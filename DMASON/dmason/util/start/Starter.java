@@ -17,8 +17,8 @@ public class Starter {
 		int MAX_DISTANCE=10;
 		int NUM_AGENTS=50;
 		boolean isTOROIDAL = true;
-		int WIDTH=1600;
-		int HEGHT=1600;
+		int WIDTH=400;
+		int HEGHT=400;
 		//int MODE=DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
 		int MODE=DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
 		
