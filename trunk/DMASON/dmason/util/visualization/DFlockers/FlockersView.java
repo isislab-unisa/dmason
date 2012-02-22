@@ -25,8 +25,8 @@ public class FlockersView extends SimState
 			 id_Cell=(String)args[1];
 		 }
     public Continuous2D flockers;
-    public double width = 1600;
-    public double height = 1600;
+    public double width = 400;
+    public double height = 400;
     public int numFlockers = 0;
     public double cohesion = 1.0;
     public double avoidance = 1.0;
