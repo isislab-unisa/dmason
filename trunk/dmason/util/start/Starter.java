@@ -14,11 +14,11 @@ public class Starter {
 	public static void main(String[] args) 
 	{		
 		int NUM_PEERS=4;
-		int MAX_DISTANCE=1;
+		int MAX_DISTANCE=10;
 		int NUM_AGENTS=50;
 		boolean isTOROIDAL = true;
-		int WIDTH=100;
-		int HEGHT=100;
+		int WIDTH=1600;
+		int HEGHT=1600;
 		//int MODE=DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
 		int MODE=DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
 		

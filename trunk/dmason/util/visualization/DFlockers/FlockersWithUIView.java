@@ -83,6 +83,7 @@ public class FlockersWithUIView extends GUIState
             */
             }
         
+        
         // update the size of the display appropriately.
         double w = flock.flockers.getWidth();
         double h = flock.flockers.getHeight();

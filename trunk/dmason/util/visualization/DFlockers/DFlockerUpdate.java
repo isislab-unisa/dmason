@@ -47,6 +47,7 @@ public class DFlockerUpdate extends Updater
 			for(Object s: continuos)
 				{
 					DFlocker r=(DFlocker)s;
+					
 					flockers.flockers.setObjectLocation(r, (Double2D)r.getPos());
 					 SimplePortrayal2D p = new AdjustablePortrayal2D(new MovablePortrayal2D(new OrientedPortrayal2D(new SimplePortrayal2D(),0,4.0,
 		                        r.color,
