@@ -162,6 +162,7 @@ public class DFlocker extends RemoteAgent<Double2D> implements Orientable2D
 		loc = new Double2D(flock.flockers.stx(loc.x + dx), flock.flockers.sty(loc.y + dy));
     	        
 		flock.flockers.setDistributedObjectLocation(loc, this, state);
+		
 	}
 	/*
 	public void setLoc(Double2D pos)
