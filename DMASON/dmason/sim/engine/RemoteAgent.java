@@ -22,8 +22,8 @@ public abstract class RemoteAgent<E> /*extends OvalPortrayal2D*/ implements Step
     public RemoteAgent(DistributedState<E> state)
 	{
 	
-			//int i=state.nextId();
-			//this.id=state.getType().toString()+"-"+i;		
+			int i=state.nextId();
+			this.id=state.getType().toString()+"-"+i;		
 	}
 	
 	//getters and setters
