@@ -355,7 +355,7 @@ public class DContinuous2DXY extends DContinuous2D
 				by.flush();
 				
 				connection.publishToTopic(new RemoteSnap(cellType, sm.schedule.getSteps()-1, by.toByteArray()), "GRAPHICS", "GRAPHICS");
-				
+				//System.out.println("PUBBLICO AL VISUALIZZATORE");
 				by.close();
 				actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
 				writer=actualSnap.getRaster();
