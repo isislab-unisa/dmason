@@ -31,8 +31,8 @@ public class FlockersWithUIView extends GUIState
 
     ContinuousPortrayal2D flockersPortrayal = new ContinuousPortrayal2D();
         
-// uncomment this to try out trails  (also need to uncomment out some others in this file, look around)
-/*    ContinuousPortrayal2D trailsPortrayal = new ContinuousPortrayal2D(); */
+    // uncomment this to try out trails  (also need to uncomment out some others in this file, look around)
+    /*    ContinuousPortrayal2D trailsPortrayal = new ContinuousPortrayal2D(); */
     
     public FlockersWithUIView()
         {
