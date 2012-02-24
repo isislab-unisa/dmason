@@ -15,30 +15,54 @@ public class VisualizationUpdateMap<E,F> extends HashMap<Long,HashMap<String,Obj
     private final ReentrantLock lock;
     private final Condition block;
     
+
+    
     public VisualizationUpdateMap()
     {
     	lock=new ReentrantLock();
     	block=lock.newCondition();
     }
-    
+    private boolean FORCE=false;
+    private long STEP;
 	public HashMap<String,Object> getUpdates(long step,int num_cell) throws InterruptedException
 	{
+		long nowStep=step;
 		lock.lock();
-		HashMap<String,Object> tmp = this.get(step);
+		HashMap<String,Object> tmp = this.get(nowStep);
 
 		while(tmp==null)
 		{
 			block.await();
-			tmp=this.get(step);
+			if(FORCE)
+				{
+					nowStep=STEP;
+					FORCE=false;
+				}
+			
+			tmp=this.get(nowStep);
 		}
 		
 		while(tmp.size()!=num_cell)
 		{
+			if(FORCE)
+				{
+					nowStep=STEP;
+					FORCE=false;
+				}
+				
 			block.await();
 		}
-		this.remove(step);
+		this.remove(nowStep);
 		lock.unlock();
 		return tmp;
+	}
+	public void forceSblock(long step)
+	{
+		lock.lock();
+			STEP=step;
+			FORCE=true;
+			block.signal();
+		lock.unlock();
 	}
 	
 	public void put(long step, Object d_reg)
