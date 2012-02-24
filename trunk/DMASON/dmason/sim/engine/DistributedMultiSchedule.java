@@ -80,7 +80,7 @@ public class DistributedMultiSchedule<E> extends Schedule  {
           this.scheduleRepeating(zombie);
           
 		}
-		boolean ZOOMforSTEP;
+		
 		synchronized (monitor) {
 			
 			if(monitor.isZoom)
@@ -122,7 +122,8 @@ public class DistributedMultiSchedule<E> extends Schedule  {
 			}
 		}	
 		
-		if(monitor.ZOOM)
+
+		if(monitor.ZOOM && monitor.isSynchro)
 		{
 			System.out.println("Chiedo ack per step "+(this.getSteps()-1));
 			Long actual_step=this.getSteps()-1;
@@ -132,8 +133,6 @@ public class DistributedMultiSchedule<E> extends Schedule  {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			
 		}
 		
 		return true;
