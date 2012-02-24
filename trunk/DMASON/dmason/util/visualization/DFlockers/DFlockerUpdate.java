@@ -55,7 +55,7 @@ public class DFlockerUpdate extends Updater
 
 		            flockers.flockersPortrayal.setPortrayalForObject(r, p);
 		            
-		            System.out.println("inseriscooooooooooo "+r.getPos());
+		         
 				}
 			zoom.sendAckToCell(continuos.STEP);
 			
