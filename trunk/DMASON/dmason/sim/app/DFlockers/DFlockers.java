@@ -1,5 +1,6 @@
 package dmason.sim.app.DFlockers;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import dmason.sim.engine.DistributedMultiSchedule;
@@ -87,10 +88,15 @@ public class DFlockers extends DistributedState<Double2D>
         {
         	f.setPos(flockers.setAvailableRandomLocation(f));
         	if (random.nextBoolean(deadFlockerProbability)) f.dead = true;
-                 
+            
             if(flockers.setDistributedObjectLocationForPeer(new Double2D(f.pos.getX(),f.pos.getY()), f, this))
         	//if(flockers.setDistributedObjectLocation(new Double2D(f.pos.getX(),f.pos.getY()), f, this))
             {
+            	Color c=new Color(
+            			128 + this.random.nextInt(128),
+            			128 + this.random.nextInt(128),
+            			128 + this.random.nextInt(128));
+            	f.setColor(c);
             	schedule.scheduleOnce(f);
             	f=new DFlocker(this,new Double2D(0,0));
             }

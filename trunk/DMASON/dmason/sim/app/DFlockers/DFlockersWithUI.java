@@ -57,15 +57,12 @@ public class DFlockersWithUI extends GUIState
         for(int x=0;x<flock.flockers.allObjects.numObjs;x++)
         {
         	DistributedState<Double2D> dState=(DistributedState<Double2D>)state;
-        	Color c=new Color(
-        			128 + dState.random.nextInt(128),
-        			128 + dState.random.nextInt(128),
-        			128 + dState.random.nextInt(128));
+        	 DFlocker f=(DFlocker)flock.flockers.allObjects.objs[x];
             SimplePortrayal2D p = new AdjustablePortrayal2D(new MovablePortrayal2D(new OrientedPortrayal2D(new SimplePortrayal2D(),0,4.0,
-                        c,
+                        f.getColor(),
                         OrientedPortrayal2D.SHAPE_COMPASS)));
-            DFlocker f=(DFlocker)flock.flockers.allObjects.objs[x];
-            f.setColor(c);
+           ;
+            
             flockersPortrayal.setPortrayalForObject(flock.flockers.allObjects.objs[x], p);
             
 // uncomment this to try out trails  (also need to uncomment out some others in this file, look around)
