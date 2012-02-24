@@ -16,21 +16,21 @@ public class ZoomViewer {
 	private ConnectionNFieldsWithActiveMQAPI dstate;
 	ThreadZoomCellMessageListener  t_zoom;
 	public Long STEP=null;
-	private String id_cell;
-	
+	public String id_cell;
+	ConnectionNFieldsWithActiveMQAPI con;
 	public UpdateMap update=new UpdateMap();
 	
 	public ZoomViewer(ConnectionNFieldsWithActiveMQAPI conn,String id_cell) throws Exception
 	{
 		
-		ConnectionNFieldsWithActiveMQAPI con=conn;
-		
-		
-		con.createTopic("GRAPHICS"+id_cell, 1);
+		this.con=conn;
+		this.id_cell=id_cell;
+		t_zoom=new ThreadZoomCellMessageListener(con, id_cell,this);
+		t_zoom.run();
+	
 		con.publishToTopic("ZOOM","GRAPHICS"+id_cell,"GRAPHICS"+id_cell);
 		
-		 t_zoom=new ThreadZoomCellMessageListener(con, id_cell,this);
-		t_zoom.run();
+		
 	
 	}
 	public void registerField(String key,Object field)
@@ -112,5 +112,10 @@ public class ZoomViewer {
 			System.out.println("POST PUT");
 		}
 		
+	}
+
+	public void sendAckToCell(long step) throws Exception {
+		
+		con.publishToTopic("ZOOM_STEP"+step,"GRAPHICS"+id_cell,"GRAPHICS"+id_cell);
 	}
 }

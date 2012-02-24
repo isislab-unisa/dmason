@@ -29,29 +29,28 @@ public class ZoomCellMessageListener extends MyMessageListener
 	{	
 		try
 		{
-			MyHashMap hash=((MyHashMap)parseMessage(arg0));
-			
-			Long step=null;
-			
-			System.out.println("Ricevuto messaggio con dimensione hash "+hash.size());
-			HashMap<String,Object> hh=new HashMap<String, Object>();
-			for(String key :zoom.fields.keySet())
-				{
-
-					ZoomArrayList z_a=(ZoomArrayList)hash.get(key);
-					if(z_a==null)System.exit(0);
-					hh.put(key,z_a);
-					step=new Long(z_a.STEP);
-					
-					
-					
-				}
-			System.out.println("Inserisco aggiornamento per "+step);
-			zoom.update.putSblock(step, hh);
-			if(zoom.STEP==null)
+			if( ((MyHashMap)parseMessage(arg0)).get("GRAPHICS"+zoom.id_cell) == null )
 			{
-				zoom.STEP=step;
-				zoom.setInStep();
+					MyHashMap hash=((MyHashMap)parseMessage(arg0));
+					System.out.println("Ricevuto messaggio con dimensione hash "+hash.size());
+					Long step=null;
+					HashMap<String,Object> hh=new HashMap<String, Object>();
+					for(String key :zoom.fields.keySet())
+						{
+							ZoomArrayList z_a=(ZoomArrayList)hash.get(key);
+							if(z_a==null)System.exit(0);
+							hh.put(key,z_a);
+							step=new Long(z_a.STEP);
+	
+						}
+					System.out.println("Inserisco aggiornamento per "+step);
+					if(zoom.STEP==null)
+					{
+						zoom.STEP=step;
+						zoom.setInStep();
+					}
+					zoom.update.putSblock(step, hh);
+					
 			}
 	
 		} catch (JMSException e) { 

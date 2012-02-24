@@ -41,20 +41,37 @@ public class ZoomInCellMessageListener extends MyMessageListener
 	
 				if(command.equals("ZOOM"))
 				{
-					//enable zoom disable central ui
-					//schedule.NUMVIEWER.decrement();	
-					schedule.isEnableZoomView=true;
+					synchronized (schedule.monitor) {
+						schedule.monitor.isZoom=true;
+					}
+					
 					System.out.println("Ricevuto comando di zoom");
 				}
 				else
-				{
+
+					if(command.contains("ZOOM_STEP"))
+					{
+						synchronized (schedule.monitor) {
+							
+							Long step= Long.parseLong(command.split("ZOOM_STEP")[1]);
+							schedule.monitor.putAck(step);
+						}
+						
+						System.out.println("Ricevuto comando di zoom step");
+					}
+					else
+					
 					if(command.equals("EXIT_ZOOM"))
 					{
 						//schedule.NUMVIEWER.decrement();	
-						schedule.isEnableZoomView=false;
+						synchronized (schedule.monitor) {
+							schedule.monitor.isZoom=false;
+							schedule.monitor.forceWakeUp();
+						}
+						
 						System.out.println("Ricevuto comando di exit_zoom");
 					}
-				}
+				
 				
 					
 			}

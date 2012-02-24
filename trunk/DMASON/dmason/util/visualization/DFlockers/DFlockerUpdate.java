@@ -54,7 +54,10 @@ public class DFlockerUpdate extends Updater
 		                        OrientedPortrayal2D.SHAPE_COMPASS)));
 
 		            flockers.flockersPortrayal.setPortrayalForObject(r, p);
+		            
+		            System.out.println("inseriscooooooooooo "+r.getPos());
 				}
+			zoom.sendAckToCell(continuos.STEP);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

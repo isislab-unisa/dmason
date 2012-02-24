@@ -6,13 +6,15 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 
-import sim.display.Console;
+import javax.swing.JOptionPane;
+
 import sim.display.GUIState;
 import dmason.sim.app.DAntsForage.DAntsForageWithUI;
 import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.visualization.CloseZoomAppListener;
+import dmason.util.visualization.Console;
 
 public class TestZoomFlockers {
 
@@ -28,13 +30,18 @@ public class TestZoomFlockers {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+				FlockersWithUIView t=new FlockersWithUIView(new Object[]{con,"1-1"} );
+		
+			Console c=new Console(t,con,"1-1");
+				
+		        c.setVisible(true);
 	
-		FlockersWithUIView t=new FlockersWithUIView(new Object[]{con,"1-1"} );
-		Console c=(Console)t.createController();
-        
-		c.removeWindowListener(c.getWindowListeners()[0]);
-        c.addWindowListener(new CloseZoomAppListener(c,con, "1-1"));
-		c.pressPlay();
+		       
+				c.pressPlay();
+	
+		
+		
 		
 	
 	}
