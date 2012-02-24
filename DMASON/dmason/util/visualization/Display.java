@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -15,7 +16,10 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 import org.apache.kahadb.util.ByteArrayInputStream;
+
+import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
+import dmason.util.visualization.DFlockers.FlockersWithUIView;
 
 
 public class Display  {
@@ -62,13 +66,86 @@ public class Display  {
 	}
 
 	private void imageViewMouseClicked(MouseEvent e) {
-
-		JOptionPane.showConfirmDialog(null, "PROVA coordinate: x="+e.getX()+" - y="+e.getY());
+		
+		int x = e.getX();
+		int y = e.getY();
+		
+		for(CellProperties cp : listCells){
+				
+				if(cp.isMine(x, y))
+				{
+					try {
+					JOptionPane jpane = new JOptionPane();
+					ImageIcon icon = new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/zoomJOpt2.png"));
+					int i = JOptionPane.showConfirmDialog(null, "Do you want a synchronized zoom?", 
+							"Select Option", JOptionPane.YES_NO_CANCEL_OPTION, 
+							JOptionPane.QUESTION_MESSAGE, icon);
+					
+					if(i==JOptionPane.YES_OPTION)
+					{
+					
+						con.publishToTopic("EXIT", "GRAPHICS", "GRAPHICS");
+						//this.Display.setVisible(false)
+						class thre extends Thread
+						{
+							public ConsoleZoom c;
+							FlockersWithUIView t;
+							ConnectionNFieldsWithActiveMQAPI con;
+							String id;
+							boolean sin;
+							Display d;
+							public thre(FlockersWithUIView f,ConnectionNFieldsWithActiveMQAPI con,
+									String id,boolean sin,Display d)
+							{
+							
+								this.t=f;
+										this.sin=sin;
+								this.con=con;
+								this.id=id;
+								this.d=d;
+							}
+							
+							public void run()
+							{
+								ConsoleZoom c=new ConsoleZoom(t, con, id, d);
+								c.setVisible(true);
+								c.pressPlay();
+							}
+						}
+						FlockersWithUIView t=new FlockersWithUIView(new Object[]{con,cp.id,true} );
+						thre ttt=new thre(t, con, cp.id, true,this);
+						
+						ttt.start();
+						
+	
+						
+					}
+					else
+						if(i==JOptionPane.NO_OPTION)
+						{
+							con.publishToTopic("EXIT", "GRAPHICS", "GRAPHICS");
+							//this.Display.setVisible(false);
+							FlockersWithUIView t=new FlockersWithUIView(new Object[]{con,cp.id,false} );
+	
+							ConsoleZoom c=new ConsoleZoom(t, con, cp.id, this);
+							c.setVisible(true);
+							c.pressPlay();
+						}
+					
+					break;
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Problem with simulation, impossible complete request!");
+					}
+			}
+			
+		}		
 	}
 	
 	private void onMouseEnterListener(MouseEvent e) {
-		xuLabel.setText(""+e.getX());
-		yuLabel.setText(""+e.getY());
+		xLabel.setText(""+e.getX());
+		yLabel.setText(""+e.getY());
 	}
 
 	public void initComponents() {
@@ -79,9 +156,9 @@ public class Display  {
 		topPanel = new JPanel();
 		coordinatedPanel = new JPanel();
 		label2 = new JLabel();
-		xuLabel = new JLabel();
+		xLabel = new JLabel();
 		label3 = new JLabel();
-		yuLabel = new JLabel();
+		yLabel = new JLabel();
 		label4 = new JLabel();
 		numStep = new JLabel();
 		coordinatedPanel2 = new JPanel();
@@ -91,7 +168,7 @@ public class Display  {
 		
 		comboBoxCell.addItem("ALL");
 		comboBoxCell.setSelectedIndex(0);
-		
+			
 		if(mode==0)
 		{
 			for (int i = 0; i < numCell; i++) {
@@ -164,14 +241,14 @@ public class Display  {
 						//---- label2 ----
 						label2.setText("X:");
 
-						//---- xuLabel ----
-						xuLabel.setText("0000000000");
+						//---- xLabelLabel ----
+						xLabel.setText("0000000000");
 
 						//---- label3 ----
 						label3.setText("Y:");
 
-						//---- yuLabel ----
-						yuLabel.setText("0000000000");
+						//---- yLabelLabel ----
+						yLabel.setText("0000000000");
 
 						//---- label4 ----
 						label4.setText("Step:");
@@ -187,11 +264,11 @@ public class Display  {
 									.addGap(11, 11, 11)
 									.addComponent(label2, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-									.addComponent(xuLabel, GroupLayout.PREFERRED_SIZE, 90, GroupLayout.PREFERRED_SIZE)
+									.addComponent(xLabel, GroupLayout.PREFERRED_SIZE, 90, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 									.addComponent(label3)
 									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-									.addComponent(yuLabel)
+									.addComponent(yLabel)
 									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 146, Short.MAX_VALUE)
 									.addComponent(label4)
 									.addGap(18, 18, 18)
@@ -203,9 +280,9 @@ public class Display  {
 								.addGroup(coordinatedPanelLayout.createSequentialGroup()
 									.addGroup(coordinatedPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 										.addComponent(label2, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
-										.addComponent(xuLabel, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
+										.addComponent(xLabel, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
 										.addComponent(label3, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
-										.addComponent(yuLabel, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
+										.addComponent(yLabel, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
 										.addComponent(label4, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
 										.addComponent(numStep, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE))
 									.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -350,9 +427,9 @@ public class Display  {
 	private JPanel topPanel;
 	private JPanel coordinatedPanel;
 	private JLabel label2;
-	private JLabel xuLabel;
+	private JLabel xLabel;
 	private JLabel label3;
-	private JLabel yuLabel;
+	private JLabel yLabel;
 	private JLabel label4;
 	private JLabel numStep;
 	private JPanel coordinatedPanel2;
@@ -368,15 +445,21 @@ public class Display  {
 	public VisualizationUpdateMap<Long, RemoteSnap> updates;
 	public long STEP;
 	public boolean STARTED=false;
+	public boolean PAUSE=false;
 	public BufferedImage actualSnap;
 	public ReentrantLock lock=new ReentrantLock();
 	public Condition sin=lock.newCondition();
+	public int zoomWidth;
+	public int zoomHeight;
+	public ArrayList<CellProperties> listCells;
+	
 	public void sblock()
 	{
 		lock.lock();
 		sin.signal();
 		lock.unlock();
 	}
+	
 	class Viewer extends Thread{
 	
 		public void run(){
@@ -400,6 +483,7 @@ public class Display  {
 					try 
 					{
 						HashMap<String,Object> snaps = (HashMap<String,Object>)updates.getUpdates(STEP, numCell);
+						System.out.println("ESCOOOOO "+STEP);
 						BufferedImage tmpImage = 
 								new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 						String comboCell = (String)comboBoxCell.getSelectedItem();
@@ -479,6 +563,31 @@ public class Display  {
 		}
 	}
 	
+	class CellProperties{
+		
+		public String id;
+		public int xu;
+		public int yu;
+		public int xd;
+		public int yd;
+
+		public CellProperties(String id, int xu, int yu, int xd, int yd) {
+			this.id = id;
+			this.xu = xu;
+			this.yu = yu;
+			this.xd = xd;
+			this.yd = yd;
+		}	
+		
+		public boolean isMine(int x, int y) {
+			
+			if((x >= xu) && (y >= yu) && (x < xd) && (y < yd))
+				return true;
+			else
+				return false;
+		}
+	}
+	
 	public Display(ConnectionNFieldsWithActiveMQAPI con, int mode, int numCell,
 			int width, int height, String absolutePath) {
 		super();
@@ -489,6 +598,29 @@ public class Display  {
 		this.height = height;
 		this.absolutePath = absolutePath;
 		updates = new VisualizationUpdateMap<Long, RemoteSnap>();
+		listCells = new ArrayList<Display.CellProperties>();
+		
+		if(mode == 0)
+		{
+			this.zoomWidth = (int)(width/numCell);
+			this.zoomHeight = height;
+			
+			for(int i = 0; i < numCell; i++) {
+				listCells.add(new CellProperties("0-"+i, (i*zoomWidth), 0, ((i*zoomWidth)+zoomWidth), zoomHeight));
+			}
+		}
+		else
+		{
+			this.zoomWidth = (int)(width/Math.sqrt(numCell));
+			this.zoomHeight = (int)(height/Math.sqrt(numCell));
+			
+			for (int i = 0; i < Math.sqrt(numCell); i++) {
+				for (int j = 0; j < Math.sqrt(numCell); j++) {
+					listCells.add(new CellProperties(i+"-"+j, 
+							(j*zoomWidth), (i*zoomHeight), ((j*zoomWidth)+zoomWidth), ((i*zoomHeight)+zoomHeight)));
+				}
+			}
+		}		
 		
 		try {
 			con.createTopic("GRAPHICS",1);
