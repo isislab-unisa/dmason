@@ -8,6 +8,7 @@ import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.visualization.CloseZoomAppListener;
+import dmason.util.visualization.ConsoleZoom;
 
 
 public class TestZoomAnts {
@@ -25,14 +26,11 @@ public class TestZoomAnts {
 			e.printStackTrace();
 		}
 
-				AntsForageWithUIZoom t=new AntsForageWithUIZoom(new Object[]{con,"1-1"} );
-		        Console c=(Console)t.createController();
-		       
-		        c.removeWindowListener(c.getWindowListeners()[0]);
-		        c.addWindowListener(new CloseZoomAppListener(c,con, "1-1"));
-		        c.pressPlay();
-		   
-		
+		AntsForageWithUIZoom t=new AntsForageWithUIZoom(new Object[]{con,"1-1",true} );
+
+		ConsoleZoom c=new ConsoleZoom(t,con,"1-1");
+		c.setVisible(true);
+		c.pressPlay();		
 	}
 
 }
