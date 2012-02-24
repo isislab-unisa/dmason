@@ -112,7 +112,7 @@ public class FlockersWithUIView extends GUIState
 
         displayFrame = display.createFrame();
         displayFrame.setTitle("Flockers");
-        c.registerFrame(displayFrame);   // register the frame so it appears in the "Display" list
+        //c.registerFrame(displayFrame);   // register the frame so it appears in the "Display" list
         displayFrame.setVisible(true);
 // uncomment this to try out trails  (also need to uncomment out some others in this file, look around)
         /* display.attach( trailsPortrayal, "Trails" ); */
