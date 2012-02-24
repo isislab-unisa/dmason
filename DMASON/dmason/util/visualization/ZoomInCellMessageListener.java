@@ -43,34 +43,43 @@ public class ZoomInCellMessageListener extends MyMessageListener
 				{
 					synchronized (schedule.monitor) {
 						schedule.monitor.isZoom=true;
+						schedule.monitor.isSynchro=false;
 					}
 					
 					System.out.println("Ricevuto comando di zoom");
 				}
 				else
-
-					if(command.contains("ZOOM_STEP"))
+					if(command.equals("ZOOM_SYNCHRO"))
 					{
 						synchronized (schedule.monitor) {
-							
-							Long step= Long.parseLong(command.split("ZOOM_STEP")[1]);
-							schedule.monitor.putAck(step);
+							schedule.monitor.isZoom=true;
+							schedule.monitor.isSynchro=true;
 						}
 						
-						System.out.println("Ricevuto comando di zoom step");
+						System.out.println("Ricevuto comando di zoom SYNCHRONO");
 					}
 					else
-					
-					if(command.equals("EXIT_ZOOM"))
-					{
-						//schedule.NUMVIEWER.decrement();	
-						synchronized (schedule.monitor) {
-							schedule.monitor.isZoom=false;
-							schedule.monitor.forceWakeUp();
+						if(command.contains("ZOOM_STEP"))
+						{
+							synchronized (schedule.monitor) {
+								
+								Long step= Long.parseLong(command.split("ZOOM_STEP")[1]);
+								schedule.monitor.putAck(step);
+							}
+							
+							System.out.println("Ricevuto comando di zoom step");
 						}
-						
-						System.out.println("Ricevuto comando di exit_zoom");
-					}
+						else
+							if(command.equals("EXIT_ZOOM"))
+							{
+								//schedule.NUMVIEWER.decrement();	
+								synchronized (schedule.monitor) {
+									schedule.monitor.isZoom=false;
+									schedule.monitor.forceWakeUp();
+								}
+								
+								System.out.println("Ricevuto comando di exit_zoom");
+							}
 				
 				
 					
