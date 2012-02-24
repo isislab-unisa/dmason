@@ -13,9 +13,11 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 import dmason.sim.field.DistributedField;
+import dmason.util.visualization.ViewerMonitor;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
+import sun.tools.tree.ThisExpression;
 
 
 /**
@@ -48,6 +50,7 @@ public class DistributedMultiSchedule<E> extends Schedule  {
 	}
 	public CounterViewer NUMVIEWER=new CounterViewer();
 	public boolean isEnableZoomView=false;
+	public ViewerMonitor monitor=new ViewerMonitor();
 	
     private int n = 0;
     
@@ -77,6 +80,16 @@ public class DistributedMultiSchedule<E> extends Schedule  {
           this.scheduleRepeating(zombie);
           
 		}
+		boolean ZOOMforSTEP;
+		synchronized (monitor) {
+			
+			if(monitor.isZoom)
+				monitor.ZOOM=true;
+			else
+				monitor.ZOOM=false;
+		}
+		if(monitor.ZOOM)
+			System.out.println("Vado in ZOOM per step "+this.getSteps());
 		
 		boolean a= super.step(state) ;
 	
@@ -108,6 +121,20 @@ public class DistributedMultiSchedule<E> extends Schedule  {
 				return false;
 			}
 		}	
+		
+		if(monitor.ZOOM)
+		{
+			System.out.println("Chiedo ack per step "+(this.getSteps()-1));
+			Long actual_step=this.getSteps()-1;
+			try {
+				monitor.awaitForAckStep(actual_step);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+		}
 		
 		return true;
 		
