@@ -1,3 +1,4 @@
+
 package dmason.util.visualization.DFlockers;
 
 import java.io.File;
@@ -14,7 +15,7 @@ import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.visualization.CloseZoomAppListener;
-import dmason.util.visualization.Console;
+import dmason.util.visualization.ConsoleZoom;
 
 public class TestZoomFlockers {
 
@@ -31,19 +32,11 @@ public class TestZoomFlockers {
 			e.printStackTrace();
 		}
 		
-				FlockersWithUIView t=new FlockersWithUIView(new Object[]{con,"1-1"} );
-		
-			Console c=new Console(t,con,"1-1");
-				
-		        c.setVisible(true);
-	
-		       
-				c.pressPlay();
-	
-		
-		
-		
-	
+		FlockersWithUIView t=new FlockersWithUIView(new Object[]{con,"1-1",true} );
+
+		ConsoleZoom c=new ConsoleZoom(t,con,"1-1");
+		c.setVisible(true);
+		c.pressPlay();
 	}
 
 }
