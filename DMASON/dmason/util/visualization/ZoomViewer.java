@@ -17,18 +17,24 @@ public class ZoomViewer {
 	ThreadZoomCellMessageListener  t_zoom;
 	public Long STEP=null;
 	public String id_cell;
+	public boolean isSynchro = false;
 	ConnectionNFieldsWithActiveMQAPI con;
 	public UpdateMap update=new UpdateMap();
 	
-	public ZoomViewer(ConnectionNFieldsWithActiveMQAPI conn,String id_cell) throws Exception
+	public ZoomViewer(ConnectionNFieldsWithActiveMQAPI conn,String id_cell, Boolean isSynchro) throws Exception
 	{
 		
 		this.con=conn;
 		this.id_cell=id_cell;
+		this.isSynchro = isSynchro;
+		
 		t_zoom=new ThreadZoomCellMessageListener(con, id_cell,this);
 		t_zoom.run();
 	
-		con.publishToTopic("ZOOM","GRAPHICS"+id_cell,"GRAPHICS"+id_cell);
+		if(this.isSynchro)
+			con.publishToTopic("ZOOM_SYNCHRO","GRAPHICS"+id_cell,"GRAPHICS"+id_cell);
+		else
+			con.publishToTopic("ZOOM","GRAPHICS"+id_cell,"GRAPHICS"+id_cell);
 		
 		
 	
