@@ -16,14 +16,17 @@ import sim.field.continuous.*;
 public class FlockersView extends SimState
 {
 	
-		 public ConnectionNFieldsWithActiveMQAPI con;
-		 public String id_Cell;
-		 public FlockersView(Object[] args)
-		 {
-			 super(1);
-			 con=(ConnectionNFieldsWithActiveMQAPI)args[0];
-			 id_Cell=(String)args[1];
-		 }
+	public ConnectionNFieldsWithActiveMQAPI con;
+	public String id_Cell;
+	public FlockersView(Object[] args)
+	{
+		super(1);
+		con=(ConnectionNFieldsWithActiveMQAPI)args[0];
+		id_Cell=(String)args[1];
+		isSynchro = (Boolean)args[2];
+	}
+	
+	public boolean isSynchro;
     public Continuous2D flockers;
     public double width = 400;
     public double height = 400;
@@ -79,7 +82,7 @@ public class FlockersView extends SimState
     	
     	ZoomViewer zoom;
 		try {
-			zoom = new ZoomViewer(con,id_Cell);
+			zoom = new ZoomViewer(con,id_Cell,isSynchro);
 	       	//in according order
         	zoom.registerField("flockers",flockers);
         	
