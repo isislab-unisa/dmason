@@ -62,11 +62,8 @@ public class Display  {
 	}
 
 	private void imageViewMouseClicked(MouseEvent e) {
-		// TODO add your code here
-	}
 
-	private void comboBoxCellItemStateChanged(ItemEvent e) {
-		// TODO add your code here
+		JOptionPane.showConfirmDialog(null, "PROVA coordinate: x="+e.getX()+" - y="+e.getY());
 	}
 	
 	private void onMouseEnterListener(MouseEvent e) {
@@ -232,12 +229,6 @@ public class Display  {
 						});
 
 						//---- comboBoxCell ----
-						comboBoxCell.addItemListener(new ItemListener() {
-							@Override
-							public void itemStateChanged(ItemEvent e) {
-								comboBoxCellItemStateChanged(e);
-							}
-						});
 
 						GroupLayout coordinatedPanel2Layout = new GroupLayout(coordinatedPanel2);
 						coordinatedPanel2.setLayout(coordinatedPanel2Layout);
