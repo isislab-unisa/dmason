@@ -10,8 +10,9 @@ public class ViewerMonitor {
 	
 	public ArrayList<Long> queue=new ArrayList<Long>();
 	public boolean isZoom=false;
+	public boolean isSynchro=false;
 	public boolean ZOOM=false;
-	public boolean FORCE=false;
+	private boolean FORCE=false;
 	
 	private final ReentrantLock lock = new ReentrantLock();
     private final Condition block = lock.newCondition();
@@ -22,7 +23,7 @@ public class ViewerMonitor {
 		System.out.println("Apetto per step "+step);
 		while(!queue.contains(step))
 		 	{
-				if(FORCE) break;
+				if(FORCE) { FORCE=false; break;}
 				block.await();
 		 	}
 		
@@ -42,6 +43,7 @@ public class ViewerMonitor {
 		lock.lock();
 			FORCE=true;
 			block.signal();
+			
 		lock.unlock();
 	}
 }
