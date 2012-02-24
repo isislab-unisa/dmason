@@ -23,11 +23,13 @@ public class Tutorial3View extends SimState
 
 	public int gridWidth = 100;
 	public int gridHeight = 100;
+	
+	private boolean isSynchro;
     
     public Tutorial3View(long seed)
     {
         super(seed);
-        }
+    }
 
     public void start()
 	{
@@ -51,7 +53,7 @@ public class Tutorial3View extends SimState
         //View Zoom in Central GUI
     	ZoomViewer zoom;
 		try {
-			zoom = new ZoomViewer(con,id_Cell);
+			zoom = new ZoomViewer(con,id_Cell, isSynchro);
 	       	//in according order
         	zoom.registerField("particles",particles);
         	zoom.registerField("trails",trails);
@@ -72,6 +74,7 @@ public class Tutorial3View extends SimState
 		 super(1);
 		 con=(ConnectionNFieldsWithActiveMQAPI)args[0];
 		 id_Cell=(String)args[1];
+		 isSynchro=(Boolean)args[1];
 	}
     
     public static void main(String[] args)
