@@ -106,7 +106,7 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS,Seria
 		if (!mytopic.equals("") || !(arg == null))
 		{
 			MyHashMap mh = contObj.get(mytopic);
-			mh.put(name, (Object)arg);
+			mh.put(name,(Object)arg);
 			contObj.put(mytopic, mh);
 			if(mh.isFull()){
 				
