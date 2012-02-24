@@ -133,7 +133,7 @@ public class DContinuous2DXY extends DContinuous2D
 	private FileOutputStream file;
 	private PrintStream ps;
 	
-	private ZoomArrayList<RemoteAgent> tmp_zoom=null;
+	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
 	
 
 	/**
@@ -328,6 +328,9 @@ public class DContinuous2DXY extends DContinuous2D
     		{
     			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
     		}
+    		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+				tmp_zoom.add(rm);
+			
     		return myfield.addAgents(new Entry<Double2D>(rm, location));
     	}
     	else
@@ -370,12 +373,7 @@ public class DContinuous2DXY extends DContinuous2D
 				this.remove(remote_agent.r);
 			}
 		}
-		if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
-		{
-			tmp_zoom=new ZoomArrayList<RemoteAgent>();
-			tmp_zoom.STEP=sm.schedule.getSteps()-1;
-		}
-		
+	
 		//every agent in the myfield region is scheduled
 		for(Entry<Double2D> e: myfield)
 		{
@@ -386,22 +384,9 @@ public class DContinuous2DXY extends DContinuous2D
 		    this.remove(rm);
 			sm.schedule.scheduleOnce(rm);
 			setObjectLocation(rm,loc);
-			if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
-			{
-				if(tmp_zoom!=null)tmp_zoom.add(rm);
-			}
+		
 		}   
-		if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
-		{
-			try {
-				
-				connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
-				System.out.println("pubblico per cella "+"GRAPHICS"+cellType+" con step"+tmp_zoom.STEP+" campo:"+NAME);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
+	
 		
 		
 		updateFields(); //update fields with java reflect
@@ -526,6 +511,23 @@ public class DContinuous2DXY extends DContinuous2D
 			
 		this.reset();
 		ps.println(sm.schedule.getSteps()+";"+System.currentTimeMillis());
+		
+		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+		{
+			try {
+				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
+				connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
+				System.out.println("pubblico per cella "+"GRAPHICS"+cellType+" con step"+tmp_zoom.STEP+" campo:"+NAME);
+				tmp_zoom=new ZoomArrayList<RemoteAgent>();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+	
+			
+			
+		
 		return true;
 	}
 	
@@ -679,10 +681,10 @@ public class DContinuous2DXY extends DContinuous2D
 	    		if(region.isMine(location.x,location.y))
 	    	    {   
 	    			if(name.contains("mine")){
-	    				if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
-	    				{
-	    					if(tmp_zoom!=null)tmp_zoom.add(rm);
-	    				}
+	    				if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+	    				
+	    					tmp_zoom.add(rm);
+	    				
 	    				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).NUMVIEWER.getCount()>0)
 	    				{
 	    	    			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
