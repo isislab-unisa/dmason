@@ -21,7 +21,8 @@ public class RegionIntegerNumeric extends RegionNumeric<Integer, EntryNum<Intege
 	 */
 	public static RegionNumeric<Integer, EntryNum<Integer, Int2D>> createRegionNumeric(Integer upl_xx, Integer upl_yy, Integer down_xx,
 			Integer down_yy, Integer MY_WIDTH, Integer MY_HEIGHT, Integer WIDTH,
-			Integer HEIGHT) {
+			Integer HEIGHT) 
+	{
 		if(upl_xx < 0 || upl_yy < 0)
 		{				
 				return null;
