@@ -119,10 +119,11 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 	private BufferedImage actualSnap;
 	private WritableRaster writer;
 	private int white[]={255,255,255};
-	
+
+	/*
 	private FileOutputStream file;
 	private PrintStream ps;
-	
+	*/
 	private ZoomArrayList<RemoteAgent> tmp_zoom=null;
 	
 	
@@ -146,6 +147,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 		MAX_DISTANCE=max_distance;
 		NUMPEERS=num_peers;
 		
+		/*
 		try {
 			file = new FileOutputStream("Region-"+cellType+".txt");
 			ps = new PrintStream(file);
@@ -153,6 +155,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 		
 		updates_cache=new ArrayList<Region<Integer,Int2D>>();
 		
@@ -420,6 +423,8 @@ public class DSparseGrid2DXY extends DSparseGrid2D
     		{
     			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
     		}
+    		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+				tmp_zoom.add(rm);
     		return myfield.addAgents(new Entry<Int2D>(rm, location));
     	}
     	else
@@ -461,11 +466,6 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 			}
 		}
 
-		if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
-		{
-			tmp_zoom=new ZoomArrayList<RemoteAgent>();
-			tmp_zoom.STEP=sm.schedule.getSteps()-1;
-		}
 		//every agent in the myfield region is scheduled
 		for(Entry<Int2D> e: myfield)
 		{
@@ -475,23 +475,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 			this.remove(rm);
 			sm.schedule.scheduleOnce(rm);
 			setObjectLocation(rm,loc);	
-			if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
-			{
-				if(tmp_zoom!=null)tmp_zoom.add(rm);
-			}
 		}   
-
-		if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
-		{
-			try {
-
-				connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
-				System.out.println("pubblico per cella "+"GRAPHICS"+cellType+" con step"+tmp_zoom.STEP+" campo:"+NAME);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
 
 		updateFields(); //update fields with java reflect
 		updates_cache=new ArrayList<Region<Integer,Int2D>>();
@@ -613,7 +597,21 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 			}
 
 		this.reset();
-		ps.println(sm.schedule.getSteps()+";"+System.currentTimeMillis());
+		/*
+			ps.println(sm.schedule.getSteps()+";"+System.currentTimeMillis());
+		*/
+		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+		{
+			try {
+				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
+				connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
+				System.out.println("pubblico per cella "+"GRAPHICS"+cellType+" con step"+tmp_zoom.STEP+" campo:"+NAME);
+				tmp_zoom=new ZoomArrayList<RemoteAgent>();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 		return true;
 	}
 	
@@ -735,7 +733,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 	 * @param location The new location of the Remote Agent
 	 * @return true if the agent is added in right way
 	 */
-	public boolean setAgents(RemoteAgent<Int2D> rm,Int2D location)
+	private boolean setAgents(RemoteAgent<Int2D> rm,Int2D location)
 	{
 		Class o=rmap.getClass();
 	
@@ -755,15 +753,11 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 	    		if(region.isMine(location.x,location.y))
 	    	    {   	 
 	    			if(name.contains("mine")){
-	    				if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
-	    				{
-	    					if(tmp_zoom!=null)tmp_zoom.add(rm);
-	    				}
+	    				if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)		
+	    					tmp_zoom.add(rm);
+	    				
 	    				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).NUMVIEWER.getCount()>0)
-	    				{
 	    	    			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
-	    	    			
-	    	    		}
 	    			}
 	    			return region.addAgents(new Entry<Int2D>(rm, location));
 	    	    }    
