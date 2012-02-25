@@ -1,7 +1,6 @@
 package dmason.sim.field.grid.numeric;
 
 import java.util.ArrayList;
-
 import sim.engine.SimState;
 import sim.field.grid.IntGrid2D;
 import sim.util.Int2D;
@@ -11,8 +10,6 @@ import dmason.sim.field.EntryNum;
 import dmason.sim.field.RegionMapNumeric;
 import dmason.sim.field.RegionNumeric;
 import dmason.sim.field.UpdateMap;
-import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
-import dmason.util.connection.ConnectionWithJMS;
 
 
 /**
