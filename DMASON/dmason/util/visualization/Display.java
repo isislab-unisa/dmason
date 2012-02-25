@@ -17,6 +17,8 @@ import javax.swing.*;
 import javax.swing.border.*;
 import org.apache.kahadb.util.ByteArrayInputStream;
 
+import sim.display.GUIState;
+
 import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.visualization.DFlockers.FlockersWithUIView;
@@ -66,7 +68,44 @@ public class Display  {
 	}
 
 	private void imageViewMouseClicked(MouseEvent e) {
-		
+
+		class runnerZoom extends Thread
+		{
+			public ConsoleZoom c;
+			public GUIState t;
+			public ConnectionNFieldsWithActiveMQAPI con;
+			public String id;
+			public boolean sin;
+			public Display d;
+			public int mode, numCell, width, height; 
+			public String absolutePath;
+			public runnerZoom(FlockersWithUIView f,ConnectionNFieldsWithActiveMQAPI con,
+					String id,boolean sin,Display d,int mode,int numCell,
+					int width,int height, String absolutePath)
+			{
+			
+				this.t=f;
+						this.sin=sin;
+				this.con=con;
+				this.id=id;
+				this.d=d;
+				this.mode=mode;
+				this.numCell=numCell;
+				this.width=width;
+				this.height=height;
+				this.absolutePath=absolutePath;
+			}
+        
+	    
+			public void run()
+			{
+				ConsoleZoom c=new ConsoleZoom(t, con,id,sin,d,
+						mode,numCell,
+						width,height,absolutePath);
+				c.setVisible(true);
+				c.pressPlay();
+			}
+		}
 		int x = e.getX();
 		int y = e.getY();
 		
@@ -76,7 +115,7 @@ public class Display  {
 				{
 					try {
 					JOptionPane jpane = new JOptionPane();
-					ImageIcon icon = new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/zoomJOpt2.png"));
+					ImageIcon icon = new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/zoomJOpt.png"));
 					int i = JOptionPane.showConfirmDialog(null, "Do you want a synchronized zoom?", 
 							"Select Option", JOptionPane.YES_NO_CANCEL_OPTION, 
 							JOptionPane.QUESTION_MESSAGE, icon);
@@ -85,51 +124,23 @@ public class Display  {
 					{
 					
 						con.publishToTopic("EXIT", "GRAPHICS", "GRAPHICS");
-						//this.Display.setVisible(false)
-						class thre extends Thread
-						{
-							public ConsoleZoom c;
-							FlockersWithUIView t;
-							ConnectionNFieldsWithActiveMQAPI con;
-							String id;
-							boolean sin;
-							Display d;
-							public thre(FlockersWithUIView f,ConnectionNFieldsWithActiveMQAPI con,
-									String id,boolean sin,Display d)
-							{
-							
-								this.t=f;
-										this.sin=sin;
-								this.con=con;
-								this.id=id;
-								this.d=d;
-							}
-							
-							public void run()
-							{
-								ConsoleZoom c=new ConsoleZoom(t, con, id, d);
-								c.setVisible(true);
-								c.pressPlay();
-							}
-						}
-						FlockersWithUIView t=new FlockersWithUIView(new Object[]{con,cp.id,true} );
-						thre ttt=new thre(t, con, cp.id, true,this);
 						
-						ttt.start();
-						
-	
+						FlockersWithUIView simulazione=new FlockersWithUIView(new Object[]{con,cp.id,true} );
+						runnerZoom rZ=new runnerZoom(simulazione, con, cp.id, true,this,mode,numCell,width,height,absolutePath);
+						rZ.start();
+						this.close();
+		
 						
 					}
 					else
 						if(i==JOptionPane.NO_OPTION)
 						{
 							con.publishToTopic("EXIT", "GRAPHICS", "GRAPHICS");
-							//this.Display.setVisible(false);
-							FlockersWithUIView t=new FlockersWithUIView(new Object[]{con,cp.id,false} );
-	
-							ConsoleZoom c=new ConsoleZoom(t, con, cp.id, this);
-							c.setVisible(true);
-							c.pressPlay();
+							
+							FlockersWithUIView simulazione=new FlockersWithUIView(new Object[]{con,cp.id,false} );
+							runnerZoom rZ=new runnerZoom(simulazione, con, cp.id, false,this,mode,numCell,width,height,absolutePath);
+							rZ.start();
+							this.close();
 						}
 					
 					break;
@@ -417,11 +428,11 @@ public class Display  {
 			Display.setLocationRelativeTo(Display.getOwner());
 		}
 		
-		Viewer view = new Viewer();
+		 view = new Viewer();
 		view.start();
 	}
 
-
+	
 	public JFrame Display;
 	private JPanel masterPanel;
 	private JPanel topPanel;
@@ -446,12 +457,15 @@ public class Display  {
 	public long STEP;
 	public boolean STARTED=false;
 	public boolean PAUSE=false;
+	public boolean FIRST_TIME=true;
 	public BufferedImage actualSnap;
 	public ReentrantLock lock=new ReentrantLock();
 	public Condition sin=lock.newCondition();
 	public int zoomWidth;
 	public int zoomHeight;
 	public ArrayList<CellProperties> listCells;
+	public Viewer view ;
+	public ThreadVisualizationMessageListener thread;
 	
 	public void sblock()
 	{
@@ -461,21 +475,11 @@ public class Display  {
 	}
 	
 	class Viewer extends Thread{
-	
+		private boolean ACTIVE=true;
 		public void run(){
 			actualSnap=new BufferedImage(100,100,BufferedImage.TYPE_3BYTE_BGR);
-			if(STARTED==false)
-			{
-				lock.lock();
-				try {
-					sin.await();
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				lock.unlock();
-			}
-			while(true)
+			
+			while(true && ACTIVE)
 			{
 				if(STARTED) 
 				{
@@ -483,7 +487,14 @@ public class Display  {
 					try 
 					{
 						HashMap<String,Object> snaps = (HashMap<String,Object>)updates.getUpdates(STEP, numCell);
-						System.out.println("ESCOOOOO "+STEP);
+						if(snaps==null){
+							System.out.println("Ripartoooooooooooo cerco step "+STEP+" ci sta?? "+updates.get(STEP));
+							System.out.println(" CI sta :");
+							for(Long k: updates.keySet())
+								System.out.print(" "+k+" ");
+							break;
+						}
+						
 						BufferedImage tmpImage = 
 								new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 						String comboCell = (String)comboBoxCell.getSelectedItem();
@@ -557,9 +568,26 @@ public class Display  {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+				}else
+				{
+					if(STARTED==false)
+					{
+						lock.lock();
+						try {
+							sin.await();
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						lock.unlock();
+					}
 				}
 			}
 				
+		}
+		public void setAlive() {
+			// TODO Auto-generated method stub
+			ACTIVE=false;
 		}
 	}
 	
@@ -631,7 +659,7 @@ public class Display  {
 			e.printStackTrace();
 		}	
 		
-		ThreadVisualizationMessageListener thread = new ThreadVisualizationMessageListener(con, this);
+		thread = new ThreadVisualizationMessageListener(con, this);
 		
 		thread.start();
 	}
@@ -640,6 +668,13 @@ public class Display  {
 		
 		updates.put(remSnap.step, remSnap);
 	
+	}
+
+	public void close() {
+		
+		view.setAlive();
+		Display.dispose();
+		
 	}
 
 }

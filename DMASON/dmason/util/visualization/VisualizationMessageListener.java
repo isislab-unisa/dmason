@@ -38,22 +38,19 @@ public class VisualizationMessageListener extends MyMessageListener
 					disp.STARTED=true;
 					
 					disp.STEP=remSnap.step+1;
-					
+					System.out.println("Starts from step:"+(disp.STEP));
 				
-					System.out.println("Starts from step:"+disp.STEP);
-					disp.sblock();
+					if(disp.FIRST_TIME) {
+						disp.sblock();
+						disp.FIRST_TIME=false;
+					}
+					else disp.updates.forceSblock();
+				
 				}
-				
+				System.out.println("Ricevuto "+remSnap.step+" da "+remSnap.i+"-"+remSnap.j);
 			
 				disp.addSnapShot(remSnap);
-				
-				if(disp.PAUSE)
-				{
-					System.out.println("SBLOCOOOOOOOOOOOO");
-					disp.updates.forceSblock(remSnap.step+1);
-					disp.STEP=remSnap.step+1;
-					disp.PAUSE=false;
-				}
+			
 			}
 		
 		} catch (JMSException e) { 
