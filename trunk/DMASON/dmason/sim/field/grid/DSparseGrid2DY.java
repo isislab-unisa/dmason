@@ -99,7 +99,7 @@ public class DSparseGrid2DY extends DSparseGrid2D
 	private BufferedImage actualSnap;
 	private WritableRaster writer;
 	private int white[]={255,255,255};
-	private ZoomArrayList<RemoteAgent> tmp_zoom=null;
+	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
 	
 	/**
 	 * @param width field's width  
