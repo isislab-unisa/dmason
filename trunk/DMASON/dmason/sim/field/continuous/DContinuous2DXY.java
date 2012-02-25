@@ -130,8 +130,10 @@ public class DContinuous2DXY extends DContinuous2D
 	private WritableRaster writer;
 	private int white[]={255,255,255};
 	
+	/*
 	private FileOutputStream file;
 	private PrintStream ps;
+	*/
 	
 	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
 	
@@ -156,13 +158,14 @@ public class DContinuous2DXY extends DContinuous2D
 		updates_cache=new ArrayList<Region<Double,Double2D>>();
 		this.NAME = name;
 		
+		/*
 		try {
 			file = new FileOutputStream("Region-"+cellType+".txt");
 			ps = new PrintStream(file);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
 		setConnection(((DistributedState)sm).getConnection());
 		
@@ -510,7 +513,9 @@ public class DContinuous2DXY extends DContinuous2D
 		}
 			
 		this.reset();
-		ps.println(sm.schedule.getSteps()+";"+System.currentTimeMillis());
+		/*
+		/ps.println(sm.schedule.getSteps()+";"+System.currentTimeMillis());
+		*/
 		
 		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 		{
@@ -524,10 +529,7 @@ public class DContinuous2DXY extends DContinuous2D
 				e1.printStackTrace();
 			}
 		}
-	
-			
-			
-		
+
 		return true;
 	}
 	
@@ -627,17 +629,6 @@ public class DContinuous2DXY extends DContinuous2D
 			 	     {
 			    		RemoteAgent<Double2D> rm=e.r;
 			 	    	Double2D loc=e.l;
-			 	    	
-						/*if(((DistributedMultiSchedule)((DistributedState)sm).schedule).NUMVIEWER.getCount()>0){
-			    			
-			    			
-			    			Double deckX = loc.x-((int)loc.x);
-			    			Double deckY = loc.y-((int)loc.y);
-			    			g2D.setColor(Color.black);
-			    			g2D.draw(new Rectangle2D.Double(loc.x%my_width+deckX,
-			    					loc.y%my_height+deckY, 0.1, 0.1));
-			    			g2D.setColor(Color.white);
-			    		}*/
 			 	    	rm.setPos(loc);
 			 	    	this.remove(rm);
 			 	    	sm.schedule.scheduleOnce(rm);
