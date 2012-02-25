@@ -3,26 +3,13 @@ package dmason.sim.field.continuous;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
-
 import javax.imageio.ImageIO;
-import javax.jms.Message;
-import javax.swing.ImageIcon;
-
-import org.apache.activemq.command.ActiveMQObjectMessage;
-
 import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.engine.RemoteAgent;
@@ -32,18 +19,12 @@ import dmason.sim.field.Entry;
 import dmason.sim.field.MessageListener;
 import dmason.sim.field.Region;
 import dmason.sim.field.UpdateMap;
-import dmason.sim.field.UpdaterThreadForListener;
-import dmason.util.connection.Address;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
-import dmason.util.connection.ConnectionWithJMS;
-import dmason.util.connection.MyMessageListener;
 import dmason.util.visualization.RemoteSnap;
-import dmason.util.visualization.ThreadVisualizationCellMessageListener;
 import dmason.util.visualization.ZoomArrayList;
 import sim.engine.SimState;
 import sim.util.Double2D;
-import sim.util.Int2D;
 
 /**
  *  <h3>This Field extends Continuous2D, to be used in a distributed environment. All the necessary informations 
@@ -325,9 +306,7 @@ public class DContinuous2DXY extends DContinuous2D
     	if(myfield.isMine(location.x,location.y))
     	{    		
     		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).NUMVIEWER.getCount()>0)
-    		{
     			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
-    		}
     		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
 			
@@ -379,7 +358,6 @@ public class DContinuous2DXY extends DContinuous2D
 		{
 			RemoteAgent<Double2D> rm=e.r;
 			Double2D loc=e.l;
-
 			rm.setPos(loc);
 		    this.remove(rm);
 			sm.schedule.scheduleOnce(rm);
@@ -387,8 +365,6 @@ public class DContinuous2DXY extends DContinuous2D
 		
 		}   
 	
-		
-		
 		updateFields(); //update fields with java reflect
 		updates_cache=new ArrayList<Region<Double,Double2D>>();
 		
@@ -670,13 +646,9 @@ public class DContinuous2DXY extends DContinuous2D
 	    	    {   
 	    			if(name.contains("mine")){
 	    				if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
-	    				
 	    					tmp_zoom.add(rm);
-	    				
 	    				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).NUMVIEWER.getCount()>0)
-	    				{
 	    	    			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
-	    	    		}
 	    			}
 	    			return region.addAgents(new Entry<Double2D>(rm, location));
 	    	    }    
