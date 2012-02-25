@@ -1,8 +1,5 @@
 package dmason.sim.field.continuous;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
