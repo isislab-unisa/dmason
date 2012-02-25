@@ -63,7 +63,7 @@ public class JMasterUI extends JFrame {
 	}
 
 	private void initComponents() {
-		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+
 		limitStep = 1000;
 		menuBar1 = new JMenuBar();
 		jMenuFile = new JMenu();
