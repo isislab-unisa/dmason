@@ -23,9 +23,10 @@ public class VisualizationUpdateMap<E,F> extends HashMap<Long,HashMap<String,Obj
     	block=lock.newCondition();
     }
     private boolean FORCE=false;
-    private long STEP;
+
 	public HashMap<String,Object> getUpdates(long step,int num_cell) throws InterruptedException
 	{
+		System.out.println("Entro per step "+step);
 		long nowStep=step;
 		lock.lock();
 		HashMap<String,Object> tmp = this.get(nowStep);
@@ -34,34 +35,32 @@ public class VisualizationUpdateMap<E,F> extends HashMap<Long,HashMap<String,Obj
 		{
 			block.await();
 			if(FORCE)
-				{
-					nowStep=STEP;
-					FORCE=false;
-				}
+			{
+				FORCE=false;
+				return null;
+			}
 			
 			tmp=this.get(nowStep);
 		}
-		
 		while(tmp.size()!=num_cell)
 		{
-			if(FORCE)
-				{
-					nowStep=STEP;
-					FORCE=false;
-				}
-				
 			block.await();
+			if(FORCE){
+				FORCE=false;
+			return null;
+			}
 		}
 		this.remove(nowStep);
 		lock.unlock();
 		return tmp;
 	}
-	public void forceSblock(long step)
+	public void forceSblock()
 	{
 		lock.lock();
-			STEP=step;
 			FORCE=true;
+			System.out.println("sbloccoooooooooooo");
 			block.signal();
+			
 		lock.unlock();
 	}
 	

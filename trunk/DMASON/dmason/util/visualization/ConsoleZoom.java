@@ -30,33 +30,45 @@ import java.util.prefs.*;
 public class ConsoleZoom extends sim.display.Console
     {
   
-    public final ConnectionNFieldsWithActiveMQAPI con;
+   
+	public final ConnectionNFieldsWithActiveMQAPI con;
     public String id_cell;
     final Object isClosingLock = new Object();
     boolean isClosing = false;
     public Display disp;
+    int mode; int numCell;
+	int width; int height; String absolutePath;
     
-    public ConsoleZoom(final GUIState simulation,ConnectionNFieldsWithActiveMQAPI con,String id_cell, Display display)
+    public ConsoleZoom(final GUIState simulation,ConnectionNFieldsWithActiveMQAPI con,String id_cell)
         {
     		super(simulation);
     		this.con=con;
     		this.id_cell=id_cell;
-    		this.disp=display;
+    		
         }
-    public ConsoleZoom(final GUIState simulation,ConnectionNFieldsWithActiveMQAPI con,String id_cell)
-    {	super(simulation);
-		this.con=con;
-		this.id_cell=id_cell;
-    }
+    public ConsoleZoom(GUIState simulation,
+			ConnectionNFieldsWithActiveMQAPI con, String id_cell,
+			boolean isClosing, Display disp, int mode, int numCell, int width,
+			int height, String absolutePath) {
+		super(simulation);
+		this.con = con;
+		this.id_cell = id_cell;
+		this.isClosing = isClosing;
+		this.disp = disp;
+		this.mode = mode;
+		this.numCell = numCell;
+		this.width = width;
+		this.height = height;
+		this.absolutePath = absolutePath;
+	}
     private void  sendAck()
     {
-    
-    		System.out.println("kiudo");
+
     		try {
 				con.publishToTopic("EXIT_ZOOM", "GRAPHICS"+id_cell,"GRAPHICS"+id_cell);
-				//JOptionPane.showMessageDialog(null, "Zoom correctly disconnect.");
+				System.out.println("Zoom correctly disconnect.");
     		  } catch (Exception e) {
-    				JOptionPane.showMessageDialog(null, 
+    				System.out.println(
     						"Zoom uncorrectly disconnect. Possible problem in your simulation...");
     				e.printStackTrace();
     			}
@@ -68,16 +80,21 @@ public class ConsoleZoom extends sim.display.Console
     		pressStop();  
     	
             simulation.quit();  
-    		 dispose();
-    	        allControllers.remove(this);
+    		dispose();
+    	    allControllers.remove(this);
+    	    
 			
     	   try {
-			con.publishToTopic("ENTER", "GRAPHICS", "GRAPHICS");
-			//System.out.println("wewe");
-			//disp.updates.forceSblock();
-			disp.PAUSE=true;
+			
+    			Display display = new Display(con, mode, 
+    					numCell, width, 
+    					height, absolutePath);
+    			display.initComponents();
+    			display.Display.setVisible(true);
+    			
+		
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			System.out.println("Problemi in chiusura Console ZOOM!!!!");
 			e.printStackTrace();
 		}
    	
