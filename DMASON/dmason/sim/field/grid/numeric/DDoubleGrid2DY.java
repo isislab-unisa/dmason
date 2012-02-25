@@ -1,19 +1,12 @@
 package dmason.sim.field.grid.numeric;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
-import java.util.Random;
-
 import sim.engine.SimState;
-import sim.util.Double2D;
 import sim.util.Int2D;
 import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
@@ -24,10 +17,8 @@ import dmason.sim.field.EntryNum;
 import dmason.sim.field.MessageListener;
 import dmason.sim.field.RegionNumeric;
 import dmason.sim.field.UpdateMap;
-import dmason.sim.field.UpdaterThreadForListener;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
-import dmason.util.visualization.ThreadZoomInCellMessageListener;
 import dmason.util.visualization.ZoomArrayList;
 
 
@@ -91,7 +82,7 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
 	private ConnectionNFieldsWithActiveMQAPI connection;
 	
-	private ZoomArrayList<EntryNum<Double, Int2D>> tmp_zoom=null;
+	private ZoomArrayList<EntryNum<Double, Int2D>> tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
 	/**
 	 * It's the name of the specific field
 	 */
@@ -127,19 +118,6 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 		updates_cache= new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
 
 		setConnection(((DistributedState)sm).getConnection());
-		
-		try {
-			connection.createTopic("GRAPHICS"+cellType, 1);
-			connection.subscribeToTopic("GRAPHICS"+cellType);
-			ThreadZoomInCellMessageListener t_zoom=
-				new ThreadZoomInCellMessageListener((ConnectionNFieldsWithActiveMQAPI)connection, 
-						cellType.toString(),(DistributedMultiSchedule)sm.schedule);
-			t_zoom.start();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		
 		createRegion();		
 
@@ -243,35 +221,29 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 	 */
 	public synchronized boolean  synchro() 
 	{		 
-		if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
-		{
-			tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
-			tmp_zoom.STEP=sm.schedule.getSteps()-1;
-		}
 		//every value in the myfield region is setted
-		for(EntryNum<Double, Int2D> e: myfield)
-		{			
-			Int2D loc=e.l;
+				for(EntryNum<Double, Int2D> e: myfield)
+				{			
+					Int2D loc=e.l;
+					double d = e.r;
+					this.field[loc.getX()][loc.getY()]=d;	
+					
+					if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+						tmp_zoom.add(new EntryNum<Double, Int2D>(d, loc));
+				}     
+				if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+				{
+					try {
+						tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
+						connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
+						tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
+						System.out.println("pubblico per cella con step"+tmp_zoom.STEP+" campo:"+NAME);
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
 				
-			double d = e.r;
-			this.field[loc.getX()][loc.getY()]=d;	
-			if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
-			{
-				if(tmp_zoom!=null)tmp_zoom.add(new EntryNum<Double, Int2D>(d, loc));
-			}
-		}   
-		
-		if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
-		{
-			try {
-				
-				connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
-				System.out.println("pubblico per cella con step"+tmp_zoom.STEP+" campo:"+NAME);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
 			
 		updateFields(); //update fields with java reflect
 		
@@ -535,10 +507,8 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 	       			if(region.isMine(l.getX(),l.getY()))
 	       			{   	  
 						if(name.contains("mine")){
-		    				if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
-		    				{
-		    					if(tmp_zoom!=null)tmp_zoom.add(new EntryNum<Double, Int2D>(value,l));
-		    				}
+							if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+								tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
 	       				}
 	    	    		return region.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 	    	    	}
