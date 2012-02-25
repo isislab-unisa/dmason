@@ -5,7 +5,6 @@ import dmason.sim.engine.DistributedState;
 import dmason.util.exception.DMasonException;
 import sim.engine.SimState;
 
-
 /**
  * A Factory class to create the right distribution field according to two parameters
  *  HORIZONTAL_DISTRIBUTION_MODE and SQUARE_DISTRIBUTION_MODE.
