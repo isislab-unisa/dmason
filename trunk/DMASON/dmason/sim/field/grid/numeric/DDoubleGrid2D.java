@@ -11,8 +11,7 @@ import dmason.sim.field.EntryNum;
 import dmason.sim.field.RegionMapNumeric;
 import dmason.sim.field.RegionNumeric;
 import dmason.sim.field.UpdateMap;
-import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
-import dmason.util.connection.ConnectionWithJMS;
+
 
 /**
  *  Abstract class for Distributed Double Grid 2D
