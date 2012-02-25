@@ -265,9 +265,9 @@ public class DSparseGrid2DY extends DSparseGrid2D
     	if(myfield.isMine(location.x,location.y))
     	{    		
     		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).NUMVIEWER.getCount()>0)
-    		{
     			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
-    		}
+    		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+				tmp_zoom.add(rm);
     		return myfield.addAgents(new Entry<Int2D>(rm, location));
     	}
     	else
@@ -290,7 +290,9 @@ public class DSparseGrid2DY extends DSparseGrid2D
 				ByteArrayOutputStream by = new ByteArrayOutputStream();
 				ImageIO.write(actualSnap, "png", by);
 				by.flush();
+				
 				connection.publishToTopic(new RemoteSnap(cellType, sm.schedule.getSteps()-1, by.toByteArray()), "GRAPHICS", "GRAPHICS");
+				//System.out.println("PUBBLICO AL VISUALIZZATORE");
 				by.close();
 				actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
 				writer=actualSnap.getRaster();
@@ -309,12 +311,6 @@ public class DSparseGrid2DY extends DSparseGrid2D
 			}
 		}
 		
-		if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
-		{
-			tmp_zoom=new ZoomArrayList<RemoteAgent>();
-			tmp_zoom.STEP=sm.schedule.getSteps()-1;
-		}
-		
 		//every agent in the myfield region is scheduled
 		for(Entry<Int2D> e: myfield)
 		{
@@ -323,24 +319,8 @@ public class DSparseGrid2DY extends DSparseGrid2D
 			rm.setPos(loc);
 		    this.remove(rm);
 			sm.schedule.scheduleOnce(rm);
-			if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
-			{
-				if(tmp_zoom!=null)tmp_zoom.add(rm);
-			}
 			super.setObjectLocation(rm,loc);		
 		}   
-		
-		if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
-		{
-			try {
-
-				connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
-				System.out.println("pubblico per cella "+"GRAPHICS"+cellType+" con step"+tmp_zoom.STEP+" campo:"+NAME);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
 		
 		updateFields(); //update fields with java reflect
 	
@@ -396,6 +376,19 @@ public class DSparseGrid2DY extends DSparseGrid2D
 			
 		this.reset();
 
+		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+		{
+			try {
+				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
+				connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
+				System.out.println("pubblico per cella "+"GRAPHICS"+cellType+" con step"+tmp_zoom.STEP+" campo:"+NAME);
+				tmp_zoom=new ZoomArrayList<RemoteAgent>();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		
 		return true;
 	}
 	
