@@ -1,9 +1,5 @@
 package dmason.sim.field.grid.numeric;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,11 +16,8 @@ import dmason.sim.field.CellType;
 import dmason.sim.field.DistributedRegionNumeric;
 import dmason.sim.field.EntryNum;
 import dmason.sim.field.MessageListener;
-import dmason.sim.field.MessageListener;
 import dmason.sim.field.RegionNumeric;
 import dmason.sim.field.UpdateMap;
-import dmason.sim.field.UpdaterThreadForListener;
-import dmason.util.connection.Address;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.visualization.ZoomArrayList;
@@ -195,24 +188,22 @@ public class DIntGrid2DY extends DIntGrid2D {
 			tmp_zoom=new ZoomArrayList<EntryNum<Integer, Int2D>>();
 			tmp_zoom.STEP=sm.schedule.getSteps()-1;
 		}
-		
+
 		//every value in the myfield region is setted
 		for(EntryNum<Integer, Int2D> e: myfield)
 		{			
 			Int2D loc=e.l;
 			int i = e.r;
 			this.field[loc.getX()][loc.getY()]=i;	
-			if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
-			{
-				if(tmp_zoom!=null)tmp_zoom.add(new EntryNum<Integer, Int2D>(i, loc));
-			}
-		}   
-			
-		if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
+			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+				tmp_zoom.add(new EntryNum<Integer,Int2D>(i, loc));
+		}     
+		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 		{
 			try {
-				
+				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
 				connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
+				tmp_zoom=new ZoomArrayList<EntryNum<Integer,Int2D>>();
 				System.out.println("pubblico per cella con step"+tmp_zoom.STEP+" campo:"+NAME);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -482,6 +473,10 @@ public class DIntGrid2DY extends DIntGrid2D {
 	       			RegionNumeric<Integer,EntryNum<Integer,Int2D>> region = ((RegionNumeric<Integer,EntryNum<Integer,Int2D>>)returnValue);
 	       			if(region.isMine(l.getX(),l.getY()))
 	       			{   	  
+	       				if(name.contains("mine")){
+							if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+								tmp_zoom.add(new EntryNum<Integer,Int2D>(value, l));
+	       				}
 	    	    		 return region.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 	    	    	}
 	       		}
