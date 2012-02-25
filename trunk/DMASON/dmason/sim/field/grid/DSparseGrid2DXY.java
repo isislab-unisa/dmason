@@ -115,7 +115,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 	private FileOutputStream file;
 	private PrintStream ps;
 	*/
-	private ZoomArrayList<RemoteAgent> tmp_zoom=null;
+	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
 	
 	
 	
