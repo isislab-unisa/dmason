@@ -4,7 +4,6 @@ import sim.engine.SimState;
 import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.field.DistributedField;
-import dmason.sim.field.grid.DSparseGrid2D;
 import dmason.util.exception.DMasonException;
 
 /**
