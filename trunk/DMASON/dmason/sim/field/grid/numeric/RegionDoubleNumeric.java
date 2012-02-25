@@ -3,7 +3,6 @@ package dmason.sim.field.grid.numeric;
 import sim.util.Int2D;
 import dmason.sim.field.EntryNum;
 import dmason.sim.field.RegionNumeric;
-import dmason.util.Util;
 
 /**
  * A Region specialized to be used in a field with Integer coordinates and double value
