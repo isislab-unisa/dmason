@@ -104,7 +104,7 @@ public class DContinuous2DY extends DContinuous2D
 	private BufferedImage actualSnap;
 	private WritableRaster writer;
 	private int white[]={255,255,255};
-	private ZoomArrayList<RemoteAgent> tmp_zoom=null;
+	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
 	
 	/*
 	private FileOutputStream file;
