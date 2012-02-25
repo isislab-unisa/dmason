@@ -263,9 +263,7 @@ public class DContinuous2DY extends DContinuous2D
     	if(myfield.isMine(location.x,location.y))
     	{    
     		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).NUMVIEWER.getCount()>0)
-    		{
     			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
-    		}
     		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
     		return myfield.addAgents(new Entry<Double2D>(rm, location));
