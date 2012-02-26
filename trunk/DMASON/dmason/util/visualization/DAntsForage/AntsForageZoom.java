@@ -1,58 +1,84 @@
 package dmason.util.visualization.DAntsForage;
 
-import java.util.ArrayList;
-
-import sim.engine.Schedule;
 import sim.engine.SimState;
-import sim.engine.Steppable;
 import sim.field.grid.DoubleGrid2D;
 import sim.field.grid.IntGrid2D;
 import sim.field.grid.SparseGrid2D;
 import sim.util.Int2D;
 import sim.util.Interval;
-import dmason.sim.engine.DistributedMultiSchedule;
-import dmason.sim.engine.DistributedState;
-import dmason.sim.engine.RemoteAgent;
-import dmason.sim.field.DistributedField;
-import dmason.sim.field.grid.DSparseGrid2D;
-import dmason.sim.field.grid.DSparseGrid2DFactory;
-import dmason.sim.field.grid.numeric.DDoubleGrid2D;
-import dmason.sim.field.grid.numeric.DDoubleGrid2DFactory;
-import dmason.sim.field.grid.numeric.DIntGrid2D;
-import dmason.sim.field.grid.numeric.DIntGrid2DFactory;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
-import dmason.util.exception.DMasonException;
-import dmason.util.trigger.Trigger;
 import dmason.util.visualization.ZoomViewer;
 
-public /*strictfp*/ class AntsForageZoom extends SimState
-    {
-	  public AntsForageZoom(long seed) {
+public /*strictfp*/ class AntsForageZoom extends SimState {
+	
+	public AntsForageZoom(long seed) {
 		super(seed);
 		// TODO Auto-generated constructor stub
 	}
-	 public ConnectionNFieldsWithActiveMQAPI con;
-	 public String id_Cell;
-	 public AntsForageZoom(Object[] args)
-	 {
-		 super(1);
-		 con=(ConnectionNFieldsWithActiveMQAPI)args[0];
-		 id_Cell=(String)args[1];
-		 isSynchro=(Boolean)args[2];
-	 }
+	
+	public ConnectionNFieldsWithActiveMQAPI con;
+	public String id_Cell;
+	public int numCell;
+	public int mode;
+	public int local_ux;
+	public int local_uy;
+	public int local_dx;
+	public int local_dy;
+	int wh;
+	int ht;
+	
+	public AntsForageZoom(Object[] args)
+	{
+		super(1);
+		con=(ConnectionNFieldsWithActiveMQAPI)args[0];
+		id_Cell=(String)args[1];
+		isSynchro=(Boolean)args[2];
+		this.numCell = (Integer)args[3];
+		this.wh = (Integer)args[4];//width
+		this.ht = (Integer)args[5];//height
+		this.mode = (Integer)args[6];
+		
+		GRID_WIDTH = ZoomViewer.getCellWidth(mode, wh, numCell);
+		GRID_HEIGHT = ZoomViewer.getCellHeight(mode, ht, numCell);
+		
+		Int2D locUXY = ZoomViewer.getCellUpLeftCoordinates(mode,id_Cell,numCell,wh, ht);
+		Int2D locDXY = ZoomViewer.getCellDownRightCoordinates(mode,id_Cell,numCell,wh, ht);
+		this.local_ux = locUXY.getX();
+		this.local_uy = locUXY.getY();
+		this.local_dx = locDXY.getX();
+		this.local_dy = locDXY.getY();
+		
+    	FXMIN = (FOOD_XMIN * wh)/100;
+    	FYMIN = (FOOD_YMIN * ht)/100;
+    	FXMAX = (FOOD_XMAX * wh)/100;
+    	FYMAX = (FOOD_YMAX * ht)/100;
+    	
+    	HXMIN = (HOME_XMIN * wh)/100;
+    	HYMIN = (HOME_YMIN * ht)/100;
+    	HXMAX = (HOME_XMAX * wh)/100;
+    	HYMAX = (HOME_YMAX * ht)/100;
+	}
 	public boolean isSynchro; 
-	public static final int GRID_HEIGHT = 100;
-	public static final int GRID_WIDTH = 100;
+	public int GRID_HEIGHT;
+	public int GRID_WIDTH;
 
-	public static final int HOME_XMIN = 75;
-	public static final int HOME_XMAX = 75;
-	public static final int HOME_YMIN = 75;
-	public static final int HOME_YMAX = 75;
+	public static final int HOME_XMIN = 80;
+	public static final int HOME_XMAX = 80;
+	public static final int HOME_YMIN = 78;
+	public static final int HOME_YMAX = 78;
+    private int HXMIN;
+    private int HYMIN;
+    private int HXMAX;
+    private int HYMAX;
 
-	public static final int FOOD_XMIN = 25;
-	public static final int FOOD_XMAX = 25;
-	public static final int FOOD_YMIN = 25;
-	public static final int FOOD_YMAX = 25;
+	public static final int FOOD_XMIN = 22;
+	public static final int FOOD_XMAX = 22;
+	public static final int FOOD_YMIN = 20;
+	public static final int FOOD_YMAX = 20;
+    private int FXMIN;
+    private int FYMIN;
+    private int FXMAX;
+    private	int FYMAX;
 
 	public static final int NO_OBSTACLES = 0;
 	public static final int ONE_OBSTACLE = 1;
@@ -111,7 +137,7 @@ public /*strictfp*/ class AntsForageZoom extends SimState
 	public SparseGrid2D buggrid = new SparseGrid2D(GRID_WIDTH, GRID_HEIGHT);
 	public IntGrid2D obstacles = new IntGrid2D(GRID_WIDTH, GRID_HEIGHT,0);
 
-	        
+
 	public void start()
 	{
 		super.start();  // clear out the schedule
@@ -120,61 +146,107 @@ public /*strictfp*/ class AntsForageZoom extends SimState
 		sites = new IntGrid2D(GRID_WIDTH, GRID_HEIGHT,0);
 		toFoodGrid = new DoubleGrid2D(GRID_WIDTH, GRID_HEIGHT,0);
 		toHomeGrid = new DoubleGrid2D(GRID_WIDTH, GRID_HEIGHT,0);
-		//valgrid2 = new DoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, 0);
 		buggrid = new SparseGrid2D(GRID_WIDTH, GRID_HEIGHT);
 		obstacles = new IntGrid2D(GRID_WIDTH, GRID_HEIGHT, 0);
+		
+		int x1 = (45 * wh)/100;
+    	int y1 = (25 * ht)/100;
+    	int x2 = (35 * wh)/100;
+    	int y2 = (70 * ht)/100;
+    	int a = (36 * wh)/100;
+    	int b = (1024 * wh)/100;
+		
+        switch( OBSTACLES )
+        {
+        case NO_OBSTACLES:
+            break;
+        case ONE_OBSTACLE:
+            
+        	x1 = (55 * GRID_WIDTH)/100;
+        	y1 = (35 * GRID_HEIGHT)/100;
 
-		switch( OBSTACLES )
-		{
-		case NO_OBSTACLES:
-			break;
-		case ONE_OBSTACLE:
-			for( int x = 0 ; x < GRID_WIDTH ; x++ )
-				for( int y = 0 ; y < GRID_HEIGHT ; y++ )
-				{
-					obstacles.field[x][y] = 0;
-					if( ((x-55)*0.707+(y-35)*0.707)*((x-55)*0.707+(y-35)*0.707)/36+
-							((x-55)*0.707-(y-35)*0.707)*((x-55)*0.707-(y-35)*0.707)/1024 <= 1 )
-						obstacles.field[x][y] = 1;
-				}
-			break;
-		case TWO_OBSTACLES:
-			for( int x = 0 ; x < GRID_WIDTH ; x++ )
-				for( int y = 0 ; y < GRID_HEIGHT ; y++ )
-				{
-					obstacles.field[x][y] = 0;
-					if( ((x-45)*0.707+(y-25)*0.707)*((x-45)*0.707+(y-25)*0.707)/36+
-							((x-45)*0.707-(y-25)*0.707)*((x-45)*0.707-(y-25)*0.707)/1024 <= 1 )
-						obstacles.field[x][y] = 1;
-					if( ((x-35)*0.707+(y-70)*0.707)*((x-35)*0.707+(y-70)*0.707)/36+
-							((x-35)*0.707-(y-70)*0.707)*((x-35)*0.707-(y-70)*0.707)/1024 <= 1 )
-						obstacles.field[x][y] = 1;
-				}
-			break;
-		case ONE_LONG_OBSTACLE:
-			for( int x = 0 ; x < GRID_WIDTH ; x++ )
-				for( int y = 0 ; y < GRID_HEIGHT ; y++ )
-				{
-					obstacles.field[x][y] = 0;
-					if( (x-60)*(x-60)/1600+
-							(y-50)*(y-50)/25 <= 1 )
-						obstacles.field[x][y] = 1;
-				}
-			break;
-		}
+        	a = (36 * GRID_WIDTH)/100;
+        	b = (1024 * GRID_WIDTH)/100;
 
-		// initialize the grid with the home and food sites
-		for( int x = HOME_XMIN ; x <= HOME_XMAX ; x++ )
-			for( int y = HOME_YMIN ; y <= HOME_YMAX ; y++ )
-				sites.field[x][y] = HOME;
-		for( int x = FOOD_XMIN ; x <= FOOD_XMAX ; x++ )
-			for( int y = FOOD_YMIN ; y <= FOOD_YMAX ; y++ )
-				sites.field[x][y] = FOOD;
+            for( int x = 0 ; x < GRID_WIDTH ; x++ )
+                for( int y = 0 ; y < GRID_HEIGHT ; y++ )
+                {
+                	if((x>=local_ux) && (y>=local_uy) && (x<=local_dx) && (y<=local_dy)){
+	                    obstacles.field[x][y] = 0;
+	            		if( ((x-x1)*0.707+(y-y1)*0.707)*((x-x1)*0.707+(y-y1)*0.707)/a+
+	            				((x-x1)*0.707-(y-y1)*0.707)*((x-x1)*0.707-(y-y1)*0.707)/b <= 1 )	
+	                			obstacles.field[x][y] = 1;
+                	}
+                }
+            break;
+        case TWO_OBSTACLES:
+        	
+        	x1 = (45 * GRID_WIDTH)/100;
+        	y1 = (25 * GRID_HEIGHT)/100;
+        	x2 = (35 * GRID_WIDTH)/100;
+        	y2 = (70 * GRID_HEIGHT)/100;
+        	a = (36 * GRID_WIDTH)/100;
+        	b = (1024 * GRID_WIDTH)/100;
+
+        	for( int x = 0 ; x < GRID_WIDTH ; x++ )
+                for( int y = 0 ; y < GRID_HEIGHT ; y++ )
+                {
+                	if((x>=local_ux) && (y>=local_uy) && (x<=local_dx) && (y<=local_dy)){
+	                    obstacles.field[x][y] = 0;
+	            		if( ((x-x1)*0.707+(y-y1)*0.707)*((x-x1)*0.707+(y-y1)*0.707)/a+
+	                			((x-x1)*0.707-(y-y1)*0.707)*((x-x1)*0.707-(y-y1)*0.707)/b <= 1 )
+	                        obstacles.field[x][y] = 1;
+                	}
+                	if((x>=local_ux) && (y>=local_uy) && (x<=local_dx) && (y<=local_dy)){       
+	            		if( ((x-x2)*0.707+(y-y2)*0.707)*((x-x2)*0.707+(y-y2)*0.707)/a+
+	            				((x-x2)*0.707-(y-y2)*0.707)*((x-x2)*0.707-(y-y2)*0.707)/b <= 1 )
+	            			obstacles.field[x][y] = 1;
+                	}
+                }
+            break;
+        case ONE_LONG_OBSTACLE:
+        	
+        	x1 = ((60 * GRID_WIDTH)/100);
+        	y1 = (50 * GRID_HEIGHT)/100;
+
+        	a = (1600 * GRID_WIDTH)/100;
+        	b = (25 * GRID_WIDTH)/100;
+
+            for( int x = 0 ; x < GRID_WIDTH ; x++ )
+                for( int y = 0 ; y < GRID_HEIGHT ; y++ )
+                    {
+                	if((x>=local_ux) && (y>=local_uy) && (x<=local_dx) && (y<=local_dy)){
+	                    obstacles.field[x][y] = 0;
+	                    if( (x-x1)*(x-x1)/a+
+	                        (y-y1)*(y-y1)/b <= 1 )
+	                        obstacles.field[x][y] = 1;
+	                    }
+                	}
+            break;
+        }
+
+    
+    // initialize the grid with the home and food sites
+        if((HXMIN>=local_ux) && (HYMIN>=local_uy) && (HXMAX<=local_dx) && (HXMAX<=local_dy)){
+		    for( int x = HXMIN ; x <= HXMAX ; x++ ){
+		    	for( int y = HYMIN ; y <= HYMAX ; y++ ){
+		    		if((x>=local_ux) && (y>=local_uy) && (x<=local_dx) && (y<=local_dy))
+		        		sites.field[x][y] = HOME;
+		    	}
+		    }
+        }
+        if((FXMIN>=local_ux) && (FYMIN>=local_uy) && (FXMAX<=local_dx) && (FXMAX<=local_dy)){
+		    for( int x = FXMIN ; x <= FXMAX ; x++ )
+		        for( int y = FYMIN ; y <= FYMAX ; y++ )
+		        	if((x>=local_ux) && (y>=local_uy) && (x<=local_dx) && (y<=local_dy))
+		        		sites.field[x][y] = FOOD;
+        }
 		//View Zoom in Central GUI
 
 		ZoomViewer zoom;
 		try {
-			zoom = new ZoomViewer(con,id_Cell,isSynchro);
+			
+			zoom = new ZoomViewer(con,id_Cell,isSynchro,numCell,GRID_WIDTH,GRID_HEIGHT,mode);
 			//in according order
 			zoom.registerField("toFoodGrid",toFoodGrid);
 			zoom.registerField("toHomeGrid",toFoodGrid);
@@ -187,18 +259,11 @@ public /*strictfp*/ class AntsForageZoom extends SimState
 		}
 
 	}
-    static final long serialVersionUID = 9115981605874680023L;
-    
-    public static void main(String[] args)
-        {
-        doLoop(AntsForageZoom.class, args);
-        System.exit(0);
-        }
-	
+	static final long serialVersionUID = 9115981605874680023L;
 
-    }
-    
-    
-    
-    
-    
+	public static void main(String[] args)
+	{
+		doLoop(AntsForageZoom.class, args);
+		System.exit(0);
+	}
+}
