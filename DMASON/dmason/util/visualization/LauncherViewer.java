@@ -53,9 +53,9 @@ public class LauncherViewer  {
 			e1.printStackTrace();
 		}
 		
-		Display display = new Display(connection, comboMode.getSelectedIndex(), 
-                                      Integer.parseInt((String) comboNCell.getSelectedItem()), Integer.parseInt(fieldWidth.getText()), 
-                                      Integer.parseInt(fieldHeight.getText()), path, (String)comboSim.getSelectedItem());
+		Display display = new Display(connection, comboMode.getSelectedIndex(),
+				Integer.parseInt((String) comboNCell.getSelectedItem()), Integer.parseInt(fieldWidth.getText()),
+				Integer.parseInt(fieldHeight.getText()), path, (String)comboSim.getSelectedItem());
 		display.initComponents();
 		display.Display.setVisible(true);
 		this.LauncherViewer.dispose();
