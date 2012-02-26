@@ -11,17 +11,16 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 import org.apache.kahadb.util.ByteArrayInputStream;
-
 import sim.display.GUIState;
-
-import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
+import dmason.util.visualization.DAntsForage.AntsForageWithUIZoom;
 import dmason.util.visualization.DFlockers.FlockersWithUIView;
+import dmason.util.visualization.DParticles.Tutorial3View;
+import dmason.util.visualization.DParticles.Tutorial3ViewWithUI;
 
 
 public class Display  {
@@ -69,7 +68,7 @@ public class Display  {
 
 	private void imageViewMouseClicked(MouseEvent e) {
 
-		class runnerZoom extends Thread
+		class RunnerZoom extends Thread
 		{
 			public ConsoleZoom c;
 			public GUIState t;
@@ -79,9 +78,10 @@ public class Display  {
 			public Display d;
 			public int mode, numCell, width, height; 
 			public String absolutePath;
-			public runnerZoom(FlockersWithUIView f,ConnectionNFieldsWithActiveMQAPI con,
+			public String simul;
+			public RunnerZoom(GUIState f,ConnectionNFieldsWithActiveMQAPI con,
 					String id,boolean sin,Display d,int mode,int numCell,
-					int width,int height, String absolutePath)
+					int width,int height, String absolutePath, String simul)
 			{
 			
 				this.t=f;
@@ -94,6 +94,7 @@ public class Display  {
 				this.width=width;
 				this.height=height;
 				this.absolutePath=absolutePath;
+				this.simul=simul;
 			}
         
 	    
@@ -101,7 +102,7 @@ public class Display  {
 			{
 				ConsoleZoom c=new ConsoleZoom(t, con,id,sin,d,
 						mode,numCell,
-						width,height,absolutePath);
+						width,height,absolutePath,simul);
 				c.setVisible(true);
 				c.pressPlay();
 			}
@@ -119,14 +120,31 @@ public class Display  {
 					int i = JOptionPane.showConfirmDialog(null, "Do you want a synchronized zoom?", 
 							"Select Option", JOptionPane.YES_NO_CANCEL_OPTION, 
 							JOptionPane.QUESTION_MESSAGE, icon);
-					
+
 					if(i==JOptionPane.YES_OPTION)
 					{
 					
 						con.publishToTopic("EXIT", "GRAPHICS", "GRAPHICS");
 						
-						FlockersWithUIView simulazione=new FlockersWithUIView(new Object[]{con,cp.id,true} );
-						runnerZoom rZ=new runnerZoom(simulazione, con, cp.id, true,this,mode,numCell,width,height,absolutePath);
+						RunnerZoom rZ = null;
+						
+						if(simulation.equals("FLOCK"))
+						{
+							FlockersWithUIView simulazione=new FlockersWithUIView(new Object[]{con,cp.id,true,numCell,width,height,mode} );
+							rZ=new RunnerZoom(simulazione, con, cp.id, true,this,mode,numCell,width,height,absolutePath,simulation);
+						}
+						else
+							if(simulation.equals("ANTS"))
+							{
+								AntsForageWithUIZoom simulazione=new AntsForageWithUIZoom(new Object[]{con,cp.id,true,numCell,width,height,mode} );
+								rZ=new RunnerZoom(simulazione, con, cp.id, true,this,mode,numCell,width,height,absolutePath,simulation);
+							}
+							else
+								if(simulation.equals("PARTICLES"))
+								{
+									Tutorial3ViewWithUI simulazione=new Tutorial3ViewWithUI(new Object[]{con,cp.id,true,numCell,width,height,mode} );
+									rZ=new RunnerZoom(simulazione, con, cp.id, true,this,mode,numCell,width,height,absolutePath,simulation);
+								}
 						rZ.start();
 						this.close();
 		
@@ -137,8 +155,26 @@ public class Display  {
 						{
 							con.publishToTopic("EXIT", "GRAPHICS", "GRAPHICS");
 							
-							FlockersWithUIView simulazione=new FlockersWithUIView(new Object[]{con,cp.id,false} );
-							runnerZoom rZ=new runnerZoom(simulazione, con, cp.id, false,this,mode,numCell,width,height,absolutePath);
+							RunnerZoom rZ = null;
+							
+							if(simulation.equals("FLOCK"))
+							{
+								FlockersWithUIView simulazione=new FlockersWithUIView(new Object[]{con,cp.id,false,numCell,width,height,mode} );
+								rZ=new RunnerZoom(simulazione, con, cp.id, false,this,mode,numCell,width,height,absolutePath,simulation);
+							}
+							else
+								if(simulation.equals("ANTS"))
+								{
+									AntsForageWithUIZoom simulazione=new AntsForageWithUIZoom(new Object[]{con,cp.id,false,numCell,width,height,mode} );
+									rZ=new RunnerZoom(simulazione, con, cp.id, false,this,mode,numCell,width,height,absolutePath,simulation);
+								}
+								else
+									if(simulation.equals("PARTICLES"))
+									{
+										Tutorial3ViewWithUI simulazione=new Tutorial3ViewWithUI(new Object[]{con,cp.id,false,numCell,width,height,mode} );
+										rZ=new RunnerZoom(simulazione, con, cp.id, false,this,mode,numCell,width,height,absolutePath,simulation);
+									}
+							
 							rZ.start();
 							this.close();
 						}
@@ -466,6 +502,7 @@ public class Display  {
 	public ArrayList<CellProperties> listCells;
 	public Viewer view ;
 	public ThreadVisualizationMessageListener thread;
+	public String simulation;
 	
 	public void sblock()
 	{
@@ -617,7 +654,7 @@ public class Display  {
 	}
 	
 	public Display(ConnectionNFieldsWithActiveMQAPI con, int mode, int numCell,
-			int width, int height, String absolutePath) {
+			int width, int height, String absolutePath, String simulation) {
 		super();
 		this.con = con;
 		this.mode = mode;
@@ -625,6 +662,7 @@ public class Display  {
 		this.width = width;
 		this.height = height;
 		this.absolutePath = absolutePath;
+		this.simulation = simulation;
 		updates = new VisualizationUpdateMap<Long, RemoteSnap>();
 		listCells = new ArrayList<Display.CellProperties>();
 		
