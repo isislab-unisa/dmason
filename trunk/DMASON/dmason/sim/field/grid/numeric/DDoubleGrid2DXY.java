@@ -343,7 +343,6 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 				e1.printStackTrace();
 			}
 		}
-		
 			
 		updateFields(); //update fields with java reflect
 		updates_cache= new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
