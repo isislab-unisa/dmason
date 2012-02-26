@@ -1,12 +1,9 @@
 package dmason.util.visualization;
-import javax.swing.*;
 
+import javax.swing.*;
 import java.awt.event.*;
 import javax.swing.event.*;
-
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
-
-
 import sim.display.Controller;
 import sim.display.Display2D;
 import sim.display.GUIState;
@@ -27,8 +24,7 @@ import java.lang.reflect.*;
 import java.util.prefs.*;
 
 
-public class ConsoleZoom extends sim.display.Console
-    {
+public class ConsoleZoom extends sim.display.Console {
   
    
 	public final ConnectionNFieldsWithActiveMQAPI con;
@@ -38,6 +34,7 @@ public class ConsoleZoom extends sim.display.Console
     public Display disp;
     int mode; int numCell;
 	int width; int height; String absolutePath;
+	String simul;
     
     public ConsoleZoom(final GUIState simulation,ConnectionNFieldsWithActiveMQAPI con,String id_cell)
         {
@@ -49,7 +46,7 @@ public class ConsoleZoom extends sim.display.Console
     public ConsoleZoom(GUIState simulation,
 			ConnectionNFieldsWithActiveMQAPI con, String id_cell,
 			boolean isClosing, Display disp, int mode, int numCell, int width,
-			int height, String absolutePath) {
+			int height, String absolutePath, String simul) {
 		super(simulation);
 		this.con = con;
 		this.id_cell = id_cell;
@@ -60,6 +57,7 @@ public class ConsoleZoom extends sim.display.Console
 		this.width = width;
 		this.height = height;
 		this.absolutePath = absolutePath;
+		this.simul = simul;
 	}
     private void  sendAck()
     {
@@ -88,7 +86,7 @@ public class ConsoleZoom extends sim.display.Console
 			
     			Display display = new Display(con, mode, 
     					numCell, width, 
-    					height, absolutePath);
+    					height, absolutePath,simul);
     			display.initComponents();
     			display.Display.setVisible(true);
     			
