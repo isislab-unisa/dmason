@@ -318,21 +318,65 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	}
 
 	@Override
+	public boolean setDistributedObjectLocationForPeer(Int2D location,
+			RemoteAgent<Int2D> rm, SimState sm) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean setDistributedObjectLocation(Int2D location,
+			RemoteAgent<Int2D> rm, SimState sm) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/**
+	 * Provide the double value shift logic among the peers
+	 * @param d
+	 * @param l
+	 * @param sm
+	 * @return
+	 */
+	public boolean setDistributedObjectLocation(double d, Int2D l, SimState sm) {
+
+		if(myfield.isMine(l.getX(), l.getY()))
+		{    		
+			return myfield.addEntryNum(new EntryNum<Double,Int2D>(d, l));
+		}
+		else
+			if(setValue(d, l))
+				return true;
+			else
+				System.out.println(cellType+")OH MY GOD! from:" +this.getClass()); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
+
+		return false;
+	}
+	
+	@Override
 	public boolean synchro() {
 		
-
+	
 		//every value in the myfield region is setted
 		for(EntryNum<Double, Int2D> e: myfield)
 		{			
 			Int2D loc=e.l;
 			double d = e.r;
-			this.field[loc.getX()][loc.getY()]=d;	
-			
+			this.field[loc.getX()][loc.getY()]=d;
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(new EntryNum<Double, Int2D>(d, loc));
 		}     
+	
 		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 		{
+//			for (int y = myfield.upl_yy; y < myfield.down_yy; y++) {
+//				for (int x = myfield.upl_xx; x < myfield.down_xx; x++) {
+//					
+//					double d = this.field[x][y];
+//					tmp_zoom.add(new EntryNum<Double, Int2D>(d, new Int2D(x, y)));
+//				}
+//			}
+			
 			try {
 				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
 				connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
@@ -348,7 +392,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		updates_cache= new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
 			
 		memorizeRegionOut();
-
+	
 		//--> publishing the regions to correspondent topics for the neighbors			
 		if(rmap.left_out!=null)
 		{
@@ -395,7 +439,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 			try 
 			{
 				connection.publishToTopic(dr,cellType.toString()+"D", NAME);
- 
+	
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
 		if(rmap.corner_out_up_left_diag!=null)
@@ -473,46 +517,10 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 			}
 		}	
 		this.reset();
-
+	
 		return true;
 	}
 
-	@Override
-	public boolean setDistributedObjectLocationForPeer(Int2D location,
-			RemoteAgent<Int2D> rm, SimState sm) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean setDistributedObjectLocation(Int2D location,
-			RemoteAgent<Int2D> rm, SimState sm) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	/**
-	 * Provide the double value shift logic among the peers
-	 * @param d
-	 * @param l
-	 * @param sm
-	 * @return
-	 */
-	public boolean setDistributedObjectLocation(double d, Int2D l, SimState sm) {
-
-		if(myfield.isMine(l.getX(), l.getY()))
-		{    		
-			return myfield.addEntryNum(new EntryNum<Double,Int2D>(d, l));
-		}
-		else
-			if(setValue(d, l))
-				return true;
-			else
-				System.out.println(cellType+")OH MY GOD! from:" +this.getClass()); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
-
-		return false;
-	}
-	
 	@Override
 	public DistributedState getState() {
 
@@ -532,7 +540,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	 * @param l The new location of the value
 	 * @return true if the value is added in right way
 	 */
-	public boolean setValue(double value, Int2D l){
+	private boolean setValue(double value, Int2D l){
 
 		Class o=rmap.getClass();
 
