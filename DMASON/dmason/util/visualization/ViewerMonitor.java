@@ -22,10 +22,10 @@ public class ViewerMonitor {
 		lock.lock();
 		System.out.println("Apetto per step "+step);
 		while(!queue.contains(step))
-		 	{
-				if(FORCE) { FORCE=false; break;}
-				block.await();
-		 	}
+		{
+			if(FORCE) { FORCE=false; break;}
+			block.await();
+		}
 		
 		queue.remove(step);
 		System.out.println("Sincronizzazione riuscita per step "+step );
