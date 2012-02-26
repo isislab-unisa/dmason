@@ -3,7 +3,6 @@ package dmason.util.visualization;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-
 import javax.swing.*;
 import javax.swing.border.*;
 import dmason.util.connection.Address;
@@ -56,7 +55,7 @@ public class LauncherViewer {
 		
 		Display display = new Display(connection, comboMode.getSelectedIndex(), 
 				Integer.parseInt((String) comboNCell.getSelectedItem()), Integer.parseInt(fieldWidth.getText()), 
-				Integer.parseInt(fieldHeight.getText()), path);
+				Integer.parseInt(fieldHeight.getText()), path, "ANTS");
 		display.initComponents();
 		display.Display.setVisible(true);
 		this.LauncherViewer.dispose();
