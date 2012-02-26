@@ -1,10 +1,7 @@
 package dmason.util.visualization.DAntsForage;
 
 import java.util.HashMap;
-
 import sim.engine.SimState;
-import sim.field.SparseField;
-import sim.field.grid.DoubleGrid2D;
 import sim.util.Int2D;
 import dmason.sim.engine.RemoteAgent;
 import dmason.sim.field.EntryNum;
@@ -35,27 +32,28 @@ public class DAntsAgentUpdate extends Updater{
 		System.out.println("Post sincro local step "+state.schedule.getSteps());
 		
 			ZoomArrayList sparse = (ZoomArrayList)hash.get("buggrid");
-	
-		
-			for(Object s: sparse)
+			for(Object s : sparse)
 			{
 				RemoteAgent<Int2D> r=(RemoteAgent)s;
-				ants.buggrid.setObjectLocation(r, r.getPos());
+				Int2D pos = ((Int2D)zoom.getZoomAgentLocation(r.getPos()));
+				ants.buggrid.setObjectLocation(r, pos);
 			}
 			
 			ZoomArrayList<EntryNum<Double, Int2D>> homeGrid=(ZoomArrayList<EntryNum<Double, Int2D>>)hash.get("toHomeGrid");
-			
-			for(EntryNum<Double, Int2D> entry:homeGrid)
+			for(EntryNum<Double, Int2D> e : homeGrid)
 			{
-				ants.toHomeGrid.field[entry.l.getX()][entry.l.getY()] =entry.r;
+				Int2D pos = (Int2D)zoom.getZoomAgentLocation(e.l);
+				ants.toHomeGrid.field[pos.getX()][pos.getY()] =e.r;
 			}
 
 			ZoomArrayList<EntryNum<Double, Int2D>> foodGrid=(ZoomArrayList<EntryNum<Double, Int2D>>)hash.get("toFoodGrid");
-			
-			for(EntryNum<Double, Int2D> entry:foodGrid)
+			for(EntryNum<Double, Int2D> e : foodGrid)
 			{
-				ants.toFoodGrid.field[entry.l.getX()][entry.l.getY()] =entry.r;
+				Int2D pos = (Int2D)zoom.getZoomAgentLocation(e.l);
+				ants.toFoodGrid.field[pos.getX()][pos.getY()] =e.r;
 			}
+			
+			zoom.sendAckToCell(sparse.STEP);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			System.err.println("Problemi nella hash per step "+state.schedule.getSteps());
