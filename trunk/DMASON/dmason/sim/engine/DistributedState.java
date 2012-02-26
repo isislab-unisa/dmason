@@ -56,10 +56,11 @@ public abstract class DistributedState<E> extends SimState
 		 try {
 			 if(("GRAPHICS"+TYPE).equals("GRAPHICS1-1"))
 			 System.out.println("DIMENSIONE DI INVIO "+((DistributedMultiSchedule)super.schedule).fields.size());
-				boolean a=connection.createTopic("GRAPHICS"+TYPE, ((DistributedMultiSchedule)super.schedule).fields.size());
-				System.out.println("Topic creato :"+a+" as "+"GRAPHICS"+TYPE);
-				connection.subscribeToTopic("GRAPHICS"+TYPE);
-				ThreadZoomInCellMessageListener t_zoom=
+			
+			 boolean a=connection.createTopic("GRAPHICS"+TYPE, ((DistributedMultiSchedule)super.schedule).fields.size());
+			 System.out.println("Topic creato :"+a+" as "+"GRAPHICS"+TYPE);
+			 connection.subscribeToTopic("GRAPHICS"+TYPE);
+			 ThreadZoomInCellMessageListener t_zoom=
 					new ThreadZoomInCellMessageListener((ConnectionNFieldsWithActiveMQAPI)connection, 
 							TYPE.toString(),(DistributedMultiSchedule)this.schedule);
 				t_zoom.start();
