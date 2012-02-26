@@ -18,8 +18,6 @@ public class ZoomCellMessageListener extends MyMessageListener
 	{
 		super();
 		this.zoom=zoom;
-	
-		
 	}
 	
    /**
