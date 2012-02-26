@@ -1,9 +1,3 @@
-/*
-  Copyright 2006 by Sean Luke and George Mason University
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
-
 package dmason.util.visualization.DParticles;
 
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
@@ -21,15 +15,32 @@ public class Tutorial3View extends SimState
 	public DoubleGrid2D trails;
 	public SparseGrid2D particles;
 
-	public int gridWidth = 100;
-	public int gridHeight = 100;
+	public int gridWidth;
+	public int gridHeight;
 	
+	public int numCell;
+	public int mode;
 	private boolean isSynchro;
     
     public Tutorial3View(long seed)
     {
-        super(seed);
+        super(seed); 
     }
+    
+	public Tutorial3View(Object[] args)
+	{
+		 super(1);
+		 con=(ConnectionNFieldsWithActiveMQAPI)args[0];
+		 id_Cell=(String)args[1];
+		 isSynchro=(Boolean)args[2];
+		 this.numCell = (Integer)args[3];
+		 int wh = (Integer)args[4];//width
+		 int ht = (Integer)args[5];//height
+		 this.mode = (Integer)args[6];
+
+		 gridWidth = ZoomViewer.getCellWidth(mode, wh, numCell);
+		 gridHeight = ZoomViewer.getCellHeight(mode, ht, numCell);
+	}
 
     public void start()
 	{
@@ -53,7 +64,7 @@ public class Tutorial3View extends SimState
         //View Zoom in Central GUI
     	ZoomViewer zoom;
 		try {
-			zoom = new ZoomViewer(con,id_Cell, isSynchro);
+			zoom = new ZoomViewer(con,id_Cell,isSynchro,numCell,gridWidth,gridHeight,mode);
 	       	//in according order
         	zoom.registerField("particles",particles);
         	zoom.registerField("trails",trails);
@@ -68,14 +79,6 @@ public class Tutorial3View extends SimState
 
     public ConnectionNFieldsWithActiveMQAPI con;
 	public String id_Cell;
-	
-	public Tutorial3View(Object[] args)
-	{
-		 super(1);
-		 con=(ConnectionNFieldsWithActiveMQAPI)args[0];
-		 id_Cell=(String)args[1];
-		 isSynchro=(Boolean)args[1];
-	}
     
     public static void main(String[] args)
         {
