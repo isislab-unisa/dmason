@@ -128,19 +128,19 @@ public class Display  {
 						
 						RunnerZoom rZ = null;
 						
-						if(simulation.equals("FLOCK"))
+						if(simulation.equals("Flockers"))
 						{
 							FlockersWithUIView simulazione=new FlockersWithUIView(new Object[]{con,cp.id,true,numCell,width,height,mode} );
 							rZ=new RunnerZoom(simulazione, con, cp.id, true,this,mode,numCell,width,height,absolutePath,simulation);
 						}
 						else
-							if(simulation.equals("ANTS"))
+							if(simulation.equals("AntsForaging"))
 							{
 								AntsForageWithUIZoom simulazione=new AntsForageWithUIZoom(new Object[]{con,cp.id,true,numCell,width,height,mode} );
 								rZ=new RunnerZoom(simulazione, con, cp.id, true,this,mode,numCell,width,height,absolutePath,simulation);
 							}
 							else
-								if(simulation.equals("PARTICLES"))
+								if(simulation.equals("Particles"))
 								{
 									Tutorial3ViewWithUI simulazione=new Tutorial3ViewWithUI(new Object[]{con,cp.id,true,numCell,width,height,mode} );
 									rZ=new RunnerZoom(simulazione, con, cp.id, true,this,mode,numCell,width,height,absolutePath,simulation);
@@ -157,19 +157,19 @@ public class Display  {
 							
 							RunnerZoom rZ = null;
 							
-							if(simulation.equals("FLOCK"))
+							if(simulation.equals("Flockers"))
 							{
 								FlockersWithUIView simulazione=new FlockersWithUIView(new Object[]{con,cp.id,false,numCell,width,height,mode} );
 								rZ=new RunnerZoom(simulazione, con, cp.id, false,this,mode,numCell,width,height,absolutePath,simulation);
 							}
 							else
-								if(simulation.equals("ANTS"))
+								if(simulation.equals("AntsForaging"))
 								{
 									AntsForageWithUIZoom simulazione=new AntsForageWithUIZoom(new Object[]{con,cp.id,false,numCell,width,height,mode} );
 									rZ=new RunnerZoom(simulazione, con, cp.id, false,this,mode,numCell,width,height,absolutePath,simulation);
 								}
 								else
-									if(simulation.equals("PARTICLES"))
+									if(simulation.equals("Particles"))
 									{
 										Tutorial3ViewWithUI simulazione=new Tutorial3ViewWithUI(new Object[]{con,cp.id,false,numCell,width,height,mode} );
 										rZ=new RunnerZoom(simulazione, con, cp.id, false,this,mode,numCell,width,height,absolutePath,simulation);
