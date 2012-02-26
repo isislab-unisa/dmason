@@ -85,7 +85,7 @@ public /*strictfp*/ class AntsForageZoom extends SimState {
 	public static final int TWO_OBSTACLES = 2;
 	public static final int ONE_LONG_OBSTACLE = 3;
 
-	public static final int OBSTACLES = ONE_OBSTACLE;
+	public static final int OBSTACLES = TWO_OBSTACLES;
 
 	public static final int ALGORITHM_VALUE_ITERATION = 1;
 	public static final int ALGORITHM_TEMPORAL_DIFERENCE = 2;
@@ -162,64 +162,63 @@ public /*strictfp*/ class AntsForageZoom extends SimState {
             break;
         case ONE_OBSTACLE:
             
-        	x1 = (55 * GRID_WIDTH)/100;
-        	y1 = (35 * GRID_HEIGHT)/100;
+        	x1 = (55 * wh)/100;
+        	y1 = (35 * ht)/100;
 
-        	a = (36 * GRID_WIDTH)/100;
-        	b = (1024 * GRID_WIDTH)/100;
+        	a = (36 * wh)/100;
+        	b = (1024 * wh)/100;
 
-            for( int x = 0 ; x < GRID_WIDTH ; x++ )
-                for( int y = 0 ; y < GRID_HEIGHT ; y++ )
+            for( int x = 0 ; x < wh ; x++ )
+                for( int y = 0 ; y < ht ; y++ )
                 {
-                	if((x>=local_ux) && (y>=local_uy) && (x<=local_dx) && (y<=local_dy)){
-	                    obstacles.field[x][y] = 0;
+                	if((x>local_ux) && (y>local_uy) && (x<local_dx) && (y<local_dy)){
+	                    obstacles.field[x-local_ux][y-local_uy] = 0;
 	            		if( ((x-x1)*0.707+(y-y1)*0.707)*((x-x1)*0.707+(y-y1)*0.707)/a+
 	            				((x-x1)*0.707-(y-y1)*0.707)*((x-x1)*0.707-(y-y1)*0.707)/b <= 1 )	
-	                			obstacles.field[x][y] = 1;
+	                			obstacles.field[x-local_ux][y-local_uy] = 1;
                 	}
                 }
             break;
         case TWO_OBSTACLES:
         	
-        	x1 = (45 * GRID_WIDTH)/100;
-        	y1 = (25 * GRID_HEIGHT)/100;
-        	x2 = (35 * GRID_WIDTH)/100;
-        	y2 = (70 * GRID_HEIGHT)/100;
-        	a = (36 * GRID_WIDTH)/100;
-        	b = (1024 * GRID_WIDTH)/100;
+        	x1 = (45 * wh)/100;
+        	y1 = (25 * ht)/100;
+        	x2 = (35 * wh)/100;
+        	y2 = (70 * ht)/100;
+        	a = (36 * wh)/100;
+        	b = (1024 * wh)/100;
 
-        	for( int x = 0 ; x < GRID_WIDTH ; x++ )
-                for( int y = 0 ; y < GRID_HEIGHT ; y++ )
+        	for( int x = 0 ; x < wh ; x++ )
+                for( int y = 0 ; y < ht ; y++ )
                 {
-                	if((x>=local_ux) && (y>=local_uy) && (x<=local_dx) && (y<=local_dy)){
-	                    obstacles.field[x][y] = 0;
+                	if((x>local_ux) && (y>local_uy) && (x<local_dx) && (y<local_dy)){
+	                    obstacles.field[x-local_ux][y-local_uy] = 0;
 	            		if( ((x-x1)*0.707+(y-y1)*0.707)*((x-x1)*0.707+(y-y1)*0.707)/a+
 	                			((x-x1)*0.707-(y-y1)*0.707)*((x-x1)*0.707-(y-y1)*0.707)/b <= 1 )
-	                        obstacles.field[x][y] = 1;
-                	}
-                	if((x>=local_ux) && (y>=local_uy) && (x<=local_dx) && (y<=local_dy)){       
+	                        obstacles.field[x-local_ux][y-local_uy] = 1;
+                	
 	            		if( ((x-x2)*0.707+(y-y2)*0.707)*((x-x2)*0.707+(y-y2)*0.707)/a+
 	            				((x-x2)*0.707-(y-y2)*0.707)*((x-x2)*0.707-(y-y2)*0.707)/b <= 1 )
-	            			obstacles.field[x][y] = 1;
+	            			obstacles.field[x-local_ux][y-local_uy] = 1;
                 	}
                 }
             break;
         case ONE_LONG_OBSTACLE:
         	
-        	x1 = ((60 * GRID_WIDTH)/100);
-        	y1 = (50 * GRID_HEIGHT)/100;
+        	x1 = ((60 * wh)/100);
+        	y1 = (50 * ht)/100;
 
-        	a = (1600 * GRID_WIDTH)/100;
-        	b = (25 * GRID_WIDTH)/100;
+        	a = (1600 * wh)/100;
+        	b = (25 * wh)/100;
 
-            for( int x = 0 ; x < GRID_WIDTH ; x++ )
-                for( int y = 0 ; y < GRID_HEIGHT ; y++ )
+            for( int x = 0 ; x < wh ; x++ )
+                for( int y = 0 ; y < ht ; y++ )
                     {
-                	if((x>=local_ux) && (y>=local_uy) && (x<=local_dx) && (y<=local_dy)){
-	                    obstacles.field[x][y] = 0;
+                	if((x>local_ux) && (y>local_uy) && (x<local_dx) && (y<local_dy)){
+	                    obstacles.field[x-local_ux][y-local_uy] = 0;
 	                    if( (x-x1)*(x-x1)/a+
 	                        (y-y1)*(y-y1)/b <= 1 )
-	                        obstacles.field[x][y] = 1;
+	                        obstacles.field[x-local_ux][y-local_uy] = 1;
 	                    }
                 	}
             break;
@@ -231,7 +230,7 @@ public /*strictfp*/ class AntsForageZoom extends SimState {
 		    for( int x = HXMIN ; x <= HXMAX ; x++ ){
 		    	for( int y = HYMIN ; y <= HYMAX ; y++ ){
 		    		if((x>=local_ux) && (y>=local_uy) && (x<=local_dx) && (y<=local_dy))
-		        		sites.field[x][y] = HOME;
+		        		sites.field[x-local_ux][y-local_uy] = HOME;
 		    	}
 		    }
         }
@@ -239,7 +238,7 @@ public /*strictfp*/ class AntsForageZoom extends SimState {
 		    for( int x = FXMIN ; x <= FXMAX ; x++ )
 		        for( int y = FYMIN ; y <= FYMAX ; y++ )
 		        	if((x>=local_ux) && (y>=local_uy) && (x<=local_dx) && (y<=local_dy))
-		        		sites.field[x][y] = FOOD;
+		        		sites.field[x-local_ux][y-local_uy] = FOOD;
         }
 		//View Zoom in Central GUI
 
