@@ -1,16 +1,9 @@
-/*
-  Copyright 2006 by Sean Luke and George Mason University
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
-
 package dmason.util.visualization.DFlockers;
+
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.visualization.ZoomViewer;
-import dmason.util.visualization.DAntsForage.DAntsAgentUpdate;
 import sim.engine.*;
 import sim.portrayal.continuous.ContinuousPortrayal2D;
-import sim.util.*;
 import sim.field.continuous.*;
 
 public class FlockersView extends SimState
@@ -18,18 +11,28 @@ public class FlockersView extends SimState
 	
 	public ConnectionNFieldsWithActiveMQAPI con;
 	public String id_Cell;
+	public int numCell;
+	public int mode;
+	
 	public FlockersView(Object[] args)
 	{
 		super(1);
 		con=(ConnectionNFieldsWithActiveMQAPI)args[0];
 		id_Cell=(String)args[1];
 		isSynchro = (Boolean)args[2];
+		this.numCell = (Integer)args[3];
+		int wh = (Integer)args[4];//width
+		int ht = (Integer)args[5];//height
+		this.mode = (Integer)args[6];
+		
+		width = ZoomViewer.getCellWidth(mode, wh, numCell);
+		height = ZoomViewer.getCellHeight(mode, ht, numCell);
 	}
 	
 	public boolean isSynchro;
     public Continuous2D flockers;
-    public double width = 400;
-    public double height = 400;
+    public double width;
+    public double height;
     public int numFlockers = 0;
     public double cohesion = 1.0;
     public double avoidance = 1.0;
@@ -63,12 +66,12 @@ public class FlockersView extends SimState
     
     /** Creates a Flockers simulation with the given random number seed. */
     public FlockersView(long seed)
-        {
-        super(seed);
-        }
+    {
+    	super(seed);
+    }
     
     public void start()
-        {
+    {
         super.start();
         
         // set up the flockers field.  It looks like a discretization
@@ -82,7 +85,7 @@ public class FlockersView extends SimState
     	
     	ZoomViewer zoom;
 		try {
-			zoom = new ZoomViewer(con,id_Cell,isSynchro);
+			zoom = new ZoomViewer(con,id_Cell,isSynchro,numCell,(int)width,(int)height,mode);
 	       	//in according order
         	zoom.registerField("flockers",flockers);
         	
@@ -100,10 +103,8 @@ public class FlockersView extends SimState
     }
 
     public static void main(String[] args)
-        {
-        doLoop(FlockersView.class, args);
-        System.exit(0);
-        }    
-    
-    
-    }
+    {
+    	doLoop(FlockersView.class, args);
+    	System.exit(0);
+    }    
+}
