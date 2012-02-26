@@ -1,6 +1,6 @@
 package dmason.util.visualization;
 
-import java.awt.*;
+import java.awt.Container;
 import java.awt.event.*;
 import java.io.File;
 import javax.swing.*;
@@ -11,18 +11,18 @@ import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 /**
  * @author Tesla
  */
-public class LauncherViewer {
+public class LauncherViewer  {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 		
 		LauncherViewer lv = new LauncherViewer();
 		lv.initComponents();
 		lv.LauncherViewer.setVisible(true);
 	}
-
+    
 	private void buttonPathActionPerformed(ActionEvent e) {
-		 
-		JFileChooser file = new JFileChooser();
+
+        JFileChooser file = new JFileChooser();
 		file.setCurrentDirectory(new File("."));
 		file.setDialogTitle("Select your directory");
 		file.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -41,7 +41,7 @@ public class LauncherViewer {
 
 	private void buttonConnectionActionPerformed(ActionEvent e) {
 
-		//riempimento campi
+        //riempimento campi
 		address = new Address(fieldAddress.getText(),fieldPort.getText());
 		
 		connection = new ConnectionNFieldsWithActiveMQAPI();
@@ -54,17 +54,16 @@ public class LauncherViewer {
 		}
 		
 		Display display = new Display(connection, comboMode.getSelectedIndex(), 
-				Integer.parseInt((String) comboNCell.getSelectedItem()), Integer.parseInt(fieldWidth.getText()), 
-				Integer.parseInt(fieldHeight.getText()), path, "ANTS");
+                                      Integer.parseInt((String) comboNCell.getSelectedItem()), Integer.parseInt(fieldWidth.getText()), 
+                                      Integer.parseInt(fieldHeight.getText()), path, (String)comboSim.getSelectedItem());
 		display.initComponents();
 		display.Display.setVisible(true);
 		this.LauncherViewer.dispose();
-		
 	}
 
 	private void comboModeItemStateChanged(ItemEvent e) {
-		
-		if(comboMode.getSelectedIndex()==0)
+
+        if(comboMode.getSelectedIndex()==0)
 		{
 			comboNCell.removeAllItems();
 			for (int i = 2; i < 100; i++) {
@@ -91,7 +90,7 @@ public class LauncherViewer {
 	}
 
 	private void initComponents() {
-
+		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
 		LauncherViewer = new JFrame();
 		panelMain = new JPanel();
 		panelLabel = new JPanel();
@@ -113,10 +112,16 @@ public class LauncherViewer {
 		fieldHeight = new JTextField();
 		labelPath = new JLabel();
 		buttonPath = new JButton();
+		comboSim = new JComboBox();
+		label7 = new JLabel();
 		buttonConnection = new JButton();
-		
-		comboMode.addItem("Horizontal");
+        
+        comboMode.addItem("Horizontal");
 		comboMode.addItem("Square");
+        
+        comboSim.addItem("Flockers");
+        comboSim.addItem("Particles");
+        comboSim.addItem("AntsForaging");
 		
 		path = System.getProperty("user.dir");
 		
@@ -136,6 +141,7 @@ public class LauncherViewer {
 
 			//======== panelMain ========
 			{
+
 				//======== panelLabel ========
 				{
 
@@ -147,16 +153,16 @@ public class LauncherViewer {
 					panelLabelLayout.setHorizontalGroup(
 						panelLabelLayout.createParallelGroup()
 							.addGroup(panelLabelLayout.createSequentialGroup()
-								.addGap(80, 80, 80)
+								.addGap(48, 48, 48)
 								.addComponent(logo)
-								.addContainerGap(76, Short.MAX_VALUE))
+								.addContainerGap(51, Short.MAX_VALUE))
 					);
 					panelLabelLayout.setVerticalGroup(
 						panelLabelLayout.createParallelGroup()
 							.addGroup(panelLabelLayout.createSequentialGroup()
 								.addContainerGap()
 								.addComponent(logo)
-								.addContainerGap(21, Short.MAX_VALUE))
+								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 					);
 				}
 
@@ -169,7 +175,7 @@ public class LauncherViewer {
 
 						//---- fieldAddress ----
 						fieldAddress.setText("127.0.0.1");
-
+                        
 						//---- fieldPort ----
 						fieldPort.setText("61616");
 
@@ -186,23 +192,23 @@ public class LauncherViewer {
 								.addGroup(panelConnectionLayout.createSequentialGroup()
 									.addContainerGap()
 									.addComponent(label5)
-									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+									.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 									.addComponent(fieldAddress, GroupLayout.PREFERRED_SIZE, 147, GroupLayout.PREFERRED_SIZE)
-									.addGap(32, 32, 32)
+									.addGap(34, 34, 34)
 									.addComponent(label6)
-									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+									.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 									.addComponent(fieldPort, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE)
-									.addContainerGap(36, Short.MAX_VALUE))
+									.addContainerGap(14, Short.MAX_VALUE))
 						);
 						panelConnectionLayout.setVerticalGroup(
 							panelConnectionLayout.createParallelGroup()
 								.addGroup(panelConnectionLayout.createSequentialGroup()
 									.addGroup(panelConnectionLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-										.addComponent(fieldAddress, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 										.addComponent(label5)
+										.addComponent(fieldPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 										.addComponent(label6)
-										.addComponent(fieldPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-									.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+										.addComponent(fieldAddress, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+									.addContainerGap(18, Short.MAX_VALUE))
 						);
 					}
 
@@ -215,7 +221,6 @@ public class LauncherViewer {
 
 						//---- comboMode ----
 						comboMode.addItemListener(new ItemListener() {
-							@Override
 							public void itemStateChanged(ItemEvent e) {
 								comboModeItemStateChanged(e);
 							}
@@ -223,7 +228,6 @@ public class LauncherViewer {
 
 						//---- comboNCell ----
 						comboNCell.addItemListener(new ItemListener() {
-							@Override
 							public void itemStateChanged(ItemEvent e) {
 								comboNCellItemStateChanged(e);
 							}
@@ -240,21 +244,29 @@ public class LauncherViewer {
 
 						//---- fieldWidth ----
 						fieldWidth.setText("200");
-
+                        
 						//---- fieldHeight ----
 						fieldHeight.setText("200");
-
+                        
 						//---- labelPath ----
-						labelPath.setText("Path: "+path);
-
+						labelPath.setText("Path: ....");
 						//---- buttonPath ----
 						buttonPath.setText("Save Path");
 						buttonPath.addActionListener(new ActionListener() {
-							@Override
 							public void actionPerformed(ActionEvent e) {
 								buttonPathActionPerformed(e);
 							}
 						});
+
+						//---- comboSim ----
+						comboSim.addItemListener(new ItemListener() {
+							public void itemStateChanged(ItemEvent e) {
+								comboModeItemStateChanged(e);
+							}
+						});
+
+						//---- label7 ----
+						label7.setText("Simulation:");
 
 						GroupLayout panelInfoLayout = new GroupLayout(panelInfo);
 						panelInfo.setLayout(panelInfoLayout);
@@ -263,8 +275,6 @@ public class LauncherViewer {
 								.addGroup(panelInfoLayout.createSequentialGroup()
 									.addContainerGap()
 									.addGroup(panelInfoLayout.createParallelGroup()
-										.addComponent(labelPath)
-										.addComponent(buttonPath)
 										.addGroup(panelInfoLayout.createSequentialGroup()
 											.addGroup(panelInfoLayout.createParallelGroup()
 												.addGroup(panelInfoLayout.createSequentialGroup()
@@ -275,47 +285,57 @@ public class LauncherViewer {
 													.addComponent(label3)
 													.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 													.addComponent(fieldWidth, GroupLayout.PREFERRED_SIZE, 91, GroupLayout.PREFERRED_SIZE)))
-											.addGap(24, 24, 24)
+											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
 											.addGroup(panelInfoLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 												.addComponent(label2)
 												.addComponent(label4))
 											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-											.addGroup(panelInfoLayout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
-												.addComponent(fieldHeight, GroupLayout.Alignment.LEADING)
-												.addComponent(comboNCell, GroupLayout.Alignment.LEADING, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-									.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+											.addGroup(panelInfoLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+												.addComponent(fieldHeight)
+												.addComponent(comboNCell, 0, 86, Short.MAX_VALUE)))
+										.addGroup(panelInfoLayout.createSequentialGroup()
+											.addComponent(buttonPath)
+											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 132, Short.MAX_VALUE)
+											.addComponent(label7)
+											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+											.addComponent(comboSim, GroupLayout.PREFERRED_SIZE, 105, GroupLayout.PREFERRED_SIZE))
+										.addComponent(labelPath))
+									.addContainerGap())
 						);
 						panelInfoLayout.setVerticalGroup(
 							panelInfoLayout.createParallelGroup()
 								.addGroup(panelInfoLayout.createSequentialGroup()
-									.addGroup(panelInfoLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-										.addComponent(comboMode, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(label1))
-									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-									.addGroup(panelInfoLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-										.addComponent(label3)
-										.addComponent(fieldWidth, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+									.addGroup(panelInfoLayout.createParallelGroup()
+										.addGroup(panelInfoLayout.createSequentialGroup()
+											.addGroup(panelInfoLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+												.addComponent(comboMode, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+												.addComponent(label1))
+											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+											.addGroup(panelInfoLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+												.addComponent(label3)
+												.addComponent(fieldWidth, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+										.addGroup(panelInfoLayout.createSequentialGroup()
+											.addGroup(panelInfoLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+												.addComponent(comboNCell, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+												.addComponent(label2))
+											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+											.addGroup(panelInfoLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+												.addComponent(fieldHeight, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+												.addComponent(label4))))
+									.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 									.addComponent(labelPath)
-									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addComponent(buttonPath)
-									.addGap(24, 24, 24))
-								.addGroup(panelInfoLayout.createSequentialGroup()
+									.addGap(13, 13, 13)
 									.addGroup(panelInfoLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-										.addComponent(comboNCell, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(label2))
-									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-									.addGroup(panelInfoLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-										.addComponent(fieldHeight, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(label4))
-									.addContainerGap())
+										.addComponent(buttonPath)
+										.addComponent(comboSim, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(label7))
+									.addContainerGap(12, Short.MAX_VALUE))
 						);
 					}
 
 					//---- buttonConnection ----
 					buttonConnection.setText("Connect");
 					buttonConnection.addActionListener(new ActionListener() {
-						@Override
 						public void actionPerformed(ActionEvent e) {
 							buttonConnectionActionPerformed(e);
 						}
@@ -328,27 +348,27 @@ public class LauncherViewer {
 							.addGroup(panelDataLayout.createSequentialGroup()
 								.addContainerGap()
 								.addGroup(panelDataLayout.createParallelGroup()
+									.addGroup(panelDataLayout.createParallelGroup()
+										.addGroup(panelDataLayout.createSequentialGroup()
+											.addComponent(panelInfo, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+											.addContainerGap())
+										.addGroup(GroupLayout.Alignment.TRAILING, panelDataLayout.createSequentialGroup()
+											.addComponent(buttonConnection)
+											.addGap(39, 39, 39)))
 									.addGroup(GroupLayout.Alignment.TRAILING, panelDataLayout.createSequentialGroup()
-										.addGap(329, 329, 329)
-										.addComponent(buttonConnection)
-										.addGap(17, 17, 17))
-									.addGroup(GroupLayout.Alignment.TRAILING, panelDataLayout.createSequentialGroup()
-										.addComponent(panelConnection, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addContainerGap())
-									.addGroup(GroupLayout.Alignment.TRAILING, panelDataLayout.createSequentialGroup()
-										.addComponent(panelInfo, GroupLayout.DEFAULT_SIZE, 447, Short.MAX_VALUE)
+										.addComponent(panelConnection, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 										.addContainerGap())))
 					);
 					panelDataLayout.setVerticalGroup(
 						panelDataLayout.createParallelGroup()
-							.addGroup(GroupLayout.Alignment.TRAILING, panelDataLayout.createSequentialGroup()
-								.addContainerGap()
-								.addComponent(panelConnection, GroupLayout.PREFERRED_SIZE, 68, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
-								.addComponent(panelInfo, GroupLayout.PREFERRED_SIZE, 149, GroupLayout.PREFERRED_SIZE)
+							.addGroup(panelDataLayout.createSequentialGroup()
+								.addGap(6, 6, 6)
+								.addComponent(panelConnection, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+								.addComponent(panelInfo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 								.addComponent(buttonConnection)
-								.addGap(18, 18, 18))
+								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 					);
 				}
 
@@ -356,18 +376,19 @@ public class LauncherViewer {
 				panelMain.setLayout(panelMainLayout);
 				panelMainLayout.setHorizontalGroup(
 					panelMainLayout.createParallelGroup()
-						.addGroup(panelMainLayout.createSequentialGroup()
-							.addGroup(panelMainLayout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
+						.addGroup(GroupLayout.Alignment.TRAILING, panelMainLayout.createSequentialGroup()
+							.addGroup(panelMainLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 								.addComponent(panelLabel, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(panelData, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-							.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+								.addComponent(panelData, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+							.addGap(10, 10, 10))
 				);
 				panelMainLayout.setVerticalGroup(
 					panelMainLayout.createParallelGroup()
 						.addGroup(GroupLayout.Alignment.TRAILING, panelMainLayout.createSequentialGroup()
 							.addComponent(panelLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-							.addComponent(panelData, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addComponent(panelData, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap())
 				);
 			}
 
@@ -376,21 +397,18 @@ public class LauncherViewer {
 			LauncherViewerContentPaneLayout.setHorizontalGroup(
 				LauncherViewerContentPaneLayout.createParallelGroup()
 					.addGroup(LauncherViewerContentPaneLayout.createSequentialGroup()
-						.addGap(0, 0, Short.MAX_VALUE)
-						.addComponent(panelMain, GroupLayout.PREFERRED_SIZE, 482, GroupLayout.PREFERRED_SIZE)
-						.addContainerGap())
+						.addComponent(panelMain, GroupLayout.PREFERRED_SIZE, 429, GroupLayout.PREFERRED_SIZE)
+						.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 			);
 			LauncherViewerContentPaneLayout.setVerticalGroup(
 				LauncherViewerContentPaneLayout.createParallelGroup()
-					.addComponent(panelMain, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addComponent(panelMain, GroupLayout.DEFAULT_SIZE, 596, Short.MAX_VALUE)
 			);
 			LauncherViewer.pack();
 			LauncherViewer.setLocationRelativeTo(LauncherViewer.getOwner());
 		}
-	
 	}
 
-	
 	private JFrame LauncherViewer;
 	private JPanel panelMain;
 	private JPanel panelLabel;
@@ -412,9 +430,11 @@ public class LauncherViewer {
 	private JTextField fieldHeight;
 	private JLabel labelPath;
 	private JButton buttonPath;
+	private JComboBox comboSim;
+	private JLabel label7;
 	private JButton buttonConnection;
-
-	private ConnectionNFieldsWithActiveMQAPI connection;
+    
+    private ConnectionNFieldsWithActiveMQAPI connection;
 	private Address address;
 	private String path;
 }
