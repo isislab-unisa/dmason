@@ -26,20 +26,24 @@ public class DParticlesAgentUpdate extends Updater {
 			HashMap<String, Object> hash = zoom.synchronizedWithSimulation();
 			
 			ZoomArrayList<RemoteAgent> list = (ZoomArrayList<RemoteAgent>) hash.get("particles");
-			
-			for(RemoteAgent a : list)
+			for(RemoteAgent p : list)
 			{
-				tut.particles.setObjectLocation(a, (Int2D)a.pos);
+				Int2D pos = ((Int2D)zoom.getZoomAgentLocation(p.getPos()));
+				tut.particles.setObjectLocation(p, pos);
 			}
 			
 			ZoomArrayList<EntryNum<Double, Int2D>> listTrails = (ZoomArrayList<EntryNum<Double, Int2D>>) hash.get("trails");
-			System.out.println("DIMENSIONEEEEEE: "+listTrails.size());
-			for(EntryNum<Double, Int2D> a : listTrails)
+			for(EntryNum<Double, Int2D> t : listTrails)
 			{
-				tut.trails.field[a.l.getX()][a.l.getY()] = a.r;
+				Int2D pos = (Int2D)zoom.getZoomAgentLocation(t.l);
+				tut.trails.field[pos.getX()][pos.getY()] = t.r;
 			}
+			zoom.sendAckToCell(list.STEP);
 			
 		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
