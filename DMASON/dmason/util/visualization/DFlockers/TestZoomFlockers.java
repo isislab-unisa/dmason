@@ -1,28 +1,18 @@
-
 package dmason.util.visualization.DFlockers;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-
-import javax.swing.JOptionPane;
-
-import sim.display.GUIState;
-import dmason.sim.app.DAntsForage.DAntsForageWithUI;
-import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
-import dmason.util.visualization.CloseZoomAppListener;
 import dmason.util.visualization.ConsoleZoom;
 
 public class TestZoomFlockers {
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
+		
+		String id = "1-1";
+		int numCell = 4;
+		int width = 400;
+		int height = 400;
+		int mode = 1;
 		
 		ConnectionNFieldsWithActiveMQAPI con=new ConnectionNFieldsWithActiveMQAPI();
 		try {
@@ -32,9 +22,9 @@ public class TestZoomFlockers {
 			e.printStackTrace();
 		}
 		
-		FlockersWithUIView t=new FlockersWithUIView(new Object[]{con,"1-1",true} );
+		FlockersWithUIView simulazione=new FlockersWithUIView(new Object[]{con,id,true,numCell,width,height,mode} );
 
-		ConsoleZoom c=new ConsoleZoom(t,con,"1-1");
+		ConsoleZoom c=new ConsoleZoom(simulazione,con,"1-1");
 		c.setVisible(true);
 		c.pressPlay();
 	}
