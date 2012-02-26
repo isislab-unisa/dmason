@@ -48,10 +48,7 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
     public static final int TWO_OBSTACLES = 2;
     public static final int ONE_LONG_OBSTACLE = 3;
 
-    //public static final int OBSTACLES = NO_OBSTACLES;
-    public static final int OBSTACLES = ONE_OBSTACLE;
-    //public static final int OBSTACLES = TWO_OBSTACLES;
-    //public static final int OBSTACLES = ONE_LONG_OBSTACLE;
+    public static final int OBSTACLES = TWO_OBSTACLES;
     
     public static final int ALGORITHM_VALUE_ITERATION = 1;
     public static final int ALGORITHM_TEMPORAL_DIFERENCE = 2;
@@ -227,21 +224,12 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
         for( int x = HXMIN ; x <= HXMAX ; x++ ){
             
         	for( int y = HYMIN ; y <= HYMAX ; y++ ){
-        		
-            	if((sites.own_x<= x) && (x<(sites.own_x+sites.my_width)) && (sites.own_y<=y)
-            			&& (y<(sites.own_y+sites.my_height))){
-            	
             		sites.field[x][y] = HOME;
-            	}
         	}
         }
         for( int x = FXMIN ; x <= FXMAX ; x++ )
             for( int y = FYMIN ; y <= FYMAX ; y++ )
-            	if((sites.own_x<= x) && (x<(sites.own_x+sites.my_width)) && (sites.own_y<=y)
-            			&& (y<(sites.own_y+sites.my_height))){
-            	
             		sites.field[x][y] = FOOD;
-            	}
 
         Int2D h = new Int2D((HXMAX+HXMIN)/2,(HYMAX+HYMIN)/2);
         
