@@ -273,7 +273,7 @@ public class DContinuous2DY extends DContinuous2D
     			 return true;
     		 }
     		 else
-    				System.out.println(cellType+")OH MY GOD!"+ rm.id); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
+    				System.out.println(cellType+")OH MY GOD!"+ rm.getId()); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
     	return false;
     }
 
