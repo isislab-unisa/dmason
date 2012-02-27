@@ -24,6 +24,7 @@ public class SystemManager {
 		info.setAddress(InetAddress.getLocalHost().getHostAddress());
 		info.setNum_core(os.getAvailableProcessors());
 		info.setoS(os.getName()+" v"+os.getVersion());
+		info.setHostName(id);
 		return info;
 	}
 
