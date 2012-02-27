@@ -15,23 +15,23 @@ public class Starter {
 	{		
 		int NUM_PEERS=4;
 		int MAX_DISTANCE=10;
-		int NUM_AGENTS=50;
+		int NUM_AGENTS=10;
 		boolean isTOROIDAL = true;
-		int WIDTH=400;
-		int HEGHT=400;
+		int WIDTH=100;
+		int HEGHT=100;
 		//int MODE=DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
 		int MODE=DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
 		
 		//int TUTORIAL=1;
-		int TUTORIAL=2;
-		//int TUTORIAL=3;
+		//int TUTORIAL=2;
+		int TUTORIAL=3;
 		if(TUTORIAL==1)
 		if(MODE==DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE)
 		{
 			ArrayList<Console> dants=new ArrayList<Console>();
 			for (int j = 0; j < NUM_PEERS; j++) 
 			{				
-				 DParticlesWithUI t=new DParticlesWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,0,j,MODE,isTOROIDAL} );
+				 DParticlesWithUI t=new DParticlesWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,0,j,MODE} );
 			        Console c=(Console)t.createController();
 			        
 			        c.pressPause();
@@ -46,7 +46,7 @@ public class Starter {
 				for (int i = 0; i < Math.sqrt(NUM_PEERS); i++) {
 					for (int j = 0; j < Math.sqrt(NUM_PEERS); j++) {
 					
-						DParticlesWithUI t=new DParticlesWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,i,j,MODE,isTOROIDAL} );
+						DParticlesWithUI t=new DParticlesWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,i,j,MODE} );
 				        Console c=(Console)t.createController();
 				        c.pressPause();
 				        dants.add(c);
@@ -60,7 +60,7 @@ public class Starter {
 				ArrayList<Console> dants=new ArrayList<Console>();
 				for (int j = 0; j < NUM_PEERS; j++) 
 				{			
-					 DFlockersWithUI t=new DFlockersWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,0,j,MODE,isTOROIDAL} );
+					 DFlockersWithUI t=new DFlockersWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,0,j,MODE} );
 				        Console c=(Console)t.createController();
 				        c.pressPause();
 				        dants.add(c);
@@ -74,7 +74,7 @@ public class Starter {
 				for (int i = 0; i < Math.sqrt(NUM_PEERS); i++) {
 					for (int j = 0; j < Math.sqrt(NUM_PEERS); j++) {
 					
-						DFlockersWithUI t=new DFlockersWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,i,j,MODE,isTOROIDAL} );
+						DFlockersWithUI t=new DFlockersWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,i,j,MODE} );
 					        Console c=(Console)t.createController();
 					        c.pressPause();
 					        dants.add(c);
@@ -88,7 +88,7 @@ public class Starter {
 		{
 			for (int j = 0; j < NUM_PEERS; j++) 
 			{				
-				DAntsForageWithUI t=new DAntsForageWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,0,j,MODE,isTOROIDAL} );
+				DAntsForageWithUI t=new DAntsForageWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,0,j,MODE} );
 				Console c=(Console)t.createController();
 			        
 			    c.pressPause();
@@ -101,7 +101,7 @@ public class Starter {
 				for (int i = 0; i < Math.sqrt(NUM_PEERS); i++) {
 					for (int j = 0; j < Math.sqrt(NUM_PEERS); j++) {
 				
-						DAntsForageWithUI t=new DAntsForageWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,i,j,MODE,isTOROIDAL} );
+						DAntsForageWithUI t=new DAntsForageWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,i,j,MODE} );
 				        Console c=(Console)t.createController();
 				        c.pressPause();
 				        dants.add(c);
