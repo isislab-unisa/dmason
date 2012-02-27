@@ -3,12 +3,10 @@ package dmason.util.SystemManagement;
 import java.util.HashMap;
 import javax.jms.Message;
 import org.apache.activemq.command.ActiveMQObjectMessage;
-
 import dmason.util.connection.MyHashMap;
 import dmason.util.connection.MyMessageListener;
 
 /**
- * @author Ada Mancuso
  * This is a simple MessageListener holds for PeerStatusInfo and provide an access method to let MasterDaemonStarter
  * get these informations,stored into an HashMap.
  */
@@ -23,8 +21,9 @@ public class MasterDaemonListener extends MyMessageListener{
 		try{
 			MyHashMap mh = (MyHashMap)msg.getObject();
 			if(mh.get("info")!=null){
-				PeerStatusInfo info = (PeerStatusInfo) msg.getObject();
-				infos.put("SERVICE-"+info.getAddress(), info);
+				PeerStatusInfo info = (PeerStatusInfo) mh.get("info");
+				infos.put(info.getHostName(), info);
+				
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
