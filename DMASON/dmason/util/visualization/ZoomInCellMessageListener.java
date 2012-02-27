@@ -45,8 +45,6 @@ public class ZoomInCellMessageListener extends MyMessageListener
 						schedule.monitor.isZoom=true;
 						schedule.monitor.isSynchro=false;
 					}
-					
-					System.out.println("Ricevuto comando di zoom");
 				}
 				else
 					if(command.equals("ZOOM_SYNCHRO"))
@@ -55,8 +53,6 @@ public class ZoomInCellMessageListener extends MyMessageListener
 							schedule.monitor.isZoom=true;
 							schedule.monitor.isSynchro=true;
 						}
-						
-						System.out.println("Ricevuto comando di zoom SYNCHRONO");
 					}
 					else
 						if(command.contains("ZOOM_STEP"))

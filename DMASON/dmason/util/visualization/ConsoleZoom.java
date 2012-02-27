@@ -61,16 +61,13 @@ public class ConsoleZoom extends sim.display.Console {
 	}
     private void  sendAck()
     {
-
     		try {
 				con.publishToTopic("EXIT_ZOOM", "GRAPHICS"+id_cell,"GRAPHICS"+id_cell);
-				System.out.println("Zoom correctly disconnect.");
-    		  } catch (Exception e) {
-    				System.out.println(
-    						"Zoom uncorrectly disconnect. Possible problem in your simulation...");
-    				e.printStackTrace();
-    			}
-			
+    		} catch (Exception e) {
+    			System.out.println(
+    					"Zoom uncorrectly disconnect. Possible problem in your simulation...");
+    			e.printStackTrace();
+    		}	
     }
     public void doClose()
     {

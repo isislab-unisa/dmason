@@ -26,7 +26,6 @@ public class VisualizationUpdateMap<E,F> extends HashMap<Long,HashMap<String,Obj
 
 	public HashMap<String,Object> getUpdates(long step,int num_cell) throws InterruptedException
 	{
-		System.out.println("Entro per step "+step);
 		long nowStep=step;
 		lock.lock();
 		HashMap<String,Object> tmp = this.get(nowStep);
@@ -58,9 +57,7 @@ public class VisualizationUpdateMap<E,F> extends HashMap<Long,HashMap<String,Obj
 	{
 		lock.lock();
 			FORCE=true;
-			System.out.println("sbloccoooooooooooo");
 			block.signal();
-			
 		lock.unlock();
 	}
 	

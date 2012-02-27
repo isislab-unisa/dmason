@@ -20,7 +20,6 @@ public class ViewerMonitor {
 	public void awaitForAckStep(Long step) throws InterruptedException
 	{
 		lock.lock();
-		System.out.println("Apetto per step "+step);
 		while(!queue.contains(step))
 		{
 			if(FORCE) { FORCE=false; break;}
@@ -28,7 +27,6 @@ public class ViewerMonitor {
 		}
 		
 		queue.remove(step);
-		System.out.println("Sincronizzazione riuscita per step "+step );
 		lock.unlock();
 	}
 	public void putAck(Long step)
