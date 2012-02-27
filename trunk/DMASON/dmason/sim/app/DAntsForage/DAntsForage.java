@@ -21,7 +21,9 @@ import dmason.util.exception.DMasonException;
 import dmason.util.trigger.Trigger;
 
 public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
-    {
+{
+	
+	private static boolean isToroidal=false;
     public int GRID_HEIGHT;
     public int GRID_WIDTH;
 
@@ -108,7 +110,9 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
     
     public DAntsForage(Object[] params)
         { 
-    	super((Integer)params[2],(Integer)params[3],(Integer)params[4],(Integer)params[7],(Integer)params[8],(String)params[0],(String)params[1],(Integer)params[9], (Boolean)params[10],new DistributedMultiSchedule<Int2D>());
+    	super((Integer)params[2],(Integer)params[3],(Integer)params[4],(Integer)params[7],
+    			(Integer)params[8],(String)params[0],(String)params[1],(Integer)params[9], 
+    			isToroidal,new DistributedMultiSchedule<Int2D>());
     	numAnts = (Integer)params[4];
     	ip = params[0]+"";
     	port = params[1]+"";
@@ -132,20 +136,20 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
         }
         
     public void start()
-        {
-        super.start();  // clear out the schedule
-        
-        try 
-        {       	
-        	toFoodGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, false, "toFoodGrid");
-            toHomeGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, false, "toHomeGrid");
-            buggrid = DSparseGrid2DFactory.createDSparseGrid2d(GRID_WIDTH, GRID_HEIGHT,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.NUMPEERS,MODE, "buggrid");
-            sites = DIntGrid2DFactory.createDIntGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, true, "sites");
-        	obstacles = DIntGrid2DFactory.createDIntGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, true, "obstacles");
-        	init_connection();
-        }catch (DMasonException e) { e.printStackTrace();}
-      
-       
+    {
+    	super.start();  // clear out the schedule
+
+    	try 
+    	{       	
+    		toFoodGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, false, "toFoodGrid");
+    		toHomeGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, false, "toHomeGrid");
+    		buggrid = DSparseGrid2DFactory.createDSparseGrid2d(GRID_WIDTH, GRID_HEIGHT,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.NUMPEERS,MODE, "buggrid");
+    		sites = DIntGrid2DFactory.createDIntGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, true, "sites");
+    		obstacles = DIntGrid2DFactory.createDIntGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, true, "obstacles");
+    		init_connection();
+    	}catch (DMasonException e) { e.printStackTrace();}
+
+
 
     	int x1 = (45 * GRID_WIDTH)/100;
     	int y1 = (25 * GRID_HEIGHT)/100;
@@ -153,117 +157,117 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
     	int y2 = (70 * GRID_HEIGHT)/100;
     	int a = (36 * GRID_WIDTH)/100;
     	int b = (1024 * GRID_WIDTH)/100;
-        
-        switch( OBSTACLES )
-            {
-            case NO_OBSTACLES:
-                break;
-            case ONE_OBSTACLE:
-                
-            	x1 = (55 * GRID_WIDTH)/100;
-            	y1 = (35 * GRID_HEIGHT)/100;
 
-            	a = (36 * GRID_WIDTH)/100;
-            	b = (1024 * GRID_WIDTH)/100;
+    	switch( OBSTACLES )
+    	{
+    	case NO_OBSTACLES:
+    		break;
+    	case ONE_OBSTACLE:
 
-                for( int x = 0 ; x < GRID_WIDTH ; x++ )
-                    for( int y = 0 ; y < GRID_HEIGHT ; y++ )
-                        {
-                        obstacles.field[x][y] = 0;
-                		if( ((x-x1)*0.707+(y-y1)*0.707)*((x-x1)*0.707+(y-y1)*0.707)/a+
-                				((x-x1)*0.707-(y-y1)*0.707)*((x-x1)*0.707-(y-y1)*0.707)/b <= 1 )	
-                    			obstacles.field[x][y] = 1;
-                        }
-                
-                break;
-            case TWO_OBSTACLES:
-            	
-            	x1 = (45 * GRID_WIDTH)/100;
-            	y1 = (25 * GRID_HEIGHT)/100;
-            	x2 = (35 * GRID_WIDTH)/100;
-            	y2 = (70 * GRID_HEIGHT)/100;
-            	a = (36 * GRID_WIDTH)/100;
-            	b = (1024 * GRID_WIDTH)/100;
+    		x1 = (55 * GRID_WIDTH)/100;
+    		y1 = (35 * GRID_HEIGHT)/100;
 
-            	for( int x = 0 ; x < GRID_WIDTH ; x++ )
-                    for( int y = 0 ; y < GRID_HEIGHT ; y++ )
-                        {
-                        obstacles.field[x][y] = 0;
-                		if( ((x-x1)*0.707+(y-y1)*0.707)*((x-x1)*0.707+(y-y1)*0.707)/a+
-                    			((x-x1)*0.707-(y-y1)*0.707)*((x-x1)*0.707-(y-y1)*0.707)/b <= 1 )
-                    			
-                            		obstacles.field[x][y] = 1;
-                            
-                    		if( ((x-x2)*0.707+(y-y2)*0.707)*((x-x2)*0.707+(y-y2)*0.707)/a+
-                    			((x-x2)*0.707-(y-y2)*0.707)*((x-x2)*0.707-(y-y2)*0.707)/b <= 1 )
+    		a = (36 * GRID_WIDTH)/100;
+    		b = (1024 * GRID_WIDTH)/100;
 
-                    				obstacles.field[x][y] = 1;
-                    	}
-                break;
-            case ONE_LONG_OBSTACLE:
-            	
-            	x1 = ((60 * GRID_WIDTH)/100);
-            	y1 = (50 * GRID_HEIGHT)/100;
+    		for( int x = 0 ; x < GRID_WIDTH ; x++ )
+    			for( int y = 0 ; y < GRID_HEIGHT ; y++ )
+    			{
+    				obstacles.field[x][y] = 0;
+    				if( ((x-x1)*0.707+(y-y1)*0.707)*((x-x1)*0.707+(y-y1)*0.707)/a+
+    						((x-x1)*0.707-(y-y1)*0.707)*((x-x1)*0.707-(y-y1)*0.707)/b <= 1 )	
+    					obstacles.field[x][y] = 1;
+    			}
 
-            	a = (1600 * GRID_WIDTH)/100;
-            	b = (25 * GRID_WIDTH)/100;
+    		break;
+    	case TWO_OBSTACLES:
 
-                for( int x = 0 ; x < GRID_WIDTH ; x++ )
-                    for( int y = 0 ; y < GRID_HEIGHT ; y++ )
-                        {
-                        obstacles.field[x][y] = 0;
-                        if( (x-x1)*(x-x1)/a+
-                            (y-y1)*(y-y1)/b <= 1 )
-                            obstacles.field[x][y] = 1;
-                        }
-                break;
-            }
+    		x1 = (45 * GRID_WIDTH)/100;
+    		y1 = (25 * GRID_HEIGHT)/100;
+    		x2 = (35 * GRID_WIDTH)/100;
+    		y2 = (70 * GRID_HEIGHT)/100;
+    		a = (36 * GRID_WIDTH)/100;
+    		b = (1024 * GRID_WIDTH)/100;
 
-        
-        // initialize the grid with the home and food sites
-        for( int x = HXMIN ; x <= HXMAX ; x++ ){
-            
-        	for( int y = HYMIN ; y <= HYMAX ; y++ ){
-            		sites.field[x][y] = HOME;
-        	}
-        }
-        for( int x = FXMIN ; x <= FXMAX ; x++ )
-            for( int y = FYMIN ; y <= FYMAX ; y++ )
-            		sites.field[x][y] = FOOD;
+    		for( int x = 0 ; x < GRID_WIDTH ; x++ )
+    			for( int y = 0 ; y < GRID_HEIGHT ; y++ )
+    			{
+    				obstacles.field[x][y] = 0;
+    				if( ((x-x1)*0.707+(y-y1)*0.707)*((x-x1)*0.707+(y-y1)*0.707)/a+
+    						((x-x1)*0.707-(y-y1)*0.707)*((x-x1)*0.707-(y-y1)*0.707)/b <= 1 )
 
-        Int2D h = new Int2D((HXMAX+HXMIN)/2,(HYMAX+HYMIN)/2);
-        
-        
-        if((sites.own_x<= h.x) && (h.x<(sites.own_x+sites.my_width)) && (sites.own_y<=h.y)
+    					obstacles.field[x][y] = 1;
+
+    				if( ((x-x2)*0.707+(y-y2)*0.707)*((x-x2)*0.707+(y-y2)*0.707)/a+
+    						((x-x2)*0.707-(y-y2)*0.707)*((x-x2)*0.707-(y-y2)*0.707)/b <= 1 )
+
+    					obstacles.field[x][y] = 1;
+    			}
+    		break;
+    	case ONE_LONG_OBSTACLE:
+
+    		x1 = ((60 * GRID_WIDTH)/100);
+    		y1 = (50 * GRID_HEIGHT)/100;
+
+    		a = (1600 * GRID_WIDTH)/100;
+    		b = (25 * GRID_WIDTH)/100;
+
+    		for( int x = 0 ; x < GRID_WIDTH ; x++ )
+    			for( int y = 0 ; y < GRID_HEIGHT ; y++ )
+    			{
+    				obstacles.field[x][y] = 0;
+    				if( (x-x1)*(x-x1)/a+
+    						(y-y1)*(y-y1)/b <= 1 )
+    					obstacles.field[x][y] = 1;
+    			}
+    		break;
+    	}
+
+
+    	// initialize the grid with the home and food sites
+    	for( int x = HXMIN ; x <= HXMAX ; x++ ){
+
+    		for( int y = HYMIN ; y <= HYMAX ; y++ ){
+    			sites.field[x][y] = HOME;
+    		}
+    	}
+    	for( int x = FXMIN ; x <= FXMAX ; x++ )
+    		for( int y = FYMIN ; y <= FYMAX ; y++ )
+    			sites.field[x][y] = FOOD;
+
+    	Int2D h = new Int2D((HXMAX+HXMIN)/2,(HYMAX+HYMIN)/2);
+
+
+    	if((sites.own_x<= h.x) && (h.x<(sites.own_x+sites.my_width)) && (sites.own_y<=h.y)
     			&& (h.y<(sites.own_y+sites.my_height))){
 
-        	DRemoteAnt ant = new DRemoteAnt(this, reward);
-        
-        	while(buggrid.size() != super.NUMAGENTS){
-        	
-        		ant.setPos(h);
-        	
-        		if(buggrid.setObjectLocation(ant, new Int2D(h.getX(), h.getY()))){
-        
-        			//schedule.scheduleOnce(schedule.getTime()+1.0, ant);
-        			schedule.scheduleOnce((Schedule.EPOCH ), 0, ant);
-        			
-        			if(buggrid.size() != super.NUMAGENTS){
-        			
-        				ant = new DRemoteAnt(this, reward);
-        			}
-        		}
-        	}
+    		DRemoteAnt ant = new DRemoteAnt(this, reward);
 
-        }
+    		while(buggrid.size() != super.NUMAGENTS){
 
-        // Schedule evaporation to happen after the ants move and update
-        	schedule.scheduleRepeating(Schedule.EPOCH,1, new Steppable()
-           	{
-            public void step(SimState state) { toFoodGrid.multiply(evaporationConstant); toHomeGrid.multiply(evaporationConstant); }
-            }, 1);
-        	
-        }
+    			ant.setPos(h);
+
+    			if(buggrid.setObjectLocation(ant, new Int2D(h.getX(), h.getY()))){
+
+    				//schedule.scheduleOnce(schedule.getTime()+1.0, ant);
+    				schedule.scheduleOnce((Schedule.EPOCH ), 0, ant);
+
+    				if(buggrid.size() != super.NUMAGENTS){
+
+    					ant = new DRemoteAnt(this, reward);
+    				}
+    			}
+    		}
+
+    	}
+
+    	// Schedule evaporation to happen after the ants move and update
+    	schedule.scheduleRepeating(Schedule.EPOCH,1, new Steppable()
+    	{
+    		public void step(SimState state) { toFoodGrid.multiply(evaporationConstant); toHomeGrid.multiply(evaporationConstant); }
+    	}, 1);
+
+    }
     static final long serialVersionUID = 9115981605874680023L;
     
     public static void main(String[] args)
@@ -292,7 +296,7 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 		buggrid.setObjectLocation(rm, loc);
 	}
 
-    }
+}
     
     
     
