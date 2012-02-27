@@ -99,9 +99,13 @@ public class Worker{
 
 	public synchronized void stop_play(){
 		if(gui)
-		{
-			console.pressStop();
+		{   
+			
+			
+			console.pressStop();	
 			console.dispose();
+			console.doClose();
+		
 		}
 		else
 		{
