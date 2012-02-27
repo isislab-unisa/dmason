@@ -596,7 +596,6 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 			try {
 				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
 				connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
-				System.out.println("pubblico per cella "+"GRAPHICS"+cellType+" con step"+tmp_zoom.STEP+" campo:"+NAME);
 				tmp_zoom=new ZoomArrayList<RemoteAgent>();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
