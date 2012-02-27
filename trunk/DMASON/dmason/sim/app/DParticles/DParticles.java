@@ -12,8 +12,9 @@ import dmason.util.exception.DMasonException;
 import sim.engine.*;
 import sim.util.*;
 
-public class DParticles extends DistributedState<Int2D>
-{
+public class DParticles extends DistributedState<Int2D> {
+	
+	private static boolean isToroidal=false;
     public DSparseGrid2D particles;
     public DDoubleGrid2D trails;
     public int gridWidth ;
@@ -22,7 +23,9 @@ public class DParticles extends DistributedState<Int2D>
    
     public DParticles(Object[] params)
     {    	
-    	super((Integer)params[2],(Integer)params[3],(Integer)params[4],(Integer)params[7],(Integer)params[8],(String)params[0],(String)params[1],(Integer)params[9],(Boolean)params[10],new DistributedMultiSchedule<Int2D>());
+    	super((Integer)params[2],(Integer)params[3],(Integer)params[4],(Integer)params[7],
+    			(Integer)params[8],(String)params[0],(String)params[1],(Integer)params[9],
+    			isToroidal,new DistributedMultiSchedule<Int2D>());
     	ip = params[0]+"";
     	port = params[1]+"";
     	this.MODE=(Integer)params[9];
@@ -97,9 +100,6 @@ public class DParticles extends DistributedState<Int2D>
 
 	public boolean setPortrayalForObject(Object o) 
 	{
-		/*
-		 * THIS METHOD MUST NOT BE IMPLEMENTED FOR THIS APP.
-		 */
 		return false;
 	}    
 }
