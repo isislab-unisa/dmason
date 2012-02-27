@@ -149,20 +149,19 @@ public class Worker{
 		try {
 
 			Constructor cc=c.getConstructor(new Class[]{args_sim.getClass()});
-			 Object obj=cc.newInstance(new Object[]{args_sim});
+			Object obj=cc.newInstance(new Object[]{args_sim});
 			 
-			 if(obj instanceof DistributedState)
-			 {
-				 return (DistributedState)obj;
-			 }
-			 else
-			 {
-				 GUIState gui=(GUIState)obj;
-				 console=(Console)gui.createController();
-				 console.setVisible(true);
-				 console.pressPause();
-				 return (DistributedState)obj.getClass().getField("state").get(obj);
-				 
+			if(obj instanceof DistributedState)
+			{
+				return (DistributedState)obj;
+			}
+			else
+			{
+				GUIState gui=(GUIState)obj;
+				console=(Console)gui.createController();
+				console.setVisible(true);
+				console.pressPause();
+				return (DistributedState)obj.getClass().getField("state").get(obj); 
 			 }
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
