@@ -191,7 +191,7 @@ public /*strictfp*/ class AntsForageZoom extends SimState {
         	for( int x = 0 ; x < wh ; x++ )
                 for( int y = 0 ; y < ht ; y++ )
                 {
-                	if((x>local_ux) && (y>local_uy) && (x<local_dx) && (y<local_dy)){
+                	if((x>=local_ux) && (y>=local_uy) && (x<local_dx) && (y<local_dy)){
 	                    obstacles.field[x-local_ux][y-local_uy] = 0;
 	            		if( ((x-x1)*0.707+(y-y1)*0.707)*((x-x1)*0.707+(y-y1)*0.707)/a+
 	                			((x-x1)*0.707-(y-y1)*0.707)*((x-x1)*0.707-(y-y1)*0.707)/b <= 1 )
