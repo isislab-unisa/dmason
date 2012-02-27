@@ -9,13 +9,15 @@ public class PeerStatusInfo implements Serializable{
 	private String arch="";;
 	private int num_core;
 	private String address;
+	private String hostName;
 	
 	public PeerStatusInfo() {
 		super();
 	}
 	
-	public PeerStatusInfo(String oS, String arch, int num_core, String address) {
+	public PeerStatusInfo(String oS, String arch, int num_core, String address,String hostName) {
 		super();
+		this.hostName=hostName;
 		this.oS = oS;
 		this.arch = arch;
 		this.num_core = num_core;
@@ -54,10 +56,16 @@ public class PeerStatusInfo implements Serializable{
 		this.address = address;
 	}
 
+	public String getHostName() {
+		return hostName;
+	}
+
+	public void setHostName(String hostName) {
+		this.hostName = hostName;
+	}
+
 	public String toString(){
 		return "HOST = "+address+"\n"+"--- diagnostic network info ---"+"\n"+"Operating System = "+oS+"\n"+
 		"Architecture = "+arch+"\n"+"Number of available processors = "+num_core+"\n";
 	}
-
-
 }
