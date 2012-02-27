@@ -4,6 +4,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.swing.JOptionPane;
+
 import com.sun.jmx.remote.internal.ArrayQueue;
 import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.util.connection.Address;
@@ -17,38 +20,44 @@ import dmason.sim.app.DParticles.DParticles;
 import dmason.sim.app.DParticles.DParticlesWithUI;
 
 public class MasterDaemonStarter {
-	
+
 	private int NUM_PEERS;
 	private int MAX_DISTANCE;
 	private int NUM_AGENTS=25;
 	private int WIDTH=201;
 	private int HEIGHT=201;
 	private int MODE;
-	private boolean isTOROIDAL;
 	private Address data;
 	private ConnectionNFieldsWithActiveMQAPI connection;
 	private String myTopic="MASTER"/*+InetAddress.getLocalHost().getHostAddress()*/;
 	private ArrayList<String> list;
 	private MasterDaemonListener myml;
-	
+
 	public MasterDaemonStarter(Connection con) throws Exception{
 		connection = (ConnectionNFieldsWithActiveMQAPI)con;
 		data = connection.getAdress();
 	}
-	
+
+
 	public boolean connectToServer(){
 		try {
 			//boolean flag = connection.setupConnection(data);
-			connection.createTopic(myTopic,1);
-			connection.subscribeToTopic(myTopic);
-			connection.asynchronousReceive(myTopic,myml =  new MasterDaemonListener());
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
+			if(connection.createTopic(myTopic,1)==true){
+				if(connection.subscribeToTopic(myTopic)==true)
+					connection.asynchronousReceive(myTopic,myml =  new MasterDaemonListener());
+				else return false;
+			}
+			else return false;
+
 		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+
+		}
+		return true;
 	}
-	
+
 	public ArrayList<String> getTopicList() throws Exception{
 		list = new ArrayList<String>();
 		for(String s : connection.getTopicList()){
@@ -59,33 +68,33 @@ public class MasterDaemonStarter {
 		}
 		return list;
 	}
-	
+
 	public PeerStatusInfo getLatestUpdate(String key){
 		return myml.getLatestUpdate(key);
 	}
-	
+
 	public void info(String key)throws Exception{
 		connection.publishToTopic("info", key, "info");
 	}
-	
+
 	public void pause() throws Exception{
 		for(String s : list)
 			connection.publishToTopic("pause", s, "pause");
 	}
-	
-	
+
+
 	public void stop() throws Exception{
 		for(String s : list)
 			connection.publishToTopic("stop", s, "stop");
 	}
-	
+
 	public void play() throws Exception{
 		for(String s : list)
 			connection.publishToTopic("play", s, "play");
 	}
-	
-	
-	public void start(int num,int width,int height,int agents,int maxDistance,int mode,HashMap<String,EntryVal<Integer, Boolean>> config, String selSim){
+
+
+	public void start(int num,int width,int height,int agents,int maxDistance,int mode,HashMap<String,EntryVal<Integer, Boolean>> config, String selSim,JMasterUI gui){
 		NUM_PEERS = num;
 		NUM_AGENTS = agents;
 		WIDTH = width;
@@ -94,35 +103,76 @@ public class MasterDaemonStarter {
 		MAX_DISTANCE = maxDistance;
 		String ip = this.data.getIPaddress();
 		Class selClassUI = null;
-		Class selClass = null;
+		Class selClass = null;	
+//		String curDir=System.getProperty("user.dir")+"/dmason/sim/app/"+selSim;
+//		String packagePath="dmason.sim.app."+selSim+".";
+//		File simulationList =new File(curDir);
+//		for(File fileSimulation : simulationList.listFiles()){
+//			if(fileSimulation.isFile()  && fileSimulation.getName().contains(".java"))
+//				if(fileSimulation.getName().contains("WithUI")){
+//
+//					try {
+//						
+//						selClassUI=Class.forName(packagePath+""+fileSimulation.getName().split(".java")[0]);
+//					    System.out.println(packagePath+""+fileSimulation.getName().split(".java")[0]);
+//					} catch (ClassNotFoundException e) {
+//						System.err.println("Unable to create class with UI :"+packagePath+fileSimulation.getName());
+//						e.printStackTrace();
+//					}
+//
+//
+//				}
+//				
+//				else{
+//					if(fileSimulation.getName().split(".java")[0].equals(selSim)){
+//						try {
+//							selClass=Class.forName(packagePath+""+fileSimulation.getName().split(".java")[0]);
+//							System.out.println("2"+packagePath+""+fileSimulation.getName().split(".java")[0]);
+//						
+//						} catch (ClassNotFoundException e) {
+//							System.err.println("Unable to create class :"+packagePath+fileSimulation.getName());
+//							e.printStackTrace();
+//						}
+//					}
+//
+//				}
+//
+//		}
+
 		
-		if(selSim.equals("Flockers")){
-			isTOROIDAL = true;
-			selClass = DFlockers.class;
-			selClassUI = DFlockersWithUI.class;
+		
+		if(selSim.equals("DFlockers")){
+			
+				selClass = DFlockers.class;
+				selClassUI =DFlockersWithUI.class;
+			
 		}
 		
-		if(selSim.equals("Ant Foraging")){
-			isTOROIDAL = false;
-			selClass = DAntsForage.class;
-			selClassUI = DAntsForageWithUI.class;	
+		if(selSim.equals("DAntsForage")){
+				selClass = DAntsForage.class;
+				selClassUI = DAntsForageWithUI.class;	
+			
+			
 		}
 		
-		if(selSim.equals("Particles")){
-			isTOROIDAL = false;
+		if(selSim.equals("DParticles")){
 			selClass = DParticles.class;
-			selClassUI = DParticlesWithUI.class;
+			selClassUI =DParticlesWithUI.class;
 		}
 		
-		if(ip.equals("127.0.0.1"))
-		try 
-		{
-			ip = InetAddress.getLocalHost().getHostAddress();
-		} catch (UnknownHostException e1) {e1.printStackTrace();}
 		
-		if(MODE == DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE){
-		
-			int cnt=0;
+
+			if(ip.equals("127.0.0.1"))
+				try 
+			{
+					ip = InetAddress.getLocalHost().getHostAddress();
+			} catch (UnknownHostException e1) {e1.printStackTrace();}
+
+	
+			
+			if(MODE == DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE){
+
+				int cnt=0;
 				for(String s : config.keySet()){
 					int x = config.get(s).getNum();
 					ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
@@ -139,55 +189,83 @@ public class MasterDaemonStarter {
 						else{
 							data.setDef(selClass);
 						}
-						data.setParam(new Object[]{ip,this.data.getPort(),MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEIGHT,0,cnt,DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,isTOROIDAL});
+						data.setParam(new Object[]{ip,this.data.getPort(),MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEIGHT,0,cnt,DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE});
 						classes.add(data);
 						//data.graphic=false;
 						cnt++;
-						}
-						try{
-							connection.publishToTopic(classes, s, "classes");
-						}catch (Exception e) {
-							e.printStackTrace();
-						}
+					}
+					try{
+
+
+						connection.publishToTopic(classes, s, "classes");
+
+						//JOptionPane.showMessageDialog(null,"Setting completed !");
+						gui.getTextFieldAgents().setEnabled(false);
+						gui.getTextFieldHeight().setEnabled(false);
+						gui.getTextFieldWidth().setEnabled(false);
+						gui.getTextFieldMaxDistance().setEnabled(false);
+						gui.getRadioButtonHorizontal().setEnabled(false);
+						gui.getRadioButtonSquare().setEnabled(false);
+						gui.getjComboRegions().setEnabled(false);
+					}
+
+
+
+					catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
-		else{
-			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
-			for(int i=0;i<Math.sqrt(NUM_PEERS);i++){
-				for(int k=0;k<Math.sqrt(NUM_PEERS);k++){
-					StartUpData data = new StartUpData();
-					if(i==k)
-						data.setStep(true);
-					//data.setDef(DAntsForage.class);
-					data.setParam(new Object[]{ip,this.data.getPort(),MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEIGHT,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE,isTOROIDAL});
-					defs.add(data);
-					data.graphic=false;
+			else{
+				ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
+				for(int i=0;i<Math.sqrt(NUM_PEERS);i++){
+					for(int k=0;k<Math.sqrt(NUM_PEERS);k++){
+						StartUpData data = new StartUpData();
+						if(i==k)
+							data.setStep(true);
+						//data.setDef(DAntsForage.class);
+						data.setParam(new Object[]{ip,this.data.getPort(),MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEIGHT,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
+						defs.add(data);
+						data.graphic=false;
 					}
 				}
-			int index=0;
-			for(String s : config.keySet()){
-				ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
-				int n = config.get(s).getNum();
-				for(int i=0;i<n;i++){
-					defs.get(index).graphic = config.get(s).isFlagTrue();
-					if(config.get(s).isFlagTrue()){
-						defs.get(index).setDef(selClassUI);
+				int index=0;
+				for(String s : config.keySet()){
+					ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
+					int n = config.get(s).getNum();
+					for(int i=0;i<n;i++){
+						defs.get(index).graphic = config.get(s).isFlagTrue();
+						if(config.get(s).isFlagTrue()){
+							defs.get(index).setDef(selClassUI);
+						}
+						else{
+							defs.get(index).setDef(selClass);
+						}
+						classes.add(defs.get(index));
+						index++;
 					}
-					else{
-						defs.get(index).setDef(selClass);
+					try{
+						if(connection.publishToTopic(classes, s, "classes")==true){
+
+							gui.getTextFieldAgents().setEditable(false);
+							gui.getTextFieldHeight().setEditable(false);
+							gui.getTextFieldWidth().setEditable(false);
+							gui.getTextFieldMaxDistance().setEditable(false);
+							gui.getRadioButtonHorizontal().setEnabled(false);
+							gui.getRadioButtonSquare().setEnabled(false);
+							gui.getjComboRegions().setEditable(false);
+
+						}
+						else
+							JOptionPane.showMessageDialog(null,"Setting failed !");
+
+					}catch (Exception e) {
+						e.printStackTrace();
 					}
-					classes.add(defs.get(index));
-					index++;
-				}
-				try{
-					connection.publishToTopic(classes,s,"classes");	
-				}catch (Exception e) {
-					e.printStackTrace();
 				}
 			}
 		}
-	}
-		
+
 		public void hilbert(ArrayList<StartUpData> defs,ArrayList<String> clients)
 		{
 			ArrayQueue<StartUpData> queue = new ArrayQueue<StartUpData>(25);
@@ -216,7 +294,7 @@ public class MasterDaemonStarter {
 			queue.add(defs.get(8));
 			queue.add(defs.get(3));
 			queue.add(defs.get(4));
-		/**CentralGuiState g = new CentralGuiState(new CentralSimState());
+			/**CentralGuiState g = new CentralGuiState(new CentralSimState());
 		Console c = (Console) g.createController();
 		c.pressPause();*/
 		}
