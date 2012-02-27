@@ -88,8 +88,6 @@ public class DistributedMultiSchedule<E> extends Schedule  {
 			else
 				monitor.ZOOM=false;
 		}
-		if(monitor.ZOOM)
-			System.out.println("Vado in ZOOM per step "+this.getSteps());
 		
 		boolean a= super.step(state) ;
 	
@@ -125,7 +123,6 @@ public class DistributedMultiSchedule<E> extends Schedule  {
 
 		if(monitor.ZOOM && monitor.isSynchro)
 		{
-			System.out.println("Chiedo ack per step "+(this.getSteps()-1));
 			Long actual_step=this.getSteps()-1;
 			try {
 				monitor.awaitForAckStep(actual_step);

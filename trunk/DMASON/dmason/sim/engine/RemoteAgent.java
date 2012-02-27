@@ -9,7 +9,6 @@ import sim.engine.Steppable;
  */
 public interface RemoteAgent<E> extends Steppable{
 
-	
 	/**
 	 * 
 	 * @return position on field of agent

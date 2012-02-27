@@ -53,12 +53,8 @@ public abstract class DistributedState<E> extends SimState
 					((DistributedMultiSchedule)this.schedule));
 		 thread.start();
 		
-		 try {
-			 if(("GRAPHICS"+TYPE).equals("GRAPHICS1-1"))
-			 System.out.println("DIMENSIONE DI INVIO "+((DistributedMultiSchedule)super.schedule).fields.size());
-			
+		 try {			
 			 boolean a=connection.createTopic("GRAPHICS"+TYPE, ((DistributedMultiSchedule)super.schedule).fields.size());
-			 System.out.println("Topic creato :"+a+" as "+"GRAPHICS"+TYPE);
 			 connection.subscribeToTopic("GRAPHICS"+TYPE);
 			 ThreadZoomInCellMessageListener t_zoom=
 					new ThreadZoomInCellMessageListener((ConnectionNFieldsWithActiveMQAPI)connection, 
@@ -223,14 +219,12 @@ public abstract class DistributedState<E> extends SimState
 				u4.start();
 				
 				 connection.subscribeToTopic(TYPE.getNeighbourLeft()+"R");
-				 System.out.println("SottoscrittoTopic="+TYPE.getNeighbourLeft()+"R");
 				 UpdaterThreadForListener u5 = 
 						 new UpdaterThreadForListener(connection, TYPE.getNeighbourLeft()+"R", 
 								 ((DistributedMultiSchedule)schedule).fields,listeners);
 				 u5.start();
 					
 				 connection.subscribeToTopic(TYPE.getNeighbourRight()+"L");
-				 System.out.println("SottoscrittoTopic="+TYPE.getNeighbourRight()+"L");
 				 UpdaterThreadForListener u6 = 
 						 new UpdaterThreadForListener(connection, TYPE.getNeighbourRight()+"L",
 								 ((DistributedMultiSchedule)schedule).fields,listeners);
