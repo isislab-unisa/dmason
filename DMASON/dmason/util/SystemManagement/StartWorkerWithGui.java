@@ -21,9 +21,9 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface {
 	public StartWorkerWithGui() {
 		initComponents();
 		connection = new ConnectionNFieldsWithActiveMQAPI();
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
 	}
-
 
 	private void button1ActionPerformed(ActionEvent e) {
 		try {
@@ -164,7 +164,7 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface {
 		);
 		setSize(410, 495);
 		setLocationRelativeTo(getOwner());
-		// JFormDesigner - End of component initialization  //GEN-END:initComponents
+
 	}
 
 	public JTextArea getTextArea() {
