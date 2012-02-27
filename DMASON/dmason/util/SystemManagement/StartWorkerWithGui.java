@@ -11,11 +11,13 @@ import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
  *Class for StartWorkerWithGui
  *
  */
-public class StartWorkerWithGui extends JFrame {
+public class StartWorkerWithGui extends JFrame implements StartWorkerInterface {
 	
 	private static final long serialVersionUID = 1L;
 	public boolean START=false;
 	private ConnectionNFieldsWithActiveMQAPI connection;
+	
+	
 	public StartWorkerWithGui() {
 		initComponents();
 		connection = new ConnectionNFieldsWithActiveMQAPI();
@@ -25,26 +27,32 @@ public class StartWorkerWithGui extends JFrame {
 
 	private void button1ActionPerformed(ActionEvent e) {
 		try {
-			connection.setupConnection(new Address((String)comboBox.getSelectedItem(),"61616"));
+			connection.setupConnection(new Address((String)comboBoxServer.getSelectedItem(), "61616"));
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		PeerDaemonStarter p = new PeerDaemonStarter(connection,this);
+		getComboBoxServer().setEditable(false);
+		getComboBoxPort().setEditable(false);
 	}
+
+	
 
 	private void initComponents() {
 		scrollPane1 = new JScrollPane();
 		textArea = new JTextArea();
+		textArea.setEditable(false);
 		button1 = new JButton();
 		label1 = new JLabel();
 		label2 = new JLabel();
-		combobox2 = new JComboBox();
+		comboBoxPort = new JComboBox();
+		
 		label3 = new JLabel();
 		labelnumber = new JLabel();
 		label4 = new JLabel();
-		comboBox = new JComboBox();
-
+		comboBoxServer = new JComboBox();
+		
 		//======== this ========
 		setTitle("D.MASON WORKER");
 		Container contentPane = getContentPane();
@@ -81,21 +89,21 @@ public class StartWorkerWithGui extends JFrame {
 		label4.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/carmineworker.png")));
 
 		//---- comboBox ----
-		comboBox.setEditable(true);
-		combobox2.setEditable(true);
+		comboBoxServer.setEditable(true);
+		comboBoxPort.setEditable(true);
 
 		Scanner in=new Scanner(ClassLoader.getSystemClassLoader().getResourceAsStream("dmason/resource/file/urlworker"));
 		while(in.hasNext())
 		{
 			String line=in.nextLine();
 			String[] args=line.split(":");
-			comboBox.addItem(args[0]);
-			combobox2.addItem(args[1]);
+			comboBoxServer.addItem(args[0]);
+			comboBoxPort.addItem(args[1]);
 			
 		}
 		
-		comboBox.setSelectedIndex(0);
-		combobox2.setSelectedIndex(0);
+		comboBoxServer.setSelectedIndex(0);
+		comboBoxPort.setSelectedIndex(0);
 	
 
 		GroupLayout contentPaneLayout = new GroupLayout(contentPane);
@@ -113,8 +121,8 @@ public class StartWorkerWithGui extends JFrame {
 									.addComponent(label1))
 								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 								.addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-									.addComponent(combobox2)
-									.addComponent(comboBox, 0, 119, Short.MAX_VALUE))
+									.addComponent(comboBoxPort)
+									.addComponent(comboBoxServer, 0, 119, Short.MAX_VALUE))
 								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 								.addGroup(contentPaneLayout.createParallelGroup()
 									.addGroup(contentPaneLayout.createSequentialGroup()
@@ -141,12 +149,12 @@ public class StartWorkerWithGui extends JFrame {
 						.addComponent(label1)
 						.addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 							.addComponent(button1)
-							.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(comboBoxServer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 					.addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 						.addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 							.addComponent(label2)
-							.addComponent(combobox2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addComponent(comboBoxPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 						.addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 							.addComponent(label3)
 							.addComponent(labelnumber)))
@@ -159,6 +167,45 @@ public class StartWorkerWithGui extends JFrame {
 		// JFormDesigner - End of component initialization  //GEN-END:initComponents
 	}
 
+	public JTextArea getTextArea() {
+		return textArea;
+	}
+
+
+	public void setTextArea(JTextArea textArea) {
+		this.textArea = textArea;
+	}
+
+
+	public JButton getButton1() {
+		return button1;
+	}
+
+
+	public void setButton1(JButton button1) {
+		this.button1 = button1;
+	}
+
+
+	public JComboBox getComboBoxPort() {
+		return comboBoxPort;
+	}
+
+
+	public void setComboBoxPort(JComboBox comboBoxPort) {
+		this.comboBoxPort = comboBoxPort;
+	}
+
+
+	public JComboBox getComboBoxServer() {
+		return comboBoxServer;
+	}
+
+
+	public void setComboBoxServer(JComboBox comboBoxServer) {
+		this.comboBoxServer = comboBoxServer;
+	}
+
 	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
 	// Generated using JFormDesigner Evaluation license - aaaa aaaa
 	private JScrollPane scrollPane1;
@@ -166,15 +213,23 @@ public class StartWorkerWithGui extends JFrame {
 	private JButton button1;
 	private JLabel label1;
 	private JLabel label2;
-	private JComboBox combobox2;
+	private JComboBox comboBoxPort;
 	private JLabel label3;
 	public JLabel labelnumber;
 	private JLabel label4;
-	private JComboBox comboBox;
+	private JComboBox comboBoxServer;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables
 	
 	public static void main(String[] args){
 		StartWorkerWithGui worker = new StartWorkerWithGui();
 		worker.setVisible(true);
+	}
+
+
+	@Override
+	public void writeMessage(String message) {
+	
+		textArea.append(message);
+		
 	}
 }
