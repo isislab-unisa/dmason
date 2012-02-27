@@ -237,7 +237,6 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 						tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
 						connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
 						tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
-						System.out.println("pubblico per cella con step"+tmp_zoom.STEP+" campo:"+NAME);
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
