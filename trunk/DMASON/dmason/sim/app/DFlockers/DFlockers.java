@@ -20,6 +20,7 @@ import sim.util.*;
 public class DFlockers extends DistributedState<Double2D>
 {
     public DContinuous2D flockers;
+    private static boolean isToroidal=true;
     public double width = 150;
     public double height = 150;
     public int numFlockers = 20;
@@ -57,88 +58,91 @@ public class DFlockers extends DistributedState<Double2D>
     public double gridHeight ;   
     public int MODE;
     
-  public DFlockers(Object[] params)
-  {    	
-	  super((Integer)params[2],(Integer)params[3],(Integer)params[4],(Integer)params[7],(Integer)params[8],(String)params[0],(String)params[1],(Integer)params[9],(Boolean)params[10],new DistributedMultiSchedule<Double2D>());
-	  ip = params[0]+"";
-	  port = params[1]+"";
-	  this.MODE=(Integer)params[9];
-	  gridWidth=(Integer)params[5];
-	  gridHeight=(Integer)params[6];
-  }    
-  public void start()
-  {
-        super.start();
-        
-        // set up the flockers field.  It looks like a discretization
-        // of about neighborhood / 1.5 is close to optimal for us.  Hmph,
-        // that's 16 hash lookups! I would have guessed that 
-        // neighborhood * 2 (which is about 4 lookups on average)
-        // would be optimal.  Go figure.
-        try 
-        {
-			flockers = DContinuous2DFactory.createDContinuous2D(neighborhood/1.5,gridWidth, gridHeight,this,
-			super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.NUMPEERS,MODE,"flockers");
-			init_connection();
-		} catch (DMasonException e) { e.printStackTrace(); }
-        
-        DFlocker f=new DFlocker(this,new Double2D(0,0));
-        int j=0;
-        while(flockers.size() != super.NUMAGENTS)
-        {
-        	f.setPos(flockers.setAvailableRandomLocation(f));
-        	if (random.nextBoolean(deadFlockerProbability)) f.dead = true;
-            
-            if(flockers.setDistributedObjectLocationForPeer(new Double2D(f.pos.getX(),f.pos.getY()), f, this))
-        	//if(flockers.setDistributedObjectLocation(new Double2D(f.pos.getX(),f.pos.getY()), f, this))
-            {
-            	Color c=new Color(
-            			128 + this.random.nextInt(128),
-            			128 + this.random.nextInt(128),
-            			128 + this.random.nextInt(128));
-            	f.setColor(c);
-            	schedule.scheduleOnce(f);
-            	f=new DFlocker(this,new Double2D(0,0));
-            }
-            
-            j++;
-       
-        }
-        
-  }
+    public DFlockers(Object[] params)
+    {    	
+    	super((Integer)params[2],(Integer)params[3],(Integer)params[4],(Integer)params[7],
+    			(Integer)params[8],(String)params[0],(String)params[1],(Integer)params[9],
+    			isToroidal,new DistributedMultiSchedule<Double2D>());
+    	ip = params[0]+"";
+    	port = params[1]+"";
+    	this.MODE=(Integer)params[9];
+    	gridWidth=(Integer)params[5];
+    	gridHeight=(Integer)params[6];
+    }    
+    
+    public void start()
+    {
+    	super.start();
 
-  public static void main(String[] args)
-  {
-	  doLoop(DFlockers.class, args);
-	  System.exit(0);
-  }
-	
-  public DistributedField getField() 
-  {
-	  return flockers;
-  }
-	
-  public void addToField(RemoteAgent rm, Double2D loc) 
-  {
-	  flockers.setObjectLocation(rm,loc);
-  }
-	
-  public SimState getState() 
-  {
-	  return this;
-  }
+    	// set up the flockers field.  It looks like a discretization
+    	// of about neighborhood / 1.5 is close to optimal for us.  Hmph,
+    	// that's 16 hash lookups! I would have guessed that 
+    	// neighborhood * 2 (which is about 4 lookups on average)
+    	// would be optimal.  Go figure.
+    	try 
+    	{
+    		flockers = DContinuous2DFactory.createDContinuous2D(neighborhood/1.5,gridWidth, gridHeight,this,
+    				super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.NUMPEERS,MODE,"flockers");
+    		init_connection();
+    	} catch (DMasonException e) { e.printStackTrace(); }
 
-  public boolean setPortrayalForObject(Object o) 
-  {
-	  if(flockers.p!=null)
-	  {
-		  DFlocker f=(DFlocker)o;
-		  SimplePortrayal2D pp = new AdjustablePortrayal2D(new MovablePortrayal2D(new OrientedPortrayal2D(new SimplePortrayal2D(),0,4.0,
-				  f.getColor(),
-				  OrientedPortrayal2D.SHAPE_COMPASS)));
-		  flockers.p.setPortrayalForObject(o, pp);
-	    return true;
-	  }
-	 return false;
-  }    
+    	DFlocker f=new DFlocker(this,new Double2D(0,0));
+    	int j=0;
+    	while(flockers.size() != super.NUMAGENTS)
+    	{
+    		f.setPos(flockers.setAvailableRandomLocation(f));
+    		if (random.nextBoolean(deadFlockerProbability)) f.dead = true;
+
+    		if(flockers.setDistributedObjectLocationForPeer(new Double2D(f.pos.getX(),f.pos.getY()), f, this))
+    			//if(flockers.setDistributedObjectLocation(new Double2D(f.pos.getX(),f.pos.getY()), f, this))
+    		{
+    			Color c=new Color(
+    					128 + this.random.nextInt(128),
+    					128 + this.random.nextInt(128),
+    					128 + this.random.nextInt(128));
+    			f.setColor(c);
+    			schedule.scheduleOnce(f);
+    			f=new DFlocker(this,new Double2D(0,0));
+    		}
+
+    		j++;
+
+    	}
+
+    }
+
+    public static void main(String[] args)
+    {
+    	doLoop(DFlockers.class, args);
+    	System.exit(0);
+    }
+
+    public DistributedField getField() 
+    {
+    	return flockers;
+    }
+	
+    public void addToField(RemoteAgent rm, Double2D loc) 
+    {
+    	flockers.setObjectLocation(rm,loc);
+    }
+
+    public SimState getState() 
+    {
+    	return this;
+    }
+
+    public boolean setPortrayalForObject(Object o) 
+    {
+    	if(flockers.p!=null)
+    	{
+    		DFlocker f=(DFlocker)o;
+    		SimplePortrayal2D pp = new AdjustablePortrayal2D(new MovablePortrayal2D(new OrientedPortrayal2D(new SimplePortrayal2D(),0,4.0,
+    				f.getColor(),
+    				OrientedPortrayal2D.SHAPE_COMPASS)));
+    		flockers.p.setPortrayalForObject(o, pp);
+    		return true;
+    	}
+    	return false;
+    }    
 }
