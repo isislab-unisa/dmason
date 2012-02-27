@@ -1,34 +1,40 @@
 package dmason.sim.engine;
 
-import java.io.Serializable;
 import sim.engine.Steppable;
-import sim.portrayal.simple.OvalPortrayal2D;
 
 /**
- * Abstract Class for Remote Steppable Objects that are aware 
- * about their position in 2D field. It contains also a unique identifier.
+ * Interface for a remote agent
+ *
+ * @param <E> 
  */
+public interface RemoteAgent<E> extends Steppable{
 
-public abstract class RemoteAgent<E> /*extends OvalPortrayal2D*/ implements Steppable,Serializable
-{
-	public E pos;
-	public String id;
 	
-    public  RemoteAgent(){}
-	
-    /**
-	 * @param state The Distributed State of simulation
+	/**
+	 * 
+	 * @return position on field of agent
 	 */
-    public RemoteAgent(DistributedState<E> state)
-	{
+	public E getPos() ; 
 	
-			int i=state.nextId();
-			this.id=state.getType().toString()+"-"+i;		
-	}
+	/**
+	 * set agent on position
+	 * 
+	 * @param pos position of 
+	 */
+	public void setPos(E pos) ; 
 	
-	//getters and setters
-	public E getPos() { return pos; }
-	public void setPos(E pos) { this.pos = pos; }
-	public String getId() {return id;	}
-	public void setId(String id) {this.id = id;}
+	/**
+	 * Return the id of an agent
+	 * 
+	 * @return
+	 */
+	public String getId();
+
+	/**
+	 * Set id of agent
+	 * 
+	 * @param id t
+	 */
+	public void setId(String id);
+	
 }
