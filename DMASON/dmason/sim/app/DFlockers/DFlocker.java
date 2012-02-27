@@ -9,14 +9,13 @@ import sim.portrayal.Orientable2D;
 import sim.util.*;
 import ec.util.*;
 
-public class DFlocker extends RemoteAgent<Double2D> implements Orientable2D
+public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
 {
     public Double2D loc = new Double2D(0,0);
     public Double2D lastd = new Double2D(0,0);
     public Color color;
     public boolean dead = false;
 
-    
     public DFlocker(){}
     public DFlocker(DistributedState<Double2D> sm,Double2D location) 
     { 
@@ -161,14 +160,8 @@ public class DFlocker extends RemoteAgent<Double2D> implements Orientable2D
 		lastd = new Double2D(dx,dy);
 		loc = new Double2D(flock.flockers.stx(loc.x + dx), flock.flockers.sty(loc.y + dy));
     	        
-		flock.flockers.setDistributedObjectLocation(loc, this, state);
-		
+		flock.flockers.setDistributedObjectLocation(loc, this, state);	
 	}
-	/*
-	public void setLoc(Double2D pos)
-	{
-		loc=pos;
-	}*/
 	
 	public Color getColor() 
 	{
