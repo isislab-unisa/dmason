@@ -2,8 +2,6 @@ package dmason.util.SystemManagement;
 
 import java.io.Serializable;
 
-
-
 public class StartUpData implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
@@ -94,7 +92,4 @@ public class StartUpData implements Serializable{
 		s.setParam(obj);
 		return s;
 	}
-	
-	
-
 }
