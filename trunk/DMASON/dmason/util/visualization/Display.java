@@ -525,8 +525,6 @@ public class Display  {
 					{
 						HashMap<String,Object> snaps = (HashMap<String,Object>)updates.getUpdates(STEP, numCell);
 						if(snaps==null){
-							System.out.println("Ripartoooooooooooo cerco step "+STEP+" ci sta?? "+updates.get(STEP));
-							System.out.println(" CI sta :");
 							for(Long k: updates.keySet())
 								System.out.print(" "+k+" ");
 							break;

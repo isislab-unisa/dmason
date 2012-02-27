@@ -212,17 +212,12 @@ public class ZoomViewer {
 		}
 		if(STEP!=null)
 		{
-			System.out.println("Rikiesta sincro per step "+STEP+" valore hash "+update.size());
-			hash=update.getUpdates(STEP);
-			System.out.println("Fine sincro per step "+STEP+" valore hash "+update.size());
-		
+			hash=update.getUpdates(STEP);		
 		}
 		else
 		{
-			System.out.println("Problemi nello step");
 			System.exit(-1);
 		}
-		System.out.println("Sincronizzazione completata per step "+STEP+" valore delle hash "+hash.size());
 		STEP++;
 		return hash;
 		
@@ -246,12 +241,10 @@ public class ZoomViewer {
 
 			while(tmp==null)
 			{
-				System.out.println("Round Wait per step "+step);
 				block.await();
 				tmp=this.get(step);
 			}
 			this.remove(step);
-			System.out.println("Rimozione per step "+step+" dimensione "+this.size());
 			
 			lock.unlock();
 			
@@ -260,13 +253,10 @@ public class ZoomViewer {
 		
 		public void putSblock(long step,Object d_reg)
 		{		
-			System.out.println("PRE PUT");
 			lock.lock();
 				super.put(step,(HashMap<String,Object>)d_reg);	
-				System.out.println("Sblocco per step "+step);
 			block.signal();	
 			lock.unlock();
-			System.out.println("POST PUT");
 		}
 		
 	}

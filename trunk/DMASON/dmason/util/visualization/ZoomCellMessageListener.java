@@ -30,7 +30,6 @@ public class ZoomCellMessageListener extends MyMessageListener
 			if( ((MyHashMap)parseMessage(arg0)).get("GRAPHICS"+zoom.id_cell) == null )
 			{
 					MyHashMap hash=((MyHashMap)parseMessage(arg0));
-					System.out.println("Ricevuto messaggio con dimensione hash "+hash.size());
 					Long step=null;
 					HashMap<String,Object> hh=new HashMap<String, Object>();
 					for(String key :zoom.fields.keySet())
@@ -41,7 +40,6 @@ public class ZoomCellMessageListener extends MyMessageListener
 							step=new Long(z_a.STEP);
 	
 						}
-					System.out.println("Inserisco aggiornamento per "+step);
 					if(zoom.STEP==null)
 					{
 						zoom.STEP=step;
