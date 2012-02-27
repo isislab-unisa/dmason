@@ -24,7 +24,5 @@ public class EntryVal <V,B>{
 	}
 	public void setFlag(boolean flag) {
 		this.flag = flag;
-	}
-	
-	
+	}	
 }
