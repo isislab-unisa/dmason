@@ -26,10 +26,8 @@ public class DAntsAgentUpdate extends Updater{
 		ants.buggrid.clear();
 		
 		try {
-		System.out.println("Pre sincro local step "+state.schedule.getSteps());
-		HashMap<String, Object> hash=zoom.synchronizedWithSimulation();
-		
-		System.out.println("Post sincro local step "+state.schedule.getSteps());
+
+			HashMap<String, Object> hash=zoom.synchronizedWithSimulation();
 		
 			ZoomArrayList sparse = (ZoomArrayList)hash.get("buggrid");
 			for(Object s : sparse)
