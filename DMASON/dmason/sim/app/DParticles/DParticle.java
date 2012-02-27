@@ -8,7 +8,7 @@ import dmason.sim.engine.RemoteAgent;
 
 /** A bouncing particle. */
 
-public class DParticle extends RemoteAgent<Int2D>
+public class DParticle extends RemoteParticle<Int2D>
 {
 	//public boolean randomize = false;
 	public int xdir;  // -1, 0, or 1
