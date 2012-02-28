@@ -77,9 +77,8 @@ A \textit{Particle} simply contains two integer parameters, \textit{xdir} and \t
 public class DParticle extends RemoteAgent<Int2D>
 {
    ...
-  public DParticle(){ }
-  public DParticle(DistributedState state)
-  {
+  public DParticle() { }
+  public DParticle(DistributedState state) {
      super(state);
   }
    ...
@@ -91,14 +90,12 @@ In order to distribute a MASON simulation it is necessary to change some parts o
 \lstset{language=Java,caption={Class Particle},label=particle2}
 \begin{lstlisting}
    ...
-  public void step(SimState state)
-  {
+  public void step(SimState state) {
    ...
-   if (randomize)
-   {
+   if (randomize) {
     xdir = tut.random.nextInt(3) - 1;
     ydir = tut.random.nextInt(3) - 1;
-	randomize = false;
+	  randomize = false;
    }
    ...
    // set my new location
@@ -107,8 +104,7 @@ In order to distribute a MASON simulation it is necessary to change some parts o
    
    // randomize everyone at that location if need be
    Bag p = tut.particles.getObjectsAtLocation(newloc);
-   if (p.numObjs > 1)
-   {
+   if (p.numObjs > 1) {
    for(int x=0;x<p.numObjs;x++)
        ((Particle)(p.objs[x])).randomize = true;
    }
