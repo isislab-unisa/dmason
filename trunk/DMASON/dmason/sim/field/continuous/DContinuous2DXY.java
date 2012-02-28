@@ -9,6 +9,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
+import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
 import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
@@ -148,7 +150,7 @@ public class DContinuous2DXY extends DContinuous2D
 		setConnection(((DistributedState)sm).getConnection());
 		
 		createRegion();		
-
+		System.out.println("Region "+cellType+" loaded..");
 	}
 	
 	/**
