@@ -18,11 +18,4 @@ public interface ConnectionWithJMS extends Connection{
 	
 	public void setTable(HashMap table);
 	
-	/*public boolean asynchronousReceiveToTriggerTopic(MyMessageListener arg1);
-	
-	public boolean subcribeToTriggerTopic() throws Exception;
-	
-	public boolean publishToTriggerTopic(Serializable arg) throws Exception;
-	
-	public boolean createTriggerTopic()throws Exception;*/
 }

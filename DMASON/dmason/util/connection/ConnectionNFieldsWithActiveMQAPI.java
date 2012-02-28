@@ -112,8 +112,7 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS,Seria
 				
 				ActiveMQObjectMessage msg ;
 				try{				
-					if(mytopic.equals("GRAPHICS1-1"))
-						System.out.println("Invio con numero "+mh.NUMBER_FIELDS);
+					
 						msg = (ActiveMQObjectMessage) pubSession.createObjectMessage(contObj.get(mytopic));
 						
 						publishers.get(mytopic).publish(topics.get(mytopic),msg);
@@ -163,8 +162,7 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS,Seria
 			ActiveMQTopicPublisher p = (ActiveMQTopicPublisher) pubSession.createPublisher(topic);
 			p.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 			publishers.put(arg,p);
-			if(arg.equals("GRAPHICS1-1"))
-				System.out.println("Creo hash con taglia "+numFields);
+			
 			return true;
 			
 		}catch (Exception e) {
