@@ -62,8 +62,6 @@ public class ZoomInCellMessageListener extends MyMessageListener
 								Long step= Long.parseLong(command.split("ZOOM_STEP")[1]);
 								schedule.monitor.putAck(step);
 							}
-							
-							System.out.println("Ricevuto comando di zoom step");
 						}
 						else
 							if(command.equals("EXIT_ZOOM"))
@@ -73,8 +71,6 @@ public class ZoomInCellMessageListener extends MyMessageListener
 									schedule.monitor.isZoom=false;
 									schedule.monitor.forceWakeUp();
 								}
-								
-								System.out.println("Ricevuto comando di exit_zoom");
 							}
 				
 				
