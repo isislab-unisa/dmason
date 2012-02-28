@@ -191,7 +191,7 @@ public /*strictfp*/ class AntsForageZoom extends SimState {
         	for( int x = 0 ; x < wh ; x++ )
                 for( int y = 0 ; y < ht ; y++ )
                 {
-                	if((x>=local_ux) && (y>=local_uy) && (x<local_dx) && (y<local_dy)){
+                	if((x>local_ux) && (y>local_uy) && (x<local_dx) && (y<local_dy)){
 	                    obstacles.field[x-local_ux][y-local_uy] = 0;
 	            		if( ((x-x1)*0.707+(y-y1)*0.707)*((x-x1)*0.707+(y-y1)*0.707)/a+
 	                			((x-x1)*0.707-(y-y1)*0.707)*((x-x1)*0.707-(y-y1)*0.707)/b <= 1 )
@@ -226,19 +226,17 @@ public /*strictfp*/ class AntsForageZoom extends SimState {
 
     
     // initialize the grid with the home and food sites
-        if((HXMIN>=local_ux) && (HYMIN>=local_uy) && (HXMAX<=local_dx) && (HXMAX<=local_dy)){
-		    for( int x = HXMIN ; x <= HXMAX ; x++ ){
-		    	for( int y = HYMIN ; y <= HYMAX ; y++ ){
-		    		if((x>=local_ux) && (y>=local_uy) && (x<=local_dx) && (y<=local_dy))
-		        		sites.field[x-local_ux][y-local_uy] = HOME;
+        if((HXMIN>=local_ux) && (HYMIN>=local_uy) && (HXMAX<local_dx) && (HYMAX<local_dy)){
+		    for( int x = (HXMIN-local_ux) ; x <= (HXMAX-local_ux) ; x++ ){
+		    	for( int y = (HYMIN-local_uy) ; y <= (HYMAX-local_uy) ; y++ ){
+		        		sites.field[x][y] = HOME;
 		    	}
 		    }
         }
-        if((FXMIN>=local_ux) && (FYMIN>=local_uy) && (FXMAX<=local_dx) && (FXMAX<=local_dy)){
-		    for( int x = FXMIN ; x <= FXMAX ; x++ )
-		        for( int y = FYMIN ; y <= FYMAX ; y++ )
-		        	if((x>=local_ux) && (y>=local_uy) && (x<=local_dx) && (y<=local_dy))
-		        		sites.field[x-local_ux][y-local_uy] = FOOD;
+        if((FXMIN>=local_ux) && (FYMIN>=local_uy) && (FXMAX<local_dx) && (FYMAX<local_dy)){
+		    for( int x = (FXMIN-local_ux) ; x <= (FXMAX-local_ux) ; x++ )
+		        for( int y = (FYMIN-local_uy) ; y <= (FYMAX-local_uy) ; y++ )
+		        		sites.field[x][y] = FOOD;
         }
 		//View Zoom in Central GUI
 
