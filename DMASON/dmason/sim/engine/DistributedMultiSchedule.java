@@ -1,23 +1,13 @@
 package dmason.sim.engine;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-
-
 import dmason.sim.field.DistributedField;
 import dmason.util.visualization.ViewerMonitor;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
-import sun.tools.tree.ThisExpression;
 
 
 /**
