@@ -144,7 +144,8 @@ public class DContinuous2DY extends DContinuous2D
 		
 		setConnection(((DistributedState)sm).getConnection());
 				
-		createRegion();		
+		createRegion();	
+		System.out.println("Region "+cellType+" loaded..");
 	}
 	/**
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
