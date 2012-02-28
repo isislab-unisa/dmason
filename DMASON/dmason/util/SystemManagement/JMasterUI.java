@@ -1,5 +1,5 @@
 package dmason.util.SystemManagement;
-import java.awt.Checkbox;
+
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -12,7 +12,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,7 +27,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -38,7 +36,6 @@ import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.connection.MyHashMap;
 import dmason.util.connection.MyMessageListener;
-import dmason.util.garbagecollector.Server;
 import dmason.util.garbagecollector.Start;
 import dmason.util.trigger.Trigger;
 import dmason.util.trigger.TriggerListener;
@@ -55,11 +52,9 @@ public class JMasterUI extends JFrame{
 	public JMasterUI() {
 		
 		initComponents();
-		//config = new HashMap<String, Integer>();
     	config = new HashMap<String, EntryVal<Integer,Boolean>>();
 		setTitle("JMasterUI");
 		initializeDefaultLabel();
-		//setSize(855,600);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setResizable(false);
 		starter = new Start();
@@ -67,8 +62,7 @@ public class JMasterUI extends JFrame{
 	}
 
 	private void initComponents() {
-		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-		limitStep = 1000;
+
 		menuBar1 = new JMenuBar();
 		jMenuFile = new JMenu();
 		//menuItemOpen = new JMenuItem();
@@ -255,7 +249,7 @@ public class JMasterUI extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				radioItemFlag = true;
 				jComboRegions.removeAllItems();
-				for(int i=2;i<=10;i++)
+				for(int i=2;i<=30;i++)
 					jComboRegions.addItem(i*i);
 				initializeDefaultLabel();
 				radioItemFlag = false;
@@ -1695,15 +1689,6 @@ public class JMasterUI extends JFrame{
 	private Start starter;
 	private Console c;		
 
-
-
-
-
-
-
-
-
-
 	private boolean dont=true;
 	private int MODE;
 	private Object WIDTH;
@@ -1724,7 +1709,6 @@ public class JMasterUI extends JFrame{
 	private JInternalFrame internalFrame1;
 	private JPanel panelConsole;
 
-	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
 	private JMenuBar menuBar1;
 	private JMenu jMenuFile;
 	//private JMenuItem menuItemOpen;
@@ -1793,9 +1777,6 @@ public class JMasterUI extends JFrame{
 	private PrintStream printer;
 	private int limitStep;
 	// fine codice profiling
-	// JFormDesigner - End of variables declaration  //GEN-END:variables
-
-
 
 	//getters and setters
 	public JRadioButton getRadioButtonHorizontal() {return radioButtonHorizontal;}
