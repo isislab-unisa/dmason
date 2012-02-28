@@ -16,15 +16,14 @@ public class Starter {
 		int NUM_PEERS=4;
 		int MAX_DISTANCE=10;
 		int NUM_AGENTS=10;
-		boolean isTOROIDAL = true;
 		int WIDTH=100;
 		int HEGHT=100;
 		//int MODE=DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
 		int MODE=DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
 		
 		//int TUTORIAL=1;
-		//int TUTORIAL=2;
-		int TUTORIAL=3;
+		int TUTORIAL=2;
+		//int TUTORIAL=3;
 		if(TUTORIAL==1)
 		if(MODE==DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE)
 		{
