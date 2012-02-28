@@ -77,7 +77,7 @@ public class LauncherViewer  {
 			comboNCell.addItem("4");
 			comboNCell.addItem("9");
 			comboNCell.addItem("16");
-			comboNCell.addItem("26");
+			comboNCell.addItem("25");
 			comboNCell.addItem("36");
 			comboNCell.addItem("49");
 			comboNCell.addItem("64");
