@@ -154,6 +154,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 		
 		createRegion();	
 		
+		System.out.println("Region "+cellType+" loaded..");
 	}
 	
 	
