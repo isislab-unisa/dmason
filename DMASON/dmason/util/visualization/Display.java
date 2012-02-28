@@ -524,12 +524,11 @@ public class Display  {
 					try 
 					{
 						HashMap<String,Object> snaps = (HashMap<String,Object>)updates.getUpdates(STEP, numCell);
-						if(snaps==null){
-							for(Long k: updates.keySet())
-								System.out.print(" "+k+" ");
-							break;
-						}
-						
+//						if(snaps==null){
+//							for(Long k: updates.keySet())
+//								System.out.print(" "+k+" ");
+//							break;
+//						}
 						BufferedImage tmpImage = 
 								new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 						String comboCell = (String)comboBoxCell.getSelectedItem();

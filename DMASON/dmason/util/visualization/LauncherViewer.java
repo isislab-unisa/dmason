@@ -66,7 +66,7 @@ public class LauncherViewer  {
         if(comboMode.getSelectedIndex()==0)
 		{
 			comboNCell.removeAllItems();
-			for (int i = 2; i < 100; i++) {
+			for (int i = 2; i <= 99; i++) {
 				
 				comboNCell.addItem(i+"");	
 			}
@@ -74,23 +74,22 @@ public class LauncherViewer  {
 		else
 		{
 			comboNCell.removeAllItems();
-			comboNCell.addItem("4");
-			comboNCell.addItem("9");
-			comboNCell.addItem("16");
-			comboNCell.addItem("25");
-			comboNCell.addItem("36");
-			comboNCell.addItem("49");
-			comboNCell.addItem("64");
-			comboNCell.addItem("81");
+			for (int i = 2; i <= 30; i++) {
+				comboNCell.addItem(i*i);
+			}
 		}
 	}
 
+	private void comboSimItemStateChanged(ItemEvent e) {
+
+	}
+	
 	private void comboNCellItemStateChanged(ItemEvent e) {
 		// TODO add your code here
 	}
 
 	private void initComponents() {
-		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+
 		LauncherViewer = new JFrame();
 		panelMain = new JPanel();
 		panelLabel = new JPanel();
@@ -261,7 +260,7 @@ public class LauncherViewer  {
 						//---- comboSim ----
 						comboSim.addItemListener(new ItemListener() {
 							public void itemStateChanged(ItemEvent e) {
-								comboModeItemStateChanged(e);
+								comboSimItemStateChanged(e);
 							}
 						});
 
