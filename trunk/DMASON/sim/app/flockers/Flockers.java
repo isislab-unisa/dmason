@@ -14,7 +14,7 @@ public class Flockers extends SimState
     public Continuous2D flockers;
     public double width = 1000;
     public double height = 1000;
-    public int numFlockers = 500000;
+    public int numFlockers = 10000;
     public double cohesion = 1.0;
     public double avoidance = 1.0;
     public double randomness = 1.0;
