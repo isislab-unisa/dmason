@@ -150,7 +150,6 @@ public class DContinuous2DXY extends DContinuous2D
 		setConnection(((DistributedState)sm).getConnection());
 		
 		createRegion();		
-		System.out.println("Region "+cellType+" loaded..");
 	}
 	
 	/**
