@@ -73,6 +73,7 @@ public class DParticles extends DistributedState<Int2D> {
             
         schedule.scheduleRepeating(Schedule.EPOCH,2,decreaser,1);
  
+        System.out.println("Simulation ready..");
     }
 
     public static void main(String[] args)
