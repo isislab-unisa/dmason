@@ -75,7 +75,7 @@ public class LauncherViewer  {
 		{
 			comboNCell.removeAllItems();
 			for (int i = 2; i <= 30; i++) {
-				comboNCell.addItem(i*i);
+				comboNCell.addItem(i*i+"");
 			}
 		}
 	}
