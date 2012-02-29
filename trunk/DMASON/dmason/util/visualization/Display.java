@@ -117,7 +117,7 @@ public class Display  {
 					try {
 					JOptionPane jpane = new JOptionPane();
 					ImageIcon icon = new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/zoomJOpt2.png"));
-					int i = JOptionPane.showConfirmDialog(null, "Do you want a synchronized zoom?", 
+					int i = JOptionPane.showConfirmDialog(null, "Do you want a synchronized zoom for cell "+cp.id+"?", 
 							"Select Option", JOptionPane.YES_NO_CANCEL_OPTION, 
 							JOptionPane.QUESTION_MESSAGE, icon);
 
