@@ -109,6 +109,7 @@ public class DFlockers extends DistributedState<Double2D>
 
     	}
 
+    	System.out.println("Simulation ready..");
     }
 
     public static void main(String[] args)
