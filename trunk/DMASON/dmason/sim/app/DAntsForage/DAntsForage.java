@@ -266,7 +266,8 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
     	{
     		public void step(SimState state) { toFoodGrid.multiply(evaporationConstant); toHomeGrid.multiply(evaporationConstant); }
     	}, 1);
-
+    	
+    	System.out.println("Simulation ready...");
     }
     static final long serialVersionUID = 9115981605874680023L;
     
