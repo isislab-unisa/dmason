@@ -123,8 +123,6 @@ public class DSparseGrid2DY extends DSparseGrid2D
 		setConnection(((DistributedState)sm).getConnection());
 
 		createRegion();		
-
-		System.out.println("Region "+cellType+" loaded..");
 	}
 	
 	/**
