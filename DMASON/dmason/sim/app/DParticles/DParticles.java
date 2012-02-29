@@ -73,7 +73,12 @@ public class DParticles extends DistributedState<Int2D> {
             
         schedule.scheduleRepeating(Schedule.EPOCH,2,decreaser,1);
  
-        System.out.println("Simulation ready..");
+    	try {
+			getTrigger().publishToTriggerTopic("Simulation cell "+particles.cellType+" ready...");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     public static void main(String[] args)

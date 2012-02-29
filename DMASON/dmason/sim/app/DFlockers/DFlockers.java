@@ -109,7 +109,12 @@ public class DFlockers extends DistributedState<Double2D>
 
     	}
 
-    	System.out.println("Simulation ready..");
+    	try {
+			getTrigger().publishToTriggerTopic("Simulation cell "+flockers.cellType+" ready...");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     public static void main(String[] args)
