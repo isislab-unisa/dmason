@@ -18,9 +18,9 @@ public class Tutorial3 extends SimState
     public DoubleGrid2D trails;
     public SparseGrid2D particles;
     
-    public int gridWidth = 1000;
-    public int gridHeight = 1000;
-    public int numParticles = 350000;
+    public int gridWidth = 100;
+    public int gridHeight = 100;
+    public int numParticles = 400;
     
     public Tutorial3(long seed)
         {
@@ -38,7 +38,7 @@ public class Tutorial3 extends SimState
         for(int i=0 ; i<numParticles ; i++)
             {
             p = new Particle(random.nextInt(3) - 1, random.nextInt(3) - 1);  // random direction
-            //schedule.scheduleRepeating(p);
+            schedule.scheduleRepeating(p);
             int x=random.nextInt(gridWidth);
             int y=random.nextInt(gridHeight);
             particles.setObjectLocation(p,
