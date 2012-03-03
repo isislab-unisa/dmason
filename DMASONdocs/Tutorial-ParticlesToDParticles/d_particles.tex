@@ -45,15 +45,15 @@ The starting point is the package \textbf{Particles} is composed by three classe
 \end{itemize}
 
 Similarly, in D-MASON, there will be the package \textbf{DParticles} containing the following classes:
-
 \begin{itemize}
-	\item \textbf{DParticle:} it implements the \textit{distributed} agent that will be simulated by the application.
+	\item \textbf{RemoteParticle:} it is an abstract class, implementing \textit{RemoteAgent} and containing the remote ID of the agent in the field and its position. 
+	\item \textbf{DParticle:} it extends \textit{RemoteParticle} and implements the \textit{distributed} agent that will be simulated by the application.
 	\item \textbf{DParticles:} it represents the \textit{distributed} simulation environment: it allows to run the simulation from the command line without using a GUI.
 	\item \textbf{DParticlesWithUI:} it allows to run simulations with a GUI that is aware of the \textit{distributed} environment.
 \end{itemize}
 
 \subsection{From Particle to DParticle}
-The original \textbf{Particle} has to implement the \textit{Steppable} interface and, in particular, the method \textit{step()}, containing the agent logic. In the same way \textit{DParticle} has to extend the abstract class \textit{RemoteAgent}, that is the D-MASON interface containing the necessary logic for the distributed agent. 
+The original \textbf{Particle} has to implement the \textit{Steppable} interface and, in particular, the method \textit{step()}, containing the agent logic. In the same way \textit{RemoteParticle} is an abstract class that has to implement \textit{RemoteAgent}, that is the D-MASON interface containing the necessary logic for the distributed agent. Finally \textit{DParticle} extends \textit{RemoteParticle} and implements the logic of the agent.
 
 \textit{RemoteAgent} is parameterized with an \textit{Int2D} object-type because, in this simulation, the field has this specific type to indicate locations, and allows programmers to set, for each agent, an unique identifier and a field position.
 A \textit{Particle} simply contains two integer parameters, \textit{xdir} and \textit{ydir}, for setting the initial direction that the particle will move along.
@@ -74,15 +74,17 @@ A \textit{Particle} simply contains two integer parameters, \textit{xdir} and \t
 
 \lstset{language=Java,caption={Class DParticle},label=dparticle1}
 \begin{lstlisting}
-public class DParticle extends RemoteAgent<Int2D>
+public class DParticle extends RemoteParticle<Int2D>
 {
-   ...
-  public DParticle() { }
-  public DParticle(DistributedState state) {
+   public int xdir;  // -1, 0, or 1
+   public int ydir;  // -1, 0, or 1
+
+   public DParticle(){ }
+   
+   public DParticle(DistributedState state)
+   {
      super(state);
-  }
-   ...
-}
+   }
 \end{lstlisting}
 
 In order to distribute a MASON simulation it is necessary to change some parts of the agent logic. In the original MASON version each particle, on each step, performs a collision avoidance routine by checking whether the location it is moving to is already occupied by another particle or not. 
@@ -112,30 +114,32 @@ In order to distribute a MASON simulation it is necessary to change some parts o
 }
 \end{lstlisting}
 
-The distributed version is slightly different because it first check if the new location is occupied and, in this case, it randomize its direction and move to the new location by using the method \textit{setDistributedObjectLocation}.
+The distributed version is slightly different because it first check if the new location is occupied and, in this case, it randomizes its direction and move to the new location by using the method \textit{setDistributedObjectLocation}.
 
 %In a distributed environment different particles cannot do this check in different steps, as in the original version, but they first check for collision, using the same MASON method, then they set the new field location, using \textit{setDistributedObjectLocation}. 
 
 \lstset{language=Java,caption={Class DParticle},label=dparticle2}
 \begin{lstlisting}
-   ...
-  public void step(SimState state) 
-  {
-   DParticles tut = (DParticles)state;
-   ...
-   Bag p = tut.particles.getObjectsAtLocation(location);
-   ...
-   // Randomize my direction if requested
-   if (p.numObjs > 1)
-   {
-     xdir = tut.random.nextInt(3) - 1;
-     ydir = tut.random.nextInt(3) - 1;
-   }
-   ...
-   // set my new location
-   Int2D newloc = new Int2D(newx,newy);
-   tut.particles.setDistributedObjectLocation(newloc, this, state);	
-  }
+public void step(SimState state)
+{
+ DParticles tut = (DParticles)state;
+ Int2D location = tut.particles.getObjectLocation(this);
+ Bag p = tut.particles.getObjectsAtLocation(location);
+ tut.trails.setDistributedObjectLocation(1.0, location,state);
+ if (p.numObjs > 1)
+ {
+   xdir = tut.random.nextInt(3) - 1; 
+   ydir = tut.random.nextInt(3) - 1;
+ }
+ int newx = location.x + xdir;
+ int newy = location.y + ydir;
+ if (newx < 0) { newx++; xdir = -xdir; } 
+ else if (newx >= tut.trails.getWidth()) {newx--; xdir = -xdir; }
+ if (newy < 0) { newy++ ; ydir = -ydir; }
+ else if (newy >= tut.trails.getHeight()) {newy--; ydir = -ydir; }
+ Int2D newloc = new Int2D(newx,newy);
+ tut.particles.setDistributedObjectLocation(newloc, this, state);
+ }
 }
 \end{lstlisting}
 
@@ -179,98 +183,143 @@ public class Particles extends SimState  {
 \lstset{language=Java,caption={Class DParticles},label=dparticles}
 \begin{lstlisting}
 public class DParticles extends DistributedState<Int2D> {
-  public DSparseGrid2D particles;
-  public DoubleGrid2D trails;
-  public int gridWidth ;
-  public int gridHeight ;
-  public int MODE;
-	
-  public DParticles(Object[] params) {
-    super((Integer)params[2],(Integer)params[3],
-         (Integer)params[4],(Integer)params[7],
-         (Integer)params[8]);
-    ip = params[0] + "";
-    port = params[1] + "";
-    this.MODE = (Integer)params[9];
-    gridWidth = (Integer)params[5];
-    gridHeight = (Integer)params[6];
-  }
-  
-  public void start() {
-    ...
-    try {
-      particles = DSparseGrid2DFactory.createDSparseGrid2d(
-	      gridHeight,this,super.MAX_DISTANCE,
-      	TYPE.pos_i,TYPE.pos_j,super.NUMPEERS,MODE);
-    } catch (DMasonException e) { 
-    	e.printStackTrace();
-    }
-    ...
-    while(particles.size() != super.NUMAGENTS) {
-      particles.setAvailableRandomLocation(p);
-      ...
-      schedule.scheduleOnce(schedule.getTime()+1.0,p);
-      ...
-    }
-	...
-  }
-  public DistributedField getField() { return particles; }
-  public SimState getState() { return this; }
-  public void addToField(RemoteAgent<Int2D> rm,Int2D loc) {
-      particles.setObjectLocation(rm, loc);
-  }
-  public boolean setPortrayalForObject(Object o) { 
-      return false; }
+private static boolean isToroidal=false;
+public DSparseGrid2D particles;
+public DDoubleGrid2D trails;
+public int gridWidth ;
+public int gridHeight ;
+public int MODE;
+
+public DParticles(Object[] params)
+{
+ super((Integer)params[2],(Integer)params[3],(Integer)params[4],
+ (Integer)params[7], (Integer)params[8], (String)params[0],
+ (String)params[1],(Integer)params[9], isToroidal,
+ new DistributedMultiSchedule<Int2D>());
+ ip = params[0]+"";
+ port = params[1]+"";
+ this.MODE=(Integer)params[9];
+ gridWidth=(Integer)params[5];
+ gridHeight=(Integer)params[6];
 }
+
+public void start()
+{
+ super.start();
+ try
+{
+ trails = DDoubleGrid2DFactory.createDDoubleGrid2D(gridWidth,
+  gridHeight, this, super.MAX_DISTANCE, TYPE.pos_i,
+  TYPE.pos_j, super.NUMPEERS, MODE,0, false, "trails");
+
+ particles = DSparseGrid2DFactory.createDSparseGrid2d(gridWidth,
+  gridHeight, this, 
+  super.MAX_DISTANCE, TYPE.pos_i,
+  TYPE.pos_j,super.NUMPEERS,MODE, "particles");
+
+ init_connection();
+}catch (DMasonException e) { e.printStackTrace();}
+ DParticle p=new DParticle(this);
+ while(particles.size() != super.NUMAGENTS)
+{
+ particles.setAvailableRandomLocation(p);
+ p.xdir = random.nextInt(3)-1;
+ p.ydir = random.nextInt(3)-1;
+ if(particles.setDistributedObjectLocationForPeer(new Int2D
+   (p.pos.getX(),p.pos.getY()), p, this))
+ {
+ schedule.scheduleOnce(schedule.getTime()+1.0,p);
+ if(particles.size() != super.NUMAGENTS)
+ p=new DParticle(this);
+ }
+}
+ Steppable decreaser = new Steppable()
+{
+ public void step(SimState state)
+{
+ trails.multiply(0.9);
+}
+ static final long serialVersionUID = 6330208160095250478L;
+};
+ schedule.scheduleRepeating(Schedule.EPOCH,2,decreaser,1);
+try
+{
+ getTrigger().publishToTriggerTopic("Simulation cell "+particles.cellType+" ready...");
+ } catch (Exception e) {
+ e.printStackTrace();
+ }
+}
+
+public static void main(String[] args)
+{
+ doLoop(DParticles.class, args);
+ System.exit(0);
+}
+static final long serialVersionUID = 9115981605874680023L;
+
+public DistributedField getField()
+{
+ return particles;
+}
+
+public SimState getState()
+{
+ return this;
+}
+
+public void addToField(RemoteAgent<Int2D> rm,Int2D loc)
+{
+ particles.setObjectLocation(rm, loc);
+}
+
+public boolean setPortrayalForObject(Object o)
+ {
+ return false;
+ }
+}
+
 \end{lstlisting}
 
 \subsection{From ParticlesWithUI to DParticlesWithUI}
 \begin{figure}
-	\centering
-		\includegraphics[width=0.4\textwidth,bb=0 0 470 520]{particles-h.png}	
-		\includegraphics[width=0.4\textwidth,bb=0 0 470 520]{particles-m.png}
-		\caption{Respectively \textit{HORIZONTAL} and \textit{SQUARE} partition mode.}
-	\label{fig:dp01}
+\centering
+\includegraphics[width=0.4\textwidth,bb=0 0 470 520]{particles-h.png} 
+\includegraphics[width=0.4\textwidth,bb=0 0 470 520]{particles-m.png}
+\caption{Respectively \textit{HORIZONTAL} and \textit{SQUARE} partition mode.}
+\label{fig:dp01}
 \end{figure}
-
 There are few differences between origianl \textit{ParticlesWithUI} and the its distributed version, \textit{DParticlesWithUI}. They both extend the class \textit{GUIState}, responsible of instantiating all graphics elements; \textit{DParticlesWithUI} has a constructor for passing to \textit{DParticles} the objects array and it has to store in a \textit{String} the \textit{region} identifier, in order to show which region it is simulating (e.g. \textit{0-0} means the upper-left part of the grid partitioned field).
-
 \lstset{language=Java,caption={Class ParticlesWithUI},label=particleswui}
 \begin{lstlisting}
 public class ParticlesWithUI extends GUIState {
-  ...
-  public static void main(String[] args) {
-   ParticlesWithUI t = new ParticlesWithUI();
-   t.createController();
-  }
-  
-  public ParticlesWithUI() { 
-  	super(new Tutorial3(System.currentTimeMillis()));
-  }
-  
-  public ParticlesWithUI(SimState state){
-  	super(state);
-  }
-  ...
+...
+public static void main(String[] args) {
+ParticlesWithUI t = new ParticlesWithUI();
+t.createController();
+}
+public ParticlesWithUI() { 
+super(new Tutorial3(System.currentTimeMillis()));
+}
+public ParticlesWithUI(SimState state){
+super(state);
+}
+...
 }
 \end{lstlisting}
 \medskip
-
 \lstset{language=Java,caption={Class \texttt{DParticlesWithUI}},label=dparticleswui}
 \begin{lstlisting}
 public class DParticlesWithUI extends GUIState {
-  ...
-  public static String name;
-  ...
-  public DParticlesWithUI(Object[] args) {
-    super(new DParticles(args));
-    name = String.valueOf(
-    	args[7])+""+(String.valueOf(args[8]));
-  }
-  
-  public static String getName() { return "Peer: <"+name+">"; }
-  ...
+...
+public static String name;
+...
+public DParticlesWithUI(Object[] args) {
+super(new DParticles(args));
+name = String.valueOf(
+args[7])+""+(String.valueOf(args[8]));
 }
-
+public static String getName() { return "Peer: <"+name+">"; }
+...
+}
 \end{lstlisting}
 \end{document}
