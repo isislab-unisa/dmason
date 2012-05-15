@@ -10,6 +10,7 @@ import java.io.Serializable;
  */
 public class DistributedRegion<E,F> implements Serializable, DistributedRegionInterface
 {
+	// Valid values for <code>position</code>
 	public static int LEFT=1;
 	public static int RIGHT=2;
 	public static int UP=3;
@@ -20,7 +21,7 @@ public class DistributedRegion<E,F> implements Serializable, DistributedRegionIn
 	public static int CORNER_DIAG_UP_RIGHT=7;
 	public static int CORNER_DIAG_UP_LEFT=8;
 	
-	public int POSITION;
+	public int position;
 	
 	//the regions swapped
 	public Region<E,F> mine;
@@ -29,14 +30,22 @@ public class DistributedRegion<E,F> implements Serializable, DistributedRegionIn
 	public long step;
 	public CellType type;
 	
-	public DistributedRegion(Region<E,F> mine, Region<E,F> out,long step,CellType type,int position) 
+	/**
+	 * Creates a new region used for swapping.
+	 * @param mine The <i>mine</i> region relative to the cell <code>type</code>.
+	 * @param out The <i>out</i> region relative to the cell <code>type</code>.
+	 * @param step Simulation step at which this region is referring.
+	 * @param type Identifies the cell that created this region.
+	 * @param position Specify the position of this cell relative to the cell <code>type</code>.
+	 */
+	public DistributedRegion(Region<E,F> mine, Region<E,F> out, long step, CellType type, int position) 
 	{
 		super();
 		this.mine = mine.clone();
 		this.out = out.clone();
 		this.step = step;
 		this.type = type;
-		this.POSITION=position;
+		this.position = position;
 	}
 	
 	//getters and setters
@@ -51,8 +60,5 @@ public class DistributedRegion<E,F> implements Serializable, DistributedRegionIn
 	public void settype(CellType type) { this.type = type; }
 
 	@Override
-	public int getPosition() {
-		// TODO Auto-generated method stub
-		return POSITION;
-	}
+	public int getPosition() { return position; }
 }

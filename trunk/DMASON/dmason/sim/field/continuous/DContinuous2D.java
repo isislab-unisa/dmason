@@ -39,17 +39,45 @@ import dmason.util.connection.ProxyConnection;
  */
 public abstract class DContinuous2D extends Continuous2D  implements DistributedField<Double2D>
 {
-	// --> instance variables
+	/**
+	 * Stores the coordinates of this distributed field relative to the
+	 * global field. For instance, assume a global field sized 200x100 units
+	 * (width * height). If we split the global field in two distributed field,
+	 * we'll obtain a field with <code>cellType</code> 0-0 and a field with
+	 * <code>cellType</code> 0-1, each sized 100x100 units. Please note that
+	 * a <code>cellType</code> i-j means that the cell is at coordinates (i, j),
+	 * where <i>i</i> is the row number, <i>j</i> is the column number.
+	 */
 	public CellType cellType;
-	public int NUMPEERS;	//the number od peers involved in the simulation
-	public double own_x;	//x coordinate of north-west corner
-	public double own_y;	//y coordinate of north-west corner
+	
+	/**
+	 * The number of peers involved in the simulation.
+	 */
+	public int numPeers;
+	
+	/**
+	 * x coordinate of north-west corner.
+	 */
+	public double own_x;
+
+	/**
+	 * y coordinate of north-west corner.
+	 */
+	public double own_y;
+	
+	/**
+	 * This field's width.
+	 */
 	public double my_width;
+	
+	/**
+	 * This field's height.
+	 */
 	public double my_height;
 	public RegionDouble myfield;
 	public RegionMap<Double,Double2D> rmap=new RegionMap<Double,Double2D>();
 	public ArrayList<Region<Double, Double2D>> updates_cache;
-	public int MAX_DISTANCE;
+	public int jumpDistance;
 	public UpdateMap<Double,Double2D> updates=new UpdateMap<Double,Double2D>();
     public SimState sm ;
     public ConnectionWithJMS connection=new ConnectionNFieldsWithActiveMQAPI();
