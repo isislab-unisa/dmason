@@ -7,7 +7,15 @@ import java.io.Serializable;
  */
 public class CellType implements Serializable
 {
-	public int pos_i,pos_j;
+	/**
+	 * i position in a 2D field
+	 */
+	public int pos_i;
+	
+	/**
+	 * j position in a 2D field
+	 */
+	public int pos_j;
 	
 	/**
 	 * @param pos_i i position in a 2D field

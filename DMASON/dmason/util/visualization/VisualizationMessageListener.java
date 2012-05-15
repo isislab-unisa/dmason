@@ -1,15 +1,10 @@
 package dmason.util.visualization;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import javax.jms.JMSException;
 
 import dmason.util.connection.MyHashMap;
 import dmason.util.connection.MyMessageListener;
 /**
  *	A Listener for the messages swapped among the peers.
- * @param <E> the type of coordinates
- * @param <F> the type of locations
  */
 public class VisualizationMessageListener extends MyMessageListener
 {	

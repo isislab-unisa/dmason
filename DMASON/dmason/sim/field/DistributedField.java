@@ -19,6 +19,7 @@ public interface DistributedField<E> extends Serializable
 	/**
 	 * 	This method provides the synchronization in the distributed environment.
 	 * 	It's called after every step of schedule.
+	 * @return true if the synchronization was successful.
 	 */
 	public boolean synchro();
 	

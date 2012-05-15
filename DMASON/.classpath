@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="libraries/quaqua-colorchooser-only-for-osx.jar"/>
 	<classpathentry kind="lib" path="libraries/slf4j-jdk14-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libraries/activemq-all-5.5.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/MASON"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

@@ -5,27 +5,47 @@ import java.util.ArrayList;
 
 import dmason.sim.field.CellType;
 
-/** This interface abstracts a communication-layer using publish/subscribe paradigm.
- Anyone can implement these methods using a preferred way to communicate.*/
+/**
+ * This interface abstracts a communication-layer using publish/subscribe paradigm.
+ * Anyone can implement these methods using a preferred way to communicate.
+ */
 public interface Connection {
 	
-	/** Setup the connection with a server,a provider,a node managing the communication... */
-	public boolean setupConnection(Address arg) throws Exception;
+	/**
+	 * Estabilishes a connection with a provider located at given address.
+	 * @param providerAddr Address of the provider.
+	 */
+	public boolean setupConnection(Address providerAddr) throws Exception;
 	
-	/** Create an identifier to physical topic using the given string */
-	public boolean createTopic(String arg, int numFields) throws Exception;
+	/**
+	 * Create an identifier to physical topic using the given string. 
+	 */
+	public boolean createTopic(String topicName, int numFields) throws Exception;
 	
-	/** publish a Serializable object,to allow type-freedom, on a topic */
-	public boolean publishToTopic(Serializable arg,String mytopic, String name) throws Exception;
+	/**
+	 * Write a Serializable object to a topic. Using the generic type
+	 * Serializable  allows from type indipendency.
+	 * @param object The Serializable object to publish.
+	 * @param topicName The name of the topic where <code>obejct</code> will be published.
+	 * @param key A string associated to the <code>object</code>.
+	 */
+	public boolean publishToTopic(Serializable object, String topicName, String key) throws Exception;
 	
-	/** Subscribe the client to the topic named with the peer. */
-	public boolean subscribeToTopic(String arg)throws Exception;
+	/**
+	 * Subscribes the peer to a topic named as the given string.
+	 * @param topicName Name of the topic to subscribe to.
+	 */
+	public boolean subscribeToTopic(String topicName) throws Exception;
 	
-	/** Allow client to to receive in asynchronous way messages. */
-	public boolean asynchronousReceive(String arg);
+	/**
+	 * Allow client to to receive messages asynchronously.
+	 * @param key A string associated to the object to receive.
+	 */
+	public boolean asynchronousReceive(String key);
 	
-	/** Return the list of activate topics. */
-	public ArrayList<String> getTopicList()throws Exception;
-
+	/**
+	 * Retrieves the list of active topics on the provider.
+	 */
+	public ArrayList<String> getTopicList() throws Exception;
 
 }

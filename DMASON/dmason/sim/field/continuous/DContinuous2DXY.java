@@ -105,7 +105,7 @@ public class DContinuous2DXY extends DContinuous2D
 {	
 	
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
-	private String NAME;
+	private String name;
 	private BufferedImage actualSnap;
 	private WritableRaster writer;
 	private int white[]={255,255,255};
@@ -128,15 +128,14 @@ public class DContinuous2DXY extends DContinuous2D
 	 * @param j j position in the field of the cell
 	 * @param num_peers number of the peers
 	 */
-		public DContinuous2DXY(double discretization, double width, double height
-			,SimState sm,int max_distance,int i,int j,int num_peers, String name) {
+	public DContinuous2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int num_peers, String name) {
 		super(discretization, width, height);
-		this.sm=sm;	
-		MAX_DISTANCE=max_distance;
-		NUMPEERS=num_peers;	
-		cellType = new CellType(i, j);
-		updates_cache=new ArrayList<Region<Double,Double2D>>();
-		this.NAME = name;
+		this.sm = sm;	
+		this.jumpDistance = max_distance;
+		this.numPeers = num_peers;	
+		this.cellType = new CellType(i, j);
+		this.updates_cache = new ArrayList<Region<Double,Double2D>>();
+		this.name = name;
 		
 		/*
 		try {
@@ -159,12 +158,12 @@ public class DContinuous2DXY extends DContinuous2D
 	private boolean createRegion()
 	{		
 		//upper left corner's coordinates
-		own_x=(width/((int)Math.sqrt(NUMPEERS)))* cellType.pos_j; //inversione
-		own_y=(height/((int)Math.sqrt(NUMPEERS)))* cellType.pos_i;
+		own_x=(width/((int)Math.sqrt(numPeers)))* cellType.pos_j; //inversione
+		own_y=(height/((int)Math.sqrt(numPeers)))* cellType.pos_i;
 		
 		// own width and height
-		my_width=(int) (width/Math.sqrt(NUMPEERS));
-		my_height=(int) (height/Math.sqrt(NUMPEERS));
+		my_width=(int) (width/Math.sqrt(numPeers));
+		my_height=(int) (height/Math.sqrt(numPeers));
 		
 		//calculating the neighbors
 		for (int k = -1; k <= 1; k++) 
@@ -173,7 +172,7 @@ public class DContinuous2DXY extends DContinuous2D
 			{				
 				int v1=cellType.pos_i+k;
 				int v2=cellType.pos_j+k2;
-				if(v1>=0 && v2 >=0 && v1<Math.sqrt(NUMPEERS) && v2<Math.sqrt(NUMPEERS))
+				if(v1>=0 && v2 >=0 && v1<Math.sqrt(numPeers) && v2<Math.sqrt(numPeers))
 					if( v1!=cellType.pos_i || v2!=cellType.pos_j)
 					{
 						neighborhood.add(v1+""+v2);
@@ -186,50 +185,50 @@ public class DContinuous2DXY extends DContinuous2D
 		
 		// Building the regions
 		
-		myfield=new RegionDouble(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE , own_y+my_height-MAX_DISTANCE,width,height);
+		myfield=new RegionDouble(own_x+jumpDistance,own_y+jumpDistance, own_x+my_width-jumpDistance , own_y+my_height-jumpDistance,width,height);
 		
 		//corner up left
-		rmap.corner_out_up_left_diag=new RegionDouble((own_x-MAX_DISTANCE + width)%width, (own_y-MAX_DISTANCE+height)%height, 
+		rmap.corner_out_up_left_diag=new RegionDouble((own_x-jumpDistance + width)%width, (own_y-jumpDistance+height)%height, 
 				(own_x+width)%width, (own_y+height)%height,width,height);
 		rmap.corner_mine_up_left=new RegionDouble(own_x, own_y, 
-				own_x+MAX_DISTANCE, own_y+MAX_DISTANCE,width,height);
+				own_x+jumpDistance, own_y+jumpDistance,width,height);
 					
 		//corner up right
-		rmap.corner_out_up_right_diag = new RegionDouble((own_x+my_width+width)%width, (own_y-MAX_DISTANCE+height)%height,
-				(own_x+my_width+MAX_DISTANCE+width)%width, (own_y+height)%height,width,height);
-		rmap.corner_mine_up_right=new RegionDouble(own_x+my_width-MAX_DISTANCE, own_y, 
-				own_x+my_width, own_y+MAX_DISTANCE,width,height);
+		rmap.corner_out_up_right_diag = new RegionDouble((own_x+my_width+width)%width, (own_y-jumpDistance+height)%height,
+				(own_x+my_width+jumpDistance+width)%width, (own_y+height)%height,width,height);
+		rmap.corner_mine_up_right=new RegionDouble(own_x+my_width-jumpDistance, own_y, 
+				own_x+my_width, own_y+jumpDistance,width,height);
 		
 		//corner down left
-		rmap.corner_out_down_left_diag=new RegionDouble((own_x-MAX_DISTANCE+width)%width, (own_y+my_height+height)%height,
-				(own_x+width)%width,(own_y+my_height+MAX_DISTANCE+height)%height,width,height);
-		rmap.corner_mine_down_left=new RegionDouble(own_x, own_y+my_height-MAX_DISTANCE,
-				own_x+MAX_DISTANCE, own_y+my_height,width,height);
+		rmap.corner_out_down_left_diag=new RegionDouble((own_x-jumpDistance+width)%width, (own_y+my_height+height)%height,
+				(own_x+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
+		rmap.corner_mine_down_left=new RegionDouble(own_x, own_y+my_height-jumpDistance,
+				own_x+jumpDistance, own_y+my_height,width,height);
 		
 		//corner down right
 		rmap.corner_out_down_right_diag=new RegionDouble((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
-				(own_x+my_width+MAX_DISTANCE+width)%width,(own_y+my_height+MAX_DISTANCE+height)%height,width,height);
-		rmap.corner_mine_down_right=new RegionDouble(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE,
+				(own_x+my_width+jumpDistance+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
+		rmap.corner_mine_down_right=new RegionDouble(own_x+my_width-jumpDistance, own_y+my_height-jumpDistance,
 				own_x+my_width,own_y+my_height,width,height);
 					
-		rmap.left_out=new RegionDouble((own_x-MAX_DISTANCE+width)%width,(own_y+height)%height,
+		rmap.left_out=new RegionDouble((own_x-jumpDistance+width)%width,(own_y+height)%height,
 				(own_x+width)%width, ((own_y+my_height)+height)%height,width,height);
 		rmap.left_mine=new RegionDouble(own_x,own_y,
-				own_x + MAX_DISTANCE , own_y+my_height,width,height);
+				own_x + jumpDistance , own_y+my_height,width,height);
 		
 		rmap.right_out=new RegionDouble((own_x+my_width+width)%width,(own_y+height)%height,
-				(own_x+my_width+MAX_DISTANCE+width)%width, (own_y+my_height+height)%height,width,height);
-		rmap.right_mine=new RegionDouble(own_x + my_width - MAX_DISTANCE,own_y,
+				(own_x+my_width+jumpDistance+width)%width, (own_y+my_height+height)%height,width,height);
+		rmap.right_mine=new RegionDouble(own_x + my_width - jumpDistance,own_y,
 				own_x +my_width , own_y+my_height,width,height);
 		
-		rmap.up_out=new RegionDouble((own_x+width)%width, (own_y - MAX_DISTANCE+height)%height,
+		rmap.up_out=new RegionDouble((own_x+width)%width, (own_y - jumpDistance+height)%height,
 				(own_x+ my_width +width)%width,(own_y+height)%height,width,height);
 		rmap.up_mine=new RegionDouble(own_x ,own_y,
-				own_x+my_width, own_y + MAX_DISTANCE ,width,height);
+				own_x+my_width, own_y + jumpDistance ,width,height);
 		
 		rmap.down_out=new RegionDouble((own_x+width)%width,(own_y+my_height+height)%height,
-				(own_x+my_width+width)%width, (own_y+my_height+MAX_DISTANCE+height)%height,width,height);
-		rmap.down_mine=new RegionDouble(own_x,own_y+my_height-MAX_DISTANCE,
+				(own_x+my_width+width)%width, (own_y+my_height+jumpDistance+height)%height,width,height);
+		rmap.down_mine=new RegionDouble(own_x,own_y+my_height-jumpDistance,
 				own_x+my_width, (own_y+my_height),width,height);
 			
 		return true;
@@ -287,8 +286,8 @@ public class DContinuous2DXY extends DContinuous2D
 	{
 		double shiftx=((DistributedState)sm).random.nextDouble();
 		double shifty=((DistributedState)sm).random.nextDouble();
-		double x=(own_x+MAX_DISTANCE)+((my_width+own_x-MAX_DISTANCE)-(own_x+MAX_DISTANCE))*shiftx;
-        double y=(own_y+MAX_DISTANCE)+((my_height+own_y-MAX_DISTANCE)-(own_y+MAX_DISTANCE))*shifty;
+		double x=(own_x+jumpDistance)+((my_width+own_x-jumpDistance)-(own_x+jumpDistance))*shiftx;
+        double y=(own_y+jumpDistance)+((my_height+own_y-jumpDistance)-(own_y+jumpDistance))*shifty;
       
         rm.setPos(new Double2D(x,y));
         
@@ -306,7 +305,7 @@ public class DContinuous2DXY extends DContinuous2D
     {
     	if(myfield.isMine(location.x,location.y))
     	{    		
-    		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).NUMVIEWER.getCount()>0)
+    		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
     			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
     		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
@@ -327,7 +326,7 @@ public class DContinuous2DXY extends DContinuous2D
 	 */
 	public synchronized boolean synchro() 
 	{			
-		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).NUMVIEWER.getCount()>0)
+		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
 			try {
 				ByteArrayOutputStream by = new ByteArrayOutputStream();
@@ -379,7 +378,7 @@ public class DContinuous2DXY extends DContinuous2D
 			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.left_mine,rmap.left_out,
 					(sm.schedule.getSteps()-1),cellType,DistributedRegion.LEFT);
 		
-			connection.publishToTopic(dr,cellType+"L",NAME);
+			connection.publishToTopic(dr,cellType+"L",name);
 			
 		 } catch (Exception e1) { e1.printStackTrace();}
 		}
@@ -390,7 +389,7 @@ public class DContinuous2DXY extends DContinuous2D
 			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.right_mine,rmap.right_out,
 					(sm.schedule.getSteps()-1),cellType,DistributedRegion.RIGHT);				
 
-			connection.publishToTopic(dr,cellType.toString()+"R",NAME);
+			connection.publishToTopic(dr,cellType.toString()+"R",name);
 			
 		 } catch (Exception e1) {e1.printStackTrace(); }
 		}
@@ -401,7 +400,7 @@ public class DContinuous2DXY extends DContinuous2D
 			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.up_mine,rmap.up_out,
 					(sm.schedule.getSteps()-1),cellType,DistributedRegion.UP);
 
-			connection.publishToTopic(dr,cellType.toString()+"U",NAME);
+			connection.publishToTopic(dr,cellType.toString()+"U",name);
 			
 		 } catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -413,7 +412,7 @@ public class DContinuous2DXY extends DContinuous2D
 			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.down_mine,rmap.down_out,
 					(sm.schedule.getSteps()-1),cellType,DistributedRegion.DOWN);
 
-			connection.publishToTopic(dr,cellType.toString()+"D",NAME);
+			connection.publishToTopic(dr,cellType.toString()+"D",name);
 			
 		 } catch (Exception e1) { e1.printStackTrace(); }
 		}
@@ -425,7 +424,7 @@ public class DContinuous2DXY extends DContinuous2D
 						(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_UP_LEFT);
 			try 
 			{
-					connection.publishToTopic(dr,cellType.toString()+"CUDL",NAME);
+					connection.publishToTopic(dr,cellType.toString()+"CUDL",name);
 			
 			} catch (Exception e1) { e1.printStackTrace();}
 
@@ -438,7 +437,7 @@ public class DContinuous2DXY extends DContinuous2D
 			try 
 			{
 			
-				connection.publishToTopic(dr,cellType.toString()+"CUDR",NAME);
+				connection.publishToTopic(dr,cellType.toString()+"CUDR",name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -448,7 +447,7 @@ public class DContinuous2DXY extends DContinuous2D
 					rmap.corner_out_down_left_diag,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_LEFT);
 			try 
 			{
-				connection.publishToTopic(dr,cellType.toString()+"CDDL",NAME);
+				connection.publishToTopic(dr,cellType.toString()+"CDDL",name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -460,7 +459,7 @@ public class DContinuous2DXY extends DContinuous2D
 			try 
 			{				
 				
-				connection.publishToTopic(dr,cellType.toString()+"CDDR",NAME);
+				connection.publishToTopic(dr,cellType.toString()+"CDDR",name);
 				
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}//<--
@@ -495,7 +494,7 @@ public class DContinuous2DXY extends DContinuous2D
 		{
 			try {
 				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
-				connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
+				connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,name);
 				tmp_zoom=new ZoomArrayList<RemoteAgent>();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -647,7 +646,7 @@ public class DContinuous2DXY extends DContinuous2D
 	    			if(name.contains("mine")){
 	    				if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 	    					tmp_zoom.add(rm);
-	    				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).NUMVIEWER.getCount()>0)
+	    				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 	    	    			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
 	    			}
 	    			return region.addAgents(new Entry<Double2D>(rm, location));
@@ -736,7 +735,7 @@ public class DContinuous2DXY extends DContinuous2D
 	@Override
 	public String getID() {
 		// TODO Auto-generated method stub
-		return NAME;
+		return name;
 	}
 
 	@Override
