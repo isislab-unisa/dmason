@@ -5,16 +5,53 @@ import java.awt.event.*;
 import java.io.File;
 import javax.swing.*;
 import javax.swing.border.*;
+
+import com.sun.org.apache.bcel.internal.generic.NEW;
+
 import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 
 /**
+ * The startup GUI for the Global Viewer.
  * @author Tesla
+ * @author Luca Vicidomini
  */
 public class LauncherViewer  {
-
-    public static void main(String[] args) {
+	
+	/**
+	 * An utility class used to represent a simulation class as a
+	 * combobox entry.
+	 * @author Luca Vicidomini
+	 */
+	class SimComboEntry
+	{
+		/**
+		 * A short name that will be shown to the user.
+		 */
+		String shortName;
 		
+		/**
+		 * Qualified name of the class implementing the Zoom feature.
+		 */
+		String fullZoomName;
+		
+		/**
+		 * Qualified name of the class implementing the proper simulation.
+		 */
+		String fullSimName;
+		
+		/**
+		 * Creates a new entry for the combobox.
+		 * @param shortName A short name that will be shown to the user.
+		 * @param fullZoomName Qualified name of the class implementing the Zoom feature.
+		 * @param fullSimName Qualified name of the class implementing the proper simulation.
+		 */
+		public SimComboEntry(String shortName, String fullZoomName, String fullSimName) { this.shortName = shortName; this.fullZoomName = fullZoomName; this.fullSimName = fullSimName; }
+		@Override public String toString() { return shortName; }
+	}
+
+    public static void main(String[] args)
+    {	
 		LauncherViewer lv = new LauncherViewer();
 		lv.initComponents();
 		lv.LauncherViewer.setVisible(true);
@@ -35,30 +72,37 @@ public class LauncherViewer  {
 		}
 		else
 		{
-			JOptionPane.showMessageDialog(null, "Not Selected Path");
+			JOptionPane.showMessageDialog(null, "No path selected");
 		}
 	}
 
-	private void buttonConnectionActionPerformed(ActionEvent e) {
-
-        //riempimento campi
-		address = new Address(fieldAddress.getText(),fieldPort.getText());
-		
+	/**
+	 * Event handler for click on "Connect" button.
+	 * @param e The click event
+	 */
+	private void buttonConnectionActionPerformed(ActionEvent e)
+	{
+		address = new Address(fieldAddress.getText(), fieldPort.getText());
 		connection = new ConnectionNFieldsWithActiveMQAPI();
 		
-		try {
-			connection.setupConnection(address);
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		if (connection.setupConnection(address))
+		{
+			Display display = new Display(connection,
+					comboMode.getSelectedIndex(),
+					Integer.parseInt((String) comboNCell.getSelectedItem()),
+					Integer.parseInt(fieldWidth.getText()),
+					Integer.parseInt(fieldHeight.getText()),
+					path,
+					((SimComboEntry)comboSim.getSelectedItem()).fullZoomName,
+					((SimComboEntry)comboSim.getSelectedItem()).fullSimName);
+			display.initComponents();
+			display.Display.setVisible(true);
+			this.LauncherViewer.dispose();
 		}
-		
-		Display display = new Display(connection, comboMode.getSelectedIndex(),
-				Integer.parseInt((String) comboNCell.getSelectedItem()), Integer.parseInt(fieldWidth.getText()),
-				Integer.parseInt(fieldHeight.getText()), path, (String)comboSim.getSelectedItem());
-		display.initComponents();
-		display.Display.setVisible(true);
-		this.LauncherViewer.dispose();
+		else
+		{
+			JOptionPane.showMessageDialog(null, "Failed to contact the provider!\nPlease check that the provider is running and IP Address and port are correct.");
+		}
 	}
 
 	private void comboModeItemStateChanged(ItemEvent e) {
@@ -80,13 +124,6 @@ public class LauncherViewer  {
 		}
 	}
 
-	private void comboSimItemStateChanged(ItemEvent e) {
-
-	}
-	
-	private void comboNCellItemStateChanged(ItemEvent e) {
-		// TODO add your code here
-	}
 
 	private void initComponents() {
 
@@ -118,9 +155,9 @@ public class LauncherViewer  {
         comboMode.addItem("Horizontal");
 		comboMode.addItem("Square");
         
-        comboSim.addItem("Flockers");
-        comboSim.addItem("Particles");
-        comboSim.addItem("AntsForaging");
+        comboSim.addItem(new SimComboEntry("Flockers", "dmason.util.visualization.DFlockers.FlockersWithUIView", "dmason.sim.app.DFlockers.DFlockers"));
+        comboSim.addItem(new SimComboEntry("Particles", "dmason.util.visualization.DParticles.Tutorial3ViewWithUI", "dmason.sim.app.DParticles.DParticles"));
+        comboSim.addItem(new SimComboEntry("Ants Foraging", "dmason.util.visualization.DAntsForage.AntsForageWithUIZoom", "dmason.sim.app.DAntsForage.DAntsForage"));
 		
 		path = System.getProperty("user.dir");
 		
@@ -225,13 +262,6 @@ public class LauncherViewer  {
 							}
 						});
 
-						//---- comboNCell ----
-						comboNCell.addItemListener(new ItemListener() {
-							public void itemStateChanged(ItemEvent e) {
-								comboNCellItemStateChanged(e);
-							}
-						});
-
 						//---- label2 ----
 						label2.setText("Number Cell:");
 
@@ -254,13 +284,6 @@ public class LauncherViewer  {
 						buttonPath.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
 								buttonPathActionPerformed(e);
-							}
-						});
-
-						//---- comboSim ----
-						comboSim.addItemListener(new ItemListener() {
-							public void itemStateChanged(ItemEvent e) {
-								comboSimItemStateChanged(e);
 							}
 						});
 

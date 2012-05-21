@@ -62,9 +62,10 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Seri
 	
 	/** 
 	 * Establishes a connection with an ActiveMQ provider.
+	 * @return true if the connection was successfully established, false otherwise.
 	 */ 
 	@Override
-	public boolean setupConnection(Address providerAddr) throws Exception
+	public boolean setupConnection(Address providerAddr)
 	{
 		// Create an ActiveMQConnectionFactory
 		String strAddr = "tcp://" + providerAddr.getIPaddress() + ":" + providerAddr.getPort();
@@ -88,7 +89,7 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Seri
 			return true;
 		}catch (Exception e) {
 			logger.severe("Unable to create a connection with the provider at address " + strAddr);
-			e.printStackTrace();
+			//e.printStackTrace();
 			return false;
 		}
 		
