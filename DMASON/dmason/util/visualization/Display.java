@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -17,13 +18,9 @@ import javax.swing.border.*;
 import org.apache.kahadb.util.ByteArrayInputStream;
 import sim.display.GUIState;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
-import dmason.util.visualization.DAntsForage.AntsForageWithUIZoom;
-import dmason.util.visualization.DFlockers.FlockersWithUIView;
-import dmason.util.visualization.DParticles.Tutorial3View;
-import dmason.util.visualization.DParticles.Tutorial3ViewWithUI;
 
 /**
- * 
+ * The visualization and inspection GUI for the Global Viewer.
  * @author unascribed 
  * @author Luca Vicidomini
  *
@@ -87,7 +84,7 @@ public class Display  {
 	{
 
 		/**
-		 * 
+		 * Just keeps the ConsoleZoom running in a separated thread.
 		 */
 		class RunnerZoom extends Thread
 		{
@@ -143,23 +140,24 @@ public class Display  {
 			
 					con.publishToTopic("EXIT", "GRAPHICS", "GRAPHICS");
 	
-					RunnerZoom rZ = null;
-					if(simulation.equals("Flockers"))
-					{
-						FlockersWithUIView simulazione=new FlockersWithUIView(new Object[]{con,cp.id,synchro,numCell,width,height,mode} );
-						rZ=new RunnerZoom(simulazione, con, cp.id, synchro,this,mode,numCell,width,height,absolutePath,simulation);
-					}
-					else if(simulation.equals("AntsForaging"))
-					{
-						AntsForageWithUIZoom simulazione=new AntsForageWithUIZoom(new Object[]{con,cp.id,synchro,numCell,width,height,mode} );
-						rZ=new RunnerZoom(simulazione, con, cp.id, synchro,this,mode,numCell,width,height,absolutePath,simulation);
-					}
-					else if(simulation.equals("Particles"))
-					{
-						Tutorial3ViewWithUI simulazione=new Tutorial3ViewWithUI(new Object[]{con,cp.id,synchro,numCell,width,height,mode} );
-						rZ=new RunnerZoom(simulazione, con, cp.id, synchro,this,mode,numCell,width,height,absolutePath,simulation);
-					}
-					
+					/*
+					 * Here we are assuming that the simulation zoom view
+					 * class has a public constructor which only takes an
+					 * Object[] as argument. In the previous version of
+					 * Display, we were getting the simulation name from
+					 * LauncherViewer, so Display knew which class it
+					 * needed to instantiate to get the zoom viewer. In 
+					 * this version, LauncherView passes the class
+					 * qualified name, so Display can instantiate the
+					 * simulation class using the system class loader.
+					 * Also, we just need 3 lines of code instead of
+					 * the huge if..else block we had previously :)
+					 * -- Luca Vicidomini
+					 */
+					Constructor<?> guiStateConstructor = Class.forName(simulation).getConstructor(Object[].class);
+					GUIState guiStateInstance = (GUIState)guiStateConstructor.newInstance(new Object[] { new Object[]{con,cp.id,synchro,numCell,width,height,mode} });
+					RunnerZoom rZ = new RunnerZoom(guiStateInstance, con, cp.id, synchro,this,mode,numCell,width,height,absolutePath,simulation);
+										
 					rZ.start();
 					this.close();
 					
@@ -167,7 +165,6 @@ public class Display  {
 				}
 				catch (Exception e1)
 				{
-					// TODO Auto-generated catch block
 					JOptionPane.showMessageDialog(null, "Problem with simulation, impossible complete request!");
 					e1.printStackTrace();
 				}
@@ -489,6 +486,7 @@ public class Display  {
 	public Viewer view ;
 	public ThreadVisualizationMessageListener thread;
 	public String simulation;
+	private String simulationClassName;
 	
 	public void sblock()
 	{
@@ -637,7 +635,7 @@ public class Display  {
 	}
 	
 	public Display(ConnectionNFieldsWithActiveMQAPI con, int mode, int numCell,
-			int width, int height, String absolutePath, String simulation) {
+			int width, int height, String absolutePath, String simulation, String simulationClassName) {
 		super();
 		this.con = con;
 		this.mode = mode;
@@ -646,6 +644,7 @@ public class Display  {
 		this.height = height;
 		this.absolutePath = absolutePath;
 		this.simulation = simulation;
+		this.simulationClassName = simulationClassName;
 		updates = new VisualizationUpdateMap<Long, RemoteSnap>();
 		listCells = new ArrayList<Display.CellProperties>();
 		
@@ -678,7 +677,23 @@ public class Display  {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}	
+		}
+		
+		// TODO Luca work in progress
+		Class<?> simClass;
+		try {
+			simClass = Class.forName(simulationClassName);
+			
+			for (java.lang.reflect.Field field : simClass.getDeclaredFields())
+				System.out.println(field.getName());
+			System.out.println("----------------------");
+			for (java.lang.reflect.Method field : simClass.getDeclaredMethods())
+				System.out.println(field.getName());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 		thread = new ThreadVisualizationMessageListener(con, this);
 		
