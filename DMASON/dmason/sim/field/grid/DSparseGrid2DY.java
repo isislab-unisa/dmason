@@ -263,7 +263,7 @@ public class DSparseGrid2DY extends DSparseGrid2D
     	*/
     	if(myfield.isMine(location.x,location.y))
     	{    		
-    		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
+    		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).NUMVIEWER.getCount()>0)
     			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
     		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
@@ -283,7 +283,7 @@ public class DSparseGrid2DY extends DSparseGrid2D
 	 */
 	public synchronized boolean  synchro() 
 	{	
-		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
+		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).NUMVIEWER.getCount()>0)
 		{
 			try {
 				ByteArrayOutputStream by = new ByteArrayOutputStream();
@@ -531,7 +531,7 @@ public class DSparseGrid2DY extends DSparseGrid2D
 		    				{
 		    					if(tmp_zoom!=null)tmp_zoom.add(rm);
 		    				}
-		    				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
+		    				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).NUMVIEWER.getCount()>0)
 		    				{
 		    	    			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
 		    	    			

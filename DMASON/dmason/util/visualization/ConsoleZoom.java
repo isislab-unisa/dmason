@@ -80,10 +80,10 @@ public class ConsoleZoom extends sim.display.Console {
     	    
 			
     	   try {
-    		   
+			
     			Display display = new Display(con, mode, 
     					numCell, width, 
-    					height, absolutePath,simul,simulation.getSimulationInspectedObject().getClass().getCanonicalName());
+    					height, absolutePath,simul);
     			display.initComponents();
     			display.Display.setVisible(true);    			
 		

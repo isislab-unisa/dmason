@@ -37,9 +37,11 @@ public class ViewerMonitor {
 		lock.unlock();
 	}
 	public void forceWakeUp() {
+		// TODO Auto-generated method stub
 		lock.lock();
 			FORCE=true;
 			block.signal();
+			
 		lock.unlock();
 	}
 }

@@ -5,7 +5,6 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -18,74 +17,57 @@ import javax.swing.border.*;
 import org.apache.kahadb.util.ByteArrayInputStream;
 import sim.display.GUIState;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
+import dmason.util.visualization.DAntsForage.AntsForageWithUIZoom;
+import dmason.util.visualization.DFlockers.FlockersWithUIView;
+import dmason.util.visualization.DParticles.Tutorial3View;
+import dmason.util.visualization.DParticles.Tutorial3ViewWithUI;
 
-/**
- * The visualization and inspection GUI for the Global Viewer.
- * @author unascribed 
- * @author Luca Vicidomini
- *
- */
+
 public class Display  {
 
-	/**
-	 * Event listener for window closing. Before closing the window,
-	 * notify workers that they don't need to send bitmaps anymore.
-	 * @param e
-	 */
 	private void DisplayWindowClosing(WindowEvent e) {
 		
 		try {
 			con.publishToTopic("EXIT", "GRAPHICS", "GRAPHICS");
-			JOptionPane.showMessageDialog(null, "Successfully disconnected!");
+			JOptionPane.showMessageDialog(null,"Successfully Send Disconnection ack!");
 		} catch (Exception e1) {
-			JOptionPane.showMessageDialog(null, "Disconnection failed: this may cause problems in future views!");
+			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(null,"Disconnection not completed, possible problems in future views!");
 			e1.printStackTrace();
 		}
 		System.exit(0);
 	}
 
-	/**
-	 * Event listener for the snapshot button.
-	 * @param e
-	 */
 	private void cameraSnapActionPerformed(ActionEvent e) {
-		// Generate a filename based on current date and time
-		GregorianCalendar gc = new GregorianCalendar();
-		String filename = gc.get(Calendar.YEAR) + "-" + gc.get(Calendar.MONTH) + "-" + gc.get(Calendar.DAY_OF_MONTH)
-			+ gc.get(Calendar.HOUR) + "." + gc.get(Calendar.MINUTE) + "." + gc.get(Calendar.SECOND);
-		String filepath = System.getProperty("user.dir") + "/snap_" + filename + ".png";
-		
+		// TODO add your code here
 		try {
-			File outputfile = new File(filepath);
+			GregorianCalendar gc = new GregorianCalendar();
+			String date="Date="+gc.get(Calendar.YEAR)+"-"+gc.get(Calendar.MONTH)+"-"+gc.get(Calendar.DAY_OF_MONTH)+
+			"Time="+gc.get(Calendar.HOUR)+":"+gc.get(Calendar.MINUTE)+":"+gc.get(Calendar.SECOND);
+			File outputfile = new File(System.getProperty("user.dir")+"/snap_"+date+".png");
 		    ImageIO.write(actualSnap, "png", outputfile);
 	
-		    if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(
+		    int val = JOptionPane.showConfirmDialog(
 		    	    null,
-		    	    "Snapshot saved as " + filename + "\n" + "Do you want to open this snapshot now?",
-		    	    "Open snapshot",
-		    	    JOptionPane.YES_NO_OPTION))
-			{				
+		    	    System.getProperty("user.dir")+"/snap_"+date+".jpg" +" Snap saved, show this snap?",
+		    	    "Open Snap",
+		    	    JOptionPane.YES_NO_OPTION);
+			
+			if(val == JOptionPane.YES_OPTION)
+			{
+				
 				Desktop dt = Desktop.getDesktop();
 			    dt.open(outputfile);
 			}
+		
 		} catch (Exception e1) {
-			JOptionPane.showMessageDialog(null, "Can't save the snapshot to:" + "\n"
-					+ filepath + "\n"
-					+ "Please ensure you have write permission on the directory and there is enough free space.");
+			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}
 
-	/**
-	 * Event listener for image views.
-	 * @param e
-	 */
-	private void imageViewMouseClicked(MouseEvent e)
-	{
+	private void imageViewMouseClicked(MouseEvent e) {
 
-		/**
-		 * Just keeps the ConsoleZoom running in a separated thread.
-		 */
 		class RunnerZoom extends Thread
 		{
 			public ConsoleZoom c;
@@ -101,8 +83,9 @@ public class Display  {
 					String id,boolean sin,Display d,int mode,int numCell,
 					int width,int height, String absolutePath, String simul)
 			{
+			
 				this.t=f;
-				this.sin=sin;
+						this.sin=sin;
 				this.con=con;
 				this.id=id;
 				this.d=d;
@@ -114,6 +97,7 @@ public class Display  {
 				this.simul=simul;
 			}
         
+	    
 			public void run()
 			{
 				ConsoleZoom c=new ConsoleZoom(t, con,id,sin,d,
@@ -122,52 +106,85 @@ public class Display  {
 				c.setVisible(true);
 				c.pressPlay();
 			}
-		} // --- END OF RunnerZoom
-		
+		}
 		int x = e.getX();
 		int y = e.getY();
 		
 		for(CellProperties cp : listCells){
-			if(cp.isMine(x, y))
-			{
-				try
+				
+				if(cp.isMine(x, y))
 				{
+					try {
+					JOptionPane jpane = new JOptionPane();
 					ImageIcon icon = new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/zoomJOpt2.png"));
-					boolean synchro = JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(null,
-							"Do you want a synchronized zoom for cell " + cp.id + "?", 
+					int i = JOptionPane.showConfirmDialog(null, "Do you want a synchronized zoom for cell "+cp.id+"?", 
 							"Select Option", JOptionPane.YES_NO_CANCEL_OPTION, 
-							JOptionPane.QUESTION_MESSAGE, icon); 
-			
-					con.publishToTopic("EXIT", "GRAPHICS", "GRAPHICS");
-	
-					/*
-					 * Here we are assuming that the simulation zoom view
-					 * class has a public constructor which only takes an
-					 * Object[] as argument. In the previous version of
-					 * Display, we were getting the simulation name from
-					 * LauncherViewer, so Display knew which class it
-					 * needed to instantiate to get the zoom viewer. In 
-					 * this version, LauncherView passes the class
-					 * qualified name, so Display can instantiate the
-					 * simulation class using the system class loader.
-					 * Also, we just need 3 lines of code instead of
-					 * the huge if..else block we had previously :)
-					 * -- Luca Vicidomini
-					 */
-					Constructor<?> guiStateConstructor = Class.forName(simulation).getConstructor(Object[].class);
-					GUIState guiStateInstance = (GUIState)guiStateConstructor.newInstance(new Object[] { new Object[]{con,cp.id,synchro,numCell,width,height,mode} });
-					RunnerZoom rZ = new RunnerZoom(guiStateInstance, con, cp.id, synchro,this,mode,numCell,width,height,absolutePath,simulation);
-										
-					rZ.start();
-					this.close();
+							JOptionPane.QUESTION_MESSAGE, icon);
+
+					if(i==JOptionPane.YES_OPTION)
+					{
+					
+						con.publishToTopic("EXIT", "GRAPHICS", "GRAPHICS");
+						
+						RunnerZoom rZ = null;
+						
+						if(simulation.equals("Flockers"))
+						{
+							FlockersWithUIView simulazione=new FlockersWithUIView(new Object[]{con,cp.id,true,numCell,width,height,mode} );
+							rZ=new RunnerZoom(simulazione, con, cp.id, true,this,mode,numCell,width,height,absolutePath,simulation);
+						}
+						else
+							if(simulation.equals("AntsForaging"))
+							{
+								AntsForageWithUIZoom simulazione=new AntsForageWithUIZoom(new Object[]{con,cp.id,true,numCell,width,height,mode} );
+								rZ=new RunnerZoom(simulazione, con, cp.id, true,this,mode,numCell,width,height,absolutePath,simulation);
+							}
+							else
+								if(simulation.equals("Particles"))
+								{
+									Tutorial3ViewWithUI simulazione=new Tutorial3ViewWithUI(new Object[]{con,cp.id,true,numCell,width,height,mode} );
+									rZ=new RunnerZoom(simulazione, con, cp.id, true,this,mode,numCell,width,height,absolutePath,simulation);
+								}
+						rZ.start();
+						this.close();
+		
+						
+					}
+					else
+						if(i==JOptionPane.NO_OPTION)
+						{
+							con.publishToTopic("EXIT", "GRAPHICS", "GRAPHICS");
+							
+							RunnerZoom rZ = null;
+							
+							if(simulation.equals("Flockers"))
+							{
+								FlockersWithUIView simulazione=new FlockersWithUIView(new Object[]{con,cp.id,false,numCell,width,height,mode} );
+								rZ=new RunnerZoom(simulazione, con, cp.id, false,this,mode,numCell,width,height,absolutePath,simulation);
+							}
+							else
+								if(simulation.equals("AntsForaging"))
+								{
+									AntsForageWithUIZoom simulazione=new AntsForageWithUIZoom(new Object[]{con,cp.id,false,numCell,width,height,mode} );
+									rZ=new RunnerZoom(simulazione, con, cp.id, false,this,mode,numCell,width,height,absolutePath,simulation);
+								}
+								else
+									if(simulation.equals("Particles"))
+									{
+										Tutorial3ViewWithUI simulazione=new Tutorial3ViewWithUI(new Object[]{con,cp.id,false,numCell,width,height,mode} );
+										rZ=new RunnerZoom(simulazione, con, cp.id, false,this,mode,numCell,width,height,absolutePath,simulation);
+									}
+							
+							rZ.start();
+							this.close();
+						}
 					
 					break;
-				}
-				catch (Exception e1)
-				{
-					JOptionPane.showMessageDialog(null, "Problem with simulation, impossible complete request!");
-					e1.printStackTrace();
-				}
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Problem with simulation, impossible complete request!");
+					}
 			}
 			
 		}		
@@ -486,7 +503,6 @@ public class Display  {
 	public Viewer view ;
 	public ThreadVisualizationMessageListener thread;
 	public String simulation;
-	private String simulationClassName;
 	
 	public void sblock()
 	{
@@ -635,7 +651,7 @@ public class Display  {
 	}
 	
 	public Display(ConnectionNFieldsWithActiveMQAPI con, int mode, int numCell,
-			int width, int height, String absolutePath, String simulation, String simulationClassName) {
+			int width, int height, String absolutePath, String simulation) {
 		super();
 		this.con = con;
 		this.mode = mode;
@@ -644,7 +660,6 @@ public class Display  {
 		this.height = height;
 		this.absolutePath = absolutePath;
 		this.simulation = simulation;
-		this.simulationClassName = simulationClassName;
 		updates = new VisualizationUpdateMap<Long, RemoteSnap>();
 		listCells = new ArrayList<Display.CellProperties>();
 		
@@ -677,23 +692,7 @@ public class Display  {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
-		// TODO Luca work in progress
-		Class<?> simClass;
-		try {
-			simClass = Class.forName(simulationClassName);
-			
-			for (java.lang.reflect.Field field : simClass.getDeclaredFields())
-				System.out.println(field.getName());
-			System.out.println("----------------------");
-			for (java.lang.reflect.Method field : simClass.getDeclaredMethods())
-				System.out.println(field.getName());
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		}	
 		
 		thread = new ThreadVisualizationMessageListener(con, this);
 		

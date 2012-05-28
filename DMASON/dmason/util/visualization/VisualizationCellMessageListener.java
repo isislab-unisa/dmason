@@ -40,12 +40,12 @@ public class VisualizationCellMessageListener extends MyMessageListener
 				
 				if(command.equals("ENTER"))
 				{
-					schedule.numViewers.increment();
+					schedule.NUMVIEWER.increment();
 				}
 				else
 					if(command.equals("EXIT"))
 					{
-						schedule.numViewers.decrement();	
+						schedule.NUMVIEWER.decrement();	
 					}
 			}
 		} catch (JMSException e) { 

@@ -31,7 +31,7 @@ public abstract class DistributedState<E> extends SimState
 	 public String port;
 	 private int MODE;
 	 private boolean isTOROIDAL;
-	 //private MersenneTwisterFast randomRegion;
+	 private MersenneTwisterFast randomRegion;
 	 private ConnectionNFieldsWithActiveMQAPI connection;
 	 private Trigger TRIGGER;
 	 private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
@@ -257,11 +257,12 @@ public abstract class DistributedState<E> extends SimState
 	 {
 		super(null, sched);		
 		this.TYPE=new CellType(i, j);
-		this.random = new MersenneTwisterFast(this.TYPE.getInitialValue());
+		randomRegion=new MersenneTwisterFast(this.TYPE.getInitialValue());
 		this.MAX_DISTANCE=max_d;
 		this.NUMPEERS=num_peers;
 		this.NUMAGENTS=num_agents;
 		this.count_id=NUMAGENTS*TYPE.getInitialValue();
+		this.setRandom(randomRegion);
 		this.ip = ip;
 		this.port = port;
 		this.MODE = mode;
@@ -293,11 +294,12 @@ public abstract class DistributedState<E> extends SimState
 	 {
 		super(null, new DistributedMultiSchedule<E>());
 		this.TYPE=new CellType(i, j);
-		this.random = new MersenneTwisterFast(this.TYPE.getInitialValue());
+		randomRegion=new MersenneTwisterFast(this.TYPE.getInitialValue());
 		this.MAX_DISTANCE=max_d;
 		this.NUMPEERS=num_peers;
 		this.NUMAGENTS=num_agents;
 		this.count_id=NUMAGENTS*TYPE.getInitialValue();
+		this.setRandom(randomRegion);
 	 }
 	 
 	 /**
@@ -314,11 +316,12 @@ public abstract class DistributedState<E> extends SimState
 	 {
 		super(null, new DistributedMultiSchedule<E>());
 		this.TYPE=new CellType((Integer)objs[5], (Integer)objs[6]);
-		this.random = new MersenneTwisterFast(this.TYPE.getInitialValue());
+		randomRegion=new MersenneTwisterFast(this.TYPE.getInitialValue());
 		this.MAX_DISTANCE=(Integer)objs[0];
 		this.NUMPEERS=(Integer)objs[1];
 		this.NUMAGENTS=(Integer)objs[2];
 		this.count_id=NUMAGENTS*TYPE.getInitialValue();
+		this.setRandom(randomRegion);
 	 }
 	 
 	 // abstract methods those must be implemented in the subclasses

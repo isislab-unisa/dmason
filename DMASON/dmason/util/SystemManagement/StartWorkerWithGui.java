@@ -8,52 +8,50 @@ import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 
 /**
- * Executable, GUI version worker.
+ *Class for StartWorkerWithGui
+ *
  */
-public class StartWorkerWithGui extends JFrame implements StartWorkerInterface
-{	
-	private static final long serialVersionUID = 1L;
-	public boolean START = false;
+public class StartWorkerWithGui extends JFrame implements StartWorkerInterface {
 	
-	/**
-	 * Connection with the provider.
-	 */
+	private static final long serialVersionUID = 1L;
+	public boolean START=false;
 	private ConnectionNFieldsWithActiveMQAPI connection;
 	
-	public StartWorkerWithGui()
-	{
+	
+	public StartWorkerWithGui() {
 		initComponents();
 		connection = new ConnectionNFieldsWithActiveMQAPI();
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
 	}
 
-	private void btnConnectOnClick(ActionEvent e) {
+	private void button1ActionPerformed(ActionEvent e) {
 		try {
-			connection.setupConnection(new Address((String)cmbIp.getSelectedItem(), "61616"));
+			connection.setupConnection(new Address((String)comboBoxServer.getSelectedItem(), "61616"));
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		new PeerDaemonStarter(connection, this);
-		cmbIp.setEditable(false);
-		cmbPort.setEditable(false);
+		PeerDaemonStarter p = new PeerDaemonStarter(connection,this);
+		getComboBoxServer().setEditable(false);
+		getComboBoxPort().setEditable(false);
 	}
 
 	
+
 	private void initComponents() {
 		scrollPane1 = new JScrollPane();
 		textArea = new JTextArea();
 		textArea.setEditable(false);
-		btnConnect = new JButton();
+		button1 = new JButton();
 		label1 = new JLabel();
 		label2 = new JLabel();
-		cmbPort = new JComboBox();
+		comboBoxPort = new JComboBox();
 		
 		label3 = new JLabel();
 		labelnumber = new JLabel();
-		lblLogo = new JLabel();
-		cmbIp = new JComboBox();
+		label4 = new JLabel();
+		comboBoxServer = new JComboBox();
 		
 		//======== this ========
 		setTitle("D.MASON WORKER");
@@ -64,20 +62,20 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface
 			scrollPane1.setViewportView(textArea);
 		}
 
-		//---- btnConnect ----
-		btnConnect.setText("Connect");
-		btnConnect.addActionListener(new ActionListener() {
+		//---- button1 ----
+		button1.setText("connect");
+		button1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				btnConnectOnClick(e);
+				button1ActionPerformed(e);
 			}
 		});
 
 		//---- label1 ----
-		label1.setText("Server IP:");
+		label1.setText("Server ip:");
 
 		//---- label2 ----
-		label2.setText("Server port:");
+		label2.setText("Server port ip:");
 
 		//---- label3 ----
 		label3.setText("");
@@ -86,24 +84,26 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface
 		labelnumber.setText("");
 
 		//---- label4 ----
-		lblLogo.setText("Distributed Mason 'failed to load image'");
-		lblLogo.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/carmineworker.png")));
+		label4.setText("Distributed Mason 'failed to load image'");
+		
+		label4.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/carmineworker.png")));
 
 		//---- comboBox ----
-		cmbIp.setEditable(true);
-		cmbPort.setEditable(true);
+		comboBoxServer.setEditable(true);
+		comboBoxPort.setEditable(true);
 
 		Scanner in=new Scanner(ClassLoader.getSystemClassLoader().getResourceAsStream("dmason/resource/file/urlworker"));
 		while(in.hasNext())
 		{
 			String line=in.nextLine();
 			String[] args=line.split(":");
-			cmbIp.addItem(args[0]);
-			cmbPort.addItem(args[1]);
+			comboBoxServer.addItem(args[0]);
+			comboBoxPort.addItem(args[1]);
+			
 		}
 		
-		cmbIp.setSelectedIndex(0);
-		cmbPort.setSelectedIndex(0);
+		comboBoxServer.setSelectedIndex(0);
+		comboBoxPort.setSelectedIndex(0);
 	
 
 		GroupLayout contentPaneLayout = new GroupLayout(contentPane);
@@ -113,7 +113,7 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface
 				.addGroup(contentPaneLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(contentPaneLayout.createParallelGroup()
-						.addComponent(lblLogo, GroupLayout.PREFERRED_SIZE, 400, GroupLayout.PREFERRED_SIZE)
+						.addComponent(label4, GroupLayout.PREFERRED_SIZE, 400, GroupLayout.PREFERRED_SIZE)
 						.addGroup(contentPaneLayout.createParallelGroup()
 							.addGroup(contentPaneLayout.createSequentialGroup()
 								.addGroup(contentPaneLayout.createParallelGroup()
@@ -121,13 +121,13 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface
 									.addComponent(label1))
 								.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 								.addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-									.addComponent(cmbPort)
-									.addComponent(cmbIp, 0, 119, Short.MAX_VALUE))
+									.addComponent(comboBoxPort)
+									.addComponent(comboBoxServer, 0, 119, Short.MAX_VALUE))
 								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 								.addGroup(contentPaneLayout.createParallelGroup()
 									.addGroup(contentPaneLayout.createSequentialGroup()
 										.addGap(78, 78, 78)
-										.addComponent(btnConnect))
+										.addComponent(button1))
 									.addGroup(contentPaneLayout.createSequentialGroup()
 										.addGap(46, 46, 46)
 										.addComponent(label3)
@@ -143,18 +143,18 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface
 			contentPaneLayout.createParallelGroup()
 				.addGroup(contentPaneLayout.createSequentialGroup()
 					.addContainerGap(21, Short.MAX_VALUE)
-					.addComponent(lblLogo, GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE)
+					.addComponent(label4, GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE)
 					.addGap(18, 18, 18)
 					.addGroup(contentPaneLayout.createParallelGroup()
 						.addComponent(label1)
 						.addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-							.addComponent(btnConnect)
-							.addComponent(cmbIp, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(button1)
+							.addComponent(comboBoxServer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 					.addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 						.addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 							.addComponent(label2)
-							.addComponent(cmbPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addComponent(comboBoxPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 						.addGroup(contentPaneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 							.addComponent(label3)
 							.addComponent(labelnumber)))
@@ -167,27 +167,69 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface
 
 	}
 
+	public JTextArea getTextArea() {
+		return textArea;
+	}
+
+
+	public void setTextArea(JTextArea textArea) {
+		this.textArea = textArea;
+	}
+
+
+	public JButton getButton1() {
+		return button1;
+	}
+
+
+	public void setButton1(JButton button1) {
+		this.button1 = button1;
+	}
+
+
+	public JComboBox getComboBoxPort() {
+		return comboBoxPort;
+	}
+
+
+	public void setComboBoxPort(JComboBox comboBoxPort) {
+		this.comboBoxPort = comboBoxPort;
+	}
+
+
+	public JComboBox getComboBoxServer() {
+		return comboBoxServer;
+	}
+
+
+	public void setComboBoxServer(JComboBox comboBoxServer) {
+		this.comboBoxServer = comboBoxServer;
+	}
+
 	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
 	// Generated using JFormDesigner Evaluation license - aaaa aaaa
 	private JScrollPane scrollPane1;
 	public JTextArea textArea;
-	private JButton btnConnect;
+	private JButton button1;
 	private JLabel label1;
 	private JLabel label2;
-	private JComboBox cmbPort;
+	private JComboBox comboBoxPort;
 	private JLabel label3;
 	public JLabel labelnumber;
-	private JLabel lblLogo;
-	private JComboBox cmbIp;
+	private JLabel label4;
+	private JComboBox comboBoxServer;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables
 	
-	public static void main(String[] args)
-	{
-		new StartWorkerWithGui();
+	public static void main(String[] args){
+		StartWorkerWithGui worker = new StartWorkerWithGui();
+		worker.setVisible(true);
 	}
+
 
 	@Override
 	public void writeMessage(String message) {
+	
 		textArea.append(message);
+		
 	}
 }

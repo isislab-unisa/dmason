@@ -20,93 +20,53 @@ import dmason.sim.app.DParticles.DParticles;
 import dmason.sim.app.DParticles.DParticlesWithUI;
 
 public class MasterDaemonStarter {
-	/**
-	 * The number of peers involved in the simulation.
-	 */
-	private int numPeers;
-	
-	/**
-	 * Max distance an agent can travel in a single step. 
-	 */
-	private int jumpDistance;
-	
-	private int numAgents = 25;
-	private int width = 201;
-	private int height = 201;
-	
-	/**
-	 * Field partitioning mode.
-	 */
-	private int fieldMode;
-	
-	/**
-	 * Connection with a provider.
-	 */
+
+	private int NUM_PEERS;
+	private int MAX_DISTANCE;
+	private int NUM_AGENTS=25;
+	private int WIDTH=201;
+	private int HEIGHT=201;
+	private int MODE;
+	private Address data;
 	private ConnectionNFieldsWithActiveMQAPI connection;
-	
-	/**
-	 * Provider address.
-	 */
-	private Address address;
-	
-	/**
-	 * Master's topic name.
-	 */
-	private String myTopic = "MASTER";
-	
-	/**
-	 * A list of workers listening on the provider.
-	 * Workers are identified by their topic
-	 */
-	private ArrayList<String> workerTopics;
-	
+	private String myTopic="MASTER"/*+InetAddress.getLocalHost().getHostAddress()*/;
+	private ArrayList<String> list;
 	private MasterDaemonListener myml;
 
-	/**
-	 * Constructor.
-	 * @param conn Connection with a provider.
-	 * @throws Exception
-	 */
-	public MasterDaemonStarter(Connection conn) throws Exception
-	{
-		connection = (ConnectionNFieldsWithActiveMQAPI)conn;
-		address = connection.getAdress();
+	public MasterDaemonStarter(Connection con) throws Exception{
+		connection = (ConnectionNFieldsWithActiveMQAPI)con;
+		data = connection.getAdress();
 	}
 
-	public boolean connectToServer()
-	{
-		try
-		{
-			if(connection.createTopic(myTopic,1)==true)
-			{
+
+	public boolean connectToServer(){
+		try {
+			//boolean flag = connection.setupConnection(data);
+			if(connection.createTopic(myTopic,1)==true){
 				if(connection.subscribeToTopic(myTopic)==true)
-					connection.asynchronousReceive(myTopic, myml = new MasterDaemonListener());
+					connection.asynchronousReceive(myTopic,myml =  new MasterDaemonListener());
 				else return false;
 			}
 			else return false;
-		} catch (Exception e) {
+
+		}
+
+		catch (Exception e) {
 			e.printStackTrace();
+
 		}
 		return true;
 	}
 
-	/**
-	 * Retrieve a list of workers' topics, that is the list of topics whose
-	 * name begins with "SERVICE"
-	 * @return An <code>ArrayList<String></code> of workers' topic names
-	 * @throws Exception
-	 */
 	public ArrayList<String> getTopicList() throws Exception{
-		workerTopics = new ArrayList<String>();
-		for(String topicName : connection.getTopicList())
-		{
-			if(topicName.startsWith("SERVICE"))
-			{
-				workerTopics.add(topicName);
-				connection.createTopic(topicName, 1);
+		list = new ArrayList<String>();
+		for(String s : connection.getTopicList()){
+			if(s.startsWith("SERVICE")){
+				list.add(s);
+				connection.createTopic(s,1);
 			}
 		}
-		return workerTopics;
+		return list;
 	}
 
 	public PeerStatusInfo getLatestUpdate(String key){
@@ -117,47 +77,31 @@ public class MasterDaemonStarter {
 		connection.publishToTopic("info", key, "info");
 	}
 
-	/**
-	 * Pauses the workers.
-	 * @throws Exception
-	 */
-	public void pause() throws Exception
-	{
-		// Just publish to workers' topics the string "pause"
-		// under the key "pause"
-		for(String topicName : workerTopics)
-			connection.publishToTopic("pause", topicName, "pause");
+	public void pause() throws Exception{
+		for(String s : list)
+			connection.publishToTopic("pause", s, "pause");
 	}
 
-	/**
-	 * Stops the workers.
-	 * @throws Exception
-	 */
-	public void stop() throws Exception
-	{
-		for(String topicName : workerTopics)
-			connection.publishToTopic("stop", topicName, "stop");
+
+	public void stop() throws Exception{
+		for(String s : list)
+			connection.publishToTopic("stop", s, "stop");
 	}
 
-	/**
-	 * Starts/resumes the workers.
-	 * @throws Exception
-	 */
-	public void play() throws Exception
-	{
-		for(String topicName : workerTopics)
-			connection.publishToTopic("play", topicName, "play");
+	public void play() throws Exception{
+		for(String s : list)
+			connection.publishToTopic("play", s, "play");
 	}
 
 
 	public void start(int num,int width,int height,int agents,int maxDistance,int mode,HashMap<String,EntryVal<Integer, Boolean>> config, String selSim,JMasterUI gui){
-		this.numPeers = num;
-		this.numAgents = agents;
-		this.width = width;
-		this.height = height;
-		this.fieldMode = mode;
-		this.jumpDistance = maxDistance;
-		String ip = this.address.getIPaddress();
+		NUM_PEERS = num;
+		NUM_AGENTS = agents;
+		WIDTH = width;
+		HEIGHT = height;
+		MODE = mode;
+		MAX_DISTANCE = maxDistance;
+		String ip = this.data.getIPaddress();
 		Class selClassUI = null;
 		Class selClass = null;	
 //		String curDir=System.getProperty("user.dir")+"/dmason/sim/app/"+selSim;
@@ -195,127 +139,132 @@ public class MasterDaemonStarter {
 //
 //		}
 
-		// Select the class to send to workers		
-		if (selSim.equals("DFlockers")){
-			selClass = DFlockers.class;
-			selClassUI =DFlockersWithUI.class;
-		} else if(selSim.equals("DAntsForage")){
-			selClass = DAntsForage.class;
-			selClassUI = DAntsForageWithUI.class;	
+		
+		
+		if(selSim.equals("DFlockers")){
+			
+				selClass = DFlockers.class;
+				selClassUI =DFlockersWithUI.class;
+			
 		}
+		
+		if(selSim.equals("DAntsForage")){
+				selClass = DAntsForage.class;
+				selClassUI = DAntsForageWithUI.class;	
+			
+			
+		}
+		
 		if(selSim.equals("DParticles")){
 			selClass = DParticles.class;
 			selClassUI =DParticlesWithUI.class;
 		}
 		
-		//
-		if(ip.equals("127.0.0.1"))
-		{
-			try 
-			{
-				ip = InetAddress.getLocalHost().getHostAddress();
-			} catch (UnknownHostException e1) {
-				e1.printStackTrace();
-			}
-		}
-
 		
-		if (mode == DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE)
-		{
-			int cnt = 0;
-			for(String s : config.keySet()){
-				int x = config.get(s).getNum();
-				ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
-				for(int j=0; j < x; j++){
-					StartUpData data = new StartUpData();
-					//data.graphic=false;
-					data.graphic=config.get(s).isFlagTrue();
-					if(cnt == numPeers/2)
-						data.setStep(true);
-					//data.setDef(DAntsForage.class);
-					if(config.get(s).isFlagTrue()){
-						data.setDef(selClassUI);
+
+			if(ip.equals("127.0.0.1"))
+				try 
+			{
+					ip = InetAddress.getLocalHost().getHostAddress();
+			} catch (UnknownHostException e1) {e1.printStackTrace();}
+
+	
+			
+			if(MODE == DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE){
+
+				int cnt=0;
+				for(String s : config.keySet()){
+					int x = config.get(s).getNum();
+					ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
+					for(int j=0;j<x;j++){
+						StartUpData data = new StartUpData();
+						//data.graphic=false;
+						data.graphic=config.get(s).isFlagTrue();
+						if(cnt == NUM_PEERS/2)
+							data.setStep(true);
+						//data.setDef(DAntsForage.class);
+						if(config.get(s).isFlagTrue()){
+							data.setDef(selClassUI);
+						}
+						else{
+							data.setDef(selClass);
+						}
+						data.setParam(new Object[]{ip,this.data.getPort(),MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEIGHT,0,cnt,DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE});
+						classes.add(data);
+						//data.graphic=false;
+						cnt++;
 					}
-					else{
-						data.setDef(selClass);
-					}
-					data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numPeers,numAgents,width,height,0,cnt,DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE});
-					classes.add(data);
-					//data.graphic=false;
-					cnt++;
-				}
-				try{
+					try{
 
 
-					connection.publishToTopic(classes, s, "classes");
+						connection.publishToTopic(classes, s, "classes");
 
-					//JOptionPane.showMessageDialog(null,"Setting completed !");
-					gui.getTextFieldAgents().setEnabled(false);
-					gui.getTextFieldHeight().setEnabled(false);
-					gui.getTextFieldWidth().setEnabled(false);
-					gui.getTextFieldMaxDistance().setEnabled(false);
-					gui.getRadioButtonHorizontal().setEnabled(false);
-					gui.getRadioButtonSquare().setEnabled(false);
-					gui.getjComboRegions().setEnabled(false);
-				}
-
-
-
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		else // (mode == DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE)
-		{
-			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
-			for(int i=0;i<Math.sqrt(numPeers);i++){
-				for(int k=0;k<Math.sqrt(numPeers);k++){
-					StartUpData data = new StartUpData();
-					if(i==k)
-						data.setStep(true);
-					//data.setDef(DAntsForage.class);
-					data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numPeers,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
-					defs.add(data);
-					data.graphic=false;
-				}
-			}
-			int index=0;
-			for(String s : config.keySet()){
-				ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
-				int n = config.get(s).getNum();
-				for(int i=0;i<n;i++){
-					defs.get(index).graphic = config.get(s).isFlagTrue();
-					if(config.get(s).isFlagTrue()){
-						defs.get(index).setDef(selClassUI);
-					}
-					else{
-						defs.get(index).setDef(selClass);
-					}
-					classes.add(defs.get(index));
-					index++;
-				}
-				try{
-					if(connection.publishToTopic(classes, s, "classes")==true){
-
-						gui.getTextFieldAgents().setEditable(false);
-						gui.getTextFieldHeight().setEditable(false);
-						gui.getTextFieldWidth().setEditable(false);
-						gui.getTextFieldMaxDistance().setEditable(false);
+						//JOptionPane.showMessageDialog(null,"Setting completed !");
+						gui.getTextFieldAgents().setEnabled(false);
+						gui.getTextFieldHeight().setEnabled(false);
+						gui.getTextFieldWidth().setEnabled(false);
+						gui.getTextFieldMaxDistance().setEnabled(false);
 						gui.getRadioButtonHorizontal().setEnabled(false);
 						gui.getRadioButtonSquare().setEnabled(false);
-						gui.getjComboRegions().setEditable(false);
-
+						gui.getjComboRegions().setEnabled(false);
 					}
-					else
-						JOptionPane.showMessageDialog(null,"Setting failed !");
 
-				}catch (Exception e) {
-					e.printStackTrace();
+
+
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			else{
+				ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
+				for(int i=0;i<Math.sqrt(NUM_PEERS);i++){
+					for(int k=0;k<Math.sqrt(NUM_PEERS);k++){
+						StartUpData data = new StartUpData();
+						if(i==k)
+							data.setStep(true);
+						//data.setDef(DAntsForage.class);
+						data.setParam(new Object[]{ip,this.data.getPort(),MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEIGHT,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
+						defs.add(data);
+						data.graphic=false;
+					}
+				}
+				int index=0;
+				for(String s : config.keySet()){
+					ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
+					int n = config.get(s).getNum();
+					for(int i=0;i<n;i++){
+						defs.get(index).graphic = config.get(s).isFlagTrue();
+						if(config.get(s).isFlagTrue()){
+							defs.get(index).setDef(selClassUI);
+						}
+						else{
+							defs.get(index).setDef(selClass);
+						}
+						classes.add(defs.get(index));
+						index++;
+					}
+					try{
+						if(connection.publishToTopic(classes, s, "classes")==true){
+
+							gui.getTextFieldAgents().setEditable(false);
+							gui.getTextFieldHeight().setEditable(false);
+							gui.getTextFieldWidth().setEditable(false);
+							gui.getTextFieldMaxDistance().setEditable(false);
+							gui.getRadioButtonHorizontal().setEnabled(false);
+							gui.getRadioButtonSquare().setEnabled(false);
+							gui.getjComboRegions().setEditable(false);
+
+						}
+						else
+							JOptionPane.showMessageDialog(null,"Setting failed !");
+
+					}catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
-	}
 
 		public void hilbert(ArrayList<StartUpData> defs,ArrayList<String> clients)
 		{
@@ -345,7 +294,7 @@ public class MasterDaemonStarter {
 			queue.add(defs.get(8));
 			queue.add(defs.get(3));
 			queue.add(defs.get(4));
-			/*CentralGuiState g = new CentralGuiState(new CentralSimState());
+			/**CentralGuiState g = new CentralGuiState(new CentralSimState());
 		Console c = (Console) g.createController();
 		c.pressPause();*/
 		}

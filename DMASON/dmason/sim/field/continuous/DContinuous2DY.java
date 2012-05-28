@@ -3,6 +3,11 @@ package dmason.sim.field.continuous;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -10,11 +15,13 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
-import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
+import javax.jms.Message;
+import org.apache.activemq.command.ActiveMQObjectMessage;
 import sim.engine.SimState;
 import sim.util.Double2D;
+import sim.util.Int2D;
 import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.engine.RemoteAgent;
@@ -24,8 +31,12 @@ import dmason.sim.field.Entry;
 import dmason.sim.field.MessageListener;
 import dmason.sim.field.Region;
 import dmason.sim.field.UpdateMap;
+import dmason.sim.field.UpdaterThreadForListener;
+import dmason.util.connection.Address;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
+import dmason.util.connection.ConnectionWithJMS;
+import dmason.util.connection.MyMessageListener;
 import dmason.util.visualization.RemoteSnap;
 import dmason.util.visualization.ZoomArrayList;
 
@@ -87,15 +98,18 @@ import dmason.util.visualization.ZoomArrayList;
 
 public class DContinuous2DY extends DContinuous2D
 {	
-	private static Logger logger = Logger.getLogger(DContinuous2DY.class.getCanonicalName());
-	
 	public ArrayList<MessageListener> listeners;
 	private PrintWriter out;
-	private String name;
+	private String NAME;
 	private BufferedImage actualSnap;
 	private WritableRaster writer;
 	private int white[]={255,255,255};
 	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
+	
+	/*
+	private FileOutputStream file;
+	private PrintStream ps;
+	*/
 	
 	/**
 	 * @param discretization the discretization of the field
@@ -107,16 +121,26 @@ public class DContinuous2DY extends DContinuous2D
 	 * @param j j position in the field of the cell
 	 * @param num_peers number of the peers
 	 */
-	public DContinuous2DY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int num_peers, String name)
-	{
+	public DContinuous2DY(double discretization, double width, double height
+			,SimState sm,int max_distance,int i,int j,int num_peers,String name) {
 		super(discretization, width, height);
-		this.sm = sm;		
-		this.jumpDistance = max_distance;
-		this.numPeers = num_peers;	
-		this.cellType = new CellType(i, j);
-		this.listeners = new ArrayList<MessageListener>();
-		this.updates_cache = new ArrayList<Region<Double,Double2D>>();
-		this.name = name;
+		this.sm=sm;		
+		MAX_DISTANCE=max_distance;
+		NUMPEERS=num_peers;	
+		cellType = new CellType(i,j);
+		listeners = new ArrayList<MessageListener>();
+		updates_cache=new ArrayList<Region<Double,Double2D>>();
+		this.NAME = name;
+		
+		/*
+		try {
+			file = new FileOutputStream("Region-"+cellType+".txt");
+			ps = new PrintStream(file);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/
 		
 		setConnection(((DistributedState)sm).getConnection());
 				
@@ -128,63 +152,35 @@ public class DContinuous2DY extends DContinuous2D
 	 */
 	private boolean createRegion()
 	{
-		// Upper left corner's coordinates
-		own_x = (width / numPeers) * cellType.pos_j;
-		own_y = 0; 
+		//upper left corner's coordinates
+		own_x=(width/NUMPEERS)*cellType.pos_j; 
+		own_y=0; // in this mode the y coordinate is ever 0
 		
-		// Own width and height
-		my_width = (int)(width / numPeers);
-		my_height = height;
+		// own width and height
+		my_width=(int) (width/NUMPEERS);
+		my_height=height;
 		
 		//calculating the neighbors
-		int v1 = cellType.pos_j - 1;
-		int v2 = cellType.pos_j + 1;
+		int v1=cellType.pos_j-1;
+		int v2=cellType.pos_j+1;
 		if( v1 >= 0 )
 		{
 			neighborhood.add(cellType.getNeighbourLeft());
 		}
-		if( v2 <= numPeers - 1 )
+		if( v2 <= NUMPEERS-1 )
 		{
 			neighborhood.add(cellType.getNeighbourRight());
 		}	
 		
 		actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
-		writer = actualSnap.getRaster();
+		writer=actualSnap.getRaster();
 		
-		myfield = new RegionDouble(
-				own_x + jumpDistance,            // MyField's x0 coordinate
-				own_y,                           // MyField's y0 coordinate
-				own_x + my_width - jumpDistance, // MyField x1 coordinate
-				height,                          // MyField y1 coordinate
-				width, height);                  // Global width and height 
+		myfield=new RegionDouble(own_x+MAX_DISTANCE,own_y, own_x+my_width-MAX_DISTANCE, own_y+my_height,width,height);
 		
-		rmap.left_out = new RegionDouble(
-				(own_x - jumpDistance + width) % width, // Left-out x0
-				0.0,									// Left-out y0
-				(own_x + width) % (width),				// Left-out x1
-				height,									// Left-out y1
-				width, height);
-		
-		rmap.left_mine = new RegionDouble(
-				(own_x + width) % width,				// Left-mine x0
-				0.0,									// Left-mune y0
-				(own_x + jumpDistance + width) % width,	// Left-mine x1
-				height,									// Left-mine y1
-				width, height);
-		
-		rmap.right_out = new RegionDouble(
-				(own_x + my_width + width) % width,                // Right-out x0
-				0.0,                                               // Right-out y0
-				(own_x + my_width + jumpDistance + width) % width, // Right-out x1
-				height,                                            // Right-out y1
-				width, height);
-		
-		rmap.right_mine = new RegionDouble(
-				(own_x + my_width - jumpDistance + width) % width, // Right-mine x0
-				0.0,											   // Right-mine y0
-				(own_x + my_width + width) % width,                // Right-mine x1
-				height,                                            // Right-mine y1
-				width, height);
+		rmap.left_out=new RegionDouble((own_x-MAX_DISTANCE +width)%width,0.0,(own_x+width)%(width),height,width,height);		
+		rmap.left_mine=new RegionDouble((own_x+width)%width,0.0,(own_x + MAX_DISTANCE +width)%(width),height,width,height);
+		rmap.right_out=new RegionDouble((own_x+my_width+width)%width,0.0,(own_x+my_width+MAX_DISTANCE+width)%(width),height,width,height);
+		rmap.right_mine=new RegionDouble((own_x + my_width -MAX_DISTANCE+width)%width,0.0,(own_x +my_width+width)%(width),height,width,height);
 	
 		return true;
 	}
@@ -229,8 +225,7 @@ public class DContinuous2DY extends DContinuous2D
  					 return this.setObjectLocation(rm,new Double2D(location.x,location.y)); 
  				  } 
  		      }
-		  }
-		  catch (IllegalArgumentException e){ e.printStackTrace(); } 
+		  }catch (IllegalArgumentException e){ e.printStackTrace(); } 
 		  catch (IllegalAccessException e) { e.printStackTrace(); }
 		  catch (SecurityException e) { e.printStackTrace(); } 
 		  catch (NoSuchMethodException e) { e.printStackTrace(); } 
@@ -248,8 +243,8 @@ public class DContinuous2DY extends DContinuous2D
 	{		
 		double shiftx=((DistributedState)sm).random.nextDouble();
 		double shifty=((DistributedState)sm).random.nextDouble();
-		double x=(own_x+jumpDistance)+((my_width+own_x-jumpDistance)-(own_x+jumpDistance))*shiftx;
-	    double y=(own_y+jumpDistance)+((my_height+own_y-jumpDistance)-(own_y+jumpDistance))*shifty;
+		double x=(own_x+MAX_DISTANCE)+((my_width+own_x-MAX_DISTANCE)-(own_x+MAX_DISTANCE))*shiftx;
+	    double y=(own_y+MAX_DISTANCE)+((my_height+own_y-MAX_DISTANCE)-(own_y+MAX_DISTANCE))*shifty;
       
         rm.setPos(new Double2D(x,y));
         
@@ -267,7 +262,7 @@ public class DContinuous2DY extends DContinuous2D
     {  	
     	if(myfield.isMine(location.x,location.y))
     	{    
-    		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
+    		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).NUMVIEWER.getCount()>0)
     			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
     		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
@@ -287,26 +282,26 @@ public class DContinuous2DY extends DContinuous2D
 	 * 	It's called after every step of schedule.
 	 */
 	public synchronized boolean synchro() 
-	{
-		// If there is any viewer, send a snapshot
-		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
+	{		
+		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).NUMVIEWER.getCount()>0)
 		{
-			try
-			{
+			try {
 				ByteArrayOutputStream by = new ByteArrayOutputStream();
 				ImageIO.write(actualSnap, "png", by);
 				by.flush();
+				
 				connection.publishToTopic(new RemoteSnap(cellType, sm.schedule.getSteps()-1, by.toByteArray()), "GRAPHICS", "GRAPHICS");
+				//System.out.println("PUBBLICO AL VISUALIZZATORE");
 				by.close();
 				actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
 				writer=actualSnap.getRaster();
+
 			} catch (Exception e1) {
-				logger.severe("Unable to publish bitmap");
+				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
 		
-		// Remove agents migrated to neighbor regions
 		for(Region<Double, Double2D> region : updates_cache)
 		{
 			for(Entry<Double2D> remote_agent : region)
@@ -315,58 +310,45 @@ public class DContinuous2DY extends DContinuous2D
 			}
 		}
 		
-		// Schedule agents in MyField region
-		for(Entry<Double2D> e : myfield)
+		//every agent in the myfield region is scheduled
+		for(Entry<Double2D> e: myfield)
 		{
-			RemoteAgent<Double2D> rm = e.r;
-			Double2D loc = e.l;
+			RemoteAgent<Double2D> rm=e.r;
+			Double2D loc=e.l;
 			rm.setPos(loc);
 		    this.remove(rm);
 			sm.schedule.scheduleOnce(rm);
-			setObjectLocation(rm, loc);	
+			setObjectLocation(rm,loc);	
 		}   
 		
-		// Update fields using Java Reflection
-		updateFields(); 
+		updateFields(); //update fields with java reflect
 		
-		// Clear update_cache
-		updates_cache = new ArrayList<Region<Double,Double2D>>();
+		updates_cache=new ArrayList<Region<Double,Double2D>>();
 		
 		memorizeRegionOut();
 		
-		// Publish left mine&out regions to correspondent topic
-		if ( rmap.left_out != null )
+		//--> publishing the regions to correspondent topics for the neighbors
+		if( rmap.left_out!=null )
 		{
-			DistributedRegion<Double,Double2D> dr1 = new DistributedRegion<Double,Double2D>(
-					rmap.left_mine,
-					rmap.left_out,
-					sm.schedule.getSteps() - 1,
-					cellType,
-					DistributedRegion.LEFT);
+			DistributedRegion<Double,Double2D> dr1=new DistributedRegion<Double,Double2D>(rmap.left_mine,
+					rmap.left_out,(sm.schedule.getSteps()-1),cellType,DistributedRegion.LEFT);
 			try 
 			{				
-				connection.publishToTopic(dr1, cellType + "L", name);
-			} catch (Exception e1) {
-				logger.severe("Unable to publish region to topic: " + cellType + "L");
-			}
+				connection.publishToTopic(dr1,cellType+"L",NAME);
+				
+			} catch (Exception e1) { e1.printStackTrace(); }
 		}
-		
-		// Publish right mine&out regions to correspondent topic
-		if ( rmap.right_out != null )
+		if( rmap.right_out!=null )
 		{
-			DistributedRegion<Double,Double2D> dr2 = new DistributedRegion<Double,Double2D>(
-					rmap.right_mine,
-					rmap.right_out,
-					sm.schedule.getSteps() - 1,
-					cellType,
-					DistributedRegion.RIGHT);
+			DistributedRegion<Double,Double2D> dr2=new DistributedRegion<Double,Double2D>(rmap.right_mine,rmap.
+					right_out,(sm.schedule.getSteps()-1),cellType,DistributedRegion.RIGHT);
 			try 
 			{		
-				connection.publishToTopic(dr2, cellType + "R", name);
-			} catch (Exception e1) {
-				logger.severe("Unable to publish region to topic: " + cellType + "R");
-			}
+				connection.publishToTopic(dr2,cellType+"R",NAME);
+
+			} catch (Exception e1) {e1.printStackTrace();}
 		}		
+		//<--		
 		
 		//take from UpdateMap the updates for current last terminated step and use 
 		//verifyUpdates() to elaborate informations
@@ -374,33 +356,32 @@ public class DContinuous2DY extends DContinuous2D
 		PriorityQueue<Object> q;
 		try 
 		{
-			q = updates.getUpdates(sm.schedule.getSteps() - 1, 2);
+			q = updates.getUpdates(sm.schedule.getSteps()-1, 2);
 			while(!q.isEmpty())
 			{
 				DistributedRegion<Double, Double2D> region=(DistributedRegion<Double,Double2D>)q.poll();
 				verifyUpdates(region);
 			}
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
+		} catch (InterruptedException e1) { e1.printStackTrace(); }
 		
 		for(Region<Double, Double2D> region : updates_cache)
-			for(Entry<Double2D> e_m : region)
-			{
-					RemoteAgent<Double2D> rm = e_m.r;
-					((DistributedState<Double2D>)sm).addToField(rm, e_m.l);
-			}
+		for(Entry<Double2D> e_m: region)
+		{
+				RemoteAgent<Double2D> rm=e_m.r;
+				((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
+		}
 		
 		this.reset();
+		/*
+		/ps.println(sm.schedule.getSteps()+";"+System.currentTimeMillis());
+		*/
 		 
-		// If there is a zoom viewer active...
 		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 		{
-			try
-			{
-				tmp_zoom.STEP = ((DistributedMultiSchedule)sm.schedule).getSteps() - 1;
-				connection.publishToTopic(tmp_zoom, "GRAPHICS" + cellType, name);
-				tmp_zoom = new ZoomArrayList<RemoteAgent>();
+			try {
+				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
+				connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
+				tmp_zoom=new ZoomArrayList<RemoteAgent>();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -558,7 +539,7 @@ public class DContinuous2DY extends DContinuous2D
 			    				
 		    					tmp_zoom.add(rm);
 		    				
-		    				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
+		    				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).NUMVIEWER.getCount()>0)
 		    				{
 		    	    			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
 		    	    		}
@@ -634,7 +615,7 @@ public class DContinuous2DY extends DContinuous2D
 	@Override
 	public String getID() {
 		// TODO Auto-generated method stub
-		return name;
+		return NAME;
 	}
 	@Override
 	public UpdateMap getUpdates() {
