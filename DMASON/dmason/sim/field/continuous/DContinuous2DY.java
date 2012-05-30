@@ -168,7 +168,7 @@ public class DContinuous2DY extends DContinuous2D
 		
 		rmap.left_mine = new RegionDouble(
 				(own_x + width) % width,				// Left-mine x0
-				0.0,									// Left-mune y0
+				0.0,									// Left-mine y0
 				(own_x + jumpDistance + width) % width,	// Left-mine x1
 				height,									// Left-mine y1
 				width, height);

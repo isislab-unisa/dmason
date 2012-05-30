@@ -84,8 +84,7 @@ public class ConsoleZoom extends sim.display.Console {
     			Display display = new Display(con, mode, 
     					numCell, width, 
     					height, absolutePath,simul,simulation.getSimulationInspectedObject().getClass().getCanonicalName());
-    			display.initComponents();
-    			display.Display.setVisible(true);    			
+    			   			
 		
 		} catch (Exception e) {
 			System.out.println("Problemi in chiusura Console ZOOM!!!!");

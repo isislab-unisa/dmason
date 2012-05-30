@@ -95,8 +95,6 @@ public class LauncherViewer  {
 					path,
 					((SimComboEntry)comboSim.getSelectedItem()).fullZoomName,
 					((SimComboEntry)comboSim.getSelectedItem()).fullSimName);
-			display.initComponents();
-			display.Display.setVisible(true);
 			this.LauncherViewer.dispose();
 		}
 		else

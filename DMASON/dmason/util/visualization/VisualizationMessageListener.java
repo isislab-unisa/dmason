@@ -28,15 +28,15 @@ public class VisualizationMessageListener extends MyMessageListener
 			if((((MyHashMap)parseMessage(arg0)).get("GRAPHICS") instanceof RemoteSnap))
 			{
 				RemoteSnap remSnap = (RemoteSnap)((MyHashMap)parseMessage(arg0)).get("GRAPHICS");
-				if(!disp.STARTED){
+				if(!disp.isStarted){
 				
-					disp.STARTED=true;
+					disp.isStarted=true;
 					
-					disp.STEP=remSnap.step+1;
+					disp.step=remSnap.step+1;
 				
-					if(disp.FIRST_TIME) {
+					if(disp.isFirstTime) {
 						disp.sblock();
-						disp.FIRST_TIME=false;
+						disp.isFirstTime=false;
 					}
 					else disp.updates.forceSblock();
 				}
