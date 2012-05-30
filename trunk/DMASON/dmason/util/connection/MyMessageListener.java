@@ -9,22 +9,35 @@ import javax.jms.MessageListener;
 
 import org.apache.activemq.command.ActiveMQObjectMessage;
 
-/** For receive asynchronously messages we have to create a listener that implements MessageListener interface,
-to implements onMessage(Message arg0),that is the method called when a message is published
-to a specific topic.
-This class provide the parseMessageMethod that allows to avoid every time casts to get the object.
-We declare 'abstract' to force the developers'rewriting...his is a developer's duty, according to his necessities! */
-public abstract class MyMessageListener implements MessageListener,Serializable{
+/**
+ * In order to asynchronously receive messages, we have to create a listener
+ * that implements MessageListener interface and its onMessage(Message arg0)
+ * method (that is the method called when a message is published to a specific
+ * topic). This class is abstract so developers have to rewrite it according 
+ * to their necessities!
+ */
+public abstract class MyMessageListener implements MessageListener, Serializable
+{
 	
 	public Object obj;
 	
 	public MyMessageListener() { obj = null; }
 	
+	/**
+	 * Handles messages received on the queue.
+	 */
 	@Override
-	public abstract void onMessage(Message arg0) ;
+	public abstract void onMessage(Message msg);
 	
-	public final Object parseMessage(Message arg0) throws JMSException{
-		return ((ActiveMQObjectMessage)arg0).getObject();
+	/**
+	 * An utility method in order to avoid manually casting the received
+	 * message.
+	 * @param msg The message received through the queue.
+	 * @return The object carried by the message.
+	 * @throws JMSException 
+	 */
+	public final Object parseMessage(Message msg) throws JMSException{
+		return ((ActiveMQObjectMessage)msg).getObject();
 	}
 	
 	public Object getAsyncMessage(){

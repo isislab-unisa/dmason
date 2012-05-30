@@ -68,7 +68,12 @@ public class DFlockers extends DistributedState<Double2D>
     	this.MODE=(Integer)params[9];
     	gridWidth=(Integer)params[5];
     	gridHeight=(Integer)params[6];
-    }    
+    }
+    
+    public DFlockers()
+    {
+    	
+    }
     
     public void start()
     {

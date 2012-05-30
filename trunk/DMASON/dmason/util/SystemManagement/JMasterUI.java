@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +32,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import sim.display.Console;
+import sim.portrayal.Inspector;
+import sim.portrayal.SimpleInspector;
+import sim.util.Properties;
 import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
@@ -41,17 +45,45 @@ import dmason.util.trigger.Trigger;
 import dmason.util.trigger.TriggerListener;
 
 /**
- * 
- * Class JMasterUI
+ * Provides a GUI to setup the simulation.
+ * @author unascribed
+ * @author Luca Vicidomini
  *
  */
 public class JMasterUI extends JFrame{
-
-	private String[] s;
 	
-	public JMasterUI() {
+	/**
+	 * An utility class used to represent a simulation class as a
+	 * combobox entry -- PLEASE NOTE THIS IS JUST A TEMPORARY
+	 * SOLUTION: simulation's definitions shouldn't be written
+	 * in JMasterUI class!!!
+	 * @author Luca Vicidomini
+	 */
+	class SimComboEntry
+	{
+		/**
+		 * A short name that will be shown to the user.
+		 */
+		String shortName;
 		
+		/**
+		 * Qualified name of the class implementing the proper simulation.
+		 */
+		String fullSimName;
+		
+		/**
+		 * Creates a new entry for the combobox.
+		 * @param shortName A short name that will be shown to the user.
+		 * @param fullSimName Qualified name of the class implementing the proper simulation.
+		 */
+		public SimComboEntry(String shortName, String fullSimName) { this.shortName = shortName; this.fullSimName = fullSimName; }
+		@Override public String toString() { return shortName; }
+	}
+	
+	public JMasterUI()
+	{	
 		initComponents();
+		setSystemSettingsEnabled(false);
     	config = new HashMap<String, EntryVal<Integer,Boolean>>();
 		setTitle("JMasterUI");
 		initializeDefaultLabel();
@@ -164,28 +196,28 @@ public class JMasterUI extends JFrame{
 
 			@Override
 			public void stateChanged(ChangeEvent e) {
-
 				withGui = graphicONcheckBox.isSelected();
 			}
 		});
 
 		jLabelChooseSimulation = new JLabel();
 		jComboBoxChooseSimulation = new JComboBox();
-
-		jComboBoxChooseSimulation.addItem("DFlockers");
-		jComboBoxChooseSimulation.addItem("DParticles");
-		jComboBoxChooseSimulation.addItem("DAntsForage");
-		jComboBoxChooseSimulation.setSelectedIndex(0);
-		selectedSimulation=jComboBoxChooseSimulation.getSelectedItem().toString(); 
-		
+		jComboBoxChooseSimulation.addItem(new SimComboEntry("Flockers", "dmason.sim.app.DFlockers.DFlockers"));
+		jComboBoxChooseSimulation.addItem(new SimComboEntry("Particles", "dmason.sim.app.DParticles.DParticles"));
+		jComboBoxChooseSimulation.addItem(new SimComboEntry("Ants Foraging", "dmason.sim.app.DAntsForage.DAntsForage"));
+		jComboBoxChooseSimulation.addItem(new SimComboEntry("Test Simulation", "dmason.sim.app.Test.TheSimulation"));
+		jComboBoxChooseSimulation.setSelectedIndex(3);
+		selectedSimulation = ((SimComboEntry)jComboBoxChooseSimulation.getSelectedItem()).fullSimName;
 		jComboBoxChooseSimulation.addItemListener(new ItemListener() {
-
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				selectedSimulation = jComboBoxChooseSimulation.getSelectedItem().toString();
-
+				// Prevent executing listener's actions two times
+				if (e.getStateChange() != ItemEvent.SELECTED)
+					return;
+				selectedSimulation = ((SimComboEntry)jComboBoxChooseSimulation.getSelectedItem()).fullSimName;
 			}
 		});
+		
 
 		for(int i=2;i<100;i++)
 			jComboRegions.addItem(i);
@@ -1058,6 +1090,13 @@ public class JMasterUI extends JFrame{
 						tabbedPane2.addTab("Advanced", jPanelAdvanced);
 
 					}
+					
+					//======== jPanel Simulation Parameters
+					jPanelSimParams = new JPanel();
+					{
+						jPanelSimParams.setBorder(new EtchedBorder());
+						tabbedPane2.addTab("Simulation parameters", jPanelSimParams);
+					}
 
 					//======== panelConsole ========
 					{
@@ -1316,8 +1355,8 @@ public class JMasterUI extends JFrame{
 	}
 
 	private void connect(){
-		try {
-
+		try
+		{
 			ip = textFieldAddress.getText();			    
 			port = textFieldPort.getText();  
 			address = new Address(textFieldAddress.getText(),textFieldPort.getText());
@@ -1325,16 +1364,16 @@ public class JMasterUI extends JFrame{
 			connection.setupConnection(address);
 			master = new MasterDaemonStarter(connection);
 
-			if(!master.connectToServer()){
-				notifyArea.append("Connection refused:\n"+"Unable to Connect to "+textFieldAddress.getText()+"\n"+"Check ip address or ip port");
+			if (!master.connectToServer())
+			{
+				notifyArea.append("Connection refused to " + textFieldAddress.getText()+", please check IP address and port.\n");
 			}
 
 			else{
-				textFieldAddress.setEditable(false);
-				textFieldPort.setEditable(false);
-				JOptionPane.showMessageDialog(null,"Connected to the server!!!");
+				setConnectionSettingsEnabled(false);
+				setSystemSettingsEnabled(true);
+				notifyArea.append("Connection estabilished.\n");
 				connected = true;
-
 				ArrayList<String> peers = master.getTopicList();
 				for(String p : peers)
 				{
@@ -1357,7 +1396,7 @@ public class JMasterUI extends JFrame{
 
 
 		// check total number of regions coincides with total number of assignments
-		if((NUM_REGIONS % root.getChildCount()) != 0 || total != NUM_REGIONS)
+		if((numRegions % root.getChildCount()) != 0 || total != numRegions)
 			errors.add("Please check regions number! \n");
 		//check field's misures if horizontal mode is selected
 		if(radioButtonHorizontal.isSelected() && width%num != 0)
@@ -1378,12 +1417,12 @@ public class JMasterUI extends JFrame{
 		ArrayList<String> errors = null;
 		WIDTH = Integer.parseInt(textFieldWidth.getText());   
 		HEIGHT = Integer.parseInt(textFieldHeight.getText());
-		NUM_REGIONS = Integer.parseInt(""+jComboRegions.getSelectedItem());
-		NUM_AGENTS = Integer.parseInt(textFieldAgents.getText());
-		MAX_DISTANCE = Integer.parseInt(textFieldMaxDistance.getText());
+		numRegions = Integer.parseInt(""+jComboRegions.getSelectedItem());
+		numAgents = Integer.parseInt(textFieldAgents.getText());
+		maxDistance = Integer.parseInt(textFieldMaxDistance.getText());
 		
 		try {
-			file = new FileOutputStream("test_cells_"+NUM_REGIONS+"_agents_"+NUM_AGENTS+"_width_"+WIDTH+"_height_"+HEIGHT+".txt");
+			file = new FileOutputStream("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT+".txt");
 			printer=new PrintStream(file);
 		} catch (FileNotFoundException e2) {
 			// TODO Auto-generated catch block
@@ -1393,7 +1432,7 @@ public class JMasterUI extends JFrame{
 			MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
 		else
 			MODE = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
-		errors = checkSyntaxForm(NUM_REGIONS,(Integer)WIDTH,(Integer)HEIGHT,NUM_AGENTS);
+		errors = checkSyntaxForm(numRegions,(Integer)WIDTH,(Integer)HEIGHT,numAgents);
 
 		(new Trigger(connection)).asynchronousReceiveToTriggerTopic(new TriggerListener(notifyArea,file, printer));
 
@@ -1410,7 +1449,7 @@ public class JMasterUI extends JFrame{
 		JOptionPane.showMessageDialog(null,"Setting completed !");
 
 
-		master.start(NUM_REGIONS, (Integer)WIDTH, (Integer)HEIGHT, NUM_AGENTS,MAX_DISTANCE,MODE, config,selectedSimulation,this);
+		master.start(numRegions, (Integer)WIDTH, (Integer)HEIGHT, numAgents,maxDistance,MODE, config,selectedSimulation,this);
 	}
 
 	private void submitDefaultMode(){
@@ -1418,12 +1457,12 @@ public class JMasterUI extends JFrame{
 		//checkSyntaxForm(NUM_REGIONS,(Integer)WIDTH,(Integer)HEIGHT,NUM_AGENTS);
 		WIDTH = Integer.parseInt(textFieldWidth.getText());
 		HEIGHT = Integer.parseInt(textFieldHeight.getText());
-		NUM_REGIONS = Integer.parseInt(""+jComboRegions.getSelectedItem());
-		NUM_AGENTS = Integer.parseInt(textFieldAgents.getText());
-		MAX_DISTANCE = Integer.parseInt(textFieldMaxDistance.getText());
+		numRegions = Integer.parseInt(""+jComboRegions.getSelectedItem());
+		numAgents = Integer.parseInt(textFieldAgents.getText());
+		maxDistance = Integer.parseInt(textFieldMaxDistance.getText());
 		withGui = graphicONcheckBox2.isSelected();
 		try {
-			file = new FileOutputStream("test_cells_"+NUM_REGIONS+"_agents_"+NUM_AGENTS+"_width_"+WIDTH+"_height_"+HEIGHT+".txt");
+			file = new FileOutputStream("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT+".txt");
 			printer=new PrintStream(file);
 		} catch (FileNotFoundException e2) {
 			// TODO Auto-generated catch block
@@ -1437,10 +1476,10 @@ public class JMasterUI extends JFrame{
 		else
 			MODE = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
 		
-		if (NUM_REGIONS % root.getChildCount() != 0)
+		if (numRegions % root.getChildCount() != 0)
 			errors.add("NUM_REGIONS < > = NUM_PEERS\n,please set Advanced mode!");
 		if(errors.size() == 0){
-			int div = NUM_REGIONS / root.getChildCount();
+			int div = numRegions / root.getChildCount();
 			EntryVal<Integer, Boolean> value; 
 			try{
 				for(String topic : master.getTopicList()){
@@ -1455,7 +1494,7 @@ public class JMasterUI extends JFrame{
 			JOptionPane.showMessageDialog(null,"Setting completed !");
 			
 			
-			master.start(NUM_REGIONS, (Integer)WIDTH, (Integer)HEIGHT, NUM_AGENTS,MAX_DISTANCE,MODE, config,selectedSimulation,this);
+			master.start(numRegions, (Integer)WIDTH, (Integer)HEIGHT, numAgents,maxDistance,MODE, config,selectedSimulation,this);
 		
 		
 		}
@@ -1510,7 +1549,7 @@ public class JMasterUI extends JFrame{
 					if(step==0)
 					{
 						initial_time=System.currentTimeMillis();
-						printer.println("Number regions:"+NUM_REGIONS+" Number agents:"+NUM_AGENTS+" Width:"+WIDTH+" Height:"+HEIGHT);
+						printer.println("Number regions:"+numRegions+" Number agents:"+numAgents+" Width:"+WIDTH+" Height:"+HEIGHT);
 						printer.println("Step :0 Time:"+initial_time);
 					}
 					else if(step == limitStep)
@@ -1542,7 +1581,7 @@ public class JMasterUI extends JFrame{
 		//controllo solo numeri non negativi
 		String regex="(\\d)+|((\\d)+\\.(\\d)+)";
 
-		NUM_REGIONS = (Integer)jComboRegions.getSelectedItem();
+		numRegions = (Integer)jComboRegions.getSelectedItem();
 		int numOfPeer = root.getChildCount();
 		
 		if(textFieldMaxDistance.getText().equals(""))
@@ -1561,7 +1600,7 @@ public class JMasterUI extends JFrame{
 
 			else{
 				checkDist=false;
-				MAX_DISTANCE = Integer.parseInt(textFieldMaxDistance.getText());
+				maxDistance = Integer.parseInt(textFieldMaxDistance.getText());
 			}
 		}
 
@@ -1605,10 +1644,10 @@ public class JMasterUI extends JFrame{
 			}
 		}
 
-		labelWriteReg.setText(""+NUM_REGIONS);
+		labelWriteReg.setText(""+numRegions);
 		labelWriteNumOfPeer.setText(""+numOfPeer);
-		if(numOfPeer > 0 && (NUM_REGIONS % numOfPeer) == 0)			
-			labelWriteRegForPeer.setText(""+NUM_REGIONS/numOfPeer);
+		if(numOfPeer > 0 && (numRegions % numOfPeer) == 0)			
+			labelWriteRegForPeer.setText(""+numRegions/numOfPeer);
 		else 
 			labelWriteRegForPeer.setText("");
 
@@ -1626,7 +1665,7 @@ public class JMasterUI extends JFrame{
 			}
 			else{
 				checkAgents=false;
-				NUM_AGENTS = Integer.parseInt(textFieldAgents.getText());
+				numAgents = Integer.parseInt(textFieldAgents.getText());
 			}
 		}
 
@@ -1634,20 +1673,20 @@ public class JMasterUI extends JFrame{
 			MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
 			String w="";
 			String h=""+HEIGHT;
-			if((Integer)WIDTH % NUM_REGIONS == 0)
-				w = ""+(Integer)WIDTH/NUM_REGIONS;
+			if((Integer)WIDTH % numRegions == 0)
+				w = ""+(Integer)WIDTH/numRegions;
 			labelWriteRegWidth.setText(""+w);
 			labelWriteRegHeight.setText(""+h);
 			labelWriteDistrMode.setText("HORIZONTAL MODE");
 		}
 		else{
 			MODE = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
-			int rad = (int) Math.sqrt(NUM_REGIONS);
+			int rad = (int) Math.sqrt(numRegions);
 			String w="";
 			String h="";
 			if((Integer)WIDTH % rad == 0){
-				w = "" + (int)((Integer)WIDTH/Math.sqrt(NUM_REGIONS));
-				h = "" + (int)((Integer)HEIGHT/Math.sqrt(NUM_REGIONS));
+				w = "" + (int)((Integer)WIDTH/Math.sqrt(numRegions));
+				h = "" + (int)((Integer)HEIGHT/Math.sqrt(numRegions));
 			}
 			labelWriteRegWidth.setText(""+w);
 			labelWriteRegHeight.setText(""+h);
@@ -1693,13 +1732,11 @@ public class JMasterUI extends JFrame{
 	private int MODE;
 	private Object WIDTH;
 	private Object HEIGHT;
-	private int NUM_REGIONS;
-	private int NUM_AGENTS;
-	private int MAX_DISTANCE;
+	private int numRegions;
+	private int numAgents;
+	private int maxDistance;
 	private JMasterUI me = this;
-	private String sim;
 	//private JFileChooser files;
-	private boolean gui;
 	public boolean centralGui = true;
 	private static final long serialVersionUID = 1L;
 	private boolean withGui = false;
@@ -1767,6 +1804,7 @@ public class JMasterUI extends JFrame{
 	private JPanel jPanelAdvanced;
 	private JPanel jPanelAdvancedMain;
 	private JPanel jPanelSetButton2;
+	private JPanel jPanelSimParams;
 	private JButton buttonSetConfigDefault2;
 	private JScrollPane scrollPane3;
 	private JTextArea notifyArea;
@@ -1778,20 +1816,23 @@ public class JMasterUI extends JFrame{
 	private int limitStep;
 	// fine codice profiling
 
-	//getters and setters
-	public JRadioButton getRadioButtonHorizontal() {return radioButtonHorizontal;}
-	public void setRadioButtonHorizontal(JRadioButton radioButtonHorizontal) {this.radioButtonHorizontal = radioButtonHorizontal;}
-	public JRadioButton getRadioButtonSquare() {return radioButtonSquare;}
-	public void setRadioButtonSquare(JRadioButton radioButtonSquare) {this.radioButtonSquare = radioButtonSquare;}
-	public JTextField getTextFieldMaxDistance() {return textFieldMaxDistance;}
-	public void setTextFieldMaxDistance(JTextField textFieldMaxDistance) {this.textFieldMaxDistance = textFieldMaxDistance;}
-	public JComboBox getjComboRegions() {return jComboRegions;}
-	public void setjComboRegions(JComboBox jComboRegions) {this.jComboRegions = jComboRegions;}
-	public JTextField getTextFieldWidth() {return textFieldWidth;}
-	public void setTextFieldWidth(JTextField textFieldWidth) {this.textFieldWidth = textFieldWidth;}
-	public JTextField getTextFieldHeight() {return textFieldHeight;}
-	public void setTextFieldHeight(JTextField textFieldHeight) {this.textFieldHeight = textFieldHeight;}
-	public JTextField getTextFieldAgents() {return textFieldAgents;}
-	public void setTextFieldAgents(JTextField textFieldAgents) {this.textFieldAgents = textFieldAgents;}	
-
+	
+	public void setConnectionSettingsEnabled(boolean enabled)
+	{
+		textFieldAddress.setEnabled(enabled);
+		textFieldPort.setEnabled(enabled);
+		//buttonRefreshServerLabel.setEnabled(enabled);
+	}
+	
+	public void setSystemSettingsEnabled(boolean enabled)
+	{
+		textFieldAgents.setEnabled(enabled);
+		textFieldHeight.setEnabled(enabled);
+		textFieldWidth.setEnabled(enabled);
+		textFieldMaxDistance.setEnabled(enabled);
+		radioButtonHorizontal.setEnabled(enabled);
+		radioButtonSquare.setEnabled(enabled);
+		jComboRegions.setEnabled(enabled);
+		jComboBoxChooseSimulation.setEnabled(enabled);
+	}
 }

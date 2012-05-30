@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import javax.jms.JMSException;
 import javax.jms.Message;
 import org.apache.activemq.command.ActiveMQObjectMessage;
 import dmason.sim.field.MessageListener;
@@ -13,153 +14,150 @@ import dmason.util.connection.MyHashMap;
 import dmason.util.connection.MyMessageListener;
 
 /**
- * @author Ada Mancuso 
- * Even if it seems a little bit complex,this is just a listener that receive all commands from the MasterDaemonStarter
- * executes them.For out System Management architecture we've chosen a Master-Worker view,in which Master commands and
- * Workers execute.To make a Worker reusable after a simulation,in order to having not need of restarting it,i've created a
- * Master Worker that only connects to the server and many sub-worker(one for each field's region assigned) that do run their
- * simulation portion and after that exit.So i've used a Master-Worker architecture also in the Worker part :)
- * Then, when the listener receive a command as "pause","play","stop",it has to send the same command to all the sub-worker,using 
- * a Socket communication channel(i also thought to use a PipedIOStream).
+ * Even if it seems a little bit complex, this is just a listener that receive
+ * all commands from the MasterDaemonStarter and executes them.
+ * For out System Management architecture we've chosen a Master-Worker view,
+ * in which Master commands and Workers execute. To make a Worker reusable
+ * after a simulation, in order to having not need of restarting it, I've 
+ * created a Master Worker that only connects to the server and many
+ * sub-worker (one for each field's region assigned) that do run their 
+ * simulation portion and after that exit. So I've used a Master-Worker 
+ * architecture also in the Worker part :)
+ * Then, when the listener receive a command as "pause", "play", "stop", it
+ * has to send the same command to all the sub-worker, using 
+ * a Socket communication channel (I also thought to use a PipedIOStream).
+ * @author Ada Mancuso
+ * @author Luca Vicidomini
  */
-public class PeerDaemonListener extends MyMessageListener{
-
-	Object t;
-	String NumPeer;
-	int STATUS=3;
-	static int PLAY=0;
-	static int PAUSE=1;
-	static int STOP=2;
-	static int START=3;
+public class PeerDaemonListener extends MyMessageListener
+{
+	// Valid values for status
+	static final int RUNNING = 0;
+	static final int PAUSED  = 1;
+	static final int STOPPED = 2;
+	static final int STARTED = 3;
+	
 	static int cnt;
-	public StartWorkerInterface gui;	
-	public int STEP=0;
-	PeerDaemonStarter daemon;
+	
+	Object t;
+	//String NumPeer;
+	int status = STARTED;
+	
+	public int step = 0;
+	public StartWorkerInterface gui;
+	private PeerDaemonStarter starter;
 	private ArrayList<Worker> workers;
 	private ArrayList<StartUpData> regions;
 	private HashMap<String,MessageListener> table;
 	private ConnectionNFieldsWithActiveMQAPI connection;
-	Logger log;
 
-	public PeerDaemonListener(PeerDaemonStarter pds,Connection con){
+	public PeerDaemonListener(PeerDaemonStarter pds, Connection con)
+	{
 		super();
-		daemon = pds;
-		this.gui = daemon.gui;
-
-
-		connection = (ConnectionNFieldsWithActiveMQAPI)con;
+		this.starter = pds;
+		this.gui = starter.gui;
+		this.connection = (ConnectionNFieldsWithActiveMQAPI)con;
 	}
 
 	@Override
-	public void onMessage(Message arg0) {
-		try {
-
-			ActiveMQObjectMessage obj = (ActiveMQObjectMessage)arg0;
-			MyHashMap mh = (MyHashMap)obj.getObject();
-
-			if(mh.get("classes") !=null){
+	public void onMessage(Message msg)
+	{
+		try
+		{
+			MyHashMap mh = (MyHashMap)parseMessage(msg);
+			
+			// Received startup data
+			if (mh.get("classes") != null)
+			{
 				regions = (ArrayList<StartUpData>) mh.get("classes");
 				table = new HashMap<String, MessageListener>();
 				workers = new ArrayList<Worker>();
+				gui.writeMessage("--> " + regions.size() + " class definitions received!\n");
 
-
-				gui.writeMessage("-->"+regions.size()+" class definitions received!\n");
-
-
-
-				for(StartUpData data : regions){
-					Worker wui = new Worker(data,connection);
+				for (StartUpData data : regions)
+				{
+					Worker wui = new Worker(data, connection);
 					workers.add(wui);
 				}
 				initializeTable();
 			}
 
+			// Received request to publish peer informations
+			if (mh.get("info") != null)
+			{
+				starter.info();
+			}
 
-
-			if(mh.get("info")!=null)
-				daemon.info();
-
-			if(mh.get("play")!=null){
-				if(STATUS == START){
-
-					gui.writeMessage("-->Start Simulation!\n");
-
-
-
-					for(Worker w : workers)
-						new starter(w).start();
-					STATUS = PLAY;
+			// Received command to start the simulation
+			if (mh.get("play") != null)
+			{
+				// Worker is at initial state
+				if (status == STARTED)
+				{
+					gui.writeMessage("--> Start Simulation!\n");
+					for (Worker w : workers)
+						new Starter(w).start();
+					status = RUNNING;
 				}
-				else if(STATUS == PAUSE){
-					gui.writeMessage("--->Restart\n");
-
-
-					for(Worker w : workers)
+				// Worked was previously paused
+				else if (status == PAUSED)
+				{
+					gui.writeMessage("---> Resume\n");
+					for (Worker w : workers)
 						w.signal();
-					STATUS = PLAY;
-					//for(Worker w : workers)
-					//w.oneStep();
+					status = RUNNING;
 				}
-
-				else if(STATUS==STOP){	
-
-
-					gui.writeMessage("--->Restart\n");
-
-
-					for(StartUpData data : regions){
-						Worker wui = new Worker(data,connection);
+				// Worker was previously stopped
+				else if (status == STOPPED){	
+					gui.writeMessage("---> Restart\n");
+					for (StartUpData data : regions)
+					{
+						Worker wui = new Worker(data, connection);
 						workers.add(wui);
 					}
-
-
-
-					for(Worker w : workers)
-						new starter(w).start();
-					STATUS = PLAY;
+					for (Worker w : workers)
+					{
+						new Starter(w).start();
+					}
+					status = RUNNING;
 				}
 			}
-			if(mh.get("pause")!=null){
-				if(STATUS == PLAY){
-					gui.writeMessage("-->Pause\n");
-
-
-					for(Worker w : workers)
+			
+			// Received command to pause the simulation
+			if (mh.get("pause") != null)
+			{
+				// Worker was running the simulation
+				if (status == RUNNING)
+				{
+					gui.writeMessage("--> Pause\n");
+					for (Worker w : workers)
 						w.await();
-					STATUS = PAUSE;
+					status = PAUSED;
 				}
-				//				else if(STATUS == PAUSE)
-				//				{
-				//				   
-				//							gui.writeMessage("--->Restart\n");
-				//					
-				//					
-				//					
-				//					for(Worker w : workers)
-				//						w.signal();
-				//					STATUS = PLAY;
-				//				}
 			}
-			if(mh.get("stop")!=null){
-
-				gui.writeMessage("-->Stop\n");
-
-				for(Worker w : workers)
+			
+			// Received command to stop the simulation
+			if (mh.get("stop") != null)
+			{
+				gui.writeMessage("--> Stop\n");
+				for (Worker w : workers)
 					w.stop_play();	
 				workers = new ArrayList<Worker>();
-				//					table = null;
-				//					regions = null;
-				STATUS = STOP;
+				// table = null;
+				// regions = null;
+				status = STOPPED;
 			}
-		}catch (Exception e) {e.printStackTrace();}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void initializeTable()
 	{
-		for(Worker w : workers)
+		for (Worker w : workers)
 		{
 			ArrayList<MessageListener> list = w.getListeners();
-			for(MessageListener x : list)
+			for (MessageListener x : list)
 			{
 				table.put(x.getTopic(),x);
 			}
@@ -171,21 +169,23 @@ public class PeerDaemonListener extends MyMessageListener{
 		}
 	}
 
-	class starter extends Thread{
-
+	class Starter extends Thread
+	{
 		Worker w;
 
-		public starter(Worker w) {
+		public Starter(Worker w)
+		{
 			super();
 			this.w = w;
 		}
 
 		@Override
-		public void run() {
+		public void run()
+		{
 			super.run();
 			cnt--;
-			if(cnt == 0)
-				STATUS = PLAY;
+			if (cnt == 0)
+				status = RUNNING;
 			w._start();
 		}
 	}

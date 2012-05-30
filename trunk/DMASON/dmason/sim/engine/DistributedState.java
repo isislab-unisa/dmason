@@ -252,6 +252,11 @@ public abstract class DistributedState<E> extends SimState
 		 }
 	 }
 
+	 public DistributedState()
+	 {
+		 super(null, null);
+	 }
+	 
 	 public DistributedState(int max_d,int num_peers,int num_agents,int i, int j,String ip,
 			 String port,int mode, boolean isToroidal, DistributedMultiSchedule<E> sched) 
 	 {

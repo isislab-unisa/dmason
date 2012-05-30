@@ -12,18 +12,12 @@ import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.util.connection.Address;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
-import dmason.sim.app.DAntsForage.DAntsForage;
-import dmason.sim.app.DAntsForage.DAntsForageWithUI;
-import dmason.sim.app.DFlockers.DFlockers;
-import dmason.sim.app.DFlockers.DFlockersWithUI;
-import dmason.sim.app.DParticles.DParticles;
-import dmason.sim.app.DParticles.DParticlesWithUI;
 
 public class MasterDaemonStarter {
 	/**
-	 * The number of peers involved in the simulation.
+	 * The number of regions the field is split in.
 	 */
-	private int numPeers;
+	private int numRegions;
 	
 	/**
 	 * Max distance an agent can travel in a single step. 
@@ -65,9 +59,8 @@ public class MasterDaemonStarter {
 	/**
 	 * Constructor.
 	 * @param conn Connection with a provider.
-	 * @throws Exception
 	 */
-	public MasterDaemonStarter(Connection conn) throws Exception
+	public MasterDaemonStarter(Connection conn)
 	{
 		connection = (ConnectionNFieldsWithActiveMQAPI)conn;
 		address = connection.getAdress();
@@ -96,7 +89,8 @@ public class MasterDaemonStarter {
 	 * @return An <code>ArrayList<String></code> of workers' topic names
 	 * @throws Exception
 	 */
-	public ArrayList<String> getTopicList() throws Exception{
+	public ArrayList<String> getTopicList() throws Exception
+	{
 		workerTopics = new ArrayList<String>();
 		for(String topicName : connection.getTopicList())
 		{
@@ -109,11 +103,12 @@ public class MasterDaemonStarter {
 		return workerTopics;
 	}
 
-	public PeerStatusInfo getLatestUpdate(String key){
+	public PeerStatusInfo getLatestUpdate(String key)
+	{
 		return myml.getLatestUpdate(key);
 	}
 
-	public void info(String key)throws Exception{
+	public void info(String key) throws Exception{
 		connection.publishToTopic("info", key, "info");
 	}
 
@@ -149,67 +144,50 @@ public class MasterDaemonStarter {
 			connection.publishToTopic("play", topicName, "play");
 	}
 
-
-	public void start(int num,int width,int height,int agents,int maxDistance,int mode,HashMap<String,EntryVal<Integer, Boolean>> config, String selSim,JMasterUI gui){
-		this.numPeers = num;
+	/**
+	 * 
+	 * @param regions Number of regions the field is split in.
+	 * @param width Field width.
+	 * @param height Field height.
+	 * @param agents Number of agents in the simulation.
+	 * @param maxDistance Max distance an agent can travel in a single
+	 *            simulation step.
+	 * @param mode A value from <code>DSparseGrid2DFactory</code> specifying
+	 *            if the field is horizontally split or as grid.
+	 * @param config An HashMap of <code>&lt;String, EntryVal&gt;</code> where
+	 * 		      each String is a worker's topic name, each EntryVal is
+	 *            that topic configuration. Each EntryVal is in fact in the 
+	 *            form <code>EntryVal&lt;Integer, Boolean&gt;</code> where 
+	 *            each Integer is the number of fields to simulate on that
+	 *            worker, each Boolean is <code>true</code> if the worked
+	 *            must start simulation's GUIState.
+	 * @param selSim Selected simulation class' canonical name.
+	 * @param gui A reference to JMasterUI. 
+	 */
+	public void start(int regions, int width, int height, int agents, int maxDistance, int mode, HashMap<String, EntryVal<Integer, Boolean>> config, String selSim, JMasterUI gui)
+	{
+		this.numRegions = regions;
 		this.numAgents = agents;
 		this.width = width;
 		this.height = height;
 		this.fieldMode = mode;
 		this.jumpDistance = maxDistance;
 		String ip = this.address.getIPaddress();
-		Class selClassUI = null;
-		Class selClass = null;	
-//		String curDir=System.getProperty("user.dir")+"/dmason/sim/app/"+selSim;
-//		String packagePath="dmason.sim.app."+selSim+".";
-//		File simulationList =new File(curDir);
-//		for(File fileSimulation : simulationList.listFiles()){
-//			if(fileSimulation.isFile()  && fileSimulation.getName().contains(".java"))
-//				if(fileSimulation.getName().contains("WithUI")){
-//
-//					try {
-//						
-//						selClassUI=Class.forName(packagePath+""+fileSimulation.getName().split(".java")[0]);
-//					    System.out.println(packagePath+""+fileSimulation.getName().split(".java")[0]);
-//					} catch (ClassNotFoundException e) {
-//						System.err.println("Unable to create class with UI :"+packagePath+fileSimulation.getName());
-//						e.printStackTrace();
-//					}
-//
-//
-//				}
-//				
-//				else{
-//					if(fileSimulation.getName().split(".java")[0].equals(selSim)){
-//						try {
-//							selClass=Class.forName(packagePath+""+fileSimulation.getName().split(".java")[0]);
-//							System.out.println("2"+packagePath+""+fileSimulation.getName().split(".java")[0]);
-//						
-//						} catch (ClassNotFoundException e) {
-//							System.err.println("Unable to create class :"+packagePath+fileSimulation.getName());
-//							e.printStackTrace();
-//						}
-//					}
-//
-//				}
-//
-//		}
+		Class<?> selClassUI = null;
+		Class<?> selClass = null;	
 
-		// Select the class to send to workers		
-		if (selSim.equals("DFlockers")){
-			selClass = DFlockers.class;
-			selClassUI =DFlockersWithUI.class;
-		} else if(selSim.equals("DAntsForage")){
-			selClass = DAntsForage.class;
-			selClassUI = DAntsForageWithUI.class;	
-		}
-		if(selSim.equals("DParticles")){
-			selClass = DParticles.class;
-			selClassUI =DParticlesWithUI.class;
+		// Try to load the class definitions used by selected simulation
+		try
+		{
+			selClass = Class.forName(selSim);
+			selClassUI = Class.forName(selSim + "WithUI");
+		} catch (ClassNotFoundException e2) {
+			System.err.println("Unable to load the simulation class " + selSim);
+			e2.printStackTrace();
 		}
 		
 		//
-		if(ip.equals("127.0.0.1"))
+		if (ip.equals("127.0.0.1"))
 		{
 			try 
 			{
@@ -223,95 +201,80 @@ public class MasterDaemonStarter {
 		if (mode == DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE)
 		{
 			int cnt = 0;
-			for(String s : config.keySet()){
-				int x = config.get(s).getNum();
+			// Repeat for each worker
+			for (String workerTopic : config.keySet())
+			{
+				int fieldsInWorker = config.get(workerTopic).getNum();
 				ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
-				for(int j=0; j < x; j++){
+				// Repeat for each field managed by this worker
+				for (int i = 0; i < fieldsInWorker; i++)
+				{
 					StartUpData data = new StartUpData();
-					//data.graphic=false;
-					data.graphic=config.get(s).isFlagTrue();
-					if(cnt == numPeers/2)
+					if (cnt == numRegions / 2)
 						data.setStep(true);
-					//data.setDef(DAntsForage.class);
-					if(config.get(s).isFlagTrue()){
+
+					if (config.get(workerTopic).isFlagTrue())
+					{
+						data.graphic = true;
 						data.setDef(selClassUI);
 					}
-					else{
+					else
+					{
+						data.graphic = false;
 						data.setDef(selClass);
 					}
-					data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numPeers,numAgents,width,height,0,cnt,DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE});
+					data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,0,cnt,DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE});
 					classes.add(data);
-					//data.graphic=false;
 					cnt++;
 				}
-				try{
-
-
-					connection.publishToTopic(classes, s, "classes");
-
-					//JOptionPane.showMessageDialog(null,"Setting completed !");
-					gui.getTextFieldAgents().setEnabled(false);
-					gui.getTextFieldHeight().setEnabled(false);
-					gui.getTextFieldWidth().setEnabled(false);
-					gui.getTextFieldMaxDistance().setEnabled(false);
-					gui.getRadioButtonHorizontal().setEnabled(false);
-					gui.getRadioButtonSquare().setEnabled(false);
-					gui.getjComboRegions().setEnabled(false);
-				}
-
-
-
-				catch (Exception e) {
-					e.printStackTrace();
-				}
+				// Publish informations about simulation to worker's topic
+				connection.publishToTopic(classes, workerTopic, "classes");
 			}
+			
+			gui.setSystemSettingsEnabled(false);
 		}
 		else // (mode == DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE)
 		{
+			// For each region...
 			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
-			for(int i=0;i<Math.sqrt(numPeers);i++){
-				for(int k=0;k<Math.sqrt(numPeers);k++){
+			for (int i=0;i<Math.sqrt(numRegions);i++){
+				for (int k=0;k<Math.sqrt(numRegions);k++){
 					StartUpData data = new StartUpData();
-					if(i==k)
+					// Set step on the central region
+					if (i==k && i == Math.sqrt(numRegions) / 2)
 						data.setStep(true);
-					//data.setDef(DAntsForage.class);
-					data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numPeers,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
+					data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
 					defs.add(data);
 					data.graphic=false;
 				}
 			}
 			int index=0;
-			for(String s : config.keySet()){
+			for (String workerTopic : config.keySet())
+			{
 				ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
-				int n = config.get(s).getNum();
-				for(int i=0;i<n;i++){
-					defs.get(index).graphic = config.get(s).isFlagTrue();
-					if(config.get(s).isFlagTrue()){
+				int fieldsInWorker = config.get(workerTopic).getNum();
+				for(int i=0;i<fieldsInWorker;i++)
+				{
+					defs.get(index).graphic = config.get(workerTopic).isFlagTrue();
+					if(config.get(workerTopic).isFlagTrue())
+					{
 						defs.get(index).setDef(selClassUI);
 					}
-					else{
+					else
+					{
 						defs.get(index).setDef(selClass);
 					}
-					classes.add(defs.get(index));
+					classes.add(defs.get(index));					
 					index++;
 				}
-				try{
-					if(connection.publishToTopic(classes, s, "classes")==true){
 
-						gui.getTextFieldAgents().setEditable(false);
-						gui.getTextFieldHeight().setEditable(false);
-						gui.getTextFieldWidth().setEditable(false);
-						gui.getTextFieldMaxDistance().setEditable(false);
-						gui.getRadioButtonHorizontal().setEnabled(false);
-						gui.getRadioButtonSquare().setEnabled(false);
-						gui.getjComboRegions().setEditable(false);
-
-					}
-					else
-						JOptionPane.showMessageDialog(null,"Setting failed !");
-
-				}catch (Exception e) {
-					e.printStackTrace();
+				if(connection.publishToTopic(classes, workerTopic, "classes")==true)
+				{
+					gui.setSystemSettingsEnabled(false);
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(null,"Setting failed !");
 				}
 			}
 		}

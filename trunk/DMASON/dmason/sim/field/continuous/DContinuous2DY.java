@@ -30,7 +30,8 @@ import dmason.util.visualization.RemoteSnap;
 import dmason.util.visualization.ZoomArrayList;
 
 /**
- *  <h3>This Field extends Continuous2D, to be used in a distributed environment. All the necessary informations for 
+ *  <h3>This Field extends Continuous2D, to be used in a distributed
+ *  environment. All the necessary informations for 
  *  the distribution of simulation are wrapped in this class.</h3>
  * <p> This version is for a distribution in a <i>horizontal mode</i>.
  *  It represents the field managed by a single peer.
@@ -49,8 +50,8 @@ import dmason.util.visualization.ZoomArrayList;
  *  <li> A Connection object for an abstract connection</li>
  *  <li> A CellType object for differentiate the field</li>
  *  </ul>
- *  This is an example for a horizontal mode distribution with 'NUM_PEERS' peers (only to distinguish the regions):
- *  (for code down)
+ *  This is an example for a horizontal mode distribution with 'NUM_PEERS'
+ *  peers (only to distinguish the regions):  (for code down)
  *  <p>
  * <ul>
  *	<li>MYFIELD : Region to be simulated by peer.</li>
@@ -366,7 +367,23 @@ public class DContinuous2DY extends DContinuous2D
 			} catch (Exception e1) {
 				logger.severe("Unable to publish region to topic: " + cellType + "R");
 			}
-		}		
+		}
+		
+		// Publish informations about simulation
+		Class<?> simClass = sm.getClass();
+		Method[] methods = simClass.getDeclaredMethods();
+		for (Method m : methods)
+		{
+			Logger l = Logger.getLogger("DContinuous2DY");
+			if (m.getName().equals("getNumAgents"))
+				try {
+					l.info( "[" + cellType.pos_i + ", " + cellType.pos_j + "] // "
+							+ "    step:" + (sm.schedule.getSteps() - 1)
+							+ "    " + m.getName() + ":" + m.invoke(sm, new Object[0]));
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+		}
 		
 		//take from UpdateMap the updates for current last terminated step and use 
 		//verifyUpdates() to elaborate informations
