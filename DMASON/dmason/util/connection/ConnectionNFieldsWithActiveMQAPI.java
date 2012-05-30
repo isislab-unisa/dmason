@@ -21,8 +21,6 @@ import org.apache.activemq.command.ActiveMQTopic;
 
 public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Serializable
 {
-	private static Logger logger = Logger.getLogger(ConnectionNFieldsWithActiveMQAPI.class.getCanonicalName());
-	
 	private ActiveMQConnection connection;
 	
 	/**
@@ -88,8 +86,8 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Seri
 			connection.start();
 			return true;
 		}catch (Exception e) {
-			logger.severe("Unable to create a connection with the provider at address " + strAddr);
-			//e.printStackTrace();
+			System.err.println("Unable to create a connection with the provider at address " + strAddr);
+			e.printStackTrace();
 			return false;
 		}
 		
@@ -107,14 +105,14 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Seri
 			subscribers.put(topicName, (ActiveMQTopicSubscriber) subSession.createSubscriber(subSession.createTopic(topicName)));
 			return true;
 		} catch (Exception e) {
-			logger.severe("Unable to subscrive to topic: " + topicName);
+			System.err.println("Unable to subscribe to topic: " + topicName);
 			e.printStackTrace();
 			return false;
 		}
 	}
 
 	@Override
-	public synchronized boolean publishToTopic(Serializable object, String topicName, String key) throws Exception
+	public synchronized boolean publishToTopic(Serializable object, String topicName, String key)
 	{
 		if (!topicName.equals("") || !(object == null))
 		{
@@ -132,7 +130,7 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Seri
 					contObj.put(topicName, mm);
 					return true;
 				} catch (Exception e) {
-					logger.severe("Can't publish:" + "\n"
+					System.err.println("Can't publish:" + "\n"
 							+ "    topicName: " + topicName          + "\n"
 							+ "    key      : " + key                + "\n"
 							+ "    object   : " + object.toString() );
@@ -157,7 +155,7 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Seri
 			subscribers.get(key).setMessageListener(listener);
 			return true;
 		} catch (Exception e) {
-			logger.severe("Failed to enable asynchronous reception... probably no message listener set.");
+			System.err.println("Failed to enable asynchronous reception... probably no message listener set.");
 			e.printStackTrace();
 			return false;
 		}
@@ -177,7 +175,7 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Seri
 			subscribers.get(key).setMessageListener(listener);
 			return true;
 		} catch (Exception e) {
-			logger.severe("Failed to enable asynchronous reception.");
+			System.err.println("Failed to enable asynchronous reception.");
 			e.printStackTrace();
 			return false;
 		}
@@ -187,9 +185,13 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Seri
 	 * Given a string, creates a topic's identifier, referring to a
 	 * physical topic on the provider. Also creates a publisher, because
 	 * when a peer creates a topic, certainly it will publish on it.
+	 * @param topicName Identifier to assign to the newly created topic.
+	 * @param numFields
+	 * @return <code>true</code> if the connection was successfully established.
 	 */
 	@Override
-	public boolean createTopic(String topicName, int numFields) throws Exception {
+	public boolean createTopic(String topicName, int numFields)
+	{
 		try
 		{
 			ActiveMQTopic topic = new ActiveMQTopic(topicName);
@@ -200,7 +202,7 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Seri
 			publishers.put(topicName,p);
 			return true;
 		} catch (Exception e) {
-			logger.severe("Unable to create topic: " + topicName);
+			System.err.println("Unable to create topic: " + topicName);
 			e.printStackTrace();
 			return false;
 		}

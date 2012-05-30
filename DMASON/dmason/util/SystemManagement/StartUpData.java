@@ -5,11 +5,29 @@ import java.io.Serializable;
 public class StartUpData implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * The simulation class.
+	 */
 	private Class def;
+	
+	/**
+	 * Parameters to pass to simulation's constructor.
+	 */
 	private Object[] param;
+	
+	/**
+	 * <code>true</code> if GUI must be shown on workers.
+	 */
 	public boolean graphic;
+	
+	/**
+	 * <code>true</code> if this worker must publish the current step to the
+	 * "step" topic, in order for the central console to read it.
+	 */
 	public boolean step = false;
-	public int pos_x,pos_y;
+	public int pos_x;
+	public int pos_y;
 	public boolean local;
 
 	public StartUpData(Class def, Object[] param, boolean graphic,boolean local) {
