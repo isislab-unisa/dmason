@@ -1,7 +1,12 @@
 package dmason.util.SystemManagement;
 import java.awt.*;
 import java.awt.event.*;
+import java.net.InetAddress;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Scanner;
+import java.util.TimerTask;
+
 import javax.swing.*;
 
 import dmason.util.connection.Address;
@@ -9,38 +14,48 @@ import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 
 /**
  * Executable, GUI version worker.
+ *
+ *@author Mario Fiore Vitale (reconnection)
  */
-public class StartWorkerWithGui extends JFrame implements StartWorkerInterface
+public class StartWorkerWithGui extends JFrame implements StartWorkerInterface , Observer
 {	
 	private static final long serialVersionUID = 1L;
 	public boolean START = false;
+	
+	//private static final long SCHEDULE_INTERVAL = 10+1000L;//2 * 60 * 1000L;
+	//private static final long SCHEDULE_DELAY = 10 * 1000L;
+	//private java.util.Timer timer = new java.util.Timer();
 	
 	/**
 	 * Connection with the provider.
 	 */
 	private ConnectionNFieldsWithActiveMQAPI connection;
 	
+	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+	// Generated using JFormDesigner Evaluation license - aaaa aaaa
+	private JScrollPane scrollPane1;
+	public JTextArea textArea;
+	private JButton btnConnect;
+	private JLabel label1;
+	private JLabel label2;
+	private JComboBox cmbPort;
+	private JLabel label3;
+	public JLabel labelnumber;
+	private JLabel lblLogo;
+	private JComboBox cmbIp;
+
 	public StartWorkerWithGui()
 	{
 		initComponents();
 		connection = new ConnectionNFieldsWithActiveMQAPI();
+		
+		connection.addObserver(this);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
+		
+		//initSchedule();
 	}
 
-	private void btnConnectOnClick(ActionEvent e) {
-		try {
-			connection.setupConnection(new Address((String)cmbIp.getSelectedItem(), "61616"));
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		new PeerDaemonStarter(connection, this);
-		cmbIp.setEditable(false);
-		cmbPort.setEditable(false);
-	}
-
-	
 	private void initComponents() {
 		scrollPane1 = new JScrollPane();
 		textArea = new JTextArea();
@@ -58,12 +73,12 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface
 		//======== this ========
 		setTitle("D.MASON WORKER");
 		Container contentPane = getContentPane();
-
+	
 		//======== scrollPane1 ========
 		{
 			scrollPane1.setViewportView(textArea);
 		}
-
+	
 		//---- btnConnect ----
 		btnConnect.setText("Connect");
 		btnConnect.addActionListener(new ActionListener() {
@@ -72,27 +87,27 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface
 				btnConnectOnClick(e);
 			}
 		});
-
+	
 		//---- label1 ----
 		label1.setText("Server IP:");
-
+	
 		//---- label2 ----
 		label2.setText("Server port:");
-
+	
 		//---- label3 ----
 		label3.setText("");
-
+	
 		//---- labelnumber ----
 		labelnumber.setText("");
-
+	
 		//---- label4 ----
 		lblLogo.setText("Distributed Mason 'failed to load image'");
 		lblLogo.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/carmineworker.png")));
-
+	
 		//---- comboBox ----
 		cmbIp.setEditable(true);
 		cmbPort.setEditable(true);
-
+	
 		Scanner in=new Scanner(ClassLoader.getSystemClassLoader().getResourceAsStream("dmason/resource/file/urlworker"));
 		while(in.hasNext())
 		{
@@ -105,7 +120,7 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface
 		cmbIp.setSelectedIndex(0);
 		cmbPort.setSelectedIndex(0);
 	
-
+	
 		GroupLayout contentPaneLayout = new GroupLayout(contentPane);
 		contentPane.setLayout(contentPaneLayout);
 		contentPaneLayout.setHorizontalGroup(
@@ -164,30 +179,61 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface
 		);
 		setSize(410, 495);
 		setLocationRelativeTo(getOwner());
-
+	
 	}
 
-	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-	// Generated using JFormDesigner Evaluation license - aaaa aaaa
-	private JScrollPane scrollPane1;
-	public JTextArea textArea;
-	private JButton btnConnect;
-	private JLabel label1;
-	private JLabel label2;
-	private JComboBox cmbPort;
-	private JLabel label3;
-	public JLabel labelnumber;
-	private JLabel lblLogo;
-	private JComboBox cmbIp;
-	// JFormDesigner - End of variables declaration  //GEN-END:variables
+	/*private void initSchedule() {
+		
+		timer.scheduleAtFixedRate(new TimerTask() {
+			
+			@Override
+			public void run() {
+				
+				if(!connection.isConnected())
+					System.out.println("not connected");
+				else
+					System.out.println("Connected");
+			}
+		}, SCHEDULE_DELAY, SCHEDULE_INTERVAL);
+		
+	}*/
+
+	private void btnConnectOnClick(ActionEvent e) {
+		
+		connect();
+		
+	}
+	
+	private void connect()
+	{
+		try {
+			connection.setupConnection(new Address((String)cmbIp.getSelectedItem(), "61616"));
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		new PeerDaemonStarter(connection, this);
+		cmbIp.setEditable(false);
+		cmbPort.setEditable(false);
+	}
+	@Override
+	public void writeMessage(String message) {
+		textArea.append(message);
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		// TODO Auto-generated method stub
+		
+		if(connection.isConnected())
+			textArea.append("Connection restabilished\n");
+		
+		else
+			textArea.append("Connection refused\n");
+	}
 	
 	public static void main(String[] args)
 	{
 		new StartWorkerWithGui();
-	}
-
-	@Override
-	public void writeMessage(String message) {
-		textArea.append(message);
 	}
 }
