@@ -1,14 +1,25 @@
 package dmason.util.connection;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Observable;
 import java.util.Set;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.logging.Logger;
 
 import javax.jms.DeliveryMode;
+import javax.jms.JMSException;
 import javax.jms.MessageListener;
+import javax.management.MBeanServerConnection;
+import javax.management.MBeanServerInvocationHandler;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -16,11 +27,23 @@ import org.apache.activemq.ActiveMQTopicPublisher;
 import org.apache.activemq.ActiveMQTopicSession;
 import org.apache.activemq.ActiveMQTopicSubscriber;
 import org.apache.activemq.advisory.DestinationSource;
+import org.apache.activemq.broker.BrokerFactory;
+import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.broker.jmx.BrokerView;
+import org.apache.activemq.broker.jmx.BrokerViewMBean;
+import org.apache.activemq.broker.jmx.ManagedRegionBroker;
 import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.apache.activemq.command.ActiveMQTopic;
+import org.apache.activemq.transport.TransportListener;
+import org.apache.activemq.xbean.BrokerFactoryBean;
 
-public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Serializable
+public class ConnectionNFieldsWithActiveMQAPI extends Observable implements ConnectionWithJMS, Serializable, TransportListener 
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3803252417146440187L;
+
 	private ActiveMQConnection connection;
 	
 	/**
@@ -44,6 +67,11 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Seri
 	private HashMap<String,ActiveMQTopic> topics;
 	private MessageListener listener;
 	
+	
+	private boolean isConnected = false;
+	
+
+	
 	/** If you're implementing Connection your program has a standard behavior after receiving:
 	 * you should use only a message listener and with this constructor you can set the 'class listener'.
 	 * For more complex after-receiving actions you had to customize your class or interface...
@@ -65,9 +93,14 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Seri
 	@Override
 	public boolean setupConnection(Address providerAddr)
 	{
+		
+	    // failover enable autoreconnection of client
+		String strAddr = "failover:tcp://" + providerAddr.getIPaddress() + ":" + providerAddr.getPort();
+		
 		// Create an ActiveMQConnectionFactory
-		String strAddr = "tcp://" + providerAddr.getIPaddress() + ":" + providerAddr.getPort();
 		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(strAddr);
+		
+		
 		try
 		{
 			// Use the ActiveMQConnectionFactory to get an ActiveMQConnection object
@@ -76,6 +109,10 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Seri
 			pubSession = (ActiveMQTopicSession) connection.createTopicSession(false, ActiveMQTopicSession.AUTO_ACKNOWLEDGE);
 			// Create a topic session for subscribers
 			subSession = (ActiveMQTopicSession) connection.createTopicSession(false, ActiveMQTopicSession.AUTO_ACKNOWLEDGE);
+			
+			//for reconnection 
+			connection.addTransportListener(this);
+			
 			// initialize HashMaps
 			publishers = new HashMap<String, ActiveMQTopicPublisher>();
 			contObj = new HashMap<String, MyHashMap>();
@@ -84,6 +121,10 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Seri
 			// Enable the in-bound flow of messages
 			providerAddress = providerAddr;
 			connection.start();
+			
+			
+			isConnected = true;
+			
 			return true;
 		}catch (Exception e) {
 			System.err.println("Unable to create a connection with the provider at address " + strAddr);
@@ -92,6 +133,13 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Seri
 		}
 		
 	}
+	
+	
+	public boolean isConnected()
+	{
+		return isConnected;
+	}
+	
 	
 	public Address getAdress()
 	{
@@ -208,6 +256,7 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Seri
 		}
 	}
 	
+	
 	@Override
 	public ArrayList<String> getTopicList() throws Exception
 	{
@@ -226,5 +275,93 @@ public class ConnectionNFieldsWithActiveMQAPI implements ConnectionWithJMS, Seri
 	@Override
 	public void setTable(HashMap table)
 	{	
+	}
+
+	
+	//Connect to ActiveMQ using jmx interface for topic cleanup
+	public void ResetSimulation() 
+	{
+		//log.info("Connecting...");
+		JMXServiceURL url = null;
+		try {
+			url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:1616/jmxrmi");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		JMXConnector jmxc;
+		try {
+			jmxc = JMXConnectorFactory.connect(url);
+			MBeanServerConnection conn = jmxc.getMBeanServerConnection();
+			
+			ObjectName activeMQ = new ObjectName("org.apache.activemq:BrokerName=localhost,Type=Broker");
+			BrokerViewMBean mbean = (BrokerViewMBean) MBeanServerInvocationHandler.newProxyInstance(conn, activeMQ,BrokerViewMBean.class, true);
+			
+			
+			for (ObjectName topic : mbean.getTopics()) {
+				
+				
+				// da sistemare! Non mi piace!
+				String topicDestination = topic.getKeyProperty("Destination");
+				if((!topicDestination.contains("Connection"))&&
+					(!topicDestination.contains("Topic.SERVICE"))&&
+					(!topicDestination.contains("Topic.MASTER"))&&
+					(!topicDestination.contains("Advisory.Topic"))&&
+					(!topicDestination.equals("MASTER"))&&
+					(!topicDestination.equals("Advisory.Queue"))&&
+					(!topicDestination.equals("Advisory.TempQueue"))&&
+					(!topicDestination.equals("Advisory.TempTopic"))&&
+					(!topicDestination.contains("SERVICE")))
+				{
+					//log.info("deleting topic.."+topicDestination);
+					mbean.removeTopic(topicDestination);
+					//log.info("Topic "+topicDestination+" deleted");
+				}
+					
+					
+					
+			} 
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		
+
+		//log.info("Connected");
+		
+	}
+
+	//TransportListner method 
+	@Override
+	public void onCommand(Object arg0) {
+		
+		//not implemented 
+	}
+
+	@Override
+	public void onException(IOException arg0) {
+		
+		//not implemented 
+	}
+
+	@Override
+	public void transportInterupted() {
+		// Notify observers of change
+		
+		isConnected = false;
+		setChanged();
+		notifyObservers();
+		
+	}
+
+	@Override
+	public void transportResumed() {
+		
+		isConnected = true;
+		 // Notify observers of change
+	    setChanged();
+	    notifyObservers();
 	}
 }
