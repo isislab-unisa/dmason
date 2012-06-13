@@ -1,6 +1,8 @@
 package dmason.sim.field.grid.numeric;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import sim.engine.SimState;
 import sim.field.grid.IntGrid2D;
 import sim.util.Int2D;
@@ -10,6 +12,9 @@ import dmason.sim.field.EntryNum;
 import dmason.sim.field.RegionMapNumeric;
 import dmason.sim.field.RegionNumeric;
 import dmason.sim.field.UpdateMap;
+import dmason.sim.loadbalancing.MyCellInterface;
+import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
+import dmason.util.connection.ConnectionWithJMS;
 
 
 /**
@@ -86,7 +91,13 @@ public abstract class DIntGrid2D extends IntGrid2D implements DistributedField<I
      */
 	public ArrayList<String> neighborhood=new ArrayList<String>();
 	
+	public HashMap<Integer,HashMap<CellType, MyCellInterface>> listGrid;
+	
+	public ArrayList<ArrayList<RegionNumeric<Integer,EntryNum<Integer,Int2D>>>> updates_cacheLB;
+	
+	public ConnectionWithJMS connection=new ConnectionNFieldsWithActiveMQAPI();
 
+	
 	public DIntGrid2D(int width, int height, int initialGridValue) {
 		
 		super(width, height, initialGridValue);

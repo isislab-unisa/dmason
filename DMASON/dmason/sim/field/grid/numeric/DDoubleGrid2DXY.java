@@ -16,6 +16,7 @@ import dmason.sim.field.EntryNum;
 import dmason.sim.field.MessageListener;
 import dmason.sim.field.RegionNumeric;
 import dmason.sim.field.UpdateMap;
+import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.visualization.ZoomArrayList;
@@ -348,7 +349,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 			if(setValue(d, l))
 				return true;
 			else
-				System.out.println(cellType+")OH MY GOD! from:" +this.getClass()); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
+				System.out.println(cellType+")OH MY GOD! "+d+" "+l+" from:" +this.getClass()); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
 
 		return false;
 	}
@@ -745,6 +746,54 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	@Override
 	public void setConnection(Connection con) {
 		connection=(ConnectionNFieldsWithActiveMQAPI)con;
+		
+	}
+
+	@Override
+	public HashMap<Integer, MyCellInterface> getToSendForBalance() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setIsSplitted(boolean isSplitted) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isSplitted() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isPrepareForBalance() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isUnited() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void prepareForBalance(boolean prepareForBalance) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public HashMap<Integer, MyCellInterface> getToSendForUnion() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void prepareForUnion(boolean prepareForUnion) {
+		// TODO Auto-generated method stub
 		
 	}
 }

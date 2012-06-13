@@ -13,16 +13,16 @@ public class Starter {
 
 	public static void main(String[] args) 
 	{		
-		int NUM_PEERS=4;
+		int NUM_PEERS=9;
 		int MAX_DISTANCE=1;
-		int NUM_AGENTS=100;
-		int WIDTH=100;
-		int HEGHT=100;
+		int NUM_AGENTS=10;
+		int WIDTH=225;
+		int HEGHT=225;
 		//int MODE=DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
-		int MODE=DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
+		int MODE=DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
 		
-		int TUTORIAL=1;
-		//int TUTORIAL=2;
+		//int TUTORIAL=1;
+		int TUTORIAL=2;
 		//int TUTORIAL=3;
 		if(TUTORIAL==1)
 		if(MODE==DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE)
@@ -52,7 +52,22 @@ public class Starter {
 				     }
 				}
 				for(Console cc:dants) cc.pressPause();
-			}	
+			}else if(MODE==DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE)
+			{
+				ArrayList<Console> dpart=new ArrayList<Console>();
+				for (int i = 0; i < Math.sqrt(NUM_PEERS); i++) {
+				for (int j = 0; j < Math.sqrt(NUM_PEERS); j++) {
+					
+					DParticlesWithUI t=new DParticlesWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,i,j,MODE} );
+				        Console c=(Console)t.createController();
+				        c.pressPause();
+				        dpart.add(c);
+
+				}
+				}
+				
+				for(Console cc:dpart) cc.pressPause();	
+			}		
 				
 		if(TUTORIAL==2)
 			if(MODE==DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE){
@@ -67,7 +82,7 @@ public class Starter {
 				for(Console cc:dants) cc.pressPause();
 			}
 		if(TUTORIAL==2)
-			if(MODE==DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE)
+			if(MODE==DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE)
 			{
 				ArrayList<Console> dants=new ArrayList<Console>();
 				for (int i = 0; i < Math.sqrt(NUM_PEERS); i++) {

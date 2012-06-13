@@ -43,7 +43,7 @@ public class MessageListener extends MyMessageListener
 				
 				DistributedRegionInterface obj = (DistributedRegionInterface)bo.get(field.getID());
 				
-				field.getUpdates().put(obj.getstep(), obj);
+				field.getUpdates().put(obj.getStep(), obj);
 			}
 				
 		} catch (JMSException e) { 

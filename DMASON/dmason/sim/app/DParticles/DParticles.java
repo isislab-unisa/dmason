@@ -53,7 +53,8 @@ public class DParticles extends DistributedState<Int2D> {
             p.xdir = random.nextInt(3)-1;
             p.ydir = random.nextInt(3)-1;
             
-           	if(particles.setDistributedObjectLocationForPeer(new Int2D(p.pos.getX(),p.pos.getY()), p, this))
+           	if(particles.setObjectLocation(p, p.getPos()))
+           		//if(particles.setDistributedObjectLocationForPeer(new Int2D(p.pos.getX(),p.pos.getY()), p, this))
            	{		
            		schedule.scheduleOnce(schedule.getTime()+1.0,p);
            			

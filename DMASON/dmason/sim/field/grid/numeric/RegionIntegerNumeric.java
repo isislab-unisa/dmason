@@ -9,10 +9,45 @@ import dmason.sim.field.RegionNumeric;
  */
 public class RegionIntegerNumeric extends RegionNumeric<Integer, EntryNum<Integer, Int2D>>{
 
+	private static int height; 
+	private static int width;
+	private static boolean isBalanced=false;
+
+		
+	/**
+	 * Constructor of class,it use the costructor of superclass and adds a width and a height
+	 * 
+	 * 
+	 * @param upl_xx        x of left upper corner
+	 * @param upl_yy        y of left upper corner
+	 * @param down_xx       x of right down corner 
+	 * @param down_yy       y of right down corner
+	 * @param width         width of region
+	 * @param height        height of region
+	 */
+	public RegionIntegerNumeric(Integer upl_xx, Integer upl_yy, Integer down_xx,
+			Integer down_yy,Integer width, Integer height) 
+	{
+		super(upl_xx, upl_yy, down_xx, down_yy);	
+
+		this.width = width;
+		this.height = height;
+
+		if(down_xx == 0)
+			super.down_xx = width;
+
+		if(down_yy == 0)
+			super.down_yy = height;	
+		isBalanced=true;
+
+	}
+
 	public RegionIntegerNumeric(Integer upl_xx, Integer upl_yy, Integer down_xx,
 			Integer down_yy) 
 	{
-		super(upl_xx, upl_yy, down_xx, down_yy);	
+		super(upl_xx, upl_yy, down_xx, down_yy);
+		isBalanced=false;
+
 	}
 	
 	/**
@@ -32,14 +67,21 @@ public class RegionIntegerNumeric extends RegionNumeric<Integer, EntryNum<Intege
 		{
 			return null;
 		}
-	
-	  return new RegionIntegerNumeric(upl_xx,upl_yy,down_xx,down_yy);
+		if(isBalanced)
+			return new RegionIntegerNumeric(upl_xx,upl_yy,down_xx,down_yy,MY_WIDTH,MY_HEIGHT);
+		else
+			return new RegionIntegerNumeric(upl_xx,upl_yy,down_xx,down_yy);
 	}
 	
 	@Override
 	public RegionNumeric<Integer, EntryNum<Integer, Int2D>> clone() 
 	{
-		RegionIntegerNumeric r=new RegionIntegerNumeric(upl_xx, upl_yy, down_xx, down_yy);
+		RegionIntegerNumeric r;
+		if(isBalanced)
+			r=new RegionIntegerNumeric(upl_xx, upl_yy, down_xx, down_yy,width,height);
+		else 
+			r=new RegionIntegerNumeric(upl_xx, upl_yy, down_xx, down_yy);
+
 		for(EntryNum<Integer, Int2D> e: this)
 		{
 			int d = e.r;
@@ -50,8 +92,12 @@ public class RegionIntegerNumeric extends RegionNumeric<Integer, EntryNum<Intege
 
 	@Override
 	public boolean isMine(Integer x, Integer y) {
-
-		return (x >= upl_xx) && (x <= down_xx) && (y >= upl_yy) && (y <= down_yy);
+	
+		
+		if(isBalanced)
+			return (x >= upl_xx) && (x < down_xx) && (y >= upl_yy) && (y < down_yy);
+		else
+			return (x >= upl_xx) && (x <= down_xx) && (y >= upl_yy) && (y <= down_yy);
 	}
 
 	public boolean addEntryNum(EntryNum<Integer, Int2D> e) 

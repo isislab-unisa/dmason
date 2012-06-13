@@ -1,11 +1,20 @@
 package dmason.sim.engine;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
+import dmason.sim.field.CellType;
 import dmason.sim.field.DistributedField;
+import dmason.sim.field.DistributedField;
+import dmason.sim.field.UpdatePositionInterface;
+import dmason.sim.loadbalancing.LoadBalancingInterface;
+import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.visualization.ViewerMonitor;
 import sim.engine.Schedule;
 import sim.engine.SimState;
@@ -24,6 +33,16 @@ public class DistributedMultiSchedule<E> extends Schedule
 	
 	public ArrayList<DistributedField<E>> fields;
 	Steppable zombie = null;
+	
+	private HashMap<String, String> peers;
+	private boolean split;
+	private boolean merge;
+	private int numAgents;
+	public int externalAgents;
+	private int numExt;
+	private DistributedState state;
+	
+
 	
     private final ReentrantLock lock = new ReentrantLock();
     private final Condition block = lock.newCondition();
@@ -64,6 +83,14 @@ public class DistributedMultiSchedule<E> extends Schedule
 	public DistributedMultiSchedule() {
 		
 		fields = new ArrayList<DistributedField<E>>();
+		peers = new HashMap<String, String>();
+		split = false;
+		merge = false;
+		numAgents = 0;
+		externalAgents = 0;
+		numExt = 0;
+		
+		
 	}
 	
 	/**
@@ -71,8 +98,25 @@ public class DistributedMultiSchedule<E> extends Schedule
 	 * blank time steps), and then stepping all of them in the decided order.
 	 * Returns FALSE if nothing was stepped -- the schedule is exhausted or time has run out.
 	 */
-	public synchronized boolean step(final SimState state)
+	public synchronized boolean step(final SimState simstate)
     {
+		state = (DistributedState)simstate;
+		
+		//load peers list
+		if(getSteps()==0){
+			int numP = (int) Math.sqrt(state.NUMPEERS);
+			int z = 0;
+			for (int i = 0; i < numP; i++) {
+				for (int j = 0; j < numP; j++) {
+					peers.put(""+z,i+"-"+j);
+					z=z+3;
+				}
+			}
+		}
+		
+		
+				
+				
 		// If not already present, adds a "zombie" agent to the schedule
 		// in order to prevent stopping the simulation.
 		if (zombie == null)
@@ -93,8 +137,17 @@ public class DistributedMultiSchedule<E> extends Schedule
 				monitor.ZOOM = false;
 		}
 		
+		
+		
+		//if(state.TYPE.toString().equals("2-2"))
+    		//System.out.println(state.TYPE+") step: "+(numStep)+" numAgents: "+(numAgents));
+		
+		
+		
 		// Execute the simulation step
 		super.step(state);
+		
+		verifyBalance();
 	
 		// Create a thread for each field assigned to this worker, in order
 		// to do synchronization
@@ -188,4 +241,171 @@ public class DistributedMultiSchedule<E> extends Schedule
 	public ArrayList<DistributedField<E>> getFields() { return fields; }
 	public void setFields(ArrayList<DistributedField<E>> fields) { this.fields = fields; }
 	public void addField(DistributedField<E> f) { fields.add(f); }	
+	
+	public void manageMerge(HashMap<Integer,UpdatePositionInterface> hashUpdatesPosition, 
+			DistributedField field, CellType cellType) {
+		if(getSteps()>state.NUMPEERS)
+		{
+			if(state.TYPE.toString().equals(peers.get((getSteps()%(3*state.NUMPEERS))+"")) && !field.isUnited() 
+					&& merge)
+			{
+				field.prepareForUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreUnion(true);			
+				hashUpdatesPosition.get(MyCellInterface.UP).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.DOWN).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(true);
+		
+				numExt = 0;
+				
+			}
+			else
+				if(state.TYPE.toString().equals(peers.get(((getSteps()%(3*state.NUMPEERS))-1)+"")) && !field.isUnited()
+						&& !field.isSplitted())
+				{
+					field.prepareForUnion(true);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreUnion(false);			
+					hashUpdatesPosition.get(MyCellInterface.UP).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.DOWN).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(false);
+				}
+				else
+				{
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreUnion(false);			
+					hashUpdatesPosition.get(MyCellInterface.UP).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.DOWN).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(false);
+				}
+			
+			HashMap<Integer, MyCellInterface> cellToSend = field.getToSendForUnion();
+			for(Integer s : cellToSend.keySet())
+			{
+				if(cellToSend.get(s)!=null)
+				{
+					MyCellInterface mc = cellToSend.get(s);
+	
+					hashUpdatesPosition.get(s).setUnion(true);
+					hashUpdatesPosition.get(s).setMyCell(mc);
+				}
+			}
+			for (Integer s : cellToSend.keySet()) {
+				cellToSend.put(s, null);
+			}
+		}
+	}
+	
+	public void manageBalance(HashMap<Integer,UpdatePositionInterface> hashUpdatesPosition, 
+			DistributedField field, CellType cellType,LoadBalancingInterface balance) {
+		if(getSteps()>state.NUMPEERS)
+		{
+			HashMap<CellType, MyCellInterface> h =field.getToSendForBalance();
+			
+			if(state.TYPE.toString().equals(peers.get((getSteps()%(3*state.NUMPEERS))+"")) && !field.isSplitted()
+					&& split)
+			{
+				field.prepareForBalance(true);
+				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreBalance(true);			
+				hashUpdatesPosition.get(MyCellInterface.UP).setPreBalance(true);
+				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreBalance(true);
+				hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreBalance(true);
+				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreBalance(true);
+				hashUpdatesPosition.get(MyCellInterface.DOWN).setPreBalance(true);
+				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreBalance(true);
+				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreBalance(true);
+				
+			
+			}
+			else
+				if(state.TYPE.toString().equals(peers.get(((getSteps()%(3*state.NUMPEERS))-1)+"")) && !field.isSplitted()
+						&& field.isPrepareForBalance())
+				{
+					field.setIsSplitted(true);		
+					field.prepareForBalance(false);
+					MyCellInterface m0 = h.get(MyCellInterface.CORNER_DIAG_UP_LEFT);
+					m0.setPosition(balance.calculatePositionForBalance(m0.getPosition()));
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setMyCell(m0);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreBalance(true);
+					
+					MyCellInterface m1 = h.get(MyCellInterface.UP);
+					m1.setPosition(balance.calculatePositionForBalance(m1.getPosition()));
+					hashUpdatesPosition.get(MyCellInterface.UP).setMyCell(m1);
+					hashUpdatesPosition.get(MyCellInterface.UP).setPreBalance(true);
+					
+					MyCellInterface m2 = h.get(MyCellInterface.CORNER_DIAG_UP_RIGHT);
+					m2.setPosition(balance.calculatePositionForBalance(m2.getPosition()));
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setMyCell(m2);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreBalance(true);
+					
+					MyCellInterface m3 = h.get(MyCellInterface.RIGHT);
+					m3.setPosition(balance.calculatePositionForBalance(m3.getPosition()));
+					hashUpdatesPosition.get(MyCellInterface.RIGHT).setMyCell(m3);
+					hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreBalance(true);
+					
+					MyCellInterface m4 = h.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT);
+					m4.setPosition(balance.calculatePositionForBalance(m4.getPosition()));
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setMyCell(m4);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreBalance(true);
+					
+					MyCellInterface m5 = h.get(MyCellInterface.DOWN);
+					m5.setPosition(balance.calculatePositionForBalance(m5.getPosition()));
+					hashUpdatesPosition.get(MyCellInterface.DOWN).setMyCell(m5);
+					hashUpdatesPosition.get(MyCellInterface.DOWN).setPreBalance(true);
+					
+					MyCellInterface m6 = h.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT);
+					m6.setPosition(balance.calculatePositionForBalance(m6.getPosition()));
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setMyCell(m6);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreBalance(true);
+		
+					MyCellInterface m7 = h.get(MyCellInterface.LEFT);
+					m7.setPosition(balance.calculatePositionForBalance(m7.getPosition()));
+					hashUpdatesPosition.get(MyCellInterface.LEFT).setMyCell(m7);
+					hashUpdatesPosition.get(MyCellInterface.LEFT).setPreBalance(true);
+				}
+				else
+				{
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreBalance(false);			
+					hashUpdatesPosition.get(MyCellInterface.UP).setPreBalance(false);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreBalance(false);
+					hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreBalance(false);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreBalance(false);
+					hashUpdatesPosition.get(MyCellInterface.DOWN).setPreBalance(false);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreBalance(false);
+					hashUpdatesPosition.get(MyCellInterface.LEFT).setPreBalance(false);
+				}
+			
+		}
+	}
+	
+	private void verifyBalance(){
+
+		double average = state.NUMAGENTS/state.NUMPEERS;
+		double thresholdSplit=3*average;
+		double thresholdMerge=1.5*average;
+		
+		if(numAgents>thresholdSplit)
+		{
+			split = true;
+			merge = false;
+		}
+		else 
+			if(((numAgents+externalAgents)<thresholdMerge) && 
+					(state.TYPE.toString().equals(peers.get((getSteps()%(3*state.NUMPEERS))+""))))
+			{
+				merge = true;
+				split = false;
+				numExt = numAgents+externalAgents;
+			}
+		externalAgents = 0;
+	}
 }
