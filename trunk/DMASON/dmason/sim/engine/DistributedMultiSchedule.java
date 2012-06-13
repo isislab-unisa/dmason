@@ -42,6 +42,17 @@ public class DistributedMultiSchedule<E> extends Schedule
 	private int numExt;
 	private DistributedState state;
 	
+	// codice profiling
+		long startStep;
+		long endStep;
+		long numStep;
+		long time;
+		//double sleepTime = 0.002;
+		FileOutputStream file;
+		PrintStream ps;
+		FileOutputStream file2;
+		PrintStream ps2;
+		// fine codice profiling
 
 	
     private final ReentrantLock lock = new ReentrantLock();
@@ -90,7 +101,16 @@ public class DistributedMultiSchedule<E> extends Schedule
 		externalAgents = 0;
 		numExt = 0;
 		
-		
+		// codice profiling
+				startStep = 0;
+				endStep = 0;
+				file = null;
+				file2 = null;
+				ps = null;
+				ps2 = null;
+				numStep = 0;
+				time = 0;
+				// fine codice profiling
 	}
 	
 	/**
@@ -114,6 +134,22 @@ public class DistributedMultiSchedule<E> extends Schedule
 			}
 		}
 		
+		// codice profiling
+				if(getSteps()==0){
+					try {
+						file=new FileOutputStream("Region"+((DistributedState)simstate).TYPE.toString()+".txt",true);
+						file2=new FileOutputStream("Balance"+((DistributedState)simstate).TYPE.toString()+".txt",true);
+					} catch (FileNotFoundException e) {
+						
+						e.printStackTrace();
+					}
+					
+					ps=new PrintStream(file);
+					ps2=new PrintStream(file2);
+				}
+				
+				numStep = getSteps();
+				// fine codice profiling
 		
 				
 				
@@ -138,6 +174,21 @@ public class DistributedMultiSchedule<E> extends Schedule
 		}
 		
 		
+		// codice profiling
+		numAgents = 0;
+		numAgents = super.counter;
+		startStep = System.currentTimeMillis();
+			/**
+			//ants fattened
+			time = 0;
+			time = (long)(numAgents*sleepTime);
+			try {
+				Thread.sleep(time);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}*/
+		// fine codice profiling
 		
 		//if(state.TYPE.toString().equals("2-2"))
     		//System.out.println(state.TYPE+") step: "+(numStep)+" numAgents: "+(numAgents));
@@ -258,7 +309,9 @@ public class DistributedMultiSchedule<E> extends Schedule
 				hashUpdatesPosition.get(MyCellInterface.DOWN).setPreUnion(true);
 				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(true);
 				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(true);
-		
+				
+				ps2.println("Merge: "+(numStep)+";"+(numExt));
+				ps2.flush();
 				numExt = 0;
 				
 			}
@@ -324,7 +377,9 @@ public class DistributedMultiSchedule<E> extends Schedule
 				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreBalance(true);
 				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreBalance(true);
 				
-			
+				ps2.println("Split: "+(numStep)+";"+(numAgents));
+				ps2.flush();
+
 			}
 			else
 				if(state.TYPE.toString().equals(peers.get(((getSteps()%(3*state.NUMPEERS))-1)+"")) && !field.isSplitted()
