@@ -170,8 +170,9 @@ public class JMasterUI extends JFrame{
 		architectureLabel.setEditable(false);
 		advancedConfirmBut = new JLabel();
 		graphicONcheckBox = new JCheckBox();
-		jCheckBoxLoadBalancing = new JCheckBox();
+		jCheckBoxLoadBalancing = new JCheckBox("Load Balancing", false);
 		jCheckBoxLoadBalancing.setEnabled(false);
+		jCheckBoxLoadBalancing.setSelected(false);
 		scrollPaneTree = new JScrollPane();
 		tree1 = new JTree();
 		buttonSetConfigAdvanced = new JButton();
@@ -1484,7 +1485,6 @@ public class JMasterUI extends JFrame{
 
 		JOptionPane.showMessageDialog(null,"Setting completed !");
 
-
 		master.start(numRegions, (Integer)WIDTH, (Integer)HEIGHT, numAgents,maxDistance,MODE, config,selectedSimulation,this);
 	}
 
@@ -1530,7 +1530,7 @@ public class JMasterUI extends JFrame{
 				e.printStackTrace();
 			}
 			JOptionPane.showMessageDialog(null,"Setting completed !");
-			
+
 			
 			master.start(numRegions, (Integer)WIDTH, (Integer)HEIGHT, numAgents,maxDistance,MODE, config,selectedSimulation,this);
 		
