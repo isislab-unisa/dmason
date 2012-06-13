@@ -245,7 +245,7 @@ public class MasterDaemonStarter {
 					// Set step on the central region
 					if (i==k && i == Math.sqrt(numRegions) / 2)
 						data.setStep(true);
-					data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE});
+					data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
 					defs.add(data);
 					data.graphic=false;
 				}
