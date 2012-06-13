@@ -98,8 +98,9 @@ public class DFlockers extends DistributedState<Double2D>
     		f.setPos(flockers.setAvailableRandomLocation(f));
     		if (random.nextBoolean(deadFlockerProbability)) f.dead = true;
 
-    		if(flockers.setDistributedObjectLocationForPeer(new Double2D(f.pos.getX(),f.pos.getY()), f, this))
+    		//if(flockers.setDistributedObjectLocationForPeer(new Double2D(f.pos.getX(),f.pos.getY()), f, this))
     			//if(flockers.setDistributedObjectLocation(new Double2D(f.pos.getX(),f.pos.getY()), f, this))
+    		if(flockers.setObjectLocation(f, f.loc))
     		{
     			Color c=new Color(
     					128 + this.random.nextInt(128),

@@ -19,6 +19,7 @@ import dmason.sim.field.Entry;
 import dmason.sim.field.MessageListener;
 import dmason.sim.field.Region;
 import dmason.sim.field.UpdateMap;
+import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.connection.ConnectionWithJMS;
@@ -832,5 +833,61 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 	public void setConnection(Connection con) {
 		// TODO Auto-generated method stub
 		connection=(ConnectionNFieldsWithActiveMQAPI)con;
+	}
+
+
+	@Override
+	public HashMap<Integer, MyCellInterface> getToSendForBalance() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public void setIsSplitted(boolean isSplitted) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public boolean isSplitted() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public boolean isPrepareForBalance() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public boolean isUnited() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public void prepareForBalance(boolean prepareForBalance) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public HashMap<Integer, MyCellInterface> getToSendForUnion() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public void prepareForUnion(boolean prepareForUnion) {
+		// TODO Auto-generated method stub
+		
 	}
 }

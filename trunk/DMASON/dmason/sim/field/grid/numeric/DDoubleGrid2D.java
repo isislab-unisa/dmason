@@ -1,6 +1,7 @@
 package dmason.sim.field.grid.numeric;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import sim.engine.SimState;
 import sim.field.grid.DoubleGrid2D;
@@ -11,6 +12,9 @@ import dmason.sim.field.EntryNum;
 import dmason.sim.field.RegionMapNumeric;
 import dmason.sim.field.RegionNumeric;
 import dmason.sim.field.UpdateMap;
+import dmason.sim.loadbalancing.MyCellInterface;
+import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
+import dmason.util.connection.ConnectionWithJMS;
 
 
 /**
@@ -70,9 +74,18 @@ public abstract class DDoubleGrid2D extends DoubleGrid2D implements DistributedF
 	 */
 	public ArrayList<RegionNumeric<Integer, EntryNum<Double,Int2D>>> updates_cache;
 	/**
+	 * list of cell into field
+	 */
+	public HashMap<Integer,HashMap<CellType, MyCellInterface>> listGrid;
+	/**
 	 * It's the distance used for the updates in the simulation
 	 */
+	
 	public int MAX_DISTANCE;
+	/**
+	 * It contains all the region out of the peer
+	 */
+	public ArrayList<ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>> updates_cacheLB;
 	/**
 	 * It represents the cell
 	 */
@@ -86,6 +99,8 @@ public abstract class DDoubleGrid2D extends DoubleGrid2D implements DistributedF
      * It contains the neighborhood of the peer
      */
 	public ArrayList<String> neighborhood=new ArrayList<String>();
+
+	public ConnectionWithJMS connection=new ConnectionNFieldsWithActiveMQAPI();
 
 	
 	public DDoubleGrid2D(int width, int height, double initialGridValue) {

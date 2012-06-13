@@ -29,6 +29,24 @@ public class DistributedRegionNumeric<E,F> implements Serializable, DistributedR
 	public long step;
 	public CellType type;
 	
+	/**
+	 * Constructor of class with parameters:
+	 * 
+	 * @param mine RegionNumeric into field that send the updates
+	 * @param out RegionNumeric external field that send the updates
+	 * @param step the number of step in which send the updates
+	 * @param type the Celltype of cell that send the updates
+	 */
+	public DistributedRegionNumeric(RegionNumeric<E,F> mine, RegionNumeric<E,F> out,long step,CellType type) 
+	{
+		super();
+		this.mine = mine.clone();
+		this.out = out.clone();
+		this.step = step;
+		this.type = type;
+		this.POSITION=0;
+	}
+	
 	public DistributedRegionNumeric(RegionNumeric<E,F> mine, RegionNumeric<E,F> out,long step,CellType type,int position) 
 	{
 		super();
@@ -45,7 +63,7 @@ public class DistributedRegionNumeric<E,F> implements Serializable, DistributedR
 	public RegionNumeric<E,F> getout() { return out; }
 	public void setout(RegionNumeric<E,F> out) { this.out = out;}
 	
-	public long getstep() {	return step;}
+	public long getStep() {	return step;}
 	public void setstep(long step) {this.step = step;}
 	public CellType gettype() { return type; }
 	public void settype(CellType type) { this.type = type; }

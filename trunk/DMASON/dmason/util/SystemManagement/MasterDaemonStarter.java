@@ -8,6 +8,8 @@ import java.util.HashMap;
 import javax.swing.JOptionPane;
 
 import com.sun.jmx.remote.internal.ArrayQueue;
+
+import dmason.sim.app.DAntsForage.DAntsForage;
 import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.util.connection.Address;
 import dmason.util.connection.Connection;
@@ -233,7 +235,7 @@ public class MasterDaemonStarter {
 			
 			gui.setSystemSettingsEnabled(false);
 		}
-		else // (mode == DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE)
+		else if(mode == DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE)
 		{
 			// For each region...
 			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
@@ -243,7 +245,7 @@ public class MasterDaemonStarter {
 					// Set step on the central region
 					if (i==k && i == Math.sqrt(numRegions) / 2)
 						data.setStep(true);
-					data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
+					data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE});
 					defs.add(data);
 					data.graphic=false;
 				}
@@ -277,6 +279,47 @@ public class MasterDaemonStarter {
 					JOptionPane.showMessageDialog(null,"Setting failed !");
 				}
 			}
+		} else if (mode==DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE){
+			// For each region...
+						ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
+						for (int i=0;i<Math.sqrt(numRegions);i++){
+							for (int k=0;k<Math.sqrt(numRegions);k++){
+								StartUpData data = new StartUpData();
+								// Set step on the central region
+								if (i==k)
+									data.setStep(true);
+								//data.setDef(DAntsForage.class);
+								data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE});
+								defs.add(data);
+								data.graphic=false;
+							}
+						}
+						int index=0;
+						for (String workerTopic : config.keySet())
+						{
+							ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
+							int fieldsInWorker = config.get(workerTopic).getNum();
+							for(int i=0;i<fieldsInWorker;i++)
+							{
+								defs.get(index).graphic = config.get(workerTopic).isFlagTrue();
+								if(config.get(workerTopic).isFlagTrue())
+								{
+									defs.get(index).setDef(selClassUI);
+								}
+								else
+								{
+									defs.get(index).setDef(selClass);
+								}
+								classes.add(defs.get(index));					
+								index++;
+							}
+
+							try{
+								connection.publishToTopic(classes,workerTopic,"classes");	
+							}catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
 		}
 	}
 

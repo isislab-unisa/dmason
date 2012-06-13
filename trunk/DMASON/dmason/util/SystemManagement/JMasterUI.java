@@ -40,10 +40,24 @@ import dmason.util.garbagecollector.Start;
 import dmason.util.trigger.Trigger;
 import dmason.util.trigger.TriggerListener;
 
+
+/**
+* This code was edited or generated using CloudGarden's Jigloo
+* SWT/Swing GUI Builder, which is free for non-commercial
+* use. If Jigloo is being used commercially (ie, by a corporation,
+* company or business for any purpose whatever) then you
+* should purchase a license for each developer using Jigloo.
+* Please visit www.cloudgarden.com for details.
+* Use of Jigloo implies acceptance of these licensing terms.
+* A COMMERCIAL LICENSE HAS NOT BEEN PURCHASED FOR
+* THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
+* LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
+*/
 /**
  * Provides a GUI to setup the simulation.
  * @author unascribed
  * @author Luca Vicidomini
+ * @author Fabio Fulgido
  *
  */
 public class JMasterUI extends JFrame{
@@ -156,6 +170,8 @@ public class JMasterUI extends JFrame{
 		architectureLabel.setEditable(false);
 		advancedConfirmBut = new JLabel();
 		graphicONcheckBox = new JCheckBox();
+		jCheckBoxLoadBalancing = new JCheckBox();
+		jCheckBoxLoadBalancing.setEnabled(false);
 		scrollPaneTree = new JScrollPane();
 		tree1 = new JTree();
 		buttonSetConfigAdvanced = new JButton();
@@ -258,6 +274,18 @@ public class JMasterUI extends JFrame{
 			public void mouseClicked(MouseEvent arg0) {}
 		});
 
+		jCheckBoxLoadBalancing.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if(jCheckBoxLoadBalancing.isSelected())
+					labelWriteDistrMode.setText("SQUARE BALANCED MODE");
+				else
+					labelWriteDistrMode.setText("SQUARE MODE");
+
+			}
+		});
+		
 		radioButtonHorizontal.addActionListener(new ActionListener() {
 
 			@Override
@@ -268,6 +296,7 @@ public class JMasterUI extends JFrame{
 					jComboRegions.addItem(i);
 				initializeDefaultLabel();
 				radioItemFlag = false;
+				jCheckBoxLoadBalancing.setEnabled(false);
 			}
 		});
 
@@ -281,6 +310,7 @@ public class JMasterUI extends JFrame{
 					jComboRegions.addItem(i*i);
 				initializeDefaultLabel();
 				radioItemFlag = false;
+				jCheckBoxLoadBalancing.setEnabled(true);
 			}
 		});
 
@@ -802,23 +832,28 @@ public class JMasterUI extends JFrame{
 
 								//---- buttonSetConfigDefault ----
 								buttonSetConfigDefault.setText("Set");
+								{
+									jCheckBoxLoadBalancing.setText("Load Balancing");
+								}
 
 								GroupLayout jPanelSetButtonLayout = new GroupLayout(jPanelSetButton);
 								jPanelSetButton.setLayout(jPanelSetButtonLayout);
-								jPanelSetButtonLayout.setHorizontalGroup(
-										jPanelSetButtonLayout.createParallelGroup()
-										.addGroup(GroupLayout.Alignment.TRAILING, jPanelSetButtonLayout.createSequentialGroup()
-												.addContainerGap(522, Short.MAX_VALUE)
-												.addComponent(buttonSetConfigDefault, GroupLayout.PREFERRED_SIZE, 76, GroupLayout.PREFERRED_SIZE)
-												.addGap(72, 72, 72))
-										);
-								jPanelSetButtonLayout.setVerticalGroup(
-										jPanelSetButtonLayout.createParallelGroup()
-										.addGroup(GroupLayout.Alignment.TRAILING, jPanelSetButtonLayout.createSequentialGroup()
-												.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-												.addComponent(buttonSetConfigDefault)
-												.addContainerGap())
-										);
+								jPanelSetButtonLayout.setVerticalGroup(jPanelSetButtonLayout.createSequentialGroup()
+									.addContainerGap()
+									.addGroup(jPanelSetButtonLayout.createParallelGroup()
+									    .addGroup(GroupLayout.Alignment.LEADING, jPanelSetButtonLayout.createSequentialGroup()
+									        .addComponent(jCheckBoxLoadBalancing, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
+									        .addGap(0, 8, Short.MAX_VALUE))
+									    .addGroup(GroupLayout.Alignment.LEADING, jPanelSetButtonLayout.createSequentialGroup()
+									        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 0, Short.MAX_VALUE)
+									        .addComponent(buttonSetConfigDefault, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)))
+									.addContainerGap());
+								jPanelSetButtonLayout.setHorizontalGroup(jPanelSetButtonLayout.createSequentialGroup()
+									.addContainerGap(17, 17)
+									.addComponent(jCheckBoxLoadBalancing, GroupLayout.PREFERRED_SIZE, 114, GroupLayout.PREFERRED_SIZE)
+									.addGap(0, 397, Short.MAX_VALUE)
+									.addComponent(buttonSetConfigDefault, GroupLayout.PREFERRED_SIZE, 76, GroupLayout.PREFERRED_SIZE)
+									.addContainerGap(72, 72));
 							}
 
 							GroupLayout jPanelDefaultLayout = new GroupLayout(jPanelDefault);
@@ -1403,6 +1438,10 @@ public class JMasterUI extends JFrame{
 		//check id agents number > 0
 		if(numAgentsForPeer<=0)
 			errors.add("Missing number of agents\n");
+		//check field's measures if square mode balanced is selected
+		//the width and the height must be equals, and both must be divisible by sqrt(peer)*3
+		if(radioButtonSquare.isSelected() && jCheckBoxLoadBalancing.isSelected() && (width % (Math.sqrt(num)*3) != 0 || height % (Math.sqrt(num)*3) != 0))
+			errors.add("Cannot divide field in Sqrt(REGIONS)*3 for the Load Balanced Mode,please check field parameter \n");
 
 		return errors;
 	}
@@ -1426,9 +1465,10 @@ public class JMasterUI extends JFrame{
 		}
 		if(radioButtonHorizontal.isSelected())
 			MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
-		else
+		else if(radioButtonSquare.isSelected() && !jCheckBoxLoadBalancing.isSelected())
 			MODE = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
-		errors = checkSyntaxForm(numRegions,(Integer)WIDTH,(Integer)HEIGHT,numAgents);
+		else if(radioButtonSquare.isSelected() && jCheckBoxLoadBalancing.isSelected())
+			MODE = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
 
 		(new Trigger(connection)).asynchronousReceiveToTriggerTopic(new TriggerListener(notifyArea,file, printer));
 
@@ -1469,8 +1509,10 @@ public class JMasterUI extends JFrame{
 
 		if(radioButtonHorizontal.isSelected())
 			MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
-		else
+		else if(radioButtonSquare.isSelected() && !jCheckBoxLoadBalancing.isSelected())
 			MODE = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
+		else if(radioButtonSquare.isSelected() && jCheckBoxLoadBalancing.isSelected())
+			MODE = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
 		
 		if (numRegions % root.getChildCount() != 0)
 			errors.add("NUM_REGIONS < > = NUM_PEERS\n,please set Advanced mode!");
@@ -1675,7 +1717,7 @@ public class JMasterUI extends JFrame{
 			labelWriteRegHeight.setText(""+h);
 			labelWriteDistrMode.setText("HORIZONTAL MODE");
 		}
-		else{
+		else if(radioButtonSquare.isSelected() && !jCheckBoxLoadBalancing.isSelected()){
 			MODE = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
 			int rad = (int) Math.sqrt(numRegions);
 			String w="";
@@ -1687,6 +1729,19 @@ public class JMasterUI extends JFrame{
 			labelWriteRegWidth.setText(""+w);
 			labelWriteRegHeight.setText(""+h);
 			labelWriteDistrMode.setText("SQUARE MODE");
+		}
+		else if (radioButtonSquare.isSelected() && jCheckBoxLoadBalancing.isSelected()){
+			MODE = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
+			int rad = (int) Math.sqrt(numRegions);
+			String w="";
+			String h="";
+			if((Integer)WIDTH % rad == 0){
+				w = "" + (Integer)WIDTH/numRegions;
+				h = "" + (Integer)HEIGHT/numRegions;
+			}
+			labelWriteRegWidth.setText(""+w);
+			labelWriteRegHeight.setText(""+h);
+			labelWriteDistrMode.setText("SQUARE BALANCED MODE");
 		}
 	}
 
@@ -1716,6 +1771,7 @@ public class JMasterUI extends JFrame{
 	private boolean connected = false;
 	private HashMap<String,EntryVal<Integer,Boolean>> config;
 	private int total=0;
+	private JCheckBox jCheckBoxLoadBalancing;
 	boolean radioItemFlag=false;	//radioItemFalg
 	private Address address;
 	int res;

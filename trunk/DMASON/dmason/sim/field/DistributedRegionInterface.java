@@ -2,7 +2,7 @@ package dmason.sim.field;
 
 public interface DistributedRegionInterface {
 
-	public long getstep();
+	public long getStep();
 	
 	public int getPosition();
 }

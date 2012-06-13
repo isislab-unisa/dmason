@@ -11,5 +11,7 @@
 	<classpathentry kind="lib" path="libraries/slf4j-jdk14-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libraries/activemq-all-5.5.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/MASON"/>
+	<classpathentry kind="lib" path="C:/Users/fabfug/Desktop/libraries/j3dcore.jar"/>
+	<classpathentry kind="lib" path="C:/Users/fabfug/Desktop/libraries/j3dutils.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

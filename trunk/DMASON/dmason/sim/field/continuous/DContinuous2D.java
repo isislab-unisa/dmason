@@ -1,6 +1,7 @@
 package dmason.sim.field.continuous;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import sim.engine.SimState;
 import sim.field.continuous.Continuous2D;
@@ -11,6 +12,7 @@ import dmason.sim.field.DistributedField;
 import dmason.sim.field.Region;
 import dmason.sim.field.RegionMap;
 import dmason.sim.field.UpdateMap;
+import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.connection.ConnectionWithJMS;
 import dmason.util.connection.ProxyConnection;
@@ -74,12 +76,16 @@ public abstract class DContinuous2D extends Continuous2D  implements Distributed
 	 * This field's height.
 	 */
 	public double my_height;
+	public int MAX_DISTANCE;
+
 	public RegionDouble myfield;
 	public RegionMap<Double,Double2D> rmap=new RegionMap<Double,Double2D>();
 	public ArrayList<Region<Double, Double2D>> updates_cache;
 	public int jumpDistance;
 	public UpdateMap<Double,Double2D> updates=new UpdateMap<Double,Double2D>();
-    public SimState sm ;
+	public HashMap<Integer,HashMap<CellType, MyCellInterface>> listGrid;
+	public ArrayList<ArrayList<Region<Double, Double2D>>> updates_cacheLB;
+	public SimState sm ;
     public ConnectionWithJMS connection=new ConnectionNFieldsWithActiveMQAPI();
 	public ArrayList<String> neighborhood=new ArrayList<String>();
 	public ContinuousPortrayal2D p;

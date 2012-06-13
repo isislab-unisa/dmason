@@ -2,6 +2,7 @@ package dmason.sim.field.grid.numeric;
 
 import sim.engine.SimState;
 import dmason.sim.engine.DistributedMultiSchedule;
+import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.field.DistributedField;
 import dmason.util.exception.DMasonException;
@@ -14,6 +15,7 @@ public class DDoubleGrid2DFactory {
 
 	public static final int HORIZONTAL_DISTRIBUTION_MODE=0;
 	public static final int SQUARE_DISTRIBUTION_MODE=1;
+	public static final int SQUARE_BALANCED_DISTRIBUTION_MODE=2;
 	
 	/**
 	 * 
@@ -54,6 +56,19 @@ public class DDoubleGrid2DFactory {
 				if((width% Math.sqrt(num_peers) == 0) && (height% Math.sqrt(num_peers) == 0))
 				{
 					DistributedField field = new DDoubleGrid2DXY(width, height,sm, max_distance, i, j, num_peers, initialGridValue, name);
+					
+					if(!fixed)
+						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
+					return (DDoubleGrid2D)field;
+				}
+				else
+					throw new DMasonException("Illegal width or height dimension for NUM_PEERS:"+num_peers);
+			}
+			else if (MODE==SQUARE_BALANCED_DISTRIBUTION_MODE){
+				if(((width% Math.sqrt(num_peers) == 0) && (height% Math.sqrt(num_peers) == 0)) && 
+						(((width/ Math.sqrt(num_peers))%3 == 0) && ((height/ Math.sqrt(num_peers))%3 == 0)))
+				{
+					DistributedField field = new DDoubleGrid2DXYLB(width, height,sm, max_distance, i, j, num_peers, initialGridValue, name);
 					
 					if(!fixed)
 						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);

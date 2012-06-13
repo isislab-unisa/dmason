@@ -2,11 +2,16 @@ package dmason.sim.field.grid;
 
 import java.net.Proxy;
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import dmason.sim.field.CellType;
 import dmason.sim.field.DistributedField;
 import dmason.sim.field.Region;
 import dmason.sim.field.RegionMap;
+import dmason.sim.field.UpdateCell;
 import dmason.sim.field.UpdateMap;
+import dmason.sim.loadbalancing.MyCellIntegerField;
+import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.connection.ConnectionWithJMS;
 import dmason.util.connection.ProxyConnection;
@@ -47,6 +52,10 @@ public abstract class DSparseGrid2D extends SparseGrid2D implements DistributedF
 	public RegionInteger myfield;
 	public RegionMap<Integer,Int2D> rmap=new RegionMap<Integer,Int2D>();
 	public ArrayList<Region<Integer, Int2D>> updates_cache;
+	public HashMap<Integer,HashMap<CellType, MyCellInterface>> listGrid;
+	public ArrayList<ArrayList<Region<Integer, Int2D>>> updates_cacheLB;
+	public UpdateCell<Integer,MyCellIntegerField> updateCell = new UpdateCell<Integer, MyCellIntegerField>();
+
 	public int MAX_DISTANCE;
 	public CellType cellType;
 	public UpdateMap<Integer,Int2D> updates=new UpdateMap<Integer,Int2D>();

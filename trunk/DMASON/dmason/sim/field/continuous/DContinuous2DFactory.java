@@ -15,7 +15,8 @@ public final class DContinuous2DFactory
 {	
 	public static final int HORIZONTAL_DISTRIBUTION_MODE=0;
 	public static final int SQUARE_DISTRIBUTION_MODE=1;
-	
+	public static final int SQUARE_BALANCED_DISTRIBUTION_MODE=2;
+
 	/** 
 	 * @param width The width of the simulated field
 	 * @param height The height of the simulated field
@@ -60,6 +61,24 @@ public final class DContinuous2DFactory
 				else
 					throw new DMasonException("Illegal width or height dimension for NUM_PEERS:"+num_peers);
 			}
+			else
+				if(MODE==SQUARE_BALANCED_DISTRIBUTION_MODE)
+				{
+					int my_width=(int) (width/Math.sqrt(num_peers));
+					int my_height=(int) (height/Math.sqrt(num_peers));
+					int safezone = my_width /3;
+					if(((width% Math.sqrt(num_peers) == 0) && (height% Math.sqrt(num_peers) == 0)) && 
+							(((width/ Math.sqrt(num_peers))%3 == 0) && ((height/ Math.sqrt(num_peers))%3 == 0)) && max_distance < safezone/2 ){
+
+						DistributedField field = new DContinuous2DXYLB(discretization,width, height,sm, max_distance, i, j, num_peers,name);
+						
+						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
+						
+						return (DContinuous2D)field;
+					}
+					else
+						throw new DMasonException("Illegal width or height dimension or MAXDISTANCE for NUM_PEERS:"+num_peers);
+				}
 			else 
 			{
 				throw new DMasonException("Illegal Distribution Mode");

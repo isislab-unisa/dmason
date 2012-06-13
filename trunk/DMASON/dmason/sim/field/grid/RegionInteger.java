@@ -10,10 +10,44 @@ import dmason.util.Util;
  */
 public class RegionInteger extends Region<Integer,Int2D>
 {
+	private static int height;
+	private static int width;
+	private static boolean isBalanced=false;
+
+	
+	/**
+	 * Constructor of class,it use the costructor of superclass and adds a width and a height
+	 * 
+	 * 
+	 * @param upl_xx        x of left upper corner
+	 * @param upl_yy        y of left upper corner
+	 * @param down_xx       x of right down corner 
+	 * @param down_yy       y of right down corner
+	 * @param width         width of region
+	 * @param height        height of region
+	 */
+	public RegionInteger(Integer upl_xx, Integer upl_yy, Integer down_xx,
+			Integer down_yy, Integer width, Integer height) 
+	{
+		super(upl_xx, upl_yy, down_xx, down_yy);	
+		
+		this.width = width;
+		this.height = height;
+		
+		if(down_xx == 0)
+			super.down_xx = width;
+		
+		if(down_yy == 0)
+			super.down_yy = height;
+		isBalanced=true;
+
+	}
 	public RegionInteger(Integer upl_xx, Integer upl_yy, Integer down_xx,
 			Integer down_yy) 
 	{
-		super(upl_xx, upl_yy, down_xx, down_yy);	
+		super(upl_xx, upl_yy, down_xx, down_yy);
+		isBalanced=false;
+
 	}
 
 	/**
@@ -32,27 +66,43 @@ public class RegionInteger extends Region<Integer,Int2D>
 		{
 			return null;
 		}
-	
-	  return new RegionInteger(upl_xx,upl_yy,down_xx,down_yy);
+		if(isBalanced)
+			return new RegionInteger(upl_xx,upl_yy,down_xx,down_yy, MY_WIDTH, MY_HEIGHT);
+		else
+			return new RegionInteger(upl_xx,upl_yy,down_xx,down_yy);
 	}
 
-	public Region<Integer,Int2D> clone() 
-	{
-		RegionInteger r=new RegionInteger(upl_xx, upl_yy, down_xx, down_yy);
+	public Region<Integer,Int2D> clone()
+	{	
+		RegionInteger r;
+		if(isBalanced)
+			r=new RegionInteger(upl_xx, upl_yy, down_xx, down_yy,width,height);
+		else
+			r=new RegionInteger(upl_xx, upl_yy, down_xx, down_yy);
 		for(Entry<Int2D> e: this)
 		{
 			r.add(new Entry(((RemoteAgent<Int2D>)(Util.clone(e.r))),e.l));
 		}
 		return r;
 	}
-
+@Override
 	public boolean isMine(Integer x ,Integer y)
 	{		
-		return (x >= upl_xx) && (x <= down_xx) && (y >= upl_yy) && (y <= down_yy);
-	}
-
+		
+		if(isBalanced)
+			return (x >= upl_xx) && (x < down_xx) && (y >= upl_yy) && (y < down_yy);
+		else
+			return (x >= upl_xx) && (x <= down_xx) && (y >= upl_yy) && (y <= down_yy);	
+		}
+@Override
 	public boolean addAgents(Entry<Int2D> e) 
 	{	
 		return this.add(e);
 	}
+	public static int getHeight() {return height;}
+	public static int getWidth() {return width;}
+	public int getDX(){return down_xx;}
+	public int getDY(){return down_yy;}
+	public int getUX(){return upl_xx;}
+	public int getUY(){return upl_yy;}
 }
