@@ -9,9 +9,13 @@ import dmason.sim.field.RegionNumeric;
  */
 public class RegionIntegerNumeric extends RegionNumeric<Integer, EntryNum<Integer, Int2D>>{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static int height; 
 	private static int width;
-	private static boolean isBalanced=false;
+	private static boolean isBalanced;
 
 		
 	/**

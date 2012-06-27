@@ -19,7 +19,11 @@ import sim.util.*;
 
 public class DFlockers extends DistributedState<Double2D>
 {
-    public DContinuous2D flockers;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public DContinuous2D flockers;
     private static boolean isToroidal=true;
     public double width = 150;
     public double height = 150;

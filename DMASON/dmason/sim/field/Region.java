@@ -19,7 +19,6 @@ public abstract class Region<E,F> extends ArrayList<Entry<F>> implements Seriali
 	//lower right corner
 	public E down_xx,down_yy;
 	
-	private boolean isBalanced;
 	
 	/**
 	 * @param upl_xx x coordinate of upper left corner
@@ -34,7 +33,6 @@ public abstract class Region<E,F> extends ArrayList<Entry<F>> implements Seriali
 		this.upl_yy = upl_yy;
 		this.down_xx = down_xx;
 		this.down_yy = down_yy;
-		this.isBalanced=false;
 	}
 	
 	//--> abstract methods to be implemented in sub-classes

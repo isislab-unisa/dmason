@@ -19,7 +19,6 @@ public abstract class RegionNumeric<E, F> extends ArrayList<F> implements Serial
 	//lower right corner
 	public E down_xx,down_yy;
 	
-	private boolean isBalanced;
 	/**
 	 * @param upl_xx x coordinate of upper left corner
 	 * @param upl_yy y coordinate of upper left corner
@@ -33,7 +32,6 @@ public abstract class RegionNumeric<E, F> extends ArrayList<F> implements Serial
 		this.upl_yy = upl_yy;
 		this.down_xx = down_xx;
 		this.down_yy = down_yy;
-		isBalanced=false;
 	}
 	
 	

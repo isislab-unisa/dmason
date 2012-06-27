@@ -46,7 +46,7 @@ public interface DistributedField<E> extends Serializable
 	 * Return the DistributedState that creates this field.
 	 * @return the DistributedState
 	 */
-	public DistributedState getState();
+	public DistributedState<E> getState();
 		
 	/**
 	 * Set a available location to a Remote Agent:
@@ -59,10 +59,12 @@ public interface DistributedField<E> extends Serializable
 
 	public ArrayList<MessageListener> getLocalListener();
 	
+	@SuppressWarnings("rawtypes")
 	public void setTable(HashMap table);
 	
 	public String getID();
 	
+	@SuppressWarnings("rawtypes")
 	public UpdateMap getUpdates();
 	
 	

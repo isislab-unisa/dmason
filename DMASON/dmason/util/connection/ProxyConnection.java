@@ -12,6 +12,10 @@ import dmason.sim.field.MessageListener;
 
 public class ProxyConnection implements InvocationHandler,Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ConnectionWithJMS obj;
 	private HashMap<String,MessageListener> table;
 	

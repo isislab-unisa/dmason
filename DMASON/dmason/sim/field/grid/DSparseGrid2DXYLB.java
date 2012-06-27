@@ -107,6 +107,7 @@ import sim.util.Int2D;
 public class DSparseGrid2DXYLB extends DSparseGrid2D
 {	
 
+
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
 	private ConnectionWithJMS con = new ConnectionNFieldsWithActiveMQAPI();
 	private String NAME;
@@ -128,9 +129,9 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 	private HashMap<Integer, UpdatePositionIntegerField<DistributedRegion<Integer, Int2D>>> hashUpdatesPosition;
 
 	
-	// --> only for testing
-	public PrintWriter printer;
-	public ArrayList<RemoteAgent<Int2D>> buffer_print=new ArrayList<RemoteAgent<Int2D>>();
+	// --> Test per la riproducibilità
+	//public PrintWriter printer;
+	//public ArrayList<RemoteAgent<Int2D>> buffer_print=new ArrayList<RemoteAgent<Int2D>>();
 	// <--
 	
 	
@@ -202,15 +203,14 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 		this.unionDone = false;
 		this.isUnited = true;
 		
-		/**
-		//RIPRODUCIBILITA'
-		// --> only for testing
+		
+		/*
+		//Test Per la riproducibilità
 		String curDir = System.getProperty("user.dir");
 	    try 
 	    {
-			printer=new PrintWriter(new FileOutputStream(curDir+"/test_"+cellType+"_"+num_peers+"_two.txt"));
+			printer=new PrintWriter(new FileOutputStream(curDir+"/test_"+cellType+"_"+num_peers+"_one.txt"));
 		} catch (FileNotFoundException e) { e.printStackTrace();}
-		// <--
 		*/
 		
 		updates_cacheLB=new ArrayList<ArrayList<Region<Integer, Int2D>>>();
@@ -243,8 +243,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 	 */
     public boolean setDistributedObjectLocation(final Int2D location,RemoteAgent<Int2D> rm,SimState sm)
     {
-    	/**
-    	//--> only for testing RIPRODUCIBILITA'
+    	/* test per la riproducibilità
     	buffer_print.add(rm);
 		*/
     	
@@ -460,7 +459,18 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 	 */
 	public synchronized boolean synchro() 
 	{	
-
+		
+		/*Test per la riproducibilità
+		 * 
+		if(super.sm.schedule.getSteps()==20000)
+		  for(RemoteAgent<Int2D> r : buffer_print)
+			{
+				printer.println("Step: "+super.sm.schedule.getSteps()+" "+r.getId());
+				printer.flush();
+			}
+		else
+			buffer_print = new ArrayList<RemoteAgent<Int2D>>();
+		*/
 		for(ArrayList<Region<Integer, Int2D>> arr : updates_cacheLB)
 		{
 			for(Region<Integer,Int2D> region : arr)
@@ -4909,6 +4919,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 			    	catch (NoSuchMethodException e) {e.printStackTrace();} 
 			    	catch (InvocationTargetException e) {e.printStackTrace();}
 			    }
+	    
 		
 	}
 	

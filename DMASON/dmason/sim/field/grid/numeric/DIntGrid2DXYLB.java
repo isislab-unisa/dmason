@@ -105,6 +105,7 @@ import sim.util.Int2D;
 
 public class DIntGrid2DXYLB extends DIntGrid2D {
 
+	
 	/**
 	 * 
 	 */
@@ -122,6 +123,17 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	//Serve per dividere le celle per il load Balancing
 	private LoadBalancingIntegerNumeric balance;
 
+	
+	// codice profiling
+		private long totPub;
+		private long startPub;
+		private long endPub;
+		private int numStep;
+		private FileOutputStream f;
+		private PrintStream ps;
+		// fine codice profiling
+
+	
 	private HashMap<Integer, UpdatePositionIntegerNumeric<DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>>> hashUpdatesPosition;
 	private HashMap<Integer, MyCellInterface> toSendForBalance;
 	private HashMap<Integer, MyCellInterface> toSendForUnion;
@@ -194,6 +206,15 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 
 		setConnection(((DistributedState)sm).getConnection());		
 
+		// codice profiling
+				totPub = 0;
+				startPub = 0;
+				endPub = 0;
+				f = null;
+				ps = null;
+				numStep = 1001;
+				// fine codice profiling
+		
 	}
 
 	@Override

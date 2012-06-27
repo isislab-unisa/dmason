@@ -10,6 +10,10 @@ import java.io.Serializable;
  */
 public class DistributedRegionNumeric<E,F> implements Serializable, DistributedRegionInterface {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static int LEFT=1;
 	public static int RIGHT=2;
 	public static int UP=3;
@@ -44,7 +48,6 @@ public class DistributedRegionNumeric<E,F> implements Serializable, DistributedR
 		this.out = out.clone();
 		this.step = step;
 		this.type = type;
-		this.POSITION=0;
 	}
 	
 	public DistributedRegionNumeric(RegionNumeric<E,F> mine, RegionNumeric<E,F> out,long step,CellType type,int position) 

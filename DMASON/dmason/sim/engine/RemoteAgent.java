@@ -1,5 +1,7 @@
 package dmason.sim.engine;
 
+import java.io.Serializable;
+
 import sim.engine.Steppable;
 
 /**
@@ -7,8 +9,9 @@ import sim.engine.Steppable;
  *
  * @param <E> 
  */
-public interface RemoteAgent<E> extends Steppable{
+public interface RemoteAgent<E> extends Steppable, Serializable{
 
+	
 	/**
 	 * 
 	 * @return position on field of agent

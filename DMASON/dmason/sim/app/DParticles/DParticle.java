@@ -32,8 +32,17 @@ public class DParticle extends RemoteParticle<Int2D>
         Bag p = tut.particles.getObjectsAtLocation(location);
    
         // leave a trail
-        tut.trails.setDistributedObjectLocation(1.0, location,state);
+        //tut.trails.setDistributedObjectLocation(1.0, location,state);
 
+        try{
+        	tut.trails.field[location.x][location.y] = 1.0;
+        	//tut.trails.setDistributedObjectLocation(1.0, location,state);
+        }catch(NullPointerException e){
+        	e.printStackTrace();
+        	System.out.println("ERRORE QUI"+tut.TYPE+"--POSIZIONE: "+this.pos+" DIREZIONE="+xdir+"  "+ydir);
+        }    
+        
+        
         // Randomize my direction if requested
         if (p.numObjs > 1)
         {     

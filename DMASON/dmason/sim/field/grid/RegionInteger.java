@@ -10,9 +10,10 @@ import dmason.util.Util;
  */
 public class RegionInteger extends Region<Integer,Int2D>
 {
+	
 	private static int height;
 	private static int width;
-	private static boolean isBalanced=false;
+	private static boolean isBalanced;
 
 	
 	/**
@@ -67,11 +68,12 @@ public class RegionInteger extends Region<Integer,Int2D>
 			return null;
 		}
 		if(isBalanced)
-			return new RegionInteger(upl_xx,upl_yy,down_xx,down_yy, MY_WIDTH, MY_HEIGHT);
+			return new RegionInteger(upl_xx,upl_yy,down_xx,down_yy, MY_HEIGHT, MY_WIDTH );
 		else
 			return new RegionInteger(upl_xx,upl_yy,down_xx,down_yy);
 	}
 
+	@Override
 	public Region<Integer,Int2D> clone()
 	{	
 		RegionInteger r;

@@ -10,6 +10,10 @@ import java.io.Serializable;
  */
 public class DistributedRegion<E,F> implements Serializable, DistributedRegionInterface
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// Valid values for <code>position</code>
 	public static int LEFT=1;
 	public static int RIGHT=2;

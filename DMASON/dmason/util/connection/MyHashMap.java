@@ -5,6 +5,10 @@ import java.util.HashMap;
 
 public class MyHashMap extends HashMap<String, Object> implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int full;
 	public int NUMBER_FIELDS;
 	

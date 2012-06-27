@@ -29,6 +29,11 @@ import sim.engine.Steppable;
  */
 public class DistributedMultiSchedule<E> extends Schedule
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private Logger logger = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName());
 	
 	public ArrayList<DistributedField<E>> fields;
@@ -41,18 +46,9 @@ public class DistributedMultiSchedule<E> extends Schedule
 	public int externalAgents;
 	private int numExt;
 	private DistributedState state;
-	
-	// codice profiling
-		long startStep;
-		long endStep;
-		long numStep;
-		long time;
-		//double sleepTime = 0.002;
-		FileOutputStream file;
-		PrintStream ps;
-		FileOutputStream file2;
-		PrintStream ps2;
-		// fine codice profiling
+	private HashMap<String, ArrayList<MyCellInterface>> h;
+
+
 
 	
     private final ReentrantLock lock = new ReentrantLock();
@@ -91,6 +87,19 @@ public class DistributedMultiSchedule<E> extends Schedule
      */
     private ArrayList<Boolean> synchResults = new ArrayList<Boolean>(); 
 	
+    
+ // codice profiling
+ 	long startStep;
+ 	long endStep;
+ 	long numStep;
+ 	long time;
+ 	//double sleepTime = 0.002;
+ 	FileOutputStream file;
+ 	PrintStream ps;
+ 	FileOutputStream file2;
+ 	PrintStream ps2;
+ 	// fine codice profiling
+    
 	public DistributedMultiSchedule() {
 		
 		fields = new ArrayList<DistributedField<E>>();
@@ -101,6 +110,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 		externalAgents = 0;
 		numExt = 0;
 		
+	
 		// codice profiling
 				startStep = 0;
 				endStep = 0;
@@ -136,9 +146,10 @@ public class DistributedMultiSchedule<E> extends Schedule
 		
 		// codice profiling
 				if(getSteps()==0){
+					
 					try {
-						file=new FileOutputStream("Region"+((DistributedState)simstate).TYPE.toString()+".txt",true);
-						file2=new FileOutputStream("Balance"+((DistributedState)simstate).TYPE.toString()+".txt",true);
+						file=new FileOutputStream("Region"+((DistributedState)state).TYPE.toString()+".txt",true);
+						file2=new FileOutputStream("Balance"+((DistributedState)state).TYPE.toString()+".txt",true);
 					} catch (FileNotFoundException e) {
 						
 						e.printStackTrace();
@@ -151,7 +162,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 				numStep = getSteps();
 				// fine codice profiling
 		
-				
+		
 				
 		// If not already present, adds a "zombie" agent to the schedule
 		// in order to prevent stopping the simulation.
@@ -173,7 +184,6 @@ public class DistributedMultiSchedule<E> extends Schedule
 				monitor.ZOOM = false;
 		}
 		
-		
 		// codice profiling
 		numAgents = 0;
 		numAgents = super.counter;
@@ -189,7 +199,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 				e.printStackTrace();
 			}*/
 		// fine codice profiling
-		
+	
 		//if(state.TYPE.toString().equals("2-2"))
     		//System.out.println(state.TYPE+") step: "+(numStep)+" numAgents: "+(numAgents));
 		
@@ -200,11 +210,20 @@ public class DistributedMultiSchedule<E> extends Schedule
 		
 		verifyBalance();
 	
+		
+		// codice profiling
+    	endStep = System.currentTimeMillis();
+	   		ps.println((numStep)+";"+(numAgents)+";"+(startStep)+";"+(endStep));
+	   		ps.flush();
+    	
+		// fine codice profiling
+		
+		
 		// Create a thread for each field assigned to this worker, in order
 		// to do synchronization
 		for(DistributedField<E> f : fields)
 		{
-			MyThread<E> t = new MyThread(f, this);
+			MyThread t = new MyThread(f, this);
 			t.start();
 		}
 		
@@ -293,71 +312,6 @@ public class DistributedMultiSchedule<E> extends Schedule
 	public void setFields(ArrayList<DistributedField<E>> fields) { this.fields = fields; }
 	public void addField(DistributedField<E> f) { fields.add(f); }	
 	
-	public void manageMerge(HashMap<Integer,UpdatePositionInterface> hashUpdatesPosition, 
-			DistributedField field, CellType cellType) {
-		if(getSteps()>state.NUMPEERS)
-		{
-			if(state.TYPE.toString().equals(peers.get((getSteps()%(3*state.NUMPEERS))+"")) && !field.isUnited() 
-					&& merge)
-			{
-				field.prepareForUnion(true);
-				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreUnion(true);			
-				hashUpdatesPosition.get(MyCellInterface.UP).setPreUnion(true);
-				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreUnion(true);
-				hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreUnion(true);
-				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreUnion(true);
-				hashUpdatesPosition.get(MyCellInterface.DOWN).setPreUnion(true);
-				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(true);
-				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(true);
-				
-				ps2.println("Merge: "+(numStep)+";"+(numExt));
-				ps2.flush();
-				numExt = 0;
-				
-			}
-			else
-				if(state.TYPE.toString().equals(peers.get(((getSteps()%(3*state.NUMPEERS))-1)+"")) && !field.isUnited()
-						&& !field.isSplitted())
-				{
-					field.prepareForUnion(true);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreUnion(false);			
-					hashUpdatesPosition.get(MyCellInterface.UP).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.DOWN).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(false);
-				}
-				else
-				{
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreUnion(false);			
-					hashUpdatesPosition.get(MyCellInterface.UP).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.DOWN).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(false);
-				}
-			
-			HashMap<Integer, MyCellInterface> cellToSend = field.getToSendForUnion();
-			for(Integer s : cellToSend.keySet())
-			{
-				if(cellToSend.get(s)!=null)
-				{
-					MyCellInterface mc = cellToSend.get(s);
-	
-					hashUpdatesPosition.get(s).setUnion(true);
-					hashUpdatesPosition.get(s).setMyCell(mc);
-				}
-			}
-			for (Integer s : cellToSend.keySet()) {
-				cellToSend.put(s, null);
-			}
-		}
-	}
-	
 	public void manageBalance(HashMap<Integer,UpdatePositionInterface> hashUpdatesPosition, 
 			DistributedField field, CellType cellType,LoadBalancingInterface balance) {
 		if(getSteps()>state.NUMPEERS)
@@ -378,7 +332,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreBalance(true);
 				
 				ps2.println("Split: "+(numStep)+";"+(numAgents));
-				ps2.flush();
+				//ps2.flush();
 
 			}
 			else
@@ -442,12 +396,77 @@ public class DistributedMultiSchedule<E> extends Schedule
 		}
 	}
 	
+	public void manageMerge(HashMap<Integer,UpdatePositionInterface> hashUpdatesPosition, 
+			DistributedField field, CellType cellType) {
+		if(getSteps()>state.NUMPEERS)
+		{
+			if(state.TYPE.toString().equals(peers.get((getSteps()%(3*state.NUMPEERS))+"")) && !field.isUnited() 
+					&& merge)
+			{
+				field.prepareForUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreUnion(true);			
+				hashUpdatesPosition.get(MyCellInterface.UP).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.DOWN).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(true);
+				
+				ps2.println("Merge: "+(numStep)+";"+(numExt));
+				//ps2.flush();
+				numExt = 0;
+				
+			}
+			else
+				if(state.TYPE.toString().equals(peers.get(((getSteps()%(3*state.NUMPEERS))-1)+"")) && !field.isUnited()
+						&& !field.isSplitted())
+				{
+					field.prepareForUnion(true);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreUnion(false);			
+					hashUpdatesPosition.get(MyCellInterface.UP).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.DOWN).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(false);
+				}
+				else
+				{
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreUnion(false);			
+					hashUpdatesPosition.get(MyCellInterface.UP).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.DOWN).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(false);
+				}
+			
+			HashMap<Integer, MyCellInterface> cellToSend = field.getToSendForUnion();
+			for(Integer s : cellToSend.keySet())
+			{
+				if(cellToSend.get(s)!=null)
+				{
+					MyCellInterface mc = cellToSend.get(s);
+	
+					hashUpdatesPosition.get(s).setUnion(true);
+					hashUpdatesPosition.get(s).setMyCell(mc);
+				}
+			}
+			for (Integer s : cellToSend.keySet()) {
+				cellToSend.put(s, null);
+			}
+		}
+	}
+	
 	private void verifyBalance(){
 
 		double average = state.NUMAGENTS/state.NUMPEERS;
 		double thresholdSplit=3*average;
 		double thresholdMerge=1.5*average;
-		
+
 		if(numAgents>thresholdSplit)
 		{
 			split = true;

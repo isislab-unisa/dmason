@@ -15,6 +15,10 @@ import dmason.util.connection.MyMessageListener;
 
 public class TriggerListener extends MyMessageListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JTextArea area;
 	private FileOutputStream file;
 	private PrintStream ps;

@@ -1,6 +1,5 @@
 package dmason.sim.field.grid;
 
-import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -14,9 +13,9 @@ import dmason.sim.loadbalancing.MyCellIntegerField;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.connection.ConnectionWithJMS;
-import dmason.util.connection.ProxyConnection;
 import sim.engine.SimState;
 import sim.field.grid.SparseGrid2D;
+import sim.portrayal.grid.SparseGridPortrayal2D;
 import sim.util.Int2D;
 
 /**
@@ -44,6 +43,10 @@ import sim.util.Int2D;
 
 public abstract class DSparseGrid2D extends SparseGrid2D implements DistributedField<Int2D>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public int NUMPEERS;
 	public int own_x;	//x coordinate of north-west corner
 	public int own_y;	//y coordinate of north-west corner
@@ -63,8 +66,12 @@ public abstract class DSparseGrid2D extends SparseGrid2D implements DistributedF
     public ConnectionWithJMS connection=new ConnectionNFieldsWithActiveMQAPI();
 	public ArrayList<String> neighborhood=new ArrayList<String>();
 	public boolean gui = true;
+	public SparseGridPortrayal2D p;
+
 	public DSparseGrid2D(int width, int height) 
 	{
 		super(width, height);
 	}
+	public  void attachPortrayal(SparseGridPortrayal2D p){this.p=p;}
+
 }

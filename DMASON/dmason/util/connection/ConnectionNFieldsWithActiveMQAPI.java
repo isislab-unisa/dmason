@@ -95,7 +95,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	{
 		
 	    // failover enable autoreconnection of client
-		String strAddr = "failover:tcp://" + providerAddr.getIPaddress() + ":" + providerAddr.getPort();
+		String strAddr = "tcp://" + providerAddr.getIPaddress() + ":" + providerAddr.getPort();
 		
 		// Create an ActiveMQConnectionFactory
 		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(strAddr);
