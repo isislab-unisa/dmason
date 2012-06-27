@@ -9,6 +9,7 @@ import java.io.Serializable;
  */
 public class RegionMapNumeric<E,F> implements Serializable{
 
+
 	public RegionNumeric<E,F>left_out,left_mine,right_mine,right_out,down_mine,down_out,up_mine,up_out=null;
 	public RegionNumeric<E,F>corner_mine_up_left,corner_out_up_left_diag=null;  //corner up left
 	public RegionNumeric<E,F>corner_out_up_left_diag_up = null; //corner up left up

@@ -12,6 +12,10 @@ import dmason.util.connection.ConnectionWithJMS;
  */
 public class UpdaterThreadForListener extends Thread implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	ConnectionWithJMS con;
 	CellType type;
 	ArrayList<DistributedField> fields;

@@ -9,6 +9,11 @@ import java.io.Serializable;
  */
 public class EntryNum<K, F> implements Serializable
 {	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public  K r;
 	public  F l;
 	

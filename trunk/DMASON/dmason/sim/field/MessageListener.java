@@ -15,6 +15,10 @@ public class MessageListener extends MyMessageListener
 {	
 
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public String topic;
 	public ArrayList<DistributedField> fields;
 	

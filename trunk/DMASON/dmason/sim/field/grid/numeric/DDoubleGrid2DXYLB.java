@@ -1,6 +1,7 @@
 package dmason.sim.field.grid.numeric;
 
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
@@ -109,6 +110,7 @@ import sim.util.Int2D;
  * </PRE>
  */
 public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
+	
 	/**
 	 * It's the name of the specific field
 	 */
@@ -134,7 +136,19 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	private HashMap<Integer, MyCellInterface> toSendForUnion;
 	private RegionDoubleNumeric outAgents;
 	
-	
+	// codice profiling
+		private long numStep;
+		private FileOutputStream f;
+		private PrintStream ps;
+		private long startPreWork;
+		private long endPreWork;
+		private long startPub;
+		private long endPub;
+		private long startWait;
+		private long endWait;
+		private long startPostWork;
+		private long endPostWork;
+		// fine codice profiling
 	
 	/**
 	 * @param width field's width  
@@ -203,6 +217,33 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 
 		setConnection(((DistributedState)sm).getConnection());		
 		
+		// codice profiling
+				startPreWork = 0;
+				endPreWork = 0;
+				startPub = 0;
+				endPub = 0;
+				startWait = 0;
+				endWait = 0;
+				startPostWork = 0;
+				endPostWork = 0;
+				
+				f = null;
+				ps = null;
+				numStep = 1001;
+				/*
+				if(sm.schedule.getSteps()==6000){
+						
+					try {
+				
+						f=new FileOutputStream("Region"+cellType.pos_i+"-"+cellType.pos_j+".txt",true);
+						
+					} catch (FileNotFoundException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					ps=new PrintStream(f);
+				}*/
+				// fine codice profiling
 	
 	}
 	
@@ -4686,6 +4727,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			    	catch (NoSuchMethodException e) {e.printStackTrace();} 
 			    	catch (InvocationTargetException e) {e.printStackTrace();}
 			    }
+	    
 		
 	}
 

@@ -13,6 +13,11 @@ import dmason.util.Util;
  */
 public class MyArrayList<E> extends ArrayList<Entry<E>> implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public MyArrayList<E> clone()
 	{
 		MyArrayList<E> r=new MyArrayList<E>();

@@ -249,8 +249,8 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 
     			if(buggrid.setObjectLocation(ant, new Int2D(h.getX(), h.getY()))){
 
-    				//schedule.scheduleOnce(schedule.getTime()+1.0, ant);
-    				schedule.scheduleOnce((Schedule.EPOCH ), 0, ant);
+    				schedule.scheduleOnce(schedule.getTime()+1.0, ant);
+    				//schedule.scheduleOnce((Schedule.EPOCH ), 0, ant);
 
     				if(buggrid.size() != super.NUMAGENTS){
 

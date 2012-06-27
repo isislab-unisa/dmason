@@ -11,6 +11,10 @@ import sim.util.IntBag;
 
 public class DRemoteAnt extends RemoteAnt<Int2D>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public boolean getHasFoodItem() { return hasFoodItem; }
 	public void setHasFoodItem(boolean val) { hasFoodItem = val; }
 	public boolean hasFoodItem = false;
@@ -58,8 +62,8 @@ public class DRemoteAnt extends RemoteAnt<Int2D>
 						int _x = dx+x;
 						int _y = dy+y; 
 
-						if((af.toFoodGrid.own_x<= x) && (x<(af.toFoodGrid.own_x+af.toFoodGrid.my_width)) && 
-								(af.toFoodGrid.own_y<=y) && (y<(af.toFoodGrid.own_y+af.toFoodGrid.my_height))){
+						/*if((af.toFoodGrid.own_x<= x) && (x<(af.toFoodGrid.own_x+af.toFoodGrid.my_width)) && 
+								(af.toFoodGrid.own_y<=y) && (y<(af.toFoodGrid.own_y+af.toFoodGrid.my_height))){*/
 
 							if (_x < 0 || _y < 0 || _x >= af.GRID_WIDTH || _y >= af.GRID_HEIGHT) continue;  // nothing to see here
 							double m = af.toFoodGrid.field[_x][_y] * 
@@ -69,7 +73,7 @@ public class DRemoteAnt extends RemoteAnt<Int2D>
 							if (m > max) max = m;
 						}
 
-					}
+					//}
 				//af.toFoodGrid.field[x][y] = max;
 				af.toFoodGrid.setDistributedObjectLocation(max, new Int2D(x, y), state);     
 			}
@@ -82,8 +86,8 @@ public class DRemoteAnt extends RemoteAnt<Int2D>
 						int _x = dx+x;
 						int _y = dy+y;
 
-						if((af.toHomeGrid.own_x<= x) && (x<(af.toHomeGrid.own_x+af.toHomeGrid.my_width)) && 
-								(af.toHomeGrid.own_y<=y) && (y<(af.toHomeGrid.own_y+af.toHomeGrid.my_height))){
+						/*if((af.toHomeGrid.own_x<= x) && (x<(af.toHomeGrid.own_x+af.toHomeGrid.my_width)) && 
+								(af.toHomeGrid.own_y<=y) && (y<(af.toHomeGrid.own_y+af.toHomeGrid.my_height))){*/
 
 							if (_x < 0 || _y < 0 || _x >= af.GRID_WIDTH || _y >= af.GRID_HEIGHT) continue;  // nothing to see here
 							double m = af.toHomeGrid.field[_x][_y] * 
@@ -92,7 +96,7 @@ public class DRemoteAnt extends RemoteAnt<Int2D>
 									reward;
 							if (m > max) max = m;
 						}
-					}
+					//}
 				//af.toHomeGrid.field[x][y] = max;
 				af.toHomeGrid.setDistributedObjectLocation(max, new Int2D(x, y), state);
 			}

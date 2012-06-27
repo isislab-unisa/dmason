@@ -9,9 +9,10 @@ import dmason.sim.field.RegionNumeric;
  */
 public class RegionDoubleNumeric extends RegionNumeric<Integer, EntryNum<Double, Int2D>>{
 
+
 	private static int height;
 	private static int width;
-	private static boolean isBalanced=false;
+	private static boolean isBalanced;
 	/**
 	 * Constructor of class,it use the costructor of superclass and adds a width and a height
 	 * 
@@ -62,10 +63,6 @@ public class RegionDoubleNumeric extends RegionNumeric<Integer, EntryNum<Double,
 		{
 			return null;
 		}
-		if(isBalanced)
-			return new RegionDoubleNumeric(upl_xx,upl_yy,down_xx,down_yy,MY_WIDTH,MY_HEIGHT);
-
-		else
 			return new RegionDoubleNumeric(upl_xx,upl_yy,down_xx,down_yy);
 	}
 	

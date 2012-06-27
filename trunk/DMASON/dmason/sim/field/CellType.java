@@ -8,6 +8,11 @@ import java.io.Serializable;
 public class CellType implements Serializable
 {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * i position in a 2D field
 	 */
 	public int pos_i;

@@ -10,6 +10,11 @@ import dmason.sim.engine.RemoteAgent;
  */
 public class Entry<E> implements Serializable
 {	
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public  RemoteAgent<E> r;
 	public  E l;
 	

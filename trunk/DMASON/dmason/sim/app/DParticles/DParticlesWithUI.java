@@ -70,7 +70,9 @@ public class DParticlesWithUI extends GUIState
                0.0,1.0,Color.black,Color.white));
         particlesPortrayal.setField(((DParticles)state).particles);
         particlesPortrayal.setPortrayalForAll( new sim.portrayal.simple.OvalPortrayal2D(Color.red) );
-            
+        
+        ((DParticles)state).particles.attachPortrayal(particlesPortrayal);
+
         // reschedule the displayer
         display.reset();
                 
