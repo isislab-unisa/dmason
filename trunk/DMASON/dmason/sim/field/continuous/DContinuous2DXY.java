@@ -189,25 +189,25 @@ public class DContinuous2DXY extends DContinuous2D
 		myfield=new RegionDouble(own_x+jumpDistance,own_y+jumpDistance, own_x+my_width-jumpDistance , own_y+my_height-jumpDistance,width,height);
 		
 		//corner up left
-		rmap.corner_out_up_left_diag=new RegionDouble((own_x-jumpDistance + width)%width, (own_y-jumpDistance+height)%height, 
+		rmap.corner_out_up_left_diag_center=new RegionDouble((own_x-jumpDistance + width)%width, (own_y-jumpDistance+height)%height, 
 				(own_x+width)%width, (own_y+height)%height,width,height);
 		rmap.corner_mine_up_left=new RegionDouble(own_x, own_y, 
 				own_x+jumpDistance, own_y+jumpDistance,width,height);
 					
 		//corner up right
-		rmap.corner_out_up_right_diag = new RegionDouble((own_x+my_width+width)%width, (own_y-jumpDistance+height)%height,
+		rmap.corner_out_up_right_diag_center = new RegionDouble((own_x+my_width+width)%width, (own_y-jumpDistance+height)%height,
 				(own_x+my_width+jumpDistance+width)%width, (own_y+height)%height,width,height);
 		rmap.corner_mine_up_right=new RegionDouble(own_x+my_width-jumpDistance, own_y, 
 				own_x+my_width, own_y+jumpDistance,width,height);
 		
 		//corner down left
-		rmap.corner_out_down_left_diag=new RegionDouble((own_x-jumpDistance+width)%width, (own_y+my_height+height)%height,
+		rmap.corner_out_down_left_diag_center=new RegionDouble((own_x-jumpDistance+width)%width, (own_y+my_height+height)%height,
 				(own_x+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
 		rmap.corner_mine_down_left=new RegionDouble(own_x, own_y+my_height-jumpDistance,
 				own_x+jumpDistance, own_y+my_height,width,height);
 		
 		//corner down right
-		rmap.corner_out_down_right_diag=new RegionDouble((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
+		rmap.corner_out_down_right_diag_center=new RegionDouble((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
 				(own_x+my_width+jumpDistance+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
 		rmap.corner_mine_down_right=new RegionDouble(own_x+my_width-jumpDistance, own_y+my_height-jumpDistance,
 				own_x+my_width,own_y+my_height,width,height);
@@ -418,10 +418,10 @@ public class DContinuous2DXY extends DContinuous2D
 		 } catch (Exception e1) { e1.printStackTrace(); }
 		}
 
-		if(rmap.corner_out_up_left_diag!=null)
+		if(rmap.corner_out_up_left_diag_center!=null)
 		{
 			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.corner_mine_up_left,
-					rmap.corner_out_up_left_diag,
+					rmap.corner_out_up_left_diag_center,
 						(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_UP_LEFT);
 			try 
 			{
@@ -430,10 +430,10 @@ public class DContinuous2DXY extends DContinuous2D
 			} catch (Exception e1) { e1.printStackTrace();}
 
 		}
-		if(rmap.corner_out_up_right_diag!=null)
+		if(rmap.corner_out_up_right_diag_center!=null)
 		{
 			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.corner_mine_up_right,
-					rmap.corner_out_up_right_diag,
+					rmap.corner_out_up_right_diag_center,
 					(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_UP_RIGHT);
 			try 
 			{
@@ -442,20 +442,20 @@ public class DContinuous2DXY extends DContinuous2D
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
-		if( rmap.corner_out_down_left_diag!=null)
+		if( rmap.corner_out_down_left_diag_center!=null)
 		{
 			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.corner_mine_down_left,
-					rmap.corner_out_down_left_diag,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_LEFT);
+					rmap.corner_out_down_left_diag_center,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_LEFT);
 			try 
 			{
 				connection.publishToTopic(dr,cellType.toString()+"CDDL",name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
-		if(rmap.corner_out_down_right_diag!=null)
+		if(rmap.corner_out_down_right_diag_center!=null)
 		{
 			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.corner_mine_down_right,
-					rmap.corner_out_down_right_diag,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_RIGHT);
+					rmap.corner_out_down_right_diag_center,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_RIGHT);
 			
 			try 
 			{				

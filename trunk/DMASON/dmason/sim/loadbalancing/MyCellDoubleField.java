@@ -87,10 +87,10 @@ public class MyCellDoubleField implements MyCellInterface,Serializable{
 		this.positionPublish = positionPublish;
 		this.positionGood = positionGood;
 		this.makeUnion = false;
-		this.upl_xx = (Double) MYRMAP.corner_out_up_left_diag.upl_xx; 
-		this.upl_yy = (Double) MYRMAP.corner_out_up_left_diag.upl_yy;
-		this.down_xx = (Double) MYRMAP.corner_out_down_right_diag.down_xx; 
-		this.down_yy = (Double) MYRMAP.corner_out_down_right_diag.down_xx;
+		this.upl_xx = (Double) MYRMAP.corner_out_up_left_diag_center.upl_xx; 
+		this.upl_yy = (Double) MYRMAP.corner_out_up_left_diag_center.upl_yy;
+		this.down_xx = (Double) MYRMAP.corner_out_down_right_diag_center.down_xx; 
+		this.down_yy = (Double) MYRMAP.corner_out_down_right_diag_center.down_xx;
 	}
 
 	public MyCellDoubleField(RegionMap MYRMAP, RegionDouble MYFIELD, String name, double own_x, double own_y, 
@@ -110,10 +110,10 @@ public class MyCellDoubleField implements MyCellInterface,Serializable{
 		positionGood = new HashMap<Integer, Boolean>();
 		this.makeUnion = false;
 		
-		this.upl_xx = (Double) MYRMAP.corner_out_up_left_diag.upl_xx; 
-		this.upl_yy = (Double) MYRMAP.corner_out_up_left_diag.upl_yy;
-		this.down_xx = (Double) MYRMAP.corner_out_down_right_diag.down_xx; 
-		this.down_yy = (Double) MYRMAP.corner_out_down_right_diag.down_xx;
+		this.upl_xx = (Double) MYRMAP.corner_out_up_left_diag_center.upl_xx; 
+		this.upl_yy = (Double) MYRMAP.corner_out_up_left_diag_center.upl_yy;
+		this.down_xx = (Double) MYRMAP.corner_out_down_right_diag_center.down_xx; 
+		this.down_yy = (Double) MYRMAP.corner_out_down_right_diag_center.down_xx;
 		
 		for (int j2 = 0; j2 <= 8; j2++) {
 			positionPublish.put(j2, false);

@@ -12,7 +12,7 @@ import dmason.sim.field.CellType;
 import dmason.sim.field.EntryNum;
 import dmason.sim.field.RegionMapNumeric;
 
-import dmason.sim.field.grid.numeric.RegionDoubleNumeric;
+import dmason.sim.field.grid.numeric.RegionDoubleNumericLB;
 
 /**
  * This Class is for Double value.
@@ -28,7 +28,7 @@ public class SplittedDoubleNumeric implements Serializable {
 	public int own_y;	//y coordinate of north-west corner
 	public int my_width;
 	public int my_height;
-	public RegionDoubleNumeric myfield;
+	public RegionDoubleNumericLB myfield;
 	public RegionMapNumeric<Integer, EntryNum<Double,Int2D>> rmap=new RegionMapNumeric<Integer, EntryNum<Double,Int2D>>();
 	private RegionMapNumeric<Integer, EntryNum<Double,Int2D>> superRmap = null;
 	public int MAX_DISTANCE;
@@ -107,99 +107,99 @@ public class SplittedDoubleNumeric implements Serializable {
 		}
 		
 		//my field
-		myfield=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE,own_x+my_width-MAX_DISTANCE, 
+		myfield=new RegionDoubleNumericLB(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE,own_x+my_width-MAX_DISTANCE, 
 				own_y+my_height-MAX_DISTANCE,TOTALWIDTH,TOTALHEIGHT);
 
 		//corner mine up left
-		rmap.corner_mine_up_left=new RegionDoubleNumeric(own_x, own_y,own_x+MAX_DISTANCE, 
+		rmap.corner_mine_up_left=new RegionDoubleNumericLB(own_x, own_y,own_x+MAX_DISTANCE, 
 				own_y+MAX_DISTANCE,TOTALWIDTH, TOTALHEIGHT);	
 		//corner out up left		
-		rmap.corner_out_up_left_diag=new RegionDoubleNumeric((own_x-MAX_DISTANCE + TOTALWIDTH)%TOTALWIDTH, 
+		rmap.corner_out_up_left_diag_center=new RegionDoubleNumericLB((own_x-MAX_DISTANCE + TOTALWIDTH)%TOTALWIDTH, 
 				(own_y-MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,(own_x+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
-		rmap.corner_out_up_left_diag_up=new RegionDoubleNumeric((own_x + TOTALWIDTH)%TOTALWIDTH, 
+		rmap.corner_out_up_left_diag_up=new RegionDoubleNumericLB((own_x + TOTALWIDTH)%TOTALWIDTH, 
 				(own_y-MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT, ((own_x+TOTALWIDTH)+MAX_DISTANCE)%TOTALWIDTH, 
 				(own_y+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
-		rmap.corner_out_up_left_diag_left=new RegionDoubleNumeric((own_x-MAX_DISTANCE + TOTALWIDTH)%TOTALWIDTH, 
+		rmap.corner_out_up_left_diag_left=new RegionDoubleNumericLB((own_x-MAX_DISTANCE + TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+TOTALHEIGHT)%TOTALHEIGHT,(own_x+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+TOTALHEIGHT+MAX_DISTANCE)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 		
 		//corner mine up right		
-		rmap.corner_mine_up_right=new RegionDoubleNumeric(own_x+my_width-MAX_DISTANCE, own_y, 
+		rmap.corner_mine_up_right=new RegionDoubleNumericLB(own_x+my_width-MAX_DISTANCE, own_y, 
 				own_x+my_width, own_y+MAX_DISTANCE,TOTALWIDTH, TOTALHEIGHT);
 		//corner out up right
-		rmap.corner_out_up_right_diag = new RegionDoubleNumeric((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
+		rmap.corner_out_up_right_diag_center = new RegionDoubleNumericLB((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y-MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT, (own_x+my_width+MAX_DISTANCE+TOTALWIDTH)
 				%TOTALWIDTH, (own_y+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
-		rmap.corner_out_up_right_diag_up=new RegionDoubleNumeric((own_x+my_width+TOTALWIDTH-MAX_DISTANCE)
+		rmap.corner_out_up_right_diag_up=new RegionDoubleNumericLB((own_x+my_width+TOTALWIDTH-MAX_DISTANCE)
 				%TOTALWIDTH, (own_y-MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,(own_x+my_width+TOTALWIDTH)
 				%TOTALWIDTH, (own_y+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
-		rmap.corner_out_up_right_diag_right=new RegionDoubleNumeric((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
+		rmap.corner_out_up_right_diag_right=new RegionDoubleNumericLB((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+TOTALHEIGHT)%TOTALHEIGHT,(own_x+my_width+MAX_DISTANCE+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+TOTALHEIGHT+MAX_DISTANCE)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 		
 		// corner mine down left
-		rmap.corner_mine_down_left=new RegionDoubleNumeric(own_x, own_y+my_height-MAX_DISTANCE,
+		rmap.corner_mine_down_left=new RegionDoubleNumericLB(own_x, own_y+my_height-MAX_DISTANCE,
 				own_x+MAX_DISTANCE, own_y+my_height,TOTALWIDTH, TOTALHEIGHT);
 		//corner out down left
-		rmap.corner_out_down_left_diag=new RegionDoubleNumeric((own_x-MAX_DISTANCE+TOTALWIDTH)%TOTALWIDTH, 
+		rmap.corner_out_down_left_diag_center=new RegionDoubleNumericLB((own_x-MAX_DISTANCE+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+my_height+TOTALHEIGHT)%TOTALHEIGHT,(own_x+TOTALWIDTH)%TOTALWIDTH,
 				(own_y+my_height+MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
-		rmap.corner_out_down_left_diag_down=new RegionDoubleNumeric((own_x+TOTALWIDTH)%TOTALWIDTH, 
+		rmap.corner_out_down_left_diag_down=new RegionDoubleNumericLB((own_x+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+my_height+TOTALHEIGHT)%TOTALHEIGHT,(own_x+TOTALWIDTH+MAX_DISTANCE)%TOTALWIDTH,
 				(own_y+my_height+TOTALHEIGHT+MAX_DISTANCE)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
-		rmap.corner_out_down_left_diag_left=new RegionDoubleNumeric((own_x-MAX_DISTANCE+TOTALWIDTH)%TOTALWIDTH, 
+		rmap.corner_out_down_left_diag_left=new RegionDoubleNumericLB((own_x-MAX_DISTANCE+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+my_height+TOTALHEIGHT-MAX_DISTANCE)%TOTALHEIGHT,(own_x+TOTALWIDTH)%TOTALWIDTH,
 				(own_y+my_height+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 
 		//corner mine down right
-		rmap.corner_mine_down_right=new RegionDoubleNumeric(own_x+my_width-MAX_DISTANCE, 
+		rmap.corner_mine_down_right=new RegionDoubleNumericLB(own_x+my_width-MAX_DISTANCE, 
 				own_y+my_height-MAX_DISTANCE,own_x+my_width,own_y+my_height,TOTALWIDTH,TOTALHEIGHT);		
 		//corner out down right
-		rmap.corner_out_down_right_diag=new RegionDoubleNumeric((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
+		rmap.corner_out_down_right_diag_center=new RegionDoubleNumericLB((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+my_height+TOTALHEIGHT)%TOTALHEIGHT,(own_x+my_width+MAX_DISTANCE+TOTALWIDTH)
 				%TOTALWIDTH,(own_y+my_height+MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
-		rmap.corner_out_down_right_diag_down=new RegionDoubleNumeric((own_x+my_width+TOTALWIDTH-MAX_DISTANCE)
+		rmap.corner_out_down_right_diag_down=new RegionDoubleNumericLB((own_x+my_width+TOTALWIDTH-MAX_DISTANCE)
 				%TOTALWIDTH, (own_y+my_height+TOTALHEIGHT)%TOTALHEIGHT,(own_x+my_width+TOTALWIDTH)
 				%TOTALWIDTH,(own_y+my_height+MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT); 
-		rmap.corner_out_down_right_diag_right=new RegionDoubleNumeric((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
+		rmap.corner_out_down_right_diag_right=new RegionDoubleNumericLB((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+my_height+TOTALHEIGHT-MAX_DISTANCE)%TOTALHEIGHT,(own_x+my_width+TOTALWIDTH
 				+MAX_DISTANCE)%TOTALWIDTH,(own_y+my_height+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, 
 				TOTALHEIGHT);
 
 		//mine left		
-		rmap.left_mine=new RegionDoubleNumeric(own_x,own_y+MAX_DISTANCE,own_x + MAX_DISTANCE, 
+		rmap.left_mine=new RegionDoubleNumericLB(own_x,own_y+MAX_DISTANCE,own_x + MAX_DISTANCE, 
 				own_y+my_height-MAX_DISTANCE,TOTALWIDTH,TOTALHEIGHT);
 		//out left
-		rmap.left_out=new RegionDoubleNumeric((own_x-MAX_DISTANCE+TOTALWIDTH)%TOTALWIDTH,
+		rmap.left_out=new RegionDoubleNumericLB((own_x-MAX_DISTANCE+TOTALWIDTH)%TOTALWIDTH,
 				((own_y+TOTALHEIGHT)+MAX_DISTANCE)%TOTALHEIGHT,(own_x+TOTALWIDTH)%TOTALWIDTH, 
 				(((own_y+my_height)+TOTALHEIGHT)-MAX_DISTANCE)%TOTALHEIGHT,TOTALWIDTH,
 				TOTALHEIGHT);
 		
 		//mine right
-		rmap.right_mine=new RegionDoubleNumeric(own_x + my_width - MAX_DISTANCE,own_y+MAX_DISTANCE,
+		rmap.right_mine=new RegionDoubleNumericLB(own_x + my_width - MAX_DISTANCE,own_y+MAX_DISTANCE,
 				own_x +my_width , own_y+my_height-MAX_DISTANCE,TOTALWIDTH,
 				TOTALHEIGHT);
 		//out right
-		rmap.right_out=new RegionDoubleNumeric((own_x+my_width+TOTALWIDTH)%TOTALWIDTH,
+		rmap.right_out=new RegionDoubleNumericLB((own_x+my_width+TOTALWIDTH)%TOTALWIDTH,
 				((own_y+TOTALHEIGHT)+MAX_DISTANCE)%TOTALHEIGHT,(own_x+my_width+MAX_DISTANCE+TOTALWIDTH)
 				%TOTALWIDTH, ((own_y+my_height+TOTALHEIGHT)-MAX_DISTANCE)%TOTALHEIGHT,
 				TOTALWIDTH,TOTALHEIGHT);		
 
 		//mine up
-		rmap.up_mine=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y,own_x+my_width-MAX_DISTANCE, 
+		rmap.up_mine=new RegionDoubleNumericLB(own_x+MAX_DISTANCE,own_y,own_x+my_width-MAX_DISTANCE, 
 				own_y + MAX_DISTANCE ,TOTALWIDTH,TOTALHEIGHT);
 		//out up
-		rmap.up_out=new RegionDoubleNumeric(((own_x+TOTALWIDTH)+MAX_DISTANCE)%TOTALWIDTH, 
+		rmap.up_out=new RegionDoubleNumericLB(((own_x+TOTALWIDTH)+MAX_DISTANCE)%TOTALWIDTH, 
 				(own_y - MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,((own_x+ my_width +TOTALWIDTH)-MAX_DISTANCE)
 				%TOTALWIDTH,(own_y+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH,
 				TOTALHEIGHT);		
 		
 		//mine down
-		rmap.down_mine=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y+my_height-MAX_DISTANCE,own_x+my_width-MAX_DISTANCE, 
+		rmap.down_mine=new RegionDoubleNumericLB(own_x+MAX_DISTANCE,own_y+my_height-MAX_DISTANCE,own_x+my_width-MAX_DISTANCE, 
 				(own_y+my_height),TOTALWIDTH,TOTALHEIGHT);
 		//out down
-		rmap.down_out=new RegionDoubleNumeric( ((own_x+TOTALWIDTH)+MAX_DISTANCE) %TOTALWIDTH,
+		rmap.down_out=new RegionDoubleNumericLB( ((own_x+TOTALWIDTH)+MAX_DISTANCE) %TOTALWIDTH,
 				(own_y+my_height+TOTALHEIGHT)%TOTALHEIGHT,
 				((own_x+my_width+TOTALWIDTH)-MAX_DISTANCE)%TOTALWIDTH, 
 				(own_y+my_height+MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,

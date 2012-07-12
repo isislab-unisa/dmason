@@ -118,7 +118,7 @@ public class SplittedDoubleField implements Serializable {
 		rmap.corner_mine_up_left=new RegionDouble(own_x, own_y,own_x+MAX_DISTANCE, 
 				own_y+MAX_DISTANCE,TOTALWIDTH, TOTALHEIGHT);
 		//corner out up left		
-		rmap.corner_out_up_left_diag=new RegionDouble((own_x-MAX_DISTANCE + TOTALWIDTH)%TOTALWIDTH, 
+		rmap.corner_out_up_left_diag_center=new RegionDouble((own_x-MAX_DISTANCE + TOTALWIDTH)%TOTALWIDTH, 
 				(own_y-MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,(own_x+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 		
@@ -135,7 +135,7 @@ public class SplittedDoubleField implements Serializable {
 				own_x+my_width, own_y+MAX_DISTANCE,TOTALWIDTH, TOTALHEIGHT);
 		
 		//corner out up right
-		rmap.corner_out_up_right_diag = new RegionDouble((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
+		rmap.corner_out_up_right_diag_center = new RegionDouble((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y-MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT, (own_x+my_width+MAX_DISTANCE+TOTALWIDTH)
 				%TOTALWIDTH, (own_y+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 		
@@ -151,7 +151,7 @@ public class SplittedDoubleField implements Serializable {
 		rmap.corner_mine_down_left=new RegionDouble(own_x, own_y+my_height-MAX_DISTANCE,
 				own_x+MAX_DISTANCE, own_y+my_height,TOTALWIDTH, TOTALHEIGHT);
 		//corner out down left
-		rmap.corner_out_down_left_diag=new RegionDouble((own_x-MAX_DISTANCE+TOTALWIDTH)%TOTALWIDTH, 
+		rmap.corner_out_down_left_diag_center=new RegionDouble((own_x-MAX_DISTANCE+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+my_height+TOTALHEIGHT)%TOTALHEIGHT,(own_x+TOTALWIDTH)%TOTALWIDTH,
 				(own_y+my_height+MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 		
@@ -168,7 +168,7 @@ public class SplittedDoubleField implements Serializable {
 				own_y+my_height-MAX_DISTANCE,own_x+my_width,own_y+my_height,TOTALWIDTH,TOTALHEIGHT);		
 		//corner out down right
 		
-		rmap.corner_out_down_right_diag=new RegionDouble((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
+		rmap.corner_out_down_right_diag_center=new RegionDouble((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+my_height+TOTALHEIGHT)%TOTALHEIGHT,(own_x+my_width+MAX_DISTANCE+TOTALWIDTH)
 				%TOTALWIDTH,(own_y+my_height+MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 		

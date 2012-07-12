@@ -10,7 +10,7 @@ import dmason.sim.field.CellType;
 import dmason.sim.field.DistributedField;
 import dmason.sim.field.EntryNum;
 import dmason.sim.field.RegionNumeric;
-import dmason.sim.field.grid.numeric.RegionDoubleNumeric;
+import dmason.sim.field.grid.numeric.RegionDoubleNumericLB;
 
 /**
  * Class for load balancing for field of double value and coordinates integer 
@@ -211,9 +211,9 @@ public class LoadBalancingDoubleNumeric <E> implements LoadBalancingInterface{
 		double i = (Double) element;
 		Int2D location = (Int2D) loc ;
 		
-		if(((RegionDoubleNumeric)m.getMyField()).isMine(location.x, location.y))
+		if(((RegionDoubleNumericLB)m.getMyField()).isMine(location.x, location.y))
 		{	
-			return ((RegionDoubleNumeric)m.getMyField()).addEntryNum(new EntryNum(i, location));
+			return ((RegionDoubleNumericLB)m.getMyField()).addEntryNum(new EntryNum(i, location));
 		}
 		else
 		{
@@ -262,7 +262,7 @@ public class LoadBalancingDoubleNumeric <E> implements LoadBalancingInterface{
 		
 		if(m.getMyField().isMine(location.x, location.y))
 		{
-			return ((RegionDoubleNumeric)m.getMyField()).addEntryNum(new EntryNum(i, location));
+			return ((RegionDoubleNumericLB)m.getMyField()).addEntryNum(new EntryNum(i, location));
 		}
 		else
 		{

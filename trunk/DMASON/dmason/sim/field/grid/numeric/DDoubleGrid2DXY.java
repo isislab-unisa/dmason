@@ -197,7 +197,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 				myfield=new RegionDoubleNumeric(own_x,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-MAX_DISTANCE-1);
 
 				//corner down right
-				rmap.corner_out_down_right_diag=RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
+				rmap.corner_out_down_right_diag_center=RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
 				rmap.corner_mine_down_right=RegionDoubleNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1,my_width, my_height, width,height);
 
 			}
@@ -208,7 +208,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 					myfield=new RegionDoubleNumeric(own_x,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
 
 					//corner up right
-					rmap.corner_out_up_right_diag = RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
+					rmap.corner_out_up_right_diag_center = RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
 					rmap.corner_mine_up_right=RegionDoubleNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 
 				}
@@ -218,11 +218,11 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 					myfield=new RegionDoubleNumeric(own_x,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-MAX_DISTANCE-1);
 
 					//corner up right
-					rmap.corner_out_up_right_diag = RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1,my_width, my_height, width, height);
+					rmap.corner_out_up_right_diag_center = RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1,my_width, my_height, width, height);
 					rmap.corner_mine_up_right=RegionDoubleNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1,my_width, my_height, width, height);
 
 					//corner down right
-					rmap.corner_out_down_right_diag=RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
+					rmap.corner_out_down_right_diag_center=RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
 					rmap.corner_mine_down_right=RegionDoubleNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1, my_width, my_height, width,height);
 
 				}			
@@ -235,7 +235,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 					myfield=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y, own_x+my_width-1, own_y+my_height-MAX_DISTANCE-1);
 
 					//corner down left
-					rmap.corner_out_down_left_diag=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
+					rmap.corner_out_down_left_diag_center=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
 					rmap.corner_mine_down_left=RegionDoubleNumeric.createRegionNumeric(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
 
 				}
@@ -246,7 +246,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 						myfield=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-1, own_y+my_height-1);
 
 						//corner up left	
-						rmap.corner_out_up_left_diag=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
+						rmap.corner_out_up_left_diag_center=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
 						rmap.corner_mine_up_left=RegionDoubleNumeric.createRegionNumeric(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 
 					}
@@ -256,11 +256,11 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 						myfield=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-1, own_y+my_height-MAX_DISTANCE-1);
 
 						//corner up left					
-						rmap.corner_out_up_left_diag=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
+						rmap.corner_out_up_left_diag_center=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
 						rmap.corner_mine_up_left=RegionDoubleNumeric.createRegionNumeric(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 
 						//corner down left
-						rmap.corner_out_down_left_diag=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
+						rmap.corner_out_down_left_diag_center=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
 						rmap.corner_mine_down_left=RegionDoubleNumeric.createRegionNumeric(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1, my_width, my_height, width, height);
 
 					}
@@ -272,11 +272,11 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 					myfield=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-MAX_DISTANCE-1);
 
 					//corner down left
-					rmap.corner_out_down_left_diag=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
+					rmap.corner_out_down_left_diag_center=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
 					rmap.corner_mine_down_left=RegionDoubleNumeric.createRegionNumeric(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
 
 					//corner down right
-					rmap.corner_out_down_right_diag=RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
+					rmap.corner_out_down_right_diag_center=RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
 					rmap.corner_mine_down_right=RegionDoubleNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1, my_width, my_height, width,height);
 
 				}
@@ -287,11 +287,11 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 						myfield=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-1);
 
 						//corner up left	
-						rmap.corner_out_up_left_diag=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
+						rmap.corner_out_up_left_diag_center=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
 						rmap.corner_mine_up_left=RegionDoubleNumeric.createRegionNumeric(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 
 						//corner up right
-						rmap.corner_out_up_right_diag = RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
+						rmap.corner_out_up_right_diag_center = RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
 						rmap.corner_mine_up_right=RegionDoubleNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 
 					}
@@ -300,19 +300,19 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 						myfield=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-MAX_DISTANCE-1);
 
 						//corner up left
-						rmap.corner_out_up_left_diag=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
+						rmap.corner_out_up_left_diag_center=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
 						rmap.corner_mine_up_left=RegionDoubleNumeric.createRegionNumeric(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1,my_width, my_height, width, height);
 
 						//corner up right
-						rmap.corner_out_up_right_diag = RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
+						rmap.corner_out_up_right_diag_center = RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
 						rmap.corner_mine_up_right=RegionDoubleNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 
 						//corner down left
-						rmap.corner_out_down_left_diag=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
+						rmap.corner_out_down_left_diag_center=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
 						rmap.corner_mine_down_left=RegionDoubleNumeric.createRegionNumeric(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
 
 						//corner down right
-						rmap.corner_out_down_right_diag=RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
+						rmap.corner_out_down_right_diag_center=RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
 						rmap.corner_mine_down_right=RegionDoubleNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1,my_width, my_height, width,height);
 					}
 		return true;
@@ -442,11 +442,11 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
-		if(rmap.corner_out_up_left_diag!=null)
+		if(rmap.corner_out_up_left_diag_center!=null)
 		{
 			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr = 
 					new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>
-						(rmap.corner_mine_up_left,rmap.corner_out_up_left_diag,
+						(rmap.corner_mine_up_left,rmap.corner_out_up_left_diag_center,
 							(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.CORNER_DIAG_UP_LEFT);
 			try 
 			{
@@ -454,11 +454,11 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 					 
 			} catch (Exception e1) { e1.printStackTrace();}
 		}
-		if(rmap.corner_out_up_right_diag!=null)
+		if(rmap.corner_out_up_right_diag_center!=null)
 		{
 			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr =
 					new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>
-						(rmap.corner_mine_up_right,rmap.corner_out_up_right_diag,
+						(rmap.corner_mine_up_right,rmap.corner_out_up_right_diag_center,
 							(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.CORNER_DIAG_UP_RIGHT);
 			try 
 			{
@@ -466,11 +466,11 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 			
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
-		if( rmap.corner_out_down_left_diag!=null)
+		if( rmap.corner_out_down_left_diag_center!=null)
 		{
 			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr = 
 					new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>
-						(rmap.corner_mine_down_left,rmap.corner_out_down_left_diag,
+						(rmap.corner_mine_down_left,rmap.corner_out_down_left_diag_center,
 							(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.CORNER_DIAG_DOWN_LEFT);
 			try 
 			{
@@ -478,11 +478,11 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 				
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
-		if(rmap.corner_out_down_right_diag!=null)
+		if(rmap.corner_out_down_right_diag_center!=null)
 		{
 			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr = 
 					new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>
-						(rmap.corner_mine_down_right, rmap.corner_out_down_right_diag,
+						(rmap.corner_mine_down_right, rmap.corner_out_down_right_diag_center,
 							(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.CORNER_DIAG_DOWN_RIGHT);				
 			try 
 			{	

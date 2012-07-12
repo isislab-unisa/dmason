@@ -105,7 +105,6 @@ import sim.util.Int2D;
 
 public class DIntGrid2DXYLB extends DIntGrid2D {
 
-	
 	/**
 	 * 
 	 */
@@ -123,22 +122,20 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	//Serve per dividere le celle per il load Balancing
 	private LoadBalancingIntegerNumeric balance;
 
-	
-	// codice profiling
-		private long totPub;
-		private long startPub;
-		private long endPub;
-		private int numStep;
-		private FileOutputStream f;
-		private PrintStream ps;
-		// fine codice profiling
-
-	
 	private HashMap<Integer, UpdatePositionIntegerNumeric<DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>>> hashUpdatesPosition;
 	private HashMap<Integer, MyCellInterface> toSendForBalance;
 	private HashMap<Integer, MyCellInterface> toSendForUnion;
-	RegionIntegerNumeric outAgents;
+	RegionIntegerNumericLB outAgents;
 	
+	// codice profiling
+	private long totPub;
+	private long startPub;
+	private long endPub;
+	private int numStep;
+	private FileOutputStream f;
+	private PrintStream ps;
+	// fine codice profiling
+
 	/**
 	 * @param width field's width  
 	 * @param height field's height
@@ -200,21 +197,20 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 		this.unionDone = false;
 		this.isUnited = true;
 
-		outAgents = new RegionIntegerNumeric(0, 0, 0, 0, 0, 0);
+		outAgents = new RegionIntegerNumericLB(0, 0, 0, 0, 0, 0);
 		
 		updates_cacheLB=new ArrayList<ArrayList<RegionNumeric<Integer,EntryNum<Integer,Int2D>>>>();
 
 		setConnection(((DistributedState)sm).getConnection());		
 
 		// codice profiling
-				totPub = 0;
-				startPub = 0;
-				endPub = 0;
-				f = null;
-				ps = null;
-				numStep = 1001;
-				// fine codice profiling
-		
+		totPub = 0;
+		startPub = 0;
+		endPub = 0;
+		f = null;
+		ps = null;
+		numStep = 1001;
+		// fine codice profiling
 	}
 
 	@Override
@@ -510,7 +506,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 					for (int i =(Integer)mc.getOwn_y(); i <((Integer)mc.getOwn_y()+(Integer)mc.getMy_height()); i++)
 						if(setValue(field[j][i],new Int2D(j, i), mc)) continue;
 						else
-							((RegionIntegerNumeric)mc.getMyField()).addEntryNum(new EntryNum<Integer,Int2D>(field[j][i], new Int2D(j, i)));
+							((RegionIntegerNumericLB)mc.getMyField()).addEntryNum(new EntryNum<Integer,Int2D>(field[j][i], new Int2D(j, i)));
 	    		toSendForUnion.put(p, mc);
 	    		removeValue(mc);
 	    	}
@@ -574,7 +570,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 					for (int i =(Integer)mc.getOwn_y(); i <((Integer)mc.getOwn_y()+(Integer)mc.getMy_height()); i++)
 						if(setValue(field[j][i],new Int2D(j, i), mc)) continue;
 						else
-							((RegionIntegerNumeric)mc.getMyField()).addEntryNum(new EntryNum<Integer,Int2D>(field[j][i], new Int2D(j, i)));
+							((RegionIntegerNumericLB)mc.getMyField()).addEntryNum(new EntryNum<Integer,Int2D>(field[j][i], new Int2D(j, i)));
 				toSendForBalance.put(k, mc);
 				removeValue(mc);
 			}
@@ -807,7 +803,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 					Int2D i=new Int2D(e_m.l.getX(), e_m.l.getY());
 					field[i.getX()][i.getY()]=e_m.r;	
 				}
-		outAgents = new RegionIntegerNumeric(0,0,0,0,0,0);
+		outAgents = new RegionIntegerNumericLB(0,0,0,0,0,0);
 		this.reset();
 	
 		return true;
@@ -1193,34 +1189,34 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 		
 		if(position == MyCellInterface.UP)
 		{
-			mc.getMyRMap().corner_out_down_left_diag.clear();
+			mc.getMyRMap().corner_out_down_left_diag_center.clear();
 			mc.getMyRMap().corner_mine_down_left.clear();
 			mc.getMyRMap().corner_mine_down_right.clear();
-			mc.getMyRMap().corner_out_down_right_diag.clear();
+			mc.getMyRMap().corner_out_down_right_diag_center.clear();
 		}
 		else
 			if(position == MyCellInterface.RIGHT)
 			{
-				mc.getMyRMap().corner_out_up_left_diag.clear();
+				mc.getMyRMap().corner_out_up_left_diag_center.clear();
 				mc.getMyRMap().corner_mine_up_left.clear();
 				mc.getMyRMap().corner_mine_down_left.clear();
-				mc.getMyRMap().corner_out_down_left_diag.clear();
+				mc.getMyRMap().corner_out_down_left_diag_center.clear();
 			}
 			else
 				if(position == MyCellInterface.DOWN)
 				{
-					mc.getMyRMap().corner_out_up_left_diag.clear();
+					mc.getMyRMap().corner_out_up_left_diag_center.clear();
 					mc.getMyRMap().corner_mine_up_left.clear();
 					mc.getMyRMap().corner_mine_up_right.clear();
-					mc.getMyRMap().corner_out_up_right_diag.clear();
+					mc.getMyRMap().corner_out_up_right_diag_center.clear();
 				}
 				else
 					if(position == MyCellInterface.LEFT)
 					{
-						mc.getMyRMap().corner_out_up_right_diag.clear();
+						mc.getMyRMap().corner_out_up_right_diag_center.clear();
 						mc.getMyRMap().corner_mine_up_right.clear();
 						mc.getMyRMap().corner_mine_down_right.clear();
-						mc.getMyRMap().corner_out_down_right_diag.clear();
+						mc.getMyRMap().corner_out_down_right_diag_center.clear();
 					}
 	}
 
@@ -1452,7 +1448,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 		
 		if(position == MyCellInterface.CORNER_DIAG_UP_LEFT)
 		{
-			for(EntryNum<Integer, Int2D> e: (RegionIntegerNumeric) ((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag())
+			for(EntryNum<Integer, Int2D> e: (RegionIntegerNumericLB) ((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
 			{			    	
 				Int2D loc=e.l;
 				int i = e.r;
@@ -1462,19 +1458,19 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 		else
 			if(position == MyCellInterface.UP)
 			{
-				for(EntryNum<Integer, Int2D> e: (RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_right_diag())
+				for(EntryNum<Integer, Int2D> e: (RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
 				{			    	
 					Int2D loc=e.l;
 					int i = e.r;
 					field[loc.getX()][loc.getY()]=i;
 				}
-				for(EntryNum<Integer, Int2D> e: (RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.UP).get(cellType)).getMyRMap().getup_out())
+				for(EntryNum<Integer, Int2D> e: (RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.UP).get(cellType)).getMyRMap().getup_out())
 				{			    	
 					Int2D loc=e.l;
 					int i = e.r;
 					field[loc.getX()][loc.getY()]=i;
 				}
-				for(EntryNum<Integer, Int2D> e: (RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_left_diag())
+				for(EntryNum<Integer, Int2D> e: (RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
 				{			    	
 					Int2D loc=e.l;
 					int i = e.r;
@@ -1484,7 +1480,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 			else
 				if(position == MyCellInterface.CORNER_DIAG_UP_RIGHT)
 				{
-					for(EntryNum<Integer, Int2D> e: (RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag())
+					for(EntryNum<Integer, Int2D> e: (RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
 					{			    	
 						Int2D loc=e.l;
 						int i = e.r;
@@ -1494,19 +1490,19 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 				else
 					if(position == MyCellInterface.RIGHT)
 					{
-						for(EntryNum<Integer, Int2D> e: (RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag())
+						for(EntryNum<Integer, Int2D> e: (RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
 						{			    	
 							Int2D loc=e.l;
 							int i = e.r;
 							field[loc.getX()][loc.getY()]=i;
 						}
-						for(EntryNum<Integer, Int2D> e: (RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.RIGHT).get(cellType)).getMyRMap().getright_out())
+						for(EntryNum<Integer, Int2D> e: (RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.RIGHT).get(cellType)).getMyRMap().getright_out())
 						{			    	
 							Int2D loc=e.l;
 							int i = e.r;
 							field[loc.getX()][loc.getY()]=i;
 						}
-						for(EntryNum<Integer, Int2D> e: (RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag())
+						for(EntryNum<Integer, Int2D> e: (RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
 						{			    	
 							Int2D loc=e.l;
 							int i = e.r;
@@ -1516,7 +1512,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 					else
 						if(position == MyCellInterface.CORNER_DIAG_DOWN_RIGHT)
 						{
-							for(EntryNum<Integer, Int2D> e: (RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag())
+							for(EntryNum<Integer, Int2D> e: (RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
 							{			    	
 								Int2D loc=e.l;
 								int i = e.r;
@@ -1526,19 +1522,19 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						else
 							if(position == MyCellInterface.DOWN)
 							{
-								for(EntryNum<Integer, Int2D> e: (RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_left_diag())
+								for(EntryNum<Integer, Int2D> e: (RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
 								{			    	
 									Int2D loc=e.l;
 									int i = e.r;
 									field[loc.getX()][loc.getY()]=i;
 								}
-								for(EntryNum<Integer, Int2D> e: (RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.DOWN).get(cellType)).getMyRMap().getdown_out())
+								for(EntryNum<Integer, Int2D> e: (RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.DOWN).get(cellType)).getMyRMap().getdown_out())
 								{			    	
 									Int2D loc=e.l;
 									int i = e.r;
 									field[loc.getX()][loc.getY()]=i;
 								}
-								for(EntryNum<Integer, Int2D> e: (RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_right_diag())
+								for(EntryNum<Integer, Int2D> e: (RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
 								{			    	
 									Int2D loc=e.l;
 									int i = e.r;
@@ -1548,7 +1544,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							else
 								if(position == MyCellInterface.CORNER_DIAG_DOWN_LEFT)
 								{
-									for(EntryNum<Integer, Int2D> e: (RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag())
+									for(EntryNum<Integer, Int2D> e: (RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
 									{			    	
 										Int2D loc=e.l;
 										int i = e.r;
@@ -1558,19 +1554,19 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 								else
 									if(position == MyCellInterface.LEFT)
 									{
-										for(EntryNum<Integer, Int2D> e: (RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag())
+										for(EntryNum<Integer, Int2D> e: (RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
 										{			    	
 											Int2D loc=e.l;
 											int i = e.r;
 											field[loc.getX()][loc.getY()]=i;
 										}
-										for(EntryNum<Integer, Int2D> e: (RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.LEFT).get(cellType)).getMyRMap().getleft_out())
+										for(EntryNum<Integer, Int2D> e: (RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.LEFT).get(cellType)).getMyRMap().getleft_out())
 										{			    	
 											Int2D loc=e.l;
 											int i = e.r;
 											field[loc.getX()][loc.getY()]=i;
 										}
-										for(EntryNum<Integer, Int2D> e: (RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag())
+										for(EntryNum<Integer, Int2D> e: (RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
 										{			    	
 											Int2D loc=e.l;
 											int i = e.r;
@@ -1584,58 +1580,58 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 		int position = mc.getPosition();
 		if(position == MyCellInterface.CORNER_DIAG_UP_LEFT)
 		{
-			mc.getMyRMap().corner_out_down_right_diag.clear();
+			mc.getMyRMap().corner_out_down_right_diag_center.clear();
 		}
 		else
 			if(position == MyCellInterface.UP)
 			{
-				mc.getMyRMap().corner_out_down_left_diag.clear();
+				mc.getMyRMap().corner_out_down_left_diag_center.clear();
 				mc.getMyRMap().corner_out_down_left_diag_down.clear();
 				mc.getMyRMap().down_out.clear();
 				mc.getMyRMap().corner_out_down_right_diag_down.clear();
-				mc.getMyRMap().corner_out_down_right_diag.clear();
+				mc.getMyRMap().corner_out_down_right_diag_center.clear();
 			}
 			else
 				if(position == MyCellInterface.CORNER_DIAG_UP_RIGHT)
 				{
-					mc.getMyRMap().corner_out_down_left_diag.clear();
+					mc.getMyRMap().corner_out_down_left_diag_center.clear();
 				}
 				else
 					if(position == MyCellInterface.RIGHT)
 					{
-						mc.getMyRMap().corner_out_up_left_diag.clear();
+						mc.getMyRMap().corner_out_up_left_diag_center.clear();
 						mc.getMyRMap().corner_out_up_left_diag_left.clear();
 						mc.getMyRMap().left_out.clear();
 						mc.getMyRMap().corner_out_down_left_diag_left.clear();
-						mc.getMyRMap().corner_out_down_left_diag.clear();
+						mc.getMyRMap().corner_out_down_left_diag_center.clear();
 					}
 					else
 						if(position == MyCellInterface.CORNER_DIAG_DOWN_RIGHT)
 						{
-							mc.getMyRMap().corner_out_up_left_diag.clear();
+							mc.getMyRMap().corner_out_up_left_diag_center.clear();
 						}
 						else
 							if(position == MyCellInterface.DOWN)
 							{
-								mc.getMyRMap().corner_out_up_left_diag.clear();
+								mc.getMyRMap().corner_out_up_left_diag_center.clear();
 								mc.getMyRMap().corner_out_up_left_diag_up.clear();
 								mc.getMyRMap().up_out.clear();
 								mc.getMyRMap().corner_out_up_right_diag_up.clear();
-								mc.getMyRMap().corner_out_up_right_diag.clear();
+								mc.getMyRMap().corner_out_up_right_diag_center.clear();
 							}
 							else
 								if(position == MyCellInterface.CORNER_DIAG_DOWN_LEFT)
 								{
-									mc.getMyRMap().corner_out_up_right_diag.clear();
+									mc.getMyRMap().corner_out_up_right_diag_center.clear();
 								}
 								else
 									if(position == MyCellInterface.LEFT)
 									{
-										mc.getMyRMap().corner_out_up_right_diag.clear();
+										mc.getMyRMap().corner_out_up_right_diag_center.clear();
 										mc.getMyRMap().corner_out_up_right_diag_right.clear();
 										mc.getMyRMap().right_out.clear();
 										mc.getMyRMap().corner_out_down_right_diag_right.clear();
-										mc.getMyRMap().corner_out_down_right_diag.clear();
+										mc.getMyRMap().corner_out_down_right_diag_center.clear();
 									}
 	}
 
@@ -1652,24 +1648,24 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			/*
 	    			if(isSplitted)
 	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_diag = 
+	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_diag_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_right_diag);    					
+	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_right_diag_center);    					
 	    			}*/
 	
 	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_center);
 	    			}
 	    			else
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_right_center);
 	    			}
 	    			if(md.getPositionPublish().get(MyCellInterface.RIGHT))
@@ -1691,7 +1687,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				}
 	    				else
 	    				{
-	    					RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_right);
+	    					RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
 	    					empty.clear();
 	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_right = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
@@ -1719,7 +1715,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				}
 	    				else
 	    				{
-	    					RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_right);
+	    					RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
 	    					empty.clear();
 	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_right = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
@@ -1739,7 +1735,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				}
 	    				else
 	    				{
-	    					RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_down);
+	    					RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
 	    					empty.clear();
 	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_down = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
@@ -1776,7 +1772,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				}
 	    				else
 	    				{
-	    					RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_down);
+	    					RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
 	    					empty.clear();
 	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_down = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
@@ -1788,13 +1784,13 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_center);
 	    			}
 	    			else{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_left_center);
 	    			}
 	    		}
@@ -1810,10 +1806,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 										md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_diag_left);
 						*/
-						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_diag = 
+						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_diag_center = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-										md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_left_diag);
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_left_diag_center);
 						/*
 						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_diag_down = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
@@ -1830,10 +1826,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 										md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_diag_down);
 						*/
-						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_diag = 
+						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_diag_center = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-										md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_right_diag);	
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_right_diag_center);	
 						/*
 						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_diag_right = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
@@ -1848,24 +1844,24 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			/*
 	    			if(isSplitted)
 	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_diag = 
+	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_diag_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_left_diag);
+	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_left_diag_center);
 	    			}*/
 	
 	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_left_center);
 	    			}
 	    			else
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_left_center);
 	    			}
 	
@@ -1873,14 +1869,14 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_center);
 	    			}
 	    			else
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_right_center);
 	    			}
 	    			if(md.getPositionPublish().get(MyCellInterface.DOWN))
@@ -1902,7 +1898,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				}
 	    				else
 	    				{
-	    					RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_down);
+	    					RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
 	    					empty.clear();
 	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_down = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
@@ -1929,7 +1925,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				}
 	    				else
 	    				{
-	    					RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_down);
+	    					RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
 	    					empty.clear();
 	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_down = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
@@ -1948,7 +1944,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				}
 	    				else
 	    				{
-	    					RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_left);
+	    					RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
 	    					empty.clear();
 	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_left = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
@@ -1984,7 +1980,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				}
 	    				else
 	    				{
-	    					RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_left);
+	    					RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
 	    					empty.clear();
 	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_left = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
@@ -2000,10 +1996,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			if(isSplitted)
 					{
 	
-						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_diag = 
+						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_diag_center = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-										md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_left_diag);
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_left_diag_center);
 						/*
 						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_diag_up = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
@@ -2025,10 +2021,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 										md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_diag_left);
 						*/
-						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_diag = 
+						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_diag_center = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-										md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_left_diag);
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_left_diag_center);
 						/*
 						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_diag_down = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
@@ -2043,10 +2039,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			/*
 	    			if(isSplitted)
 	    			{		
-	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_diag = 
+	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_diag_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_left_diag);
+	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_left_diag_center);
 	    			}*/
 	
 	    			if(md.getPositionPublish().get(MyCellInterface.UP))
@@ -2061,7 +2057,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				}
 	    				else
 	    				{
-	    					RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_up);
+	    					RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
 	    					empty.clear();
 	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_up = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
@@ -2090,7 +2086,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				}
 	    				else
 	    				{
-	    					RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_up);
+	    					RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
 	    					empty.clear();
 	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_up = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
@@ -2112,14 +2108,14 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_right_center);
 	    			}
 	    			else
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_right_center);
 	    			}
 	
@@ -2127,14 +2123,14 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_center);
 	    			}
 	    			else
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_left_center);
 	    			}
 	    			if(md.getPositionPublish().get(MyCellInterface.LEFT))
@@ -2157,7 +2153,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				}
 	    				else
 	    				{
-	    					RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_left);
+	    					RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
 	    					empty.clear();
 	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_left = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
@@ -2184,7 +2180,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				}
 	    				else
 	    				{
-	    					RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_left);
+	    					RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
 	    					empty.clear();
 	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_left = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
@@ -2204,10 +2200,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 										md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_diag_left);
 						*/
-						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_diag = 
+						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_diag_center = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-										md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_left_diag);
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_left_diag_center);
 						/*
 						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_diag_up = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
@@ -2224,10 +2220,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 										md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_diag_up);
 						*/
-						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_diag = 
+						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_diag_center = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-										md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_right_diag);
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_right_diag_center);
 						/*
 						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_diag_right = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
@@ -2242,24 +2238,24 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			/*
 	    			if(isSplitted)
 	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_diag = 
+	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_diag_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_right_diag);
+	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_right_diag_center);
 	    			}*/
 	
 	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_center);
 	    			}
 	    			else
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_left_center);
 	    			}
 	    			if(md.getPositionPublish().get(MyCellInterface.UP))
@@ -2281,7 +2277,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				}
 	    				else
 	    				{
-	    					RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_up);
+	    					RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
 	    					empty.clear();
 	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_up = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
@@ -2307,7 +2303,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				}
 	    				else
 	    				{
-	    					RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_up);
+	    					RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
 	    					empty.clear();
 	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_up = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
@@ -2327,7 +2323,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				}
 	    				else
 	    				{
-	    					RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_right);
+	    					RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
 	    					empty.clear();
 	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_right = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
@@ -2354,7 +2350,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				}
 	    				else
 	    				{
-	    					RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_right);
+	    					RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
 	    					empty.clear();
 	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_right = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
@@ -2374,14 +2370,14 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_right_center);
 	    			}
 	    			else
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_right_center);
 	    			}
 	    		}
@@ -2396,10 +2392,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 										md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_diag_up);
 						*/
-						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_diag = 
+						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_diag_center = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-										md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_right_diag);
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_right_diag_center);
 						/*
 						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_diag_right = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
@@ -2416,10 +2412,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 										md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_diag_right);
 						*/
-						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_diag = 
+						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_diag_center = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-										md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_right_diag);
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_right_diag_center);
 						/*
 						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_diag_down = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
@@ -2448,16 +2444,16 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 					{
 						if(isSplitted)
 						{
-							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_diag = 
+							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_diag_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_right_diag);    					
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_right_diag_center);    					
 						}
 						if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_left_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.UP))
@@ -2479,14 +2475,14 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_center);
 						}
 						else
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.RIGHT))
@@ -2508,7 +2504,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-	    	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_right);
+	    	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
 	    	    				empty.clear();
 	    						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_right = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
@@ -2535,7 +2531,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-	    	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_right);
+	    	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
 	    	    				empty.clear();
 	    						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_right = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
@@ -2554,7 +2550,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-	    	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_down);
+	    	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
 	    	    				empty.clear();
 	    						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_down = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
@@ -2590,7 +2586,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-	    	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_down);
+	    	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
 	    	    				empty.clear();
 	    						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_down = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
@@ -2602,14 +2598,14 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_center);
 						}
 						else
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_left_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.LEFT))
@@ -2638,10 +2634,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
 											md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_diag_left);*/
-							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_diag = 
+							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_diag_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_left_diag);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_left_diag_center);
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_diag_down = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
 											md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
@@ -2656,10 +2652,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
 											md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_diag_down);
-							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_diag = 
+							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_diag_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_right_diag);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_right_diag_center);
 							/*
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_diag_right = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
@@ -2670,7 +2666,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_left_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.UP))
@@ -2692,7 +2688,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.RIGHT))
@@ -2714,7 +2710,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-	    						RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_right);
+	    						RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
 	    	    				empty.clear();
 	    						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_right = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
@@ -2733,7 +2729,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-	    						RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_left);
+	    						RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
 	    	    				empty.clear();
 	    						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_left = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
@@ -2755,24 +2751,24 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 					{
 						if(isSplitted)
 						{
-							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_diag = 
+							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_diag_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_left_diag);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_left_diag_center);
 						}
 						
 						if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_left_center);
 						}
 						else
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_left_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.UP))
@@ -2794,7 +2790,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.RIGHT))
@@ -2816,14 +2812,14 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_center);
 						}
 						else
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.DOWN))
@@ -2845,7 +2841,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-	    						RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_down);
+	    						RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
 	    	    				empty.clear();
 	    						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_down = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
@@ -2872,7 +2868,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-	    						RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_down);
+	    						RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
 	    	    				empty.clear();
 	    						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_down = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
@@ -2891,7 +2887,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-	    	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_left);
+	    	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
 	    	    				empty.clear();
 	    						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_left = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
@@ -2927,7 +2923,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-	    	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_left);
+	    	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
 	    	    				empty.clear();
 	    						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_left = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
@@ -2942,10 +2938,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						if(isSplitted)
 						{
 	
-							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_diag = 
+							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_diag_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_left_diag);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_left_diag_center);
 							/*DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_diag_up = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
 											md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
@@ -2964,10 +2960,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
 											md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_diag_left);
-							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_diag = 
+							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_diag_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_left_diag);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_left_diag_center);
 							/*DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_diag_down = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
 											md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
@@ -2986,7 +2982,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-	    						RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_up);
+	    						RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
 	    	    				empty.clear();
 	    						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_up = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
@@ -3006,7 +3002,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.RIGHT))
@@ -3028,7 +3024,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.DOWN))
@@ -3049,7 +3045,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_diag_down);
 							}
 							else{
-	    						RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_down);
+	    						RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
 	    	    				empty.clear();
 	    	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_down = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
@@ -3063,10 +3059,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 					{
 						if(isSplitted)
 						{		
-							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_diag = 
+							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_diag_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_left_diag);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_left_diag_center);
 						}
 	
 						if(md.getPositionPublish().get(MyCellInterface.UP))
@@ -3081,7 +3077,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    					}
 							else
 							{
-								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_up);
+								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_up = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
@@ -3109,7 +3105,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    					}
 							else
 							{
-								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_up);
+								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_up = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
@@ -3131,14 +3127,14 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_right_center);
 						}
 						else
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.RIGHT))
@@ -3160,7 +3156,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.DOWN))
@@ -3182,14 +3178,14 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_center);
 						}
 						else
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_left_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.LEFT))
@@ -3212,7 +3208,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_left);
+								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
 	    	    				empty.clear();
 	    						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_left = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
@@ -3239,7 +3235,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_left);
+								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
 	    	    				empty.clear();
 	    						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_left = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
@@ -3257,10 +3253,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
 											md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_diag_left);*/
-							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_diag = 
+							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_diag_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_left_diag);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_left_diag_center);
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_diag_up = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
 											md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
@@ -3275,10 +3271,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
 											md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_diag_up);
-							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_diag = 
+							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_diag_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_right_diag);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_right_diag_center);
 							/*
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_diag_right = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
@@ -3296,7 +3292,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_right);
+								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_right = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
@@ -3316,7 +3312,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.DOWN))
@@ -3338,7 +3334,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_left_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.LEFT))
@@ -3360,7 +3356,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-	    						RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_left);
+	    						RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
 	    	    				empty.clear();
 	    	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_left = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
@@ -3374,24 +3370,24 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 					{
 						if(isSplitted)
 						{
-							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_diag = 
+							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_diag_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_right_diag);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_right_diag_center);
 	    				}
 						
 						if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_center);
 						}
 						else
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_left_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.UP))
@@ -3413,7 +3409,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-	    	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_up);
+	    	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
 	    	    				empty.clear();
 	    						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_up = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
@@ -3439,7 +3435,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-	    	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_up);
+	    	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
 	    	    				empty.clear();
 	    						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_up = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
@@ -3458,7 +3454,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-	    	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_right);
+	    	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
 	    	    				empty.clear();
 	    						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_right = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
@@ -3485,7 +3481,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-	    	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_right);
+	    	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
 	    	    				empty.clear();
 	    						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_right = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
@@ -3505,14 +3501,14 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_right_center);
 						}
 						else
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.DOWN))
@@ -3534,7 +3530,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_left_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.LEFT))
@@ -3563,10 +3559,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
 	    									md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
 	    					hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_diag_up);*/
-							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_diag = 
+							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_diag_center = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    									md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_right_diag);
+	    									md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+	    					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_right_diag_center);
 	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_diag_right = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
 	    									md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
@@ -3581,10 +3577,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
 	    									md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
 	    					hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_diag_right);
-	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_diag = 
+	    					DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_diag_center = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    									md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_right_diag);
+	    									md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+	    					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_right_diag_center);
 	    					/*DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_diag_down = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
 	    									md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
@@ -3595,7 +3591,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_left_center);
 						}
 	
@@ -3618,7 +3614,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-	    						RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_up);
+	    						RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
 	    	    				empty.clear();
 	    	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_up = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
@@ -3637,7 +3633,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 							}
 							else
 							{
-								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_down);
+								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
 	    	    				empty.clear();
 	    	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_down = 
 	    								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
@@ -3657,7 +3653,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_left_center);
 	
 						}
@@ -3700,7 +3696,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left_corner_down_diag = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left_corner_down_diag);
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().left_mine,
@@ -3713,7 +3709,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			}
 	    			else
 	    			{
-	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_left);
+	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
 	    				empty.clear();
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_left = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
@@ -3733,7 +3729,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			{						
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_left_up = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag,	(sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_left_up);
 	    			}
 	
@@ -3749,7 +3745,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_up);
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_right_up_diag = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_right_up_diag);
 	    			}
 	    			else
@@ -3762,7 +3758,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().up_mine,
 	    								md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_up);
-	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_up);
+	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
 	    				empty.clear();
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_up = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
@@ -3778,7 +3774,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_left_up_diag = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag,	(sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_left_up_diag);
 	
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_up = 
@@ -3788,7 +3784,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_right_up_diag = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_right_up_diag);
 	    			}
 	    			else
@@ -3796,12 +3792,12 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				if(positionForUnion != MyCellInterface.UP){
 		    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_left_up_diag = 
 		    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-		    								md.getMyRMap().corner_out_up_left_diag,	(sm.schedule.getSteps()-1),cellType);
+		    								md.getMyRMap().corner_out_up_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
 		    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_left_up_diag);
 		
 		    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_right_up_diag = 
 		    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-		    								md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+		    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 		    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_right_up_diag);
 	    				}
 	    			}
@@ -3814,7 +3810,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left_corner_up_diag = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_left_corner_up_diag);
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_up = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().up_mine,
@@ -3827,7 +3823,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			}
 	    			else
 	    			{
-	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_up);
+	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
 	    				empty.clear();
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left_corner_up_diag_up = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
@@ -3847,7 +3843,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			{	
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_right);
 	    			}
 	
@@ -3864,7 +3860,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_right_down_diag = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_right_down_diag);
 	    				
 	    			}
@@ -3878,7 +3874,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().right_mine,
 	    								md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right);
-	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_right);
+	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
 	    				empty.clear();
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_right_corner_down_diag_right = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
@@ -3893,7 +3889,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			if(md.getPositionPublish().get(MyCellInterface.RIGHT)){
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_right_corner_up_diag = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right_corner_up_diag);
 	    				
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_right = 
@@ -3903,7 +3899,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_right_down_diag = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_right_down_diag);
 	    				
 	    			}
@@ -3912,12 +3908,12 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				if(positionForUnion != MyCellInterface.RIGHT){
 		    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_right_corner_up_diag = 
 		    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-		    								md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+		    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 		    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right_corner_up_diag);
 		
 		    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_right_down_diag = 
 		    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-		    								md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+		    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 		    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_right_down_diag);
 	    				}
 	    			}
@@ -3929,7 +3925,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			if(md.getPositionPublish().get(MyCellInterface.RIGHT)){
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_right_corner_up_diag = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right_corner_up_diag);
 	    				
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_right = 
@@ -3945,7 +3941,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			}
 	    			else
 	    			{
-	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_right);
+	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
 	    				empty.clear();
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_right_corner_up_diag_right = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
@@ -3965,7 +3961,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			{	
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_right);
 	    			}
 	
@@ -3981,7 +3977,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_down);
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_left_down_diag = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_left_down_diag);
 	    			}
 	    			else
@@ -3994,7 +3990,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().down_mine,
 	    								md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_down);
-	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_down);
+	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
 	    				empty.clear();
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left_corner_down_diag_down = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
@@ -4010,7 +4006,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_right_down_diag = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_right_down_diag);
 	
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_down = 
@@ -4020,7 +4016,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_left_down_diag = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_left_down_diag);
 	    			}
 	    			else
@@ -4028,11 +4024,11 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				if(positionForUnion != MyCellInterface.DOWN){
 		    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_right_down_diag = 
 		    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-		    								md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+		    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 		    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_right_down_diag);		    			
 		    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_left_down_diag = 
 		    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-		    								md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+		    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 		    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_left_down_diag);
 	    				}
 	    			}
@@ -4045,7 +4041,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_right_down_diag = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_right_down_diag);
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_down = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().down_mine,
@@ -4058,7 +4054,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			}
 	    			else
 	    			{
-	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_down);
+	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
 	    				empty.clear();
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_right_corner_down_diag_down = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
@@ -4078,7 +4074,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			{	
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_left);
 	    			}
 	
@@ -4094,7 +4090,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left);
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left_corner_up_diag = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left_corner_up_diag);
 	    			}
 	    			else
@@ -4107,7 +4103,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().left_mine,
 	    								md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_left);
-	    				RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_left);
+	    				RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
 	    				empty.clear();
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left_corner_up_diag_left = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
@@ -4122,7 +4118,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			if(md.getPositionPublish().get(MyCellInterface.LEFT)){
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_left_down_diag = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag,	(sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_left_down_diag);
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().left_mine,
@@ -4130,7 +4126,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left);
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left_corner_up_diag = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left_corner_up_diag);
 	    			}
 	    			else
@@ -4138,11 +4134,11 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				if(positionForUnion != MyCellInterface.LEFT){
 		    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_left_down_diag = 
 		    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-		    								md.getMyRMap().corner_out_down_left_diag,	(sm.schedule.getSteps()-1),cellType);
+		    								md.getMyRMap().corner_out_down_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
 		    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_left_down_diag);
 		    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left_corner_up_diag = 
 		    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-		    								md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+		    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 		    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_left_corner_up_diag);
 	    				}
 	    			}
@@ -4151,10 +4147,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    		if(md.getPosition() == MyCellInterface.CENTER){
 	    			
 	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT)){
-	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left_corner_up_diag = 
+	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left_corner_up_diag_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_left_corner_up_diag);
+	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_left_corner_up_diag_center);
 	    			}
 	    			if(md.getPositionPublish().get(MyCellInterface.UP)){
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left_corner_up_diag_up = 
@@ -4174,10 +4170,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				    				
 	    			}
 	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_RIGHT)){
-	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_right_corner_up_diag = 
+	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_right_corner_up_diag_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_right_corner_up_diag);
+	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_right_corner_up_diag_center);
 	    			}
 	    			
 	    			if(md.getPositionPublish().get(MyCellInterface.RIGHT)){
@@ -4197,7 +4193,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT)){
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_right_corner_down_diag = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_right_corner_down_diag);
 	    			}
 	    			if(md.getPositionPublish().get(MyCellInterface.DOWN)){
@@ -4215,10 +4211,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_down);
 	    			}
 	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT)){
-	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left_corner_down_diag = 
+	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left_corner_down_diag_center = 
 	    						new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_left_corner_down_diag);
+	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_left_corner_down_diag_center);
 	    			}
 	    			if(md.getPositionPublish().get(MyCellInterface.LEFT)){
 	    				DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_left_down_diag_left = 
@@ -4379,7 +4375,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 											field[loc.getX()][loc.getY()]=i;
 										}
 										else
-											if(name.contains("corner_out_down_left_diag") && !md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
+											if(name.contains("corner_out_down_left_diag_center") && !md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
 											{
 												Int2D loc=e.l;
 												int i = e.r;
@@ -4400,7 +4396,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 														field[loc.getX()][loc.getY()]=i;
 													}
 													else
-														if(name.contains("corner_out_down_right_diag") && !md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
+														if(name.contains("corner_out_down_right_diag_center") && !md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
 														{
 															Int2D loc=e.l;
 															int i = e.r;
@@ -4421,7 +4417,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 																	field[loc.getX()][loc.getY()]=i;
 																}
 																else
-																	if(name.contains("corner_out_up_left_diag") && !md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
+																	if(name.contains("corner_out_up_left_diag_center") && !md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 																	{
 																		Int2D loc=e.l;
 																		int i = e.r;
@@ -4442,7 +4438,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 																				field[loc.getX()][loc.getY()]=i;
 																			}
 																			else
-																				if(name.contains("corner_out_up_right_diag") && !md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
+																				if(name.contains("corner_out_up_right_diag_center") && !md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
 																				{
 																					Int2D loc=e.l;
 																					int i = e.r;
@@ -4553,7 +4549,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 		    									updates_out.add(region.clone());
 		    								}
 		    								else
-		    									if(name.contains("corner_out_down_left_diag") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
+		    									if(name.contains("corner_out_down_left_diag_center") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
 		    									{
 		    										updates_out.add(region.clone());
 		    									}
@@ -4568,7 +4564,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 		    												updates_out.add(region.clone());
 		    											}
 		    											else
-		    												if(name.contains("corner_out_down_right_diag") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
+		    												if(name.contains("corner_out_down_right_diag_center") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
 		    												{
 		    													updates_out.add(region.clone());
 		    												}
@@ -4583,7 +4579,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 		    															updates_out.add(region.clone());
 		    														}
 		    														else
-		    															if(name.contains("corner_out_up_left_diag") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
+		    															if(name.contains("corner_out_up_left_diag_center") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 		    															{
 		    																updates_out.add(region.clone());
 		    															}
@@ -4598,7 +4594,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 		    																		updates_out.add(region.clone());
 		    																	}
 		    																	else
-		    																		if(name.contains("corner_out_up_right_diag") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
+		    																		if(name.contains("corner_out_up_right_diag_center") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
 		    																		{
 		    																			updates_out.add(region.clone());
 		    																		}
@@ -4794,7 +4790,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 
 		if(md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
 		{
-			RegionNumeric<Integer,EntryNum<Integer,Int2D>> region = rmap.corner_out_down_left_diag;
+			RegionNumeric<Integer,EntryNum<Integer,Int2D>> region = rmap.corner_out_down_left_diag_center;
 			if(region.isMine(location.x,location.y))
 			{   
 				outAgents.add(new EntryNum<Integer,Int2D>(value, location));
@@ -4824,7 +4820,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 
 		if(md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
 		{
-			RegionNumeric<Integer,EntryNum<Integer,Int2D>> region = rmap.corner_out_down_right_diag;
+			RegionNumeric<Integer,EntryNum<Integer,Int2D>> region = rmap.corner_out_down_right_diag_center;
 			if(region.isMine(location.x,location.y))
 			{   
 				outAgents.add(new EntryNum<Integer,Int2D>(value, location));
@@ -4854,7 +4850,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 
 		if(md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 		{
-			RegionNumeric<Integer,EntryNum<Integer,Int2D>> region = rmap.corner_out_up_left_diag;
+			RegionNumeric<Integer,EntryNum<Integer,Int2D>> region = rmap.corner_out_up_left_diag_center;
 			if(region.isMine(location.x,location.y))
 			{   
 				outAgents.add(new EntryNum<Integer,Int2D>(value, location));
@@ -4884,7 +4880,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 
 		if(md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
 		{
-			RegionNumeric<Integer,EntryNum<Integer,Int2D>> region = rmap.corner_out_up_right_diag;
+			RegionNumeric<Integer,EntryNum<Integer,Int2D>> region = rmap.corner_out_up_right_diag_center;
 			if(region.isMine(location.x,location.y))
 			{   	
 				outAgents.add(new EntryNum<Integer,Int2D>(value, location));
@@ -4961,7 +4957,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 				(mc.getPosition() == MyCellInterface.CORNER_DIAG_DOWN_LEFT) ||
 				(mc.getPosition() == MyCellInterface.LEFT))
 		{
-			RegionNumeric<Integer,EntryNum<Integer,Int2D>> r_o1 = rmap.corner_out_up_left_diag;
+			RegionNumeric<Integer,EntryNum<Integer,Int2D>> r_o1 = rmap.corner_out_up_left_diag_center;
 			for (int i = r_o1.getUpl_yy(); i < r_o1.getDown_yy(); i++) {
 				for (int j = r_o1.upl_xx; j < r_o1.down_xx; j++) {
 					field[j][i]=0;
@@ -5015,7 +5011,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 				(mc.getPosition() == MyCellInterface.RIGHT) ||
 				(mc.getPosition() == MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
 		{
-			RegionNumeric<Integer,EntryNum<Integer,Int2D>> r_o1 = rmap.corner_out_up_right_diag;
+			RegionNumeric<Integer,EntryNum<Integer,Int2D>> r_o1 = rmap.corner_out_up_right_diag_center;
 			for (int i = r_o1.getUpl_yy(); i < r_o1.getDown_yy(); i++) {
 				for (int j = r_o1.upl_xx; j < r_o1.down_xx; j++) {
 					field[j][i]=0;
@@ -5069,7 +5065,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 				(mc.getPosition() == MyCellInterface.DOWN) ||
 				(mc.getPosition() == MyCellInterface.CORNER_DIAG_DOWN_LEFT))
 		{
-			RegionNumeric<Integer,EntryNum<Integer,Int2D>> r_o1 = rmap.corner_out_down_right_diag;
+			RegionNumeric<Integer,EntryNum<Integer,Int2D>> r_o1 = rmap.corner_out_down_right_diag_center;
 			for (int i = r_o1.getUpl_yy(); i < r_o1.getDown_yy(); i++) {
 				for (int j = r_o1.upl_xx; j < r_o1.down_xx; j++) {
 					field[j][i]=0;
@@ -5123,7 +5119,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 				(mc.getPosition() == MyCellInterface.CORNER_DIAG_DOWN_LEFT) ||
 				(mc.getPosition() == MyCellInterface.LEFT))
 		{
-			RegionNumeric<Integer,EntryNum<Integer,Int2D>> r_o1 = rmap.corner_out_down_left_diag;
+			RegionNumeric<Integer,EntryNum<Integer,Int2D>> r_o1 = rmap.corner_out_down_left_diag_center;
 			for (int i = r_o1.getUpl_yy(); i < r_o1.getDown_yy(); i++) {
 				for (int j = r_o1.upl_xx; j < r_o1.down_xx; j++) {
 					field[j][i]=0;
