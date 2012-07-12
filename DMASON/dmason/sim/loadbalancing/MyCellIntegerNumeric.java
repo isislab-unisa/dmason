@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import dmason.sim.field.CellType;
 import dmason.sim.field.RegionMapNumeric;
-import dmason.sim.field.grid.numeric.RegionIntegerNumeric;
+import dmason.sim.field.grid.numeric.RegionIntegerNumericLB;
 
 /**
 *
@@ -37,7 +37,7 @@ public class MyCellIntegerNumeric implements MyCellInterface,Serializable{
 
 	private static final long serialVersionUID = 1L;
 	private RegionMapNumeric MYRMAP;
-	private RegionIntegerNumeric MYFIELD;
+	private RegionIntegerNumericLB MYFIELD;
 	private String NAME;
 	private CellType PARENTTYPE;
 	private int own_x; 
@@ -67,7 +67,7 @@ public class MyCellIntegerNumeric implements MyCellInterface,Serializable{
 	 * @param positionGood a HashMap<Integer,Boolean> where the key is the region and the associated value indicates if is possible to send the update
 	 * @param position is the position of cell into field
 	 */
-	public MyCellIntegerNumeric(RegionMapNumeric MYRMAP, RegionIntegerNumeric MYFIELD, String name, int own_x, int own_y, 
+	public MyCellIntegerNumeric(RegionMapNumeric MYRMAP, RegionIntegerNumericLB MYFIELD, String name, int own_x, int own_y, 
 			int my_width, int my_height, long step, CellType parentType, HashMap<Integer, 
 				Boolean> positionPublish,HashMap<Integer, Boolean> positionGood, int position) {
 	
@@ -84,10 +84,10 @@ public class MyCellIntegerNumeric implements MyCellInterface,Serializable{
 		this.positionPublish = positionPublish;
 		this.positionGood = positionGood;
 		this.makeUnion = false;
-		this.upl_xx = (Integer) MYRMAP.corner_out_up_left_diag.upl_xx; 
-		this.upl_yy = (Integer) MYRMAP.corner_out_up_left_diag.upl_yy;
-		this.down_xx = (Integer) MYRMAP.corner_out_down_right_diag.down_xx; 
-		this.down_yy = (Integer) MYRMAP.corner_out_down_right_diag.down_xx;
+		this.upl_xx = (Integer) MYRMAP.corner_out_up_left_diag_center.upl_xx; 
+		this.upl_yy = (Integer) MYRMAP.corner_out_up_left_diag_center.upl_yy;
+		this.down_xx = (Integer) MYRMAP.corner_out_down_right_diag_center.down_xx; 
+		this.down_yy = (Integer) MYRMAP.corner_out_down_right_diag_center.down_xx;
 		
 	}
 
@@ -107,7 +107,7 @@ public class MyCellIntegerNumeric implements MyCellInterface,Serializable{
 	 * @param positionGood a HashMap<Integer,Boolean> where the key is the region and the associated value indicates if is possible to send the update
 	 * @param position is the position of cell into field
 	 */
-	public MyCellIntegerNumeric(RegionMapNumeric MYRMAP, RegionIntegerNumeric MYFIELD, String name, int own_x, int own_y, 
+	public MyCellIntegerNumeric(RegionMapNumeric MYRMAP, RegionIntegerNumericLB MYFIELD, String name, int own_x, int own_y, 
 			int my_width, int my_height, long step, CellType parentType, int position) {
 		
 		this.NAME = name;
@@ -121,10 +121,10 @@ public class MyCellIntegerNumeric implements MyCellInterface,Serializable{
 		this.PARENTTYPE = parentType;
 		this.POSITION = position;
 		this.makeUnion = false;
-		this.upl_xx = (Integer) MYRMAP.corner_out_up_left_diag.upl_xx; 
-		this.upl_yy = (Integer) MYRMAP.corner_out_up_left_diag.upl_yy;
-		this.down_xx = (Integer) MYRMAP.corner_out_down_right_diag.down_xx; 
-		this.down_yy = (Integer) MYRMAP.corner_out_down_right_diag.down_xx;
+		this.upl_xx = (Integer) MYRMAP.corner_out_up_left_diag_center.upl_xx; 
+		this.upl_yy = (Integer) MYRMAP.corner_out_up_left_diag_center.upl_yy;
+		this.down_xx = (Integer) MYRMAP.corner_out_down_right_diag_center.down_xx; 
+		this.down_yy = (Integer) MYRMAP.corner_out_down_right_diag_center.down_xx;
 		
 		positionPublish = new HashMap<Integer, Boolean>();
 		positionGood = new HashMap<Integer, Boolean>();
@@ -162,9 +162,9 @@ public class MyCellIntegerNumeric implements MyCellInterface,Serializable{
 	@Override
 	public void setMYRMAP(Object myRMap) {MYRMAP = (RegionMapNumeric)myRMap;}
 	@Override
-	public RegionIntegerNumeric getMyField() {return MYFIELD;}
+	public RegionIntegerNumericLB getMyField() {return MYFIELD;}
 	@Override
-	public void setMyField(Object myField) {MYFIELD = (RegionIntegerNumeric)myField;}
+	public void setMyField(Object myField) {MYFIELD = (RegionIntegerNumericLB)myField;}
 	@Override
 	public Object getOwn_x(){return own_x;}
 	@Override

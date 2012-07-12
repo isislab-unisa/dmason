@@ -213,9 +213,10 @@ public class DistributedMultiSchedule<E> extends Schedule
 		
 		// codice profiling
     	endStep = System.currentTimeMillis();
+    	if(getSteps()<40002){
 	   		ps.println((numStep)+";"+(numAgents)+";"+(startStep)+";"+(endStep));
 	   		ps.flush();
-    	
+    	}
 		// fine codice profiling
 		
 		
@@ -251,6 +252,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 				return false;
 			}
 		}	
+		
 		
 		// If there is an active zoom synchronous monitor, wait for it 
 		if(monitor.ZOOM && monitor.isSynchro)

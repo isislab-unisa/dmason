@@ -11,7 +11,7 @@ import dmason.sim.field.CellType;
 import dmason.sim.field.DistributedField;
 import dmason.sim.field.Entry;
 import dmason.sim.field.Region;
-import dmason.sim.field.grid.RegionInteger;
+import dmason.sim.field.grid.RegionIntegerLB;
 
 /**
  * Class for load balancing for field with agent of integer coordinates
@@ -218,9 +218,9 @@ public class LoadBalancingIntegerField implements LoadBalancingInterface{
 		RemoteAgent<Int2D> rm = (RemoteAgent<Int2D>) element;
 		Int2D location = (Int2D)loc;
 		
-		if(((RegionInteger)m.getMyField()).isMine(location.x, location.y))
+		if(((RegionIntegerLB)m.getMyField()).isMine(location.x, location.y))
 		{
-			return ((RegionInteger)m.getMyField()).add(new Entry<Int2D>(rm, location));
+			return ((RegionIntegerLB)m.getMyField()).add(new Entry<Int2D>(rm, location));
 		}
 		else
 		{
@@ -268,9 +268,9 @@ public class LoadBalancingIntegerField implements LoadBalancingInterface{
 		RemoteAgent<Int2D> rm = ((RemoteAgent<Int2D>) element);
 		Int2D location = (Int2D)loc;
 
-		if(((RegionInteger)m.getMyField()).isMine(location.x, location.y))
+		if(((RegionIntegerLB)m.getMyField()).isMine(location.x, location.y))
 		{
-			return ((RegionInteger)m.getMyField()).add(new Entry<Int2D>(rm, location));
+			return ((RegionIntegerLB)m.getMyField()).add(new Entry<Int2D>(rm, location));
 		}
 		else
 		{

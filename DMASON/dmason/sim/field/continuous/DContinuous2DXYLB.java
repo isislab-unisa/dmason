@@ -1,6 +1,5 @@
 package dmason.sim.field.continuous;
 
-
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
@@ -1266,34 +1265,34 @@ public class DContinuous2DXYLB extends DContinuous2D
 
 		if(position == MyCellInterface.UP)
 		{
-			mc.getMyRMap().corner_out_down_left_diag.clear();
+			mc.getMyRMap().corner_out_down_left_diag_center.clear();
 			mc.getMyRMap().corner_mine_down_left.clear();
 			mc.getMyRMap().corner_mine_down_right.clear();
-			mc.getMyRMap().corner_out_down_right_diag.clear();
+			mc.getMyRMap().corner_out_down_right_diag_center.clear();
 		}
 		else
 			if(position == MyCellInterface.RIGHT)
 			{
-				mc.getMyRMap().corner_out_up_left_diag.clear();
+				mc.getMyRMap().corner_out_up_left_diag_center.clear();
 				mc.getMyRMap().corner_mine_up_left.clear();
 				mc.getMyRMap().corner_mine_down_left.clear();
-				mc.getMyRMap().corner_out_down_left_diag.clear();
+				mc.getMyRMap().corner_out_down_left_diag_center.clear();
 			}
 			else
 				if(position == MyCellInterface.DOWN)
 				{
-					mc.getMyRMap().corner_out_up_left_diag.clear();
+					mc.getMyRMap().corner_out_up_left_diag_center.clear();
 					mc.getMyRMap().corner_mine_up_left.clear();
 					mc.getMyRMap().corner_mine_up_right.clear();
-					mc.getMyRMap().corner_out_up_right_diag.clear();
+					mc.getMyRMap().corner_out_up_right_diag_center.clear();
 				}
 				else
 					if(position == MyCellInterface.LEFT)
 					{
-						mc.getMyRMap().corner_out_up_right_diag.clear();
+						mc.getMyRMap().corner_out_up_right_diag_center.clear();
 						mc.getMyRMap().corner_mine_up_right.clear();
 						mc.getMyRMap().corner_mine_down_right.clear();
-						mc.getMyRMap().corner_out_down_right_diag.clear();
+						mc.getMyRMap().corner_out_down_right_diag_center.clear();
 					}
 	}
 
@@ -1525,7 +1524,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 
 		if(position == MyCellInterface.CORNER_DIAG_UP_LEFT)
 		{
-			for(Entry<Double2D> e: (RegionDouble) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag())
+			for(Entry<Double2D> e: (RegionDouble) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
 			{			    	
 				RemoteAgent<Double2D> rm=e.r;
 				Double2D loc=e.l;
@@ -1539,7 +1538,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 		else
 			if(position == MyCellInterface.UP)
 			{
-				for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_right_diag())
+				for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
 				{			    	
 					RemoteAgent<Double2D> rm=e.r;
 					Double2D loc=e.l;
@@ -1559,7 +1558,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					setObjectLocation(rm,loc);
 					setPortrayalForObject(rm);
 				}
-				for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_left_diag())
+				for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
 				{			    	
 					RemoteAgent<Double2D> rm=e.r;
 					Double2D loc=e.l;
@@ -1573,7 +1572,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 			else
 				if(position == MyCellInterface.CORNER_DIAG_UP_RIGHT)
 				{
-					for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag())
+					for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
 					{			    	
 						RemoteAgent<Double2D> rm=e.r;
 						Double2D loc=e.l;
@@ -1587,7 +1586,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 				else
 					if(position == MyCellInterface.RIGHT)
 					{
-						for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag())
+						for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
 						{			    	
 							RemoteAgent<Double2D> rm=e.r;
 							Double2D loc=e.l;
@@ -1607,7 +1606,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							setObjectLocation(rm,loc);
 							setPortrayalForObject(rm);
 						}
-						for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag())
+						for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
 						{			    	
 							RemoteAgent<Double2D> rm=e.r;
 							Double2D loc=e.l;
@@ -1621,7 +1620,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					else
 						if(position == MyCellInterface.CORNER_DIAG_DOWN_RIGHT)
 						{
-							for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag())
+							for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
 							{			    	
 								RemoteAgent<Double2D> rm=e.r;
 								Double2D loc=e.l;
@@ -1635,7 +1634,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						else
 							if(position == MyCellInterface.DOWN)
 							{
-								for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_left_diag())
+								for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
 								{			    	
 									RemoteAgent<Double2D> rm=e.r;
 									Double2D loc=e.l;
@@ -1655,7 +1654,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 									setObjectLocation(rm,loc);
 									setPortrayalForObject(rm);
 								}
-								for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_right_diag())
+								for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
 								{			    	
 									RemoteAgent<Double2D> rm=e.r;
 									Double2D loc=e.l;
@@ -1669,7 +1668,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							else
 								if(position == MyCellInterface.CORNER_DIAG_DOWN_LEFT)
 								{
-									for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag())
+									for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
 									{			    	
 										RemoteAgent<Double2D> rm=e.r;
 										Double2D loc=e.l;
@@ -1683,7 +1682,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 								else
 									if(position == MyCellInterface.LEFT)
 									{
-										for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag())
+										for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
 										{			    	
 											RemoteAgent<Double2D> rm=e.r;
 											Double2D loc=e.l;
@@ -1703,7 +1702,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 											setObjectLocation(rm,loc);
 											setPortrayalForObject(rm);
 										}
-										for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag())
+										for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
 										{			    	
 											RemoteAgent<Double2D> rm=e.r;
 											Double2D loc=e.l;
@@ -1721,58 +1720,58 @@ public class DContinuous2DXYLB extends DContinuous2D
 		int position = mc.getPosition();
 		if(position == MyCellInterface.CORNER_DIAG_UP_LEFT)
 		{
-			mc.getMyRMap().corner_out_down_right_diag.clear();
+			mc.getMyRMap().corner_out_down_right_diag_center.clear();
 		}
 		else
 			if(position == MyCellInterface.UP)
 			{
-				mc.getMyRMap().corner_out_down_left_diag.clear();
+				mc.getMyRMap().corner_out_down_left_diag_center.clear();
 				mc.getMyRMap().corner_out_down_left_diag_down.clear();
 				mc.getMyRMap().down_out.clear();
 				mc.getMyRMap().corner_out_down_right_diag_down.clear();
-				mc.getMyRMap().corner_out_down_right_diag.clear();
+				mc.getMyRMap().corner_out_down_right_diag_center.clear();
 			}
 			else
 				if(position == MyCellInterface.CORNER_DIAG_UP_RIGHT)
 				{
-					mc.getMyRMap().corner_out_down_left_diag.clear();
+					mc.getMyRMap().corner_out_down_left_diag_center.clear();
 				}
 				else
 					if(position == MyCellInterface.RIGHT)
 					{
-						mc.getMyRMap().corner_out_up_left_diag.clear();
+						mc.getMyRMap().corner_out_up_left_diag_center.clear();
 						mc.getMyRMap().corner_out_up_left_diag_left.clear();
 						mc.getMyRMap().left_out.clear();
 						mc.getMyRMap().corner_out_down_left_diag_left.clear();
-						mc.getMyRMap().corner_out_down_left_diag.clear();
+						mc.getMyRMap().corner_out_down_left_diag_center.clear();
 					}
 					else
 						if(position == MyCellInterface.CORNER_DIAG_DOWN_RIGHT)
 						{
-							mc.getMyRMap().corner_out_up_left_diag.clear();
+							mc.getMyRMap().corner_out_up_left_diag_center.clear();
 						}
 						else
 							if(position == MyCellInterface.DOWN)
 							{
-								mc.getMyRMap().corner_out_up_left_diag.clear();
+								mc.getMyRMap().corner_out_up_left_diag_center.clear();
 								mc.getMyRMap().corner_out_up_left_diag_up.clear();
 								mc.getMyRMap().up_out.clear();
 								mc.getMyRMap().corner_out_up_right_diag_up.clear();
-								mc.getMyRMap().corner_out_up_right_diag.clear();
+								mc.getMyRMap().corner_out_up_right_diag_center.clear();
 							}
 							else
 								if(position == MyCellInterface.CORNER_DIAG_DOWN_LEFT)
 								{
-									mc.getMyRMap().corner_out_up_right_diag.clear();
+									mc.getMyRMap().corner_out_up_right_diag_center.clear();
 								}
 								else
 									if(position == MyCellInterface.LEFT)
 									{
-										mc.getMyRMap().corner_out_up_right_diag.clear();
+										mc.getMyRMap().corner_out_up_right_diag_center.clear();
 										mc.getMyRMap().corner_out_up_right_diag_right.clear();
 										mc.getMyRMap().right_out.clear();
 										mc.getMyRMap().corner_out_down_right_diag_right.clear();
-										mc.getMyRMap().corner_out_down_right_diag.clear();
+										mc.getMyRMap().corner_out_down_right_diag_center.clear();
 									}
 	}
 
@@ -1789,24 +1788,24 @@ public class DContinuous2DXYLB extends DContinuous2D
 					/*
 	    			if(isSplitted)
 	    			{
-	    				DistributedRegion<Double, Double2D> dr_corner_down_right_diag = 
+	    				DistributedRegion<Double, Double2D> dr_corner_down_right_diag_center = 
 	    						new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_right_diag);    					
+	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_right_diag_center);    					
 	    			}*/
 
 					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
 					{
 						DistributedRegion<Double, Double2D> dr_corner_up_right_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-										md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_center);
 					}
 					else
 					{
 						DistributedRegion<Double, Double2D> dr_corner_up_right_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-										md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_right_center);
 					}
 					if(md.getPositionPublish().get(MyCellInterface.RIGHT))
@@ -1925,13 +1924,13 @@ public class DContinuous2DXYLB extends DContinuous2D
 					{
 						DistributedRegion<Double, Double2D> dr_corner_down_left_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-										md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_center);
 					}
 					else{
 						DistributedRegion<Double, Double2D> dr_corner_down_left_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-										md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_left_center);
 					}
 				}
@@ -1947,10 +1946,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 										md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_diag_left);
 						 */
-						DistributedRegion<Double, Double2D> dr_corner_down_left_diag = 
+						DistributedRegion<Double, Double2D> dr_corner_down_left_diag_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-										md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_left_diag);
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_left_diag_center);
 						/*
 						DistributedRegion<Double, Double2D> dr_corner_down_left_diag_down = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
@@ -1967,10 +1966,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 										md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_diag_down);
 						 */
-						DistributedRegion<Double, Double2D> dr_corner_down_right_diag = 
+						DistributedRegion<Double, Double2D> dr_corner_down_right_diag_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-										md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_right_diag);	
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_right_diag_center);	
 						/*
 						DistributedRegion<Double, Double2D> dr_corner_down_right_diag_right = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
@@ -1985,24 +1984,24 @@ public class DContinuous2DXYLB extends DContinuous2D
 					/*
 	    			if(isSplitted)
 	    			{
-	    				DistributedRegion<Double, Double2D> dr_corner_down_left_diag = 
+	    				DistributedRegion<Double, Double2D> dr_corner_down_left_diag_center = 
 	    						new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_left_diag);
+	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_left_diag_center);
 	    			}*/
 
 					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 					{
 						DistributedRegion<Double, Double2D> dr_corner_up_left_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-										md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_left_center);
 					}
 					else
 					{
 						DistributedRegion<Double, Double2D> dr_corner_up_left_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-										md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_left_center);
 					}
 
@@ -2010,14 +2009,14 @@ public class DContinuous2DXYLB extends DContinuous2D
 					{
 						DistributedRegion<Double, Double2D> dr_corner_down_right_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-										md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_center);
 					}
 					else
 					{
 						DistributedRegion<Double, Double2D> dr_corner_down_right_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-										md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_right_center);
 					}
 					if(md.getPositionPublish().get(MyCellInterface.DOWN))
@@ -2137,10 +2136,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 					if(isSplitted)
 					{
 
-						DistributedRegion<Double, Double2D> dr_corner_up_left_diag = 
+						DistributedRegion<Double, Double2D> dr_corner_up_left_diag_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-										md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_left_diag);
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_left_diag_center);
 						/*
 						DistributedRegion<Double, Double2D> dr_corner_up_left_diag_up = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
@@ -2162,10 +2161,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 										md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_diag_left);
 						 */
-						DistributedRegion<Double, Double2D> dr_corner_down_left_diag = 
+						DistributedRegion<Double, Double2D> dr_corner_down_left_diag_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-										md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_left_diag);
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_left_diag_center);
 						/*
 						DistributedRegion<Double, Double2D> dr_corner_down_left_diag_down = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
@@ -2180,10 +2179,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 					/*
 	    			if(isSplitted)
 	    			{		
-	    				DistributedRegion<Double, Double2D> dr_corner_up_left_diag = 
+	    				DistributedRegion<Double, Double2D> dr_corner_up_left_diag_center = 
 	    						new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_left_diag);
+	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_left_diag_center);
 	    			}*/
 
 					if(md.getPositionPublish().get(MyCellInterface.UP))
@@ -2249,14 +2248,14 @@ public class DContinuous2DXYLB extends DContinuous2D
 					{
 						DistributedRegion<Double, Double2D> dr_corner_up_right_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-										md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_right_center);
 					}
 					else
 					{
 						DistributedRegion<Double, Double2D> dr_corner_up_right_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-										md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_right_center);
 					}
 
@@ -2264,14 +2263,14 @@ public class DContinuous2DXYLB extends DContinuous2D
 					{
 						DistributedRegion<Double, Double2D> dr_corner_down_left_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-										md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_center);
 					}
 					else
 					{
 						DistributedRegion<Double, Double2D> dr_corner_down_left_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-										md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_left_center);
 					}
 					if(md.getPositionPublish().get(MyCellInterface.LEFT))
@@ -2341,10 +2340,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 										md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_diag_left);
 						 */
-						DistributedRegion<Double, Double2D> dr_corner_up_left_diag = 
+						DistributedRegion<Double, Double2D> dr_corner_up_left_diag_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-										md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_left_diag);
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_left_diag_center);
 						/*
 						DistributedRegion<Double, Double2D> dr_corner_up_left_diag_up = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
@@ -2361,10 +2360,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 										md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_diag_up);
 						 */
-						DistributedRegion<Double, Double2D> dr_corner_up_right_diag = 
+						DistributedRegion<Double, Double2D> dr_corner_up_right_diag_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-										md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_right_diag);
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_right_diag_center);
 						/*
 						DistributedRegion<Double, Double2D> dr_corner_up_right_diag_right = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
@@ -2379,24 +2378,24 @@ public class DContinuous2DXYLB extends DContinuous2D
 					/*
 	    			if(isSplitted)
 	    			{
-	    				DistributedRegion<Double, Double2D> dr_corner_up_right_diag = 
+	    				DistributedRegion<Double, Double2D> dr_corner_up_right_diag_center = 
 	    						new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_right_diag);
+	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_right_diag_center);
 	    			}*/
 
 					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 					{
 						DistributedRegion<Double, Double2D> dr_corner_up_left_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-										md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_center);
 					}
 					else
 					{
 						DistributedRegion<Double, Double2D> dr_corner_up_left_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-										md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_left_center);
 					}
 					if(md.getPositionPublish().get(MyCellInterface.UP))
@@ -2511,14 +2510,14 @@ public class DContinuous2DXYLB extends DContinuous2D
 					{
 						DistributedRegion<Double, Double2D> dr_corner_down_right_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-										md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_right_center);
 					}
 					else
 					{
 						DistributedRegion<Double, Double2D> dr_corner_down_right_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-										md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_right_center);
 					}
 				}
@@ -2533,10 +2532,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 										md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_diag_up);
 						 */
-						DistributedRegion<Double, Double2D> dr_corner_up_right_diag = 
+						DistributedRegion<Double, Double2D> dr_corner_up_right_diag_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-										md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_right_diag);
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_right_diag_center);
 						/*
 						DistributedRegion<Double, Double2D> dr_corner_up_right_diag_right = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
@@ -2553,10 +2552,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 										md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_diag_right);
 						 */
-						DistributedRegion<Double, Double2D> dr_corner_down_right_diag = 
+						DistributedRegion<Double, Double2D> dr_corner_down_right_diag_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-										md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_right_diag);
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_right_diag_center);
 						/*
 						DistributedRegion<Double, Double2D> dr_corner_down_right_diag_down = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
@@ -2586,16 +2585,16 @@ public class DContinuous2DXYLB extends DContinuous2D
 						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setNumAgentExternalCell(countAgent(md));
 						if(isSplitted)
 						{
-							DistributedRegion<Double, Double2D> dr_corner_down_right_diag = 
+							DistributedRegion<Double, Double2D> dr_corner_down_right_diag_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_right_diag);    					
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_right_diag_center);    					
 						}
 						if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 						{
 							DistributedRegion<Double, Double2D> dr_corner_up_left_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_left_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.UP))
@@ -2617,14 +2616,14 @@ public class DContinuous2DXYLB extends DContinuous2D
 						{
 							DistributedRegion<Double, Double2D> dr_corner_up_right_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_center);
 						}
 						else
 						{
 							DistributedRegion<Double, Double2D> dr_corner_up_right_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.RIGHT))
@@ -2740,14 +2739,14 @@ public class DContinuous2DXYLB extends DContinuous2D
 						{
 							DistributedRegion<Double, Double2D> dr_corner_down_left_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_center);
 						}
 						else
 						{
 							DistributedRegion<Double, Double2D> dr_corner_down_left_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_left_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.LEFT))
@@ -2777,10 +2776,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
 											md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_diag_left);*/
-							DistributedRegion<Double, Double2D> dr_corner_down_left_diag = 
+							DistributedRegion<Double, Double2D> dr_corner_down_left_diag_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_left_diag);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_left_diag_center);
 							DistributedRegion<Double, Double2D> dr_corner_down_left_diag_down = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
 											md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
@@ -2795,10 +2794,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
 											md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_diag_down);
-							DistributedRegion<Double, Double2D> dr_corner_down_right_diag = 
+							DistributedRegion<Double, Double2D> dr_corner_down_right_diag_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_right_diag);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_right_diag_center);
 							/*
 							DistributedRegion<Double, Double2D> dr_corner_down_right_diag_right = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
@@ -2809,7 +2808,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						{
 							DistributedRegion<Double, Double2D> dr_corner_up_left_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_left_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.UP))
@@ -2831,7 +2830,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						{
 							DistributedRegion<Double, Double2D> dr_corner_up_right_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.RIGHT))
@@ -2895,24 +2894,24 @@ public class DContinuous2DXYLB extends DContinuous2D
 						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setNumAgentExternalCell(countAgent(md));
 						if(isSplitted)
 						{
-							DistributedRegion<Double, Double2D> dr_corner_down_left_diag = 
+							DistributedRegion<Double, Double2D> dr_corner_down_left_diag_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_left_diag);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_left_diag_center);
 						}
 
 						if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 						{
 							DistributedRegion<Double, Double2D> dr_corner_up_left_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_left_center);
 						}
 						else
 						{
 							DistributedRegion<Double, Double2D> dr_corner_up_left_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_left_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.UP))
@@ -2934,7 +2933,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						{
 							DistributedRegion<Double, Double2D> dr_corner_up_right_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.RIGHT))
@@ -2956,14 +2955,14 @@ public class DContinuous2DXYLB extends DContinuous2D
 						{
 							DistributedRegion<Double, Double2D> dr_corner_down_right_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_center);
 						}
 						else
 						{
 							DistributedRegion<Double, Double2D> dr_corner_down_right_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.DOWN))
@@ -3083,10 +3082,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 						if(isSplitted)
 						{
 
-							DistributedRegion<Double, Double2D> dr_corner_up_left_diag = 
+							DistributedRegion<Double, Double2D> dr_corner_up_left_diag_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_left_diag);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_left_diag_center);
 							/*DistributedRegion<Double, Double2D> dr_corner_up_left_diag_up = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
 											md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
@@ -3105,10 +3104,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
 											md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_diag_left);
-							DistributedRegion<Double, Double2D> dr_corner_down_left_diag = 
+							DistributedRegion<Double, Double2D> dr_corner_down_left_diag_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_left_diag);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_left_diag_center);
 							/*DistributedRegion<Double, Double2D> dr_corner_down_left_diag_down = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
 											md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
@@ -3147,7 +3146,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						{
 							DistributedRegion<Double, Double2D> dr_corner_up_right_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.RIGHT))
@@ -3169,7 +3168,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						{
 							DistributedRegion<Double, Double2D> dr_corner_down_right_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.DOWN))
@@ -3205,10 +3204,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setNumAgentExternalCell(countAgent(md));
 						if(isSplitted)
 						{		
-							DistributedRegion<Double, Double2D> dr_corner_up_left_diag = 
+							DistributedRegion<Double, Double2D> dr_corner_up_left_diag_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_left_diag);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_left_diag_center);
 						}
 
 						if(md.getPositionPublish().get(MyCellInterface.UP))
@@ -3273,14 +3272,14 @@ public class DContinuous2DXYLB extends DContinuous2D
 						{
 							DistributedRegion<Double, Double2D> dr_corner_up_right_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_right_center);
 						}
 						else
 						{
 							DistributedRegion<Double, Double2D> dr_corner_up_right_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.RIGHT))
@@ -3302,7 +3301,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						{
 							DistributedRegion<Double, Double2D> dr_corner_down_right_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.DOWN))
@@ -3324,14 +3323,14 @@ public class DContinuous2DXYLB extends DContinuous2D
 						{
 							DistributedRegion<Double, Double2D> dr_corner_down_left_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_center);
 						}
 						else
 						{
 							DistributedRegion<Double, Double2D> dr_corner_down_left_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_left_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.LEFT))
@@ -3400,10 +3399,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
 											md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_diag_left);*/
-							DistributedRegion<Double, Double2D> dr_corner_up_left_diag = 
+							DistributedRegion<Double, Double2D> dr_corner_up_left_diag_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_left_diag);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_left_diag_center);
 							DistributedRegion<Double, Double2D> dr_corner_up_left_diag_up = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
 											md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
@@ -3418,10 +3417,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
 											md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_diag_up);
-							DistributedRegion<Double, Double2D> dr_corner_up_right_diag = 
+							DistributedRegion<Double, Double2D> dr_corner_up_right_diag_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_right_diag);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_right_diag_center);
 							/*
 							DistributedRegion<Double, Double2D> dr_corner_up_right_diag_right = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
@@ -3459,7 +3458,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						{
 							DistributedRegion<Double, Double2D> dr_corner_down_right_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.DOWN))
@@ -3481,7 +3480,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						{
 							DistributedRegion<Double, Double2D> dr_corner_down_left_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_left_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.LEFT))
@@ -3518,24 +3517,24 @@ public class DContinuous2DXYLB extends DContinuous2D
 						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setNumAgentExternalCell(countAgent(md));
 						if(isSplitted)
 						{
-							DistributedRegion<Double, Double2D> dr_corner_up_right_diag = 
+							DistributedRegion<Double, Double2D> dr_corner_up_right_diag_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_right_diag);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_right_diag_center);
 						}
 
 						if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 						{
 							DistributedRegion<Double, Double2D> dr_corner_up_left_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_center);
 						}
 						else
 						{
 							DistributedRegion<Double, Double2D> dr_corner_up_left_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_left_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.UP))
@@ -3649,14 +3648,14 @@ public class DContinuous2DXYLB extends DContinuous2D
 						{
 							DistributedRegion<Double, Double2D> dr_corner_down_right_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_right_center);
 						}
 						else
 						{
 							DistributedRegion<Double, Double2D> dr_corner_down_right_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_right_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.DOWN))
@@ -3678,7 +3677,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						{
 							DistributedRegion<Double, Double2D> dr_corner_down_left_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_left_center);
 						}
 						if(md.getPositionPublish().get(MyCellInterface.LEFT))
@@ -3708,10 +3707,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 	    							new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
 	    									md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
 	    					hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_diag_up);*/
-							DistributedRegion<Double, Double2D> dr_corner_up_right_diag = 
+							DistributedRegion<Double, Double2D> dr_corner_up_right_diag_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_right_diag);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_right_diag_center);
 							DistributedRegion<Double, Double2D> dr_corner_up_right_diag_right = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
 											md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
@@ -3726,10 +3725,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
 											md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_diag_right);
-							DistributedRegion<Double, Double2D> dr_corner_down_right_diag = 
+							DistributedRegion<Double, Double2D> dr_corner_down_right_diag_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
-							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_right_diag);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_right_diag_center);
 							/*DistributedRegion<Double, Double2D> dr_corner_down_right_diag_down = 
 	    							new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
 	    									md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
@@ -3740,7 +3739,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						{
 							DistributedRegion<Double, Double2D> dr_corner_up_left_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_left_center);
 						}
 
@@ -3802,7 +3801,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						{
 							DistributedRegion<Double, Double2D> dr_corner_down_left_center = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_left_center);
 
 						}
@@ -3845,7 +3844,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					{
 						DistributedRegion<Double, Double2D> dr_left_corner_down_diag = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-										md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left_corner_down_diag);
 						DistributedRegion<Double, Double2D> dr_left = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().left_mine,
@@ -3878,7 +3877,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					{						
 						DistributedRegion<Double, Double2D> dr_corner_left_up = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-										md.getMyRMap().corner_out_up_left_diag,	(sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_left_up);
 					}
 
@@ -3894,7 +3893,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_up);
 						DistributedRegion<Double, Double2D> dr_corner_right_up_diag = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-										md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_right_up_diag);
 					}
 					else
@@ -3923,7 +3922,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					{
 						DistributedRegion<Double, Double2D> dr_corner_left_up_diag = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-										md.getMyRMap().corner_out_up_left_diag,	(sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_left_up_diag);
 
 						DistributedRegion<Double, Double2D> dr_up = 
@@ -3933,7 +3932,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 
 						DistributedRegion<Double, Double2D> dr_corner_right_up_diag = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-										md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_right_up_diag);
 					}
 					else
@@ -3941,12 +3940,12 @@ public class DContinuous2DXYLB extends DContinuous2D
 						if(positionForUnion != MyCellInterface.UP){
 							DistributedRegion<Double, Double2D> dr_corner_left_up_diag = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag,	(sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_left_up_diag);
 
 							DistributedRegion<Double, Double2D> dr_corner_right_up_diag = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_right_up_diag);
 						}
 					}
@@ -3959,7 +3958,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					{
 						DistributedRegion<Double, Double2D> dr_left_corner_up_diag = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-										md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_left_corner_up_diag);
 						DistributedRegion<Double, Double2D> dr_up = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().up_mine,
@@ -3992,7 +3991,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					{	
 						DistributedRegion<Double, Double2D> dr_corner_up_right = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-										md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_right);
 					}
 
@@ -4009,7 +4008,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 
 						DistributedRegion<Double, Double2D> dr_corner_right_down_diag = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-										md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_right_down_diag);
 
 					}
@@ -4038,7 +4037,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					if(md.getPositionPublish().get(MyCellInterface.RIGHT)){
 						DistributedRegion<Double, Double2D> dr_right_corner_up_diag = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-										md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right_corner_up_diag);
 
 						DistributedRegion<Double, Double2D> dr_right = 
@@ -4048,7 +4047,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 
 						DistributedRegion<Double, Double2D> dr_corner_right_down_diag = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-										md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_right_down_diag);
 
 					}
@@ -4057,12 +4056,12 @@ public class DContinuous2DXYLB extends DContinuous2D
 						if(positionForUnion != MyCellInterface.RIGHT){
 							DistributedRegion<Double, Double2D> dr_right_corner_up_diag = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-											md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right_corner_up_diag);
 
 							DistributedRegion<Double, Double2D> dr_corner_right_down_diag = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_right_down_diag);
 						}
 					}
@@ -4074,7 +4073,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					if(md.getPositionPublish().get(MyCellInterface.RIGHT)){
 						DistributedRegion<Double, Double2D> dr_right_corner_up_diag = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-										md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right_corner_up_diag);
 
 						DistributedRegion<Double, Double2D> dr_right = 
@@ -4110,7 +4109,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					{	
 						DistributedRegion<Double, Double2D> dr_corner_down_right = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-										md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_right);
 					}
 
@@ -4126,7 +4125,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_down);
 						DistributedRegion<Double, Double2D> dr_corner_left_down_diag = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-										md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_left_down_diag);
 					}
 					else
@@ -4155,7 +4154,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					{
 						DistributedRegion<Double, Double2D> dr_corner_right_down_diag = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-										md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_right_down_diag);
 
 						DistributedRegion<Double, Double2D> dr_down = 
@@ -4165,7 +4164,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 
 						DistributedRegion<Double, Double2D> dr_corner_left_down_diag = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-										md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_left_down_diag);
 					}
 					else
@@ -4173,11 +4172,11 @@ public class DContinuous2DXYLB extends DContinuous2D
 						if(positionForUnion != MyCellInterface.DOWN){
 							DistributedRegion<Double, Double2D> dr_corner_right_down_diag = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-											md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_right_down_diag);		    			
 							DistributedRegion<Double, Double2D> dr_corner_left_down_diag = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_left_down_diag);
 						}
 					}
@@ -4190,7 +4189,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					{
 						DistributedRegion<Double, Double2D> dr_corner_right_down_diag = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-										md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_right_down_diag);
 						DistributedRegion<Double, Double2D> dr_down = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().down_mine,
@@ -4223,7 +4222,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					{	
 						DistributedRegion<Double, Double2D> dr_corner_down_left = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-										md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_left);
 					}
 
@@ -4239,7 +4238,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left);
 						DistributedRegion<Double, Double2D> dr_left_corner_up_diag = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-										md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left_corner_up_diag);
 					}
 					else
@@ -4267,7 +4266,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					if(md.getPositionPublish().get(MyCellInterface.LEFT)){
 						DistributedRegion<Double, Double2D> dr_corner_left_down_diag = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-										md.getMyRMap().corner_out_down_left_diag,	(sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_left_down_diag);
 						DistributedRegion<Double, Double2D> dr_left = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().left_mine,
@@ -4275,7 +4274,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left);
 						DistributedRegion<Double, Double2D> dr_left_corner_up_diag = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-										md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left_corner_up_diag);
 					}
 					else
@@ -4283,11 +4282,11 @@ public class DContinuous2DXYLB extends DContinuous2D
 						if(positionForUnion != MyCellInterface.LEFT){
 							DistributedRegion<Double, Double2D> dr_corner_left_down_diag = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-											md.getMyRMap().corner_out_down_left_diag,	(sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_down_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_left_down_diag);
 							DistributedRegion<Double, Double2D> dr_left_corner_up_diag = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-											md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_left_corner_up_diag);
 						}
 					}
@@ -4296,10 +4295,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 				if(md.getPosition() == MyCellInterface.CENTER){
 
 					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT)){
-						DistributedRegion<Double, Double2D> dr_left_corner_up_diag = 
+						DistributedRegion<Double, Double2D> dr_left_corner_up_diag_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
-										md.getMyRMap().corner_out_up_left_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_left_corner_up_diag);
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_left_corner_up_diag_center);
 					}
 					if(md.getPositionPublish().get(MyCellInterface.UP)){
 						DistributedRegion<Double, Double2D> dr_left_corner_up_diag_up = 
@@ -4319,10 +4318,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 
 					}
 					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_RIGHT)){
-						DistributedRegion<Double, Double2D> dr_right_corner_up_diag = 
+						DistributedRegion<Double, Double2D> dr_right_corner_up_diag_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
-										md.getMyRMap().corner_out_up_right_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_right_corner_up_diag);
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_right_corner_up_diag_center);
 					}
 
 					if(md.getPositionPublish().get(MyCellInterface.RIGHT)){
@@ -4342,7 +4341,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT)){
 						DistributedRegion<Double, Double2D> dr_right_corner_down_diag = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
-										md.getMyRMap().corner_out_down_right_diag, (sm.schedule.getSteps()-1),cellType);
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_right_corner_down_diag);
 					}
 					if(md.getPositionPublish().get(MyCellInterface.DOWN)){
@@ -4360,10 +4359,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_down);
 					}
 					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT)){
-						DistributedRegion<Double, Double2D> dr_left_corner_down_diag = 
+						DistributedRegion<Double, Double2D> dr_left_corner_down_diag_center = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
-										md.getMyRMap().corner_out_down_left_diag, (sm.schedule.getSteps()-1),cellType);
-						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_left_corner_down_diag);
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_left_corner_down_diag_center);
 					}
 					if(md.getPositionPublish().get(MyCellInterface.LEFT)){
 						DistributedRegion<Double, Double2D> dr_corner_left_down_diag_left = 
@@ -4574,7 +4573,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 											setPortrayalForObject(rm);
 										}
 										else
-											if(name.contains("corner_out_down_left_diag") && !md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
+											if(name.contains("corner_out_down_left_diag_center") && !md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
 											{
 												RemoteAgent<Double2D> rm=e.r;
 												Double2D loc=e.l;
@@ -4607,7 +4606,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 														setPortrayalForObject(rm);
 													}
 													else
-														if(name.contains("corner_out_down_right_diag") && !md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
+														if(name.contains("corner_out_down_right_diag_center") && !md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
 														{
 															RemoteAgent<Double2D> rm=e.r;
 															Double2D loc=e.l;
@@ -4643,7 +4642,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 																	setPortrayalForObject(rm);
 																}
 																else
-																	if(name.contains("corner_out_up_left_diag") && !md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
+																	if(name.contains("corner_out_up_left_diag_center") && !md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 																	{
 																		RemoteAgent<Double2D> rm=e.r;
 																		Double2D loc=e.l;
@@ -4680,7 +4679,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 																				setPortrayalForObject(rm);
 																			}
 																			else
-																				if(name.contains("corner_out_up_right_diag") && !md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
+																				if(name.contains("corner_out_up_right_diag_center") && !md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
 																				{
 																					RemoteAgent<Double2D> rm=e.r;
 																					Double2D loc=e.l;
@@ -4805,7 +4804,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 												updates_out.add(region.clone());
 											}
 											else
-												if(name.contains("corner_out_down_left_diag") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
+												if(name.contains("corner_out_down_left_diag_center") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
 												{
 													updates_out.add(region.clone());
 												}
@@ -4820,7 +4819,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 															updates_out.add(region.clone());
 														}
 														else
-															if(name.contains("corner_out_down_right_diag") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
+															if(name.contains("corner_out_down_right_diag_center") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
 															{
 																updates_out.add(region.clone());
 															}
@@ -4835,7 +4834,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 																		updates_out.add(region.clone());
 																	}
 																	else
-																		if(name.contains("corner_out_up_left_diag") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
+																		if(name.contains("corner_out_up_left_diag_center") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 																		{
 																			updates_out.add(region.clone());
 																		}
@@ -4850,7 +4849,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 																					updates_out.add(region.clone());
 																				}
 																				else
-																					if(name.contains("corner_out_up_right_diag") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
+																					if(name.contains("corner_out_up_right_diag_center") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
 																					{
 																						updates_out.add(region.clone());
 																					}
@@ -5079,7 +5078,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 
 		if(md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
 		{
-			Region<Double,Double2D> region = rmap.corner_out_down_left_diag;
+			Region<Double,Double2D> region = rmap.corner_out_down_left_diag_center;
 			if(region.isMine(location.x,location.y))
 			{   
 				outAgents.add(new Entry<Double2D>(rm, location));
@@ -5109,7 +5108,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 
 		if(md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
 		{
-			Region<Double,Double2D> region = rmap.corner_out_down_right_diag;
+			Region<Double,Double2D> region = rmap.corner_out_down_right_diag_center;
 			if(region.isMine(location.x,location.y))
 			{   
 				outAgents.add(new Entry<Double2D>(rm, location));
@@ -5139,7 +5138,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 
 		if(md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 		{
-			Region<Double,Double2D> region = rmap.corner_out_up_left_diag;
+			Region<Double,Double2D> region = rmap.corner_out_up_left_diag_center;
 			if(region.isMine(location.x,location.y))
 			{   
 				outAgents.add(new Entry<Double2D>(rm, location));
@@ -5169,7 +5168,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 
 		if(md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
 		{
-			Region<Double,Double2D> region = rmap.corner_out_up_right_diag;
+			Region<Double,Double2D> region = rmap.corner_out_up_right_diag_center;
 			if(region.isMine(location.x,location.y))
 			{   	
 				outAgents.add(new Entry<Double2D>(rm, location));

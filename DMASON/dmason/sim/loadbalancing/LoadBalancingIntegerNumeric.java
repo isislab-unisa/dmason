@@ -10,7 +10,7 @@ import dmason.sim.field.CellType;
 import dmason.sim.field.DistributedField;
 import dmason.sim.field.EntryNum;
 import dmason.sim.field.RegionNumeric;
-import dmason.sim.field.grid.numeric.RegionIntegerNumeric;
+import dmason.sim.field.grid.numeric.RegionIntegerNumericLB;
 
 /**
  * Class for load balancing for field of integer value and coordinates
@@ -209,9 +209,9 @@ public class LoadBalancingIntegerNumeric <E> implements LoadBalancingInterface{
 		int i = (Integer) element;
 		Int2D location = (Int2D) loc;
 		
-		if(((RegionIntegerNumeric)m.getMyField()).isMine(location.x, location.y))
+		if(((RegionIntegerNumericLB)m.getMyField()).isMine(location.x, location.y))
 		{	
-			return ((RegionIntegerNumeric)m.getMyField()).addEntryNum(new EntryNum(i, location));
+			return ((RegionIntegerNumericLB)m.getMyField()).addEntryNum(new EntryNum(i, location));
 		}
 		else
 		{
@@ -258,9 +258,9 @@ public class LoadBalancingIntegerNumeric <E> implements LoadBalancingInterface{
 		Int2D location = (Int2D) loc;
 		int position = calculatePositionForBalance(m.getPosition());
 		
-		if(((RegionIntegerNumeric)m.getMyField()).isMine(location.x, location.y))
+		if(((RegionIntegerNumericLB)m.getMyField()).isMine(location.x, location.y))
 		{
-			return ((RegionIntegerNumeric)m.getMyField()).addEntryNum(new EntryNum(i, location));
+			return ((RegionIntegerNumericLB)m.getMyField()).addEntryNum(new EntryNum(i, location));
 		}
 		else
 		{

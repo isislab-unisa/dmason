@@ -223,7 +223,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 				myfield=new RegionInteger(own_x,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-MAX_DISTANCE-1);
 								
 				//corner down right
-				rmap.corner_out_down_right_diag=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
+				rmap.corner_out_down_right_diag_center=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
 				rmap.corner_mine_down_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1,my_width, my_height, width,height);
 			}
 			else
@@ -233,7 +233,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 				myfield=new RegionInteger(own_x,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
 				
 				//corner up right
-				rmap.corner_out_up_right_diag = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
+				rmap.corner_out_up_right_diag_center = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
 				rmap.corner_mine_up_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 			}
 			else
@@ -242,11 +242,11 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 			    myfield=new RegionInteger(own_x,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-MAX_DISTANCE-1);
 									
 				//corner up right
-				rmap.corner_out_up_right_diag = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1,my_width, my_height, width, height);
+				rmap.corner_out_up_right_diag_center = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1,my_width, my_height, width, height);
 				rmap.corner_mine_up_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1,my_width, my_height, width, height);
 				
 				//corner down right
-				rmap.corner_out_down_right_diag=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
+				rmap.corner_out_down_right_diag_center=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
 				rmap.corner_mine_down_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1, my_width, my_height, width,height);
 			}			
 		}
@@ -259,7 +259,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 				myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y, own_x+my_width-1, own_y+my_height-MAX_DISTANCE-1);
 					
 				//corner down left
-				rmap.corner_out_down_left_diag=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
+				rmap.corner_out_down_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
 				rmap.corner_mine_down_left=RegionInteger.createRegion(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
 			}
 			else
@@ -269,7 +269,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 				myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-1, own_y+my_height-1);
 			
 				//corner up left	
-				rmap.corner_out_up_left_diag=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
+				rmap.corner_out_up_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
 				rmap.corner_mine_up_left=RegionInteger.createRegion(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 				
 			}
@@ -279,11 +279,11 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 				myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-1, own_y+my_height-MAX_DISTANCE-1);
 				
 				//corner up left					
-				rmap.corner_out_up_left_diag=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
+				rmap.corner_out_up_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
 				rmap.corner_mine_up_left=RegionInteger.createRegion(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 				
 				//corner down left
-				rmap.corner_out_down_left_diag=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
+				rmap.corner_out_down_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
 				rmap.corner_mine_down_left=RegionInteger.createRegion(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1, my_width, my_height, width, height);
 			}
 		}
@@ -294,11 +294,11 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 			myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-MAX_DISTANCE-1);
 	
 			//corner down left
-			rmap.corner_out_down_left_diag=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
+			rmap.corner_out_down_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
 			rmap.corner_mine_down_left=RegionInteger.createRegion(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
 			
 			//corner down right
-			rmap.corner_out_down_right_diag=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
+			rmap.corner_out_down_right_diag_center=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
 			rmap.corner_mine_down_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1, my_width, my_height, width,height);
 		}
 		else
@@ -308,11 +308,11 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 			myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-1);
 			
 			//corner up left	
-			rmap.corner_out_up_left_diag=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
+			rmap.corner_out_up_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
 			rmap.corner_mine_up_left=RegionInteger.createRegion(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 
 			//corner up right
-			rmap.corner_out_up_right_diag = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
+			rmap.corner_out_up_right_diag_center = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
 			rmap.corner_mine_up_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 		}
 		else
@@ -320,19 +320,19 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 			myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-MAX_DISTANCE-1);
 		
 			//corner up left
-			rmap.corner_out_up_left_diag=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
+			rmap.corner_out_up_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
 			rmap.corner_mine_up_left=RegionInteger.createRegion(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1,my_width, my_height, width, height);
 						
 			//corner up right
-			rmap.corner_out_up_right_diag = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
+			rmap.corner_out_up_right_diag_center = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
 			rmap.corner_mine_up_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 			
 			//corner down left
-			rmap.corner_out_down_left_diag=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
+			rmap.corner_out_down_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
 			rmap.corner_mine_down_left=RegionInteger.createRegion(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
 			
 			//corner down right
-			rmap.corner_out_down_right_diag=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
+			rmap.corner_out_down_right_diag_center=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
 			rmap.corner_mine_down_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1,my_width, my_height, width,height);
 						
 		}
@@ -519,9 +519,9 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
 
-		if(rmap.corner_out_up_left_diag!=null)
+		if(rmap.corner_out_up_left_diag_center!=null)
 		{
-			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.corner_mine_up_left,rmap.corner_out_up_left_diag,
+			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.corner_mine_up_left,rmap.corner_out_up_left_diag_center,
 					(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_UP_LEFT);
 			try 
 			{
@@ -530,9 +530,9 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 
 			} catch (Exception e1) { e1.printStackTrace();}
 		}
-		if(rmap.corner_out_up_right_diag!=null)
+		if(rmap.corner_out_up_right_diag_center!=null)
 		{
-			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.corner_mine_up_right,rmap.corner_out_up_right_diag,
+			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.corner_mine_up_right,rmap.corner_out_up_right_diag_center,
 					(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_UP_RIGHT);
 			try 
 			{
@@ -541,20 +541,20 @@ public class DSparseGrid2DXY extends DSparseGrid2D
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
-		if( rmap.corner_out_down_left_diag!=null)
+		if( rmap.corner_out_down_left_diag_center!=null)
 		{
 			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.corner_mine_down_left,
-					rmap.corner_out_down_left_diag,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_LEFT);
+					rmap.corner_out_down_left_diag_center,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_LEFT);
 			try 
 			{
 				connection.publishToTopic(dr,cellType.toString()+"CDDL", NAME);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
-		if(rmap.corner_out_down_right_diag!=null)
+		if(rmap.corner_out_down_right_diag_center!=null)
 		{
 			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.corner_mine_down_right,
-					rmap.corner_out_down_right_diag,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_RIGHT);
+					rmap.corner_out_down_right_diag_center,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_RIGHT);
 
 			try 
 			{
