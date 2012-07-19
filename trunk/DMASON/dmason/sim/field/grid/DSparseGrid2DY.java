@@ -25,6 +25,7 @@ import dmason.sim.field.Entry;
 import dmason.sim.field.MessageListener;
 import dmason.sim.field.MessageListener;
 import dmason.sim.field.Region;
+import dmason.sim.field.TraceableField;
 import dmason.sim.field.UpdateMap;
 import dmason.sim.field.UpdaterThreadForListener;
 import dmason.sim.loadbalancing.MyCellInterface;
@@ -91,7 +92,7 @@ import sim.util.Int2D;
  * ----------------------------------------------------------------------------------------------------------
  * </PRE>
  */
-public class DSparseGrid2DY extends DSparseGrid2D
+public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 {	
 	private String NAME;
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
@@ -101,6 +102,15 @@ public class DSparseGrid2DY extends DSparseGrid2D
 	private WritableRaster writer;
 	private int white[]={255,255,255};
 	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
+	private boolean isSendingGraphics;
+	
+	/** List of parameters to trace */
+	private ArrayList<String> tracing = new ArrayList<String>();
+	
+	private double actualTime;
+	private HashMap<String, Object> actualStats;
+	
+	
 	
 	/**
 	 * @param width field's width  
@@ -153,7 +163,11 @@ public class DSparseGrid2DY extends DSparseGrid2D
 		}
 		
 		actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
+		actualTime = sm.schedule.getTime();
+		actualStats = new HashMap<String, Object>();
+		isSendingGraphics = false;
 		writer=actualSnap.getRaster();
+		
 	
 		// Building the regions
 		rmap.left_out=RegionInteger.createRegion(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height),my_width, my_height, width, height);
@@ -286,22 +300,58 @@ public class DSparseGrid2DY extends DSparseGrid2D
 	{	
 		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
-			try {
-				ByteArrayOutputStream by = new ByteArrayOutputStream();
-				ImageIO.write(actualSnap, "png", by);
-				by.flush();
-				
-				connection.publishToTopic(new RemoteSnap(cellType, sm.schedule.getSteps()-1, by.toByteArray()), "GRAPHICS", "GRAPHICS");
-				//System.out.println("PUBBLICO AL VISUALIZZATORE");
-				by.close();
-				actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
-				writer=actualSnap.getRaster();
-
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			RemoteSnap snap = new RemoteSnap(cellType, sm.schedule.getSteps() - 1, actualTime);
+			actualTime = sm.schedule.getTime();
+			
+			if (isSendingGraphics)
+			{
+				try {
+					ByteArrayOutputStream by = new ByteArrayOutputStream();
+					ImageIO.write(actualSnap, "png", by);
+					by.flush();
+					snap.image = by.toByteArray();
+					//connection.publishToTopic(snap, "GRAPHICS", "GRAPHICS");
+					//System.out.println("PUBBLICO AL VISUALIZZATORE");
+					by.close();
+					actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
+					writer=actualSnap.getRaster();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
-		}
+			
+			//if (isSendingGraphics || tracing.size() > 0)
+			/* The above line is commented because if we don't send the
+			 * RemoteSnap at every simulation step, the global viewer
+			 * will block waiting on the queue.
+			 */
+			{
+				try
+				{
+					snap.stats = actualStats;
+					connection.publishToTopic(snap, "GRAPHICS", "GRAPHICS");
+				} catch (Exception e) {
+					//logger.severe("Error while publishing the snap message");
+					e.printStackTrace();
+				}
+			}
+			
+			// Update statistics
+			Class<?> simClass = sm.getClass();
+			for (int i = 0; i < tracing.size(); i++)
+			{
+				try
+				{
+					Method m = simClass.getMethod("get" + tracing.get(i), (Class<?>[])null);
+					Object res = m.invoke(sm, new Object [0]);
+					snap.stats.put(tracing.get(i), res);
+				} catch (Exception e) {
+					//logger.severe("Reflection error while calling get" + tracing.get(i));
+					e.printStackTrace();
+				}
+			}
+		} // numViewers > 0
 
 		for(Region<Integer,Int2D> region : updates_cache)
 		{
@@ -673,4 +723,25 @@ public class DSparseGrid2DY extends DSparseGrid2D
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void trace(String param)
+	{ 
+		if (param.equals("-GRAPHICS"))
+			isSendingGraphics = true;
+		else
+			tracing.add(param);
+	}
+	
+	@Override
+	public void untrace(String param)
+	{
+		if (param.equals("-GRAPHICS"))
+			isSendingGraphics = false;
+		else
+		{
+			tracing.remove(param);
+			actualStats.remove(param);
+		}
+	}	
 }
