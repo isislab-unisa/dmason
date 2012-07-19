@@ -19,6 +19,9 @@ import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.swing.*;
@@ -31,6 +34,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import sim.display.Console;
+import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
@@ -1457,13 +1461,17 @@ public class JMasterUI extends JFrame{
 		numAgents = Integer.parseInt(textFieldAgents.getText());
 		maxDistance = Integer.parseInt(textFieldMaxDistance.getText());
 		
-		try {
-			file = new FileOutputStream("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT+".txt");
-			printer=new PrintStream(file);
-		} catch (FileNotFoundException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+		
+			try {
+				file = new FileHandler("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT+".txt");
+			} catch (SecurityException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		
 		if(radioButtonHorizontal.isSelected())
 			MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
 		else if(radioButtonSquare.isSelected() && !jCheckBoxLoadBalancing.isSelected())
@@ -1471,7 +1479,7 @@ public class JMasterUI extends JFrame{
 		else if(radioButtonSquare.isSelected() && jCheckBoxLoadBalancing.isSelected())
 			MODE = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
 
-		(new Trigger(connection)).asynchronousReceiveToTriggerTopic(new TriggerListener(notifyArea,file, printer));
+		(new Trigger(connection)).asynchronousReceiveToTriggerTopic(new TriggerListener(notifyArea,logger));
 
 		// Wrong data inserted
 		if(errors.size() > 0){
@@ -1497,15 +1505,19 @@ public class JMasterUI extends JFrame{
 		numAgents = Integer.parseInt(textFieldAgents.getText());
 		maxDistance = Integer.parseInt(textFieldMaxDistance.getText());
 		withGui = graphicONcheckBox2.isSelected();
-		try {
-			file = new FileOutputStream("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT+".txt");
-			printer=new PrintStream(file);
-		} catch (FileNotFoundException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+		
+			try {
+				file = new FileHandler("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT+".log");
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
 
-		(new Trigger(connection)).asynchronousReceiveToTriggerTopic(new TriggerListener(notifyArea,file,printer));
+		(new Trigger(connection)).asynchronousReceiveToTriggerTopic(new TriggerListener(notifyArea,logger));
 
 		if(radioButtonHorizontal.isSelected())
 			MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
@@ -1587,18 +1599,18 @@ public class JMasterUI extends JFrame{
 					if(step==0)
 					{
 						initial_time=System.currentTimeMillis();
-						printer.println("Number regions:"+numRegions+" Number agents:"+numAgents+" Width:"+WIDTH+" Height:"+HEIGHT);
-						printer.println("Step :0 Time:"+initial_time);
+						logger.addHandler(file);
+						logger.info("Number regions:"+numRegions+" Number agents:"+numAgents+" Width:"+WIDTH+" Height:"+HEIGHT);
+						logger.info("Step :0 Time:"+initial_time);
 					}
 					else if(step == limitStep)
 					{
 						long fifty_time=System.currentTimeMillis();
-						printer.println("Step :"+limitStep+" Time: "+fifty_time);
+						logger.info("Step :"+limitStep+" Time: "+fifty_time);
 
 						long time= (fifty_time - initial_time );
 
-						printer.println("Total Time : "+time);
-						printer.close();
+						logger.info("Total Time : "+time);
 					}
 					writeStepLabel.setText(""+mh.get("step"));
 				}
@@ -1863,8 +1875,8 @@ public class JMasterUI extends JFrame{
 
 
 	// codice profiling
-	private FileOutputStream file;
-	private PrintStream printer;
+	private static final Logger logger = Logger.getLogger(JMasterUI.class.getCanonicalName());
+ 	FileHandler file;
 	private int limitStep;
 	// fine codice profiling
 

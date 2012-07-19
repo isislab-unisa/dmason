@@ -1,12 +1,16 @@
 package dmason.sim.engine;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import dmason.sim.field.CellType;
@@ -34,7 +38,11 @@ public class DistributedMultiSchedule<E> extends Schedule
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private Logger logger = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName());
+	private static final Logger logger = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName());
+	
+	private static final Logger loggerStep = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+"Step");
+	private static final Logger loggerBalance = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+"Balance");
+
 	
 	public ArrayList<DistributedField<E>> fields;
 	Steppable zombie = null;
@@ -48,7 +56,8 @@ public class DistributedMultiSchedule<E> extends Schedule
 	private DistributedState state;
 	private HashMap<String, ArrayList<MyCellInterface>> h;
 
-
+	private double thresholdSplit;
+	private double thresholdMerge;
 
 	
     private final ReentrantLock lock = new ReentrantLock();
@@ -94,10 +103,9 @@ public class DistributedMultiSchedule<E> extends Schedule
  	long numStep;
  	long time;
  	//double sleepTime = 0.002;
- 	FileOutputStream file;
- 	PrintStream ps;
- 	FileOutputStream file2;
- 	PrintStream ps2;
+ 	FileHandler file;
+ 	FileHandler file2;
+
  	// fine codice profiling
     
 	public DistributedMultiSchedule() {
@@ -110,14 +118,29 @@ public class DistributedMultiSchedule<E> extends Schedule
 		externalAgents = 0;
 		numExt = 0;
 		
-	
+		thresholdSplit=3;
+		thresholdMerge=1.5;
 		// codice profiling
 				startStep = 0;
 				endStep = 0;
-				file = null;
-				file2 = null;
-				ps = null;
-				ps2 = null;
+				/* try {
+					new File("Region"+((DistributedState)state).TYPE.toString()+".log").createNewFile();
+					new File("Balance"+((DistributedState)state).TYPE.toString()+".log").createNewFile();
+
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				
+			*/
+				loggerStep.setLevel(Level.ALL);
+				loggerBalance.setLevel(Level.ALL);
+				//loggerStep.addHandler(file);
+				//loggerBalance.addHandler(file2);
+				//ps = null;
+				//ps2 = null;
+
 				numStep = 0;
 				time = 0;
 				// fine codice profiling
@@ -148,16 +171,21 @@ public class DistributedMultiSchedule<E> extends Schedule
 				if(getSteps()==0){
 					
 					try {
-						file=new FileOutputStream("Region"+((DistributedState)state).TYPE.toString()+".txt",true);
-						file2=new FileOutputStream("Balance"+((DistributedState)state).TYPE.toString()+".txt",true);
-					} catch (FileNotFoundException e) {
-						
+						file=new FileHandler("Region"+((DistributedState)state).TYPE.toString()+".log");
+						file2=new FileHandler("Balance"+((DistributedState)state).TYPE.toString()+".log");
+
+					} catch (SecurityException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
-					ps=new PrintStream(file);
-					ps2=new PrintStream(file2);
-				}
+				
+					loggerStep.addHandler(file);
+					loggerBalance.addHandler(file2);
+			}
+
 				
 				numStep = getSteps();
 				// fine codice profiling
@@ -213,10 +241,10 @@ public class DistributedMultiSchedule<E> extends Schedule
 		
 		// codice profiling
     	endStep = System.currentTimeMillis();
-    	if(getSteps()<40002){
-	   		ps.println((numStep)+";"+(numAgents)+";"+(startStep)+";"+(endStep));
-	   		ps.flush();
-    	}
+    	loggerStep.info((numStep)+";"+(numAgents)+";"+(startStep)+";"+(endStep));
+   		//ps.println((numStep)+";"+(numAgents)+";"+(startStep)+";"+(endStep));
+   		//ps.flush();
+
 		// fine codice profiling
 		
 		
@@ -332,9 +360,11 @@ public class DistributedMultiSchedule<E> extends Schedule
 				hashUpdatesPosition.get(MyCellInterface.DOWN).setPreBalance(true);
 				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreBalance(true);
 				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreBalance(true);
-				
-				ps2.println("Split: "+(numStep)+";"+(numAgents));
+				loggerBalance.info("Split: "+(numStep)+";"+(numAgents));
+				//ps2.println("Split: "+(numStep)+";"+(numAgents));
 				//ps2.flush();
+
+
 
 			}
 			else
@@ -415,7 +445,8 @@ public class DistributedMultiSchedule<E> extends Schedule
 				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(true);
 				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(true);
 				
-				ps2.println("Merge: "+(numStep)+";"+(numExt));
+				loggerBalance.info("Merge: "+(numStep)+";"+(numExt));
+				//ps2.println("Merge: "+(numStep)+";"+(numExt));
 				//ps2.flush();
 				numExt = 0;
 				
@@ -466,16 +497,16 @@ public class DistributedMultiSchedule<E> extends Schedule
 	private void verifyBalance(){
 
 		double average = state.NUMAGENTS/state.NUMPEERS;
-		double thresholdSplit=3*average;
-		double thresholdMerge=1.5*average;
+		double splitting=thresholdSplit*average;
+		double merging=thresholdMerge*average;
 
-		if(numAgents>thresholdSplit)
+		if(numAgents>splitting)
 		{
 			split = true;
 			merge = false;
 		}
 		else 
-			if(((numAgents+externalAgents)<thresholdMerge) && 
+			if(((numAgents+externalAgents)<merging) && 
 					(state.TYPE.toString().equals(peers.get((getSteps()%(3*state.NUMPEERS))+""))))
 			{
 				merge = true;
@@ -484,4 +515,21 @@ public class DistributedMultiSchedule<E> extends Schedule
 			}
 		externalAgents = 0;
 	}
+
+	public double getThresholdSplit() {
+		return thresholdSplit;
+	}
+
+	public void setThresholdSplit(double thresholdSplit) {
+		this.thresholdSplit = thresholdSplit;
+	}
+
+	public double getThresholdMerge() {
+		return thresholdMerge;
+	}
+
+	public void setThresholdMerge(double thresholdMerge) {
+		this.thresholdMerge = thresholdMerge;
+	}
+
 }

@@ -2,6 +2,7 @@ package dmason.util.trigger;
 
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.logging.Logger;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -20,13 +21,11 @@ public class TriggerListener extends MyMessageListener {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JTextArea area;
-	private FileOutputStream file;
-	private PrintStream ps;
+	private Logger logger;
 
-	public TriggerListener(JTextArea textArea, FileOutputStream f, PrintStream stream){
+	public TriggerListener(JTextArea textArea, Logger logger){
 		area = textArea;
-		file = f;
-		ps = stream;
+		this.logger = logger;
 	}
 	
 	@Override
@@ -39,7 +38,7 @@ public class TriggerListener extends MyMessageListener {
 				
 				String message = (String) mh.get("trigger");
 				area.append(message+"\n");
-				ps.println(message);
+				logger.info(message);
 			}
 		} catch (JMSException e) {
 			e.printStackTrace();

@@ -19,6 +19,7 @@ public abstract class Region<E,F> extends ArrayList<Entry<F>> implements Seriali
 	//lower right corner
 	public E down_xx,down_yy;
 	
+	
 	/**
 	 * @param upl_xx x coordinate of upper left corner
 	 * @param upl_yy y coordinate of upper left corner
