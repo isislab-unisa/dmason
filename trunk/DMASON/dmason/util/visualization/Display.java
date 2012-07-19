@@ -194,8 +194,7 @@ public class Display extends GUIState
 						}
 						
 						// Update the global image
-						//lblStepValue.setText(step + "");
-						lblStepValue.setText("" + time);
+						lblStepValue.setText(step + "");
 						actualSnap = tmpImage;
 						imageView.repaint();
 						step++;
