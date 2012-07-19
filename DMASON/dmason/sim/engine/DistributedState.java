@@ -453,7 +453,7 @@ public abstract class DistributedState<E> extends SimState {
 	}
 
 	public DistributedState() {
-		super(null, null);
+		super(null, new DistributedMultiSchedule<E>());
 
 	}
 

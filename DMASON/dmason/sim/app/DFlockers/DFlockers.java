@@ -76,7 +76,7 @@ public class DFlockers extends DistributedState<Double2D>
     
     public DFlockers()
     {
-    	
+    	super();
     }
     
     public void start()

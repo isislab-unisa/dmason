@@ -457,24 +457,10 @@ public class Display extends GUIState
 			 * for this goal.
 			 */
 			Class<?> simClass = Class.forName(simulationClassName);
-			Constructor<?> constructor = simClass.getConstructor(Object[].class);
-			System.err.println("NOTE: AN EXCEPTION WILL FOLLOW. IGNORE IT, IT'S NORMAL.");
-			Object simObj = constructor.newInstance(new Object[] { new Object[] {
-					"127.0.0.1", // IP
-					"80", // Port
-					1, // Jump Distance
-					1, // # Regions
-					1, // # Agents
-					1, // width
-					1, // height
-					0, // ?
-					1, // cnt
-					0  // distribution mode
-			} });
+			Constructor<?> constructor = simClass.getConstructor();
+			Object simObj = constructor.newInstance(new Object[] { });
 			super.state = (DistributedState)simObj;
 			this.modelInspector = new DistributedInspector(new DistributedProperties(state), this);
-			System.err.println("NOTE: THE PREVIOUS EXCEPTION WAS NECESSARY. DON'T MIND, IT WON'T AFFECT THE SIMULATION.");
-			
 			pnlInspector.add(new JScrollPane(modelInspector), BorderLayout.CENTER); 
 		} catch (Exception e) {
 			pnlInspector.add(new JLabel("Could not find class " + simulationClassName + ". Inspector not available."));
