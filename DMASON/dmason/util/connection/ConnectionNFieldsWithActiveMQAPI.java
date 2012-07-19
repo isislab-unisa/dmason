@@ -93,10 +93,23 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	@Override
 	public boolean setupConnection(Address providerAddr)
 	{
-		
-	    // failover enable autoreconnection of client
+		/*
+		 * As current strategy in dmason.util.visualization, 
+		 * since I need to use reflection on the simulation's class
+		 * instance, I just use the standard constructor (the one
+		 * accepting an Object[] as parameter). This will cause the
+		 * instance to try to connect to ActiveMQ. In order to
+		 * prevent the instance to actually connect to the server,
+		 * I just pass invalid values for Address and IP.
+		 * BUT! Using failover will make the instance to wait forever.
+		 * So, just for developing purposes, I will disable failover
+		 * at the moment. If this copy of the class is found on the SVN...
+		 * forgive me, it was a mistake :P
+		 * 
+		 * Luca Vicidomini
+		 */
 		String strAddr = "tcp://" + providerAddr.getIPaddress() + ":" + providerAddr.getPort();
-		
+
 		// Create an ActiveMQConnectionFactory
 		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(strAddr);
 		
