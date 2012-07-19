@@ -28,6 +28,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -41,14 +42,24 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 
 import org.apache.kahadb.util.ByteArrayInputStream;
 
+import sim.display.Console;
+import sim.display.GUIState;
+import sim.engine.Steppable;
+import sim.engine.Stoppable;
+import sim.portrayal.Inspector;
 import sim.util.Properties;
 
+import dmason.sim.engine.DistributedState;
+import dmason.sim.field.continuous.DContinuous2DFactory;
+import dmason.sim.portrayal.DistributedInspector;
+import dmason.sim.util.DistributedProperties;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 
 /**
@@ -57,7 +68,7 @@ import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
  * @author Luca Vicidomini
  *
  */
-public class Display
+public class Display extends GUIState
 {
 
 	/**
@@ -99,6 +110,9 @@ public class Display
 		
 		public void run()
 		{
+			// Will contain the list of cell from which we will take data
+			String[] activeCells = new String[numCells];
+			
 			actualSnap = new BufferedImage(100, 100, BufferedImage.TYPE_3BYTE_BGR);
 
 			while(isActive)
@@ -106,77 +120,109 @@ public class Display
 				if (isStarted) 
 				{
 					try 
-					{
+					{	
 						HashMap<String,Object> snaps = (HashMap<String,Object>)updates.getUpdates(step, numCells);
 						BufferedImage tmpImage = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 						String comboCell = "ALL";//(String)comboBoxCell.getSelectedItem();
-						try
+						
+						// Used for drawing
+						int cellsPerDimension = fieldMode == DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE ? numCells : (int)Math.sqrt(numCells);
+						
+						// Overwrite current list of active cells
+						short activeCellsI = 0;
+						
+						// // //
+						// // //
+						// NOTE: The creation of activeCells array should be moved
+						//       in a more efficient position. It would be better
+						//       to build the array once every time the user
+						//       changes the comboBoxCell item. However, this
+						//       combobox isn't available at current stage
+						//       of development...
+						// // //
+						// // //
+						if (!comboCell.equalsIgnoreCase("ALL"))
 						{
-							if (fieldMode == 1)
+							activeCells[activeCellsI++] = comboCell;
+						}
+						else if (fieldMode == DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE)
+						{
+							for (int j = 0; j < numCells; j++)
+								activeCells[activeCellsI++] = "0-" + j;
+						}
+						else // Square
+						{
+							for (int i = 0; i < Math.sqrt(numCells); i++)
+								for (int j = 0; j < Math.sqrt(numCells); j++)
+									activeCells[activeCellsI++] = i + "-" + j;
+						}
+						
+						// Retrieve some common info
+						RemoteSnap zeroSnap = (RemoteSnap)snaps.get("0-0");
+						time = zeroSnap.time;
+						int numProps = zeroSnap.stats.size();
+						Object[] propNames = zeroSnap.stats.keySet().toArray();
+						Object[][] props = new Object[numProps][activeCells.length];
+						
+						for (activeCellsI = 0; activeCellsI < activeCells.length; activeCellsI++)
+						{
+							RemoteSnap snap = (RemoteSnap)snaps.get(activeCells[activeCellsI]);
+							
+							try
 							{
-								if(comboCell.equalsIgnoreCase("ALL"))
+								short i = snap.i;
+								short j = snap.j;
+								byte[] array = snap.image;
+								if (array != null)
 								{
-									for (int i = 0; i < Math.sqrt(numCells); i++)
-									{
-										for (int j = 0; j < Math.sqrt(numCells); j++)
-										{
-											byte[] array = ((RemoteSnap)snaps.get(i + "-" + j)).image;
-											BufferedImage image = ImageIO.read(new ByteArrayInputStream(array));
-											tmpImage.createGraphics().drawImage(image, 
-													(width / (int)Math.sqrt(numCells)) * j,
-													(height / (int)Math.sqrt(numCells)) * i,
-													null);
-										}
-									}
-								}
-								else 
-								{
-									byte[] array = ((RemoteSnap)snaps.get(comboCell)).image;
-									BufferedImage image;
-									image = ImageIO.read(new ByteArrayInputStream(array));
+									BufferedImage image = ImageIO.read(new ByteArrayInputStream(array));
 									tmpImage.createGraphics().drawImage(image, 
-											(width/(int)Math.sqrt(numCells))*Integer.parseInt(""+comboCell.charAt(0)), 
-											(height/(int)Math.sqrt(numCells))*Integer.parseInt(""+comboCell.charAt(2)), null);		
+											(width  / cellsPerDimension) * j,
+											(height / cellsPerDimension) * i,
+											null);
 								}
+							} catch (Exception e) {
+								e.printStackTrace();
+								JOptionPane.showMessageDialog(null, "Rendering error :(");
+								System.exit(-1);
 							}
-							else // (fieldMode == 2)
+							
+							for (int propertyI = 0; propertyI < numProps; propertyI++)
 							{
-								if(comboCell.equalsIgnoreCase("ALL"))
-								{
-									for (int i = 0; i < numCells; i++)
-									{
-										byte[] array = ((RemoteSnap)snaps.get("0-" + i)).image;
-										BufferedImage image;
-										image = ImageIO.read(new ByteArrayInputStream(array));
-										tmpImage.createGraphics().drawImage(image, 
-												(width / numCells) * i,
-												0,
-												null);
-
-									}
-								}
-								else
-								{
-									byte[] array = ((RemoteSnap)snaps.get(comboCell)).image;
-									BufferedImage image;
-									image = ImageIO.read(new ByteArrayInputStream(array));
-									tmpImage.createGraphics().drawImage(image, 
-											(width/numCells)*Integer.parseInt(""+comboCell.charAt(0)), 
-											0, null);		
-								}
+								props[propertyI][activeCellsI] = snap.stats.get(propNames[propertyI]);
 							}
-
-						} catch (IOException e) {
-							e.printStackTrace();
-							JOptionPane.showMessageDialog(null, "Problem with the rendering");
-							System.exit(-1);
 						}
 						
 						// Update the global image
-						lblStepValue.setText(step + "");
+						//lblStepValue.setText(step + "");
+						lblStepValue.setText("" + time);
 						actualSnap = tmpImage;
 						imageView.repaint();
 						step++;
+						
+						// Update the simulation object
+						Display.this.state.schedule.steps = step;
+						Display.this.state.schedule.time = time;
+						
+						Class<?> simClass = Display.this.state.getClass();
+						for (int propertyI = 0; propertyI < numProps; propertyI++)
+						{
+							String propName = (String)propNames[propertyI];
+							try
+							{
+								Method m = simClass.getMethod("reduce" + propName, Object[].class);
+								m.invoke(Display.this.state, new Object[] { props[propertyI] } );
+							} catch (Exception e) {		
+								e.printStackTrace();
+							}
+						}
+						
+						// Update the inspector
+						Display.this.modelInspector.updateInspector();
+						if (Display.this.updateInspector != null)
+						{
+							Display.this.updateInspector.updateInspector();
+						}
 					} 
 					catch (InterruptedException e) 
 					{
@@ -197,7 +243,9 @@ public class Display
 			}
 
 		}
-		public void setAlive() {
+		
+		public void setAlive()
+		{
 			isActive = false;
 		}
 	}
@@ -234,16 +282,31 @@ public class Display
 	private int zoomWidth;
 	private int zoomHeight;
 	
+	/** Simulation's step */
 	public long step;
+	
+	/** Simulation's time */
+	public double time;
+	
 	public boolean isStarted = false;
 	public boolean isPaused = false;
 	public boolean isFirstTime = true;
+	
+	/** List of workers involved in the simulation */
+	private ArrayList<String> workerTopics = new ArrayList<String>();
+	
+	public Steppable updateSteppable = null;
+	
+	/** Panel containing inspectable simulation properties */
+	public DistributedInspector modelInspector;
+
+	protected Inspector updateInspector;
 	
 	public Display(ConnectionNFieldsWithActiveMQAPI con, int mode,
 			int numCells, int width, int height, String absolutePath,
 			String simulation, String simulationClassName)
 	{
-		super();
+		super(null); // We'll set super.guistate later
 		this.connection = con;
 		this.fieldMode = mode;
 		this.numCells = numCells;
@@ -291,6 +354,18 @@ public class Display
 			con.createTopic("GRAPHICS",1);
 			con.subscribeToTopic("GRAPHICS");
 			con.publishToTopic("ENTER", "GRAPHICS", "GRAPHICS");
+			
+			// Save the list of active workers
+			// Needed for (un-)trace commands
+			for(String topicName : con.getTopicList())
+			{
+				if(topicName.startsWith("SERVICE"))
+				{
+					workerTopics.add(topicName);
+					con.createTopic(topicName, 1);
+					System.out.println(topicName);
+				}
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -366,9 +441,8 @@ public class Display
 		
 		// FRAME > CENTER > INSPECTORS (RIGHT)
 		JPanel pnlInspector = new JPanel();
-		//pnlInspector.setLayout(new BorderLayout());
+		pnlInspector.setLayout(new BorderLayout());
 		
-		// Create a sacrificial simulation object
 		try
 		{
 			/*
@@ -379,12 +453,13 @@ public class Display
 			 * simulation object. The problem is that we need to avoid
 			 * an actual connection between the 'fake' simulation instance
 			 * and the ActiveMQ server. This will cause some exception
-			 * we will need to catch, hiding them at the user.
+			 * we will need to catch, hiding them to the user.
 			 * Another solution may be to create a dedicate constructor
-			 * for this sake.
+			 * for this goal.
 			 */
 			Class<?> simClass = Class.forName(simulationClassName);
 			Constructor<?> constructor = simClass.getConstructor(Object[].class);
+			System.err.println("NOTE: AN EXCEPTION WILL FOLLOW. IGNORE IT, IT'S NORMAL.");
 			Object simObj = constructor.newInstance(new Object[] { new Object[] {
 					"127.0.0.1", // IP
 					"80", // Port
@@ -397,16 +472,25 @@ public class Display
 					1, // cnt
 					0  // distribution mode
 			} });
+			super.state = (DistributedState)simObj;
+			this.modelInspector = new DistributedInspector(new DistributedProperties(state), this);
+			System.err.println("NOTE: THE PREVIOUS EXCEPTION WAS NECESSARY. DON'T MIND, IT WON'T AFFECT THE SIMULATION.");
 			
-			Properties props = Properties.getProperties(simObj);
-			
-			for (int i = 0; i < props.numProperties(); i++)
-				pnlInspector.add(new JLabel(props.getName(i)));
-		} catch (Exception ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
+			pnlInspector.add(new JScrollPane(modelInspector), BorderLayout.CENTER); 
+		} catch (Exception e) {
+			pnlInspector.add(new JLabel("Could not find class " + simulationClassName + ". Inspector not available."));
 		}
 		
+		/* A controller field for GUISTATE is needed. Let's try this... */
+		this.controller = new Console(this) {
+			public void registerInspector(Inspector inspector, Stoppable stopper) {
+				Display.this.updateSteppable = inspector.getUpdateSteppable();
+				Display.this.updateInspector = inspector;
+				super.registerInspector(inspector, stopper);
+			};
+		};
+		/* End of controller generation */
+
 		// FRAME > CENTER
 		JSplitPane splGraphic_Inspector = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		splGraphic_Inspector.setLeftComponent(pnlGraphic);
@@ -499,6 +583,34 @@ public class Display
 	{
 		view.setAlive();
 		frame.dispose();
+	}
+	
+	/**
+	 * Send a message to workers to start tracing a parameter
+	 * @param what The parameter to trace
+	 */
+	public void startTracing(String what)
+	{
+		try {
+			for(String topicName : workerTopics)
+				connection.publishToTopic(what, topicName, "trace");
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Send a message to workers to stop tracing a parameter
+	 * @param what The parameter to stop tracing
+	 */
+	public void stopTracing(String what)
+	{
+		try {
+			for(String topicName : workerTopics)
+				connection.publishToTopic(what, topicName, "untrace");
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 	}
 
 }

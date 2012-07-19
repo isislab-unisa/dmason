@@ -8,9 +8,9 @@ import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.util.connection.MyHashMap;
 import dmason.util.connection.MyMessageListener;
 /**
- *	A Listener for the messages swapped among the peers.
- * @param <E> the type of coordinates
- * @param <F> the type of locations
+ * A Listener for the messages swapped among the peers.
+ * @author unascribed
+ * @author Luca Vicidomini
  */
 public class VisualizationCellMessageListener extends MyMessageListener
 {	
@@ -25,28 +25,27 @@ public class VisualizationCellMessageListener extends MyMessageListener
 	}
 	
    /**
-	*	It's called when a message is listen 
+	* Process a message received through the queue.
+	* @param msg The message to process.
 	*/
-	public void onMessage(javax.jms.Message arg0) 
+	public void onMessage(javax.jms.Message msg) 
 	{	
 		try
 		{
-		
-			if(((MyHashMap)parseMessage(arg0)).get("GRAPHICS") instanceof String)
+			MyHashMap mh = (MyHashMap)parseMessage(msg);
+			
+			if (mh.get("GRAPHICS") instanceof String)
 			{
-				String command = (String)((MyHashMap)parseMessage(arg0)).get("GRAPHICS");
-			
-			
-				
+				String command = (String)mh.get("GRAPHICS");
+
 				if(command.equals("ENTER"))
 				{
 					schedule.numViewers.increment();
 				}
-				else
-					if(command.equals("EXIT"))
-					{
-						schedule.numViewers.decrement();	
-					}
+				else if(command.equals("EXIT"))
+				{
+					schedule.numViewers.decrement();	
+				}
 			}
 		} catch (JMSException e) { 
 			e.printStackTrace(); 

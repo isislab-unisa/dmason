@@ -1,4 +1,6 @@
 package dmason.util.visualization;
+import java.util.HashMap;
+
 import javax.jms.JMSException;
 
 import dmason.util.connection.MyHashMap;
@@ -18,32 +20,33 @@ public class VisualizationMessageListener extends MyMessageListener
 		this.disp = disp;
 	}
 	
-   /**
-	*	It's called when a message is listen 
+	/**
+	* Process a message received through the queue.
+	* @param msg The message to process.
 	*/
-	public void onMessage(javax.jms.Message arg0) 
+	public void onMessage(javax.jms.Message msg) 
 	{	
 		try
 		{
-			if((((MyHashMap)parseMessage(arg0)).get("GRAPHICS") instanceof RemoteSnap))
-			{
-				RemoteSnap remSnap = (RemoteSnap)((MyHashMap)parseMessage(arg0)).get("GRAPHICS");
-				if(!disp.isStarted){
-				
-					disp.isStarted=true;
-					
-					disp.step=remSnap.step+1;
-				
-					if(disp.isFirstTime) {
-						disp.sblock();
-						disp.isFirstTime=false;
-					}
-					else disp.updates.forceSblock();
-				}
-			
-				disp.addSnapShot(remSnap);
-			}
+			MyHashMap mh = (MyHashMap)parseMessage(msg);
 		
+			if (mh.get("GRAPHICS") instanceof RemoteSnap)
+			{
+				RemoteSnap remSnap = (RemoteSnap)mh.get("GRAPHICS");
+				if(!disp.isStarted)
+				{
+					disp.isStarted=true;
+					disp.step=remSnap.step+1;
+					if(disp.isFirstTime)
+					{
+						disp.sblock();
+						disp.isFirstTime = false;
+					}
+					else
+						disp.updates.forceSblock();
+				}
+				disp.addSnapShot(remSnap);
+			}		
 		} catch (JMSException e) { 
 			e.printStackTrace(); 
 		}				

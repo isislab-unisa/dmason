@@ -6,8 +6,6 @@ import java.io.File;
 import javax.swing.*;
 import javax.swing.border.*;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
 import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 
@@ -148,7 +146,9 @@ public class LauncherViewer  {
 		buttonPath = new JButton();
 		comboSim = new JComboBox();
 		label7 = new JLabel();
-		buttonConnection = new JButton();
+		buttonConnection = new JButton(); 
+		
+		chkLoadBalancing = new JCheckBox();
         
         comboMode.addItem("Horizontal");
 		comboMode.addItem("Square");
@@ -156,6 +156,9 @@ public class LauncherViewer  {
         comboSim.addItem(new SimComboEntry("Flockers", "dmason.util.visualization.DFlockers.FlockersWithUIView", "dmason.sim.app.DFlockers.DFlockers"));
         comboSim.addItem(new SimComboEntry("Particles", "dmason.util.visualization.DParticles.Tutorial3ViewWithUI", "dmason.sim.app.DParticles.DParticles"));
         comboSim.addItem(new SimComboEntry("Ants Foraging", "dmason.util.visualization.DAntsForage.AntsForageWithUIZoom", "dmason.sim.app.DAntsForage.DAntsForage"));
+        comboSim.addItem(new SimComboEntry("Vampires", "dmason.util.visualization.DVampires.DSimulationUI", "dmason.sim.app.DVampires.DSimulation"));
+        
+        comboSim.setSelectedIndex(comboSim.getItemCount() - 1);
 		
 		path = System.getProperty("user.dir");
 		
@@ -274,6 +277,20 @@ public class LauncherViewer  {
                         
 						//---- fieldHeight ----
 						fieldHeight.setText("200");
+						
+						//---- chkLoadBalancing ----
+						chkLoadBalancing.setText("Load Balancing");
+						chkLoadBalancing.addItemListener(new ItemListener() {
+							@Override
+							public void itemStateChanged(ItemEvent e)
+							{
+								if (e.getStateChange() == ItemEvent.SELECTED)
+								{
+									JOptionPane.showMessageDialog(LauncherViewer, "Loadbalancing-enabled fields don't support the global viewer, yet!");
+									chkLoadBalancing.setSelected(false);
+								}
+							}
+						});
                         
 						//---- labelPath ----
 						labelPath.setText("Path: ....");
@@ -304,7 +321,9 @@ public class LauncherViewer  {
 												.addGroup(panelInfoLayout.createSequentialGroup()
 													.addComponent(label3)
 													.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-													.addComponent(fieldWidth, GroupLayout.PREFERRED_SIZE, 91, GroupLayout.PREFERRED_SIZE)))
+													.addComponent(fieldWidth, GroupLayout.PREFERRED_SIZE, 91, GroupLayout.PREFERRED_SIZE))
+												.addGroup(panelInfoLayout.createSequentialGroup()
+													.addComponent(chkLoadBalancing)))
 											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
 											.addGroup(panelInfoLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 												.addComponent(label2)
@@ -333,7 +352,10 @@ public class LauncherViewer  {
 											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 											.addGroup(panelInfoLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 												.addComponent(label3)
-												.addComponent(fieldWidth, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+												.addComponent(fieldWidth, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+											.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+											.addGroup(panelInfoLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+												.addComponent(chkLoadBalancing)))
 										.addGroup(panelInfoLayout.createSequentialGroup()
 											.addGroup(panelInfoLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 												.addComponent(comboNCell, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -453,6 +475,9 @@ public class LauncherViewer  {
 	private JComboBox comboSim;
 	private JLabel label7;
 	private JButton buttonConnection;
+	
+	private JCheckBox chkLoadBalancing;
+
     
     private ConnectionNFieldsWithActiveMQAPI connection;
 	private Address address;
