@@ -65,7 +65,7 @@ import dmason.util.trigger.TriggerListener;
  *
  */
 public class JMasterUI extends JFrame{
-	
+
 	/**
 	 * An utility class used to represent a simulation class as a
 	 * combobox entry -- PLEASE NOTE THIS IS JUST A TEMPORARY
@@ -222,8 +222,7 @@ public class JMasterUI extends JFrame{
 		jComboBoxChooseSimulation.addItem(new SimComboEntry("Flockers", "dmason.sim.app.DFlockers.DFlockers"));
 		jComboBoxChooseSimulation.addItem(new SimComboEntry("Particles", "dmason.sim.app.DParticles.DParticles"));
 		jComboBoxChooseSimulation.addItem(new SimComboEntry("Ants Foraging", "dmason.sim.app.DAntsForage.DAntsForage"));
-		jComboBoxChooseSimulation.addItem(new SimComboEntry("Test Simulation", "dmason.sim.app.Test.TheSimulation"));
-		jComboBoxChooseSimulation.setSelectedIndex(3);
+
 		selectedSimulation = ((SimComboEntry)jComboBoxChooseSimulation.getSelectedItem()).fullSimName;
 		jComboBoxChooseSimulation.addItemListener(new ItemListener() {
 			@Override
