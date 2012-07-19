@@ -214,7 +214,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 		
 		// codice profiling
 		numAgents = 0;
-		numAgents = super.counter;
+		//numAgents = super.counter;
 		startStep = System.currentTimeMillis();
 			/**
 			//ants fattened
