@@ -10,6 +10,7 @@ import sim.display.GUIState;
 import dmason.util.SystemManagement.StartUpData;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.field.MessageListener;
+import dmason.sim.field.TraceableField;
 import dmason.util.connection.Address;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
@@ -156,6 +157,20 @@ public class Worker
 		}
 		else
 			console.pressPause();
+	}
+	
+	/**
+	 * Starts/stop simulation's parameter tracing
+	 * @param param The parameter to start/stop tracing.
+	 * @param trace true if we want to start tracing, false if we want to stop tracing.
+	 */
+	public void trace(String param, boolean trace)
+	{
+		TraceableField tf = (TraceableField)this.state.getField();
+		if (trace)
+			tf.trace(param);
+		else
+			tf.untrace(param);
 	}
 
 	/**
