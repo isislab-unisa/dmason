@@ -182,7 +182,8 @@ public class MasterDaemonStarter {
 		try
 		{
 			selClass = Class.forName(selSim);
-			selClassUI = Class.forName(selSim + "WithUI");
+			selClassUI = Class.forName(selSim);
+			//selClassUI = Class.forName(selSim + "WithUI");
 		} catch (ClassNotFoundException e2) {
 			System.err.println("Unable to load the simulation class " + selSim);
 			e2.printStackTrace();
@@ -243,7 +244,7 @@ public class MasterDaemonStarter {
 				for (int k=0;k<Math.sqrt(numRegions);k++){
 					StartUpData data = new StartUpData();
 					// Set step on the central region
-					if (i==k && i == Math.sqrt(numRegions) / 2)
+					if (i==k /*&& i == Math.sqrt(numRegions) / 2*/)
 						data.setStep(true);
 					data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
 					defs.add(data);

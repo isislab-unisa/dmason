@@ -26,6 +26,9 @@ import dmason.util.connection.MyMessageListener;
  * Then, when the listener receive a command as "pause", "play", "stop", it
  * has to send the same command to all the sub-worker, using 
  * a Socket communication channel (I also thought to use a PipedIOStream).
+ * 
+ * Luca: added code for variables tracing
+ * 
  * @author Ada Mancuso
  * @author Luca Vicidomini
  */
@@ -72,7 +75,7 @@ public class PeerDaemonListener extends MyMessageListener
 				regions = (ArrayList<StartUpData>) mh.get("classes");
 				table = new HashMap<String, MessageListener>();
 				workers = new ArrayList<Worker>();
-				gui.writeMessage("--> " + regions.size() + " class definitions received!\n");
+				gui.writeMessage(regions.size() + " class definitions received!\n");
 
 				for (StartUpData data : regions)
 				{
@@ -94,7 +97,7 @@ public class PeerDaemonListener extends MyMessageListener
 				// Worker is at initial state
 				if (status == STARTED)
 				{
-					gui.writeMessage("--> Start Simulation!\n");
+					gui.writeMessage("Start\n");
 					for (Worker w : workers)
 						new Starter(w).start();
 					status = RUNNING;
@@ -102,14 +105,14 @@ public class PeerDaemonListener extends MyMessageListener
 				// Worked was previously paused
 				else if (status == PAUSED)
 				{
-					gui.writeMessage("---> Resume\n");
+					gui.writeMessage("Resume\n");
 					for (Worker w : workers)
 						w.signal();
 					status = RUNNING;
 				}
 				// Worker was previously stopped
 				else if (status == STOPPED){	
-					gui.writeMessage("---> Restart\n");
+					gui.writeMessage("Restart\n");
 					for (StartUpData data : regions)
 					{
 						Worker wui = new Worker(data, connection);
@@ -129,7 +132,7 @@ public class PeerDaemonListener extends MyMessageListener
 				// Worker was running the simulation
 				if (status == RUNNING)
 				{
-					gui.writeMessage("--> Pause\n");
+					gui.writeMessage("Pause\n");
 					for (Worker w : workers)
 						w.await();
 					status = PAUSED;
@@ -139,13 +142,31 @@ public class PeerDaemonListener extends MyMessageListener
 			// Received command to stop the simulation
 			if (mh.get("stop") != null)
 			{
-				gui.writeMessage("--> Stop\n");
+				gui.writeMessage("Stop\n");
 				for (Worker w : workers)
 					w.stop_play();	
 				workers = new ArrayList<Worker>();
 				// table = null;
 				// regions = null;
 				status = STOPPED;
+			}
+			
+			// Received command to begin tracing a value
+			if (mh.get("trace") != null)
+			{
+				String toTrace = (String) mh.get("trace");
+				gui.writeMessage("Trace " + toTrace + "\n");
+				for (Worker w : workers)
+					w.trace(toTrace, true);
+			}
+			
+			// Received command to stop tracing a value
+			if (mh.get("untrace") != null)
+			{
+				String toUntrace = (String) mh.get("untrace");
+				gui.writeMessage("Stop tracing " + toUntrace + "\n");
+				for (Worker w : workers)
+					w.trace(toUntrace, false);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
