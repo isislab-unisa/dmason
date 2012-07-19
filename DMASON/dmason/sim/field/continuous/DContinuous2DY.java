@@ -3,7 +3,6 @@ package dmason.sim.field.continuous;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
-import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,6 +22,7 @@ import dmason.sim.field.DistributedRegion;
 import dmason.sim.field.Entry;
 import dmason.sim.field.MessageListener;
 import dmason.sim.field.Region;
+import dmason.sim.field.TraceableField;
 import dmason.sim.field.UpdateMap;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
@@ -87,17 +87,61 @@ import dmason.util.visualization.ZoomArrayList;
  * </PRE>
  */
 
-public class DContinuous2DY extends DContinuous2D
+public class DContinuous2DY extends DContinuous2D implements TraceableField
 {	
+	private static final long serialVersionUID = 1L;
+
 	private static Logger logger = Logger.getLogger(DContinuous2DY.class.getCanonicalName());
 	
 	public ArrayList<MessageListener> listeners;
-	private PrintWriter out;
 	private String name;
+	
+	/** The image to send */
 	private BufferedImage actualSnap;
+	
+	/** Simulation's time when the image was generated */
+	private double actualTime;
+	
+	/** Statistics to send */
+	HashMap<String, Object> actualStats;
+	
+	/** True if the global viewer requested graphics **/
+	boolean isSendingGraphics;
+	
 	private WritableRaster writer;
 	private int white[]={255,255,255};
 	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
+	
+	/** List of parameters to trace */
+	private ArrayList<String> tracing = new ArrayList<String>();
+	
+	/**
+	 * Starts tracing a variable (or the graphic). To start tracing the graphic,
+	 * the global viewer must set param = "-GRAPHICS". We choose this particular
+	 * string because method names "get-GRAPHICS()" aren't allowed, so we are
+	 * sure that we aren't hiding any real simulation getter.
+	 **/
+	@Override
+	public void trace(String param)
+	{ 
+		if (param.equals("-GRAPHICS"))
+			isSendingGraphics = true;
+		else
+			tracing.add(param);
+	}
+	
+	/** Stops tracing a variable (or the graphic) **/
+	@Override
+	public void untrace(String param)
+	{
+		if (param.equals("-GRAPHICS"))
+			isSendingGraphics = false;
+		else
+		{
+			tracing.remove(param);
+			actualStats.remove(param);
+		}
+	}	
 	
 	/**
 	 * @param discretization the discretization of the field
@@ -151,6 +195,9 @@ public class DContinuous2DY extends DContinuous2D
 		}	
 		
 		actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
+		actualTime = sm.schedule.getTime();
+		actualStats = new HashMap<String, Object>();
+		isSendingGraphics = false;
 		writer = actualSnap.getRaster();
 		
 		myfield = new RegionDouble(
@@ -290,23 +337,61 @@ public class DContinuous2DY extends DContinuous2D
 	 */
 	public synchronized boolean synchro() 
 	{
-		// If there is any viewer, send a snapshot
+		// If there is any viewer, send a snap
 		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
-			try
+			RemoteSnap snap = new RemoteSnap(cellType, sm.schedule.getSteps() - 1, actualTime);
+			actualTime = sm.schedule.getTime();
+			
+			if (isSendingGraphics)
 			{
-				ByteArrayOutputStream by = new ByteArrayOutputStream();
-				ImageIO.write(actualSnap, "png", by);
-				by.flush();
-				connection.publishToTopic(new RemoteSnap(cellType, sm.schedule.getSteps()-1, by.toByteArray()), "GRAPHICS", "GRAPHICS");
-				by.close();
-				actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
-				writer=actualSnap.getRaster();
-			} catch (Exception e1) {
-				logger.severe("Unable to publish bitmap");
-				e1.printStackTrace();
+				try
+				{
+					ByteArrayOutputStream by = new ByteArrayOutputStream();
+					ImageIO.write(actualSnap, "png", by);
+					by.flush();
+					snap.image = by.toByteArray();
+					by.close();
+					actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
+					writer=actualSnap.getRaster();
+				} catch (Exception e) {
+					logger.severe("Error while serializing the snapshot");
+					e.printStackTrace();
+				}
 			}
-		}
+			
+			//if (isSendingGraphics || tracing.size() > 0)
+			/* The above line is commented because if we don't send the
+			 * RemoteSnap at every simulation step, the global viewer
+			 * will block waiting on the queue.
+			 */
+			{
+				try
+				{
+					snap.stats = actualStats;
+					connection.publishToTopic(snap, "GRAPHICS", "GRAPHICS");
+				} catch (Exception e) {
+					logger.severe("Error while publishing the snap message");
+					e.printStackTrace();
+				}
+			}
+			
+			// Update statistics
+			Class<?> simClass = sm.getClass();
+			for (int i = 0; i < tracing.size(); i++)
+			{
+				try
+				{
+					Method m = simClass.getMethod("get" + tracing.get(i), (Class<?>[])null);
+					Object res = m.invoke(sm, new Object [0]);
+					snap.stats.put(tracing.get(i), res);
+				} catch (Exception e) {
+					logger.severe("Reflection error while calling get" + tracing.get(i));
+					e.printStackTrace();
+				}
+			}
+
+		} //numViewers > 0
 		
 		// Remove agents migrated to neighbor regions
 		for(Region<Double, Double2D> region : updates_cache)
@@ -368,22 +453,6 @@ public class DContinuous2DY extends DContinuous2D
 			} catch (Exception e1) {
 				logger.severe("Unable to publish region to topic: " + cellType + "R");
 			}
-		}
-		
-		// Publish informations about simulation
-		Class<?> simClass = sm.getClass();
-		Method[] methods = simClass.getDeclaredMethods();
-		for (Method m : methods)
-		{
-			Logger l = Logger.getLogger("DContinuous2DY");
-			if (m.getName().equals("getNumAgents"))
-				try {
-					l.info( "[" + cellType.pos_i + ", " + cellType.pos_j + "] // "
-							+ "    step:" + (sm.schedule.getSteps() - 1)
-							+ "    " + m.getName() + ":" + m.invoke(sm, new Object[0]));
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
 		}
 		
 		//take from UpdateMap the updates for current last terminated step and use 
