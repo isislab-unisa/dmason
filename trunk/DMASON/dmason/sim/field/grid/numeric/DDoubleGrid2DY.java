@@ -93,6 +93,7 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 	 * It represents the initial value in every position of the field
 	 */
 	private double initialValue;
+	private int numAgents;
 	
 	/**
 	 * @param width field's width  
@@ -119,7 +120,7 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 		updates_cache= new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
 
 		setConnection(((DistributedState)sm).getConnection());
-		
+		numAgents=0;
 		createRegion();		
 
 	}
@@ -466,7 +467,7 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 	 * @return
 	 */
 	public boolean setDistributedObjectLocation(double d, Int2D l, SimState sm){
-		
+		numAgents++;
 		if(myfield.isMine(l.getX(), l.getY()))
     	{    		
     		return myfield.addEntryNum(new EntryNum<Double,Int2D>(d, l));
@@ -621,5 +622,17 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 	public void prepareForUnion(boolean prepareForUnion) {
 		// TODO Auto-generated method stub
 		
+	}
+
+
+	@Override
+	public int getNumAgents() {
+		return numAgents;
+	}
+
+
+	@Override
+	public void resetNumAgents() {
+		numAgents=0;
 	}
 }

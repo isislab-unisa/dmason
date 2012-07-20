@@ -136,6 +136,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 	// --> only for testing
 	public PrintWriter printer;
 	public ArrayList<RemoteAgent<Double2D>> buffer_print=new ArrayList<RemoteAgent<Double2D>>();
+	private int numAgents;
 	// <--
 
 
@@ -221,6 +222,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 */
 		updates_cacheLB=new ArrayList<ArrayList<Region<Double,Double2D>>>();
 		setConnection(((DistributedState)sm).getConnection());	
+		numAgents=0;
 	}
 
 	/**
@@ -254,7 +256,7 @@ public class DContinuous2DXYLB extends DContinuous2D
     	//--> only for testing RIPRODUCIBILITA'
     	buffer_print.add(rm);
 		*/
-    	
+    	numAgents++;
     	boolean fl = false;
     	
     	if(prepareForBalance)
@@ -5420,5 +5422,16 @@ public class DContinuous2DXYLB extends DContinuous2D
 			RemoteAgent<Double2D> rm, SimState sm) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public int getNumAgents() {
+		return numAgents;
+	}
+
+	@Override
+	public void resetNumAgents() {
+		numAgents=0;
+		
 	}
 }

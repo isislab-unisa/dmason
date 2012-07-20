@@ -90,6 +90,7 @@ public class DIntGrid2DY extends DIntGrid2D {
 	 * It's the name of the specific field
 	 */
 	private String NAME;
+	private int numAgents;
 	
 	/**
 	 * @param width field's width  
@@ -115,7 +116,7 @@ public class DIntGrid2DY extends DIntGrid2D {
 		updates_cache= new ArrayList<RegionNumeric<Integer,EntryNum<Integer,Int2D>>>();
 		
 		setConnection(((DistributedState)sm).getConnection());
-		
+		numAgents=0;
 		createRegion();		
 			
 	}
@@ -433,7 +434,7 @@ public class DIntGrid2DY extends DIntGrid2D {
 	 * @return
 	 */
 	public boolean setDistributedObjectLocation(int i, Int2D l, SimState sm){
-		
+		numAgents++;
 		if(myfield.isMine(l.getX(), l.getY()))
     	{    		
     		return myfield.addEntryNum(new EntryNum<Integer,Int2D>(i, l));
@@ -578,5 +579,15 @@ public class DIntGrid2DY extends DIntGrid2D {
 	public void prepareForUnion(boolean prepareForUnion) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public int getNumAgents() {
+		return numAgents;
+	}
+
+	@Override
+	public void resetNumAgents() {
+		numAgents=0;
 	}
 }
