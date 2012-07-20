@@ -301,6 +301,8 @@ public class Worker
 	public void setTable(HashMap<String, MessageListener> table)
 	{
 		this.table = table;
+		if(state.getField() == null)
+			System.out.println("O_O");
 		state.getField().setTable(this.table);
 	}
 }
