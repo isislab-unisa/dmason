@@ -5,9 +5,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+
+import javax.jms.JMSException;
+
 import sim.display.Console;
 import sim.display.GUIState;
 import dmason.util.SystemManagement.StartUpData;
+import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.field.MessageListener;
 import dmason.sim.field.TraceableField;
@@ -29,6 +33,10 @@ public class Worker
 	private StartUpData data;
 	private HashMap<String,MessageListener> table;
 	private Console console;
+	private volatile boolean resetted = false;
+	
+	private boolean isFirst = true;
+	private boolean blocked = false;
 	
 	public Worker(StartUpData data, Connection con)
 	{
@@ -55,6 +63,55 @@ public class Worker
 		{
 			state.start();
 		}
+		
+		
+	}
+	
+	public boolean isGUI()
+	{
+		return gui;
+	}
+	public Console getConsole()
+	{
+		return console;
+	}
+	
+	//add
+	public void kill()
+	{
+		if (gui)
+		{   
+			console.pressStop();	
+			//console.dispose();
+			//console.doClose();
+			
+			try {
+				((DistributedState)state).closeConnection();
+			} catch (JMSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		else
+		{
+			
+			lock.lock();
+			{
+				resetted = true;
+				run = false;
+				flag = true;
+				
+			}
+			lock.unlock();
+			
+			if(blocked)
+				signal();
+			
+		}
+		
+		
+		
 	}
 	
 	public void oneStep()
@@ -95,6 +152,7 @@ public class Worker
 				block1.signal();
 			}
 			lock.unlock();
+			
 		}
 	}
 	
@@ -108,9 +166,11 @@ public class Worker
 		{
 			lock.lock();
 			{
-				flag=true;
+				flag = true;
 			}
 			lock.unlock();
+			
+			
 		}
 	}
 
@@ -118,13 +178,16 @@ public class Worker
 	{
 		if (gui)
 		{   
+			//System.out.println("Called method stop_play");
 			console.pressStop();	
-			console.dispose();
-			console.doClose();
+			//console.dispose();
+			//console.doClose();
+			
+			//System.out.println("Terminated method stop_play");
 		}
 		else
 		{
-			run=false;
+			run = false;
 			flag = true;
 		}
 	}
@@ -134,7 +197,7 @@ public class Worker
 		{
 			if(run)
 				try {	
-					while(true)
+					while(!resetted)
 					{
 						while(!flag)
 						{
@@ -142,14 +205,26 @@ public class Worker
 							{
 								connection.publishToTopic(state.schedule.getSteps()-1,"step","step");
 							}
+
 							state.schedule.step(state);
 							//worker.setStep(state.schedule.getSteps());
 						}
 
-						lock.lock();
-							block1.await();
-						lock.unlock();
+						if(!resetted)
+						{
+							
+							blocked  = true;
+							lock.lock();
+								block1.await();
+							lock.unlock();
+						
+							blocked = false;
+
+						}
+
 					}
+					closeConnection();
+
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -157,7 +232,15 @@ public class Worker
 		}
 		else
 			console.pressPause();
+		
 	}
+
+	
+	private void closeConnection() throws JMSException
+	{
+		((DistributedState)state).closeConnection();
+	}
+
 	
 	/**
 	 * Starts/stop simulation's parameter tracing
@@ -173,6 +256,7 @@ public class Worker
 			tf.untrace(param);
 	}
 
+
 	/**
 	 * Instantiate the simulation object.
 	 * @param simClass The simulation class to instantiate.
@@ -184,6 +268,8 @@ public class Worker
 	{
 		try
 		{
+			//System.out.println("Class name: "+simClass.getName());
+			
 			Constructor constr = simClass.getConstructor(new Class[]{ args_sim.getClass() });
 			Object obj = constr.newInstance(new Object[]{ args_sim });
 			
