@@ -134,6 +134,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	private int numStep;
 	private FileOutputStream f;
 	private PrintStream ps;
+	private int numAgents;
 	// fine codice profiling
 
 	/**
@@ -294,7 +295,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	 */
 	public boolean setDistributedObjectLocation(int d, Int2D location, SimState sm)
 	{
-	
+		numAgents++;
 		boolean fl = false;
 		
 		if(prepareForBalance)
@@ -5243,5 +5244,16 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 			RemoteAgent<Int2D> rm, SimState sm) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public int getNumAgents() {
+		return numAgents;
+	}
+
+	@Override
+	public void resetNumAgents() {
+		numAgents=0;
+		
 	}
 }

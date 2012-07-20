@@ -133,6 +133,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	boolean isSendingGraphics;
 	
 	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
+	private int numAgents;
 	
 
 	/**
@@ -164,7 +165,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 		}*/
 		
 		setConnection(((DistributedState)sm).getConnection());
-		
+		numAgents=0;
 		createRegion();		
 	}
 	
@@ -323,6 +324,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	 */
     public boolean setDistributedObjectLocation(final Double2D location,RemoteAgent<Double2D> rm,SimState sm)
     {
+    	numAgents++;
     	if(myfield.isMine(location.x,location.y))
     	{    		
     		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
@@ -874,6 +876,16 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	public void prepareForUnion(boolean prepareForUnion) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public int getNumAgents() {
+		return numAgents;
+	}
+
+	@Override
+	public void resetNumAgents() {
+		numAgents=0;
 	}
 
 	@Override

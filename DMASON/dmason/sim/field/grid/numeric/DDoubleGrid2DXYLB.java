@@ -146,6 +146,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	private long endWait;
 	private long startPostWork;
 	private long endPostWork;
+	private int numAgents;
 	// fine codice profiling
 	
 	/**
@@ -242,6 +243,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			ps=new PrintStream(f);
 		//}*/
 		// fine codice profiling
+		numAgents=0;
 	}
 	
 	@Override
@@ -265,7 +267,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	 */
 	public boolean setDistributedObjectLocation(double d, Int2D location, SimState sm)
 	{
-	
+		numAgents++;
 		boolean fl = false;
 		
 		if(prepareForBalance)
@@ -5477,6 +5479,16 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RemoteAgent<Int2D> rm, SimState sm) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public int getNumAgents() {
+		return numAgents;
+	}
+
+	@Override
+	public void resetNumAgents() {
+		numAgents=0;
 	}
 
 

@@ -111,6 +111,8 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 	private WritableRaster writer;
 	private int white[]={255,255,255};
 	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
+
+	private int numAgents;
 	
 	/** List of parameters to trace */
 	private ArrayList<String> tracing = new ArrayList<String>();
@@ -165,7 +167,7 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 		this.name = name;
 		
 		setConnection(((DistributedState)sm).getConnection());
-				
+		numAgents=0;
 		createRegion();	
 	}
 	/**
@@ -314,6 +316,7 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 	 */
     public boolean setDistributedObjectLocation(final Double2D location,RemoteAgent<Double2D> rm,SimState sm)
     {  	
+    	numAgents++;
     	if(myfield.isMine(location.x,location.y))
     	{    
     		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
@@ -772,5 +775,13 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 	public void prepareForUnion(boolean prepareForUnion) {
 		// TODO Auto-generated method stub
 		
+	}
+	@Override
+	public int getNumAgents() {
+		return numAgents;
+	}
+	@Override
+	public void resetNumAgents() {
+		numAgents=0;
 	}
 }

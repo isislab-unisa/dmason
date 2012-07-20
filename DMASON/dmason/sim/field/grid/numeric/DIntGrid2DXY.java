@@ -106,6 +106,8 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	private ConnectionNFieldsWithActiveMQAPI connection;
 	private double initialValue;
 	private ZoomArrayList<EntryNum<Integer, Int2D>> tmp_zoom=new ZoomArrayList<EntryNum<Integer,Int2D>>();
+
+	private int numAgents;
 	
 	/**
 	 * @param width field's width  
@@ -817,6 +819,18 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	public void prepareForUnion(boolean prepareForUnion) {
 		// TODO Auto-generated method stub
 		
+	}
+
+
+	@Override
+	public int getNumAgents() {
+		return numAgents;
+	}
+
+
+	@Override
+	public void resetNumAgents() {
+		numAgents=0;
 	}
 
 }

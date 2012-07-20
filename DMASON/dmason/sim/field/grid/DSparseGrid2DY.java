@@ -102,6 +102,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 	private WritableRaster writer;
 	private int white[]={255,255,255};
 	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
+	private int numAgents;
 	private boolean isSendingGraphics;
 	
 	/** List of parameters to trace */
@@ -132,7 +133,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		updates_cache= new ArrayList<Region<Integer,Int2D>>();
 		
 		setConnection(((DistributedState)sm).getConnection());
-
+		numAgents=0;
 		createRegion();		
 	}
 	
@@ -276,6 +277,8 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
     	/**
     	buffer_print.add(rm);
     	*/
+		numAgents++;
+
     	if(myfield.isMine(location.x,location.y))
     	{    		
     		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
@@ -722,6 +725,16 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 	public void prepareForUnion(boolean prepareForUnion) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public int getNumAgents() {
+		return numAgents;
+	}
+
+	@Override
+	public void resetNumAgents() {
+		numAgents=0;
 	}
 	
 	@Override

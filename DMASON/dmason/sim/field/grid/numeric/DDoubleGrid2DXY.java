@@ -107,6 +107,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	private double initialValue;
 	private ZoomArrayList<EntryNum<Double, Int2D>> tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
 	private ConnectionNFieldsWithActiveMQAPI connection;
+	private int numAgents;
 	
 	
 	/**
@@ -133,7 +134,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		updates_cache = new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
 
 		setConnection(((DistributedState)sm).getConnection());
-		
+		numAgents=0;
 		createRegion();	
 	}
 	
@@ -341,6 +342,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	 */
 	public boolean setDistributedObjectLocation(double d, Int2D l, SimState sm) {
 
+		numAgents++;
 		if(myfield.isMine(l.getX(), l.getY()))
 		{    		
 			return myfield.addEntryNum(new EntryNum<Double,Int2D>(d, l));
@@ -795,5 +797,15 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	public void prepareForUnion(boolean prepareForUnion) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public int getNumAgents() {
+		return numAgents;
+	}
+
+	@Override
+	public void resetNumAgents() {
+		numAgents=0;
 	}
 }

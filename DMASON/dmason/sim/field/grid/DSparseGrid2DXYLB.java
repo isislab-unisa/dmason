@@ -131,6 +131,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 	// --> only for testing
 	public PrintWriter printer;
 	public ArrayList<RemoteAgent<Int2D>> buffer_print=new ArrayList<RemoteAgent<Int2D>>();
+	private int numAgents;
 	// <--
 	
 	/*
@@ -233,7 +234,9 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 		updates_cacheLB=new ArrayList<ArrayList<Region<Integer, Int2D>>>();
 		
 		setConnection(((DistributedState)sm).getConnection());	
+		numAgents=0;
 	}
+	
 	
 	/**
 	 * Set a available location to a Remote Agent:
@@ -264,6 +267,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
     	//--> only for testing RIPRODUCIBILITA'
     	buffer_print.add(rm);
 		*/
+    	numAgents++;
     	
     	boolean fl = false;
     	
@@ -841,6 +845,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 		timeStep.print(afterUpdateCell-afterPublish+";\n");
 		timeStep.flush();
 		*/
+		//numAgents=0;
 		return true;
 	}
 
@@ -5510,6 +5515,18 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 			RemoteAgent<Int2D> rm, SimState sm) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public int getNumAgents() {
+		// TODO Auto-generated method stub
+		return numAgents;
+	}
+
+
+	@Override
+	public void resetNumAgents() {
+		numAgents=0;
 	}
 	
 }

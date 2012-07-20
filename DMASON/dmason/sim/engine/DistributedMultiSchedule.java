@@ -38,10 +38,10 @@ public class DistributedMultiSchedule<E> extends Schedule
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName());
+	private static Logger logger;
 	
-	private static final Logger loggerStep = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+"Step");
-	private static final Logger loggerBalance = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+"Balance");
+	private static Logger loggerStep;
+	private static Logger loggerBalance;
 
 	
 	public ArrayList<DistributedField<E>> fields;
@@ -56,6 +56,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 	private DistributedState state;
 	private HashMap<String, ArrayList<MyCellInterface>> h;
 
+	//thresholds for the split and the merge of the cell 
 	private double thresholdSplit;
 	private double thresholdMerge;
 
@@ -97,7 +98,7 @@ public class DistributedMultiSchedule<E> extends Schedule
     private ArrayList<Boolean> synchResults = new ArrayList<Boolean>(); 
 	
     
- // codice profiling
+ // profiling code
  	long startStep;
  	long endStep;
  	long numStep;
@@ -106,7 +107,7 @@ public class DistributedMultiSchedule<E> extends Schedule
  	FileHandler file;
  	FileHandler file2;
 
- 	// fine codice profiling
+ 	// end profiling code
     
 	public DistributedMultiSchedule() {
 		
@@ -120,30 +121,16 @@ public class DistributedMultiSchedule<E> extends Schedule
 		
 		thresholdSplit=3;
 		thresholdMerge=1.5;
-		// codice profiling
+		// profiling code
 				startStep = 0;
 				endStep = 0;
-				/* try {
-					new File("Region"+((DistributedState)state).TYPE.toString()+".log").createNewFile();
-					new File("Balance"+((DistributedState)state).TYPE.toString()+".log").createNewFile();
-
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
 				
-			*/
-				loggerStep.setLevel(Level.ALL);
-				loggerBalance.setLevel(Level.ALL);
-				//loggerStep.addHandler(file);
-				//loggerBalance.addHandler(file2);
-				//ps = null;
-				//ps2 = null;
+				
+				
 
 				numStep = 0;
 				time = 0;
-				// fine codice profiling
+		// end profiling code
 	}
 	
 	/**
@@ -167,9 +154,15 @@ public class DistributedMultiSchedule<E> extends Schedule
 			}
 		}
 		
-		// codice profiling
+		// profiling code
 				if(getSteps()==0){
 					
+					logger = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+state.TYPE.toString());
+					
+					loggerStep = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+"Step"+state.TYPE.toString());
+					loggerBalance = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+"Balance"+state.TYPE.toString());
+					loggerStep.setLevel(Level.INFO);
+					loggerBalance.setLevel(Level.INFO);
 					try {
 						file=new FileHandler("Region"+((DistributedState)state).TYPE.toString()+".log");
 						file2=new FileHandler("Balance"+((DistributedState)state).TYPE.toString()+".log");
@@ -188,7 +181,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 
 				
 				numStep = getSteps();
-				// fine codice profiling
+				// end profiling code
 		
 		
 				
@@ -212,10 +205,13 @@ public class DistributedMultiSchedule<E> extends Schedule
 				monitor.ZOOM = false;
 		}
 		
-		// codice profiling
+		// profiling code
 		numAgents = 0;
-		//numAgents = super.counter;
+		
+		numAgents = state.getField().getNumAgents();
 		startStep = System.currentTimeMillis();
+		state.getField().resetNumAgents();
+
 			/**
 			//ants fattened
 			time = 0;
@@ -226,7 +222,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}*/
-		// fine codice profiling
+		// end profiling code
 	
 		//if(state.TYPE.toString().equals("2-2"))
     		//System.out.println(state.TYPE+") step: "+(numStep)+" numAgents: "+(numAgents));
@@ -239,13 +235,11 @@ public class DistributedMultiSchedule<E> extends Schedule
 		verifyBalance();
 	
 		
-		// codice profiling
+		// profiling code
     	endStep = System.currentTimeMillis();
     	loggerStep.info((numStep)+";"+(numAgents)+";"+(startStep)+";"+(endStep));
-   		//ps.println((numStep)+";"+(numAgents)+";"+(startStep)+";"+(endStep));
-   		//ps.flush();
 
-		// fine codice profiling
+		// end profiling code
 		
 		
 		// Create a thread for each field assigned to this worker, in order
@@ -361,11 +355,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreBalance(true);
 				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreBalance(true);
 				loggerBalance.info("Split: "+(numStep)+";"+(numAgents));
-				//ps2.println("Split: "+(numStep)+";"+(numAgents));
-				//ps2.flush();
-
-
-
+				
 			}
 			else
 				if(state.TYPE.toString().equals(peers.get(((getSteps()%(3*state.NUMPEERS))-1)+"")) && !field.isSplitted()
@@ -446,8 +436,6 @@ public class DistributedMultiSchedule<E> extends Schedule
 				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(true);
 				
 				loggerBalance.info("Merge: "+(numStep)+";"+(numExt));
-				//ps2.println("Merge: "+(numStep)+";"+(numExt));
-				//ps2.flush();
 				numExt = 0;
 				
 			}

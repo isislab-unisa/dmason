@@ -102,7 +102,7 @@ public interface DistributedField<E> extends Serializable
 	public boolean isUnited();
 
 	/**
-	 * Set setForBalanle 
+	 * Set setForBalance 
 	 * @param setForBalance true for loadbalancing
 	 */
 	public void prepareForBalance(boolean prepareForBalance);
@@ -110,4 +110,8 @@ public interface DistributedField<E> extends Serializable
 	public HashMap<Integer, MyCellInterface> getToSendForUnion();
 
 	public void prepareForUnion(boolean prepareForUnion);
+	
+	public int getNumAgents();
+	
+	public void resetNumAgents();
 }
