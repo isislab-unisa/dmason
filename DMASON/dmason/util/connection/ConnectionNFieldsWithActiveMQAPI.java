@@ -108,7 +108,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 		 * 
 		 * Luca Vicidomini
 		 */
-		String strAddr = "tcp://" + providerAddr.getIPaddress() + ":" + providerAddr.getPort();
+		String strAddr = "failover:tcp://" + providerAddr.getIPaddress() + ":" + providerAddr.getPort();
 
 		// Create an ActiveMQConnectionFactory
 		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(strAddr);
@@ -136,6 +136,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 			connection.start();
 			
 			
+			
 			isConnected = true;
 			
 			return true;
@@ -147,6 +148,10 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 		
 	}
 	
+	public void close() throws JMSException
+	{
+		connection.close();
+	}
 	
 	public boolean isConnected()
 	{
@@ -164,6 +169,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 		try
 		{
 			subscribers.put(topicName, (ActiveMQTopicSubscriber) subSession.createSubscriber(subSession.createTopic(topicName)));
+		
 			return true;
 		} catch (Exception e) {
 			System.err.println("Unable to subscribe to topic: " + topicName);
@@ -234,6 +240,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 		try 
 		{
 			subscribers.get(key).setMessageListener(listener);
+			
 			return true;
 		} catch (Exception e) {
 			System.err.println("Failed to enable asynchronous reception.");
@@ -241,6 +248,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 			return false;
 		}
 	}
+	
 
 	/**
 	 * Given a string, creates a topic's identifier, referring to a
@@ -273,6 +281,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	@Override
 	public ArrayList<String> getTopicList() throws Exception
 	{
+		
 		// The list is retrieved using a DestinationSource object
 		DestinationSource provider = connection.getDestinationSource();
 		Set<ActiveMQTopic> topics = provider.getTopics();
@@ -285,6 +294,10 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 		return list;
 	}
 	
+	public void printPublischers()
+	{
+		System.out.println(publishers.toString());
+	}
 	@Override
 	public void setTable(HashMap table)
 	{	

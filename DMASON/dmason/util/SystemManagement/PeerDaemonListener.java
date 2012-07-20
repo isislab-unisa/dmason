@@ -8,6 +8,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import org.apache.activemq.command.ActiveMQObjectMessage;
 import dmason.sim.field.MessageListener;
+import dmason.util.connection.Address;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.connection.MyHashMap;
@@ -53,6 +54,7 @@ public class PeerDaemonListener extends MyMessageListener
 	private ArrayList<StartUpData> regions;
 	private HashMap<String,MessageListener> table;
 	private ConnectionNFieldsWithActiveMQAPI connection;
+	private ArrayList<Thread> started;
 
 	public PeerDaemonListener(PeerDaemonStarter pds, Connection con)
 	{
@@ -67,21 +69,27 @@ public class PeerDaemonListener extends MyMessageListener
 	{
 		try
 		{
+			
+			//System.out.println("Topic :" + msg.getJMSDestination().toString());
 			MyHashMap mh = (MyHashMap)parseMessage(msg);
 			
 			// Received startup data
 			if (mh.get("classes") != null)
 			{
 				regions = (ArrayList<StartUpData>) mh.get("classes");
+				
 				table = new HashMap<String, MessageListener>();
 				workers = new ArrayList<Worker>();
 				gui.writeMessage(regions.size() + " class definitions received!\n");
 
+				started = new ArrayList<Thread>();
 				for (StartUpData data : regions)
 				{
+					
 					Worker wui = new Worker(data, connection);
 					workers.add(wui);
 				}
+				
 				initializeTable();
 			}
 
@@ -94,25 +102,42 @@ public class PeerDaemonListener extends MyMessageListener
 			// Received command to start the simulation
 			if (mh.get("play") != null)
 			{
+				
 				// Worker is at initial state
 				if (status == STARTED)
 				{
 					gui.writeMessage("Start\n");
+					
+					// ????????
 					for (Worker w : workers)
-						new Starter(w).start();
+						started.add(new Starter(w));
+					for (Thread w : started)
+						w.start();
 					status = RUNNING;
+					
+					
 				}
 				// Worked was previously paused
 				else if (status == PAUSED)
 				{
+
+					
+					
+					gui.writeMessage("---> Resume\n");
+
 					gui.writeMessage("Resume\n");
+
 					for (Worker w : workers)
 						w.signal();
 					status = RUNNING;
+					
+					
 				}
 				// Worker was previously stopped
 				else if (status == STOPPED){	
 					gui.writeMessage("Restart\n");
+					
+					workers = new ArrayList<Worker>();
 					for (StartUpData data : regions)
 					{
 						Worker wui = new Worker(data, connection);
@@ -145,11 +170,30 @@ public class PeerDaemonListener extends MyMessageListener
 				gui.writeMessage("Stop\n");
 				for (Worker w : workers)
 					w.stop_play();	
-				workers = new ArrayList<Worker>();
-				// table = null;
-				// regions = null;
+				
+				//table = null;
+				//regions = null;
 				status = STOPPED;
 			}
+
+			
+			// Received command to stop the simulation
+			if (mh.get("reset") != null)
+			{
+				
+				gui.writeMessage("--> Reset\n");
+				for (Worker w : workers)
+					w.kill();
+				
+				Worker w = workers.get(workers.size()-1);
+				if(w.isGUI())
+					w.getConsole().doClose();
+				
+				workers = null;
+				status = STARTED;
+				
+			}
+
 			
 			// Received command to begin tracing a value
 			if (mh.get("trace") != null)
@@ -168,6 +212,7 @@ public class PeerDaemonListener extends MyMessageListener
 				for (Worker w : workers)
 					w.trace(toUntrace, false);
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -179,7 +224,7 @@ public class PeerDaemonListener extends MyMessageListener
 		{
 			ArrayList<MessageListener> list = w.getListeners();
 			for (MessageListener x : list)
-			{
+			{	
 				table.put(x.getTopic(),x);
 			}
 		}
@@ -192,6 +237,7 @@ public class PeerDaemonListener extends MyMessageListener
 
 	class Starter extends Thread
 	{
+	
 		Worker w;
 
 		public Starter(Worker w)
@@ -208,7 +254,11 @@ public class PeerDaemonListener extends MyMessageListener
 			if (cnt == 0)
 				status = RUNNING;
 			w._start();
+		
+			
 		}
+		
+		
 	}
 
 }

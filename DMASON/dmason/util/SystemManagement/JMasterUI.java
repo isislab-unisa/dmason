@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.jms.JMSException;
@@ -43,6 +44,8 @@ import dmason.util.connection.MyMessageListener;
 import dmason.util.garbagecollector.Start;
 import dmason.util.trigger.Trigger;
 import dmason.util.trigger.TriggerListener;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
 
 
 /**
@@ -62,6 +65,7 @@ import dmason.util.trigger.TriggerListener;
  * @author unascribed
  * @author Luca Vicidomini
  * @author Fabio Fulgido
+ * @author Mario Fiore Vitale
  *
  */
 public class JMasterUI extends JFrame{
@@ -93,6 +97,8 @@ public class JMasterUI extends JFrame{
 		public SimComboEntry(String shortName, String fullSimName) { this.shortName = shortName; this.fullSimName = fullSimName; }
 		@Override public String toString() { return shortName; }
 	}
+
+	private boolean isSubmitted = false;
 	
 	public JMasterUI()
 	{	
@@ -104,6 +110,8 @@ public class JMasterUI extends JFrame{
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setResizable(false);
 		starter = new Start();
+		
+		
 	
 	}
 
@@ -183,8 +191,8 @@ public class JMasterUI extends JFrame{
 		jLabelPlayButton = new JLabel();
 		jLabelPauseButton = new JLabel();
 		jPanelNumStep = new JPanel();
-		writeStepLabel = new JLabel();
 		jLabelStep = new JLabel();
+		jLabelStep.setHorizontalAlignment(SwingConstants.LEFT);
 		jLabelStopButton = new JLabel();
 		scrollPane1 = new JScrollPane();
 		peerInfoStatus1 = new JDesktopPane();
@@ -861,73 +869,74 @@ public class JMasterUI extends JFrame{
 							}
 
 							GroupLayout jPanelDefaultLayout = new GroupLayout(jPanelDefault);
-							jPanelDefault.setLayout(jPanelDefaultLayout);
 							jPanelDefaultLayout.setHorizontalGroup(
-									jPanelDefaultLayout.createParallelGroup()
+								jPanelDefaultLayout.createParallelGroup(Alignment.LEADING)
 									.addGroup(jPanelDefaultLayout.createSequentialGroup()
-											.addContainerGap()
-											.addGroup(jPanelDefaultLayout.createParallelGroup()
-													.addComponent(labelSimulationConfigSet, GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE)
+										.addContainerGap()
+										.addGroup(jPanelDefaultLayout.createParallelGroup(Alignment.LEADING)
+											.addComponent(labelSimulationConfigSet, GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
+											.addGroup(jPanelDefaultLayout.createSequentialGroup()
+												.addGap(6)
+												.addGroup(jPanelDefaultLayout.createParallelGroup(Alignment.LEADING)
 													.addGroup(jPanelDefaultLayout.createSequentialGroup()
-															.addGap(6, 6, 6)
-															.addGroup(jPanelDefaultLayout.createParallelGroup()
-																	.addGroup(jPanelDefaultLayout.createSequentialGroup()
-																			.addGroup(jPanelDefaultLayout.createParallelGroup()
-																					.addComponent(labelNumOfPeerResume)
-																					.addComponent(labelRegForPeerResume)
-																					.addComponent(labelWidthRegion)
-																					.addComponent(labelheightRegion)
-																					.addComponent(labelDistrMode)
-																					.addComponent(labelRegionsResume))
-																					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 189, Short.MAX_VALUE)
-																					.addGroup(jPanelDefaultLayout.createParallelGroup()
-																							.addComponent(labelWriteNumOfPeer, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-																							.addComponent(labelWriteReg)
-																							.addComponent(labelWriteRegForPeer)
-																							.addComponent(labelWriteRegWidth)
-																							.addComponent(labelWriteRegHeight)
-																							.addComponent(labelWriteDistrMode))
-																							.addGap(118, 118, 118))
-																							.addComponent(graphicONcheckBox2))))
-																							.addGap(211, 211, 211))
-																							.addComponent(jPanelSetButton, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									);
-							jPanelDefaultLayout.setVerticalGroup(
-									jPanelDefaultLayout.createParallelGroup()
-									.addGroup(jPanelDefaultLayout.createSequentialGroup()
-											.addContainerGap()
-											.addComponent(labelSimulationConfigSet, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
-											.addGap(28, 28, 28)
-											.addGroup(jPanelDefaultLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-													.addGroup(jPanelDefaultLayout.createSequentialGroup()
-															.addComponent(labelRegionsResume)
-															.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+														.addGroup(jPanelDefaultLayout.createParallelGroup(Alignment.LEADING)
 															.addComponent(labelNumOfPeerResume)
-															.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 															.addComponent(labelRegForPeerResume)
-															.addGap(6, 6, 6)
 															.addComponent(labelWidthRegion)
-															.addGap(6, 6, 6)
 															.addComponent(labelheightRegion)
-															.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-															.addComponent(labelDistrMode))
-															.addGroup(jPanelDefaultLayout.createSequentialGroup()
-																	.addComponent(labelWriteReg)
-																	.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-																	.addComponent(labelWriteNumOfPeer)
-																	.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-																	.addComponent(labelWriteRegForPeer)
-																	.addGap(6, 6, 6)
-																	.addComponent(labelWriteRegWidth)
-																	.addGap(6, 6, 6)
-																	.addComponent(labelWriteRegHeight)
-																	.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-																	.addComponent(labelWriteDistrMode, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE)))
-																	.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-																	.addComponent(graphicONcheckBox2)
-																	.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 91, Short.MAX_VALUE)
-																	.addComponent(jPanelSetButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-									);
+															.addComponent(labelDistrMode)
+															.addComponent(labelRegionsResume))
+														.addPreferredGap(ComponentPlacement.RELATED, 204, Short.MAX_VALUE)
+														.addGroup(jPanelDefaultLayout.createParallelGroup(Alignment.LEADING)
+															.addComponent(labelWriteNumOfPeer, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+															.addComponent(labelWriteReg)
+															.addComponent(labelWriteRegForPeer)
+															.addComponent(labelWriteRegWidth)
+															.addComponent(labelWriteRegHeight)
+															.addComponent(labelWriteDistrMode))
+														.addGap(118))
+													.addComponent(graphicONcheckBox2))))
+										.addGap(211))
+									.addComponent(jPanelSetButton, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 685, Short.MAX_VALUE)
+							);
+							jPanelDefaultLayout.setVerticalGroup(
+								jPanelDefaultLayout.createParallelGroup(Alignment.LEADING)
+									.addGroup(jPanelDefaultLayout.createSequentialGroup()
+										.addContainerGap()
+										.addComponent(labelSimulationConfigSet, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
+										.addGap(28)
+										.addGroup(jPanelDefaultLayout.createParallelGroup(Alignment.TRAILING)
+											.addGroup(jPanelDefaultLayout.createSequentialGroup()
+												.addComponent(labelRegionsResume)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(labelNumOfPeerResume)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(labelRegForPeerResume)
+												.addGap(6)
+												.addComponent(labelWidthRegion)
+												.addGap(6)
+												.addComponent(labelheightRegion)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(labelDistrMode))
+											.addGroup(jPanelDefaultLayout.createSequentialGroup()
+												.addComponent(labelWriteReg)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(labelWriteNumOfPeer)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(labelWriteRegForPeer)
+												.addGap(6)
+												.addComponent(labelWriteRegWidth)
+												.addGap(6)
+												.addComponent(labelWriteRegHeight)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(labelWriteDistrMode, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE)
+												.addGap(8)))
+										.addPreferredGap(ComponentPlacement.UNRELATED)
+										.addComponent(graphicONcheckBox2)
+										.addPreferredGap(ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
+										.addComponent(jPanelSetButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							);
+							jPanelDefault.setLayout(jPanelDefaultLayout);
 						}
 						tabbedPane2.addTab("Default", jPanelDefault);
 
@@ -1235,6 +1244,7 @@ public class JMasterUI extends JFrame{
 					jLabelPlayButton.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/Playing.png")));
 					jLabelPauseButton.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/PauseOff.png")));
 					jLabelStopButton.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/NotStopped.png")));
+					jLabelResetButton.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/NotReload.png")));
 					try {
 						
 						master.play();
@@ -1304,85 +1314,165 @@ public class JMasterUI extends JFrame{
 				}
 			});
 
-
-
 			//======== jPanelNumStep ========
 			{
 
-				//---- writeStepLabel ----
-				writeStepLabel.setText("txt");
-
 				GroupLayout jPanelNumStepLayout = new GroupLayout(jPanelNumStep);
-				jPanelNumStep.setLayout(jPanelNumStepLayout);
 				jPanelNumStepLayout.setHorizontalGroup(
-						jPanelNumStepLayout.createParallelGroup()
-						.addGroup(GroupLayout.Alignment.TRAILING, jPanelNumStepLayout.createSequentialGroup()
-								.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(writeStepLabel))
-						);
+					jPanelNumStepLayout.createParallelGroup(Alignment.TRAILING)
+						.addGap(0, 25, Short.MAX_VALUE)
+				);
 				jPanelNumStepLayout.setVerticalGroup(
-						jPanelNumStepLayout.createParallelGroup()
-						.addGroup(jPanelNumStepLayout.createSequentialGroup()
-								.addComponent(writeStepLabel)
-								.addContainerGap(12, Short.MAX_VALUE))
-						);
+					jPanelNumStepLayout.createParallelGroup(Alignment.LEADING)
+						.addGap(0, 28, Short.MAX_VALUE)
+				);
+				jPanelNumStep.setLayout(jPanelNumStepLayout);
+				jPanelNumStep.setPreferredSize(new java.awt.Dimension(89, 23));
 			}
+			{
+				jLabelResetButton = new JLabel();
+				jLabelResetButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource("dmason/resource/image/NotReload.png")));
+				jLabelResetButton.setPreferredSize(new java.awt.Dimension(20, 20));
+			}
+			
+						// for resetting simulation
+						jLabelResetButton.addMouseListener(new MouseListener() {
+			
+							@Override
+							public void mouseClicked(MouseEvent arg0) {
+								
+								if(connected)
+								{
+									jLabelStopButton.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/NotStopped.png")));
+									jLabelPlayButton.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/NotPlaying.png")));
+									jLabelPauseButton.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/PauseOff.png")));
+									jLabelResetButton.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/Reload.png")));
+									
+									//send message to workers for resetting simulation
+									try {
+										master.reset();
+			
+									} catch (Exception e1) {
+										e1.printStackTrace();
+									}
+									
+									
+									//clean up topic from AcitveMQ
+									connection.ResetSimulation();
+								
+									setSystemSettingsEnabled(true);
+								
+									notifyArea.append("Simulation resetted\n");
+									
+									
+								}
+								
+							}
+			
+							@Override
+							public void mouseEntered(MouseEvent arg0) {
+								// TODO Auto-generated method stub
+								
+							}
+			
+							@Override
+							public void mouseExited(MouseEvent arg0) {
+								// TODO Auto-generated method stub
+								
+							}
+			
+							@Override
+							public void mousePressed(MouseEvent arg0) {
+								// TODO Auto-generated method stub
+								
+							}
+			
+							@Override
+							public void mouseReleased(MouseEvent arg0) {
+								// TODO Auto-generated method stub
+								
+							}
+						});
+			writeStepLabel = new JLabel();
+			writeStepLabel.setText("0");
+			
+			lblTotalSteps = new JLabel("Steps:");
 
 			GroupLayout panelMainLayout = new GroupLayout(panelMain);
-			panelMain.setLayout(panelMainLayout);
 			panelMainLayout.setHorizontalGroup(
-					panelMainLayout.createParallelGroup()
+				panelMainLayout.createParallelGroup(Alignment.LEADING)
 					.addGroup(panelMainLayout.createSequentialGroup()
-							.addComponent(jPanelContainerSettings, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-							.addComponent(jPanelSetDistribution, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addContainerGap())
-							.addComponent(jPanelContainerConnection, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addGroup(GroupLayout.Alignment.TRAILING, panelMainLayout.createSequentialGroup()
-									.addContainerGap(642, Short.MAX_VALUE)
-									.addComponent(jLabelStep)
-									.addGap(4, 4, 4)
-									.addComponent(jPanelNumStep, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addGap(24, 24, 24)
-									.addComponent(jLabelPlayButton)
-									.addGap(10, 10, 10)
-									.addComponent(jLabelPauseButton)
-									.addGap(10, 10, 10)
-									.addComponent(jLabelStopButton)
-									.addGap(189, 189, 189))
-					);
-			panelMainLayout.setVerticalGroup(
-					panelMainLayout.createParallelGroup()
-					.addGroup(panelMainLayout.createSequentialGroup()
-							.addComponent(jPanelContainerConnection, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addGroup(panelMainLayout.createParallelGroup()
+						.addComponent(jPanelContainerSettings, GroupLayout.PREFERRED_SIZE, 0, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(panelMainLayout.createParallelGroup(Alignment.LEADING)
+							.addComponent(jPanelSetDistribution, 0, 986, Short.MAX_VALUE)
+							.addGroup(panelMainLayout.createSequentialGroup()
+								.addGap(589)
+								.addGroup(panelMainLayout.createParallelGroup(Alignment.TRAILING)
+									.addComponent(jLabelStep, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 									.addGroup(panelMainLayout.createSequentialGroup()
-											.addGap(35, 35, 35)
-											.addComponent(jPanelContainerSettings, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-											.addGroup(panelMainLayout.createSequentialGroup()
-													.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-													.addComponent(jPanelSetDistribution, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-													.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-													.addGroup(panelMainLayout.createParallelGroup()
-															.addComponent(jLabelStep)
-															.addComponent(jPanelNumStep, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-															.addComponent(jLabelPlayButton, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
-															.addComponent(jLabelPauseButton, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
-															.addComponent(jLabelStopButton, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE))
-															.addContainerGap())
-					);
+										.addComponent(lblTotalSteps)
+										.addPreferredGap(ComponentPlacement.UNRELATED)
+										.addComponent(writeStepLabel)))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(jPanelNumStep, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+								.addGroup(panelMainLayout.createParallelGroup(Alignment.LEADING)
+									.addGroup(panelMainLayout.createSequentialGroup()
+										.addGap(24)
+										.addComponent(jLabelPlayButton, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(ComponentPlacement.UNRELATED)
+										.addComponent(jLabelPauseButton, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(ComponentPlacement.UNRELATED)
+										.addComponent(jLabelStopButton, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+									.addGroup(panelMainLayout.createSequentialGroup()
+										.addGap(116)
+										.addComponent(jLabelResetButton, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)))))
+						.addGap(12))
+					.addComponent(jPanelContainerConnection, 0, 1004, Short.MAX_VALUE)
+			);
+			panelMainLayout.setVerticalGroup(
+				panelMainLayout.createParallelGroup(Alignment.LEADING)
+					.addGroup(panelMainLayout.createSequentialGroup()
+						.addComponent(jPanelContainerConnection, GroupLayout.PREFERRED_SIZE, 71, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(panelMainLayout.createParallelGroup(Alignment.LEADING)
+							.addComponent(jPanelSetDistribution, GroupLayout.PREFERRED_SIZE, 518, GroupLayout.PREFERRED_SIZE)
+							.addGroup(panelMainLayout.createSequentialGroup()
+								.addGap(29)
+								.addComponent(jPanelContainerSettings, GroupLayout.PREFERRED_SIZE, 489, GroupLayout.PREFERRED_SIZE)))
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(panelMainLayout.createParallelGroup(Alignment.LEADING)
+							.addComponent(jLabelStopButton, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(jLabelPlayButton, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(jLabelPauseButton, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(jLabelResetButton, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
+							.addGroup(panelMainLayout.createSequentialGroup()
+								.addComponent(jLabelStep, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(jPanelNumStep, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
+							.addGroup(panelMainLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(writeStepLabel, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblTotalSteps)))
+						.addContainerGap(13, Short.MAX_VALUE))
+			);
+			panelMain.setLayout(panelMainLayout);
 		}
 
 		GroupLayout contentPaneLayout = new GroupLayout(contentPane);
-		contentPane.setLayout(contentPaneLayout);
 		contentPaneLayout.setHorizontalGroup(
-				contentPaneLayout.createParallelGroup()
-				.addComponent(panelMain, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				);
+			contentPaneLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(Alignment.TRAILING, contentPaneLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(panelMain, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addContainerGap())
+		);
 		contentPaneLayout.setVerticalGroup(
-				contentPaneLayout.createParallelGroup()
-				.addComponent(panelMain, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				);
+			contentPaneLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(Alignment.TRAILING, contentPaneLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(panelMain, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+		);
+		contentPane.setLayout(contentPaneLayout);
 		pack();
 		setLocationRelativeTo(null);
 		
@@ -1478,7 +1568,15 @@ public class JMasterUI extends JFrame{
 		else if(radioButtonSquare.isSelected() && jCheckBoxLoadBalancing.isSelected())
 			MODE = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
 
-		(new Trigger(connection)).asynchronousReceiveToTriggerTopic(new TriggerListener(notifyArea,logger));
+
+		if(!isSubmitted ) //for next simulations do not have to register again
+		{	
+			(new Trigger(connection)).asynchronousReceiveToTriggerTopic(new TriggerListener(notifyArea,logger));
+			isSubmitted = true;
+		}
+
+		
+
 
 		// Wrong data inserted
 		if(errors.size() > 0){
@@ -1516,7 +1614,15 @@ public class JMasterUI extends JFrame{
 			}
 		
 
-		(new Trigger(connection)).asynchronousReceiveToTriggerTopic(new TriggerListener(notifyArea,logger));
+
+		if(!isSubmitted ) //for next simulations do not have to register again
+		{	
+			(new Trigger(connection)).asynchronousReceiveToTriggerTopic(new TriggerListener(notifyArea,logger));
+			isSubmitted = true;
+		}
+
+		
+
 
 		if(radioButtonHorizontal.isSelected())
 			MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
@@ -1537,6 +1643,7 @@ public class JMasterUI extends JFrame{
 					config.put(topic, value);
 				}
 				getSteps();
+				
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -1782,7 +1889,11 @@ public class JMasterUI extends JFrame{
 	private boolean connected = false;
 	private HashMap<String,EntryVal<Integer,Boolean>> config;
 	private int total=0;
+
+	private JLabel jLabelResetButton;
+
 	private JCheckBox jCheckBoxLoadBalancing;
+
 	boolean radioItemFlag=false;	//radioItemFalg
 	private Address address;
 	int res;
@@ -1877,6 +1988,7 @@ public class JMasterUI extends JFrame{
 	private static final Logger logger = Logger.getLogger(JMasterUI.class.getCanonicalName());
  	FileHandler file;
 	private int limitStep;
+	private JLabel lblTotalSteps;
 	// fine codice profiling
 
 	

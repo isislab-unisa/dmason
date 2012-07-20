@@ -2,6 +2,8 @@ package dmason.sim.engine;
 
 import java.util.ArrayList;
 
+import javax.jms.JMSException;
+
 import dmason.sim.field.CellType;
 import dmason.sim.field.DistributedField;
 import dmason.sim.field.MessageListener;
@@ -577,6 +579,12 @@ public abstract class DistributedState<E> extends SimState {
 
 	public Trigger getTrigger() {
 		return TRIGGER;
+	}
+	
+	//added for close connection of current simulation after reset
+	public void closeConnection() throws JMSException
+	{
+		connection.close();
 	}
 
 }

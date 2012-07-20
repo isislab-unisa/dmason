@@ -135,6 +135,16 @@ public class MasterDaemonStarter {
 		for(String topicName : workerTopics)
 			connection.publishToTopic("stop", topicName, "stop");
 	}
+	
+	/**
+	 * Reset the workers.
+	 * @throws Exception
+	 */
+	public void reset() throws Exception
+	{
+		for(String topicName : workerTopics)
+			connection.publishToTopic("reset", topicName, "reset");
+	}
 
 	/**
 	 * Starts/resumes the workers.
