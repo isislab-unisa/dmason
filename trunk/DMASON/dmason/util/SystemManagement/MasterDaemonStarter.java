@@ -192,8 +192,8 @@ public class MasterDaemonStarter {
 		try
 		{
 			selClass = Class.forName(selSim);
-			selClassUI = Class.forName(selSim);
-			//selClassUI = Class.forName(selSim + "WithUI");
+			//selClassUI = Class.forName(selSim);
+			selClassUI = Class.forName(selSim + "WithUI");
 		} catch (ClassNotFoundException e2) {
 			System.err.println("Unable to load the simulation class " + selSim);
 			e2.printStackTrace();
