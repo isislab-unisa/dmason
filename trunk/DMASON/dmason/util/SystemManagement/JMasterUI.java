@@ -425,7 +425,7 @@ public class JMasterUI extends JFrame{
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						JOptionPane.showMessageDialog(null, "D-MASON version 1.5","Info",1);
+						JOptionPane.showMessageDialog(null, "D-MASON version 2.0","Info",1);
 					
 						
 					}
