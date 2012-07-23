@@ -288,7 +288,7 @@ public boolean setPortrayalForObject(Object o)
 \caption{Respectively \textit{HORIZONTAL} and \textit{SQUARE} partition mode.}
 \label{fig:dp01}
 \end{figure}
-There are few differences between origianl \textit{ParticlesWithUI} and the its distributed version, \textit{DParticlesWithUI}. They both extend the class \textit{GUIState}, responsible of instantiating all graphics elements; \textit{DParticlesWithUI} has a constructor for passing to \textit{DParticles} the objects array and it has to store in a \textit{String} the \textit{region} identifier, in order to show which region it is simulating (e.g. \textit{0-0} means the upper-left part of the grid partitioned field).
+There are few differences between original \textit{ParticlesWithUI} and the its distributed version, \textit{DParticlesWithUI}. They both extend the class \textit{GUIState}, responsible of instantiating all graphics elements; \textit{DParticlesWithUI} has a constructor for passing to \textit{DParticles} the objects array and it has to store in a \textit{String} the \textit{region} identifier, in order to show which region it is simulating (e.g. \textit{0-0} means the upper-left part of the grid partitioned field).
 \lstset{language=Java,caption={Class ParticlesWithUI},label=particleswui}
 \begin{lstlisting}
 public class ParticlesWithUI extends GUIState {
@@ -322,4 +322,36 @@ public static String getName() { return "Peer: <"+name+">"; }
 ...
 }
 \end{lstlisting}
+
+\section{Load balancing for SQUARE partition}
+
+\subsection{Introduction}
+When a region is overloaded of agents splits in 9 little cells. Eight of this little cells are distributed to the worker that are simulating the neighborhood, while the central little cell is held by the worker that is simulating this region. When the worker is no longer overloaded returns to the initial configuration.
+The figure 3 shows 9 worker and each of them simulates a region. The worker 11 is overloaded then split its region in 9 little cells following a 3x3 grid division.
+\begin{figure}
+\centering
+\includegraphics[width=0.4\textwidth]{LoadBalancing.png}
+\caption{Example of load balancing for SQUARE partition mode.}
+\end{figure}
+\subsection{Setting parameters for load balancing}
+In this section it's explained how to set the parameters for the load balancing in DParticles. There are two parameters to set to define when a region is overloaded and when is no longer overloaded. For the first case there is  \textit{thresholdSplit} and specifics that the region can split when it has more than \[thresholdSplit*numAgents/numRegions\] For the second case there is  \textit{thresholdMerge} and specifics that the region can merge all the little cell when all the little cell have less than \[thresholdMerge*numAgents/numRegions\] Than the constructor of  \textit{DParticles} becames 
+
+\lstset{language=Java,caption={Class \texttt{DParticles}},label=dparticles}
+\begin{lstlisting}
+ public DParticles(Object[] params)
+    {    	
+    	...
+    	gridWidth=(Integer)params[5];
+    	gridHeight=(Integer)params[6];
+    	((DistributedMultiSchedule)schedule).setThresholdMerge(1);
+        ((DistributedMultiSchedule)schedule).setThresholdSplit(5);
+
+    }    
+\end{lstlisting}
+
+By default \textit{thresholdSplit} is 3 and \textit{thresholdMerge} is 1.5.
+
+
+
+
 \end{document}
