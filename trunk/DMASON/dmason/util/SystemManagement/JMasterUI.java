@@ -16,12 +16,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.management.ManagementFactory;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.*;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -36,6 +35,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import sim.display.Console;
 import dmason.sim.engine.DistributedMultiSchedule;
+import dmason.sim.engine.DistributedState;
 import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
@@ -110,7 +110,7 @@ public class JMasterUI extends JFrame{
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setResizable(false);
 		starter = new Start();
-		
+		logger.setLevel(Level.OFF);
 		
 	
 	}
@@ -1550,15 +1550,14 @@ public class JMasterUI extends JFrame{
 		numAgents = Integer.parseInt(textFieldAgents.getText());
 		maxDistance = Integer.parseInt(textFieldMaxDistance.getText());
 		
-		
-			try {
-				file = new FileHandler("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT+".txt");
-			} catch (SecurityException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+		if(logger.getLevel()!=Level.OFF){
+			file = new FileAppender();
+			  file.setName("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT);
+			  file.setFile("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT+".log");
+			  file.setLayout(new SimpleLayout());
+			  file.setThreshold(Level.DEBUG);
+			  file.activateOptions();	
+			logger.addAppender(file);
 			}
 		
 		if(radioButtonHorizontal.isSelected())
@@ -1603,15 +1602,15 @@ public class JMasterUI extends JFrame{
 		maxDistance = Integer.parseInt(textFieldMaxDistance.getText());
 		withGui = graphicONcheckBox2.isSelected();
 		
-			try {
-				file = new FileHandler("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT+".log");
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		if(logger.getLevel()!=Level.OFF){
+		file = new FileAppender();
+		  file.setName("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT);
+		  file.setFile("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT+".log");
+		  file.setLayout(new SimpleLayout());
+		  file.setThreshold(Level.DEBUG);
+		  file.activateOptions();	
+		logger.addAppender(file);
+		}
 		
 
 
@@ -1705,18 +1704,17 @@ public class JMasterUI extends JFrame{
 					if(step==0)
 					{
 						initial_time=System.currentTimeMillis();
-						logger.addHandler(file);
-						logger.info("Number regions:"+numRegions+" Number agents:"+numAgents+" Width:"+WIDTH+" Height:"+HEIGHT);
-						logger.info("Step :0 Time:"+initial_time);
+						logger.debug("Number regions:"+numRegions+" Number agents:"+numAgents+" Width:"+WIDTH+" Height:"+HEIGHT);
+						logger.debug("Step :0 Time:"+initial_time);
 					}
 					else if(step == limitStep)
 					{
 						long fifty_time=System.currentTimeMillis();
-						logger.info("Step :"+limitStep+" Time: "+fifty_time);
+						logger.debug("Step :"+limitStep+" Time: "+fifty_time);
 
 						long time= (fifty_time - initial_time );
 
-						logger.info("Total Time : "+time);
+						logger.debug("Total Time : "+time);
 					}
 					writeStepLabel.setText(""+mh.get("step"));
 				}
@@ -1986,7 +1984,7 @@ public class JMasterUI extends JFrame{
 
 	// codice profiling
 	private static final Logger logger = Logger.getLogger(JMasterUI.class.getCanonicalName());
- 	FileHandler file;
+ 	FileAppender file;
 	private int limitStep;
 	private JLabel lblTotalSteps;
 	// fine codice profiling

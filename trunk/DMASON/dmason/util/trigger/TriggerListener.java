@@ -2,7 +2,7 @@ package dmason.util.trigger;
 
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -23,9 +23,9 @@ public class TriggerListener extends MyMessageListener {
 	private JTextArea area;
 	private Logger logger;
 
-	public TriggerListener(JTextArea textArea, Logger logger){
+	public TriggerListener(JTextArea textArea, org.apache.log4j.Logger logger2){
 		area = textArea;
-		this.logger = logger;
+		this.logger = logger2;
 	}
 	
 	@Override
