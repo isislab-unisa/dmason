@@ -1,20 +1,14 @@
 package dmason.sim.engine;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.log4j.*;
 import dmason.sim.field.CellType;
-import dmason.sim.field.DistributedField;
 import dmason.sim.field.DistributedField;
 import dmason.sim.field.UpdatePositionInterface;
 import dmason.sim.loadbalancing.LoadBalancingInterface;
@@ -104,8 +98,8 @@ public class DistributedMultiSchedule<E> extends Schedule
  	long numStep;
  	long time;
  	//double sleepTime = 0.002;
- 	FileHandler file;
- 	FileHandler file2;
+ 	FileAppender file;
+ 	FileAppender file2;
 
  	// end profiling code
     
@@ -159,24 +153,33 @@ public class DistributedMultiSchedule<E> extends Schedule
 					
 					logger = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+state.TYPE.toString());
 					
-					loggerStep = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+"Step"+state.TYPE.toString());
-					loggerBalance = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+"Balance"+state.TYPE.toString());
-					loggerStep.setLevel(Level.INFO);
-					loggerBalance.setLevel(Level.INFO);
-					try {
-						file=new FileHandler("Region"+((DistributedState)state).TYPE.toString()+".log");
-						file2=new FileHandler("Balance"+((DistributedState)state).TYPE.toString()+".log");
+					loggerStep = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+"Step");
+					loggerBalance = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+"Balance");
+					loggerStep.setLevel(Level.OFF);
+					loggerBalance.setLevel(Level.OFF);
+					if(loggerStep.getLevel()!=Level.OFF){
+					 file = new FileAppender();
+					  file.setName("FileLogger"+"Region"+((DistributedState)state).TYPE.toString());
+					  file.setFile("Worker"+ManagementFactory.getRuntimeMXBean().getName()+".log");
+					  file.setLayout(new SimpleLayout());
+					  file.setThreshold(Level.DEBUG);
+					  file.activateOptions();
+					loggerStep.addAppender(file);
 
-					} catch (SecurityException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					} 
+					if(loggerBalance.getLevel()!=Level.OFF){
+					  file2 = new FileAppender();
+					  file2.setName("FileLogger"+"Balance"+((DistributedState)state).TYPE.toString());
+					  file2.setFile("Balance"+ManagementFactory.getRuntimeMXBean().getName()+".log");
+					  file2.setLayout(new SimpleLayout());
+					  file2.setThreshold(Level.DEBUG);
+					  file2.setAppend(true);
+					  file2.activateOptions();
+						loggerBalance.addAppender(file2);
+
 					}
-				
-					loggerStep.addHandler(file);
-					loggerBalance.addHandler(file2);
+
+					loggerBalance.addAppender(file2);
 			}
 
 				
@@ -237,9 +240,8 @@ public class DistributedMultiSchedule<E> extends Schedule
 		
 		// profiling code
     	endStep = System.currentTimeMillis();
-    	loggerStep.info((numStep)+";"+(numAgents)+";"+(startStep)+";"+(endStep));
-
-		// end profiling code
+   		loggerStep.debug(";"+state.TYPE.toString()+";"+(numStep)+";"+(numAgents)+";"+(startStep)+";"+(endStep));
+   		// end profiling code
 		
 		
 		// Create a thread for each field assigned to this worker, in order
@@ -259,7 +261,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 			{
 				block.await(); // Will be signaled by a thread
 			} catch (InterruptedException e) {
-				logger.severe("Error during block.await()");
+				logger.fatal("Error during block.await()");
 				e.printStackTrace();
 			}
 		}
@@ -284,7 +286,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 			{
 				monitor.awaitForAckStep(currentStep);
 			} catch (InterruptedException e) {
-				logger.severe("Error on monitor.awaitForAckStep(" + currentStep + ")");
+				logger.fatal("Error on monitor.awaitForAckStep(" + currentStep + ")");
 				e.printStackTrace();
 			}
 		}
@@ -354,7 +356,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 				hashUpdatesPosition.get(MyCellInterface.DOWN).setPreBalance(true);
 				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreBalance(true);
 				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreBalance(true);
-				loggerBalance.info("Split: "+(numStep)+";"+(numAgents));
+				loggerBalance.debug(";"+state.TYPE.toString()+";Split: "+(numStep)+";"+(numAgents));
 				
 			}
 			else
@@ -435,7 +437,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(true);
 				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(true);
 				
-				loggerBalance.info("Merge: "+(numStep)+";"+(numExt));
+				loggerBalance.debug(";"+state.TYPE.toString()+";Merge: "+(numStep)+";"+(numExt));
 				numExt = 0;
 				
 			}

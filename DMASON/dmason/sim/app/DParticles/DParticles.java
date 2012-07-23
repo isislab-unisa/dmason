@@ -45,6 +45,9 @@ public class DParticles extends DistributedState<Int2D> {
     	this.MODE=(Integer)params[9];
     	gridWidth=(Integer)params[5];
     	gridHeight=(Integer)params[6];
+    	((DistributedMultiSchedule)schedule).setThresholdMerge(1);
+        ((DistributedMultiSchedule)schedule).setThresholdSplit(5);
+
     }    
 
     public void start()
@@ -63,7 +66,7 @@ public class DParticles extends DistributedState<Int2D> {
         //catch (FileNotFoundException e) {e.printStackTrace();}
 
         DParticle p=new DParticle(this);
-
+        
         while(particles.size() != super.NUMAGENTS)
         {		
         	particles.setAvailableRandomLocation(p);
