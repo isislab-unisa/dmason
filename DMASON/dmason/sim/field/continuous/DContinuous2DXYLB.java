@@ -131,7 +131,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 	private HashMap<Integer, UpdatePositionDoubleField<DistributedRegion<Double,Double2D>>> hashUpdatesPosition;
 	private HashMap<Integer, MyCellInterface> toSendForBalance;
 	private HashMap<Integer, MyCellInterface> toSendForUnion;
-	private RegionDouble outAgents;
+	private RegionDoubleLB outAgents;
 
 	// --> only for testing
 	public PrintWriter printer;
@@ -209,7 +209,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 		this.unionDone = false;
 		this.isUnited = true;
 
-		outAgents = new RegionDouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+		outAgents = new RegionDoubleLB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
 		/*//RIPRODUCIBILIT�
 		// --> only for testing
@@ -834,7 +834,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
 				}
 
-		outAgents = new RegionDouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+		outAgents = new RegionDoubleLB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 		
 		this.reset();
 
@@ -1526,7 +1526,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 
 		if(position == MyCellInterface.CORNER_DIAG_UP_LEFT)
 		{
-			for(Entry<Double2D> e: (RegionDouble) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
+			for(Entry<Double2D> e: (RegionDoubleLB) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
 			{			    	
 				RemoteAgent<Double2D> rm=e.r;
 				Double2D loc=e.l;
@@ -1540,7 +1540,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 		else
 			if(position == MyCellInterface.UP)
 			{
-				for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
+				for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
 				{			    	
 					RemoteAgent<Double2D> rm=e.r;
 					Double2D loc=e.l;
@@ -1550,7 +1550,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					setObjectLocation(rm,loc);
 					setPortrayalForObject(rm);
 				}
-				for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.UP).get(cellType)).getMyRMap().getup_out())
+				for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.UP).get(cellType)).getMyRMap().getup_out())
 				{			    	
 					RemoteAgent<Double2D> rm=e.r;
 					Double2D loc=e.l;
@@ -1560,7 +1560,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					setObjectLocation(rm,loc);
 					setPortrayalForObject(rm);
 				}
-				for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
+				for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
 				{			    	
 					RemoteAgent<Double2D> rm=e.r;
 					Double2D loc=e.l;
@@ -1574,7 +1574,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 			else
 				if(position == MyCellInterface.CORNER_DIAG_UP_RIGHT)
 				{
-					for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
+					for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
 					{			    	
 						RemoteAgent<Double2D> rm=e.r;
 						Double2D loc=e.l;
@@ -1588,7 +1588,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 				else
 					if(position == MyCellInterface.RIGHT)
 					{
-						for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
+						for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
 						{			    	
 							RemoteAgent<Double2D> rm=e.r;
 							Double2D loc=e.l;
@@ -1598,7 +1598,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							setObjectLocation(rm,loc);
 							setPortrayalForObject(rm);
 						}
-						for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.RIGHT).get(cellType)).getMyRMap().getright_out())
+						for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.RIGHT).get(cellType)).getMyRMap().getright_out())
 						{			    	
 							RemoteAgent<Double2D> rm=e.r;
 							Double2D loc=e.l;
@@ -1608,7 +1608,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							setObjectLocation(rm,loc);
 							setPortrayalForObject(rm);
 						}
-						for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
+						for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
 						{			    	
 							RemoteAgent<Double2D> rm=e.r;
 							Double2D loc=e.l;
@@ -1622,7 +1622,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					else
 						if(position == MyCellInterface.CORNER_DIAG_DOWN_RIGHT)
 						{
-							for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
+							for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
 							{			    	
 								RemoteAgent<Double2D> rm=e.r;
 								Double2D loc=e.l;
@@ -1636,7 +1636,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						else
 							if(position == MyCellInterface.DOWN)
 							{
-								for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
+								for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
 								{			    	
 									RemoteAgent<Double2D> rm=e.r;
 									Double2D loc=e.l;
@@ -1646,7 +1646,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 									setObjectLocation(rm,loc);
 									setPortrayalForObject(rm);
 								}
-								for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.DOWN).get(cellType)).getMyRMap().getdown_out())
+								for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.DOWN).get(cellType)).getMyRMap().getdown_out())
 								{			    	
 									RemoteAgent<Double2D> rm=e.r;
 									Double2D loc=e.l;
@@ -1656,7 +1656,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 									setObjectLocation(rm,loc);
 									setPortrayalForObject(rm);
 								}
-								for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
+								for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
 								{			    	
 									RemoteAgent<Double2D> rm=e.r;
 									Double2D loc=e.l;
@@ -1670,7 +1670,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							else
 								if(position == MyCellInterface.CORNER_DIAG_DOWN_LEFT)
 								{
-									for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
+									for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
 									{			    	
 										RemoteAgent<Double2D> rm=e.r;
 										Double2D loc=e.l;
@@ -1684,7 +1684,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 								else
 									if(position == MyCellInterface.LEFT)
 									{
-										for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
+										for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
 										{			    	
 											RemoteAgent<Double2D> rm=e.r;
 											Double2D loc=e.l;
@@ -1694,7 +1694,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 											setObjectLocation(rm,loc);
 											setPortrayalForObject(rm);
 										}
-										for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.LEFT).get(cellType)).getMyRMap().getleft_out())
+										for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.LEFT).get(cellType)).getMyRMap().getleft_out())
 										{			    	
 											RemoteAgent<Double2D> rm=e.r;
 											Double2D loc=e.l;
@@ -1704,7 +1704,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 											setObjectLocation(rm,loc);
 											setPortrayalForObject(rm);
 										}
-										for(Entry<Double2D> e: (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
+										for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
 										{			    	
 											RemoteAgent<Double2D> rm=e.r;
 											Double2D loc=e.l;
@@ -1829,7 +1829,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						}
 						else
 						{
-							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_right);
+							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_right);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_down_right_right = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
@@ -1857,7 +1857,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						}
 						else
 						{
-							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_right);
+							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_right);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_down_right_right = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
@@ -1877,7 +1877,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						}
 						else
 						{
-							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_down);
+							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_down);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_down_right_down = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
@@ -1914,7 +1914,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						}
 						else
 						{
-							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_down);
+							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_down);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_down_right_down = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
@@ -2040,7 +2040,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						}
 						else
 						{
-							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_down);
+							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_down);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_down_left_down = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
@@ -2067,7 +2067,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						}
 						else
 						{
-							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_down);
+							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_down);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_down_left_down = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
@@ -2086,7 +2086,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						}
 						else
 						{
-							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_left);
+							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_left);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_down_left_left = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
@@ -2122,7 +2122,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						}
 						else
 						{
-							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_left);
+							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_left);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_down_left_left = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
@@ -2199,7 +2199,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						}
 						else
 						{
-							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_up);
+							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_up);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_up_left_up = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
@@ -2228,7 +2228,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						}
 						else
 						{
-							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_up);
+							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_up);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_up_left_up = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
@@ -2295,7 +2295,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						}
 						else
 						{
-							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_left);
+							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_left);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_up_left_left = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
@@ -2322,7 +2322,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						}
 						else
 						{
-							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_left);
+							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_left);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_up_left_left = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
@@ -2419,7 +2419,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						}
 						else
 						{
-							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_up);
+							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_up);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_up_right_up = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
@@ -2445,7 +2445,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						}
 						else
 						{
-							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_up);
+							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_up);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_up_right_up = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
@@ -2465,7 +2465,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						}
 						else
 						{
-							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_right);
+							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_right);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_up_right_right = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
@@ -2492,7 +2492,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 						}
 						else
 						{
-							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_right);
+							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_right);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_up_right_right = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
@@ -2647,7 +2647,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_right);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_right);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_right_right = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
@@ -2674,7 +2674,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_right);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_right);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_right_right = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
@@ -2693,7 +2693,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_down);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_down);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_right_down = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
@@ -2729,7 +2729,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_down);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_down);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_right_down = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
@@ -2854,7 +2854,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_right);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_right);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_right_right = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
@@ -2873,7 +2873,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_left);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_left);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_left_left = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
@@ -2986,7 +2986,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_down);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_down);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_left_down = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
@@ -3013,7 +3013,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_down);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_down);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_left_down = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
@@ -3032,7 +3032,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_left);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_left);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_left_left = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
@@ -3068,7 +3068,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_left);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_left);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_left_left = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
@@ -3128,7 +3128,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_up);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_up);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_left_up = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
@@ -3191,7 +3191,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 								hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_diag_down);
 							}
 							else{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_down);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_down);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_left_down = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
@@ -3224,7 +3224,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_up);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_up);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_left_up = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
@@ -3252,7 +3252,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_up);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_up);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_left_up = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
@@ -3355,7 +3355,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_left);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_left);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_left_left = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
@@ -3382,7 +3382,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_left);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_left);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_left_left = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
@@ -3440,7 +3440,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_right);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_right);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_right_right = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
@@ -3504,7 +3504,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_left);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_left);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_left_left = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
@@ -3558,7 +3558,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_up);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_up);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_right_up = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
@@ -3584,7 +3584,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_up);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_up);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_right_up = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
@@ -3603,7 +3603,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_right);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_right);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_right_right = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
@@ -3630,7 +3630,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_right);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_right);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_right_right = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
@@ -3764,7 +3764,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_up);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_up);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_right_up = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
@@ -3783,7 +3783,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 							}
 							else
 							{
-								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_down);
+								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_down);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_right_down = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
@@ -3859,7 +3859,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					}
 					else
 					{
-						RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_left);
+						RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_left);
 						empty.clear();
 						DistributedRegion<Double, Double2D> dr_corner_down_left_left = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_left,
@@ -3908,7 +3908,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().up_mine,
 										md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_up);
-						RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_up);
+						RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_up);
 						empty.clear();
 						DistributedRegion<Double, Double2D> dr_corner_up_right_up = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
@@ -3973,7 +3973,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					}
 					else
 					{
-						RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_up);
+						RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_up);
 						empty.clear();
 						DistributedRegion<Double, Double2D> dr_left_corner_up_diag_up = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
@@ -4024,7 +4024,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().right_mine,
 										md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right);
-						RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_right);
+						RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_right);
 						empty.clear();
 						DistributedRegion<Double, Double2D> dr_right_corner_down_diag_right = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
@@ -4091,7 +4091,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					}
 					else
 					{
-						RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_right);
+						RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_right);
 						empty.clear();
 						DistributedRegion<Double, Double2D> dr_right_corner_up_diag_right = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
@@ -4140,7 +4140,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().down_mine,
 										md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_down);
-						RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_down);
+						RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_down);
 						empty.clear();
 						DistributedRegion<Double, Double2D> dr_left_corner_down_diag_down = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_right,
@@ -4204,7 +4204,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 					}
 					else
 					{
-						RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_down);
+						RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_down);
 						empty.clear();
 						DistributedRegion<Double, Double2D> dr_right_corner_down_diag_down = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_down_right,
@@ -4253,7 +4253,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().left_mine,
 										md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_left);
-						RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_left);
+						RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_left);
 						empty.clear();
 						DistributedRegion<Double, Double2D> dr_left_corner_up_diag_left = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().corner_mine_up_left,
@@ -5234,7 +5234,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 		
 		int counter = 0;
 		
-		counter = counter + ((RegionDouble)mc.getMyField()).size();
+		counter = counter + ((RegionDoubleLB)mc.getMyField()).size();
 		
 		Class o=mc.getMyRMap().getClass();
 		
