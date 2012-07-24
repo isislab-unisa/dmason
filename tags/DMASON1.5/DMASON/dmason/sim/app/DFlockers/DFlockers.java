@@ -19,7 +19,11 @@ import sim.util.*;
 
 public class DFlockers extends DistributedState<Double2D>
 {
-    public DContinuous2D flockers;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public DContinuous2D flockers;
     private static boolean isToroidal=true;
     public double width = 150;
     public double height = 150;
@@ -93,8 +97,8 @@ public class DFlockers extends DistributedState<Double2D>
     		f.setPos(flockers.setAvailableRandomLocation(f));
     		if (random.nextBoolean(deadFlockerProbability)) f.dead = true;
 
-    		if(flockers.setDistributedObjectLocationForPeer(new Double2D(f.pos.getX(),f.pos.getY()), f, this))
-    			//if(flockers.setDistributedObjectLocation(new Double2D(f.pos.getX(),f.pos.getY()), f, this))
+    	
+            if(flockers.setObjectLocation(f, f.pos))
     		{
     			Color c=new Color(
     					128 + this.random.nextInt(128),
