@@ -1,62 +1,124 @@
-\documentclass[12pt]{article}
+\documentclass{book}
+\usepackage[a4paper, top=3cm, bottom=3cm]{geometry}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{tocloft}
 \usepackage[utf8x]{inputenc}
-\usepackage[italian,english]{babel}
+\usepackage[english]{babel}
 \usepackage{url,graphicx,tabularx,array,geometry}
 \usepackage{amsmath}
-\setlength{\parskip}{1ex} 
-\setlength{\parindent}{0pt} 
 \usepackage{listings}
 \usepackage{tikz}
-%\renewcommand{\title}[1]{\textbf{#1}\\}
-\renewcommand{\line}{\begin{tabularx}{\textwidth}{X>{\raggedleft}X}\hline\\\end{tabularx}\\[-0.5cm]}
-\newcommand{\leftright}[2]{\begin{tabularx}{\textwidth}{X>{\raggedleft}X}#1%
-& #2\\\end{tabularx}\\[-0.5cm]}
+\usepackage{listings}
+\usepackage{courier}
+\usepackage{caption}
+\usepackage{titlesec}
 
-\lstset{basicstyle=\small\ttfamily,
-keywordstyle=\color{black}\bfseries,
-commentstyle=\color{darkgray},
-stringstyle=\color{black},
-showstringspaces=true,numbers=left}
+\titleformat{\section}{\bf\large\sffamily}{\thesection}{1em}{}  
+\titleformat{\chapter}{\bf\huge\sffamily}{\thechapter}{1em}{}  
+
+
+\lstset{
+         basicstyle=\footnotesize\ttfamily, % Standardschrift
+         %numbers=left,               % Ort der Zeilennummern
+         numberstyle=\tiny,          % Stil der Zeilennummern
+         %stepnumber=2,               % Abstand zwischen den Zeilennummern
+         numbersep=5pt,              % Abstand der Nummern zum Text
+         tabsize=2,                  % Groesse von Tabs
+         extendedchars=true,         %
+         breaklines=true,            % Zeilen werden Umgebrochen
+         keywordstyle=\color{red},
+    		frame=b,         
+ %        keywordstyle=[1]\textbf,    % Stil der Keywords
+ %        keywordstyle=[2]\textbf,    %
+ %        keywordstyle=[3]\textbf,    %
+ %        keywordstyle=[4]\textbf,   \sqrt{\sqrt{}} %
+         stringstyle=\color{white}\ttfamily, % Farbe der String
+         showspaces=false,           % Leerzeichen anzeigen ?
+         showtabs=false,             % Tabs anzeigen ?
+         xleftmargin=17pt,
+         framexleftmargin=17pt,
+         framexrightmargin=5pt,
+         framexbottommargin=4pt,
+         %backgroundcolor=\color{lightgray},
+         showstringspaces=false      % Leerzeichen in Strings anzeigen ?        
+ }
+ \lstloadlanguages{% Check Dokumentation for further languages ...
+         %[Visual]Basic
+         %Pascal
+         %C
+         %C++
+         %XML
+         %HTML
+         Java
+ }
+
+\DeclareCaptionFont{white}{\color{white}\sffamily}
+\DeclareCaptionFormat{listing}{\colorbox[cmyk]{0.43, 0.35, 0.35,0.01}{\parbox{\textwidth}{\hspace{15pt}#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white, singlelinecheck=false, margin=0pt, font={bf,footnotesize}}
 
 \begin{document}
-
-\title{From MASON to D-MASON, a simple example: Particles}
+\pagestyle{empty}
+\sffamily
+\title{D-MASON: a tutorial}
 \author{\url{http://www.isislab.it/projects/dmason}}
 \maketitle
-%\leftright{}{ISISLab}
-\leftright{}{}
-\leftright{}{}
 
-\section{Introduction}
-In this short document we provide a step-by-step guide to ``parallelize'' the Particle example from MASON by using D-MASON.
+% Define Page style for all chapters
+\pagestyle{fancy}
+% Delete the current section for header and footer
+\fancyhf{}
+% Set custom header
+\lhead[]{\thepage}
+\rhead[\thepage]{}
+
+% Set arabic (1,2,3...) page numbering
+\pagenumbering{arabic}
+
+% Set double spacing for the text
+%\doublespacing
+
+\def\ma{\textsc{Mason}}
+\def\dm{\textsc{D-Mason}}
+
+\chapter{Introduction}
+We present a framework, \dm, that is a distributed version of  \ma, a well-known and popular library for writing and running Agent-based simulations. \dm\ introduces the parallelization at framework level so that scientists that use the framework (domain expert but with limited knowledge of distributed programming) can be only minimally aware of such distribution. 
+
+In this document, in particular, we provide a step-by-step guide to the process of ``parallelization'' of the Particle example from \ma\ by using \dm.
 \begin{figure}[ht]
 	\centering
 		\includegraphics[width=0.5\textwidth, bb=0 0 470 520]{particles.png}	
-		\caption{GUIState for \textit{Particle} simulation}
+		\caption{GUIState for \texttt{Particle} simulation}
 	\label{fig:p01}
 \end{figure}
-\section{Structure}
-The starting point is the package \textbf{Particles} is composed by three classes, as it can be found in the original MASON distribution:
+
+\section*{Acknowledgements}
+\dm\ contains work by (in alphabetical order): \textit{Michele Carillo, Gennaro Cordasco, Rosario De Chiara, Fabio Fulgido, Ada Mancuso, Dario Mazzeo, Francesco Raia, Vittorio Scarano, Flavio Serrapica, Carmine Spagnuolo, 
+Luca Vicidomini, Mario Vitale.}
+
+
+\chapter{Structure}
+The starting point is the package \texttt{Particles} is composed by three classes, as it can be found in the original MASON distribution:
 
 \begin{itemize}
-	\item \textbf{Particle:} it implements the agent that will be simulated by the application.
-	\item \textbf{Particles:} it represents the simulation environment: it allows to run the simulation from the command line without using a GUI.
-	\item \textbf{ParticlesWithUI:} it allows to run simulations with a GUI, as depicted in the Figure \ref{fig:p01}.
+	\item \texttt{Particle:} it implements the agent that will be simulated by the application.
+	\item \texttt{Particles:} it represents the simulation environment: it allows to run the simulation from the command line without using a GUI.
+	\item \texttt{ParticlesWithUI:} it allows to run simulations with a GUI, as depicted in the Figure \ref{fig:p01}.
 \end{itemize}
 
-Similarly, in D-MASON, there will be the package \textbf{DParticles} containing the following classes:
+Similarly, in D-MASON, there will be the package \texttt{DParticles} containing the following classes:
 \begin{itemize}
-	\item \textbf{RemoteParticle:} it is an abstract class, implementing \textit{RemoteAgent} and containing the remote ID of the agent in the field and its position. 
-	\item \textbf{DParticle:} it extends \textit{RemoteParticle} and implements the \textit{distributed} agent that will be simulated by the application.
-	\item \textbf{DParticles:} it represents the \textit{distributed} simulation environment: it allows to run the simulation from the command line without using a GUI.
-	\item \textbf{DParticlesWithUI:} it allows to run simulations with a GUI that is aware of the \textit{distributed} environment.
+	\item \texttt{RemoteParticle:} it is an abstract class, implementing \texttt{RemoteAgent} and containing the remote ID of the agent in the field and its position. 
+	\item \texttt{DParticle:} it extends \texttt{RemoteParticle} and implements the \texttt{distributed} agent that will be simulated by the application.
+	\item \texttt{DParticles:} it represents the \texttt{distributed} simulation environment: it allows to run the simulation from the command line without using a GUI.
+	\item \texttt{DParticlesWithUI:} it allows to run simulations with a GUI that is aware of the \texttt{distributed} environment.
 \end{itemize}
 
-\subsection{From Particle to DParticle}
-The original \textbf{Particle} has to implement the \textit{Steppable} interface and, in particular, the method \textit{step()}, containing the agent logic. In the same way \textit{RemoteParticle} is an abstract class that has to implement \textit{RemoteAgent}, that is the D-MASON interface containing the necessary logic for the distributed agent. Finally \textit{DParticle} extends \textit{RemoteParticle} and implements the logic of the agent.
+\section{From Particle to DParticle}
+The original \texttt{Particle} has to implement the \texttt{Steppable} interface and, in particular, the method \texttt{step()}, containing the agent logic. In the same way \texttt{RemoteParticle} is an abstract class that has to implement \texttt{RemoteAgent}, that is the D-MASON interface containing the necessary logic for the distributed agent. Finally \texttt{DParticle} extends \texttt{RemoteParticle} and implements the logic of the agent.
 
-\textit{RemoteAgent} is parameterized with an \textit{Int2D} object-type because, in this simulation, the field has this specific type to indicate locations, and allows programmers to set, for each agent, an unique identifier and a field position.
-A \textit{Particle} simply contains two integer parameters, \textit{xdir} and \textit{ydir}, for setting the initial direction that the particle will move along.
+\texttt{RemoteAgent} is parameterized with an \texttt{Int2D} object-type because, in this simulation, the field has this specific type to indicate locations, and allows programmers to set, for each agent, an unique identifier and a field position.
+A \texttt{Particle} simply contains two integer parameters, \texttt{xdir} and \texttt{ydir}, for setting the initial direction that the particle will move along.
 
 \lstset{language=Java,caption={Class Particle},label=particle1}
 \begin{lstlisting}
@@ -68,9 +130,9 @@ A \textit{Particle} simply contains two integer parameters, \textit{xdir} and \t
   }
 ...
 \end{lstlisting}
-\medskip
 
-\textit{DParticle} has two constructors: the first is empty and it has been introduced for a future implementation of the method \textit{clone()}, and the second one has as parameter a subclass of the abstract class \textit{DistributedState}.
+
+\texttt{DParticle} has two constructors: the first is empty and it has been introduced for a future implementation of the method \texttt{clone()}, and the second one has as parameter a subclass of the abstract class \texttt{DistributedState}.
 
 \lstset{language=Java,caption={Class DParticle},label=dparticle1}
 \begin{lstlisting}
@@ -114,9 +176,9 @@ In order to distribute a MASON simulation it is necessary to change some parts o
 }
 \end{lstlisting}
 
-The distributed version is slightly different because it first check if the new location is occupied and, in this case, it randomizes its direction and move to the new location by using the method \textit{setDistributedObjectLocation}.
+The distributed version is slightly different because it first check if the new location is occupied and, in this case, it randomizes its direction and move to the new location by using the method \texttt{setDistributedObjectLocation}.
 
-%In a distributed environment different particles cannot do this check in different steps, as in the original version, but they first check for collision, using the same MASON method, then they set the new field location, using \textit{setDistributedObjectLocation}. 
+%In a distributed environment different particles cannot do this check in different steps, as in the original version, but they first check for collision, using the same MASON method, then they set the new field location, using \texttt{setDistributedObjectLocation}. 
 
 \lstset{language=Java,caption={Class DParticle},label=dparticle2}
 \begin{lstlisting}
@@ -144,14 +206,14 @@ public void step(SimState state)
 \end{lstlisting}
 
 
-\subsection{From Particles to DParticles}
-\textit{Particles} extends the \textit{SimState} class  while \textit{DParticles} extends \textit{DistributedState}, parameterized with \textit{Int2D} object-type.
+\section{From Particles to DParticles}
+\texttt{Particles} extends the \texttt{SimState} class  while \texttt{DParticles} extends \texttt{DistributedState}, parameterized with \texttt{Int2D} object-type.
 
-DParticles contains three other variables indicating, respectively, width and height of the field and the way of partitioning the field (that can be one or two dimensional, as shown in Figure \ref{fig:dp01}). \textit{Particles} has just one constructor that has as parameter the random generator seed while \textit{DParticles} constructor has as input an objects array, containing several parameters specific for the distributed simulation (e.g. network address, port, etc \ldots). 
+DParticles contains three other variables indicating, respectively, width and height of the field and the way of partitioning the field (that can be one or two dimensional, as shown in Figure \ref{fig:dp01}). \texttt{Particles} has just one constructor that has as parameter the random generator seed while \texttt{DParticles} constructor has as input an objects array, containing several parameters specific for the distributed simulation (e.g. network address, port, etc \ldots). 
 
-In \textit{Particles} there are two fields, the first containing the agents, the second one containing the trails. The creation of the fields and the placement of the agents in them are carried out by a simple loop that instantiates new particles with a random position and direction and place them in the proper field. 
+In \texttt{Particles} there are two fields, the first containing the agents, the second one containing the trails. The creation of the fields and the placement of the agents in them are carried out by a simple loop that instantiates new particles with a random position and direction and place them in the proper field. 
 
-In order to add particles to the schedule, it is possible to use \textit{scheduleRepeating()}, that allows to schedule agents repeatedly, and to add particles to the field there is \textit{setObjectLocation()}. In \textit{DParticles} there is the method \textit{createDSparseGrid2D} of the class \textit{DSparseGrid2DFactory} for creating a new distributed field. Note that it is necessary to use a factory to choose the kind of field partition. The agent initial position is computed by the method \textit{setAvailableRandomLocation()} and to add particles in the schedule it is necessary to use the method \textit{scheduleOnce()}, because in the next step a certain agent could not stay in the same part of the field, so using \textit{scheduleRepeating()} will not delete the particle from the schedule. Finally there are other three new methods: a \textit{getter} method for returning the subclass of the \textit{DistributedState}, a method for adding an agent with a given position in the field, a method for attaching a portrayal to an agent.
+In order to add particles to the schedule, it is possible to use \texttt{scheduleRepeating()}, that allows to schedule agents repeatedly, and to add particles to the field there is \texttt{setObjectLocation()}. In \texttt{DParticles} there is the method \texttt{createDSparseGrid2D} of the class \texttt{DSparseGrid2DFactory} for creating a new distributed field. Note that it is necessary to use a factory to choose the kind of field partition. The agent initial position is computed by the method \texttt{setAvailableRandomLocation()} and to add particles in the schedule it is necessary to use the method \texttt{scheduleOnce()}, because in the next step a certain agent could not stay in the same part of the field, so using \texttt{scheduleRepeating()} will not delete the particle from the schedule. Finally there are other three new methods: a \texttt{getter} method for returning the subclass of the \texttt{DistributedState}, a method for adding an agent with a given position in the field, a method for attaching a portrayal to an agent.
 
 \lstset{language=Java,caption={Class Particles},label=particles}
 \begin{lstlisting}
@@ -179,7 +241,7 @@ public class Particles extends SimState  {
   }
 }
 \end{lstlisting}
-\medskip
+
 \lstset{language=Java,caption={Class DParticles},label=dparticles}
 \begin{lstlisting}
 public class DParticles extends DistributedState<Int2D> {
@@ -280,15 +342,15 @@ public boolean setPortrayalForObject(Object o)
 
 \end{lstlisting}
 
-\subsection{From ParticlesWithUI to DParticlesWithUI}
+\section{From ParticlesWithUI to DParticlesWithUI}
 \begin{figure}
 \centering
 \includegraphics[width=0.4\textwidth,bb=0 0 470 520]{particles-h.png} 
 \includegraphics[width=0.4\textwidth,bb=0 0 470 520]{particles-m.png}
-\caption{Respectively \textit{HORIZONTAL} and \textit{SQUARE} partition mode.}
+\caption{Respectively \texttt{HORIZONTAL} and \texttt{SQUARE} partition mode.}
 \label{fig:dp01}
 \end{figure}
-There are few differences between original \textit{ParticlesWithUI} and the its distributed version, \textit{DParticlesWithUI}. They both extend the class \textit{GUIState}, responsible of instantiating all graphics elements; \textit{DParticlesWithUI} has a constructor for passing to \textit{DParticles} the objects array and it has to store in a \textit{String} the \textit{region} identifier, in order to show which region it is simulating (e.g. \textit{0-0} means the upper-left part of the grid partitioned field).
+There are few differences between original \texttt{ParticlesWithUI} and the its distributed version, \texttt{DParticlesWithUI}. They both extend the class \texttt{GUIState}, responsible of instantiating all graphics elements; \texttt{DParticlesWithUI} has a constructor for passing to \texttt{DParticles} the objects array and it has to store in a \texttt{String} the \texttt{region} identifier, in order to show which region it is simulating (e.g. \texttt{0-0} means the upper-left part of the grid partitioned field).
 \lstset{language=Java,caption={Class ParticlesWithUI},label=particleswui}
 \begin{lstlisting}
 public class ParticlesWithUI extends GUIState {
@@ -306,7 +368,7 @@ super(state);
 ...
 }
 \end{lstlisting}
-\medskip
+
 \lstset{language=Java,caption={Class \texttt{DParticlesWithUI}},label=dparticleswui}
 \begin{lstlisting}
 public class DParticlesWithUI extends GUIState {
@@ -323,18 +385,30 @@ public static String getName() { return "Peer: <"+name+">"; }
 }
 \end{lstlisting}
 
-\section{Load balancing for SQUARE partition}
+\chapter{Load balancing for SQUARE partition}
 
-\subsection{Introduction}
-When a region is overloaded of agents splits in 9 little cells. Eight of this little cells are distributed to the worker that are simulating the neighborhood, while the central little cell is held by the worker that is simulating this region. When the worker is no longer overloaded returns to the initial configuration.
+\section{Introduction}
+As described before \dm\ uses a space partitioning approach where the fields are subdivided in regions assigned to workers; this approach allows to limit the communication among the workers. Indeed, since each agent interacts only within a small area around it, the communication is limited to local messages (messages between workers, managing neighboring spaces, etc.). 
+
+The problem with this approach is that agents can migrate between regions and consequently the association between workers and agents changes during the simulation. Moreover, load balancing is not guaranteed and needs to be addressed by the application.
+
+\subsection{The balancing mechanism}
+The balancing mechanism is quite simple: when a region is overloaded it decides to split itself in smaller regions, divinding consequently the amount of agents in each of these regions. 
+
+Two important factors have an impact on the efficiency of this decision: when to split and how to split.
+
+
+
+Eight of this little cells are distributed to the worker that are simulating the neighborhood, while the central little cell is held by the worker that is simulating this region. When the worker is no longer overloaded returns to the initial configuration.
 The figure 3 shows 9 worker and each of them simulates a region. The worker 11 is overloaded then split its region in 9 little cells following a 3x3 grid division.
 \begin{figure}
 \centering
-\includegraphics[width=0.4\textwidth]{LoadBalancing.png}
+\includegraphics[width=0.4\textwidth, bb=0 0 1302 827]{LoadBalancing.png}
 \caption{Example of load balancing for SQUARE partition mode.}
 \end{figure}
+
 \subsection{Setting parameters for load balancing}
-In this section it's explained how to set the parameters for the load balancing in DParticles. There are two parameters to set to define when a region is overloaded and when is no longer overloaded. For the first case there is  \textit{thresholdSplit} and specifics that the region can split when it has more than \[thresholdSplit*numAgents/numRegions\] For the second case there is  \textit{thresholdMerge} and specifics that the region can merge all the little cell when all the little cell have less than \[thresholdMerge*numAgents/numRegions\] Than the constructor of  \textit{DParticles} becames 
+In this section it is explained how to set the parameters for the load balancing in DParticles. There are two parameters to set to define when a region is overloaded and when is no longer overloaded. For the first case there is  \texttt{thresholdSplit} and specifics that the region can split when it has more than \[thresholdSplit*numAgents/numRegions\] For the second case there is  \texttt{thresholdMerge} and specifics that the region can merge all the little cell when all the little cell have less than \[thresholdMerge*numAgents/numRegions\] Than the constructor of  \texttt{DParticles} becames 
 
 \lstset{language=Java,caption={Class \texttt{DParticles}},label=dparticles}
 \begin{lstlisting}
@@ -349,7 +423,7 @@ In this section it's explained how to set the parameters for the load balancing 
     }    
 \end{lstlisting}
 
-By default \textit{thresholdSplit} is 3 and \textit{thresholdMerge} is 1.5.
+By default \texttt{thresholdSplit} is 3 and \texttt{thresholdMerge} is 1.5.
 
 
 
