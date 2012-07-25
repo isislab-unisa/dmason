@@ -1,4 +1,4 @@
-\documentclass{book}
+\documentclass{article}
 \usepackage[a4paper, top=3cm, bottom=3cm]{geometry}
 \usepackage{setspace}
 \usepackage{fancyhdr}
@@ -14,7 +14,6 @@
 \usepackage{caption}
 \usepackage{titlesec}
 
-\titleformat{\chapter}{\bf\huge\sffamily}{\thechapter}{1em}{}  
 \titleformat{\section}{\bf\Large\sffamily}{\thesection}{1em}{}  
 \titleformat{\subsection}{\bf\large\large\sffamily}{\thesubsection}{1em}{}  
 
@@ -71,7 +70,7 @@
 \pagenumbering{arabic}
 
 
-\chapter{Introduction}
+\section{Introduction}
 We present a framework, \dm, that is a distributed version of  \ma, a well-known and popular library for writing and running Agent-based simulations. \dm\ introduces the parallelization at framework level so that scientists that use the framework (domain expert but with limited knowledge of distributed programming) can be only minimally aware of such distribution. 
 
 In this document, in particular, we provide a step-by-step guide to the process of ``parallelization'' of the Particle example from \ma\ by using \dm.
@@ -86,7 +85,7 @@ In this document, in particular, we provide a step-by-step guide to the process 
 \dm\ contains work by (in alphabetical order): \textit{Michele Carillo, Gennaro Cordasco, Rosario De Chiara, Fabio Fulgido, Ada Mancuso, Dario Mazzeo, Francesco Raia, Vittorio Scarano, Flavio Serrapica, Carmine Spagnuolo, 
 Luca Vicidomini, Mario Vitale.}
 
-\chapter{Structure}
+\section{Structure}
 The starting point is the package \texttt{Particles} is composed by three classes, as it can be found in the original MASON distribution:
 
 \begin{itemize}
@@ -374,7 +373,7 @@ public static String getName() { return "Peer: <"+name+">"; }
 }
 \end{lstlisting}
 
-\chapter{Load balancing for Grid partition}
+\section{Load balancing for Grid partition}
 
 \section{Introduction}
 As described before \dm\ uses a space partitioning approach where the fields are subdivided in regions assigned to workers; this approach allows to limit the communication among the workers. Indeed, since each agent interacts only within a small area around it, the communication is limited to local messages (messages between workers, managing neighboring spaces, etc.). 
