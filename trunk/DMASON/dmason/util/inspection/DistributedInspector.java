@@ -76,6 +76,18 @@ public class DistributedInspector extends JPanel
     	
     	generateProperties();
     }
+    
+    /**
+     * If no inspectable class is available, just shot the Graphics checkbox.
+     * @param guiState
+     */
+    public DistributedInspector(GUIState guiState)
+    {
+    	Properties p = Properties.getProperties(null);
+    	this.properties = p;
+    	this.guiState = guiState;
+    	generateProperties();
+    }
 
 	private void generateProperties()
 	{
