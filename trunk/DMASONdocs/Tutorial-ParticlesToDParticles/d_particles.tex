@@ -32,7 +32,7 @@
  %        keywordstyle=[2]\textbf,    %
  %        keywordstyle=[3]\textbf,    %
  %        keywordstyle=[4]\textbf,   \sqrt{\sqrt{}} %
-         stringstyle=\color{white}\ttfamily, % Farbe der String
+         stringstyle=\color{black}\ttfamily, % Farbe der String
          showspaces=false,           % Leerzeichen anzeigen ?
          showtabs=false,             % Tabs anzeigen ?
          xleftmargin=17pt,
@@ -493,14 +493,16 @@ The file to edit is "activemq" located in:
 It is necessary to unccoment this line
 
 \lstset{language=Java,caption={File \texttt{activemq}},label=activemq}
+
+
 \begin{lstlisting}
 	...
 	#
-	# ACTIVEMQ_SUNJMX_START=''-Dcom.sun.management.jmxremote.port=11099 ''
-	# ACTIVEMQ_SUNJMX_START=''\$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote.password.file=\${ACTIVEMQ_CONF}/jmx.password ''
-	# ACTIVEMQ_SUNJMX_START=''\$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote.access.file=\${ACTIVEMQ_CONF}/jmx.access''
-	# ACTIVEMQ_SUNJMX_START=''\$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote.ssl=false''
-	ACTIVEMQ_SUNJMX_START="\$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote''
+	#ACTIVEMQ_SUNJMX_START="-Dcom.sun.management.jmxremote.port=11099 "
+	#ACTIVEMQ_SUNJMX_START="$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote.password.file=${ACTIVEMQ_CONF}/jmx.password"
+	#ACTIVEMQ_SUNJMX_START="$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote.access.file=${ACTIVEMQ_CONF}/jmx.access"
+	#ACTIVEMQ_SUNJMX_START="$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote.ssl=false"
+	ACTIVEMQ_SUNJMX_START="$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote"
 \end{lstlisting}
 
 We obtain this
@@ -508,12 +510,12 @@ We obtain this
 \begin{lstlisting}
 	...
 	#
-	ACTIVEMQ_SUNJMX_START=''-Dcom.sun.management.jmxremote.port=1616 ''
-	ACTIVEMQ_SUNJMX_START=''$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote.authenticate=false''
-	#ACTIVEMQ_SUNJMX_START=''$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote.password.file=${ACTIVEMQ_CONF}/jmx.password''
-	#ACTIVEMQ_SUNJMX_START=''$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote.access.file=${ACTIVEMQ_CONF}/jmx.access''
-	ACTIVEMQ_SUNJMX_START=''$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote.ssl=false''
-	#ACTIVEMQ_SUNJMX_START=''$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote''
+	ACTIVEMQ_SUNJMX_START="-Dcom.sun.management.jmxremote.port=1616 "
+	ACTIVEMQ_SUNJMX_START="$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote.authenticate=false"
+	#ACTIVEMQ_SUNJMX_START="$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote.password.file=${ACTIVEMQ_CONF}/jmx.password"
+	#ACTIVEMQ_SUNJMX_START="$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote.access.file=${ACTIVEMQ_CONF}/jmx.access"
+	ACTIVEMQ_SUNJMX_START="$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote.ssl=false"
+	#ACTIVEMQ_SUNJMX_START="$ACTIVEMQ_SUNJMX_START -Dcom.sun.management.jmxremote"
 
 \end{lstlisting}
 
