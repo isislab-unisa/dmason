@@ -135,6 +135,7 @@ public class DFlockers extends DistributedState<Double2D>
     public void addToField(RemoteAgent rm, Double2D loc) 
     {
     	flockers.setObjectLocation(rm,loc);
+    	setPortrayalForObject(rm);
     }
 
     public SimState getState() 
