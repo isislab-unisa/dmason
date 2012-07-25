@@ -1630,8 +1630,13 @@ public class JMasterUI extends JFrame{
 		else if(radioButtonSquare.isSelected() && jCheckBoxLoadBalancing.isSelected())
 			MODE = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
 		
+		if(radioButtonSquare.isSelected() && jCheckBoxLoadBalancing.isSelected() && (Integer)WIDTH % 3*Math.sqrt(numRegions)!=0)
+			errors.add("Width and height are not divisible by 3 * sqrt(numRegion)");
+		
 		if (numRegions % root.getChildCount() != 0)
 			errors.add("NUM_REGIONS < > = NUM_PEERS\n,please set Advanced mode!");
+		
+		
 		if(errors.size() == 0){
 			int div = numRegions / root.getChildCount();
 			EntryVal<Integer, Boolean> value; 
