@@ -1,4 +1,4 @@
-package dmason.sim.portrayal;
+package dmason.util.inspection;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;

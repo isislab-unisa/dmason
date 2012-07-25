@@ -47,9 +47,11 @@ import sim.util.Properties;
 
 import dmason.sim.engine.DistributedState;
 import dmason.sim.field.continuous.DContinuous2DFactory;
-import dmason.sim.portrayal.DistributedInspector;
 import dmason.sim.util.DistributedProperties;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
+import dmason.util.inspection.DistributedInspector;
+import dmason.util.inspection.InspectableSchedule;
+import dmason.util.inspection.InspectableState;
 
 /**
  * The visualization and inspection GUI for the Global Viewer.
@@ -189,8 +191,7 @@ public class Display extends GUIState
 						step++;
 						
 						// Update the simulation object
-						Display.this.state.schedule.steps = step;
-						Display.this.state.schedule.time = time;
+						((InspectableSchedule)Display.this.state.schedule).timeWarp(step, time);
 						
 						Class<?> simClass = Display.this.state.getClass();
 						for (int propertyI = 0; propertyI < numProps; propertyI++)
@@ -205,7 +206,7 @@ public class Display extends GUIState
 							}
 						}
 						
-						// Update the inspector
+						// Manually update the inspector
 						Display.this.modelInspector.updateInspector();
 						if (Display.this.updateInspector != null)
 						{
@@ -450,10 +451,10 @@ public class Display extends GUIState
 			 * Another solution may be to create a dedicate constructor
 			 * for this goal.
 			 */
-			Class<?> simClass = Class.forName(simulationClassName);
+			Class<?> simClass = Class.forName(simulationClassName + "Insp");
 			Constructor<?> constructor = simClass.getConstructor();
 			Object simObj = constructor.newInstance(new Object[] { });
-			super.state = (DistributedState)simObj;
+			super.state = (InspectableState)simObj;
 			this.modelInspector = new DistributedInspector(new DistributedProperties(state), this);
 			pnlInspector.add(new JScrollPane(modelInspector), BorderLayout.CENTER); 
 		} catch (Exception e) {
@@ -482,6 +483,7 @@ public class Display extends GUIState
 		frame.add(pnlTop, BorderLayout.NORTH);
 		frame.add(splGraphic_Inspector, BorderLayout.CENTER);
 		frame.pack();
+		frame.setSize(frame.getWidth() + width, frame.getHeight() + height); 
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new WindowAdapter() { @Override public void windowClosing(WindowEvent e) { onWindowClosing(); } });
 	}

@@ -156,9 +156,6 @@ public class LauncherViewer  {
         comboSim.addItem(new SimComboEntry("Flockers", "dmason.util.visualization.DFlockers.FlockersWithUIView", "dmason.sim.app.DFlockers.DFlockers"));
         comboSim.addItem(new SimComboEntry("Particles", "dmason.util.visualization.DParticles.Tutorial3ViewWithUI", "dmason.sim.app.DParticles.DParticles"));
         comboSim.addItem(new SimComboEntry("Ants Foraging", "dmason.util.visualization.DAntsForage.AntsForageWithUIZoom", "dmason.sim.app.DAntsForage.DAntsForage"));
-        //comboSim.addItem(new SimComboEntry("Vampires", "dmason.util.visualization.DVampires.DSimulationUI", "dmason.sim.app.DVampires.DSimulation"));
-        
-        comboSim.setSelectedIndex(comboSim.getItemCount() - 1);
 		
 		path = System.getProperty("user.dir");
 		
