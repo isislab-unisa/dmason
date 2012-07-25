@@ -14,9 +14,9 @@
 \usepackage{caption}
 \usepackage{titlesec}
 
-\titleformat{\section}{\bf\large\sffamily}{\thesection}{1em}{}  
 \titleformat{\chapter}{\bf\huge\sffamily}{\thechapter}{1em}{}  
-
+\titleformat{\section}{\bf\Large\sffamily}{\thesection}{1em}{}  
+\titleformat{\subsection}{\bf\large\large\sffamily}{\thesubsection}{1em}{}  
 
 \lstset{
          basicstyle=\footnotesize\ttfamily, % Standardschrift
@@ -57,29 +57,19 @@
 \DeclareCaptionFormat{listing}{\colorbox[cmyk]{0.43, 0.35, 0.35,0.01}{\parbox{\textwidth}{\hspace{15pt}#1#2#3}}}
 \captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white, singlelinecheck=false, margin=0pt, font={bf,footnotesize}}
 
+\def\ma{\textsc{Mason}}
+\def\dm{\textsc{D-Mason}}
+
 \begin{document}
 \pagestyle{empty}
 \sffamily
-\title{D-MASON: a tutorial}
+\title{\dm\: a tutorial}
 \author{\url{http://www.isislab.it/projects/dmason}}
 \maketitle
-
-% Define Page style for all chapters
-\pagestyle{fancy}
-% Delete the current section for header and footer
-\fancyhf{}
-% Set custom header
-\lhead[]{\thepage}
-\rhead[\thepage]{}
 
 % Set arabic (1,2,3...) page numbering
 \pagenumbering{arabic}
 
-% Set double spacing for the text
-%\doublespacing
-
-\def\ma{\textsc{Mason}}
-\def\dm{\textsc{D-Mason}}
 
 \chapter{Introduction}
 We present a framework, \dm, that is a distributed version of  \ma, a well-known and popular library for writing and running Agent-based simulations. \dm\ introduces the parallelization at framework level so that scientists that use the framework (domain expert but with limited knowledge of distributed programming) can be only minimally aware of such distribution. 
@@ -92,10 +82,9 @@ In this document, in particular, we provide a step-by-step guide to the process 
 	\label{fig:p01}
 \end{figure}
 
-\section*{Acknowledgements}
+\section{Acknowledgements}
 \dm\ contains work by (in alphabetical order): \textit{Michele Carillo, Gennaro Cordasco, Rosario De Chiara, Fabio Fulgido, Ada Mancuso, Dario Mazzeo, Francesco Raia, Vittorio Scarano, Flavio Serrapica, Carmine Spagnuolo, 
 Luca Vicidomini, Mario Vitale.}
-
 
 \chapter{Structure}
 The starting point is the package \texttt{Particles} is composed by three classes, as it can be found in the original MASON distribution:
@@ -114,7 +103,7 @@ Similarly, in D-MASON, there will be the package \texttt{DParticles} containing 
 	\item \texttt{DParticlesWithUI:} it allows to run simulations with a GUI that is aware of the \texttt{distributed} environment.
 \end{itemize}
 
-\section{From Particle to DParticle}
+\section{From \texttt{Particle} to \texttt{DParticle}}
 The original \texttt{Particle} has to implement the \texttt{Steppable} interface and, in particular, the method \texttt{step()}, containing the agent logic. In the same way \texttt{RemoteParticle} is an abstract class that has to implement \texttt{RemoteAgent}, that is the D-MASON interface containing the necessary logic for the distributed agent. Finally \texttt{DParticle} extends \texttt{RemoteParticle} and implements the logic of the agent.
 
 \texttt{RemoteAgent} is parameterized with an \texttt{Int2D} object-type because, in this simulation, the field has this specific type to indicate locations, and allows programmers to set, for each agent, an unique identifier and a field position.
@@ -206,7 +195,7 @@ public void step(SimState state)
 \end{lstlisting}
 
 
-\section{From Particles to DParticles}
+\section{From \texttt{Particles} to \texttt{DParticles}}
 \texttt{Particles} extends the \texttt{SimState} class  while \texttt{DParticles} extends \texttt{DistributedState}, parameterized with \texttt{Int2D} object-type.
 
 DParticles contains three other variables indicating, respectively, width and height of the field and the way of partitioning the field (that can be one or two dimensional, as shown in Figure \ref{fig:dp01}). \texttt{Particles} has just one constructor that has as parameter the random generator seed while \texttt{DParticles} constructor has as input an objects array, containing several parameters specific for the distributed simulation (e.g. network address, port, etc \ldots). 
@@ -342,7 +331,7 @@ public boolean setPortrayalForObject(Object o)
 
 \end{lstlisting}
 
-\section{From ParticlesWithUI to DParticlesWithUI}
+\section{From \texttt{ParticlesWithUI} to \texttt{DParticlesWithUI}}
 \begin{figure}
 \centering
 \includegraphics[width=0.4\textwidth,bb=0 0 470 520]{particles-h.png} 
@@ -385,7 +374,7 @@ public static String getName() { return "Peer: <"+name+">"; }
 }
 \end{lstlisting}
 
-\chapter{Load balancing for SQUARE partition}
+\chapter{Load balancing for Grid partition}
 
 \section{Introduction}
 As described before \dm\ uses a space partitioning approach where the fields are subdivided in regions assigned to workers; this approach allows to limit the communication among the workers. Indeed, since each agent interacts only within a small area around it, the communication is limited to local messages (messages between workers, managing neighboring spaces, etc.). 
@@ -393,37 +382,39 @@ As described before \dm\ uses a space partitioning approach where the fields are
 The problem with this approach is that agents can migrate between regions and consequently the association between workers and agents changes during the simulation. Moreover, load balancing is not guaranteed and needs to be addressed by the application.
 
 \subsection{The balancing mechanism}
-The balancing mechanism is quite simple: when a region is overloaded it decides to split itself in smaller regions, divinding consequently the amount of agents in each of these regions. 
+The balancing mechanism is quite simple: when a region is overloaded it decides to split itself in smaller regions, dividing consequently the amount of agents in each of these regions. 
 
 Two important factors have an impact on the efficiency of this decision: when to split and how to split.
 
+Each region during the simulation compares the number $r$ of agents it is simulating with the average number $a$ of agents simulated by its neighbors. When these $r > k_s \times a$ then the load balancing kicks in splitting the overloaded region in $9$ subregions as depicted in \ref{fig:lb}: $8$ will go to neighbors of the overloaded region and it will be in charge just for the central one. 
 
+As along as the inequality stands the region stays split; whenever $r < k_m \times a$ the subregions are called back to its original region. 
 
-Eight of this little cells are distributed to the worker that are simulating the neighborhood, while the central little cell is held by the worker that is simulating this region. When the worker is no longer overloaded returns to the initial configuration.
-The figure 3 shows 9 worker and each of them simulates a region. The worker 11 is overloaded then split its region in 9 little cells following a 3x3 grid division.
+It is worth noting that the both the split and the merge are computational expensive operations so deciding the factors $k_s$ and $k_m$ is a key point in the performances of the whole system.
+
 \begin{figure}
 \centering
 \includegraphics[width=0.4\textwidth, bb=0 0 1302 827]{LoadBalancing.png}
-\caption{Example of load balancing for SQUARE partition mode.}
+\caption{Example of load balancing for grid partition mode. \label{fig:lb}}
 \end{figure}
 
-\subsection{Setting parameters for load balancing}
-In this section it is explained how to set the parameters for the load balancing in DParticles. There are two parameters to set to define when a region is overloaded and when is no longer overloaded. For the first case there is  \texttt{thresholdSplit} and specifics that the region can split when it has more than \[thresholdSplit*numAgents/numRegions\] For the second case there is  \texttt{thresholdMerge} and specifics that the region can merge all the little cell when all the little cell have less than \[thresholdMerge*numAgents/numRegions\] Than the constructor of  \texttt{DParticles} becames 
+\subsection{Parameters for load balancing}
+In this section it is explained how to set the parameters for the load balancing in \texttt{DParticles}. The factor $k_s$ is the variable \texttt{thresholdSplit} and specifies while $k_m$ is the simulation parameter \texttt{thresholdMerge}.
 
 \lstset{language=Java,caption={Class \texttt{DParticles}},label=dparticles}
 \begin{lstlisting}
  public DParticles(Object[] params)
     {    	
     	...
-    	gridWidth=(Integer)params[5];
-    	gridHeight=(Integer)params[6];
+    	gridWidth = (Integer)params[5];
+    	gridHeight = (Integer)params[6];
     	((DistributedMultiSchedule)schedule).setThresholdMerge(1);
         ((DistributedMultiSchedule)schedule).setThresholdSplit(5);
 
     }    
 \end{lstlisting}
 
-By default \texttt{thresholdSplit} is 3 and \texttt{thresholdMerge} is 1.5.
+
 
 
 
