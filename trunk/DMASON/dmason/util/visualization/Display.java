@@ -1,17 +1,4 @@
-package dmason.util.visualization;
-
-/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * NOTE: This class is being updated by Luca Vicidomini. It replaces
- * the previous Display class and introduces new controls and
- * inspectors. If you need the old version of this class, please
- * retrieve it using SVN (look for the last revision committed by
- * Francesco Raia). This version may not include every single function
- * implemented by the old one, so beware!
- * it's in an early stage of progress, you know :)
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- */
+ package dmason.util.visualization;
 
 import java.awt.BorderLayout;
 import java.awt.Desktop;
@@ -20,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
@@ -37,6 +25,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -362,7 +351,6 @@ public class Display extends GUIState
 				{
 					workerTopics.add(topicName);
 					con.createTopic(topicName, 1);
-					System.out.println(topicName);
 				}
 			}
 		} catch (Exception e) {
@@ -431,6 +419,12 @@ public class Display extends GUIState
 			@Override public void mouseMoved(MouseEvent e) { onImageViewMouseMoved(e); }
 			@Override public void mouseDragged(MouseEvent e) { }
 		});
+		imageView.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				imageViewMouseClicked(e);
+			}
+		});
 		
 		// FRAME > CENTER > GRAPHICS (LEFT)
 		JPanel pnlGraphic = new JPanel();
@@ -490,6 +484,129 @@ public class Display extends GUIState
 		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new WindowAdapter() { @Override public void windowClosing(WindowEvent e) { onWindowClosing(); } });
+	}
+	
+	private void imageViewMouseClicked(MouseEvent e) {
+
+		class RunnerZoom extends Thread
+		{
+			public ConsoleZoom c;
+			public GUIState t;
+			public ConnectionNFieldsWithActiveMQAPI con;
+			public String id;
+			public boolean sin;
+			public Display d;
+			public int mode, numCell, width, height; 
+			public String absolutePath;
+			public String simul;
+			public RunnerZoom(GUIState f,ConnectionNFieldsWithActiveMQAPI con,
+					String id,boolean sin,Display d,int mode,int numCell,
+					int width,int height, String absolutePath, String simul)
+			{
+			
+				this.t=f;
+						this.sin=sin;
+				this.con=con;
+				this.id=id;
+				this.d=d;
+				this.mode=mode;
+				this.numCell=numCell;
+				this.width=width;
+				this.height=height;
+				this.absolutePath=absolutePath;
+				this.simul=simul;
+			}
+        
+	    
+			public void run()
+			{
+				ConsoleZoom c=new ConsoleZoom(t, con,id,sin,d,
+						mode,numCell,
+						width,height,absolutePath,simul);
+				c.setVisible(true);
+				c.pressPlay();
+			}
+		}
+		int x = e.getX();
+		int y = e.getY();
+		
+		for(CellProperties cp : listCells){
+				
+				if(cp.isMine(x, y))
+				{
+					try {
+					JOptionPane jpane = new JOptionPane();
+					ImageIcon icon = new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/zoomJOpt2.png"));
+					int i = JOptionPane.showConfirmDialog(null, "Do you want a synchronized zoom for cell "+cp.id+"?", 
+							"Select Option", JOptionPane.YES_NO_CANCEL_OPTION, 
+							JOptionPane.QUESTION_MESSAGE, icon);
+
+					if(i==JOptionPane.YES_OPTION)
+					{
+						connection.publishToTopic("EXIT", "GRAPHICS", "GRAPHICS");
+						
+						RunnerZoom rZ = null;
+						
+						if(simulation.equals("dmason.util.visualization.DFlockers.FlockersWithUIView"))
+						{
+							dmason.util.visualization.DFlockers.FlockersWithUIView simulazione=new dmason.util.visualization.DFlockers.FlockersWithUIView(new Object[]{connection,cp.id,true,numCells,width,height,fieldMode} );
+							rZ=new RunnerZoom(simulazione, connection, cp.id, true,this,fieldMode,numCells,width,height,absolutePath,simulation);
+						}
+						else
+							if(simulation.equals("dmason.util.visualization.DAntsForage.AntsForageWithUIZoom"))
+							{
+								dmason.util.visualization.DAntsForage.AntsForageWithUIZoom simulazione=new dmason.util.visualization.DAntsForage.AntsForageWithUIZoom(new Object[]{connection,cp.id,true,numCells,width,height,fieldMode} );
+								rZ=new RunnerZoom(simulazione, connection, cp.id, true,this,fieldMode,numCells,width,height,absolutePath,simulation);
+							}
+							else
+								if(simulation.equals("dmason.util.visualization.DParticles.Tutorial3ViewWithUI"))
+								{
+									dmason.util.visualization.DParticles.Tutorial3ViewWithUI simulazione=new dmason.util.visualization.DParticles.Tutorial3ViewWithUI(new Object[]{connection,cp.id,true,numCells,width,height,fieldMode} );
+									rZ=new RunnerZoom(simulazione, connection, cp.id, true,this,fieldMode,numCells,width,height,absolutePath,simulation);
+								}
+						rZ.start();
+						this.close();
+		
+						
+					}
+					else
+						if(i==JOptionPane.NO_OPTION)
+						{
+							connection.publishToTopic("EXIT", "GRAPHICS", "GRAPHICS");
+							
+							RunnerZoom rZ = null;
+							
+							if(simulation.equals("dmason.util.visualization.DFlockers.FlockersWithUIView"))
+							{
+								dmason.util.visualization.DFlockers.FlockersWithUIView simulazione=new dmason.util.visualization.DFlockers.FlockersWithUIView(new Object[]{connection,cp.id,false,numCells,width,height,fieldMode} );
+								rZ=new RunnerZoom(simulazione, connection, cp.id, false,this,fieldMode,numCells,width,height,absolutePath,simulation);
+							}
+							else
+								if(simulation.equals("dmason.util.visualization.DAntsForage.AntsForageWithUIZoom"))
+								{
+									dmason.util.visualization.DAntsForage.AntsForageWithUIZoom simulazione=new dmason.util.visualization.DAntsForage.AntsForageWithUIZoom(new Object[]{connection,cp.id,false,numCells,width,height,fieldMode} );
+									rZ=new RunnerZoom(simulazione, connection, cp.id, false,this,fieldMode,numCells,width,height,absolutePath,simulation);
+								}
+								else
+									if(simulation.equals("dmason.util.visualization.DParticles.Tutorial3ViewWithUI"))
+									{
+										dmason.util.visualization.DParticles.Tutorial3ViewWithUI simulazione=new dmason.util.visualization.DParticles.Tutorial3ViewWithUI(new Object[]{connection,cp.id,false,numCells,width,height,fieldMode} );
+										rZ=new RunnerZoom(simulazione, connection, cp.id, false,this,fieldMode,numCells,width,height,absolutePath,simulation);
+									}
+							
+							rZ.start();
+							this.close();
+						}
+					
+					break;
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Problem with simulation, impossible complete request!");
+					}
+			}
+			
+		}		
 	}
 
 	/**
