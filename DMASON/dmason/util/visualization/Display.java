@@ -190,27 +190,30 @@ public class Display extends GUIState
 						imageView.repaint();
 						step++;
 						
-						// Update the simulation object
-						((InspectableSchedule)Display.this.state.schedule).timeWarp(step, time);
-						
-						Class<?> simClass = Display.this.state.getClass();
-						for (int propertyI = 0; propertyI < numProps; propertyI++)
+						// Update the simulation object (if anty)
+						if (state != null)
 						{
-							String propName = (String)propNames[propertyI];
-							try
+							((InspectableSchedule)Display.this.state.schedule).timeWarp(step, time);
+						
+							Class<?> simClass = Display.this.state.getClass();
+							for (int propertyI = 0; propertyI < numProps; propertyI++)
 							{
-								Method m = simClass.getMethod("reduce" + propName, Object[].class);
-								m.invoke(Display.this.state, new Object[] { props[propertyI] } );
-							} catch (Exception e) {		
-								e.printStackTrace();
+								String propName = (String)propNames[propertyI];
+								try
+								{
+									Method m = simClass.getMethod("reduce" + propName, Object[].class);
+									m.invoke(Display.this.state, new Object[] { props[propertyI] } );
+								} catch (Exception e) {		
+									e.printStackTrace();
+								}
 							}
-						}
-						
-						// Manually update the inspector
-						Display.this.modelInspector.updateInspector();
-						if (Display.this.updateInspector != null)
-						{
-							Display.this.updateInspector.updateInspector();
+							
+							// Manually update the inspector
+							Display.this.modelInspector.updateInspector();
+							if (Display.this.updateInspector != null)
+							{
+								Display.this.updateInspector.updateInspector();
+							}
 						}
 					} 
 					catch (InterruptedException e) 
@@ -456,21 +459,21 @@ public class Display extends GUIState
 			Object simObj = constructor.newInstance(new Object[] { });
 			super.state = (InspectableState)simObj;
 			this.modelInspector = new DistributedInspector(new DistributedProperties(state), this);
-			pnlInspector.add(new JScrollPane(modelInspector), BorderLayout.CENTER); 
+			pnlInspector.add(new JScrollPane(modelInspector), BorderLayout.CENTER);
+			
+			// A controller field for GUISTATE is needed. Let's try this...
+			this.controller = new Console(this) {
+				public void registerInspector(Inspector inspector, Stoppable stopper) {
+					Display.this.updateSteppable = inspector.getUpdateSteppable();
+					Display.this.updateInspector = inspector;
+					super.registerInspector(inspector, stopper);
+				};
+			};
 		} catch (Exception e) {
-			pnlInspector.add(new JLabel("Could not find class " + simulationClassName + ". Inspector not available."));
+			this.modelInspector = new DistributedInspector(new DistributedProperties(state), this);
+			pnlInspector.add(new JScrollPane(modelInspector), BorderLayout.CENTER);
 		}
 		
-		/* A controller field for GUISTATE is needed. Let's try this... */
-		this.controller = new Console(this) {
-			public void registerInspector(Inspector inspector, Stoppable stopper) {
-				Display.this.updateSteppable = inspector.getUpdateSteppable();
-				Display.this.updateInspector = inspector;
-				super.registerInspector(inspector, stopper);
-			};
-		};
-		/* End of controller generation */
-
 		// FRAME > CENTER
 		JSplitPane splGraphic_Inspector = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		splGraphic_Inspector.setLeftComponent(pnlGraphic);
