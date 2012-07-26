@@ -1,0 +1,9 @@
+- Renewed GlobalViewer interface, now embedding Global Inspector
+- Ability to independently track distributed statistics (see Introduction to Global Inspector and notes) and graphics
+- Use Log4J for debug of the regions (id of region, number of agents, timestamp start step, timestamp end step)
+- Use Log4j for logging by master of the parameters of the simulation
+- Setting of parameters (split and merge factors, see tutorial) for load balancing from the simulation
+- Error message for wrong parameters for the load balancing configuration
+- Added button for enabling/disabling the load balancing mechanism
+- Peer auto reconnection using ActiveMQ failover
+- Restart simulation using ActiveMQ jmx connection 
