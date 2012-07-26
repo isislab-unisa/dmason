@@ -1,0 +1,109 @@
+package dmason.sim.field;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import dmason.sim.loadbalancing.MyCellIntegerField;
+
+/**
+________________________________________________________________________
+|						|						|						|                  
+|						|						|						|
+|						|						|						|
+|						|						|						|
+|						|						|						|
+|			0			|			1			|			2			|
+|		   CDUL			|			UP			|		   CDUR			|
+|						|						|						|
+|						|						|						|
+|_______________________|_______________________|_______________________|
+|						|						|						|                                
+|						|						|						|
+|						|						|		     			|
+|						|						|						|
+|						|						|						|
+|			7			|			8			|		    3       	|
+|		   LEFT			|		  CENTER		|		  RIGHT		    |
+|						|						|						|
+|						|						|						|
+|_______________________|_______________________|_______________________|
+|						|						|						|                                
+|						|						|						|
+|						|						|						|
+|						|						|						|
+|			6			|			5			|			4			|
+|		   CDDL			|		   DOWN			|		   CDDR			|
+|						|						|						|
+|						|						|						|
+|						|						|						|
+|_______________________|_______________________|_______________________|
+
+
+ * A class specialized for Integer field.Extends ArrayList and implements UpdatePositionInterface 
+ * @see UpdatePositionInterface
+ * @author lizard87
+ *
+ * @param <E>
+ */
+public class UpdatePositionIntegerField<E> extends ArrayList<E> implements Serializable,UpdatePositionInterface{
+	
+	private boolean preUnion;
+	private boolean union;
+	private int POSITION;	
+	private long STEP;
+	private boolean preBalance;
+	private CellType celltype;
+	private MyCellIntegerField mC = null;
+	private int numAgentExternalCell;
+	
+	/**
+	 * Constructor of class with parameters:
+	 * s
+	 * @param step      the step
+	 * @param position  the position
+	 * @param celltype  the celltype 
+	 * @param mC        my cell
+	 */
+	public UpdatePositionIntegerField(long step,int position,CellType celltype,MyCellIntegerField mC) {	
+		this.STEP = step;
+		this.POSITION = position;
+		this.mC = mC;	
+		this.preBalance = false;
+		this.preUnion = false;
+		this.union = false;
+		this.celltype = celltype;
+		this.numAgentExternalCell = 0;
+	}
+	
+	@Override
+	public boolean isUnion() {return union;}
+	@Override
+	public void setUnion(boolean union) {this.union = union;}
+	@Override
+	public boolean isPreUnion() {return preUnion;}
+	@Override
+	public void setPreUnion(boolean preUnion) {this.preUnion = preUnion;}
+	@Override
+	public int getPosition() {return POSITION;}
+	@Override
+	public void setPosition(int position) {POSITION = position;}	
+	@Override
+	public long getStep(){return STEP;}
+	@Override
+	public void setStep(long step){STEP = step;}
+	@Override
+	public MyCellIntegerField getMyCell() {return mC;}
+	@Override
+	public void setMyCell(Object mC) {this.mC = (MyCellIntegerField)mC;}
+	@Override
+	public boolean isPreBalance() {return preBalance;}
+	@Override
+	public void setPreBalance(boolean preBalance) {this.preBalance = preBalance;}
+	@Override
+	public CellType getCellType() {return celltype;}
+	@Override
+	public void setCellType(CellType celltype) {this.celltype = celltype;}
+	@Override
+	public int getNumAgentExternalCell() {return numAgentExternalCell;}
+	@Override
+	public void setNumAgentExternalCell(int numAgentExternalCell) {this.numAgentExternalCell = numAgentExternalCell;}
+}
