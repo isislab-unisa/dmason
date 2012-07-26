@@ -391,10 +391,11 @@ As along as the inequality stands the region stays split; whenever $r < k_m \tim
 
 It is worth noting that the both the split and the merge are computational expensive operations so deciding the factors $k_s$ and $k_m$ is a key point in the performances of the whole system.
 
-\begin{figure}
-\centering
-\includegraphics[width=0.4\textwidth, bb=0 0 1302 827]{LoadBalancing.png}
-\caption{Example of load balancing for grid partition mode. \label{fig:lb}}
+\begin{figure}[h!]
+ \begin{center}
+  \includegraphics[width=0.5\textwidth, bb=0 0 512 418]{LoadBalancing.png}
+  \caption{The load balance policy for split and merge: the darker region is overloaded and is split in $9$ subregions; when the load decreases the subregions are merged back. \label{fig:lb}}
+ \end{center}
 \end{figure}
 
 \subsection{Parameters for load balancing}
@@ -413,69 +414,53 @@ In this section it is explained how to set the parameters for the load balancing
     }    
 \end{lstlisting}
 
-\subsection{How to use Master’s GUI with load balancing}
-For load balancing the textbox WIDTH and the textbox HEIGHT must contain the same value and this value must be divided by $3 * sqrt(REGIONS)$. For example if the regions are $16$  the value of the textbox must be divided by $3 * 4 = 12$.  For enable the load balancing there is a checkbox to set, see \ref{fig:masterlb}. Remember that the regions must be at least $9$ because of type of load balancing.
-\begin{figure}
-\centering
-\includegraphics[width=1.3\textwidth, bb=0 0 1012 520]{JMasterUI.png}
-\caption{Master GUI. \label{fig:masterlb}}
+\subsection{Master GUI and load balancing}
+To activate the load balancing mechanism the field must be square (same width and height) and its width (height) must be divisible by $3 \times sqrt(\#regions)$. For example when your field is divided in $16$ regions then the width (height) must be divisible by $3 \times \sqrt{16} = 12$. The number of regions must be $\geq9$ because of the way the split/merge mechanism works. The next step is just to tick the checkbox in Figure \ref{fig:masterlb}. 
+
+\begin{figure}[h!]
+\centering {
+\includegraphics[width=0.9\textwidth, bb=0 0 1012 520]{JMasterUI.png}
+\caption{Master GUI. \label{fig:masterlb}}}
 \end{figure}
 
 \section{System Management}
 
-\subsection{Introduction}
-In this section it is explained the system management functionalities, in detail:
+In this section it is explained the System Management functionalities, in detail:
+\begin{description}
+	\item[Peer Auto Reconnection] Automatic reconnection when the communication server (CS) is restarted after a failure;
+	\item[Restart Simulation] Restart simulation without restart the CS (eg launch another simulation). 
+\end{description}
 
-\begin{itemize}
-	\item Peer auto reconnection
-		\begin{itemize}
-		\item Automatic reconnection when the comunication server(CS) is restarted after a failure 
-		\end{itemize}
-	 \item Restart simulation
-		\begin{itemize}
-		\item Restart simulation without restart the CS (eg launch another simulation) 
-		\end{itemize}
-\end{itemize}
+While the Peer Auto Reconnection is a mechanism that has been implemented at the framework level to enable the Simulation Reset requires to modify the ActiveMQ configuration file.
 
-\subsection{ Peer auto reconnection}
-This feature requires no change.
+\paragraph*{Windows}
+Under Windows the file to edit is \texttt{wrapper.conf} located in: 
 
-\subsection{Restart simulation}
+\verb|%ACTIVEMQ_BASE%\bin\win32| or \verb|%ACTIVEMQ_BASE%\bin\win64|
 
-To enable the functionality of simulation reset it is necessary to edit the ActiveMQ configuration file.
+In this file it is necessary to uncomment the following line:
 
-\begin{itemize}
-	\item Windows\\ 
-The file to edit is "wrapper.conf" located in:
-
-\lstset{language=Java}
-\begin{lstlisting}	
-		%ACTIVEMQ_BASE%\bin\win32 or %ACTIVEMQ_BASE%\bin\win64
-\end{lstlisting}
-It is necessary to uncomment this line
-
-\lstset{language=Java,caption={File \texttt{wrapper.conf}},label=wrapper.conf}
+\lstset{language=Java,caption={File \texttt{wrapper.conf}}}
 \begin{lstlisting}
-  	
     	...
     	# Uncomment to enable jmx
-	#wrapper.java.additional.n=-Dcom.sun.management.jmxremote.port=1616
-	#wrapper.java.additional.n=-Dcom.sun.management.jmxremote.authenticate=false
-	#wrapper.java.additional.n=-Dcom.sun.management.jmxremote.ssl=false
-
- 
+	#wrapper.java.additional.n=-Dcom.sun.management.jmxremote.port = 1616
+	#wrapper.java.additional.n=-Dcom.sun.management.jmxremote.authenticate = false
+	#wrapper.java.additional.n=-Dcom.sun.management.jmxremote.ssl = false
 \end{lstlisting}
 
-and then replace the "n" with the next number from the previous section
+and then replace the \texttt{n} with the next number from the previous section
 
-\lstset{language=Java,caption={File \texttt{wrapper.conf}},label=wrapper.conf}
+\lstset{language=Java,caption={File \texttt{wrapper.conf}}}
 \begin{lstlisting}
 	...
-	wrapper.java.additional.10=-Dactivemq.conf=%ACTIVEMQ_CONF%
-	wrapper.java.additional.11=-Dactivemq.data=%ACTIVEMQ_DATA%
+	wrapper.java.additional.10 = -Dactivemq.conf = %ACTIVEMQ_CONF%
+	wrapper.java.additional.11 = -Dactivemq.data = %ACTIVEMQ_DATA%
 \end{lstlisting}
+
 In this case we obtain this
-\lstset{language=Java,caption={File \texttt{wrapper.conf}},label=wrapper.conf}
+
+\lstset{language=Java,caption={File \texttt{wrapper.conf}}}
 \begin{lstlisting}
 	...
 	# Uncomment to enable remote jmx
@@ -484,17 +469,14 @@ In this case we obtain this
 	wrapper.java.additional.14=-Dcom.sun.management.jmxremote.ssl=false
 \end{lstlisting}
 
-\item Linux\\
-The file to edit is "activemq" located in:
-\lstset{language=Java}
-\begin{lstlisting}	
-		%ACTIVEMQ_HOME%/bin/
-\end{lstlisting}
-It is necessary to unccoment this line
+\paragraph*{Linux}
+Under Linux the file to edit is \textit{activemq} located in:
+
+\verb|%ACTIVEMQ_HOME%/bin/|
+
+It is necessary to uncomment this line
 
 \lstset{language=Java,caption={File \texttt{activemq}},label=activemq}
-
-
 \begin{lstlisting}
 	...
 	#
@@ -519,16 +501,65 @@ We obtain this
 
 \end{lstlisting}
 
-\subsection{How to use Master’s GUI for restart simulation}
+\subsection{How to use Master GUI to restart simulation}
 
-For restart simulation there is reset button, highlighted by the red circle, see \ref{fig:mastersr}. After stoped the simulation, when the button is clicked the current simulation stops and the parameters can be edit again and the simulation can be changed or not.
+To restart simulation there is reset button (in a the red circle in \ref{fig:mastersr}). When a simulation is stopped by clicking the button the parameters can be edit again and the simulation can be re-initialized.
 
 \begin{figure}
-\centering
+\centering{
 \includegraphics[width=1.3\textwidth, bb=0 0 1012 300]{resetDetail.png}
-\caption{Simulation reset button. \label{fig:mastersr}}
+\caption{Simulation reset button. \label{fig:mastersr}}}
 \end{figure}
 
+\section{The Global Inspector}
 
+Taking inspiration from the \ma inspector, we wanted to create a mechanism to let the user to inspect a distributed simulation. This is just a first a step toward a complete support of the mechanism.
+
+\paragraph*{An example.}
+Think about a simulation regarding inhabitants of a city. Suppose the simulation class exposes a method called \texttt{getPopulation()} returning an \texttt{int} representing the number of alive citizens.
+
+Now assume that our city is split in a $2\times2$ grid. If any worker calls the \texttt{getPopulation()} on its region of the city, that call will return the number of alive citizen living in that region of the city. In this example, if we want to know how many citizens are alive in the entire city, we need to sum the number of citizens alive in each region.
+
+This is the goal if the Global Inspector.
+
+\subsection{Enabling the Global Inspector}
+The Global Inspector (GI) is embedded into the Global Viewer. It allows the user to track specific statistics about the simulation being run, and also to view agent's positions.
+
+In order to GI to work, we need build an \emph{inspectable} simulation, whose only goal will be to retrieve information from the workers, reduce it and show it in the model inspector.
+
+Being the simulation class called \texttt{DParticles}, the GI will look for an inspectable class called  \texttt{DParticles\emph{Insp}}.
+
+For each of the properties that the GI will display, the inspectable class will have:
+
+\begin{itemize}
+	\item a getter method (e.g. \texttt{getNumAgents()});  
+  \item a reducer method (e.g. \texttt{reduceNumAgents()});
+  \item possibly a variable (e.g. \texttt{numAgents})
 \end{itemize}
+
+This example may not have much sense, since the number of particles in this simulation never changes, but it is simple enough to get started. Following the details the class \texttt{DParticlesInsp}:
+
+\lstset{language=Java,caption={Class DParticlesInsp},label=dparticlesinsp}
+\begin{lstlisting}
+public class DParticlesInsp extends InspectableState {
+  protected int numAgents;
+
+  public int getNumAgents() {
+    return numAgents;
+  }
+
+  public void reduceNumAgents(Object[] shards) {
+    int sum = 0;
+    int n = shards.length;
+    for (int i = 0; i < n; i++)
+      sum += (Integer)shards[i];
+    numAgents = sum;
+  }
+}
+\end{lstlisting}
+
+The reduce method takes an \texttt{Object[]} as parameter and the length of this array equals the number of regions in which the field is split and, obviously, each entry of the array contains information about one region (in no particular order).
+
+A reduce method may have or not a return value. Remember that the global inspector reads the simulation status using getter methods so what the reduce method needs has to set a variable that will be read by the getter (in this case, \texttt{reduceNumAgents()}) set the variable \texttt{numAgents} that will be read by \texttt{getNumAgents()}.
+
 \end{document}
