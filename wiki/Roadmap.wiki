@@ -2,6 +2,9 @@
 
 This page outlines certain goals, nothing is guaranteed to land in a specific release.
 
+Last updated after the Monday, September 10 meeting.
+Next scheduled meeting: Monday, September 17.
+
 = 2.0.1 (TBA) =
   * Automatic update of workers _(Mario)_
   * Automatic deploy of simulations _(Mario)_
@@ -15,6 +18,7 @@ This page outlines certain goals, nothing is guaranteed to land in a specific re
     * Fields initialisation refactoring _(Luca)_
       * Remove the Object[] param from the constructors
       * Allow passing arbitrary simulation parameter for initialisation
+  * Simulation-global properties _(Luca)_
 
 = Other works =
   * Build a script + sandbox for release testing _(Luca)_
