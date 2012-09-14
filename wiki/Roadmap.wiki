@@ -24,3 +24,7 @@ Next scheduled meeting: Monday, September 17.
   * Build a script + sandbox for release testing _(Luca)_
   * Test D-Mason on cluster _(Fabio)_
   * Test D-Mason's FTP server (how many connection can it handle?) _(Mario)_
+
+= The vision (DMason future) =
+  * Complete transparency of distribution 
+  * 
