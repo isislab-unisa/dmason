@@ -26,5 +26,5 @@ Next scheduled meeting: Monday, September 17.
   * Test D-Mason's FTP server (how many connection can it handle?) _(Mario)_
 
 = The vision (DMason future) =
-  * Complete transparency of distribution 
+  * Improved transparency of distribution with enhanced support of the user...
   * 
