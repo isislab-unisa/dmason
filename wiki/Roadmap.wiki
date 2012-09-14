@@ -27,4 +27,4 @@ Next scheduled meeting: Monday, September 17.
 
 = The vision (DMason future) =
   * Improved transparency of distribution with enhanced support of the user...
-  * 
+  * Other fields
