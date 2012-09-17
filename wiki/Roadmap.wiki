@@ -8,12 +8,12 @@ Next scheduled meeting: Monday, September 17.
 = 2.0.1 (TBA) =
   * Automatic update of workers _(Mario)_
   * Automatic deploy of simulations _(Mario)_
+  * Include license _(Fabio, Luca, Mario)_
 
 = Further releases =
   * Support for arbitrary field size (not only multiple of partitioning rows/columns)
   * Support for non-square fields using grid partitioning
   * Code refactoring
-    * Include license
     * Fields classes refactoring (remove duplicate code) _(Fabio, Luca, Mario)_
     * Fields initialisation refactoring _(Luca)_
       * Remove the Object[] param from the constructors
