@@ -8,4 +8,7 @@ public interface StartWorkerInterface
 	 */
 	public void writeMessage(String message);
 	
+	public void exit();
+	
+	
 }

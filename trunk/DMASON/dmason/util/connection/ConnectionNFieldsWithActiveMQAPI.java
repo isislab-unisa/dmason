@@ -1,3 +1,20 @@
+/**
+ * Copyright 2012 Università degli Studi di Salerno
+ 
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
 package dmason.util.connection;
 
 import java.io.IOException;
@@ -56,6 +73,10 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	 */
 	private Address providerAddress;
 	
+	public Address getProviderAddress() {
+		return providerAddress;
+	}
+
 	/**
 	 * Subscribers' topic session.
 	 */
@@ -159,7 +180,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	}
 	
 	
-	public Address getAdress()
+	public Address getAddress()
 	{
 		return providerAddress;
 	}
@@ -303,6 +324,41 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	{	
 	}
 
+	public void cleanBeforeUpdate(String mytopic)
+	{
+		JMXServiceURL url = null;
+		try {
+			url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://"+providerAddress.getIPaddress()+":1616/jmxrmi");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		JMXConnector jmxc;
+		try {
+			jmxc = JMXConnectorFactory.connect(url);
+			MBeanServerConnection conn = jmxc.getMBeanServerConnection();
+
+			ObjectName activeMQ = new ObjectName("org.apache.activemq:BrokerName=localhost,Type=Broker");
+			BrokerViewMBean mbean = (BrokerViewMBean) MBeanServerInvocationHandler.newProxyInstance(conn, activeMQ,BrokerViewMBean.class, true);
+
+
+			for (ObjectName topic : mbean.getTopics()) {
+
+
+				// da sistemare! Non mi piace!
+				String topicDestination = topic.getKeyProperty("Destination");
+				if(topicDestination.contains(mytopic))
+					mbean.removeTopic(topicDestination);
+			}
+
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+	}
 	
 	//Connect to ActiveMQ using jmx interface for topic cleanup
 	public void ResetSimulation() 
@@ -310,7 +366,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 		//log.info("Connecting...");
 		JMXServiceURL url = null;
 		try {
-			url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:1616/jmxrmi");
+			url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://"+providerAddress.getIPaddress()+":1616/jmxrmi");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -321,6 +377,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 			
 			ObjectName activeMQ = new ObjectName("org.apache.activemq:BrokerName=localhost,Type=Broker");
 			BrokerViewMBean mbean = (BrokerViewMBean) MBeanServerInvocationHandler.newProxyInstance(conn, activeMQ,BrokerViewMBean.class, true);
+			
 			
 			
 			for (ObjectName topic : mbean.getTopics()) {

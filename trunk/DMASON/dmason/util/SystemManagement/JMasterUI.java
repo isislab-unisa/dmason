@@ -1,9 +1,27 @@
+/**
+ * Copyright 2012 Università degli Studi di Salerno
+ 
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
 package dmason.util.SystemManagement;
 
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -12,20 +30,57 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.FileNotFoundException;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.InputStream;
 import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
+import java.net.InetAddress;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.apache.log4j.*;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Properties;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDesktopPane;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.LayoutStyle;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -33,19 +88,33 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.ftpserver.ConnectionConfigFactory;
+import org.apache.ftpserver.FtpServer;
+import org.apache.ftpserver.FtpServerFactory;
+import org.apache.ftpserver.ftplet.Authority;
+import org.apache.ftpserver.ftplet.FtpException;
+import org.apache.ftpserver.ftplet.UserManager;
+import org.apache.ftpserver.listener.ListenerFactory;
+import org.apache.ftpserver.usermanager.PropertiesUserManagerFactory;
+import org.apache.ftpserver.usermanager.SaltedPasswordEncryptor;
+import org.apache.ftpserver.usermanager.impl.BaseUser;
+import org.apache.ftpserver.usermanager.impl.WritePermission;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Logger;
+
 import sim.display.Console;
-import dmason.sim.engine.DistributedMultiSchedule;
-import dmason.sim.engine.DistributedState;
 import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.connection.MyHashMap;
 import dmason.util.connection.MyMessageListener;
+import dmason.util.exception.NoDigestFoundException;
 import dmason.util.garbagecollector.Start;
 import dmason.util.trigger.Trigger;
 import dmason.util.trigger.TriggerListener;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
 
 
 /**
@@ -68,8 +137,156 @@ import javax.swing.LayoutStyle.ComponentPlacement;
  * @author Mario Fiore Vitale
  *
  */
-public class JMasterUI extends JFrame{
+public class JMasterUI extends JFrame  implements Observer{
 
+	private static final String FTP_HOME = "FTPHome";
+	private static final String SIMULATION_DIR = "simulation";
+	private static final String UPDATE_DIR = "update";
+	private static final String FTP_PORT = "18786";
+	private File updateFile;
+	private File simulationFile;
+	private static String SEPARATOR;
+	
+	private WorkerUpdater wu;
+	
+	
+	private JMenuItem menuNewSim;
+	private JScrollPane scrollPaneTree;	//scrollPaneTree
+	private JLabel advancedConfirmBut;	//advancedConfirmBut;
+	private JCheckBox graphicONcheckBox;
+	private JButton buttonSetConfigAdvanced;
+	private JLabel jLabelPlayButton;	//labelstopbutton
+	private JLabel jLabelPauseButton;	//labelpausebutton
+	private JPanel jPanelNumStep;		//panel1
+	private JLabel writeStepLabel;		//labelWriteStep;
+	private JLabel jLabelStep;	//step
+	private JLabel jLabelStopButton;	//labelStopButton2
+	private String selectedSimulation;
+	private JScrollPane scrollPane1;
+	private JDesktopPane peerInfoStatus1;
+	private MasterDaemonStarter master;
+	private String ip;
+	private String port;
+	private DefaultMutableTreeNode root;
+	private boolean connected = false;
+	private HashMap<String,EntryVal<Integer,Boolean>> config;
+	private int total=0;
+	private JMenuItem jMenuItemUpdateWorker;
+	private JMenu jMenuSystem;
+	private JButton jButtonChoseSimJar;
+	private JTextField jTextFieldPathSimJar;
+	private JButton jButtonLoadJar;
+	private JPanel jPanelDeploying;
+
+	private JLabel jLabelResetButton;
+
+	private JCheckBox jCheckBoxLoadBalancing;
+
+	boolean radioItemFlag=false;	//radioItemFalg
+	private Address address;
+	int res;
+	private ConnectionNFieldsWithActiveMQAPI connection;
+	private ConnectionNFieldsWithActiveMQAPI connectionForSteps;
+	private Start starter;
+	private Console c;	
+	private boolean isSubmitted = false;
+
+	private boolean dont=true;
+	private int MODE;
+	private Object WIDTH;
+	private Object HEIGHT;
+	private int numRegions;
+	private int numAgents;
+	private int maxDistance;
+	private JMasterUI me = this;
+	//private JFileChooser files;
+	public boolean centralGui = true;
+	private static final long serialVersionUID = 1L;
+	private boolean withGui = false;
+	private JTree tree1;
+	private JTextArea architectureLabel;
+	private JDesktopPane peerInfoStatus;
+	private JInternalFrame internalFrame1;
+	private JPanel panelConsole;
+
+	private JMenuBar menuBar1;
+	private JMenu jMenuFile;
+	//private JMenuItem menuItemOpen;
+	private JMenuItem menuItemExit;
+	private JMenu jMenuAbout;
+	private JMenuItem menuItemInfo;
+	private JMenuItem menuItemHelp;
+	private JPanel panelMain;
+	private JPanel jPanelContainerConnection;
+	private JPanel jPanelConnection;
+	private JLabel jLabelAddress;
+	private JTextField textFieldAddress;
+	private JLabel jLabelPort;
+	private JTextField textFieldPort;
+	private JLabel refreshServerLabel;
+	private JButton buttonRefreshServerLabel;
+	private JPanel jPanelContainerSettings;
+	private JPanel jPanelSetDistribution;
+	private JPanel jPanelSettings;
+	private JRadioButton radioButtonHorizontal;
+	private JRadioButton radioButtonSquare;
+	private JLabel jLabelHorizontal;
+	private JLabel jLabelSquare;
+	private JLabel jLabelRegions;
+	private JLabel jLabelMaxDistance;
+	private JLabel jLabelWidth;
+	private JTextField textFieldMaxDistance;
+	private JComboBox jComboRegions;
+	private JComboBox jComboBoxNumRegionXPeer;
+	private JTextField textFieldWidth;
+	private JLabel jLabelHeight;
+	private JTextField textFieldHeight;
+	private JLabel jLabelAgents;
+	private JTextField textFieldAgents;
+	private JLabel jLabelChooseSimulation;
+	private JComboBox jComboBoxChooseSimulation;
+	private JPanel jPanelContainerTabbedPane;
+	private JTabbedPane tabbedPane2;
+	private JPanel jPanelDefault;
+	private JLabel labelSimulationConfigSet;
+	private JLabel labelRegionsResume;
+	private JLabel labelNumOfPeerResume;
+	private JLabel labelRegForPeerResume;
+	private JLabel labelWriteReg;
+	private JLabel labelWriteNumOfPeer;
+	private JLabel labelWriteRegForPeer;
+	private JLabel labelWidthRegion;
+	private JLabel labelheightRegion;
+	private JLabel labelDistrMode;
+	private JLabel labelWriteRegWidth;
+	private JLabel labelWriteRegHeight;
+	private JLabel labelWriteDistrMode;
+	private JCheckBox graphicONcheckBox2;
+	private JPanel jPanelSetButton;
+	private JButton buttonSetConfigDefault;
+	private JPanel jPanelAdvanced;
+	private JPanel jPanelAdvancedMain;
+	private JPanel jPanelSetButton2;
+	private JPanel jPanelSimParams;
+	private JButton buttonSetConfigDefault2;
+	private JScrollPane scrollPane3;
+	private JTextArea notifyArea;
+
+
+	// codice profiling
+	private static Logger logger;
+ 	FileAppender file;
+	private int limitStep;
+	private JLabel lblTotalSteps;
+	private int workerUpdated = 0;
+	private ArrayList<String> peers;
+	private ArrayList<String> toUpdate = new ArrayList<String>();
+	private int totPeers = 0;
+	private String workerJarName;
+	private String curWorkerDigest;
+	// fine codice profiling
+
+	
 	/**
 	 * An utility class used to represent a simulation class as a
 	 * combobox entry -- PLEASE NOTE THIS IS JUST A TEMPORARY
@@ -98,10 +315,14 @@ public class JMasterUI extends JFrame{
 		@Override public String toString() { return shortName; }
 	}
 
-	private boolean isSubmitted = false;
+	
 	
 	public JMasterUI()
 	{	
+		//used for set the name of logger in log4j.properties
+		System.setProperty("masterlogfile.name","masterUI");
+		logger = Logger.getLogger(JMasterUI.class.getCanonicalName());
+				
 		initComponents();
 		setSystemSettingsEnabled(false);
     	config = new HashMap<String, EntryVal<Integer,Boolean>>();
@@ -110,12 +331,30 @@ public class JMasterUI extends JFrame{
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setResizable(false);
 		starter = new Start();
-		logger.setLevel(Level.OFF);
 		
-	
+	  
+		
+	}
+
+	public static void main(String[] args){
+		
+		// check if the OS
+		setSeparator();
+		
+		// check the dir for FTP
+		checkFTPHOME();
+		
+		JFrame a = new JMasterUI();
+		a.setVisible(true);
+		
+		startFTPServer();
+		
+		 
 	}
 
 	private void initComponents() {
+		
+		
 
 		menuBar1 = new JMenuBar();
 		jMenuFile = new JMenu();
@@ -227,9 +466,9 @@ public class JMasterUI extends JFrame{
 
 		jLabelChooseSimulation = new JLabel();
 		jComboBoxChooseSimulation = new JComboBox();
-		jComboBoxChooseSimulation.addItem(new SimComboEntry("Flockers", "dmason.sim.app.DFlockers.DFlockers"));
-		jComboBoxChooseSimulation.addItem(new SimComboEntry("Particles", "dmason.sim.app.DParticles.DParticles"));
-		jComboBoxChooseSimulation.addItem(new SimComboEntry("Ants Foraging", "dmason.sim.app.DAntsForage.DAntsForage"));
+		
+		
+		loadSimulation();
 
 		selectedSimulation = ((SimComboEntry)jComboBoxChooseSimulation.getSelectedItem()).fullSimName;
 		jComboBoxChooseSimulation.addItemListener(new ItemListener() {
@@ -262,6 +501,8 @@ public class JMasterUI extends JFrame{
 				connect();
 			}
 		});
+		
+		
 
 		refreshServerLabel.addMouseListener(new MouseListener() {
 
@@ -414,6 +655,7 @@ public class JMasterUI extends JFrame{
 				jMenuFile.add(menuItemExit);
 			}
 			menuBar1.add(jMenuFile);
+			menuBar1.add(getJMenuSystem());
 
 			//======== jMenuAbout ========
 			{
@@ -1195,6 +1437,74 @@ public class JMasterUI extends JFrame{
 									.addComponent(panelConsole, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 							);
 				}
+				{
+					jPanelDeploying = new JPanel();
+					tabbedPane2.addTab("Simulation Jar", null, jPanelDeploying, null);
+					GroupLayout jPanelDeployingLayout = new GroupLayout((JComponent)jPanelDeploying);
+					jPanelDeploying.setLayout(jPanelDeployingLayout);
+					{
+						jButtonLoadJar = new JButton();
+						jButtonLoadJar.setText("Load Jar");
+						jButtonLoadJar.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent evt)
+							{
+								
+								if( simulationFile != null)
+								{
+									
+									File dest = new File(FTP_HOME+SEPARATOR+SIMULATION_DIR+SEPARATOR+simulationFile.getName());
+									try {
+										FileUtils.copyFile(simulationFile, dest);
+									
+										Digester dg = new Digester(DigestAlgorithm.MD5);
+										
+										InputStream in = new FileInputStream(dest);
+										
+										Properties prop = new Properties();
+										 
+								    	try {
+								    		
+								    		prop.setProperty("MD5", dg.getDigest(in));
+								    		
+								    		String fileName = FilenameUtils.removeExtension(simulationFile.getName());
+								    		//save properties to project root folder
+								    		prop.store(new FileOutputStream(FTP_HOME+SEPARATOR+SIMULATION_DIR+SEPARATOR+fileName+".hash"), null);
+								 
+								    	} catch (IOException ex) {
+								    		ex.printStackTrace();
+								        }
+										
+										System.out.println("MD5: "+dg.getDigest(in));
+										
+										loadSimulation();
+									} catch (IOException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								}
+							}
+						});
+						
+						
+					}
+
+					jPanelDeployingLayout.setVerticalGroup(jPanelDeployingLayout.createSequentialGroup()
+						.addGap(22, 22, 22)
+						.addGroup(jPanelDeployingLayout.createParallelGroup()
+						    .addGroup(GroupLayout.Alignment.LEADING, jPanelDeployingLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+						        .addComponent(jButtonLoadJar, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+						        .addComponent(getJTextFieldPathSimJar(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+						    .addComponent(getJButtonChoseSimJar(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 286, GroupLayout.PREFERRED_SIZE));
+					jPanelDeployingLayout.setHorizontalGroup(jPanelDeployingLayout.createSequentialGroup()
+						.addGap(22, 22, 22)
+						.addComponent(getJTextFieldPathSimJar(), GroupLayout.PREFERRED_SIZE, 202, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+						.addComponent(getJButtonChoseSimJar(), GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE)
+						.addGap(24)
+						.addComponent(jButtonLoadJar, GroupLayout.PREFERRED_SIZE, 146, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 155, Short.MAX_VALUE));
+				}
 				GroupLayout jPanelSetDistributionLayout = new GroupLayout(jPanelSetDistribution);
 				jPanelSetDistribution.setLayout(jPanelSetDistributionLayout);
 				jPanelSetDistributionLayout.setHorizontalGroup(
@@ -1277,7 +1587,15 @@ public class JMasterUI extends JFrame{
 					jLabelPauseButton.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/PauseOff.png")));
 					
 					try {
-						master.stop();
+						
+						Address FTPAddress = getFPTAddress();
+						
+						if(FTPAddress != null)
+						{
+							UpdateData ud = new UpdateData("", FTPAddress);
+							master.stop(ud);
+						}
+						
 
 					} catch (Exception e1) {
 						e1.printStackTrace();
@@ -1477,29 +1795,65 @@ public class JMasterUI extends JFrame{
 		setLocationRelativeTo(null);
 		
 		refreshServerLabel.setVisible(false);
+		
+		jButtonChoseSimJar.addActionListener(new ActionListener() {
+			
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				simulationFile = showFileChooser();
+				if(simulationFile != null)
+					jTextFieldPathSimJar.setText(simulationFile.getAbsolutePath());
+			}
+		});
+		
+		
+	}
+
+	
+
+	public void setConnectionSettingsEnabled(boolean enabled)
+	{
+		textFieldAddress.setEnabled(enabled);
+		textFieldPort.setEnabled(enabled);
+		//buttonRefreshServerLabel.setEnabled(enabled);
+		
+	}
+
+	public void setSystemSettingsEnabled(boolean enabled)
+	{
+		textFieldAgents.setEnabled(enabled);
+		textFieldHeight.setEnabled(enabled);
+		textFieldWidth.setEnabled(enabled);
+		textFieldMaxDistance.setEnabled(enabled);
+		radioButtonHorizontal.setEnabled(enabled);
+		radioButtonSquare.setEnabled(enabled);
+		jComboRegions.setEnabled(enabled);
+		jComboBoxChooseSimulation.setEnabled(enabled);
 	}
 
 	private void connect(){
 		try
 		{
+			curWorkerDigest = getCurWorkerDigest();
+			
 			ip = textFieldAddress.getText();			    
 			port = textFieldPort.getText();  
 			address = new Address(textFieldAddress.getText(),textFieldPort.getText());
 			connection = new ConnectionNFieldsWithActiveMQAPI();
 			connection.setupConnection(address);
-			master = new MasterDaemonStarter(connection);
-
+			master = new MasterDaemonStarter(connection,this);
+	
 			if (!master.connectToServer())
 			{
 				notifyArea.append("Connection refused to " + textFieldAddress.getText()+", please check IP address and port.\n");
 			}
-
+	
 			else{
-				setConnectionSettingsEnabled(false);
-				setSystemSettingsEnabled(true);
+				
 				notifyArea.append("Connection estabilished.\n");
 				connected = true;
-				ArrayList<String> peers = master.getTopicList();
+				peers = master.getTopicList();
 				for(String p : peers)
 				{
 					master.info(p);
@@ -1507,19 +1861,20 @@ public class JMasterUI extends JFrame{
 				}
 				labelWriteNumOfPeer.setText(""+peers.size());
 				dont = true;
+				
+				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-
 	private ArrayList<String> checkSyntaxForm(int num,int width,int height,int numAgentsForPeer){
-
+	
 		ArrayList<String> errors = new ArrayList<String>();	
-
-
-
+	
+	
+	
 		// check total number of regions coincides with total number of assignments
 		if((numRegions % root.getChildCount()) != 0 || total != numRegions)
 			errors.add("Please check regions number! \n");
@@ -1536,7 +1891,7 @@ public class JMasterUI extends JFrame{
 		//the width and the height must be equals, and both must be divisible by sqrt(peer)*3
 		if(radioButtonSquare.isSelected() && jCheckBoxLoadBalancing.isSelected() && (width % (Math.sqrt(num)*3) != 0 || height % (Math.sqrt(num)*3) != 0))
 			errors.add("Cannot divide field in Sqrt(REGIONS)*3 for the Load Balanced Mode,please check field parameter \n");
-
+	
 		return errors;
 	}
 
@@ -1550,7 +1905,10 @@ public class JMasterUI extends JFrame{
 		numAgents = Integer.parseInt(textFieldAgents.getText());
 		maxDistance = Integer.parseInt(textFieldMaxDistance.getText());
 		
-		if(logger.getLevel()!=Level.OFF){
+		
+		
+		
+		/*if(logger.getLevel()!=Level.OFF){
 			file = new FileAppender();
 			  file.setName("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT);
 			  file.setFile("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT+".log");
@@ -1559,24 +1917,24 @@ public class JMasterUI extends JFrame{
 			  file.activateOptions();	
 			logger.addAppender(file);
 			}
-		
+		*/
 		if(radioButtonHorizontal.isSelected())
 			MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
 		else if(radioButtonSquare.isSelected() && !jCheckBoxLoadBalancing.isSelected())
 			MODE = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
 		else if(radioButtonSquare.isSelected() && jCheckBoxLoadBalancing.isSelected())
 			MODE = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
-
-
+	
+	
 		if(!isSubmitted ) //for next simulations do not have to register again
 		{	
 			(new Trigger(connection)).asynchronousReceiveToTriggerTopic(new TriggerListener(notifyArea,logger));
 			isSubmitted = true;
 		}
-
+	
 		
-
-
+	
+	
 		// Wrong data inserted
 		if(errors.size() > 0){
 			String x="ERRORS"+"\n";
@@ -1586,10 +1944,10 @@ public class JMasterUI extends JFrame{
 		}
 		getSteps();
 		//sim = files.getSelectedFile().getName();
-
+	
 		JOptionPane.showMessageDialog(null,"Setting completed !");
-
-		master.start(numRegions, (Integer)WIDTH, (Integer)HEIGHT, numAgents,maxDistance,MODE, config,selectedSimulation,this);
+	
+		master.start(numRegions, (Integer)WIDTH, (Integer)HEIGHT, numAgents,maxDistance,MODE, config,selectedSimulation,this,getFPTAddress());
 	}
 
 	private void submitDefaultMode(){
@@ -1602,7 +1960,9 @@ public class JMasterUI extends JFrame{
 		maxDistance = Integer.parseInt(textFieldMaxDistance.getText());
 		withGui = graphicONcheckBox2.isSelected();
 		
-		if(logger.getLevel()!=Level.OFF){
+		
+		
+		/*if(logger.getLevel()!=Level.OFF){
 		file = new FileAppender();
 		  file.setName("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT);
 		  file.setFile("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT+".log");
@@ -1610,19 +1970,19 @@ public class JMasterUI extends JFrame{
 		  file.setThreshold(Level.DEBUG);
 		  file.activateOptions();	
 		logger.addAppender(file);
-		}
+		}*/
 		
-
-
+	
+	
 		if(!isSubmitted ) //for next simulations do not have to register again
 		{	
 			(new Trigger(connection)).asynchronousReceiveToTriggerTopic(new TriggerListener(notifyArea,logger));
 			isSubmitted = true;
 		}
-
+	
 		
-
-
+	
+	
 		if(radioButtonHorizontal.isSelected())
 			MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
 		else if(radioButtonSquare.isSelected() && !jCheckBoxLoadBalancing.isSelected())
@@ -1652,9 +2012,9 @@ public class JMasterUI extends JFrame{
 				e.printStackTrace();
 			}
 			JOptionPane.showMessageDialog(null,"Setting completed !");
-
+	
 			
-			master.start(numRegions, (Integer)WIDTH, (Integer)HEIGHT, numAgents,maxDistance,MODE, config,selectedSimulation,this);
+			master.start(numRegions, (Integer)WIDTH, (Integer)HEIGHT, numAgents,maxDistance,MODE, config,selectedSimulation,this,getFPTAddress());
 		
 		
 		}
@@ -1676,18 +2036,9 @@ public class JMasterUI extends JFrame{
 			
 				info = master.getLatestUpdate(key);
 				if(info!=null)
-					architectureLabel.setText("IP : "+info.getAddress()+"\n"+"OS : "+info.getoS()+"\n"+"Architecture : "+info.getArch()+"\n"+"Number of Core : "+info.getNum_core());
+					architectureLabel.setText("IP : "+info.getAddress()+"\n"+"OS : "+info.getoS()+"\n"+"Architecture : "+info.getArch()+"\n"+"Number of Core : "+info.getNum_core()+"\n"+"Worker Version : "+info.getVersion());
 			}
 		}
-	}
-
-	private void confirm(){
-		String key = tree1.getLastSelectedPathComponent().toString();
-		int reg = (Integer)jComboBoxNumRegionXPeer.getSelectedItem();
-		withGui = graphicONcheckBox.isSelected();
-		EntryVal<Integer,Boolean> value = new EntryVal<Integer,Boolean>(reg,withGui);
-		//config.put(key,reg);
-		config.put(key, value);
 	}
 
 	private void getSteps(){
@@ -1705,7 +2056,7 @@ public class JMasterUI extends JFrame{
 				MyHashMap mh = (MyHashMap)o;
 				if(mh.get("step")!=null){
 					step=(Long)mh.get("step");
-
+	
 					if(step==0)
 					{
 						initial_time=System.currentTimeMillis();
@@ -1716,9 +2067,9 @@ public class JMasterUI extends JFrame{
 					{
 						long fifty_time=System.currentTimeMillis();
 						logger.debug("Step :"+limitStep+" Time: "+fifty_time);
-
+	
 						long time= (fifty_time - initial_time );
-
+	
 						logger.debug("Total Time : "+time);
 					}
 					writeStepLabel.setText(""+mh.get("step"));
@@ -1736,60 +2087,60 @@ public class JMasterUI extends JFrame{
 	}
 
 	private void initializeDefaultLabel(){
-
+	
 		//controllo solo numeri non negativi
 		String regex="(\\d)+|((\\d)+\\.(\\d)+)";
-
+	
 		numRegions = (Integer)jComboRegions.getSelectedItem();
 		int numOfPeer = root.getChildCount();
 		
 		if(textFieldMaxDistance.getText().equals(""))
 			textFieldMaxDistance.setText("0");
-
+	
 		boolean checkDist=true;
-
+	
 		while(checkDist){
-
+	
 			String dist=textFieldMaxDistance.getText();
 			boolean validateDist=dist.matches(regex);
 			if(!validateDist){	
 				String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
 				textFieldMaxDistance.setText(newDist);
 			}
-
+	
 			else{
 				checkDist=false;
 				maxDistance = Integer.parseInt(textFieldMaxDistance.getText());
 			}
 		}
-
+	
 		//width
 		if(textFieldWidth.getText().equals(""))
 			textFieldWidth.setText("0");
-
+	
 		boolean checkWidth=true;
 		while(checkWidth){
-
+	
 			String width=textFieldWidth.getText();
-
+	
 			boolean validateWidth=width.matches(regex) ;
 			if(!validateWidth){	
 				//JOptionPane.showInputDialog("Insert a number please W!");
 				String	newWidth=JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
 				textFieldWidth.setText(newWidth);
 			}
-
+	
 			else{
 				checkWidth=false;
 				WIDTH = Integer.parseInt(textFieldWidth.getText());
 			}
 		}
-
+	
 		if(textFieldHeight.getText().equals(""))
 			textFieldHeight.setText("0");
-
+	
 		boolean checkHeight=true;
-
+	
 		while(checkHeight){
 			String height=textFieldHeight.getText();
 			boolean validateHeight=height.matches(regex) ;
@@ -1802,19 +2153,19 @@ public class JMasterUI extends JFrame{
 				HEIGHT = Integer.parseInt(textFieldHeight.getText());
 			}
 		}
-
+	
 		labelWriteReg.setText(""+numRegions);
 		labelWriteNumOfPeer.setText(""+numOfPeer);
 		if(numOfPeer > 0 && (numRegions % numOfPeer) == 0)			
 			labelWriteRegForPeer.setText(""+numRegions/numOfPeer);
 		else 
 			labelWriteRegForPeer.setText("");
-
+	
 		if(textFieldAgents.getText().equals(""))
 			textFieldAgents.setText("0");
-
+	
 		boolean checkAgents=true;
-
+	
 		while(checkAgents){
 			String agents=textFieldAgents.getText();
 			boolean validateAgents=agents.matches(regex);
@@ -1827,7 +2178,7 @@ public class JMasterUI extends JFrame{
 				numAgents = Integer.parseInt(textFieldAgents.getText());
 			}
 		}
-
+	
 		if(radioButtonHorizontal.isSelected()){
 			MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
 			String w="";
@@ -1866,151 +2217,387 @@ public class JMasterUI extends JFrame{
 		}
 	}
 
-	public static void main(String[] args){
-		JFrame a = new JMasterUI();
-		a.setVisible(true);
+	private void confirm(){
+		String key = tree1.getLastSelectedPathComponent().toString();
+		int reg = (Integer)jComboBoxNumRegionXPeer.getSelectedItem();
+		withGui = graphicONcheckBox.isSelected();
+		EntryVal<Integer,Boolean> value = new EntryVal<Integer,Boolean>(reg,withGui);
+		//config.put(key,reg);
+		config.put(key, value);
 	}
-
-	private JMenuItem menuNewSim;
-	private JScrollPane scrollPaneTree;	//scrollPaneTree
-	private JLabel advancedConfirmBut;	//advancedConfirmBut;
-	private JCheckBox graphicONcheckBox;
-	private JButton buttonSetConfigAdvanced;
-	private JLabel jLabelPlayButton;	//labelstopbutton
-	private JLabel jLabelPauseButton;	//labelpausebutton
-	private JPanel jPanelNumStep;		//panel1
-	private JLabel writeStepLabel;		//labelWriteStep;
-	private JLabel jLabelStep;	//step
-	private JLabel jLabelStopButton;	//labelStopButton2
-	private String selectedSimulation;
-	private JScrollPane scrollPane1;
-	private JDesktopPane peerInfoStatus1;
-	private MasterDaemonStarter master;
-	private String ip;
-	private String port;
-	private DefaultMutableTreeNode root;
-	private boolean connected = false;
-	private HashMap<String,EntryVal<Integer,Boolean>> config;
-	private int total=0;
-
-	private JLabel jLabelResetButton;
-
-	private JCheckBox jCheckBoxLoadBalancing;
-
-	boolean radioItemFlag=false;	//radioItemFalg
-	private Address address;
-	int res;
-	private ConnectionNFieldsWithActiveMQAPI connection;
-	private ConnectionNFieldsWithActiveMQAPI connectionForSteps;
-	private Start starter;
-	private Console c;		
-
-	private boolean dont=true;
-	private int MODE;
-	private Object WIDTH;
-	private Object HEIGHT;
-	private int numRegions;
-	private int numAgents;
-	private int maxDistance;
-	private JMasterUI me = this;
-	//private JFileChooser files;
-	public boolean centralGui = true;
-	private static final long serialVersionUID = 1L;
-	private boolean withGui = false;
-	private JTree tree1;
-	private JTextArea architectureLabel;
-	private JDesktopPane peerInfoStatus;
-	private JInternalFrame internalFrame1;
-	private JPanel panelConsole;
-
-	private JMenuBar menuBar1;
-	private JMenu jMenuFile;
-	//private JMenuItem menuItemOpen;
-	private JMenuItem menuItemExit;
-	private JMenu jMenuAbout;
-	private JMenuItem menuItemInfo;
-	private JMenuItem menuItemHelp;
-	private JPanel panelMain;
-	private JPanel jPanelContainerConnection;
-	private JPanel jPanelConnection;
-	private JLabel jLabelAddress;
-	private JTextField textFieldAddress;
-	private JLabel jLabelPort;
-	private JTextField textFieldPort;
-	private JLabel refreshServerLabel;
-	private JButton buttonRefreshServerLabel;
-	private JPanel jPanelContainerSettings;
-	private JPanel jPanelSetDistribution;
-	private JPanel jPanelSettings;
-	private JRadioButton radioButtonHorizontal;
-	private JRadioButton radioButtonSquare;
-	private JLabel jLabelHorizontal;
-	private JLabel jLabelSquare;
-	private JLabel jLabelRegions;
-	private JLabel jLabelMaxDistance;
-	private JLabel jLabelWidth;
-	private JTextField textFieldMaxDistance;
-	private JComboBox jComboRegions;
-	private JComboBox jComboBoxNumRegionXPeer;
-	private JTextField textFieldWidth;
-	private JLabel jLabelHeight;
-	private JTextField textFieldHeight;
-	private JLabel jLabelAgents;
-	private JTextField textFieldAgents;
-	private JLabel jLabelChooseSimulation;
-	private JComboBox jComboBoxChooseSimulation;
-	private JPanel jPanelContainerTabbedPane;
-	private JTabbedPane tabbedPane2;
-	private JPanel jPanelDefault;
-	private JLabel labelSimulationConfigSet;
-	private JLabel labelRegionsResume;
-	private JLabel labelNumOfPeerResume;
-	private JLabel labelRegForPeerResume;
-	private JLabel labelWriteReg;
-	private JLabel labelWriteNumOfPeer;
-	private JLabel labelWriteRegForPeer;
-	private JLabel labelWidthRegion;
-	private JLabel labelheightRegion;
-	private JLabel labelDistrMode;
-	private JLabel labelWriteRegWidth;
-	private JLabel labelWriteRegHeight;
-	private JLabel labelWriteDistrMode;
-	private JCheckBox graphicONcheckBox2;
-	private JPanel jPanelSetButton;
-	private JButton buttonSetConfigDefault;
-	private JPanel jPanelAdvanced;
-	private JPanel jPanelAdvancedMain;
-	private JPanel jPanelSetButton2;
-	private JPanel jPanelSimParams;
-	private JButton buttonSetConfigDefault2;
-	private JScrollPane scrollPane3;
-	private JTextArea notifyArea;
-
-
-	// codice profiling
-	private static final Logger logger = Logger.getLogger(JMasterUI.class.getCanonicalName());
- 	FileAppender file;
-	private int limitStep;
-	private JLabel lblTotalSteps;
-	// fine codice profiling
 
 	
-	public void setConnectionSettingsEnabled(boolean enabled)
+	/** System Management methods 
+	 * @author marvit 
+	 * */
+	public File showFileChooser()
 	{
-		textFieldAddress.setEnabled(enabled);
-		textFieldPort.setEnabled(enabled);
-		//buttonRefreshServerLabel.setEnabled(enabled);
+		JFileChooser fileChooser = new JFileChooser();
+		
+		fileChooser.setCurrentDirectory(new File(FTP_HOME));
+        int n = fileChooser.showOpenDialog(JMasterUI.this);
+        if (n == JFileChooser.APPROVE_OPTION) 
+        {
+          return  fileChooser.getSelectedFile();
+        }
+        else
+        	return null;
+	}
+	private void loadSimulation() 
+	{
+		
+		jComboBoxChooseSimulation.removeAllItems();
+		
+		//These are hardcoded simulations
+		jComboBoxChooseSimulation.addItem(new SimComboEntry("Flockers", "dmason.sim.app.DFlockers.DFlockers"));
+		jComboBoxChooseSimulation.addItem(new SimComboEntry("Particles", "dmason.sim.app.DParticles.DParticles"));
+		jComboBoxChooseSimulation.addItem(new SimComboEntry("Ants Foraging", "dmason.sim.app.DAntsForage.DAntsForage"));
+	
+		
+		// Then loads jar simulation from SIMULATION_DIR
+		File folder = new File(FTP_HOME+SEPARATOR+SIMULATION_DIR);
+		File[] listOfFiles = folder.listFiles(); 
+
+		for (File file : listOfFiles) {
+			if (file.isFile() && FilenameUtils.isExtension(file.getName(), "jar")) 
+				jComboBoxChooseSimulation.addItem(new SimComboEntry(file.getName(), file.getName()));
+		}
+		
+	}
+
+	// Manages the automatic update mechanism
+	private void checkUpdate()
+	{
+		if(toUpdate.isEmpty()) // All workers are updated
+		{
+			setConnectionSettingsEnabled(false);
+			setSystemSettingsEnabled(true);
+			jMenuItemUpdateWorker.setEnabled(true);
+		}
+		else
+		{
+			if(curWorkerDigest != null)
+			{
+				JOptionPane.showMessageDialog(this,"Not all worker have the same version! Update needed");
+				
+				wu = new WorkerUpdater(getFPTAddress(),FTP_HOME,SEPARATOR,master,toUpdate.size(),UPDATE_DIR,toUpdate);
+				wu.setVisible(true);
+				
+				//Needs to know when the process is done
+				wu.getObservable().addObserver(JMasterUI.this);
+				
+				File updFile = new File(FTP_HOME+SEPARATOR+UPDATE_DIR+SEPARATOR+workerJarName);
+				wu.setUpdateFile(updFile);
+				wu.startAutoUpdate();
+			}
+			else
+			{ // There is no update file
+				
+				int res = JOptionPane.showConfirmDialog(this, "Current Worker file does not exist! Do you want to load it?");
+				if(res == JOptionPane.OK_OPTION)
+				{
+					updateFile = showFileChooser();
+					
+					if(updateFile != null)
+					{
+						File dest = new File(FTP_HOME+SEPARATOR+UPDATE_DIR+SEPARATOR+updateFile.getName());
+						
+						try {
+							FileUtils.copyFile(updateFile, dest);
+							
+							Digester dg = new Digester(DigestAlgorithm.MD5);
+							
+							InputStream in = new FileInputStream(dest);
+							curWorkerDigest = dg.getDigest(in);
+							workerJarName = updateFile.getName();
+							
+							String fileName = FilenameUtils.removeExtension(updateFile.getName());
+							dg.storeToPropFile(FTP_HOME+SEPARATOR+UPDATE_DIR+SEPARATOR+fileName+".hash");
+							
+			
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (NoDigestFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+						checkUpdate();
+					}
+					
+				}
+				if(res == JOptionPane.NO_OPTION || res == JOptionPane.CANCEL_OPTION 
+						|| res == JOptionPane.CLOSED_OPTION)
+				{
+					JOptionPane.showMessageDialog(this,"You must to have the worker file!");
+					this.dispose();
+					System.exit(EXIT_ON_CLOSE);
+				}
+					
+					
+			}
+		}
+	}
+
+
+	private static void setSeparator() 
+	{
+		OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
+		
+		if(os.getName().contains("Windows"))
+			SEPARATOR = "\\";
+		if(os.getName().contains("Linux") || os.getName().contains("OSX"))
+			SEPARATOR = "/";
 	}
 	
-	public void setSystemSettingsEnabled(boolean enabled)
+
+	private Address getFPTAddress()
 	{
-		textFieldAgents.setEnabled(enabled);
-		textFieldHeight.setEnabled(enabled);
-		textFieldWidth.setEnabled(enabled);
-		textFieldMaxDistance.setEnabled(enabled);
-		radioButtonHorizontal.setEnabled(enabled);
-		radioButtonSquare.setEnabled(enabled);
-		jComboRegions.setEnabled(enabled);
-		jComboBoxChooseSimulation.setEnabled(enabled);
+		InetAddress thisIp;
+		try {
+			thisIp = InetAddress.getLocalHost(); //Note: It starts with Master
+			return new Address(thisIp.getHostAddress(), FTP_PORT);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
+	
+	private static void startFTPServer()
+	{
+		FtpServerFactory serverFactory = new FtpServerFactory();
+
+		PropertiesUserManagerFactory userManagerFactory = new PropertiesUserManagerFactory();
+
+		ConnectionConfigFactory connConfFactory = new ConnectionConfigFactory();
+		connConfFactory.setAnonymousLoginEnabled(true);
+		connConfFactory.setMaxAnonymousLogins(1000);
+		connConfFactory.setMaxLogins(1000);
+
+		serverFactory.setConnectionConfig(connConfFactory.createConnectionConfig());
+
+		userManagerFactory.setPasswordEncryptor(new SaltedPasswordEncryptor());
+		UserManager userManager = userManagerFactory.createUserManager();
+
+		BaseUser user = new BaseUser();
+		user.setName("anonymous");
+		user.setPassword("");
+		user.setHomeDirectory(FTP_HOME);
+		List<Authority> auths = new ArrayList<Authority>();
+		Authority auth = new WritePermission();
+		auths.add(auth);
+		user.setAuthorities(auths);
+		try {
+			userManager.save(user);
+		} 
+		catch (FtpException e1) {
+
+			e1.printStackTrace();
+		}
+
+		ListenerFactory listenerFactory = new ListenerFactory();
+		listenerFactory.setPort(Integer.parseInt(FTP_PORT));
+		serverFactory.addListener("default",
+				listenerFactory.createListener());
+
+		serverFactory.setUserManager(userManager);
+
+		FtpServer server = serverFactory.createServer();
+
+		// start the server
+		try {
+			server.start();
+			logger.debug("Server FTP started");
+		} catch (FtpException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	//Creates the directories structures if not exists
+	private static void checkFTPHOME() 
+	{
+		boolean result;
+		File homedir = new File(FTP_HOME);
+
+		// if the directory does not exist, create it
+		if (!homedir.exists())
+		{
+			result = homedir.mkdir();  
+			if(result){    
+				System.out.println("DIR "+ FTP_HOME+" created");  
+				
+				File simdir = new File(FTP_HOME+SEPARATOR+SIMULATION_DIR);
+				result = simdir.mkdir();
+				if(result)   
+					System.out.println("DIR "+ FTP_HOME+SEPARATOR+SIMULATION_DIR+" created");
+				File updatedir = new File(FTP_HOME+SEPARATOR+UPDATE_DIR);
+				result = updatedir.mkdir();
+				if(result)   
+					System.out.println("DIR "+ FTP_HOME+SEPARATOR+UPDATE_DIR+" created");
+			}
+
+		}
+		else
+		{
+			File simdir = new File(FTP_HOME+SEPARATOR+SIMULATION_DIR);
+			result = simdir.mkdir();
+			if(result)   
+				System.out.println("DIR "+ FTP_HOME+SEPARATOR+SIMULATION_DIR+" created");
+			File updatedir = new File(FTP_HOME+SEPARATOR+UPDATE_DIR);
+			result = updatedir.mkdir();
+			if(result)   
+				System.out.println("DIR "+ FTP_HOME+SEPARATOR+UPDATE_DIR+" created");
+		}
+	}
+
+	// receving notify from Worker Updater
+	@Override
+	public void update(Observable o, Object arg) 
+	{
+		wu.dispose();
+		setConnectionSettingsEnabled(false);
+		setSystemSettingsEnabled(true);
+		jMenuItemUpdateWorker.setEnabled(true);
+	}
+	
+	// Used for manual update, called from MasterDeamonStarter
+	public void incrementUpdatedWorker() 
+	{
+		wu.setProgress();
+	}
+	
+	/**Used for setting the name of last worker version
+	 * 
+	 * @return 0 if no file
+	 * 		   1 if more then 2 file
+	 * 		   2 if number of file is correct
+	 */
+	private int getCurWorkerJarName()
+	{
+		File file = new File(FTP_HOME+SEPARATOR+UPDATE_DIR);  
+		File[] files = file.listFiles();
+
+		if(files.length == 0)
+			return 0;
+		if(files.length > 2)
+			return 1;
+		if(files.length == 2)
+		{
+			for (File curfile : files) 
+			{
+				if (curfile.isFile() && FilenameUtils.isExtension(curfile.getName(), "jar"))
+				{	
+					workerJarName = curfile.getName();
+					return 2;
+				}
+			}
+			return 1;
+		}
+		return -1;
+	}
+
+	//Used for setting the digest last worker version
+	private String getCurWorkerDigest()
+	{
+		int res = getCurWorkerJarName();
+		if(res == 0)
+			return null;
+		if(res == 1){
+			JOptionPane.showMessageDialog(this, "There is more one worker version in Updade dir, please leave only the last version");
+			System.exit(1);
+			return null;
+		}
+		if(res == 2)
+		{
+			File jarFile = new File(FTP_HOME+SEPARATOR+UPDATE_DIR+SEPARATOR+workerJarName);
+			if(jarFile.exists())
+			{
+				String digestFile = FilenameUtils.removeExtension(workerJarName)+".hash";
+				
+				Digester dg = new Digester(DigestAlgorithm.MD5);
+				
+				return dg.loadFromPropFile(FTP_HOME+SEPARATOR+UPDATE_DIR+SEPARATOR+digestFile);
+			}
+			else
+				return null;
+		}
+		else
+		{
+			return null;
+		}
+		
+	}
+
+	// Called by MasterDeamonStarter when receives WorkerInfo
+	public void addToUpdate(PeerStatusInfo workerInfo) 
+	{
+		totPeers++;
+		
+		if(workerInfo.getDigest() != null)
+		{
+			if(!workerInfo.getDigest().equals(curWorkerDigest))
+				toUpdate.add(workerInfo.getTopic());
+		}
+		if(totPeers == peers.size())
+			checkUpdate();
+	}
+
+	/* End System Management methods */
+	
+	
+	/** UI Component */
+	private JTextField getJTextFieldPathSimJar() {
+		if(jTextFieldPathSimJar == null) {
+			jTextFieldPathSimJar = new JTextField();
+			jTextFieldPathSimJar.setText("PathSimulationJar");
+		}
+		return jTextFieldPathSimJar;
+	}
+
+	private JButton getJButtonChoseSimJar() {
+		if(jButtonChoseSimJar == null) {
+			jButtonChoseSimJar = new JButton();
+			jButtonChoseSimJar.setIcon(new ImageIcon(getClass().getClassLoader().getResource("dmason/resource/image/openFolder.png")));
+			jButtonChoseSimJar.setSize(16, 16);
+		}
+		return jButtonChoseSimJar;
+	}
+
+	private JMenu getJMenuSystem() {
+		if(jMenuSystem == null) {
+			jMenuSystem = new JMenu();
+			jMenuSystem.setText("System");
+			jMenuSystem.add(getJMenuItemUpdateWorker());
+		}
+		return jMenuSystem;
+	}
+
+	private JMenuItem getJMenuItemUpdateWorker() {
+		if(jMenuItemUpdateWorker == null) {
+			jMenuItemUpdateWorker = new JMenuItem();
+			jMenuItemUpdateWorker.setText("Update Worker...");
+			jMenuItemUpdateWorker.addActionListener(new ActionListener() {
+	
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					
+					
+					wu = new WorkerUpdater(getFPTAddress(),FTP_HOME,SEPARATOR,master,peers.size(),UPDATE_DIR);
+					wu.setVisible(true);
+					
+					wu.getObservable().addObserver(JMasterUI.this);
+					
+				}
+			});
+		}
+		
+		jMenuItemUpdateWorker.setEnabled(false);
+		return jMenuItemUpdateWorker;
+	}
+
+	
+
 }

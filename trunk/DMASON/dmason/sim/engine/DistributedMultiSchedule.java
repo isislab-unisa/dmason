@@ -7,7 +7,17 @@ import java.util.HashMap;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.log4j.*;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
+
+
+
+
+
+
+
 import dmason.sim.field.CellType;
 import dmason.sim.field.DistributedField;
 import dmason.sim.field.UpdatePositionInterface;
@@ -155,8 +165,8 @@ public class DistributedMultiSchedule<E> extends Schedule
 					
 					loggerStep = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+"Step");
 					loggerBalance = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+"Balance");
-					loggerStep.setLevel(Level.OFF);
-					loggerBalance.setLevel(Level.OFF);
+					loggerStep.setLevel(Level.DEBUG);
+					loggerBalance.setLevel(Level.DEBUG);
 					if(loggerStep.getLevel()!=Level.OFF){
 					 file = new FileAppender();
 					  file.setName("FileLogger"+"Region"+((DistributedState)state).TYPE.toString());

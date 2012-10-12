@@ -1,18 +1,32 @@
+/**
+ * Copyright 2012 Università degli Studi di Salerno
+ 
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 package dmason.util.SystemManagement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Logger;
 
-import javax.jms.JMSException;
 import javax.jms.Message;
-import org.apache.activemq.command.ActiveMQObjectMessage;
+
 import dmason.sim.field.MessageListener;
-import dmason.util.connection.Address;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.connection.MyHashMap;
 import dmason.util.connection.MyMessageListener;
+
 
 /**
  * Even if it seems a little bit complex, this is just a listener that receive
@@ -29,9 +43,11 @@ import dmason.util.connection.MyMessageListener;
  * a Socket communication channel (I also thought to use a PipedIOStream).
  * 
  * Luca: added code for variables tracing
+ * Mario: added code for reset simulation, update worker, upload log file
  * 
  * @author Ada Mancuso
  * @author Luca Vicidomini
+ * @author Mario Fiore Vitale
  */
 public class PeerDaemonListener extends MyMessageListener
 {
@@ -55,13 +71,18 @@ public class PeerDaemonListener extends MyMessageListener
 	private HashMap<String,MessageListener> table;
 	private ConnectionNFieldsWithActiveMQAPI connection;
 	private ArrayList<Thread> started;
+	
+	private String myTopic;
+	private boolean isWorkerUI;
 
-	public PeerDaemonListener(PeerDaemonStarter pds, Connection con)
+	public PeerDaemonListener(PeerDaemonStarter pds, Connection con, String topic, boolean WorkerUI)
 	{
 		super();
 		this.starter = pds;
 		this.gui = starter.gui;
 		this.connection = (ConnectionNFieldsWithActiveMQAPI)con;
+		this.myTopic = topic;
+		this.isWorkerUI = WorkerUI;
 	}
 
 	@Override
@@ -120,9 +141,6 @@ public class PeerDaemonListener extends MyMessageListener
 				// Worked was previously paused
 				else if (status == PAUSED)
 				{
-
-					
-					
 					gui.writeMessage("---> Resume\n");
 
 					gui.writeMessage("Resume\n");
@@ -174,10 +192,15 @@ public class PeerDaemonListener extends MyMessageListener
 				//table = null;
 				//regions = null;
 				status = STOPPED;
+				
+				
+				UpdateData up = (UpdateData) mh.get("stop");
+				Updater.uploadLog(up);
+				
 			}
 
 			
-			// Received command to stop the simulation
+			// Received command to reset the simulation
 			if (mh.get("reset") != null)
 			{
 				
@@ -194,7 +217,20 @@ public class PeerDaemonListener extends MyMessageListener
 				
 			}
 
-			
+			// Received command to update worker
+			if (mh.get("update") != null)
+			{
+				
+				UpdateData up = (UpdateData) mh.get("update");
+				
+				
+				if(isWorkerUI)
+					Updater.updateWithGUI(up.getFTPAddress(),up.getJarName(),myTopic,connection.getAddress());
+				else
+					Updater.updateNoGUI(up.getFTPAddress(),up.getJarName(),myTopic,connection.getAddress());
+				gui.exit();
+				
+			}
 			// Received command to begin tracing a value
 			if (mh.get("trace") != null)
 			{

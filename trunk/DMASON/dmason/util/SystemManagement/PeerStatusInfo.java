@@ -1,3 +1,20 @@
+/**
+ * Copyright 2012 Università degli Studi di Salerno
+ 
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
 package dmason.util.SystemManagement;
 
 import java.io.Serializable;
@@ -11,11 +28,16 @@ public class PeerStatusInfo implements Serializable{
 	private String address;
 	private String hostName;
 	
+	private String version;
+	private String digest;
+	private String topic;
+	
+
 	public PeerStatusInfo() {
 		super();
 	}
 	
-	public PeerStatusInfo(String oS, String arch, int num_core, String address,String hostName) {
+	public PeerStatusInfo(String oS, String arch, int num_core, String address,String hostName,String version) {
 		super();
 		this.hostName=hostName;
 		this.oS = oS;
@@ -24,6 +46,30 @@ public class PeerStatusInfo implements Serializable{
 		this.address = address;
 	}
 
+	
+	public String getTopic() {
+		return topic;
+	}
+
+	public void setTopic(String topic) {
+		this.topic = topic;
+	}
+
+	public String getDigest() {
+		return digest;
+	}
+
+	public void setDigest(String digest) {
+		this.digest = digest;
+	}
+	public String getVersion()
+	{
+		return version;
+	}
+	public void setVersion(String vers)
+	{
+		this.version = vers;
+	}
 	public String getoS() {
 		return oS;
 	}
