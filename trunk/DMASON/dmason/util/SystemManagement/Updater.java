@@ -45,6 +45,7 @@ import java.util.Properties;
 
 import javax.swing.Timer;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import dmason.util.connection.Address;
@@ -93,35 +94,46 @@ public class Updater
 		downloadJar(jarName,"upd");
 
 		//DOWNLOADED_JAR_PATH+SEPARATOR+
-		File f = new File(jarName);
-
+		File fDown = new File(DOWNLOADED_JAR_PATH+SEPARATOR+jarName);
+		File fDest = new File(jarName);
+		
 		try {
-			ArrayList<String> command = new ArrayList<String>();
-
-			command.add("java");
-			command.add("-jar");
-			command.add(f.getAbsolutePath());
-			command.add(myTopic);
-			command.add(address.getIPaddress());
-			command.add(address.getPort());
-
-
-			ProcessBuilder builder = new ProcessBuilder(command);	
-			Process process = builder.start();
+			FileUtils.copyFile(fDown, fDest);
 			
-		} catch (IOException e) {
+			try {
+				ArrayList<String> command = new ArrayList<String>();
+
+				command.add("java");
+				command.add("-jar");
+				command.add(fDest.getAbsolutePath());
+				command.add(myTopic);
+				command.add(address.getIPaddress());
+				command.add(address.getPort());
+
+
+				ProcessBuilder builder = new ProcessBuilder(command);	
+				Process process = builder.start();
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			Timer timer = new Timer(4000, new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					System.exit(0);
+
+				}
+			});
+
+			timer.start();
+			
+		} catch (IOException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}
 
-		Timer timer = new Timer(4000, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-
-			}
-		});
-
-		timer.start();
+		
 
 	}
 
@@ -135,37 +147,49 @@ public class Updater
 		setSeparator();
 
 		downloadJar(jarName,"upd");
+		
+		
 
 		//DOWNLOADED_JAR_PATH+SEPARATOR+
-		File f = new File(jarName);
-
+		File fDown = new File(DOWNLOADED_JAR_PATH+SEPARATOR+jarName);
+		File fDest = new File(jarName);
+		
 		try {
-			ArrayList<String> command = new ArrayList<String>();
+			FileUtils.copyFile(fDown, fDest);
+			
+			try {
+				ArrayList<String> command = new ArrayList<String>();
 
-			command.add("java");
-			command.add("-jar");
-			command.add(f.getAbsolutePath());
-			command.add(address.getIPaddress());
-			command.add(address.getPort());
-			command.add(myTopic);
+				command.add("java");
+				command.add("-jar");
+				command.add(fDest.getAbsolutePath());
+				command.add(address.getIPaddress());
+				command.add(address.getPort());
+				command.add(myTopic);
 
 
-			ProcessBuilder builder = new ProcessBuilder(command);	
-			Process process = builder.start();	
+				ProcessBuilder builder = new ProcessBuilder(command);	
+				Process process = builder.start();	
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		Timer timer = new Timer(4000, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		});
 
-		timer.start();
+			Timer timer = new Timer(4000, new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					System.exit(0);
+
+				}
+			});
+
+			timer.start();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
 	}
 
 	public static URL getSimulationJar(StartUpData data)
@@ -262,9 +286,9 @@ public class Updater
 				}
 			}
 			
-			if(jarType.equals("upd"))
-				client.download(jarName, new java.io.File(jarName));
-			if(jarType.equals("sim"))
+			//if(jarType.equals("upd"))
+			//	client.download(jarName, new java.io.File(jarName));
+			//if(jarType.equals("sim"))
 				client.download(jarName, new java.io.File(DOWNLOADED_JAR_PATH+SEPARATOR+jarName));
 			
 		} catch (IllegalStateException e) {
