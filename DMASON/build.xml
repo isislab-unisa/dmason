@@ -25,6 +25,10 @@
                 <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
                 <attribute name="Rsrc-Main-Class" value="dmason.util.SystemManagement.JMasterUI"/>
                 <attribute name="Class-Path" value="."/>
+
+            	<attribute name="Implementation-Version" value="1.0.0beta2" />
+                <attribute name="Rsrc-Class-Path" value="./ itext-1.2.jar jcommon-1.0.0.jar jfreechart-1.0.1.jar jmf.jar jms.jar quaqua-colorchooser-only-for-osx.jar slf4j-jdk14-1.6.1.jar activemq-all-5.5.1.jar itext-1.2.jar jcommon-1.0.16.jar jfreechart-1.0.13.jar jmf.jar"/>
+
                 <attribute name="Rsrc-Class-Path" value="./ itext-1.2.jar jcommon-1.0.16.jar jfreechart-1.0.13.jar jmf.jar activemq-all-5.5.1.jar jcommon-1.0.0.jar jfreechart-1.0.1.jar jmf.jar jms.jar quaqua-colorchooser-only-for-osx.jar slf4j-jdk14-1.6.1.jar log4j-1.2.17.jar"/>
             </manifest>
             <zipfileset src="jar-in-jar-loader.zip"/>

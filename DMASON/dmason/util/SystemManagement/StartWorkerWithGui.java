@@ -1,25 +1,66 @@
+/**
+ * Copyright 2012 Università degli Studi di Salerno
+ 
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
 package dmason.util.SystemManagement;
-import java.awt.*;
-import java.awt.event.*;
-import java.net.InetAddress;
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.net.URISyntaxException;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Properties;
 import java.util.Scanner;
-import java.util.TimerTask;
 
-import javax.swing.*;
+import javax.swing.GroupLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.LayoutStyle;
+
+import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.Logger;
 
 import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
+import dmason.util.exception.NoDigestFoundException;
 
 /**
  * Executable, GUI version worker.
  *
- *@author Mario Fiore Vitale (reconnection)
+ *@author Mario Fiore Vitale (reconnection,reset simulation, update)
  */
 public class StartWorkerWithGui extends JFrame implements StartWorkerInterface , Observer
 {	
 	private static final long serialVersionUID = 1L;
+	
+	private static final String version = "2.0";
+	
 	public boolean START = false;
 	
 	//private static final long SCHEDULE_INTERVAL = 10+1000L;//2 * 60 * 1000L;
@@ -43,17 +84,119 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 	public JLabel labelnumber;
 	private JLabel lblLogo;
 	private JComboBox cmbIp;
+	private static boolean updated;
+	private static boolean autoStart;
+	
+	private static String myTopic;
+	private static String ip;
+	private static String port;
+	
 
-	public StartWorkerWithGui()
+	private static Logger logger;
+	
+	
+	private String digest;
+
+	public StartWorkerWithGui(boolean start, boolean up, String topic,String ipCS,String portCS)
 	{
 		initComponents();
+
 		connection = new ConnectionNFieldsWithActiveMQAPI();
-		
+
 		connection.addObserver(this);
+		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
-		
+
+		// Get the path from which worker was started
+		String path = StartWorkerWithGui.class.getProtectionDomain().getCodeSource().getLocation().getFile();
+
+		logger.debug("Path: "+path);
+
+		if(path.contains(".jar")) //from jar
+		{
+
+			File jarfile = new File(path);
+
+			Digester dg = new Digester(DigestAlgorithm.MD5);
+
+			try {
+				InputStream in = new FileInputStream(path);
+
+				digest = dg.getDigest(in);
+
+				String fileName = FilenameUtils.removeExtension(jarfile.getName());
+				//save properties to project root folder
+				dg.storeToPropFile(fileName+".hash");
+
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			} catch (NoDigestFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		else
+		{ // not from jar
+			digest = null;
+		}
+
+		autoStart = start;
+		updated = up;
+		myTopic = topic;
+		ip = ipCS;
+		port = portCS;
+
+		if(autoStart)
+			connect();
+
 		//initSchedule();
+	}
+
+	public static void main(String[] args)
+	{
+		RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
+		 
+	    //
+	    // Get name representing the running Java virtual machine.
+	    // It returns something like 6460@AURORA. Where the value
+	    // before the @ symbol is the PID.
+	    //
+	    String jvmName = bean.getName();
+	    
+	    //Used for log4j properties
+		System.setProperty("logfile.name",jvmName);
+		
+		
+		logger = Logger.getLogger(StartWorker.class.getCanonicalName());
+		logger.debug("StartWorker "+version);
+		
+		String topic = "";
+		String ip = null;
+		String port = null;
+		autoStart = false;
+		updated = false;
+		
+		if(args.length == 3)
+		{
+			autoStart = true;
+			updated = true;
+			topic = args[0];
+			ip = args[1];
+			port = args[2];
+			
+		}
+		
+		/*if(args.length == 2 && args[0].equals("auto"))
+		{	autoStart = true;
+			updated = true;
+			topic = args[1];
+		}
+		if(args.length == 1 && args[0].equals("auto"))
+		{	autoStart = true;
+		}*/
+		 new StartWorkerWithGui(autoStart,updated,topic,ip,port);
 	}
 
 	private void initComponents() {
@@ -71,7 +214,7 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 		cmbIp = new JComboBox();
 		
 		//======== this ========
-		setTitle("D.MASON WORKER");
+		setTitle("D.MASON WORKER "+version);
 		Container contentPane = getContentPane();
 	
 		//======== scrollPane1 ========
@@ -206,13 +349,21 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 	
 	private void connect()
 	{
+		
 		try {
-			connection.setupConnection(new Address((String)cmbIp.getSelectedItem(), "61616"));
+			if(autoStart)
+				connection.setupConnection(new Address(ip, port));
+			else
+				connection.setupConnection(new Address((String)cmbIp.getSelectedItem(), (String)cmbPort.getSelectedItem()));
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		new PeerDaemonStarter(connection, this);
+		if(!updated)
+			new PeerDaemonStarter(connection, this,version,digest);
+		else // the worker was updated and then reconnected to the same topic
+			new PeerDaemonStarter(connection, this,myTopic,version,digest);
+		
 		cmbIp.setEditable(false);
 		cmbPort.setEditable(false);
 	}
@@ -221,6 +372,8 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 		textArea.append(message);
 	}
 
+	// used for show change about connection reconnection
+	// Observable is: ConnectionNFieldsWithActiveMQAPI
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		// TODO Auto-generated method stub
@@ -232,8 +385,9 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 			textArea.append("Connection refused\n");
 	}
 	
-	public static void main(String[] args)
+	public void exit()
 	{
-		new StartWorkerWithGui();
+		System.out.println("Quitting");
+		System.exit(EXIT_ON_CLOSE);
 	}
 }

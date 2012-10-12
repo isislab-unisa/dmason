@@ -1,6 +1,28 @@
+/**
+ * Copyright 2012 Università degli Studi di Salerno
+ 
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
 package dmason.util.SystemManagement;
 
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.locks.Condition;
@@ -10,8 +32,6 @@ import javax.jms.JMSException;
 
 import sim.display.Console;
 import sim.display.GUIState;
-import dmason.util.SystemManagement.StartUpData;
-import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.field.MessageListener;
 import dmason.sim.field.TraceableField;
@@ -21,6 +41,11 @@ import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 
 public class Worker
 {
+	//used for FTP
+	private static final String DOWNLOADED_JAR_PATH = "TMP";
+	private static final String SIMULATION_DIR = "simulation";
+	private static String SEPARATOR;
+	
 	private Address address;
 	private final ReentrantLock lock = new ReentrantLock();
 	private final Condition block1 = lock.newCondition();
@@ -38,6 +63,7 @@ public class Worker
 	private boolean isFirst = true;
 	private boolean blocked = false;
 	
+	
 	public Worker(StartUpData data, Connection con)
 	{
 		super();
@@ -48,10 +74,14 @@ public class Worker
 	
 	public void bootstrap()
 	{
-		state = this.makeState(data.getDef(), data.getParam(), new String[]{});
 		step = data.isStep();
 		gui = data.isGraphic();
-		address = connection.getAdress();
+		address = connection.getAddress();
+		
+		setSeparator();
+		
+		state = this.makeState(data.getDef(), data.getParam(), new String[]{});
+		
 		
 		// If this worker must publish to the "step" topic
 		if (step)
@@ -66,6 +96,17 @@ public class Worker
 		
 		
 	}
+	
+	private static void setSeparator() 
+	{
+		OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
+		
+		if(os.getName().contains("Windows"))
+			SEPARATOR = "\\";
+		if(os.getName().contains("Linux") || os.getName().contains("OSX"))
+			SEPARATOR = "/";
+	}
+	
 	
 	public boolean isGUI()
 	{
@@ -266,31 +307,116 @@ public class Worker
 	 */
 	public DistributedState makeState(Class simClass, Object[] args_sim, String[] args_mason)
 	{
-		try
+		Object obj = null;
+		
+		if(simClass != null) //hardcoded simulation
 		{
-			//System.out.println("Class name: "+simClass.getName());
-			
-			Constructor constr = simClass.getConstructor(new Class[]{ args_sim.getClass() });
-			Object obj = constr.newInstance(new Object[]{ args_sim });
-			
-			if(obj instanceof DistributedState)
-			{
-				// The instantiated class is the proper simulation class
-				return (DistributedState)obj;
+			Constructor constr;
+			try {
+				constr = simClass.getConstructor(new Class[]{ args_sim.getClass() });
+				obj = constr.newInstance(new Object[]{ args_sim });
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			else
-			{
-				// The instantiated class is a GUIState
-				GUIState gui = (GUIState)obj;
-				console = (Console)gui.createController();
-				console.setVisible(true);
-				console.pressPause();
-				// Read as "get <state> variable from object <obj>"
-				return (DistributedState)obj.getClass().getField("state").get(obj); 
-			 }
-		} catch (Exception e) {
-			throw new RuntimeException("Exception occurred while trying to construct the simulation " + simClass + "\n" + e);			
+			
 		}
+		else
+		{
+			try
+			{
+				
+				URL url = Updater.getSimulationJar(data);
+				
+			    obj = getSimulationInstance(args_sim, url,gui);
+				
+				
+			} catch (Exception e) {
+				throw new RuntimeException("Exception occurred while trying to construct the simulation " + simClass + "\n" + e);			
+			}
+		}
+		
+		
+		if(obj instanceof DistributedState)
+		{
+			
+			// The instantiated class is the proper simulation class
+			return (DistributedState)obj;
+		}
+		else
+		{
+			
+			// The instantiated class is a GUIState
+			GUIState gui = (GUIState)obj;
+			console = (Console)gui.createController();
+			console.setVisible(true);
+			console.pressPause();
+			// Read as "get <state> variable from object <obj>"
+			try {
+				return (DistributedState)obj.getClass().getField("state").get(obj);
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchFieldException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+		 }
+	
+		return null;
+	}
+
+	private Object getSimulationInstance(Object[] args_sim, URL url, boolean isGui)
+			throws NoSuchMethodException, IllegalAccessException,
+			InvocationTargetException, ClassNotFoundException,
+			InstantiationException 
+			{
+		JarClassLoader cl = new JarClassLoader(url);
+
+		cl.addToClassPath();
+
+		// String name = "dmason.sim.app.DAntsForage.DAntsForage";
+		String name = null;
+		try {
+			name = cl.getMainClassName();
+		} catch (IOException e) {
+			System.err.println("I/O error while loading JAR file:");
+			e.printStackTrace();
+			System.exit(1);
+		}
+		if (name == null) {
+			System.out.println("Specified jar file does not contain a 'Main-Class'" +
+					" manifest attribute");
+		}
+
+		if(isGui)
+		{
+
+			name += "WithUI";
+		}
+		Object obj = cl.getInstance(name, args_sim);
+		return obj;
 	}
 	
 	public ArrayList<MessageListener> getListeners()

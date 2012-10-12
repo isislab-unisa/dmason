@@ -1,159 +1,100 @@
+/**
+ * Copyright 2012 Università degli Studi di Salerno
+
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package dmason.util.SystemManagement;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JOptionPane;
 
 import com.sun.jmx.remote.internal.ArrayQueue;
 
-import dmason.sim.app.DAntsForage.DAntsForage;
 import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.util.connection.Address;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 
-public class MasterDaemonStarter {
+public class MasterDaemonStarter implements Observer
+{
+
+
 	/**
 	 * The number of regions the field is split in.
 	 */
 	private int numRegions;
-	
+
 	/**
 	 * Max distance an agent can travel in a single step. 
 	 */
 	private int jumpDistance;
-	
+
 	private int numAgents = 25;
 	private int width = 201;
 	private int height = 201;
-	
+
 	/**
 	 * Field partitioning mode.
 	 */
 	private int fieldMode;
-	
+
 	/**
 	 * Connection with a provider.
 	 */
 	private ConnectionNFieldsWithActiveMQAPI connection;
-	
+
 	/**
 	 * Provider address.
 	 */
 	private Address address;
-	
+
 	/**
 	 * Master's topic name.
 	 */
 	private String myTopic = "MASTER";
-	
+
 	/**
 	 * A list of workers listening on the provider.
 	 * Workers are identified by their topic
 	 */
 	private ArrayList<String> workerTopics;
-	
+
 	private MasterDaemonListener myml;
+
+	private Address addr;
+
+	private JMasterUI masterUi;
 
 	/**
 	 * Constructor.
 	 * @param conn Connection with a provider.
 	 */
-	public MasterDaemonStarter(Connection conn)
+	public MasterDaemonStarter(Connection conn, JMasterUI ui)
 	{
 		connection = (ConnectionNFieldsWithActiveMQAPI)conn;
-		address = connection.getAdress();
-	}
+		address = connection.getAddress();
 
-	public boolean connectToServer()
-	{
-		try
-		{
-			if(connection.createTopic(myTopic,1)==true)
-			{
-				if(connection.subscribeToTopic(myTopic)==true)
-					connection.asynchronousReceive(myTopic, myml = new MasterDaemonListener());
-				else return false;
-			}
-			else return false;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return true;
-	}
+		masterUi = ui;
 
-	/**
-	 * Retrieve a list of workers' topics, that is the list of topics whose
-	 * name begins with "SERVICE"
-	 * @return An <code>ArrayList<String></code> of workers' topic names
-	 * @throws Exception
-	 */
-	public ArrayList<String> getTopicList() throws Exception
-	{
-		workerTopics = new ArrayList<String>();
-		for(String topicName : connection.getTopicList())
-		{
-			if(topicName.startsWith("SERVICE"))
-			{
-				workerTopics.add(topicName);
-				connection.createTopic(topicName, 1);
-			}
-		}
-		return workerTopics;
-	}
 
-	public PeerStatusInfo getLatestUpdate(String key)
-	{
-		return myml.getLatestUpdate(key);
-	}
-
-	public void info(String key) throws Exception{
-		connection.publishToTopic("info", key, "info");
-	}
-
-	/**
-	 * Pauses the workers.
-	 * @throws Exception
-	 */
-	public void pause() throws Exception
-	{
-		// Just publish to workers' topics the string "pause"
-		// under the key "pause"
-		for(String topicName : workerTopics)
-			connection.publishToTopic("pause", topicName, "pause");
-	}
-
-	/**
-	 * Stops the workers.
-	 * @throws Exception
-	 */
-	public void stop() throws Exception
-	{
-		for(String topicName : workerTopics)
-			connection.publishToTopic("stop", topicName, "stop");
-	}
-	
-	/**
-	 * Reset the workers.
-	 * @throws Exception
-	 */
-	public void reset() throws Exception
-	{
-		for(String topicName : workerTopics)
-			connection.publishToTopic("reset", topicName, "reset");
-	}
-
-	/**
-	 * Starts/resumes the workers.
-	 * @throws Exception
-	 */
-	public void play() throws Exception
-	{
-		for(String topicName : workerTopics)
-			connection.publishToTopic("play", topicName, "play");
 	}
 
 	/**
@@ -176,7 +117,7 @@ public class MasterDaemonStarter {
 	 * @param selSim Selected simulation class' canonical name.
 	 * @param gui A reference to JMasterUI. 
 	 */
-	public void start(int regions, int width, int height, int agents, int maxDistance, int mode, HashMap<String, EntryVal<Integer, Boolean>> config, String selSim, JMasterUI gui)
+	public void start(int regions, int width, int height, int agents, int maxDistance, int mode, HashMap<String, EntryVal<Integer, Boolean>> config, String selSim, JMasterUI gui,Address ftpAddress)
 	{
 		this.numRegions = regions;
 		this.numAgents = agents;
@@ -187,18 +128,29 @@ public class MasterDaemonStarter {
 		String ip = this.address.getIPaddress();
 		Class<?> selClassUI = null;
 		Class<?> selClass = null;	
-
-		// Try to load the class definitions used by selected simulation
-		try
+	
+	
+		boolean isJarSimulation = true;
+		if(!selSim.contains(".jar")) //hardcoded simulation
 		{
-			selClass = Class.forName(selSim);
-			//selClassUI = Class.forName(selSim);
-			selClassUI = Class.forName(selSim + "WithUI");
-		} catch (ClassNotFoundException e2) {
-			System.err.println("Unable to load the simulation class " + selSim);
-			e2.printStackTrace();
+			// Try to load the class definitions used by selected simulation
+			try
+			{
+				selClass = Class.forName(selSim);
+				//selClassUI = Class.forName(selSim);
+				selClassUI = Class.forName(selSim + "WithUI");
+	
+				isJarSimulation = false;
+			} catch (ClassNotFoundException e2) {
+				System.err.println("Unable to load the simulation class " + selSim);
+				e2.printStackTrace();
+			}
 		}
-		
+		else
+		{
+			addr = ftpAddress;
+		}
+	
 		//
 		if (ip.equals("127.0.0.1"))
 		{
@@ -209,8 +161,8 @@ public class MasterDaemonStarter {
 				e1.printStackTrace();
 			}
 		}
-
-		
+	
+	
 		if (mode == DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE)
 		{
 			int cnt = 0;
@@ -225,16 +177,28 @@ public class MasterDaemonStarter {
 					StartUpData data = new StartUpData();
 					if (cnt == numRegions / 2)
 						data.setStep(true);
-
+	
 					if (config.get(workerTopic).isFlagTrue())
 					{
 						data.graphic = true;
-						data.setDef(selClassUI);
+						if(!isJarSimulation)
+							data.setDef(selClassUI);
+						else
+						{	
+							data.setJarName(selSim);
+							data.setFTPAddress(addr);
+						}
 					}
 					else
 					{
 						data.graphic = false;
-						data.setDef(selClass);
+						if(!isJarSimulation)
+							data.setDef(selClass);
+						else
+						{	
+							data.setJarName(selSim);
+							data.setFTPAddress(addr);
+						}
 					}
 					data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,0,cnt,DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE});
 					classes.add(data);
@@ -243,7 +207,7 @@ public class MasterDaemonStarter {
 				// Publish informations about simulation to worker's topic
 				connection.publishToTopic(classes, workerTopic, "classes");
 			}
-			
+	
 			gui.setSystemSettingsEnabled(false);
 		}
 		else if(mode == DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE)
@@ -280,7 +244,7 @@ public class MasterDaemonStarter {
 					classes.add(defs.get(index));					
 					index++;
 				}
-
+	
 				if(connection.publishToTopic(classes, workerTopic, "classes")==true)
 				{
 					gui.setSystemSettingsEnabled(false);
@@ -292,78 +256,219 @@ public class MasterDaemonStarter {
 			}
 		} else if (mode==DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE){
 			// For each region...
-						ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
-						for (int i=0;i<Math.sqrt(numRegions);i++){
-							for (int k=0;k<Math.sqrt(numRegions);k++){
-								StartUpData data = new StartUpData();
-								// Set step on the central region
-								if (i==k)
-									data.setStep(true);
-								//data.setDef(DAntsForage.class);
-								data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE});
-								defs.add(data);
-								data.graphic=false;
-							}
-						}
-						int index=0;
-						for (String workerTopic : config.keySet())
-						{
-							ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
-							int fieldsInWorker = config.get(workerTopic).getNum();
-							for(int i=0;i<fieldsInWorker;i++)
-							{
-								defs.get(index).graphic = config.get(workerTopic).isFlagTrue();
-								if(config.get(workerTopic).isFlagTrue())
-								{
-									defs.get(index).setDef(selClassUI);
-								}
-								else
-								{
-									defs.get(index).setDef(selClass);
-								}
-								classes.add(defs.get(index));					
-								index++;
-							}
-
-							try{
-								connection.publishToTopic(classes,workerTopic,"classes");	
-							}catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
+			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
+			for (int i=0;i<Math.sqrt(numRegions);i++){
+				for (int k=0;k<Math.sqrt(numRegions);k++){
+					StartUpData data = new StartUpData();
+					// Set step on the central region
+					if (i==k)
+						data.setStep(true);
+					//data.setDef(DAntsForage.class);
+					data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE});
+					defs.add(data);
+					data.graphic=false;
+				}
+			}
+			int index=0;
+			for (String workerTopic : config.keySet())
+			{
+				ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
+				int fieldsInWorker = config.get(workerTopic).getNum();
+				for(int i=0;i<fieldsInWorker;i++)
+				{
+					defs.get(index).graphic = config.get(workerTopic).isFlagTrue();
+					if(config.get(workerTopic).isFlagTrue())
+					{
+						defs.get(index).setDef(selClassUI);
+					}
+					else
+					{
+						defs.get(index).setDef(selClass);
+					}
+					classes.add(defs.get(index));					
+					index++;
+				}
+	
+				try{
+					connection.publishToTopic(classes,workerTopic,"classes");	
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
-		public void hilbert(ArrayList<StartUpData> defs,ArrayList<String> clients)
+	public boolean connectToServer()
+	{
+		try
 		{
-			ArrayQueue<StartUpData> queue = new ArrayQueue<StartUpData>(25);
-			queue.add(defs.get(0));
-			queue.add(defs.get(1));
-			queue.add(defs.get(5));
-			queue.add(defs.get(6));
-			queue.add(defs.get(2));
-			queue.add(defs.get(7));
-			queue.add(defs.get(12));
-			queue.add(defs.get(17));
-			queue.add(defs.get(16));
-			queue.add(defs.get(11));
-			queue.add(defs.get(10));
-			queue.add(defs.get(15));
-			queue.add(defs.get(20));
-			queue.add(defs.get(21));
-			queue.add(defs.get(22));
-			queue.add(defs.get(23));
-			queue.add(defs.get(24));
-			queue.add(defs.get(19));
-			queue.add(defs.get(18));
-			queue.add(defs.get(13));
-			queue.add(defs.get(14));
-			queue.add(defs.get(9));
-			queue.add(defs.get(8));
-			queue.add(defs.get(3));
-			queue.add(defs.get(4));
-			/*CentralGuiState g = new CentralGuiState(new CentralSimState());
+			if(connection.createTopic(myTopic,1)==true)
+			{
+				if(connection.subscribeToTopic(myTopic)==true)
+				{
+					connection.asynchronousReceive(myTopic, myml = new MasterDaemonListener());
+
+					myml.getObservable().addObserver(this);
+				}
+				else return false;
+			}
+			else return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+
+	/**
+	 * Retrieve a list of workers' topics, that is the list of topics whose
+	 * name begins with "SERVICE"
+	 * @return An <code>ArrayList<String></code> of workers' topic names
+	 * @throws Exception
+	 */
+	public ArrayList<String> getTopicList() throws Exception
+	{
+		workerTopics = new ArrayList<String>();
+		for(String topicName : connection.getTopicList())
+		{
+			if(topicName.startsWith("SERVICE"))
+			{
+				workerTopics.add(topicName);
+				connection.createTopic(topicName, 1);
+			}
+		}
+		return workerTopics;
+	}
+
+
+	public PeerStatusInfo getLatestUpdate(String key)
+	{
+		return myml.getLatestUpdate(key);
+	}
+
+	/** Command Section */
+	
+	/**
+	 * Pauses the workers.
+	 * @throws Exception
+	 */
+	public void info(String key) throws Exception
+	{
+		connection.publishToTopic("info", key, "info");
+	}
+
+	/**
+	 * Pauses the workers.
+	 * @throws Exception
+	 */
+	public void pause() throws Exception
+	{
+		// Just publish to workers' topics the string "pause"
+		// under the key "pause"
+		for(String topicName : workerTopics)
+			connection.publishToTopic("pause", topicName, "pause");
+	}
+
+	/**
+	 * Stops the workers.
+	 * @throws Exception
+	 */
+	public void stop(UpdateData ud) throws Exception
+	{
+		for(String topicName : workerTopics)
+			connection.publishToTopic(ud, topicName, "stop");
+	}
+
+	/**
+	 * Reset the workers.
+	 * @throws Exception
+	 */
+	public void reset() throws Exception
+	{
+		for(String topicName : workerTopics)
+			connection.publishToTopic("reset", topicName, "reset");
+	}
+
+	/**
+	 * Starts/resumes the workers.
+	 * @throws Exception
+	 */
+	public void play() throws Exception
+	{
+		for(String topicName : workerTopics)
+			connection.publishToTopic("play", topicName, "play");
+	}
+
+	/**
+	 * Notify the worker for the update
+	 * @param ud 
+	 * @throws Exception
+	 */
+	public void notifyUpdateAll(UpdateData ud) 
+	{
+		for(String topicName : workerTopics)
+			connection.publishToTopic(ud, topicName, "update");
+	}
+
+	/**
+	 * Notify some worker for the update
+	 * @param ud 
+	 * @throws Exception
+	 */
+	public void notifyUpdate(UpdateData ud, ArrayList<String> toUpdate) 
+	{
+		for(String topicName : toUpdate)
+			connection.publishToTopic(ud, topicName, "update");
+	}
+
+	/** End Command Section */
+	
+	
+	// reiceves notify from MasterDeamonListener related to worker update
+	@Override
+	public void update(Observable arg0, Object arg1) {
+	
+		if(arg1 == null) // used for check update process progress
+			masterUi.incrementUpdatedWorker();
+		else
+		{  //automatic update, used for check worker version
+			PeerStatusInfo workerInfo = (PeerStatusInfo) arg1;
+			masterUi.addToUpdate(workerInfo);
+		}
+	
+	}
+
+	public void hilbert(ArrayList<StartUpData> defs,ArrayList<String> clients)
+	{
+		ArrayQueue<StartUpData> queue = new ArrayQueue<StartUpData>(25);
+		queue.add(defs.get(0));
+		queue.add(defs.get(1));
+		queue.add(defs.get(5));
+		queue.add(defs.get(6));
+		queue.add(defs.get(2));
+		queue.add(defs.get(7));
+		queue.add(defs.get(12));
+		queue.add(defs.get(17));
+		queue.add(defs.get(16));
+		queue.add(defs.get(11));
+		queue.add(defs.get(10));
+		queue.add(defs.get(15));
+		queue.add(defs.get(20));
+		queue.add(defs.get(21));
+		queue.add(defs.get(22));
+		queue.add(defs.get(23));
+		queue.add(defs.get(24));
+		queue.add(defs.get(19));
+		queue.add(defs.get(18));
+		queue.add(defs.get(13));
+		queue.add(defs.get(14));
+		queue.add(defs.get(9));
+		queue.add(defs.get(8));
+		queue.add(defs.get(3));
+		queue.add(defs.get(4));
+		/*CentralGuiState g = new CentralGuiState(new CentralSimState());
 		Console c = (Console) g.createController();
 		c.pressPause();*/
-		}
+	}
+
+
 }
