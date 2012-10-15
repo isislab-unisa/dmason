@@ -81,8 +81,7 @@ public class StartWorker implements StartWorkerInterface {
 			e1.printStackTrace();
 			path = "";
 		}
-	   
-		logger.debug("path: " +path);
+		logger.debug("Path: "+path);
 	    if(path.contains(".jar")) //from jar
 	    {
 
