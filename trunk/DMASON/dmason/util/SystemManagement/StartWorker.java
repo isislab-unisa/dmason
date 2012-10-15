@@ -23,8 +23,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.net.URLDecoder;
 import java.util.Properties;
 
 import org.apache.commons.io.FilenameUtils;
@@ -52,7 +54,7 @@ public class StartWorker implements StartWorkerInterface {
 	private Address ipAddress;
 	
 	private String myTopic;
-	private static final String version = "2.0";
+	private static final String version = "1.0";
 	private String digest;
 
 	
@@ -71,8 +73,16 @@ public class StartWorker implements StartWorkerInterface {
 	    myTopic = topic;
 	    
 	    // Get the path from which worker was started
-	    String path = StartWorkerWithGui.class.getProtectionDomain().getCodeSource().getLocation().getFile();
-		
+	    String path;
+		try {
+			path = URLDecoder.decode(StartWorkerWithGui.class.getProtectionDomain().getCodeSource().getLocation().getFile(),"UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			path = "";
+		}
+	   
+		logger.debug("path: " +path);
 	    if(path.contains(".jar")) //from jar
 	    {
 
