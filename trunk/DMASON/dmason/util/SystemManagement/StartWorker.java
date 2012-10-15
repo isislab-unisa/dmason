@@ -54,7 +54,7 @@ public class StartWorker implements StartWorkerInterface {
 	private Address ipAddress;
 	
 	private String myTopic;
-	private static final String version = "1.0";
+	private static final String version = "2.0";
 	private String digest;
 
 	
