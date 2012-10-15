@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path=""/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libraries/itext-1.2.jar"/>
-	<classpathentry kind="lib" path="libraries/jcommon-1.0.0.jar"/>
-	<classpathentry kind="lib" path="libraries/jfreechart-1.0.1.jar"/>
-	<classpathentry kind="lib" path="libraries/jmf.jar"/>
-	<classpathentry kind="lib" path="libraries/jms.jar"/>
-	<classpathentry kind="lib" path="libraries/quaqua-colorchooser-only-for-osx.jar"/>
-	<classpathentry kind="lib" path="libraries/activemq-all-5.5.1.jar"/>
-	<classpathentry kind="lib" path="libraries/ftp4j-1.7.1.jar"/>
-	<classpathentry kind="lib" path="libraries/slf4j-api-1.5.2.jar"/>
-	<classpathentry kind="lib" path="libraries/commons-io-2.4.jar"/>
-	<classpathentry kind="lib" path="libraries/slf4j-log4j12-1.5.2.jar"/>
-	<classpathentry kind="lib" path="libraries/log4j-1.2.17.jar"/>
-	<classpathentry kind="lib" path="libraries/commons-codec-1.7.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/MASON"/>
-	<classpathentry kind="lib" path="libraries/ftplet-api-1.0.5.jar"/>
-	<classpathentry kind="lib" path="libraries/ftpserver-core-1.0.5.jar"/>
-	<classpathentry kind="lib" path="libraries/mina-core-2.0.0-RC1.jar"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="libraries/itext-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/jcommon-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/jfreechart-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/jmf.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/jms.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/quaqua-colorchooser-only-for-osx.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/activemq-all-5.5.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/ftp4j-1.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/slf4j-api-1.5.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/commons-io-2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/slf4j-log4j12-1.5.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/log4j-1.2.17.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/commons-codec-1.7.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/MASON"/>
+	<classpathentry exported="true" kind="lib" path="libraries/ftplet-api-1.0.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/ftpserver-core-1.0.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/mina-core-2.0.0-RC1.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
