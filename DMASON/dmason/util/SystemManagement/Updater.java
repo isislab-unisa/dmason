@@ -225,7 +225,7 @@ public class Updater
 
 		if(os.getName().contains("Windows"))
 			SEPARATOR = "\\";
-		if(os.getName().contains("Linux") || os.getName().contains("OSX"))
+		if(os.getName().contains("Linux") || os.getName().contains("OS X"))
 			SEPARATOR = "/";
 	}
 

@@ -110,16 +110,15 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
 		
-		String path;
 		// Get the path from which worker was started
-		try {
-			path = URLDecoder.decode(StartWorkerWithGui.class.getProtectionDomain().getCodeSource().getLocation().getFile(),"UTF-8");
-		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			path = "";
-		}
-
+		 String path;
+			try {
+				path = URLDecoder.decode(StartWorkerWithGui.class.getProtectionDomain().getCodeSource().getLocation().getFile(),"UTF-8");
+			} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				path = "";
+			}
 		logger.debug("Path: "+path);
 
 		if(path.contains(".jar")) //from jar
