@@ -25,9 +25,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
@@ -107,9 +109,16 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
-
+		
+		String path;
 		// Get the path from which worker was started
-		String path = StartWorkerWithGui.class.getProtectionDomain().getCodeSource().getLocation().getFile();
+		try {
+			path = URLDecoder.decode(StartWorkerWithGui.class.getProtectionDomain().getCodeSource().getLocation().getFile(),"UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			path = "";
+		}
 
 		logger.debug("Path: "+path);
 
