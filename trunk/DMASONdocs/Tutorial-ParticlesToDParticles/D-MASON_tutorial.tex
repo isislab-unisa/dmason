@@ -83,7 +83,7 @@ In this document, in particular, we provide a step-by-step guide to the process 
 
 \section{Acknowledgements}
 \dm\ contains work by (in alphabetical order): \textit{Michele Carillo, Gennaro Cordasco, Rosario De Chiara, Fabio Fulgido, Ada Mancuso, Dario Mazzeo, Francesco Raia, Vittorio Scarano, Flavio Serrapica, Carmine Spagnuolo, 
-Luca Vicidomini, Mario Vitale.}
+Luca Vicidomini, Mario Fiore Vitale.}
 
 \section{Structure}
 The starting point is the package \texttt{Particles} is composed by three classes, as it can be found in the original MASON distribution:
@@ -428,7 +428,8 @@ To activate the load balancing mechanism the field must be square (same width an
 In this section it is explained the System Management functionalities, in detail:
 \begin{description}
 	\item[Peer Auto Reconnection] Automatic reconnection when the communication server (CS) is restarted after a failure;
-	\item[Restart Simulation] Restart simulation without restart the CS (eg launch another simulation). 
+	\item[Restart Simulation] Restart simulation without restart the CS (eg launch another simulation).
+	\item[Jar Deploy] Deploy simulation/update jar to workers.
 \end{description}
 
 While the Peer Auto Reconnection is a mechanism that has been implemented at the framework level to enable the Simulation Reset requires to modify the ActiveMQ configuration file.
@@ -502,15 +503,75 @@ We obtain this
 \end{lstlisting}
 
 \subsection{How to use Master GUI to restart simulation}
-
 To restart simulation there is reset button (in a the red circle in \ref{fig:mastersr}). When a simulation is stopped by clicking the button the parameters can be edit again and the simulation can be re-initialized.
-
-\begin{figure}
+\begin{figure}[h]
 \centering{
-\includegraphics[width=1.3\textwidth, bb=0 0 1012 300]{resetDetail.png}
+\includegraphics[scale= 0.5]{resetDetail.png}
 \caption{Simulation reset button. \label{fig:mastersr}}}
 \end{figure}
+\subsection{Jar Deploy}
+\subsubsection{Simulation Deploy}
+This feature allows the user to deploy simulation with a jar file.\\
+\begin{figure}[h]
+\centering{
+\includegraphics[scale=1]{images/simPackage.png}
+\caption{DFlockers simulation package. \label{fig:dflockpackage}}}
+\end{figure}
+To create simulation jar, follows this steps:
+\begin{enumerate} 
+  \item export JAR file
+  \item select main class (i.e. DFlockers)
+\end{enumerate}
+To deploy the created jar, the user can use the MasterUI (fig.
+\ref{fig:simjar}).
+\begin{figure}[h]
+\centering{
+\includegraphics[scale=0.5]{images/simjar.png}
+\caption{Simulation deploy in MasterUI. \label{fig:simjar}}}
+\end{figure}\\
+First of all the user can load the simulation jar by selecting it and clicking
+``load jar'' button. After this operations the simulation can be chosen from the
+``Choose your simulation'' combobox.
+\subsubsection{Update Deploy}
+This feature allows the user to update the worker application.\\ \\
+\textbf{Manual Update.}The user can start manual update from System/Update
+Worker(fig.
+\ref{fig:upmenu}) in the MasterUI application.
+\begin{figure}[h!]
+\centering{
+\includegraphics[scale=0.7]{images/updatemenu.png}
+\caption{Manual update in MasterUI. \label{fig:upmenu}}}
+\end{figure}
+\newpage
+This will display the update panel (fig. \ref{fig:update}).\\
+\begin{figure}[h]
+\centering{
+\includegraphics[scale=0.5]{images/update.png}
+\caption{Manual update panel. \label{fig:update}}}
+\end{figure}
+To start manual update the user can load the update jar by selecting it and then
+click on the ``Update Worker'' button. This wil cause the manual update process
+to start, the progress will be displayed in the ``Update Progress''.\\
+\textbf{Automatic Update.} If the workers connected to the system are not the
+same version, the MasterUI is able to decetct this problem and starts the
+automatic update process.\\
+The automatic update requires that the last worker jar file is loaded in the
+system, if the file is not found, the MasteUI displays this message
+\begin{figure}[h]
+\centering{
+\includegraphics[scale=0.5]{images/mexfile.png}
+\caption{Jar update not found. \label{fig:mexfile}}}
+\end{figure}\\
+If the file exists and there are workers with different
+version, the MasterUI shows this message
+\begin{figure}[h!]
+\centering{
+\includegraphics[scale=0.5]{images/notsamever.png}
+\caption{Starting update process. \label{fig:notsamever}}}
+\end{figure}
+and then the process starts.
 
+\newpage
 \section{The Global Inspector}
 
 Taking inspiration from the \ma inspector, we wanted to create a mechanism to let the user to inspect a distributed simulation. This is just a first a step toward a complete support of the mechanism.
