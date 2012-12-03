@@ -25,7 +25,11 @@ import java.lang.reflect.Modifier;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.List;
 import java.util.jar.Attributes;
+
+import dmason.batch.data.EntryParam;
+import dmason.batch.data.GeneralParam;
 
 /**
  * This class contains the mechanism for dynamically load jar
@@ -85,7 +89,7 @@ public class JarClassLoader extends URLClassLoader
 		    }
 		}
 	
-	public Object getInstance(String className, Object[] args_sim) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+	public Object getInstance(String className, GeneralParam args_sim) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
 	{
 		 Class simClass = loadClass(className);
 		 
@@ -96,5 +100,20 @@ public class JarClassLoader extends URLClassLoader
 		
 		 return obj;
 	}
+
+	public Object getInstance(String className, GeneralParam args_gen, List<EntryParam<String, Object>> simParam, String topicPrefix) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException 
+	{
+		Class simClass = loadClass(className);
+
+
+
+		Constructor constr = simClass.getConstructor(new Class[]{ args_gen.getClass(),List.class, String.class});
+		Object obj = constr.newInstance(new Object[]{ args_gen ,simParam, topicPrefix});
+
+		return obj;
+	}
+	
+
+	
 
 }

@@ -17,10 +17,13 @@
 
 package dmason.util.SystemManagement;
 
+import it.sauronsoftware.ftp4j.FTPClient;
+
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.HeadlessException;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,20 +35,32 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -85,9 +100,16 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.text.DefaultCaret;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.xml.XMLConstants;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -104,9 +126,23 @@ import org.apache.ftpserver.usermanager.impl.BaseUser;
 import org.apache.ftpserver.usermanager.impl.WritePermission;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
+
+import com.google.common.collect.Sets;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import sim.display.Console;
+import dmason.batch.BatchExecutor;
+import dmason.batch.data.Batch;
+import dmason.batch.data.EntryParam;
+import dmason.batch.data.GeneralParam;
+import dmason.batch.data.Param;
+import dmason.batch.data.ParamFixed;
+import dmason.batch.data.ParamRange;
+import dmason.batch.data.EntryParam.ParamType;
 import dmason.sim.field.grid.DSparseGrid2DFactory;
+import dmason.util.Util;
 import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.connection.MyHashMap;
@@ -115,6 +151,7 @@ import dmason.util.exception.NoDigestFoundException;
 import dmason.util.garbagecollector.Start;
 import dmason.util.trigger.Trigger;
 import dmason.util.trigger.TriggerListener;
+import javax.swing.JProgressBar;
 
 
 /**
@@ -145,6 +182,8 @@ public class JMasterUI extends JFrame  implements Observer{
 	private static final String FTP_PORT = "18786";
 	private File updateFile;
 	private File simulationFile;
+	private File configFile;
+	private String xsdFilename = "batch.xsd";
 	private static String SEPARATOR;
 	
 	private WorkerUpdater wu;
@@ -190,6 +229,12 @@ public class JMasterUI extends JFrame  implements Observer{
 	private Start starter;
 	private Console c;	
 	private boolean isSubmitted = false;
+	private BatchExecutor batchExec;
+	
+	private boolean isBatchTest = false;
+	
+	private AtomicInteger testCount = new AtomicInteger();
+	private int totalTests;
 
 	private boolean dont=true;
 	private int MODE;
@@ -284,6 +329,14 @@ public class JMasterUI extends JFrame  implements Observer{
 	private int totPeers = 0;
 	private String workerJarName;
 	private String curWorkerDigest;
+	private JPanel jPanelRunBatchTests;
+	private boolean enableReset;
+	private JTextField textFieldConfigFilePath;
+	private JProgressBar progressBarBatchTest;
+	private int fineshed = 0;
+	private JCheckBox chckbxParallelBatch;
+	protected Logger batchLogger;
+	
 	// fine codice profiling
 
 	
@@ -319,10 +372,26 @@ public class JMasterUI extends JFrame  implements Observer{
 	
 	public JMasterUI()
 	{	
-		//used for set the name of logger in log4j.properties
-		System.setProperty("masterlogfile.name","masterUI");
-		logger = Logger.getLogger(JMasterUI.class.getCanonicalName());
-				
+		
+			
+		// Get the path from which worker was started
+		String path;
+		try {
+			path = URLDecoder.decode(StartWorkerWithGui.class.getProtectionDomain().getCodeSource().getLocation().getFile(),"UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			path = "";
+		}
+		logger.debug("Path: "+path);
+
+		enableReset = true;
+		// disabled for debug
+		/*if(path.contains(".jar")) //from jar
+			enableReset = true;
+		else
+			enableReset = false;
+		*/
 		initComponents();
 		setSystemSettingsEnabled(false);
     	config = new HashMap<String, EntryVal<Integer,Boolean>>();
@@ -333,11 +402,16 @@ public class JMasterUI extends JFrame  implements Observer{
 		starter = new Start();
 		
 	  
+		curWorkerDigest = getCurWorkerDigest();
 		
+		if(curWorkerDigest == null)
+			loadUpdateFile();
 	}
 
 	public static void main(String[] args){
-		
+		//used for set the name of logger in log4j.properties
+		System.setProperty("masterlogfile.name","masterUI");
+		logger = Logger.getLogger(JMasterUI.class.getCanonicalName());
 		// check if the OS
 		setSeparator();
 		
@@ -1392,6 +1466,8 @@ public class JMasterUI extends JFrame  implements Observer{
 
 							//---- textField1 ----
 							notifyArea.setEditable(false);
+							DefaultCaret caret = (DefaultCaret)notifyArea.getCaret();
+							caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 							scrollPane3.setViewportView(notifyArea);
 						}
 
@@ -1505,6 +1581,226 @@ public class JMasterUI extends JFrame  implements Observer{
 						.addComponent(jButtonLoadJar, GroupLayout.PREFERRED_SIZE, 146, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 155, Short.MAX_VALUE));
 				}
+				
+				jPanelRunBatchTests = new JPanel();
+				tabbedPane2.addTab("Run batch tests", null, jPanelRunBatchTests, null);
+				
+				JLabel lblSelectConfigurationFile = new JLabel("Select configuration file:");
+				
+				textFieldConfigFilePath = new JTextField();
+				textFieldConfigFilePath.setColumns(10);
+				
+				JButton buttonChooseConfigFile = new JButton();
+				buttonChooseConfigFile.addActionListener(new ActionListener() {
+					
+
+					public void actionPerformed(ActionEvent arg0) {
+						
+						configFile = showFileChooser();
+						if(configFile != null)
+							textFieldConfigFilePath.setText(configFile.getAbsolutePath());
+					}
+				});
+				buttonChooseConfigFile.setIcon(new ImageIcon(JMasterUI.class.getResource("/dmason/resource/image/openFolder.png")));
+				
+				JButton buttonLoadConfig = new JButton("Load Configuration");
+				buttonLoadConfig.addActionListener(new ActionListener() {
+					
+					
+
+					public void actionPerformed(ActionEvent e) {
+						
+						try {
+							if(validateXML(configFile, new File(xsdFilename)))
+							 {
+								 System.out.println("valid");
+								 
+								 Batch batch = loadConfigFromXML(configFile);
+								 
+								 if(batch != null)
+								 {
+									 if(batch.getNeededWorkers() > peers.size() || batch.getNeededWorkers() == 0)
+										 JOptionPane.showMessageDialog(JMasterUI.this, "There are not enough workers to start the simulation");
+									 else
+									 {
+										 System.out.println("Needed Worker: "+batch.getNeededWorkers());
+										 Set<List<EntryParam<String, Object>>> testList = generateTestsFrom(batch);
+											
+										 ConcurrentLinkedQueue<List<EntryParam<String, Object>>> testQueue = new ConcurrentLinkedQueue<List<EntryParam<String,Object>>>();
+										 
+										 for (List<EntryParam<String, Object>> test : testList) 
+											testQueue.offer(test);
+										 
+										 try {
+											List<List<String>> workersPartition = Util.chopped(master.getTopicList(), batch.getNeededWorkers());
+										
+											System.out.println(workersPartition.toString());
+											
+											testCount.set(0);
+											totalTests =  testList.size();
+											
+											progressBarBatchTest.setValue(0);
+											progressBarBatchTest.setString("0 %");
+											progressBarBatchTest.setStringPainted(true);
+											
+											batchLogger = Logger.getLogger(BatchExecutor.class.getCanonicalName());
+											
+											batchLogger.debug("Started at: "+System.currentTimeMillis());
+											int i = 1;
+											BatchExecutor batchExec;
+											for (List<String> workers : workersPartition)
+											{
+												 try {
+													 	
+														batchExec = new BatchExecutor(batch.getSimulationName(),testQueue,master,connection,root.getChildCount(),getFPTAddress(),workers,"Batch"+i,1);
+													
+														batchExec.getObservable().addObserver(JMasterUI.this);
+														batchExec.start();
+														
+														//Thread.sleep(2000);
+														System.out.println("Batch"+i+" started");
+														 
+														 i++;
+														 
+														 //not paraller simulation, I use only one batch executor
+														 if(!chckbxParallelBatch.isSelected())
+															 break;
+												 	} catch (Exception e1) {
+														// TODO Auto-generated catch block
+														e1.printStackTrace();
+													}
+													
+											}
+										 
+										 } catch (Exception e3) {
+											// TODO Auto-generated catch block
+											e3.printStackTrace();
+										}
+										
+										/* ArrayList<String> worker1 = new ArrayList<String>();
+										 ArrayList<String> worker2 = new ArrayList<String>();
+										 try {
+											 worker1.add(master.getTopicList().get(0));
+											worker2.add(master.getTopicList().get(1));
+										} catch (Exception e2) {
+											// TODO Auto-generated catch block
+											e2.printStackTrace();
+										}
+										 
+										 try {
+											batchExec = new BatchExecutor(batch.getSimulationName(),testQueue,master,progressBarBatchTest,connection,root.getChildCount(),getFPTAddress(),worker1,"Batch1");
+										} catch (Exception e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										}
+										 batchExec.registerListener();
+										 
+										 batchExec.start();
+										 
+										 System.out.println("Batch started1");
+										 try {
+												BatchExecutor batchExec1 = new BatchExecutor(batch.getSimulationName(),testQueue,master,progressBarBatchTest,connection,root.getChildCount(),getFPTAddress(),worker2,"Batch2");
+												 batchExec1 .registerListener();
+												 
+												 batchExec1 .start();
+										 } catch (Exception e1) {
+												// TODO Auto-generated catch block
+												e1.printStackTrace();
+											}
+										
+										 
+										 isBatchTest = true;
+										 
+										 System.out.println("Batch started2"); */
+									 }
+									 
+								 }
+								 else
+									 JOptionPane.showMessageDialog(JMasterUI.this, "Error when loading config file");
+							 }
+								 
+							 else
+								 System.out.println("not valids");
+						} catch (HeadlessException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+				});
+				
+				JPanel panel = new JPanel();
+				panel.setBorder(new TitledBorder(null, "Batch Status", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+				
+				chckbxParallelBatch = new JCheckBox("Parallel Batch");
+				
+				
+				GroupLayout gl_jPanelRunBatchTests = new GroupLayout(jPanelRunBatchTests);
+				gl_jPanelRunBatchTests.setHorizontalGroup(
+					gl_jPanelRunBatchTests.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_jPanelRunBatchTests.createSequentialGroup()
+							.addContainerGap()
+							.addGroup(gl_jPanelRunBatchTests.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_jPanelRunBatchTests.createSequentialGroup()
+									.addComponent(chckbxParallelBatch)
+									.addContainerGap())
+								.addGroup(gl_jPanelRunBatchTests.createParallelGroup(Alignment.LEADING)
+									.addGroup(gl_jPanelRunBatchTests.createSequentialGroup()
+										.addComponent(panel, GroupLayout.DEFAULT_SIZE, 669, Short.MAX_VALUE)
+										.addContainerGap())
+									.addGroup(gl_jPanelRunBatchTests.createSequentialGroup()
+										.addComponent(lblSelectConfigurationFile, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(textFieldConfigFilePath, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE)
+										.addGap(10)
+										.addComponent(buttonChooseConfigFile, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+										.addGap(18)
+										.addComponent(buttonLoadConfig)
+										.addGap(119)))))
+				);
+				gl_jPanelRunBatchTests.setVerticalGroup(
+					gl_jPanelRunBatchTests.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_jPanelRunBatchTests.createSequentialGroup()
+							.addContainerGap()
+							.addGroup(gl_jPanelRunBatchTests.createParallelGroup(Alignment.TRAILING)
+								.addComponent(buttonLoadConfig)
+								.addComponent(buttonChooseConfigFile, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+								.addGroup(gl_jPanelRunBatchTests.createParallelGroup(Alignment.BASELINE)
+									.addComponent(textFieldConfigFilePath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addComponent(lblSelectConfigurationFile)))
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(chckbxParallelBatch)
+							.addPreferredGap(ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 261, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap())
+				);
+				
+				progressBarBatchTest = new JProgressBar();
+				
+				JLabel lblProgress = new JLabel("Progress:");
+				GroupLayout gl_panel = new GroupLayout(panel);
+				gl_panel.setHorizontalGroup(
+					gl_panel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(lblProgress)
+							.addGap(18)
+							.addComponent(progressBarBatchTest, GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap(234, Short.MAX_VALUE))
+				);
+				gl_panel.setVerticalGroup(
+					gl_panel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel.createSequentialGroup()
+							.addContainerGap()
+							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblProgress)
+								.addComponent(progressBarBatchTest, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addContainerGap(201, Short.MAX_VALUE))
+				);
+				panel.setLayout(gl_panel);
+				jPanelRunBatchTests.setLayout(gl_jPanelRunBatchTests);
 				GroupLayout jPanelSetDistributionLayout = new GroupLayout(jPanelSetDistribution);
 				jPanelSetDistribution.setLayout(jPanelSetDistributionLayout);
 				jPanelSetDistributionLayout.setHorizontalGroup(
@@ -1651,6 +1947,8 @@ public class JMasterUI extends JFrame  implements Observer{
 				jLabelResetButton = new JLabel();
 				jLabelResetButton.setIcon(new ImageIcon(getClass().getClassLoader().getResource("dmason/resource/image/NotReload.png")));
 				jLabelResetButton.setPreferredSize(new java.awt.Dimension(20, 20));
+				
+				jLabelResetButton.setVisible(enableReset);
 			}
 			
 						// for resetting simulation
@@ -1676,7 +1974,7 @@ public class JMasterUI extends JFrame  implements Observer{
 									
 									
 									//clean up topic from AcitveMQ
-									connection.ResetSimulation();
+									connection.resetTopic();
 								
 									setSystemSettingsEnabled(true);
 								
@@ -1835,7 +2133,7 @@ public class JMasterUI extends JFrame  implements Observer{
 	private void connect(){
 		try
 		{
-			curWorkerDigest = getCurWorkerDigest();
+			
 			
 			ip = textFieldAddress.getText();			    
 			port = textFieldPort.getText();  
@@ -1946,11 +2244,13 @@ public class JMasterUI extends JFrame  implements Observer{
 		//sim = files.getSelectedFile().getName();
 	
 		JOptionPane.showMessageDialog(null,"Setting completed !");
-	
-		master.start(numRegions, (Integer)WIDTH, (Integer)HEIGHT, numAgents,maxDistance,MODE, config,selectedSimulation,this,getFPTAddress());
+		GeneralParam params = new GeneralParam((Integer)WIDTH, (Integer)HEIGHT, maxDistance, numRegions, numAgents, MODE);
+		//master.start(numRegions, (Integer)WIDTH, (Integer)HEIGHT, numAgents,maxDistance,MODE, config,selectedSimulation,this,getFPTAddress());
+		master.start(params, config,selectedSimulation,this,getFPTAddress());
 	}
 
 	private void submitDefaultMode(){
+		
 		ArrayList<String> errors = new ArrayList<String>();
 		//checkSyntaxForm(NUM_REGIONS,(Integer)WIDTH,(Integer)HEIGHT,NUM_AGENTS);
 		WIDTH = Integer.parseInt(textFieldWidth.getText());
@@ -1981,7 +2281,7 @@ public class JMasterUI extends JFrame  implements Observer{
 		}
 	
 		
-	
+	   
 	
 		if(radioButtonHorizontal.isSelected())
 			MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
@@ -1993,12 +2293,56 @@ public class JMasterUI extends JFrame  implements Observer{
 		if(radioButtonSquare.isSelected() && jCheckBoxLoadBalancing.isSelected() && (Integer)WIDTH % 3*Math.sqrt(numRegions)!=0)
 			errors.add("Width and height are not divisible by 3 * sqrt(numRegion)");
 		
-		if (numRegions % root.getChildCount() != 0)
-			errors.add("NUM_REGIONS < > = NUM_PEERS\n,please set Advanced mode!");
+		//if (numRegions % root.getChildCount() != 0)
+		//	errors.add("NUM_REGIONS < > = NUM_PEERS\n,please set Advanced mode!");
 		
 		
-		if(errors.size() == 0){
-			int div = numRegions / root.getChildCount();
+		if(errors.size() == 0)
+		{
+			
+			int regionsToPeers = numRegions / root.getChildCount();
+			int remainder = numRegions % root.getChildCount();
+			
+			if(remainder == 0) // all the workers will have the same number of regions
+			{
+				
+				EntryVal<Integer, Boolean> value; 
+				try{
+					for(String topic : master.getTopicList()){
+						value = new EntryVal(regionsToPeers, withGui);
+						//config.put(topic, div);
+						config.put(topic, value);
+					}
+					getSteps();
+
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			else
+			{
+				
+				try { // there will be some workers(remainders) that will have one more regions
+					int count = 0;
+					EntryVal<Integer, Boolean> value;
+					for(String topic : master.getTopicList()) {
+						if(count < remainder)
+							value = new EntryVal<Integer, Boolean>(regionsToPeers+1,withGui);
+						else
+							value = new EntryVal<Integer, Boolean>(regionsToPeers,withGui);
+						
+						config.put(topic, value);
+						
+						count++;
+					}
+					
+					getSteps();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			/*int div = numRegions / root.getChildCount();
 			EntryVal<Integer, Boolean> value; 
 			try{
 				for(String topic : master.getTopicList()){
@@ -2007,15 +2351,18 @@ public class JMasterUI extends JFrame  implements Observer{
 					config.put(topic, value);
 				}
 				getSteps();
-				
+
 			}catch (Exception e) {
 				e.printStackTrace();
-			}
+			}*/
 			JOptionPane.showMessageDialog(null,"Setting completed !");
-	
+
 			
-			master.start(numRegions, (Integer)WIDTH, (Integer)HEIGHT, numAgents,maxDistance,MODE, config,selectedSimulation,this,getFPTAddress());
-		
+			
+			GeneralParam params = new GeneralParam((Integer)WIDTH, (Integer)HEIGHT, maxDistance, numRegions, numAgents, MODE);
+
+			//master.start(numRegions, (Integer)WIDTH, (Integer)HEIGHT, numAgents,maxDistance,MODE, config,selectedSimulation,this,getFPTAddress());
+			master.start(params, config,selectedSimulation,this,getFPTAddress());
 		
 		}
 		else{
@@ -2268,16 +2615,20 @@ public class JMasterUI extends JFrame  implements Observer{
 	// Manages the automatic update mechanism
 	private void checkUpdate()
 	{
+		
 		if(toUpdate.isEmpty()) // All workers are updated
-		{
+		{	
+			
+			notifyArea.append("All workers are ready!\n");
 			setConnectionSettingsEnabled(false);
 			setSystemSettingsEnabled(true);
 			jMenuItemUpdateWorker.setEnabled(true);
+			
 		}
 		else
 		{
-			if(curWorkerDigest != null)
-			{
+			//if(curWorkerDigest != null)
+			//{
 				JOptionPane.showMessageDialog(this,"Not all worker have the same version! Update needed");
 				
 				wu = new WorkerUpdater(getFPTAddress(),FTP_HOME,SEPARATOR,master,toUpdate.size(),UPDATE_DIR,toUpdate);
@@ -2289,56 +2640,62 @@ public class JMasterUI extends JFrame  implements Observer{
 				File updFile = new File(FTP_HOME+SEPARATOR+UPDATE_DIR+SEPARATOR+workerJarName);
 				wu.setUpdateFile(updFile);
 				wu.startAutoUpdate();
-			}
-			else
-			{ // There is no update file
 				
-				int res = JOptionPane.showConfirmDialog(this, "Current Worker file does not exist! Do you want to load it?");
-				if(res == JOptionPane.OK_OPTION)
-				{
-					updateFile = showFileChooser();
+				toUpdate.clear();
+		}
+			//else
+			//{ // There is no update file
+				
+				//loadUpdateFile();
 					
-					if(updateFile != null)
-					{
-						File dest = new File(FTP_HOME+SEPARATOR+UPDATE_DIR+SEPARATOR+updateFile.getName());
-						
-						try {
-							FileUtils.copyFile(updateFile, dest);
-							
-							Digester dg = new Digester(DigestAlgorithm.MD5);
-							
-							InputStream in = new FileInputStream(dest);
-							curWorkerDigest = dg.getDigest(in);
-							workerJarName = updateFile.getName();
-							
-							String fileName = FilenameUtils.removeExtension(updateFile.getName());
-							dg.storeToPropFile(FTP_HOME+SEPARATOR+UPDATE_DIR+SEPARATOR+fileName+".hash");
-							
+					
+	}
+
+	private void loadUpdateFile() {
+		int res = JOptionPane.showConfirmDialog(this, "Current Worker file does not exist! Do you want to load it?");
+		if(res == JOptionPane.OK_OPTION)
+		{
+			updateFile = showFileChooser();
 			
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (NoDigestFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						
-						checkUpdate();
-					}
+			if(updateFile != null)
+			{
+				File dest = new File(FTP_HOME+SEPARATOR+UPDATE_DIR+SEPARATOR+updateFile.getName());
+				
+				try {
+					FileUtils.copyFile(updateFile, dest);
 					
+					Digester dg = new Digester(DigestAlgorithm.MD5);
+					
+					InputStream in = new FileInputStream(dest);
+					curWorkerDigest = dg.getDigest(in);
+					workerJarName = updateFile.getName();
+					
+					String fileName = FilenameUtils.removeExtension(updateFile.getName());
+					dg.storeToPropFile(FTP_HOME+SEPARATOR+UPDATE_DIR+SEPARATOR+fileName+".hash");
+					
+
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoDigestFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				if(res == JOptionPane.NO_OPTION || res == JOptionPane.CANCEL_OPTION 
-						|| res == JOptionPane.CLOSED_OPTION)
-				{
-					JOptionPane.showMessageDialog(this,"You must to have the worker file!");
-					this.dispose();
-					System.exit(EXIT_ON_CLOSE);
-				}
-					
-					
+				
+				
 			}
+			
+		}
+		if(res == JOptionPane.NO_OPTION || res == JOptionPane.CANCEL_OPTION 
+				|| res == JOptionPane.CLOSED_OPTION)
+		{
+			JOptionPane.showMessageDialog(this,"You must to have the worker file!");
+			this.dispose();
+			System.exit(EXIT_ON_CLOSE);
 		}
 	}
+		
+	
 
 
 	private static void setSeparator() 
@@ -2457,10 +2814,29 @@ public class JMasterUI extends JFrame  implements Observer{
 	@Override
 	public void update(Observable o, Object arg) 
 	{
-		wu.dispose();
-		setConnectionSettingsEnabled(false);
-		setSystemSettingsEnabled(true);
-		jMenuItemUpdateWorker.setEnabled(true);
+		int value;
+		if(arg.equals("Update"))
+		{
+			wu.dispose();
+			setConnectionSettingsEnabled(false);
+			setSystemSettingsEnabled(true);
+			jMenuItemUpdateWorker.setEnabled(true);
+		}
+		if(arg.equals("Test done"))
+		{
+			value = testCount.incrementAndGet();
+
+			int progValue = (value*100)/totalTests;
+			progressBarBatchTest.setValue(progValue);
+			progressBarBatchTest.setString(progValue+" %");
+			
+			if(value ==  totalTests)
+			{
+				progressBarBatchTest.setString("Done!");
+				
+				batchLogger.debug("Ended at: "+System.currentTimeMillis());
+			}
+		}
 	}
 	
 	// Used for manual update, called from MasterDeamonStarter
@@ -2535,16 +2911,189 @@ public class JMasterUI extends JFrame  implements Observer{
 	public void addToUpdate(PeerStatusInfo workerInfo) 
 	{
 		totPeers++;
-		
 		if(workerInfo.getDigest() != null)
 		{
+			//System.out.println("Digest worker: "+workerInfo.getDigest()+" digest last: "+curWorkerDigest);
 			if(!workerInfo.getDigest().equals(curWorkerDigest))
 				toUpdate.add(workerInfo.getTopic());
 		}
+		else
+		{
+			System.out.println("null");
+		}
 		if(totPeers == peers.size())
-			checkUpdate();
+		{	checkUpdate();
+			totPeers = 0;
+			
+			System.out.println("ok");
+			if(isBatchTest)
+			{
+				
+				nextTest();
+			}
+		}
+	}
+	
+	private static Set<List<EntryParam<String, Object>>> generateTestsFrom(Batch batch)
+	{
+		ArrayList<Set<EntryParam<String, Object>>> sets = new ArrayList<Set<EntryParam<String, Object>>>();
+		int totalTests = 1;
+		for (Param p : batch.getSimulationParams())
+		{
+			System.out.println("Param: "+p.getName()+" mode "+p.getMode());
+			
+			Set<EntryParam<String, Object>> s = null;
+			if(p.getMode().equals("fixed"))
+			{
+				ParamFixed pf = (ParamFixed) p;
+				s = new HashSet<EntryParam<String, Object>>();
+				// da aggiungere anche per range e per altri tipi
+				if(pf.getType().equals("double"))
+					s.add(new EntryParam<String, Object>(pf.getName(),Double.parseDouble(pf.getValue()),ParamType.SIMULATION));
+				if(pf.getType().equals("int"))
+					s.add(new EntryParam<String, Object>(pf.getName(),Integer.parseInt(pf.getValue()),ParamType.SIMULATION));
+				if(pf.getType().equals("long"))
+					s.add(new EntryParam<String, Object>(pf.getName(),Long.parseLong(pf.getValue()),ParamType.SIMULATION));
+				
+				totalTests *= s.size();
+			}
+			if(p.getMode().equals("range"))
+			{
+				ParamRange pr = (ParamRange) p;
+				s = new HashSet<EntryParam<String, Object>>();
+				int end = Integer.parseInt(pr.getEnd());
+				int inc = Integer.parseInt(pr.getIncrement());
+				int start = Integer.parseInt(pr.getStart());
+				int limit = (end-start)/inc;
+				int last = start;
+				s.add(new EntryParam<String, Object>(pr.getName(),start,ParamType.SIMULATION));
+				for(int i=0;i<limit;i++)
+				{		
+					s.add(new EntryParam<String, Object>(pr.getName(),last+inc,ParamType.SIMULATION));
+					last += inc;
+				}
+				totalTests *= s.size();
+			}
+			if(s != null)
+				sets.add(s);
+		}
+		for (Param p : batch.getGeneralParams())
+		{
+			System.out.println("Param: "+p.getName()+" mode "+p.getMode());
+			
+			Set<EntryParam<String, Object>> s = null;
+			if(p.getMode().equals("fixed"))
+			{
+				ParamFixed pf = (ParamFixed) p;
+				s = new HashSet<EntryParam<String, Object>>();
+				// da aggiungere anche per range e per altri tipi
+				if(pf.getType().equals("double"))
+					s.add(new EntryParam<String, Object>(pf.getName(),Double.parseDouble(pf.getValue()),ParamType.GENERAL));
+				if(pf.getType().equals("int"))
+					s.add(new EntryParam<String, Object>(pf.getName(),Integer.parseInt(pf.getValue()),ParamType.GENERAL));
+				if(pf.getType().equals("long"))
+					s.add(new EntryParam<String, Object>(pf.getName(),Long.parseLong(pf.getValue()),ParamType.GENERAL));
+				
+				totalTests *= s.size();
+			}
+			if(p.getMode().equals("range"))
+			{
+				ParamRange pr = (ParamRange) p;
+				s = new HashSet<EntryParam<String, Object>>();
+				int end = Integer.parseInt(pr.getEnd());
+				int inc = Integer.parseInt(pr.getIncrement());
+				int start = Integer.parseInt(pr.getStart());
+				int limit = (end-start)/inc;
+				int last = start;
+				s.add(new EntryParam<String, Object>(pr.getName(),start,ParamType.GENERAL));
+				for(int i=0;i<limit;i++)
+				{		
+					s.add(new EntryParam<String, Object>(pr.getName(),last+inc,ParamType.GENERAL));
+					last += inc;
+				}
+				totalTests *= s.size();
+			}
+			if(s != null)
+				sets.add(s);
+		}
+		
+		/*System.out.println("Cartesian product size: "+totalTests);
+		for (Set<EntryParam<String, Object>> set : sets) {
+			System.out.println(set.toString());
+		}*/
+		
+		Set<List<EntryParam<String, Object>>> res = Sets.cartesianProduct(sets);
+	    /*System.out.println("Method 2 size: "+res.size());
+	    System.out.println(res.toString()+"\n");*/
+		
+		return res;
+	}
+	private static Batch loadConfigFromXML(File configFile)
+	{
+		
+		XStream xstream = new XStream(new DomDriver("UTF-8"));
+		xstream.processAnnotations(Batch.class);
+		xstream.processAnnotations(Param.class);
+		xstream.processAnnotations(ParamRange.class);
+		xstream.processAnnotations(ParamFixed.class);
+		
+		try {
+			return (Batch)xstream.fromXML(new FileReader(configFile.getAbsolutePath()));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+			return null;
+		}
+	}
+	private static boolean validateXML(File configFile,File xsdFile) throws IOException
+	{
+		Source schemaFile = new StreamSource(xsdFile);
+		Source xmlFile = new StreamSource(configFile);
+		SchemaFactory schemaFactory = SchemaFactory
+				.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+
+		try {
+
+			Schema schema = schemaFactory.newSchema(schemaFile);
+			Validator validator = schema.newValidator();
+			validator.validate(xmlFile);
+			return true;
+			//System.out.println(xmlFile.getSystemId() + " is valid");
+		} catch (SAXException e) {
+			//System.out.println(xmlFile.getSystemId() + " is NOT valid");
+			//System.out.println("Reason: " + e.getLocalizedMessage());
+			return false;
+		}
 	}
 
+	public void countFinishedTest()
+	{
+		fineshed++;
+		System.out.println("finsished: "+ fineshed +" tot: "+peers.size());
+		if(fineshed == peers.size())
+		{	
+			fineshed = 0;
+			
+			nextTest();
+		}
+	}
+	// Here I wakeup the BatchExecutor
+	public void nextTest() 
+	{
+		// TODO Auto-generated method stub
+		System.out.println("unlock");
+		
+		batchExec.setCanStartAnother(true);
+		
+		Lock batchLock = batchExec.getLock();
+		batchLock.lock();
+		{
+			batchExec.getIsResetted().signalAll();
+		}
+		batchLock.unlock();
+	}
 	/* End System Management methods */
 	
 	
@@ -2597,7 +3146,4 @@ public class JMasterUI extends JFrame  implements Observer{
 		jMenuItemUpdateWorker.setEnabled(false);
 		return jMenuItemUpdateWorker;
 	}
-
-	
-
 }

@@ -40,6 +40,8 @@ public abstract class DistributedState<E> extends SimState {
 	public String port;
 	private int MODE;
 	private boolean isTOROIDAL;
+	
+	private String topicPrefix = "";
 	// private MersenneTwisterFast randomRegion;
 	private ConnectionNFieldsWithActiveMQAPI connection;
 	private Trigger TRIGGER;
@@ -56,8 +58,8 @@ public abstract class DistributedState<E> extends SimState {
 	public void init_connection() {
 
 		try {
-			connection.createTopic("GRAPHICS", 1);
-			connection.subscribeToTopic("GRAPHICS");
+			connection.createTopic(topicPrefix+"GRAPHICS", 1);
+			connection.subscribeToTopic(topicPrefix+"GRAPHICS");
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -69,9 +71,9 @@ public abstract class DistributedState<E> extends SimState {
 		thread.start();
 
 		try {
-			boolean a = connection.createTopic("GRAPHICS" + TYPE,
+			boolean a = connection.createTopic(topicPrefix+"GRAPHICS" + TYPE,
 					((DistributedMultiSchedule) super.schedule).fields.size());
-			connection.subscribeToTopic("GRAPHICS" + TYPE);
+			connection.subscribeToTopic(topicPrefix+"GRAPHICS" + TYPE);
 			ThreadZoomInCellMessageListener t_zoom = new ThreadZoomInCellMessageListener(
 					(ConnectionNFieldsWithActiveMQAPI) connection,
 					TYPE.toString(), (DistributedMultiSchedule) this.schedule);
@@ -92,27 +94,27 @@ public abstract class DistributedState<E> extends SimState {
 
 			try {
 
-				connection.createTopic(TYPE.pos_i + "-" + TYPE.pos_j + "L",
+				connection.createTopic(topicPrefix+TYPE.pos_i + "-" + TYPE.pos_j + "L",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
-				connection.createTopic(TYPE.pos_i + "-" + TYPE.pos_j + "R",
+				connection.createTopic(topicPrefix+TYPE.pos_i + "-" + TYPE.pos_j + "R",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
 
-				connection.subscribeToTopic(TYPE.pos_i + "-"
+				connection.subscribeToTopic(topicPrefix+TYPE.pos_i + "-"
 						+ ((TYPE.pos_j - 1 + NUMPEERS) % NUMPEERS) + "R");
-				connection.subscribeToTopic(TYPE.pos_i + "-"
+				connection.subscribeToTopic(topicPrefix+TYPE.pos_i + "-"
 						+ ((TYPE.pos_j + 1 + NUMPEERS) % NUMPEERS) + "L");
 
 				UpdaterThreadForListener u1 = new UpdaterThreadForListener(
-						connection, TYPE.pos_i + "-"
+						connection, topicPrefix+TYPE.pos_i + "-"
 								+ (((TYPE.pos_j - 1 + NUMPEERS)) % NUMPEERS)
 								+ "R",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u1.start();
 
 				UpdaterThreadForListener u2 = new UpdaterThreadForListener(
-						connection, TYPE.pos_i + "-"
+						connection, topicPrefix+TYPE.pos_i + "-"
 								+ (((TYPE.pos_j + 1 + NUMPEERS)) % NUMPEERS)
 								+ "L",
 						((DistributedMultiSchedule) schedule).fields, listeners);
@@ -125,95 +127,95 @@ public abstract class DistributedState<E> extends SimState {
 
 			try {
 
-				connection.createTopic(TYPE + "L",
+				connection.createTopic(topicPrefix+TYPE + "L",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
-				connection.createTopic(TYPE + "R",
+				connection.createTopic(topicPrefix+TYPE + "R",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
-				connection.createTopic(TYPE + "D",
+				connection.createTopic(topicPrefix+TYPE + "D",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
-				connection.createTopic(TYPE + "U",
+				connection.createTopic(topicPrefix+TYPE + "U",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
-				connection.createTopic(TYPE + "CUDL",
+				connection.createTopic(topicPrefix+TYPE + "CUDL",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
-				connection.createTopic(TYPE + "CUDR",
+				connection.createTopic(topicPrefix+TYPE + "CUDR",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
-				connection.createTopic(TYPE + "CDDL",
+				connection.createTopic(topicPrefix+TYPE + "CDDL",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
-				connection.createTopic(TYPE + "CDDR",
+				connection.createTopic(topicPrefix+TYPE + "CDDR",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
 
 				int i = TYPE.pos_i, j = TYPE.pos_j;
 				int sqrt = (int) Math.sqrt(NUMPEERS);
 
-				connection.subscribeToTopic(((i + sqrt) % sqrt) + "-"
+				connection.subscribeToTopic(topicPrefix+((i + sqrt) % sqrt) + "-"
 						+ ((j + 1 + sqrt) % sqrt) + "L");
-				connection.subscribeToTopic(((i + sqrt) % sqrt) + "-"
+				connection.subscribeToTopic(topicPrefix+((i + sqrt) % sqrt) + "-"
 						+ ((j - 1 + sqrt) % sqrt) + "R");
-				connection.subscribeToTopic(((i + 1 + sqrt) % sqrt) + "-"
+				connection.subscribeToTopic(topicPrefix+((i + 1 + sqrt) % sqrt) + "-"
 						+ ((j + sqrt) % sqrt) + "U");
-				connection.subscribeToTopic(((i - 1 + sqrt) % sqrt) + "-"
+				connection.subscribeToTopic(topicPrefix+((i - 1 + sqrt) % sqrt) + "-"
 						+ ((j + sqrt) % sqrt) + "D");
-				connection.subscribeToTopic(((i - 1 + sqrt) % sqrt) + "-"
+				connection.subscribeToTopic(topicPrefix+((i - 1 + sqrt) % sqrt) + "-"
 						+ ((j - 1 + sqrt) % sqrt) + "CDDR");
-				connection.subscribeToTopic(((i - 1 + sqrt) % sqrt) + "-"
+				connection.subscribeToTopic(topicPrefix+((i - 1 + sqrt) % sqrt) + "-"
 						+ ((j + 1 + sqrt) % sqrt) + "CDDL");
-				connection.subscribeToTopic(((i + 1 + sqrt) % sqrt) + "-"
+				connection.subscribeToTopic(topicPrefix+((i + 1 + sqrt) % sqrt) + "-"
 						+ ((j - 1 + sqrt) % sqrt) + "CUDR");
-				connection.subscribeToTopic(((i + 1 + sqrt) % sqrt) + "-"
+				connection.subscribeToTopic(topicPrefix+((i + 1 + sqrt) % sqrt) + "-"
 						+ ((j + 1 + sqrt) % sqrt) + "CUDL");
 
 				u1 = new UpdaterThreadForListener(
-						connection, ((i + sqrt) % sqrt) + "-"
+						connection, topicPrefix+((i + sqrt) % sqrt) + "-"
 								+ ((j + 1 + sqrt) % sqrt) + "L",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u1.start();
 
 				u2 = new UpdaterThreadForListener(
-						connection, ((i + sqrt) % sqrt) + "-"
+						connection, topicPrefix+((i + sqrt) % sqrt) + "-"
 								+ ((j - 1 + sqrt) % sqrt) + "R",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u2.start();
 
 				u3 = new UpdaterThreadForListener(
-						connection, ((i + 1 + sqrt) % sqrt) + "-"
+						connection, topicPrefix+((i + 1 + sqrt) % sqrt) + "-"
 								+ ((j + sqrt) % sqrt) + "U",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u3.start();
 
 				u4 = new UpdaterThreadForListener(
-						connection, ((i - 1 + sqrt) % sqrt) + "-"
+						connection, topicPrefix+((i - 1 + sqrt) % sqrt) + "-"
 								+ ((j + sqrt) % sqrt) + "D",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u4.start();
 
 				u5 = new UpdaterThreadForListener(
-						connection, ((i - 1 + sqrt) % sqrt) + "-"
+						connection, topicPrefix+((i - 1 + sqrt) % sqrt) + "-"
 								+ ((j - 1 + sqrt) % sqrt) + "CDDR",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u5.start();
 
 				u6 = new UpdaterThreadForListener(
-						connection, ((i - 1 + sqrt) % sqrt) + "-"
+						connection, topicPrefix+((i - 1 + sqrt) % sqrt) + "-"
 								+ ((j + 1 + sqrt) % sqrt) + "CDDL",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u6.start();
 
 				u7 = new UpdaterThreadForListener(
-						connection, ((i + 1 + sqrt) % sqrt) + "-"
+						connection, topicPrefix+((i + 1 + sqrt) % sqrt) + "-"
 								+ ((j - 1 + sqrt) % sqrt) + "CUDR",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u7.start();
 
 				u8 = new UpdaterThreadForListener(
-						connection, ((i + 1 + sqrt) % sqrt) + "-"
+						connection, topicPrefix+((i + 1 + sqrt) % sqrt) + "-"
 								+ ((j + 1 + sqrt) % sqrt) + "CUDL",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u8.start();
@@ -226,49 +228,49 @@ public abstract class DistributedState<E> extends SimState {
 
 			 try {
 
-					connection.createTopic(TYPE+"L",((DistributedMultiSchedule)super.schedule).fields.size());
-					connection.createTopic(TYPE+"R",((DistributedMultiSchedule)super.schedule).fields.size());
-					connection.createTopic(TYPE+"D",((DistributedMultiSchedule)super.schedule).fields.size());
-					connection.createTopic(TYPE+"U",((DistributedMultiSchedule)super.schedule).fields.size());
-					connection.createTopic(TYPE+"CUDL",((DistributedMultiSchedule)super.schedule).fields.size());
-					connection.createTopic(TYPE+"CUDR",((DistributedMultiSchedule)super.schedule).fields.size());
-					connection.createTopic(TYPE+"CDDL",((DistributedMultiSchedule)super.schedule).fields.size());
-					connection.createTopic(TYPE+"CDDR",((DistributedMultiSchedule)super.schedule).fields.size());
+					connection.createTopic(topicPrefix+TYPE+"L",((DistributedMultiSchedule)super.schedule).fields.size());
+					connection.createTopic(topicPrefix+TYPE+"R",((DistributedMultiSchedule)super.schedule).fields.size());
+					connection.createTopic(topicPrefix+TYPE+"D",((DistributedMultiSchedule)super.schedule).fields.size());
+					connection.createTopic(topicPrefix+TYPE+"U",((DistributedMultiSchedule)super.schedule).fields.size());
+					connection.createTopic(topicPrefix+TYPE+"CUDL",((DistributedMultiSchedule)super.schedule).fields.size());
+					connection.createTopic(topicPrefix+TYPE+"CUDR",((DistributedMultiSchedule)super.schedule).fields.size());
+					connection.createTopic(topicPrefix+TYPE+"CDDL",((DistributedMultiSchedule)super.schedule).fields.size());
+					connection.createTopic(topicPrefix+TYPE+"CDDR",((DistributedMultiSchedule)super.schedule).fields.size());
 						
 					int i=TYPE.pos_i,j=TYPE.pos_j;
 					int sqrt=(int)Math.sqrt(NUMPEERS);
 							
-					connection.subscribeToTopic(((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L");
-					connection.subscribeToTopic(((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R");
-					connection.subscribeToTopic(((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U");
-					connection.subscribeToTopic(((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D");
-					connection.subscribeToTopic(((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR");
-					connection.subscribeToTopic(((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL");
-					connection.subscribeToTopic(((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR");
-					connection.subscribeToTopic(((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL");
+					connection.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L");
+					connection.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R");
+					connection.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U");
+					connection.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D");
+					connection.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR");
+					connection.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL");
+					connection.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR");
+					connection.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL");
 						
-					u1 = new UpdaterThreadForListener(connection,((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L",((DistributedMultiSchedule)schedule).fields,listeners);
+					u1 = new UpdaterThreadForListener(connection,topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L",((DistributedMultiSchedule)schedule).fields,listeners);
 					u1.start();
 						
-					u2 = new UpdaterThreadForListener(connection, ((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R",((DistributedMultiSchedule)schedule).fields,listeners);
+					u2 = new UpdaterThreadForListener(connection, topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R",((DistributedMultiSchedule)schedule).fields,listeners);
 					u2.start();
 						
-					u3 = new UpdaterThreadForListener(connection, ((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U",((DistributedMultiSchedule)schedule).fields,listeners);
+					u3 = new UpdaterThreadForListener(connection, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U",((DistributedMultiSchedule)schedule).fields,listeners);
 					u3.start();
 						
-					u4 = new UpdaterThreadForListener(connection, ((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D",((DistributedMultiSchedule)schedule).fields,listeners);
+					u4 = new UpdaterThreadForListener(connection, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D",((DistributedMultiSchedule)schedule).fields,listeners);
 					u4.start();
 						
-					u5 = new UpdaterThreadForListener(connection, ((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR",((DistributedMultiSchedule)schedule).fields,listeners);
+					u5 = new UpdaterThreadForListener(connection, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR",((DistributedMultiSchedule)schedule).fields,listeners);
 					u5.start();
 						
-					u6 = new UpdaterThreadForListener(connection, ((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL",((DistributedMultiSchedule)schedule).fields,listeners);
+					u6 = new UpdaterThreadForListener(connection, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL",((DistributedMultiSchedule)schedule).fields,listeners);
 					u6.start();	
 						
-					u7 = new UpdaterThreadForListener(connection, ((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR",((DistributedMultiSchedule)schedule).fields,listeners);
+					u7 = new UpdaterThreadForListener(connection, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR",((DistributedMultiSchedule)schedule).fields,listeners);
 					u7.start();		
 						
-					u8 = new UpdaterThreadForListener(connection, ((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL",((DistributedMultiSchedule)schedule).fields,listeners);
+					u8 = new UpdaterThreadForListener(connection, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL",((DistributedMultiSchedule)schedule).fields,listeners);
 					u8.start();
 						
 				}catch (Exception e) {
@@ -286,22 +288,22 @@ public abstract class DistributedState<E> extends SimState {
 
 			try {
 
-				connection.createTopic(TYPE + "R",
+				connection.createTopic(topicPrefix+TYPE + "R",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
-				connection.createTopic(TYPE + "L",
+				connection.createTopic(topicPrefix+TYPE + "L",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
 
-				connection.subscribeToTopic(TYPE.getNeighbourLeft() + "R");
+				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "R");
 				UpdaterThreadForListener u1 = new UpdaterThreadForListener(
-						connection, TYPE.getNeighbourLeft() + "R",
+						connection, topicPrefix+TYPE.getNeighbourLeft() + "R",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u1.start();
 
-				connection.subscribeToTopic(TYPE.getNeighbourRight() + "L");
+				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "L");
 				UpdaterThreadForListener u2 = new UpdaterThreadForListener(
-						connection, TYPE.getNeighbourRight() + "L",
+						connection, topicPrefix+TYPE.getNeighbourRight() + "L",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u2.start();
 
@@ -314,81 +316,81 @@ public abstract class DistributedState<E> extends SimState {
 
 			try {
 
-				connection.createTopic(TYPE + "L",
+				connection.createTopic(topicPrefix+TYPE + "L",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
-				connection.createTopic(TYPE + "R",
+				connection.createTopic(topicPrefix+TYPE + "R",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
-				connection.createTopic(TYPE + "U",
+				connection.createTopic(topicPrefix+TYPE + "U",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
-				connection.createTopic(TYPE + "D",
+				connection.createTopic(topicPrefix+TYPE + "D",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
-				connection.createTopic(TYPE + "CDDR",
+				connection.createTopic(topicPrefix+TYPE + "CDDR",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
-				connection.createTopic(TYPE + "CUDR",
+				connection.createTopic(topicPrefix+TYPE + "CUDR",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
-				connection.createTopic(TYPE + "CDDL",
+				connection.createTopic(topicPrefix+TYPE + "CDDL",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
-				connection.createTopic(TYPE + "CUDL",
+				connection.createTopic(topicPrefix+TYPE + "CUDL",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());
 
-				connection.subscribeToTopic(TYPE.getNeighbourDiagLeftUp()
+				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagLeftUp()
 						+ "CDDR");
 				UpdaterThreadForListener u1 = new UpdaterThreadForListener(
-						connection, TYPE.getNeighbourDiagLeftUp() + "CDDR",
+						connection, topicPrefix+TYPE.getNeighbourDiagLeftUp() + "CDDR",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u1.start();
 
-				connection.subscribeToTopic(TYPE.getNeighbourDiagRightUp()
+				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagRightUp()
 						+ "CDDL");
 				UpdaterThreadForListener u2 = new UpdaterThreadForListener(
-						connection, TYPE.getNeighbourDiagRightUp() + "CDDL",
+						connection, topicPrefix+TYPE.getNeighbourDiagRightUp() + "CDDL",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u2.start();
 
-				connection.subscribeToTopic(TYPE.getNeighbourDiagLeftDown()
+				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagLeftDown()
 						+ "CUDR");
 				UpdaterThreadForListener u3 = new UpdaterThreadForListener(
-						connection, TYPE.getNeighbourDiagLeftDown() + "CUDR",
+						connection, topicPrefix+TYPE.getNeighbourDiagLeftDown() + "CUDR",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u3.start();
 
-				connection.subscribeToTopic(TYPE.getNeighbourDiagRightDown()
+				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagRightDown()
 						+ "CUDL");
 				UpdaterThreadForListener u4 = new UpdaterThreadForListener(
-						connection, TYPE.getNeighbourDiagRightDown() + "CUDL",
+						connection, topicPrefix+TYPE.getNeighbourDiagRightDown() + "CUDL",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u4.start();
 
-				connection.subscribeToTopic(TYPE.getNeighbourLeft() + "R");
+				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "R");
 				UpdaterThreadForListener u5 = new UpdaterThreadForListener(
-						connection, TYPE.getNeighbourLeft() + "R",
+						connection, topicPrefix+TYPE.getNeighbourLeft() + "R",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u5.start();
 
-				connection.subscribeToTopic(TYPE.getNeighbourRight() + "L");
+				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "L");
 				UpdaterThreadForListener u6 = new UpdaterThreadForListener(
-						connection, TYPE.getNeighbourRight() + "L",
+						connection, topicPrefix+TYPE.getNeighbourRight() + "L",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u6.start();
 
-				connection.subscribeToTopic((TYPE.getNeighbourUp() + "D"));
+				connection.subscribeToTopic(topicPrefix+(TYPE.getNeighbourUp() + "D"));
 				UpdaterThreadForListener u7 = new UpdaterThreadForListener(
-						connection, TYPE.getNeighbourUp() + "D",
+						connection, topicPrefix+TYPE.getNeighbourUp() + "D",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u7.start();
 
-				connection.subscribeToTopic(TYPE.getNeighbourDown() + "U");
+				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourDown() + "U");
 
 				UpdaterThreadForListener u8 = new UpdaterThreadForListener(
-						connection, TYPE.getNeighbourDown() + "U",
+						connection, topicPrefix+TYPE.getNeighbourDown() + "U",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u8.start();
 
@@ -401,49 +403,49 @@ public abstract class DistributedState<E> extends SimState {
 
 			 try {
 
-					connection.createTopic(TYPE+"L",((DistributedMultiSchedule)super.schedule).fields.size());
-					connection.createTopic(TYPE+"R",((DistributedMultiSchedule)super.schedule).fields.size());
-					connection.createTopic(TYPE+"D",((DistributedMultiSchedule)super.schedule).fields.size());
-					connection.createTopic(TYPE+"U",((DistributedMultiSchedule)super.schedule).fields.size());
-					connection.createTopic(TYPE+"CUDL",((DistributedMultiSchedule)super.schedule).fields.size());
-					connection.createTopic(TYPE+"CUDR",((DistributedMultiSchedule)super.schedule).fields.size());
-					connection.createTopic(TYPE+"CDDL",((DistributedMultiSchedule)super.schedule).fields.size());
-					connection.createTopic(TYPE+"CDDR",((DistributedMultiSchedule)super.schedule).fields.size());
+					connection.createTopic(topicPrefix+TYPE+"L",((DistributedMultiSchedule)super.schedule).fields.size());
+					connection.createTopic(topicPrefix+TYPE+"R",((DistributedMultiSchedule)super.schedule).fields.size());
+					connection.createTopic(topicPrefix+TYPE+"D",((DistributedMultiSchedule)super.schedule).fields.size());
+					connection.createTopic(topicPrefix+TYPE+"U",((DistributedMultiSchedule)super.schedule).fields.size());
+					connection.createTopic(topicPrefix+TYPE+"CUDL",((DistributedMultiSchedule)super.schedule).fields.size());
+					connection.createTopic(topicPrefix+TYPE+"CUDR",((DistributedMultiSchedule)super.schedule).fields.size());
+					connection.createTopic(topicPrefix+TYPE+"CDDL",((DistributedMultiSchedule)super.schedule).fields.size());
+					connection.createTopic(topicPrefix+TYPE+"CDDR",((DistributedMultiSchedule)super.schedule).fields.size());
 						
 					int i=TYPE.pos_i,j=TYPE.pos_j;
 					int sqrt=(int)Math.sqrt(NUMPEERS);
 							
-					connection.subscribeToTopic(((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L");
-					connection.subscribeToTopic(((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R");
-					connection.subscribeToTopic(((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U");
-					connection.subscribeToTopic(((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D");
-					connection.subscribeToTopic(((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR");
-					connection.subscribeToTopic(((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL");
-					connection.subscribeToTopic(((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR");
-					connection.subscribeToTopic(((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL");
+					connection.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L");
+					connection.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R");
+					connection.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U");
+					connection.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D");
+					connection.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR");
+					connection.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL");
+					connection.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR");
+					connection.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL");
 						
-					u1 = new UpdaterThreadForListener(connection,((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L",((DistributedMultiSchedule)schedule).fields,listeners);
+					u1 = new UpdaterThreadForListener(connection,topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L",((DistributedMultiSchedule)schedule).fields,listeners);
 					u1.start();
 						
-					u2 = new UpdaterThreadForListener(connection, ((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R",((DistributedMultiSchedule)schedule).fields,listeners);
+					u2 = new UpdaterThreadForListener(connection, topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R",((DistributedMultiSchedule)schedule).fields,listeners);
 					u2.start();
 						
-					u3 = new UpdaterThreadForListener(connection, ((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U",((DistributedMultiSchedule)schedule).fields,listeners);
+					u3 = new UpdaterThreadForListener(connection, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U",((DistributedMultiSchedule)schedule).fields,listeners);
 					u3.start();
 						
-					u4 = new UpdaterThreadForListener(connection, ((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D",((DistributedMultiSchedule)schedule).fields,listeners);
+					u4 = new UpdaterThreadForListener(connection, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D",((DistributedMultiSchedule)schedule).fields,listeners);
 					u4.start();
 						
-					u5 = new UpdaterThreadForListener(connection, ((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR",((DistributedMultiSchedule)schedule).fields,listeners);
+					u5 = new UpdaterThreadForListener(connection, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR",((DistributedMultiSchedule)schedule).fields,listeners);
 					u5.start();
 						
-					u6 = new UpdaterThreadForListener(connection, ((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL",((DistributedMultiSchedule)schedule).fields,listeners);
+					u6 = new UpdaterThreadForListener(connection, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL",((DistributedMultiSchedule)schedule).fields,listeners);
 					u6.start();	
 						
-					u7 = new UpdaterThreadForListener(connection, ((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR",((DistributedMultiSchedule)schedule).fields,listeners);
+					u7 = new UpdaterThreadForListener(connection, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR",((DistributedMultiSchedule)schedule).fields,listeners);
 					u7.start();		
 						
-					u8 = new UpdaterThreadForListener(connection, ((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL",((DistributedMultiSchedule)schedule).fields,listeners);
+					u8 = new UpdaterThreadForListener(connection, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL",((DistributedMultiSchedule)schedule).fields,listeners);
 					u8.start();
 						
 				}catch (Exception e) {
@@ -461,7 +463,7 @@ public abstract class DistributedState<E> extends SimState {
 
 	public DistributedState(int max_d, int num_peers, int num_agents, int i,
 			int j, String ip, String port, int mode, boolean isToroidal,
-			DistributedMultiSchedule<E> sched) {
+			DistributedMultiSchedule<E> sched, String prefix) {
 		super(null, sched);
 		this.TYPE = new CellType(i, j);
 		this.random = new MersenneTwisterFast(this.TYPE.getInitialValue());
@@ -473,6 +475,8 @@ public abstract class DistributedState<E> extends SimState {
 		this.port = port;
 		this.MODE = mode;
 		this.isTOROIDAL = isToroidal;
+		
+		this.topicPrefix = prefix;
 		connection = new ConnectionNFieldsWithActiveMQAPI();
 		try {
 			connection.setupConnection(new Address(ip, port));

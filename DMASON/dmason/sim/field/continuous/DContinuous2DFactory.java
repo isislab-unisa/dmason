@@ -26,17 +26,18 @@ public final class DContinuous2DFactory
 	 * @param j j position in the field
 	 * @param num_peers The number of peers
 	 * @param MODE The mode of simulation (horizontal or squared)
+	 * @param topicPrefix 
 	 * @return The right DSparseGrid2D
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */
-	public static final DContinuous2D createDContinuous2D(double discretization,double width, double height,SimState sm,int max_distance,int i,int j,int num_peers,int MODE,String name)
+	public static final DContinuous2D createDContinuous2D(double discretization,double width, double height,SimState sm,int max_distance,int i,int j,int num_peers,int MODE,String name, String topicPrefix)
 		throws DMasonException
 	{		
 		if(MODE==HORIZONTAL_DISTRIBUTION_MODE)
 		{
 			int my_width=(int) (width/num_peers);
 			if(width%num_peers == 0 && (max_distance < my_width/2 )){
-				DistributedField field = new DContinuous2DY(discretization,width, height,sm, max_distance, i, j, num_peers,name);	
+				DistributedField field = new DContinuous2DY(discretization,width, height,sm, max_distance, i, j, num_peers,name,topicPrefix);	
 				
 				((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 				
@@ -52,7 +53,7 @@ public final class DContinuous2DFactory
 				int my_height=(int) (height/Math.sqrt(num_peers));
 				if((width% Math.sqrt(num_peers) == 0) && (height% Math.sqrt(num_peers) == 0) && (max_distance < my_width/2) && (max_distance < my_height)){
 
-					DistributedField field = new DContinuous2DXY(discretization,width, height,sm, max_distance, i, j, num_peers,name);
+					DistributedField field = new DContinuous2DXY(discretization,width, height,sm, max_distance, i, j, num_peers,name,topicPrefix);
 					
 					((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 					
@@ -70,7 +71,7 @@ public final class DContinuous2DFactory
 					if(((width% Math.sqrt(num_peers) == 0) && (height% Math.sqrt(num_peers) == 0)) && 
 							(((width/ Math.sqrt(num_peers))%3 == 0) && ((height/ Math.sqrt(num_peers))%3 == 0)) && max_distance < safezone/2 ){
 
-						DistributedField field = new DContinuous2DXYLB(discretization,width, height,sm, max_distance, i, j, num_peers,name);
+						DistributedField field = new DContinuous2DXYLB(discretization,width, height,sm, max_distance, i, j, num_peers,name,topicPrefix);
 						
 						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 						

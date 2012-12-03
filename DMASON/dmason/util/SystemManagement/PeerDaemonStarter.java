@@ -37,6 +37,8 @@ public class PeerDaemonStarter extends Thread
 	 */
 	private String myTopic;
 	
+	private String batchTopic;
+	
 	/**
 	 * Connection to the provider.
 	 */
@@ -88,7 +90,7 @@ public class PeerDaemonStarter extends Thread
 		}
 	}
 
-	public PeerDaemonStarter(Connection conn, StartWorkerInterface ui, String topic,String version, String digest) 
+	public PeerDaemonStarter(Connection conn, StartWorkerInterface ui, String topic,String version, String digest,boolean updated, boolean isBatch, String topicPrefix) 
 	{
 		
 		this.gui = ui;
@@ -118,7 +120,19 @@ public class PeerDaemonStarter extends Thread
 			{
 				ui.writeMessage("Ready to Start!\n");
 				
-				updateDone();
+				if(updated)
+					updateDone();
+				else 
+				{
+					if(!isBatch)
+						info();
+					else
+					{
+						info();
+						subscribeToBatch(topicPrefix);
+						sendBatchInfo("info");
+					}
+				}
 			}
 			else   
 				ui.writeMessage("Connection Refused\nUnable to Connect to " + connection.getAddress().getIPaddress() + "\n");
@@ -161,5 +175,26 @@ public class PeerDaemonStarter extends Thread
 		info.setDigest(digest); // the core of update mechanism
 		info.setTopic(myTopic);
 		return info;
+	}
+
+	public void subscribeToBatch(String topic)
+	{
+		try {
+			connection.createTopic(topic, 1);
+			
+			batchTopic = topic;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void sendBatchInfo(String msg)
+	{
+		connection.publishToTopic("batch", batchTopic, msg);
+	}
+	public void testFinished() 
+	{
+
+		connection.publishToTopic("batch",masterTopic, "batch");
 	}
 }

@@ -4,6 +4,8 @@ import sim.engine.*;
 import sim.display.*;
 import sim.portrayal.continuous.*;
 import javax.swing.*;
+
+import dmason.batch.data.GeneralParam;
 import dmason.sim.engine.DistributedState;
 import java.awt.*;
 import sim.portrayal.simple.*;
@@ -16,6 +18,8 @@ public class DFlockersWithUI extends GUIState
     public Display2D display;
     public JFrame displayFrame;
     public static String name;
+    
+    public static String topicPrefix = "";
 
     public Object getSimulationInspectedObject() { return state; }  // non-volatile
 
@@ -24,11 +28,18 @@ public class DFlockersWithUI extends GUIState
 // uncomment this to try out trails  (also need to uncomment out some others in this file, look around)
 /*    ContinuousPortrayal2D trailsPortrayal = new ContinuousPortrayal2D(); */
     
-    public DFlockersWithUI(Object[] args) 
+   /* public DFlockersWithUI(Object[] args) 
     { 
     	super(new DFlockers(args));
     
     	name=String.valueOf(args[7])+""+(String.valueOf(args[8]));
+    }*/
+    
+    public DFlockersWithUI(GeneralParam args) 
+    { 
+    	super(new DFlockers(args));
+    
+    	name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
     }
   
     public static String getName() { return "Peer: <"+name+">"; }

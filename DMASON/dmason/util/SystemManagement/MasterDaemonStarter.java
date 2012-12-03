@@ -17,17 +17,30 @@
 
 package dmason.util.SystemManagement;
 
+import it.sauronsoftware.ftp4j.FTPClient;
+import it.sauronsoftware.ftp4j.FTPException;
+import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
+
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JOptionPane;
 
+import sun.instrument.InstrumentationImpl;
+
 import com.sun.jmx.remote.internal.ArrayQueue;
 
+import dmason.batch.data.EntryParam;
+import dmason.batch.data.GeneralParam;
 import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.util.connection.Address;
 import dmason.util.connection.Connection;
@@ -83,6 +96,10 @@ public class MasterDaemonStarter implements Observer
 
 	private JMasterUI masterUi;
 
+	private int testCounter;
+
+	private String topicPrefix;
+
 	/**
 	 * Constructor.
 	 * @param conn Connection with a provider.
@@ -117,19 +134,24 @@ public class MasterDaemonStarter implements Observer
 	 * @param selSim Selected simulation class' canonical name.
 	 * @param gui A reference to JMasterUI. 
 	 */
-	public void start(int regions, int width, int height, int agents, int maxDistance, int mode, HashMap<String, EntryVal<Integer, Boolean>> config, String selSim, JMasterUI gui,Address ftpAddress)
+	//public void start(int regions, int width, int height, int agents, int maxDistance, int mode, HashMap<String, EntryVal<Integer, Boolean>> config, String selSim, JMasterUI gui,Address ftpAddress)
+	public void start(GeneralParam params, HashMap<String, EntryVal<Integer, Boolean>> config, String selSim, JMasterUI gui,Address ftpAddress)
 	{
-		this.numRegions = regions;
-		this.numAgents = agents;
-		this.width = width;
-		this.height = height;
-		this.fieldMode = mode;
-		this.jumpDistance = maxDistance;
+		this.numRegions = params.getNumRegions();
+		this.numAgents = params.getNumAgents();
+		this.width = params.getWidth();
+		this.height = params.getHeight();
+		this.fieldMode = params.getMode();
+		this.jumpDistance = params.getMaxDistance();
 		String ip = this.address.getIPaddress();
 		Class<?> selClassUI = null;
 		Class<?> selClass = null;	
+		
+		this.testCounter = 0; //0 means that this is not a batch simulation
 	
-	
+		String uploadDir = createUploadDir(selSim, ftpAddress);
+		
+		
 		boolean isJarSimulation = true;
 		if(!selSim.contains(".jar")) //hardcoded simulation
 		{
@@ -163,7 +185,7 @@ public class MasterDaemonStarter implements Observer
 		}
 	
 	
-		if (mode == DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE)
+		if (fieldMode == DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE)
 		{
 			int cnt = 0;
 			// Repeat for each worker
@@ -200,7 +222,16 @@ public class MasterDaemonStarter implements Observer
 							data.setFTPAddress(addr);
 						}
 					}
-					data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,0,cnt,DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE});
+					
+					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,0,cnt,DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE});
+					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getNumRegions(), params.getNumAgents(), params.getMode()); 
+					genParam.setI(0);
+					genParam.setJ(cnt);
+					genParam.setIp(ip);
+					genParam.setPort(this.address.getPort());
+					data.setParam(genParam);
+					data.setUploadDir(uploadDir);
+					System.out.println("Params: "+ genParam);
 					classes.add(data);
 					cnt++;
 				}
@@ -210,7 +241,7 @@ public class MasterDaemonStarter implements Observer
 	
 			gui.setSystemSettingsEnabled(false);
 		}
-		else if(mode == DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE)
+		else if(fieldMode == DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE)
 		{
 			// For each region...
 			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
@@ -220,7 +251,14 @@ public class MasterDaemonStarter implements Observer
 					// Set step on the central region
 					if (i==k /*&& i == Math.sqrt(numRegions) / 2*/)
 						data.setStep(true);
-					data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
+					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
+					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getNumRegions(), params.getNumAgents(), params.getMode()); 
+					genParam.setI(i);
+					genParam.setJ(k);
+					genParam.setIp(ip);
+					genParam.setPort(this.address.getPort());
+					data.setParam(params);
+					data.setUploadDir(uploadDir);
 					defs.add(data);
 					data.graphic=false;
 				}
@@ -232,14 +270,29 @@ public class MasterDaemonStarter implements Observer
 				int fieldsInWorker = config.get(workerTopic).getNum();
 				for(int i=0;i<fieldsInWorker;i++)
 				{
+					
 					defs.get(index).graphic = config.get(workerTopic).isFlagTrue();
 					if(config.get(workerTopic).isFlagTrue())
 					{
-						defs.get(index).setDef(selClassUI);
+						if(!isJarSimulation)
+							defs.get(index).setDef(selClassUI);
+						else
+						{	
+							defs.get(index).setJarName(selSim);
+							defs.get(index).setFTPAddress(addr);
+						}
+						//defs.get(index).setDef(selClassUI);
 					}
 					else
 					{
-						defs.get(index).setDef(selClass);
+						if(!isJarSimulation)
+							defs.get(index).setDef(selClass);
+						else
+						{	
+							defs.get(index).setJarName(selSim);
+							defs.get(index).setFTPAddress(addr);
+						}
+						//defs.get(index).setDef(selClass);
 					}
 					classes.add(defs.get(index));					
 					index++;
@@ -254,7 +307,7 @@ public class MasterDaemonStarter implements Observer
 					JOptionPane.showMessageDialog(null,"Setting failed !");
 				}
 			}
-		} else if (mode==DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE){
+		} else if (fieldMode==DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE){
 			// For each region...
 			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
 			for (int i=0;i<Math.sqrt(numRegions);i++){
@@ -264,7 +317,15 @@ public class MasterDaemonStarter implements Observer
 					if (i==k)
 						data.setStep(true);
 					//data.setDef(DAntsForage.class);
-					data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE});
+					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE});
+					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getNumRegions(), params.getNumAgents(), params.getMode()); 
+					genParam.setI(i);
+					genParam.setJ(k);
+					genParam.setIp(ip);
+					genParam.setPort(this.address.getPort());
+					data.setUploadDir(uploadDir);
+					data.setParam(genParam);
+					
 					defs.add(data);
 					data.graphic=false;
 				}
@@ -279,11 +340,26 @@ public class MasterDaemonStarter implements Observer
 					defs.get(index).graphic = config.get(workerTopic).isFlagTrue();
 					if(config.get(workerTopic).isFlagTrue())
 					{
-						defs.get(index).setDef(selClassUI);
+						//defs.get(index).setDef(selClassUI);
+						if(!isJarSimulation)
+							defs.get(index).setDef(selClassUI);
+						else
+						{	
+							defs.get(index).setJarName(selSim);
+							defs.get(index).setFTPAddress(addr);
+						}
 					}
 					else
 					{
-						defs.get(index).setDef(selClass);
+						//defs.get(index).setDef(selClass);
+						
+						if(!isJarSimulation)
+							defs.get(index).setDef(selClass);
+						else
+						{	
+							defs.get(index).setJarName(selSim);
+							defs.get(index).setFTPAddress(addr);
+						}
 					}
 					classes.add(defs.get(index));					
 					index++;
@@ -298,6 +374,177 @@ public class MasterDaemonStarter implements Observer
 		}
 	}
 
+	private String createUploadDir(String selSim, Address ftpAddress) {
+		FTPClient client = Updater.connect(ftpAddress.getIPaddress(),Integer.parseInt(ftpAddress.getPort()));
+
+		Updater.login(client);
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss_SS");
+		Date date = new Date();
+		dateFormat.format(date);
+		
+		String batch = "";
+		if(testCounter != 0)
+			batch = "Test-"+testCounter+"_"; 
+		
+		String uploadDir = batch+selSim+"_"+dateFormat.format(date);
+		try {
+			client.createDirectory(uploadDir);
+		} catch (IllegalStateException e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+		} catch (IOException e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+		} catch (FTPIllegalReplyException e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+		} catch (FTPException e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+			//Updater.login(client);
+			/*try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			date = new Date();
+			dateFormat.format(date);
+			
+			uploadDir = selSim+"_"+dateFormat.format(date);
+			
+			try {
+				client.createDirectory(uploadDir);
+			} catch (IllegalStateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (FTPIllegalReplyException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (FTPException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}*/
+		}
+		return uploadDir;
+	}
+
+	public void startBatch(GeneralParam params, HashMap<String, EntryVal<Integer, Boolean>> config, String selSim, List<EntryParam<String, Object>> simParam, Address ftpAddress, String topicPrefix, int testCounter)
+	{
+		this.numRegions = params.getNumRegions();
+		this.numAgents = params.getNumAgents();
+		this.width = params.getWidth();
+		this.height = params.getHeight();
+		this.fieldMode = params.getMode();
+		this.jumpDistance = params.getMaxDistance();
+		String ip = this.address.getIPaddress();
+		Class<?> selClassUI = null;
+		Class<?> selClass = null;	
+		
+		String uploadDir;
+		synchronized (this) {
+			this.testCounter = testCounter;
+			this.topicPrefix =  topicPrefix;
+			
+			uploadDir = createUploadDir(selSim, ftpAddress);
+		}
+		
+		boolean isJarSimulation = true;
+		if(!selSim.contains(".jar")) //hardcoded simulation
+		{
+			// Try to load the class definitions used by selected simulation
+			try
+			{
+				selClass = Class.forName(selSim);
+				//selClassUI = Class.forName(selSim);
+				selClassUI = Class.forName(selSim + "WithUI");
+	
+				isJarSimulation = false;
+			} catch (ClassNotFoundException e2) {
+				System.err.println("Unable to load the simulation class " + selSim);
+				e2.printStackTrace();
+			}
+		}
+		else
+		{
+			//addr = ftpAddress;
+		}
+	
+		//
+		if (ip.equals("127.0.0.1"))
+		{
+			try 
+			{
+				ip = InetAddress.getLocalHost().getHostAddress();
+			} catch (UnknownHostException e1) {
+				e1.printStackTrace();
+			}
+		}
+	
+	
+		if (params.getMode() == DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE)
+		{
+			int cnt = 0;
+			// Repeat for each worker
+			for (String workerTopic : config.keySet())
+			{
+				int fieldsInWorker = config.get(workerTopic).getNum();
+				ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
+				// Repeat for each field managed by this worker
+				for (int i = 0; i < fieldsInWorker; i++)
+				{
+					StartUpData data = new StartUpData();
+					if (cnt == numRegions / 2)
+						data.setStep(true);
+	
+					if (config.get(workerTopic).isFlagTrue())
+					{
+						data.graphic = true;
+						if(!isJarSimulation)
+							data.setDef(selClassUI);
+						else
+						{	
+							data.setJarName(selSim);
+							data.setFTPAddress(addr);
+						}
+					}
+					else
+					{
+						data.graphic = false;
+						if(!isJarSimulation)
+							data.setDef(selClass);
+						else
+						{	
+							data.setJarName(selSim);
+							data.setFTPAddress(addr);
+						}
+					}
+					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,0,cnt,DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE});
+					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getNumRegions(), params.getNumAgents(), params.getMode(),params.getMaxStep()); 
+					genParam.setI(0);
+					genParam.setJ(cnt);
+					genParam.setIp(ip);
+					genParam.setPort(this.address.getPort());
+					data.setParam(genParam);
+					data.setSimParam(simParam);
+					data.setUploadDir(uploadDir);
+					data.setTopicPrefix(topicPrefix);
+					//System.out.println("FTP ADDRESS: "+ftpAddress.getIPaddress());
+					data.setFTPAddress(ftpAddress);
+					classes.add(data);
+					cnt++;
+				}
+				// Publish informations about simulation to worker's topic
+				connection.publishToTopic(classes, workerTopic, "classes");
+			}
+	
+			//gui.setSystemSettingsEnabled(false);
+		}
+	}
+	
 	public boolean connectToServer()
 	{
 		try
@@ -388,6 +635,13 @@ public class MasterDaemonStarter implements Observer
 			connection.publishToTopic("reset", topicName, "reset");
 	}
 
+	public void reset(List<String> myWorkers) throws Exception
+	{
+		
+		for(String topicName : myWorkers)
+			connection.publishToTopic("batch", topicName, "reset");
+	}
+	
 	/**
 	 * Starts/resumes the workers.
 	 * @throws Exception
@@ -395,6 +649,13 @@ public class MasterDaemonStarter implements Observer
 	public void play() throws Exception
 	{
 		for(String topicName : workerTopics)
+			connection.publishToTopic("play", topicName, "play");
+	}
+	
+	public void play(List<String> myWorkers) throws Exception
+	{
+		
+		for(String topicName : myWorkers)
 			connection.publishToTopic("play", topicName, "play");
 	}
 
@@ -424,16 +685,23 @@ public class MasterDaemonStarter implements Observer
 	
 	
 	// reiceves notify from MasterDeamonListener related to worker update
+	// and batch tests
 	@Override
 	public void update(Observable arg0, Object arg1) {
 	
-		if(arg1 == null) // used for check update process progress
+		/*if(arg1.equals("batch"))
+		{
+			masterUi.countFinishedTest();
+		}
+		else*/ if(arg1 == null) // used for check update process progress
 			masterUi.incrementUpdatedWorker();
 		else
 		{  //automatic update, used for check worker version
 			PeerStatusInfo workerInfo = (PeerStatusInfo) arg1;
 			masterUi.addToUpdate(workerInfo);
 		}
+		
+		
 	
 	}
 
@@ -469,6 +737,10 @@ public class MasterDaemonStarter implements Observer
 		Console c = (Console) g.createController();
 		c.pressPause();*/
 	}
+
+	
+
+	
 
 
 }

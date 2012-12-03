@@ -2,6 +2,7 @@ package dmason.util.visualization.DFlockers;
 
 
 import java.util.HashMap;
+
 import dmason.sim.app.DFlockers.DFlocker;
 import dmason.util.visualization.Updater;
 import dmason.util.visualization.ZoomArrayList;

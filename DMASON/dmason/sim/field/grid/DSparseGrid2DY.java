@@ -111,6 +111,8 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 	private double actualTime;
 	private HashMap<String, Object> actualStats;
 	
+	private String topicPrefix = "";
+	
 	
 	
 	/**
@@ -121,8 +123,9 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 	 * @param i i position in the field of the cell
 	 * @param j j position in the field of the cell
 	 * @param num_peers number of the peers
+	 * @param prefix 
 	 */
-	public DSparseGrid2DY(int width, int height,SimState sm,int max_distance,int i,int j,int num_peers, String name) 
+	public DSparseGrid2DY(int width, int height,SimState sm,int max_distance,int i,int j,int num_peers, String name, String prefix) 
 	{		
 		super(width, height);
 		this.NAME = name;
@@ -131,7 +134,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		NUMPEERS=num_peers;	
 		cellType = new CellType(i, j);
 		updates_cache= new ArrayList<Region<Integer,Int2D>>();
-		
+		this.topicPrefix = prefix;
 		setConnection(((DistributedState)sm).getConnection());
 		numAgents=0;
 		createRegion();		
@@ -333,7 +336,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 				try
 				{
 					snap.stats = actualStats;
-					connection.publishToTopic(snap, "GRAPHICS", "GRAPHICS");
+					connection.publishToTopic(snap, topicPrefix+"GRAPHICS", "GRAPHICS");
 				} catch (Exception e) {
 					//logger.severe("Error while publishing the snap message");
 					e.printStackTrace();
@@ -390,7 +393,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 							(sm.schedule.getSteps()-1),cellType,DistributedRegion.LEFT);
 			try 
 			{	
-				connection.publishToTopic(dr1,cellType+"L", NAME);
+				connection.publishToTopic(dr1,topicPrefix+cellType+"L", NAME);
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
 		if( rmap.right_out!=null )
@@ -401,7 +404,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 							(sm.schedule.getSteps()-1),cellType,DistributedRegion.RIGHT);
 			try 
 			{			
-				connection.publishToTopic(dr2,cellType+"R", NAME);	
+				connection.publishToTopic(dr2,topicPrefix+cellType+"R", NAME);	
 			} catch (Exception e1) {e1.printStackTrace();}
 		}		
 		//<--
@@ -433,7 +436,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		{
 			try {
 				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
-				connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
+				connection.publishToTopic(tmp_zoom,topicPrefix+"GRAPHICS"+cellType,NAME);
 				tmp_zoom=new ZoomArrayList<RemoteAgent>();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block

@@ -32,14 +32,14 @@ public class DIntGrid2DFactory {
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */
 	public static final DIntGrid2D createDIntGrid2D(int width, int height,SimState sm,int max_distance,int i,int j,int num_peers,int MODE, 
-			int initialGridValue, boolean fixed, String name)
+			int initialGridValue, boolean fixed, String name, String topicPrefix)
 		throws DMasonException
 	{
 		if(MODE==HORIZONTAL_DISTRIBUTION_MODE)
 		{
 			if(width%num_peers == 0)
 			{
-				DIntGrid2D field = new DIntGrid2DY(width, height,sm, max_distance, i, j, num_peers, initialGridValue, name);
+				DIntGrid2D field = new DIntGrid2DY(width, height,sm, max_distance, i, j, num_peers, initialGridValue, name, topicPrefix);
 				
 				if(!fixed)
 					((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
@@ -55,7 +55,7 @@ public class DIntGrid2DFactory {
 				if((width% Math.sqrt(num_peers) == 0) && (height% Math.sqrt(num_peers) == 0))
 				{
 					
-					DIntGrid2D field = new DIntGrid2DXY(width, height,sm, max_distance, i, j, num_peers, initialGridValue, name); 
+					DIntGrid2D field = new DIntGrid2DXY(width, height,sm, max_distance, i, j, num_peers, initialGridValue, name, topicPrefix); 
 					
 					if(!fixed)
 						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);	
@@ -70,7 +70,7 @@ public class DIntGrid2DFactory {
 						(((width/ Math.sqrt(num_peers))%3 == 0) && ((height/ Math.sqrt(num_peers))%3 == 0)))
 				{
 					
-					DIntGrid2D field = new DIntGrid2DXYLB(width, height,sm, max_distance, i, j, num_peers, initialGridValue, name); 
+					DIntGrid2D field = new DIntGrid2DXYLB(width, height,sm, max_distance, i, j, num_peers, initialGridValue, name, topicPrefix); 
 					
 					if(!fixed)
 						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField((DistributedField<Int2D>)field);	

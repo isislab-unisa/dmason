@@ -6,6 +6,8 @@ import sim.portrayal.grid.*;
 import java.awt.*;
 import javax.swing.*;
 
+import dmason.batch.data.GeneralParam;
+
 public class DAntsForageWithUI extends GUIState
     {
     public Display2D display;
@@ -18,9 +20,14 @@ public class DAntsForageWithUI extends GUIState
     FastValueGridPortrayal2D obstaclesPortrayal = new FastValueGridPortrayal2D("Obstacle", true);  // immutable
     SparseGridPortrayal2D bugPortrayal = new SparseGridPortrayal2D();
                 
-    public DAntsForageWithUI(Object[] args) { 
+    /*public DAntsForageWithUI(Object[] args) { 
     	super(new DAntsForage(args)); 
     	name=String.valueOf(args[7])+""+(String.valueOf(args[8]));
+    }*/
+    
+    public DAntsForageWithUI(GeneralParam args) { 
+    	super(new DAntsForage(args)); 
+    	name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
     }
     
     public DAntsForageWithUI(SimState state) { super(state); }

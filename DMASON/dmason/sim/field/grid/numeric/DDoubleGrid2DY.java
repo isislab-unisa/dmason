@@ -95,6 +95,8 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 	private double initialValue;
 	private int numAgents;
 	
+	private String topicPrefix = "";
+	
 	/**
 	 * @param width field's width  
 	 * @param height field's height
@@ -105,8 +107,9 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 	 * @param num_peers number of the peers
 	 * @param name the name that we give at topic for the ((DistributedState)sm).getConnection()
 	 * @param initialGridValue is the initial value that we want to set at grid at begin simulation. 
+	 * @param prefix 
 	 */
-	public DDoubleGrid2DY(int width, int height,SimState sm,int max_distance,int i,int j,int num_peers, double initialGridValue, String name) {
+	public DDoubleGrid2DY(int width, int height,SimState sm,int max_distance,int i,int j,int num_peers, double initialGridValue, String name, String prefix) {
 		
 		super(width, height, initialGridValue);
 	
@@ -116,7 +119,7 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 		NUMPEERS=num_peers;	
 		cellType = new CellType(i, j);
 		this.initialValue = initialGridValue;
-		
+		this.topicPrefix = prefix;
 		updates_cache= new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
 
 		setConnection(((DistributedState)sm).getConnection());
@@ -237,7 +240,7 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 				{
 					try {
 						tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
-						connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
+						connection.publishToTopic(tmp_zoom,topicPrefix+"GRAPHICS"+cellType,NAME);
 						tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
@@ -259,7 +262,7 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr1=new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(rmap.left_mine,rmap.left_out,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.LEFT);
 			try 
 			{	
-				connection.publishToTopic(dr1,cellType+"L", NAME);
+				connection.publishToTopic(dr1,topicPrefix+cellType+"L", NAME);
 				
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
@@ -268,7 +271,7 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr2=new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(rmap.right_mine,rmap.right_out,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.RIGHT);
 			try 
 			{			
-				connection.publishToTopic(dr2,cellType+"R", NAME);
+				connection.publishToTopic(dr2,topicPrefix+cellType+"R", NAME);
 				
 			} catch (Exception e1) {e1.printStackTrace();}
 		}		

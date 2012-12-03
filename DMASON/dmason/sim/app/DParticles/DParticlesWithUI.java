@@ -6,6 +6,8 @@ import sim.portrayal.grid.*;
 import java.awt.*;
 import javax.swing.*;
 
+import dmason.batch.data.GeneralParam;
+
 public class DParticlesWithUI extends GUIState
 {
     public Display2D display;
@@ -14,10 +16,16 @@ public class DParticlesWithUI extends GUIState
     SparseGridPortrayal2D particlesPortrayal = new SparseGridPortrayal2D();
     FastValueGridPortrayal2D trailsPortrayal = new FastValueGridPortrayal2D("Trail");
 
-    public DParticlesWithUI(Object[] args) 
+    /*public DParticlesWithUI(Object[] args) 
     { 
     	super(new DParticles(args));
     	name=String.valueOf(args[7])+""+(String.valueOf(args[8]));
+    }*/
+    
+    public DParticlesWithUI(GeneralParam args) 
+    { 
+    	super(new DParticles(args));
+    	name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
     }
     
     public static String getName() { return "Peer: <"+name+">"; }

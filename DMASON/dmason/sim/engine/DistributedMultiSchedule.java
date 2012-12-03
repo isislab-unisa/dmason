@@ -2,6 +2,7 @@ package dmason.sim.engine;
 
 
 import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.locks.Condition;
@@ -115,6 +116,8 @@ public class DistributedMultiSchedule<E> extends Schedule
     
 	public DistributedMultiSchedule() {
 		
+		
+		
 		fields = new ArrayList<DistributedField<E>>();
 		peers = new HashMap<String, String>();
 		split = false;
@@ -165,7 +168,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 					
 					loggerStep = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+"Step");
 					loggerBalance = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+"Balance");
-					loggerStep.setLevel(Level.DEBUG);
+					/*loggerStep.setLevel(Level.DEBUG);
 					loggerBalance.setLevel(Level.DEBUG);
 					if(loggerStep.getLevel()!=Level.OFF){
 					 file = new FileAppender();
@@ -189,7 +192,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 
 					}
 
-					loggerBalance.addAppender(file2);
+					loggerBalance.addAppender(file2); */
 			}
 
 				

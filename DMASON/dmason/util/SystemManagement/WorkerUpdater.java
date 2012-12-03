@@ -383,7 +383,7 @@ public class WorkerUpdater extends javax.swing.JFrame
 		{	
 			// notify MasterUI
 			obs.setChanged();
-			obs.notifyObservers();
+			obs.notifyObservers("Update");
 		}
 	}
 	

@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import dmason.batch.data.GeneralParam;
 import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.engine.RemoteAgent;
@@ -29,13 +30,29 @@ public class DParticles extends DistributedState<Int2D> {
     public int gridWidth ;
     public int gridHeight ;   
     public int MODE;
-    
+   
+    public static String topicPrefix = "";
     
    // public ArrayList<RemoteAgent<Int2D>> buffer_print=new ArrayList<RemoteAgent<Int2D>>();
     //public PrintWriter printer;
   
-   
-    public DParticles(Object[] params)
+  
+    public DParticles(GeneralParam params)
+    {    	
+    	super(params.getMaxDistance(),params.getNumRegions(),params.getNumAgents(),params.getI(),
+    			params.getJ(),params.getIp(),params.getPort(),params.getMode(),
+    			isToroidal,new DistributedMultiSchedule<Int2D>(),topicPrefix);
+    	ip = params.getIp();
+    	port = params.getPort();
+    	this.MODE=params.getMode();
+    	gridWidth=params.getWidth();
+    	gridHeight=params.getHeight();
+    	((DistributedMultiSchedule)schedule).setThresholdMerge(1);
+        ((DistributedMultiSchedule)schedule).setThresholdSplit(5);
+
+    } 
+    
+    /*public DParticles(Object[] params)
     {    	
     	super((Integer)params[2],(Integer)params[3],(Integer)params[4],(Integer)params[7],
     			(Integer)params[8],(String)params[0],(String)params[1],(Integer)params[9],
@@ -48,7 +65,7 @@ public class DParticles extends DistributedState<Int2D> {
     	((DistributedMultiSchedule)schedule).setThresholdMerge(1);
         ((DistributedMultiSchedule)schedule).setThresholdSplit(5);
 
-    }    
+    } */   
 
     public void start()
     {
@@ -58,7 +75,7 @@ public class DParticles extends DistributedState<Int2D> {
         {
 			trails = new DoubleGrid2D(gridWidth, gridHeight);
         	//trails = DDoubleGrid2DFactory.createDDoubleGrid2D(gridWidth, gridHeight,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.NUMPEERS,MODE,0,false,"trails");
-			particles = DSparseGrid2DFactory.createDSparseGrid2d(gridWidth, gridHeight,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.NUMPEERS,MODE, "particles");
+			particles = DSparseGrid2DFactory.createDSparseGrid2d(gridWidth, gridHeight,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.NUMPEERS,MODE, "particles", topicPrefix);
 		    init_connection();
 		   // String curDir = System.getProperty("user.dir");
 			//printer=new PrintWriter(new FileOutputStream(curDir+"/testTOTAgents.txt",true));

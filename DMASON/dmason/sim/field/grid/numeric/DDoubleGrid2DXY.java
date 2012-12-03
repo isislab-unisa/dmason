@@ -109,6 +109,8 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	private ConnectionNFieldsWithActiveMQAPI connection;
 	private int numAgents;
 	
+	private String topicPrefix = "";
+	
 	
 	/**
 	 * @param width field's width  
@@ -120,9 +122,10 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	 * @param num_peers number of the peers
 	 * @param name the name that we give at topic for the connection
 	 * @param initialGridValue is the initial value that we want to set at grid at begin simulation. 
+	 * @param prefix 
 	 */
 	public DDoubleGrid2DXY(int width, int height,SimState sm,int max_distance,int i,int j,int num_peers,
-			double initialGridValue, String name) 
+			double initialGridValue, String name, String prefix) 
 	{	
 		super(width, height,initialGridValue);
 		this.NAME = name;
@@ -130,7 +133,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		cellType = new CellType(i, j);
 		MAX_DISTANCE=max_distance;
 		NUMPEERS=num_peers;
-		
+		this.topicPrefix = prefix;
 		updates_cache = new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
 
 		setConnection(((DistributedState)sm).getConnection());
@@ -382,7 +385,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 			
 			try {
 				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
-				connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
+				connection.publishToTopic(tmp_zoom,topicPrefix+"GRAPHICS"+cellType,NAME);
 				tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -404,7 +407,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 								cellType,DistributedRegionNumeric.LEFT);
 			try 
 			{	
-				connection.publishToTopic(dr,cellType+"L", NAME);
+				connection.publishToTopic(dr,topicPrefix+cellType+"L", NAME);
 			
 			} catch (Exception e1) { e1.printStackTrace();}
 		}
@@ -416,7 +419,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 								cellType,DistributedRegionNumeric.RIGHT);				
 			try 
 			{
-				connection.publishToTopic(dr,cellType.toString()+"R", NAME);
+				connection.publishToTopic(dr,topicPrefix+cellType.toString()+"R", NAME);
 				  
 			 } catch (Exception e1) {e1.printStackTrace(); }
 		}
@@ -428,7 +431,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 								cellType,DistributedRegionNumeric.UP);
 			try 
 			{
-				connection.publishToTopic(dr,cellType.toString()+"U", NAME);
+				connection.publishToTopic(dr,topicPrefix+cellType.toString()+"U", NAME);
 				 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -440,7 +443,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 								cellType,DistributedRegionNumeric.DOWN);
 			try 
 			{
-				connection.publishToTopic(dr,cellType.toString()+"D", NAME);
+				connection.publishToTopic(dr,topicPrefix+cellType.toString()+"D", NAME);
 	
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
@@ -452,7 +455,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 							(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.CORNER_DIAG_UP_LEFT);
 			try 
 			{
-				connection.publishToTopic(dr,cellType.toString()+"CUDL", NAME);
+				connection.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDL", NAME);
 					 
 			} catch (Exception e1) { e1.printStackTrace();}
 		}
@@ -464,7 +467,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 							(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.CORNER_DIAG_UP_RIGHT);
 			try 
 			{
-				connection.publishToTopic(dr,cellType.toString()+"CUDR", NAME); 
+				connection.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDR", NAME); 
 			
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -476,7 +479,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 							(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.CORNER_DIAG_DOWN_LEFT);
 			try 
 			{
-				connection.publishToTopic(dr,cellType.toString()+"CDDL", NAME);
+				connection.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDL", NAME);
 				
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -488,7 +491,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 							(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.CORNER_DIAG_DOWN_RIGHT);				
 			try 
 			{	
-				connection.publishToTopic(dr,cellType.toString()+"CDDR", NAME);
+				connection.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDR", NAME);
 			
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}

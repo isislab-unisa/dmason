@@ -17,21 +17,33 @@
 
 package dmason.util.SystemManagement;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Observable;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.jms.JMSException;
 
+import org.apache.log4j.Logger;
+
 import sim.display.Console;
 import sim.display.GUIState;
+import dmason.batch.data.EntryParam;
+import dmason.batch.data.GeneralParam;
+import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.field.MessageListener;
 import dmason.sim.field.TraceableField;
@@ -39,11 +51,12 @@ import dmason.util.connection.Address;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 
-public class Worker
+public class Worker extends Observable
 {
 	//used for FTP
 	private static final String DOWNLOADED_JAR_PATH = "TMP";
 	private static final String SIMULATION_DIR = "simulation";
+	private static final String TEST_PARAM_NAME = "Logs/workers/params.conf";
 	private static String SEPARATOR;
 	
 	private Address address;
@@ -63,13 +76,22 @@ public class Worker
 	private boolean isFirst = true;
 	private boolean blocked = false;
 	
+	private long totSteps = 0;
+	private Logger logger;
+	private String stepTopic;
+	
 	
 	public Worker(StartUpData data, Connection con)
 	{
 		super();
 		this.data = data;
 		connection = (ConnectionNFieldsWithActiveMQAPI)con;
+		
+		logger = Logger.getLogger(Worker.class.getCanonicalName());
+		
 		bootstrap();
+		
+		
 	}
 	
 	public void bootstrap()
@@ -78,15 +100,46 @@ public class Worker
 		gui = data.isGraphic();
 		address = connection.getAddress();
 		
+		System.out.println("Params :"+ data.getParam());
+	
+		totSteps = data.getParam().getMaxStep();
+		
+		
+		System.out.println("Tot steps: "+totSteps);
 		setSeparator();
 		
-		state = this.makeState(data.getDef(), data.getParam(), new String[]{});
+		
+		state = this.makeState(data.getDef(), data.getParam());
 		
 		
 		// If this worker must publish to the "step" topic
 		if (step)
 		{
-			connection.createTopic("step", 1);
+			if(data.getParam().isBatch)
+				stepTopic = data.getTopicPrefix()+"step";
+			else
+				stepTopic = "step";
+			
+			connection.createTopic(stepTopic, 1);
+			
+			
+			/*FileOutputStream paramFile;
+			try {
+				paramFile = new FileOutputStream(TEST_PARAM_NAME);
+				PrintStream writer = new PrintStream(paramFile);
+				writer.println(data.getParam()+"\n");
+				if(data.getParam().isBatch)
+					writer.println(data.getSimParam()+"\n");
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}*/
+			
+			logger.debug(data.getParam()+"\n");
+			if(data.getParam().isBatch)
+				logger.debug(data.getSimParam()+"\n");
+		    
+			
 		}
 				
 		if (!gui)
@@ -97,13 +150,15 @@ public class Worker
 		
 	}
 	
+	
+
 	private static void setSeparator() 
 	{
 		OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
 		
 		if(os.getName().contains("Windows"))
 			SEPARATOR = "\\";
-		if(os.getName().contains("Linux") || os.getName().contains("OSX"))
+		if(os.getName().contains("Linux") || os.getName().contains("OS X"))
 			SEPARATOR = "/";
 	}
 	
@@ -172,7 +227,8 @@ public class Worker
 				if (gui)
 					connection.publishToTopic(console.simulation.state.schedule.getSteps(), "step","step");
 				else
-					connection.publishToTopic(state.schedule.getSteps()-1,"step","step");
+					connection.publishToTopic(state.schedule.getSteps()-1,"step","step"); 
+						
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -242,13 +298,32 @@ public class Worker
 					{
 						while(!flag)
 						{
+							//System.out.println("step");
 							if(step)
 							{
-								connection.publishToTopic(state.schedule.getSteps()-1,"step","step");
+								connection.publishToTopic(state.schedule.getSteps()-1,stepTopic,"step");
+								
 							}
 
+							if(totSteps != 0)
+							{
+								if(state.schedule.getSteps()-1 == totSteps)
+								{
+									//System.out.println("step: "+(state.schedule.getSteps()-1));
+									
+									stop_play();
+									// notify to PeerDeamonListener
+									setChanged();
+									notifyObservers();
+									
+									
+								}
+							}
+							
+							
 							state.schedule.step(state);
 							//worker.setStep(state.schedule.getSteps());
+							
 						}
 
 						if(!resetted)
@@ -297,15 +372,14 @@ public class Worker
 			tf.untrace(param);
 	}
 
-
 	/**
 	 * Instantiate the simulation object.
 	 * @param simClass The simulation class to instantiate.
-	 * @param args_sim Parameters to be passed to simulation.
+	 * @param args_gen Parameters to be passed to simulation.
 	 * @param args_mason Parameters to be passed to MASON engine.
 	 * @return
 	 */
-	public DistributedState makeState(Class simClass, Object[] args_sim, String[] args_mason)
+	public DistributedState makeState(Class simClass, GeneralParam args_gen)
 	{
 		Object obj = null;
 		
@@ -313,8 +387,26 @@ public class Worker
 		{
 			Constructor constr;
 			try {
-				constr = simClass.getConstructor(new Class[]{ args_sim.getClass() });
-				obj = constr.newInstance(new Object[]{ args_sim });
+				
+				/*if(data.getSimParam() != null) //batch test simulation
+				{
+					constr = simClass.getConstructor(new Class[]{ args_sim.getClass(),List.class});
+					obj = constr.newInstance(new Object[]{ args_sim ,data.getSimParam()});
+				}*/
+				//else //costruttore nel caso di sim non batch
+				//{
+					constr = simClass.getConstructor(new Class[]{ args_gen.getClass() });
+					obj = constr.newInstance(new Object[]{ args_gen });
+					
+				//}
+				
+				//List<EntryParam<String, Object>> list = Arrays.asList(new EntryParam<String, Object>("width", 150), new EntryParam<String, Object>("height",500), new EntryParam<String, Object>("numFlockers",30), new EntryParam<String, Object>("cohesion",10.0), new EntryParam<String, Object>("avoidance",5.0), new EntryParam<String, Object>("randomness",2.0), new EntryParam<String, Object>("consistency",13.0), new EntryParam<String, Object>("momentum",11.0), new EntryParam<String, Object>("deadFlockerProbability",0.5), new EntryParam<String, Object>("neighborhood",40.0));
+				
+				/*simClass.getConstructors();
+				for (Constructor c : simClass.getConstructors()) {
+					System.out.println(c.getName()+" "+(c.getParameterTypes().length == 2 ? c.getParameterTypes()[1] : c.getParameterTypes()[0]));
+				}*/
+				
 			} catch (SecurityException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -343,7 +435,7 @@ public class Worker
 				
 				URL url = Updater.getSimulationJar(data);
 				
-			    obj = getSimulationInstance(args_sim, url,gui);
+			    obj = getSimulationInstance(args_gen, url,gui);
 				
 				
 			} catch (Exception e) {
@@ -387,7 +479,7 @@ public class Worker
 		return null;
 	}
 
-	private Object getSimulationInstance(Object[] args_sim, URL url, boolean isGui)
+	private Object getSimulationInstance(GeneralParam args_gen, URL url, boolean isGui)
 			throws NoSuchMethodException, IllegalAccessException,
 			InvocationTargetException, ClassNotFoundException,
 			InstantiationException 
@@ -415,8 +507,16 @@ public class Worker
 
 			name += "WithUI";
 		}
-		Object obj = cl.getInstance(name, args_sim);
-		return obj;
+		if(data.getParam().isBatch) //batch test simulation
+		{
+			
+			return cl.getInstance(name, args_gen, data.getSimParam(), data.getTopicPrefix());
+		}
+		else
+			return cl.getInstance(name, args_gen);
+	
+		
+		
 	}
 	
 	public ArrayList<MessageListener> getListeners()

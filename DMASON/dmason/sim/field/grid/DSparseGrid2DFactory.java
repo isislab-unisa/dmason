@@ -29,14 +29,14 @@ public final class DSparseGrid2DFactory
 	 * @return The right DSparseGrid2D
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */
-	public static final DSparseGrid2D createDSparseGrid2d(int width, int height,SimState sm,int max_distance,int i,int j,int num_peers,int MODE, String name)
+	public static final DSparseGrid2D createDSparseGrid2d(int width, int height,SimState sm,int max_distance,int i,int j,int num_peers,int MODE, String name, String topicPrefix)
 		throws DMasonException
 	{
 		if(MODE==HORIZONTAL_DISTRIBUTION_MODE)
 		{
 			if(width%num_peers == 0)
 					{
-						DistributedField field=new DSparseGrid2DY(width, height,sm, max_distance, i, j, num_peers, name);
+						DistributedField field=new DSparseGrid2DY(width, height,sm, max_distance, i, j, num_peers, name,topicPrefix);
 						
 						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 						
@@ -51,7 +51,7 @@ public final class DSparseGrid2DFactory
 			{
 				if((width% Math.sqrt(num_peers) == 0) && (height% Math.sqrt(num_peers) == 0))
 				{
-					DistributedField field = new DSparseGrid2DXY(width, height,sm, max_distance, i, j, num_peers, name);
+					DistributedField field = new DSparseGrid2DXY(width, height,sm, max_distance, i, j, num_peers, name,topicPrefix);
 					
 					((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 					return (DSparseGrid2D)field;
@@ -65,7 +65,7 @@ public final class DSparseGrid2DFactory
 					if(((width% Math.sqrt(num_peers) == 0) && (height% Math.sqrt(num_peers) == 0)) && 
 							(((width/ Math.sqrt(num_peers))%3 == 0) && ((height/ Math.sqrt(num_peers))%3 == 0)))
 					{
-						DistributedField field = new DSparseGrid2DXYLB(width, height,sm, max_distance, i, j, num_peers, name);
+						DistributedField field = new DSparseGrid2DXYLB(width, height,sm, max_distance, i, j, num_peers, name,topicPrefix);
 						
 						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 						return (DSparseGrid2D)field;
