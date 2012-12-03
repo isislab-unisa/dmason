@@ -56,6 +56,7 @@ public class MasterDaemonListener extends MyMessageListener
 			
 			if(mh.get("info")!=null)
 			{
+				System.out.println("Ricevuto infoooooooooooooooo");
 				PeerStatusInfo info = (PeerStatusInfo) mh.get("info");
 				infos.put(info.getHostName(), info);
 				
@@ -78,6 +79,14 @@ public class MasterDaemonListener extends MyMessageListener
 				obs.setChanged();
 				obs.notifyObservers();
 			}
+			
+			/*if(mh.get("batch")!=null)
+			{
+				//Notify MasterDeamonStarter
+				obs.setChanged();
+				obs.notifyObservers("batch");
+			}*/
+			
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

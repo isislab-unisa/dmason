@@ -27,8 +27,12 @@ import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.URLDecoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -43,6 +47,14 @@ import dmason.util.exception.NoDigestFoundException;
 public class StartWorker implements StartWorkerInterface {
 	private static Logger logger;
 
+	private static boolean updated;
+
+	private static boolean autoStart;
+
+	private static boolean isBatch;
+
+	private static String topicPrefix;
+
 	/**
 	 * Connection with a provider.
 	 */
@@ -54,7 +66,7 @@ public class StartWorker implements StartWorkerInterface {
 	private Address ipAddress;
 	
 	private String myTopic;
-	private static final String version = "2.0";
+	private static final String version = "1.0";
 	private String digest;
 
 	
@@ -124,19 +136,42 @@ public class StartWorker implements StartWorkerInterface {
 	    String jvmName = bean.getName();
 	    
 	    //Used for log4j properties
-		System.setProperty("logfile.name",jvmName);
+		System.setProperty("logfile.name","worker"+jvmName);
+		
+	    //Used for log4j properties
+		System.setProperty("steplog.name","workerStep"+jvmName);
+		
+
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss_SS");
+		Date date = new Date();
+		dateFormat.format(date);
+		
+		System.setProperty("timestamp", date.toLocaleString());
+		
+		System.setProperty("paramsfile.name", "params");
+		try {
+			File logPath = new File("Logs/workers");
+			if(logPath.exists())
+				FileUtils.cleanDirectory(logPath);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 		logger = Logger.getLogger(StartWorker.class.getCanonicalName());
 		logger.debug("StartWorker "+version);
 		
 		
-				
+		autoStart = false;	
 		String ip = null;
 		String port = null;
 		String topic = null;
+		updated = false;
+		isBatch = false;
+		topicPrefix = "";
 		
-		if(args.length != 2 && args.length != 3)
+		if(args.length != 2 && args.length != 4)
 			System.out.println("Usage StartWorker IP PORT");
 		else
 		{
@@ -146,8 +181,22 @@ public class StartWorker implements StartWorkerInterface {
 				port = args[1];
 				
 			}
-			if(args.length == 3)
+			if(args.length == 4)
 			{	
+				autoStart = true;
+				if(args[3].equals("update"))
+					updated = true;
+				if(args[3].equals("reset"))
+				{
+					updated = false;
+					isBatch = false;
+				}
+				if(args[3].contains("Batch"))
+				{
+					updated = false;
+					isBatch = true;
+					topicPrefix = args[3];
+				}
 				ip = args[0];
 				port = args[1];
 				topic = args[2];
@@ -174,10 +223,10 @@ public class StartWorker implements StartWorkerInterface {
 		{
 			connection.setupConnection(ipAddress);
 			
-			if(myTopic == null)
+			if(!autoStart)
 				new PeerDaemonStarter(connection, this,version,digest);
 			else
-				new PeerDaemonStarter(connection, this,myTopic,version,digest);
+				new PeerDaemonStarter(connection, this,myTopic,version,digest,updated,isBatch,topicPrefix);
 				
 			
 			return true;

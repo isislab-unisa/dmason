@@ -18,7 +18,10 @@
 package dmason.util.SystemManagement;
 
 import java.io.Serializable;
+import java.util.List;
 
+import dmason.batch.data.EntryParam;
+import dmason.batch.data.GeneralParam;
 import dmason.util.connection.Address;
 
 
@@ -34,7 +37,10 @@ public class StartUpData implements Serializable{
 	/**
 	 * Parameters to pass to simulation's constructor.
 	 */
-	private Object[] param;
+	//private Object[] param;
+	private GeneralParam param;
+	private List<EntryParam<String, Object>> simParam;
+	
 	
 	/**
 	 * <code>true</code> if GUI must be shown on workers.
@@ -60,6 +66,28 @@ public class StartUpData implements Serializable{
 	 */
 	private Address FTPAddress;
 
+	private String uploadDir;
+
+	private String topicPrefix;
+	
+	
+	
+	public String getTopicPrefix() {
+		return topicPrefix;
+	}
+
+	public void setTopicPrefix(String topicPrefix) {
+		this.topicPrefix = topicPrefix;
+	}
+
+	public String getUploadDir() {
+		return uploadDir;
+	}
+
+	public void setUploadDir(String uploadDir) {
+		this.uploadDir = uploadDir;
+	}
+
 	public Address getFTPAddress() {
 		return FTPAddress;
 	}
@@ -68,7 +96,7 @@ public class StartUpData implements Serializable{
 		FTPAddress = fTPAddress;
 	}
 
-	public StartUpData(Class def, Object[] param, boolean graphic,boolean local) {
+	public StartUpData(Class def, GeneralParam param, boolean graphic,boolean local) {
 		super();
 		this.def = def;
 		this.param = param;
@@ -86,14 +114,24 @@ public class StartUpData implements Serializable{
 		this.def = def;
 	}
 
-	public Object[] getParam() {
+	public GeneralParam getParam() {
 		return param;
 	}
 
-	public void setParam(Object[] param) {
+	public void setParam(GeneralParam param) {
 		this.param = param;
 	}
 	
+	
+	
+	public List<EntryParam<String, Object>> getSimParam() {
+		return simParam;
+	}
+
+	public void setSimParam(List<EntryParam<String, Object>> simParam) {
+		this.simParam = simParam;
+	}
+
 	public boolean isStep() {
 		return step;
 	}
@@ -101,7 +139,7 @@ public class StartUpData implements Serializable{
 	public void setStep(boolean step) {
 		this.step = step;
 	}
-	
+
 	public void setPos_x(int pos_x){
 		this.pos_x = pos_x;
 	}
@@ -137,7 +175,7 @@ public class StartUpData implements Serializable{
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		super.clone();
-		Object[] obj = new Object[param.length];
+		//Object[] obj = new Object[param.length];
 		StartUpData s = new StartUpData();
 		s.setDef(def);
 		s.setStep(step);
@@ -145,12 +183,14 @@ public class StartUpData implements Serializable{
 		s.setLocal(local);
 		s.setPos_x(pos_x);
 		s.setPos_y(pos_y);
-		s.setParam(obj);
+		//s.setParam(obj);
 		return s;
 	}
 
 	public void setJarName(String selSim) { jarName = selSim; }
 
 	public String getJarName() { return jarName; }
+
+	
 	
 }

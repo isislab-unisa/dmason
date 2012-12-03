@@ -33,6 +33,7 @@ import javax.jms.JMSException;
 import javax.jms.MessageListener;
 import javax.management.MBeanServerConnection;
 import javax.management.MBeanServerInvocationHandler;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
@@ -326,19 +327,10 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 
 	public void cleanBeforeUpdate(String mytopic)
 	{
-		JMXServiceURL url = null;
-		try {
-			url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://"+providerAddress.getIPaddress()+":1616/jmxrmi");
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
+		JMXServiceURL url = connectToJMX();
 		JMXConnector jmxc;
 		try {
-			jmxc = JMXConnectorFactory.connect(url);
-			MBeanServerConnection conn = jmxc.getMBeanServerConnection();
-
-			ObjectName activeMQ = new ObjectName("org.apache.activemq:BrokerName=localhost,Type=Broker");
-			BrokerViewMBean mbean = (BrokerViewMBean) MBeanServerInvocationHandler.newProxyInstance(conn, activeMQ,BrokerViewMBean.class, true);
+			BrokerViewMBean mbean = getBrokerView(url);
 
 
 			for (ObjectName topic : mbean.getTopics()) {
@@ -361,59 +353,107 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	}
 	
 	//Connect to ActiveMQ using jmx interface for topic cleanup
-	public void ResetSimulation() 
+	public void resetTopic() 
 	{
 		//log.info("Connecting...");
+		JMXServiceURL url = connectToJMX();
+
+		try {
+
+			BrokerViewMBean mbean = getBrokerView(url);
+
+			for (ObjectName topic : mbean.getTopics()) 
+			{
+
+				String topicDestination = topic.getKeyProperty("Destination");
+				if((!topicDestination.contains("Connection"))&&
+						(!topicDestination.contains("Topic.SERVICE"))&&
+						(!topicDestination.contains("Topic.MASTER"))&&
+						(!topicDestination.contains("Advisory.Topic"))&&
+						(!topicDestination.equals("MASTER"))&&
+						(!topicDestination.equals("Advisory.Queue"))&&
+						(!topicDestination.equals("Advisory.TempQueue"))&&
+						(!topicDestination.equals("Advisory.TempTopic"))&&
+						(!topicDestination.contains("SERVICE")))
+				{
+					
+					mbean.removeTopic(topicDestination);
+				
+				}
+
+
+
+			} 
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+	}
+	public void resetBatchTopic(String topicPrefix) 
+	{
+		//log.info("Connecting...");
+		JMXServiceURL url = connectToJMX();
+
+		try {
+
+			BrokerViewMBean mbean = getBrokerView(url);
+
+			for (ObjectName topic : mbean.getTopics()) 
+			{
+				//System.out.println("TOPIC TO REMOVE: " +topicPrefix);
+
+				String topicDestination = topic.getKeyProperty("Destination");
+				if(((!topicDestination.contains("Connection"))&&
+						(!topicDestination.contains("Topic.SERVICE"))&&
+						(!topicDestination.contains("Topic.MASTER"))&&
+						(!topicDestination.contains("Advisory.Topic"))&&
+						(!topicDestination.equals("MASTER"))&&
+						(!topicDestination.equals("Advisory.Queue"))&&
+						(!topicDestination.equals("Advisory.TempQueue"))&&
+						(!topicDestination.equals("Advisory.TempTopic"))&&
+						(!topicDestination.contains("SERVICE"))) && topicDestination.contains(topicPrefix))
+				{
+					
+					//System.out.println("REMOVED TOPIC: "+topicDestination);
+					mbean.removeTopic(topicDestination);
+				
+				}
+
+
+
+			} 
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+	}
+	private BrokerViewMBean getBrokerView(JMXServiceURL url)
+			throws IOException, MalformedObjectNameException {
+		JMXConnector jmxc;
+		jmxc = JMXConnectorFactory.connect(url);
+		MBeanServerConnection conn = jmxc.getMBeanServerConnection();
+		
+		ObjectName activeMQ = new ObjectName("org.apache.activemq:BrokerName=localhost,Type=Broker");
+		BrokerViewMBean mbean = (BrokerViewMBean) MBeanServerInvocationHandler.newProxyInstance(conn, activeMQ,BrokerViewMBean.class, true);
+		return mbean;
+	}
+
+	private JMXServiceURL connectToJMX() {
 		JMXServiceURL url = null;
 		try {
 			url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://"+providerAddress.getIPaddress()+":1616/jmxrmi");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		JMXConnector jmxc;
-		try {
-			jmxc = JMXConnectorFactory.connect(url);
-			MBeanServerConnection conn = jmxc.getMBeanServerConnection();
-			
-			ObjectName activeMQ = new ObjectName("org.apache.activemq:BrokerName=localhost,Type=Broker");
-			BrokerViewMBean mbean = (BrokerViewMBean) MBeanServerInvocationHandler.newProxyInstance(conn, activeMQ,BrokerViewMBean.class, true);
-			
-			
-			
-			for (ObjectName topic : mbean.getTopics()) {
-				
-				
-				// da sistemare! Non mi piace!
-				String topicDestination = topic.getKeyProperty("Destination");
-				if((!topicDestination.contains("Connection"))&&
-					(!topicDestination.contains("Topic.SERVICE"))&&
-					(!topicDestination.contains("Topic.MASTER"))&&
-					(!topicDestination.contains("Advisory.Topic"))&&
-					(!topicDestination.equals("MASTER"))&&
-					(!topicDestination.equals("Advisory.Queue"))&&
-					(!topicDestination.equals("Advisory.TempQueue"))&&
-					(!topicDestination.equals("Advisory.TempTopic"))&&
-					(!topicDestination.contains("SERVICE")))
-				{
-					//log.info("deleting topic.."+topicDestination);
-					mbean.removeTopic(topicDestination);
-					//log.info("Topic "+topicDestination+" deleted");
-				}
-					
-					
-					
-			} 
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-		}
-		
-
-		//log.info("Connected");
-		
+		return url;
 	}
 
 	//TransportListner method 

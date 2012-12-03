@@ -33,14 +33,14 @@ public class DDoubleGrid2DFactory {
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */
 	public static final DDoubleGrid2D createDDoubleGrid2D(int width, int height,SimState sm,int max_distance,int i,int j,int num_peers,int MODE, 
-			double initialGridValue, boolean fixed, String name)
+			double initialGridValue, boolean fixed, String name, String topicPrefix)
 		throws DMasonException
 	{
 		if(MODE==HORIZONTAL_DISTRIBUTION_MODE)
 		{
 			if(width%num_peers == 0)
 			{
-					DistributedField field = new DDoubleGrid2DY(width, height,sm, max_distance, i, j, num_peers, initialGridValue, name);
+					DistributedField field = new DDoubleGrid2DY(width, height,sm, max_distance, i, j, num_peers, initialGridValue, name, topicPrefix);
 					
 					if(!fixed)
 						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
@@ -55,7 +55,7 @@ public class DDoubleGrid2DFactory {
 			{
 				if((width% Math.sqrt(num_peers) == 0) && (height% Math.sqrt(num_peers) == 0))
 				{
-					DistributedField field = new DDoubleGrid2DXY(width, height,sm, max_distance, i, j, num_peers, initialGridValue, name);
+					DistributedField field = new DDoubleGrid2DXY(width, height,sm, max_distance, i, j, num_peers, initialGridValue, name, topicPrefix);
 					
 					if(!fixed)
 						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
@@ -68,7 +68,7 @@ public class DDoubleGrid2DFactory {
 				if(((width% Math.sqrt(num_peers) == 0) && (height% Math.sqrt(num_peers) == 0)) && 
 						(((width/ Math.sqrt(num_peers))%3 == 0) && ((height/ Math.sqrt(num_peers))%3 == 0)))
 				{
-					DistributedField field = new DDoubleGrid2DXYLB(width, height,sm, max_distance, i, j, num_peers, initialGridValue, name);
+					DistributedField field = new DDoubleGrid2DXYLB(width, height,sm, max_distance, i, j, num_peers, initialGridValue, name, topicPrefix);
 					
 					if(!fixed)
 						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);

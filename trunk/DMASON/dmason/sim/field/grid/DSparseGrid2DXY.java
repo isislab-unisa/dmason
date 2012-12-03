@@ -130,6 +130,8 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	private double actualTime;
 	private HashMap<String, Object> actualStats;
 	
+	private String topicPrefix = "";
+	
 	
 	
 	/**
@@ -141,8 +143,9 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	 * @param j j position in the field of the cell
 	 * @param num_peers number of the peers
 	 * @param name identifier of the field
+	 * @param prefix 
 	 */	
-	public DSparseGrid2DXY(int width, int height,SimState sm,int max_distance,int i,int j,int num_peers, String name) 
+	public DSparseGrid2DXY(int width, int height,SimState sm,int max_distance,int i,int j,int num_peers, String name, String prefix) 
 	{		
 		super(width, height);
 		this.NAME = name;
@@ -150,6 +153,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		cellType = new CellType(i, j);
 		MAX_DISTANCE=max_distance;
 		NUMPEERS=num_peers;
+		this.topicPrefix = prefix;
 		
 		/*
 		try {
@@ -480,7 +484,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 				try
 				{
 					snap.stats = actualStats;
-					connection.publishToTopic(snap, "GRAPHICS", "GRAPHICS");
+					connection.publishToTopic(snap, topicPrefix+"GRAPHICS", "GRAPHICS");
 				} catch (Exception e) {
 					//logger.severe("Error while publishing the snap message");
 					e.printStackTrace();
@@ -552,7 +556,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.left_mine,rmap.left_out,
 						(sm.schedule.getSteps()-1),cellType,DistributedRegion.LEFT);
 
-				connection.publishToTopic(dr,cellType+"L", NAME);
+				connection.publishToTopic(dr,topicPrefix+cellType+"L", NAME);
 
 
 
@@ -564,7 +568,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 			{
 				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.right_mine,rmap.right_out,(sm.schedule.getSteps()-1),cellType,DistributedRegion.RIGHT);				
 
-				connection.publishToTopic(dr,cellType.toString()+"R", NAME);
+				connection.publishToTopic(dr,topicPrefix+cellType.toString()+"R", NAME);
 
 			} catch (Exception e1) {e1.printStackTrace(); }
 		}
@@ -574,7 +578,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 			{
 				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.up_mine,rmap.up_out,(sm.schedule.getSteps()-1),cellType,DistributedRegion.UP);
 
-				connection.publishToTopic(dr,cellType.toString()+"U", NAME);
+				connection.publishToTopic(dr,topicPrefix+cellType.toString()+"U", NAME);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -585,7 +589,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 			{
 				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.down_mine,rmap.down_out,(sm.schedule.getSteps()-1),cellType,DistributedRegion.DOWN);
 
-				connection.publishToTopic(dr,cellType.toString()+"D", NAME);
+				connection.publishToTopic(dr,topicPrefix+cellType.toString()+"D", NAME);
 
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
@@ -597,7 +601,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 			try 
 			{
 
-				connection.publishToTopic(dr,cellType.toString()+"CUDL", NAME);
+				connection.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDL", NAME);
 
 			} catch (Exception e1) { e1.printStackTrace();}
 		}
@@ -608,7 +612,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 			try 
 			{
 
-				connection.publishToTopic(dr,cellType.toString()+"CUDR", NAME);
+				connection.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDR", NAME);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -618,7 +622,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 					rmap.corner_out_down_left_diag_center,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_LEFT);
 			try 
 			{
-				connection.publishToTopic(dr,cellType.toString()+"CDDL", NAME);
+				connection.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDL", NAME);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -630,7 +634,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 			try 
 			{
 
-				connection.publishToTopic(dr,cellType.toString()+"CDDR", NAME);
+				connection.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDR", NAME);
 
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}//<--
@@ -666,7 +670,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		{
 			try {
 				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
-				connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
+				connection.publishToTopic(tmp_zoom,topicPrefix+"GRAPHICS"+cellType,NAME);
 				tmp_zoom=new ZoomArrayList<RemoteAgent>();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block

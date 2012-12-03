@@ -2,7 +2,11 @@ package dmason.sim.app.DFlockers;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
 
+import dmason.annotation.batch;
+import dmason.batch.data.EntryParam;
+import dmason.batch.data.GeneralParam;
 import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.engine.RemoteAgent;
@@ -25,16 +29,31 @@ public class DFlockers extends DistributedState<Double2D>
 	private static final long serialVersionUID = 1L;
 	public DContinuous2D flockers;
     private static boolean isToroidal=true;
+    
+    @batch(
+    	domain = "100-300",
+    	suggestedValue = "250"
+    )
     public double width = 150;
+    @batch
     public double height = 150;
+    @batch
     public int numFlockers = 20;
+    @batch
     public double cohesion = 1.0;
+    @batch
     public double avoidance = 1.0;
+    @batch
     public double randomness = 1.0;
+    @batch
     public double consistency = 1.0;
+    @batch
     public double momentum = 1.0;
+    @batch
     public double deadFlockerProbability = 0.1;
+    @batch
     public double neighborhood = 10;
+    
     public double jump = 0.7;  // how far do we move in a timestep?
     
     public double getCohesion() { return cohesion; }
@@ -62,7 +81,9 @@ public class DFlockers extends DistributedState<Double2D>
     public double gridHeight ;   
     public int MODE;
     
-    public DFlockers(Object[] params)
+    public static String topicPrefix = "";
+    
+   /* public DFlockers(Object[] params)
     {    	
     	super((Integer)params[2],(Integer)params[3],(Integer)params[4],(Integer)params[7],
     			(Integer)params[8],(String)params[0],(String)params[1],(Integer)params[9],
@@ -72,8 +93,76 @@ public class DFlockers extends DistributedState<Double2D>
     	this.MODE=(Integer)params[9];
     	gridWidth=(Integer)params[5];
     	gridHeight=(Integer)params[6];
+    }*/
+    
+    public DFlockers(GeneralParam params)
+    {    	
+    	super(params.getMaxDistance(),params.getNumRegions(),params.getNumAgents(),params.getI(),
+    			params.getJ(),params.getIp(),params.getPort(),params.getMode(),
+    			isToroidal,new DistributedMultiSchedule<Double2D>(),topicPrefix);
+    	ip = params.getIp();
+    	port = params.getPort();
+    	this.MODE=params.getMode();
+    	gridWidth=params.getWidth();
+    	gridHeight=params.getHeight();
     }
     
+    public DFlockers(GeneralParam params,List<EntryParam<String, Object>> simParams, String prefix)
+    {    	
+    	super(params.getMaxDistance(),params.getNumRegions(),params.getNumAgents(),params.getI(),
+    			params.getJ(),params.getIp(),params.getPort(),params.getMode(),
+    			isToroidal,new DistributedMultiSchedule<Double2D>(), prefix);
+    	ip = params.getIp();
+    	port = params.getPort();
+    	this.MODE=params.getMode();
+    	gridWidth=params.getWidth();
+    	gridHeight=params.getHeight();
+    	topicPrefix = prefix;
+    	
+    	System.out.println(simParams.size());
+    	for (EntryParam<String, Object> entryParam : simParams) {
+    		
+    		try {
+				this.getClass().getDeclaredField(entryParam.getParamName()).set(this, entryParam.getParamValue());
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchFieldException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+    	
+    	for (EntryParam<String, Object> entryParam : simParams) {
+    		
+    		try {
+				System.out.println(this.getClass().getDeclaredField(entryParam.getParamName()).get(this));
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchFieldException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+			
+		
+    	
+    }
     public DFlockers()
     {
     	super();
@@ -91,7 +180,7 @@ public class DFlockers extends DistributedState<Double2D>
     	try 
     	{
     		flockers = DContinuous2DFactory.createDContinuous2D(neighborhood/1.5,gridWidth, gridHeight,this,
-    				super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.NUMPEERS,MODE,"flockers");
+    				super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.NUMPEERS,MODE,"flockers", topicPrefix);
     		init_connection();
     	} catch (DMasonException e) { e.printStackTrace(); }
 

@@ -3,6 +3,7 @@ package dmason.util.start;
 
 import java.util.ArrayList;
 
+import dmason.batch.data.GeneralParam;
 import dmason.sim.app.DFlockers.DFlockersWithUI;
 import dmason.sim.app.DParticles.DParticlesWithUI;
 import dmason.sim.app.DAntsForage.DAntsForageWithUI;
@@ -29,12 +30,17 @@ public class Starter {
 		{
 			ArrayList<Console> dants=new ArrayList<Console>();
 			for (int j = 0; j < NUM_PEERS; j++) 
-			{				
-				 DParticlesWithUI t=new DParticlesWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,0,j,MODE} );
-			        Console c=(Console)t.createController();
-			        
-			        c.pressPause();
-			        dants.add(c);
+			{		
+				GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, NUM_PEERS,NUM_AGENTS, MODE); 
+				genParam.setI(0);
+				genParam.setJ(j);
+				genParam.setIp("127.0.0.1");
+				genParam.setPort("61616");
+				DParticlesWithUI t=new DParticlesWithUI(genParam); //new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,0,j,MODE}
+				Console c=(Console)t.createController();
+
+				c.pressPause();
+				dants.add(c);
 			}
 			for(Console cc:dants) cc.pressPause();
 		}
@@ -45,7 +51,12 @@ public class Starter {
 				for (int i = 0; i < Math.sqrt(NUM_PEERS); i++) {
 					for (int j = 0; j < Math.sqrt(NUM_PEERS); j++) {
 					
-						DParticlesWithUI t=new DParticlesWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,i,j,MODE} );
+						GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, NUM_PEERS,NUM_AGENTS, MODE); 
+						genParam.setI(i);
+						genParam.setJ(j);
+						genParam.setIp("127.0.0.1");
+						genParam.setPort("61616");
+						DParticlesWithUI t=new DParticlesWithUI(genParam); //new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,i,j,MODE}
 				        Console c=(Console)t.createController();
 				        c.pressPause();
 				        dants.add(c);
@@ -58,7 +69,12 @@ public class Starter {
 				for (int i = 0; i < Math.sqrt(NUM_PEERS); i++) {
 				for (int j = 0; j < Math.sqrt(NUM_PEERS); j++) {
 					
-					DParticlesWithUI t=new DParticlesWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,i,j,MODE} );
+					GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, NUM_PEERS,NUM_AGENTS, MODE); 
+					genParam.setI(i);
+					genParam.setJ(j);
+					genParam.setIp("127.0.0.1");
+					genParam.setPort("61616");
+					DParticlesWithUI t=new DParticlesWithUI(genParam); //new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,i,j,MODE}
 				        Console c=(Console)t.createController();
 				        c.pressPause();
 				        dpart.add(c);
@@ -74,7 +90,12 @@ public class Starter {
 				ArrayList<Console> dants=new ArrayList<Console>();
 				for (int j = 0; j < NUM_PEERS; j++) 
 				{			
-					 DFlockersWithUI t=new DFlockersWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,0,j,MODE} );
+					GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, NUM_PEERS,NUM_AGENTS, MODE); 
+					genParam.setI(0);
+					genParam.setJ(j);
+					genParam.setIp("127.0.0.1");
+					genParam.setPort("61616");
+					DParticlesWithUI t=new DParticlesWithUI(genParam); //new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,0,j,MODE}
 				        Console c=(Console)t.createController();
 				        c.pressPause();
 				        dants.add(c);
@@ -88,7 +109,12 @@ public class Starter {
 				for (int i = 0; i < Math.sqrt(NUM_PEERS); i++) {
 					for (int j = 0; j < Math.sqrt(NUM_PEERS); j++) {
 					
-						DFlockersWithUI t=new DFlockersWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,i,j,MODE} );
+						GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, NUM_PEERS,NUM_AGENTS, MODE); 
+						genParam.setI(i);
+						genParam.setJ(j);
+						genParam.setIp("127.0.0.1");
+						genParam.setPort("61616");
+						DParticlesWithUI t=new DParticlesWithUI(genParam); //new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,i,j,MODE}
 					        Console c=(Console)t.createController();
 					        c.pressPause();
 					        dants.add(c);
@@ -102,7 +128,12 @@ public class Starter {
 		{
 			for (int j = 0; j < NUM_PEERS; j++) 
 			{				
-				DAntsForageWithUI t=new DAntsForageWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,0,j,MODE} );
+				GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, NUM_PEERS,NUM_AGENTS, MODE); 
+				genParam.setI(0);
+				genParam.setJ(j);
+				genParam.setIp("127.0.0.1");
+				genParam.setPort("61616");
+				DParticlesWithUI t=new DParticlesWithUI(genParam); //new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,0,j,MODE}
 				Console c=(Console)t.createController();
 			        
 			    c.pressPause();
@@ -115,7 +146,12 @@ public class Starter {
 				for (int i = 0; i < Math.sqrt(NUM_PEERS); i++) {
 					for (int j = 0; j < Math.sqrt(NUM_PEERS); j++) {
 				
-						DAntsForageWithUI t=new DAntsForageWithUI(new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,i,j,MODE} );
+						GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, NUM_PEERS,NUM_AGENTS, MODE); 
+						genParam.setI(i);
+						genParam.setJ(j);
+						genParam.setIp("127.0.0.1");
+						genParam.setPort("61616");
+						DParticlesWithUI t=new DParticlesWithUI(genParam); //new Object[]{"127.0.0.1","61616",MAX_DISTANCE,NUM_PEERS,NUM_AGENTS,WIDTH,HEGHT,i,j,MODE}
 				        Console c=(Console)t.createController();
 				        c.pressPause();
 				        dants.add(c);

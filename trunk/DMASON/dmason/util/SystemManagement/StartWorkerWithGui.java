@@ -30,6 +30,9 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
@@ -45,6 +48,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
@@ -95,11 +99,15 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 	
 
 	private static Logger logger;
+
+	private static boolean isBatch;
+
+	private static String topicPrefix;
 	
 	
 	private String digest;
 
-	public StartWorkerWithGui(boolean start, boolean up, String topic,String ipCS,String portCS)
+	public StartWorkerWithGui(boolean start, boolean up, boolean batch, String topic,String ipCS,String portCS)
 	{
 		initComponents();
 
@@ -153,6 +161,7 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 		autoStart = start;
 		updated = up;
 		myTopic = topic;
+		isBatch = batch;
 		ip = ipCS;
 		port = portCS;
 
@@ -174,8 +183,27 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 	    String jvmName = bean.getName();
 	    
 	    //Used for log4j properties
-		System.setProperty("logfile.name",jvmName);
+		System.setProperty("logfile.name","worker"+jvmName);
 		
+	    //Used for log4j properties
+		System.setProperty("steplog.name","workerStep"+jvmName);
+		
+
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss_SS");
+		Date date = new Date();
+		dateFormat.format(date);
+		
+		System.setProperty("timestamp", date.toLocaleString());
+		
+		System.setProperty("paramsfile.name", "params");
+		try {
+			File logPath = new File("Logs/workers");
+			if(logPath.exists())
+				FileUtils.cleanDirectory(logPath);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		logger = Logger.getLogger(StartWorker.class.getCanonicalName());
 		logger.debug("StartWorker "+version);
@@ -185,15 +213,27 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 		String port = null;
 		autoStart = false;
 		updated = false;
-		
-		if(args.length == 3)
+		isBatch = false;
+		topicPrefix = "";
+		if(args.length == 4)
 		{
 			autoStart = true;
-			updated = true;
-			topic = args[0];
-			ip = args[1];
-			port = args[2];
-			
+			if(args[3].equals("update"))
+				updated = true;
+			if(args[3].equals("reset"))
+			{
+				updated = false;
+				isBatch = false;
+			}
+			if(args[3].contains("Batch"))
+			{
+				updated = false;
+				isBatch = true;
+				topicPrefix = args[3];
+			}
+			ip = args[0];
+			port = args[1];
+			topic = args[2];
 		}
 		
 		/*if(args.length == 2 && args[0].equals("auto"))
@@ -204,7 +244,7 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 		if(args.length == 1 && args[0].equals("auto"))
 		{	autoStart = true;
 		}*/
-		 new StartWorkerWithGui(autoStart,updated,topic,ip,port);
+		 new StartWorkerWithGui(autoStart,updated,isBatch,topic,ip,port);
 	}
 
 	private void initComponents() {
@@ -367,10 +407,11 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		if(!updated)
+		
+		if(!autoStart)
 			new PeerDaemonStarter(connection, this,version,digest);
 		else // the worker was updated and then reconnected to the same topic
-			new PeerDaemonStarter(connection, this,myTopic,version,digest);
+		 new PeerDaemonStarter(connection, this,myTopic,version,digest,updated,isBatch,topicPrefix);
 		
 		cmbIp.setEditable(false);
 		cmbPort.setEditable(false);

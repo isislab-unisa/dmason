@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
+import sim.util.Double2D;
 import sim.util.Int2D;
 import sim.util.Interval;
+import dmason.batch.data.GeneralParam;
 import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.engine.RemoteAgent;
@@ -72,6 +74,7 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
     public double momentumProbability = 0.8;
     public double randomActionProbability = 0.1;
         
+    public static String topicPrefix = "";
         
     // some properties
     public int getNumAnts() { return numAnts; }
@@ -108,7 +111,7 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 
     public int MODE;
     
-    public DAntsForage(Object[] params)
+   /* public DAntsForage(Object[] params)
         { 
     	super((Integer)params[2],(Integer)params[3],(Integer)params[4],(Integer)params[7],
     			(Integer)params[8],(String)params[0],(String)params[1],(Integer)params[9], 
@@ -133,19 +136,44 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
     	HXMAX = (HOME_XMAX * GRID_WIDTH)/100;
     	HYMAX = (HOME_YMAX * GRID_HEIGHT)/100;
     	
-        }
-        
+        }*/
+  
+    public DAntsForage(GeneralParam params)
+    { 
+    	super(params.getMaxDistance(),params.getNumRegions(),params.getNumAgents(),params.getI(),
+    			params.getJ(),params.getIp(),params.getPort(),params.getMode(),
+    			isToroidal,new DistributedMultiSchedule<Int2D>(),topicPrefix);
+    	ip = params.getIp();
+    	port = params.getPort();
+    	this.MODE=params.getMode();
+    	GRID_WIDTH=params.getWidth();
+    	GRID_HEIGHT=params.getHeight();
+
+    	numAnts = params.getNumAgents();
+
+
+    	FXMIN = (FOOD_XMIN * GRID_WIDTH)/100;
+    	FYMIN = (FOOD_YMIN * GRID_HEIGHT)/100;
+    	FXMAX = (FOOD_XMAX * GRID_WIDTH)/100;
+    	FYMAX = (FOOD_YMAX * GRID_HEIGHT)/100;
+
+    	HXMIN = (HOME_XMIN * GRID_WIDTH)/100;
+    	HYMIN = (HOME_YMIN * GRID_HEIGHT)/100;
+    	HXMAX = (HOME_XMAX * GRID_WIDTH)/100;
+    	HYMAX = (HOME_YMAX * GRID_HEIGHT)/100;
+
+    }  
     public void start()
     {
     	super.start();  // clear out the schedule
 
     	try 
     	{       	
-    		toFoodGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, false, "toFoodGrid");
-    		toHomeGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, false, "toHomeGrid");
-    		buggrid = DSparseGrid2DFactory.createDSparseGrid2d(GRID_WIDTH, GRID_HEIGHT,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.NUMPEERS,MODE, "buggrid");
-    		sites = DIntGrid2DFactory.createDIntGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, true, "sites");
-    		obstacles = DIntGrid2DFactory.createDIntGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, true, "obstacles");
+    		toFoodGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, false, "toFoodGrid", topicPrefix);
+    		toHomeGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, false, "toHomeGrid", topicPrefix);
+    		buggrid = DSparseGrid2DFactory.createDSparseGrid2d(GRID_WIDTH, GRID_HEIGHT,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.NUMPEERS,MODE, "buggrid", topicPrefix);
+    		sites = DIntGrid2DFactory.createDIntGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, true, "sites", topicPrefix);
+    		obstacles = DIntGrid2DFactory.createDIntGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, true, "obstacles", topicPrefix);
     		init_connection();
     	}catch (DMasonException e) { e.printStackTrace();}
 

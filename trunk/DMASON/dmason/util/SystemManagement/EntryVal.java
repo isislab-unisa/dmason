@@ -24,5 +24,12 @@ public class EntryVal <V,B>{
 	}
 	public void setFlag(boolean flag) {
 		this.flag = flag;
+	}
+
+	@Override
+	public String toString() {
+		return "EntryVal [num=" + num + ", flag=" + flag + "]";
 	}	
+	
+	
 }

@@ -18,6 +18,8 @@ package dmason.util.SystemManagement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.jms.Message;
 
@@ -49,7 +51,7 @@ import dmason.util.connection.MyMessageListener;
  * @author Luca Vicidomini
  * @author Mario Fiore Vitale
  */
-public class PeerDaemonListener extends MyMessageListener
+public class PeerDaemonListener extends MyMessageListener implements Observer
 {
 	// Valid values for status
 	static final int RUNNING = 0;
@@ -74,6 +76,11 @@ public class PeerDaemonListener extends MyMessageListener
 	
 	private String myTopic;
 	private boolean isWorkerUI;
+	
+	private String updateDir;
+	
+	private int stoppedWorker = 0;
+	private String topicPrefix;
 
 	public PeerDaemonListener(PeerDaemonStarter pds, Connection con, String topic, boolean WorkerUI)
 	{
@@ -103,15 +110,26 @@ public class PeerDaemonListener extends MyMessageListener
 				workers = new ArrayList<Worker>();
 				gui.writeMessage(regions.size() + " class definitions received!\n");
 
+				updateDir =  regions.get(0).getUploadDir();
+				topicPrefix = regions.get(0).getTopicPrefix();
 				started = new ArrayList<Thread>();
 				for (StartUpData data : regions)
 				{
 					
 					Worker wui = new Worker(data, connection);
+					//register for notification about stop after totSteps
+					wui.addObserver(this);
 					workers.add(wui);
 				}
 				
+				
 				initializeTable();
+				if(regions.get(0).getParam().isBatch)
+				{
+					starter.subscribeToBatch(topicPrefix); 
+				
+					starter.sendBatchInfo("ready");
+				}
 			}
 
 			// Received request to publish peer informations
@@ -135,7 +153,6 @@ public class PeerDaemonListener extends MyMessageListener
 					for (Thread w : started)
 						w.start();
 					status = RUNNING;
-					
 					
 				}
 				// Worked was previously paused
@@ -195,7 +212,7 @@ public class PeerDaemonListener extends MyMessageListener
 				
 				
 				UpdateData up = (UpdateData) mh.get("stop");
-				Updater.uploadLog(up);
+				Updater.uploadLog(up,updateDir,false);
 				
 			}
 
@@ -203,19 +220,37 @@ public class PeerDaemonListener extends MyMessageListener
 			// Received command to reset the simulation
 			if (mh.get("reset") != null)
 			{
+				String content = (String) mh.get("reset");
+				boolean isBatch = false;
+				
+				if(content.equals("batch"))
+					isBatch = true;
+				
 				
 				gui.writeMessage("--> Reset\n");
-				for (Worker w : workers)
+				
+				Updater.restart(myTopic,connection.getAddress(),isBatch,topicPrefix);
+				
+				gui.exit();
+				
+				/*for (Worker w : workers)
 					w.kill();
+				
 				
 				Worker w = workers.get(workers.size()-1);
 				if(w.isGUI())
 					w.getConsole().doClose();
 				
+				regions = null;
+				table = null;
 				workers = null;
-				status = STARTED;
+				
+				Runtime.getRuntime().gc();
+				
+				status = STARTED;*/
 				
 			}
+			
 
 			// Received command to update worker
 			if (mh.get("update") != null)
@@ -228,6 +263,8 @@ public class PeerDaemonListener extends MyMessageListener
 					Updater.updateWithGUI(up.getFTPAddress(),up.getJarName(),myTopic,connection.getAddress());
 				else
 					Updater.updateNoGUI(up.getFTPAddress(),up.getJarName(),myTopic,connection.getAddress());
+				
+				
 				gui.exit();
 				
 			}
@@ -295,6 +332,30 @@ public class PeerDaemonListener extends MyMessageListener
 		}
 		
 		
+		
+	}
+
+	//Reiceve info by Worker about simulation stops
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		synchronized (this) {
+			stoppedWorker++;
+		}
+		
+		System.out.println("Stop "+stoppedWorker);
+		if(stoppedWorker == workers.size())
+		{
+			stoppedWorker = 0;
+			System.out.println("send message to master");
+			
+			UpdateData up =  new UpdateData("",regions.get(0).getFTPAddress());
+			
+			Updater.uploadLog(up,updateDir,true);
+			
+			//starter.testFinished();
+			starter.sendBatchInfo("test done");
+		}
 	}
 
 }

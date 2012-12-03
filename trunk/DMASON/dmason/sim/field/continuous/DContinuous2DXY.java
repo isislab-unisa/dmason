@@ -135,7 +135,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
 	private int numAgents;
 	
-
+	private String topicPrefix = "";
 	/**
 	 * @param discretization the discretization of the field
 	 * @param width field's width  
@@ -145,8 +145,9 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	 * @param i i position in the field of the cell
 	 * @param j j position in the field of the cell
 	 * @param num_peers number of the peers
+	 * @param prefix 
 	 */
-	public DContinuous2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int num_peers, String name) {
+	public DContinuous2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int num_peers, String name, String prefix) {
 		super(discretization, width, height);
 		this.sm = sm;	
 		this.jumpDistance = max_distance;
@@ -154,6 +155,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 		this.cellType = new CellType(i, j);
 		this.updates_cache = new ArrayList<Region<Double,Double2D>>();
 		this.name = name;
+		this.topicPrefix = prefix;
 		
 		/*
 		try {
@@ -380,7 +382,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 				try
 				{
 					snap.stats = actualStats;
-					connection.publishToTopic(snap, "GRAPHICS", "GRAPHICS");
+					connection.publishToTopic(snap, topicPrefix+"GRAPHICS", "GRAPHICS");
 				} catch (Exception e) {
 					logger.severe("Error while publishing the snap message");
 					e.printStackTrace();
@@ -458,7 +460,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.left_mine,rmap.left_out,
 					(sm.schedule.getSteps()-1),cellType,DistributedRegion.LEFT);
 		
-			connection.publishToTopic(dr,cellType+"L",name);
+			connection.publishToTopic(dr,topicPrefix+cellType+"L",name);
 			
 		 } catch (Exception e1) { e1.printStackTrace();}
 		}
@@ -469,7 +471,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.right_mine,rmap.right_out,
 					(sm.schedule.getSteps()-1),cellType,DistributedRegion.RIGHT);				
 
-			connection.publishToTopic(dr,cellType.toString()+"R",name);
+			connection.publishToTopic(dr,topicPrefix+cellType.toString()+"R",name);
 			
 		 } catch (Exception e1) {e1.printStackTrace(); }
 		}
@@ -480,7 +482,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.up_mine,rmap.up_out,
 					(sm.schedule.getSteps()-1),cellType,DistributedRegion.UP);
 
-			connection.publishToTopic(dr,cellType.toString()+"U",name);
+			connection.publishToTopic(dr,topicPrefix+cellType.toString()+"U",name);
 			
 		 } catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -492,7 +494,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.down_mine,rmap.down_out,
 					(sm.schedule.getSteps()-1),cellType,DistributedRegion.DOWN);
 
-			connection.publishToTopic(dr,cellType.toString()+"D",name);
+			connection.publishToTopic(dr,topicPrefix+cellType.toString()+"D",name);
 			
 		 } catch (Exception e1) { e1.printStackTrace(); }
 		}
@@ -504,7 +506,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 						(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_UP_LEFT);
 			try 
 			{
-					connection.publishToTopic(dr,cellType.toString()+"CUDL",name);
+					connection.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDL",name);
 			
 			} catch (Exception e1) { e1.printStackTrace();}
 
@@ -517,7 +519,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 			try 
 			{
 			
-				connection.publishToTopic(dr,cellType.toString()+"CUDR",name);
+				connection.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDR",name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -527,7 +529,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 					rmap.corner_out_down_left_diag_center,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_LEFT);
 			try 
 			{
-				connection.publishToTopic(dr,cellType.toString()+"CDDL",name);
+				connection.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDL",name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -539,7 +541,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 			try 
 			{				
 				
-				connection.publishToTopic(dr,cellType.toString()+"CDDR",name);
+				connection.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDR",name);
 				
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}//<--
@@ -574,7 +576,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 		{
 			try {
 				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
-				connection.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,name);
+				connection.publishToTopic(tmp_zoom,topicPrefix+"GRAPHICS"+cellType,name);
 				tmp_zoom=new ZoomArrayList<RemoteAgent>();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block

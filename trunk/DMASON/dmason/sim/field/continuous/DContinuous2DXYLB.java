@@ -137,6 +137,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 	public PrintWriter printer;
 	public ArrayList<RemoteAgent<Double2D>> buffer_print=new ArrayList<RemoteAgent<Double2D>>();
 	private int numAgents;
+	private String topicPrefix = "";
 	// <--
 
 
@@ -152,15 +153,17 @@ public class DContinuous2DXYLB extends DContinuous2D
 	 * @param i i position in the field of the cell
 	 * @param j j position in the field of the cell
 	 * @param num_peers number of the peers
+	 * @param prefix 
 	 */
 
 	public DContinuous2DXYLB(double discretization, double width, double height
-			,SimState sm,int max_distance,int i,int j,int num_peers, String name) {
+			,SimState sm,int max_distance,int i,int j,int num_peers, String name, String prefix) {
 
 
 		super(discretization, width, height);
 		this.NAME = name;
 		this.sm=sm;	
+		this.topicPrefix = prefix;
 		MAX_DISTANCE=max_distance;
 		numPeers=num_peers;	
 		cellType = new CellType(i, j);
@@ -655,14 +658,14 @@ public class DContinuous2DXYLB extends DContinuous2D
 		//PUBLISH SUI TOPIC
 		try {
 			
-			connection.publishToTopic(hashUpdatesPosition.get(MyCellInterface.LEFT),cellType.toString()+"L", NAME);
-			connection.publishToTopic(hashUpdatesPosition.get(MyCellInterface.RIGHT),cellType.toString()+"R", NAME);
-			connection.publishToTopic(hashUpdatesPosition.get(MyCellInterface.UP),cellType.toString()+"U", NAME);
-			connection.publishToTopic(hashUpdatesPosition.get(MyCellInterface.DOWN),cellType.toString()+"D", NAME);
-			connection.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT),cellType.toString()+"CUDL", NAME);
-			connection.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT),cellType.toString()+"CUDR", NAME);
-			connection.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT),cellType.toString()+"CDDL", NAME);
-			connection.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT),cellType.toString()+"CDDR", NAME);	
+			connection.publishToTopic(hashUpdatesPosition.get(MyCellInterface.LEFT),topicPrefix+cellType.toString()+"L", NAME);
+			connection.publishToTopic(hashUpdatesPosition.get(MyCellInterface.RIGHT),topicPrefix+cellType.toString()+"R", NAME);
+			connection.publishToTopic(hashUpdatesPosition.get(MyCellInterface.UP),topicPrefix+cellType.toString()+"U", NAME);
+			connection.publishToTopic(hashUpdatesPosition.get(MyCellInterface.DOWN),topicPrefix+cellType.toString()+"D", NAME);
+			connection.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT),topicPrefix+cellType.toString()+"CUDL", NAME);
+			connection.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT),topicPrefix+cellType.toString()+"CUDR", NAME);
+			connection.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT),topicPrefix+cellType.toString()+"CDDL", NAME);
+			connection.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT),topicPrefix+cellType.toString()+"CDDR", NAME);	
 			
 		} catch (Exception e1) { e1.printStackTrace();}
 		//<--
