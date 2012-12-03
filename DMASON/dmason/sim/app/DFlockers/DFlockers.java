@@ -117,7 +117,7 @@ public class DFlockers extends DistributedState<Double2D>
     	this.MODE=params.getMode();
     	gridWidth=params.getWidth();
     	gridHeight=params.getHeight();
-    	topicPrefix = prefix;
+    	topicPrefix = prefix; 
     	
     	//System.out.println(simParams.size());
     	for (EntryParam<String, Object> entryParam : simParams) {
