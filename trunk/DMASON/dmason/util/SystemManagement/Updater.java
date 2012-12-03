@@ -127,7 +127,7 @@ public class Updater
 				e.printStackTrace();
 			}
 
-			Timer timer = new Timer(4000, new ActionListener() {
+			/*Timer timer = new Timer(4000, new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					System.exit(0);
 
@@ -135,7 +135,7 @@ public class Updater
 			});
 
 			timer.start();
-			
+			*/
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -196,7 +196,7 @@ public class Updater
 				e.printStackTrace();
 			}
 
-			Timer timer = new Timer(4000, new ActionListener() {
+			/*Timer timer = new Timer(4000, new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					System.exit(0);
 
@@ -204,7 +204,7 @@ public class Updater
 			});
 
 			timer.start();
-		
+		*/
 		
 		
 	}

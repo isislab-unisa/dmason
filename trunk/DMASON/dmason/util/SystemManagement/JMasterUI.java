@@ -2628,7 +2628,8 @@ public class JMasterUI extends JFrame  implements Observer{
 		else
 		{
 			//if(curWorkerDigest != null)
-			//{
+			//{ 
+				//System.out.println("ToUPDATE :"+toUpdate.size());
 				JOptionPane.showMessageDialog(this,"Not all worker have the same version! Update needed");
 				
 				wu = new WorkerUpdater(getFPTAddress(),FTP_HOME,SEPARATOR,master,toUpdate.size(),UPDATE_DIR,toUpdate);
@@ -2681,8 +2682,12 @@ public class JMasterUI extends JFrame  implements Observer{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
-				
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(this,"You must to have the worker file!");
+				this.dispose();
+				System.exit(EXIT_ON_CLOSE);
 			}
 			
 		}
@@ -2922,7 +2927,8 @@ public class JMasterUI extends JFrame  implements Observer{
 			System.out.println("null");
 		}
 		if(totPeers == peers.size())
-		{	checkUpdate();
+		{	
+			checkUpdate();
 			totPeers = 0;
 			
 			System.out.println("ok");
@@ -3097,6 +3103,7 @@ public class JMasterUI extends JFrame  implements Observer{
 	/* End System Management methods */
 	
 	
+	
 	/** UI Component */
 	private JTextField getJTextFieldPathSimJar() {
 		if(jTextFieldPathSimJar == null) {
@@ -3104,6 +3111,10 @@ public class JMasterUI extends JFrame  implements Observer{
 			jTextFieldPathSimJar.setText("PathSimulationJar");
 		}
 		return jTextFieldPathSimJar;
+	}
+
+	public void setCurWorkerDigest(String curWorkerDigest) {
+		this.curWorkerDigest = curWorkerDigest;
 	}
 
 	private JButton getJButtonChoseSimJar() {
@@ -3134,7 +3145,7 @@ public class JMasterUI extends JFrame  implements Observer{
 				public void actionPerformed(ActionEvent e) {
 					
 					
-					wu = new WorkerUpdater(getFPTAddress(),FTP_HOME,SEPARATOR,master,peers.size(),UPDATE_DIR);
+					wu = new WorkerUpdater(getFPTAddress(),FTP_HOME,SEPARATOR,master,peers.size(),UPDATE_DIR,JMasterUI.this);
 					wu.setVisible(true);
 					
 					wu.getObservable().addObserver(JMasterUI.this);
