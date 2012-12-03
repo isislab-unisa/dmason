@@ -99,6 +99,8 @@ public class WorkerUpdater extends javax.swing.JFrame
 	private String SEPARATOR;
 	private String UPDATE_DIR;
 	private ArrayList<String> toUpdate;
+
+	private JMasterUI masterUI;
 	
 
 
@@ -109,7 +111,7 @@ public class WorkerUpdater extends javax.swing.JFrame
 
 
 	public WorkerUpdater(Address fptAddress, String ftpHome, String sEPARATOR2,
-			MasterDaemonStarter master2, int size, String updateDir) {
+			MasterDaemonStarter master2, int size, String updateDir, JMasterUI masterUI) {
 		super();
 		
 		this.fTPAddress = fptAddress;
@@ -118,6 +120,7 @@ public class WorkerUpdater extends javax.swing.JFrame
 		this.master = master2;
 		this.total = size;
 		this.UPDATE_DIR = updateDir;
+		this.masterUI = masterUI;
 		
 		
 		initGUI();
@@ -331,9 +334,9 @@ public class WorkerUpdater extends javax.swing.JFrame
 					FileUtils.copyFile(updateFile, dest);
 
 					Digester dg = new Digester(DigestAlgorithm.MD5);
-
+					
 					InputStream in = new FileInputStream(dest);
-					dg.getDigest(in);
+					masterUI.setCurWorkerDigest(dg.getDigest(in));
 
 					String fileName = FilenameUtils.removeExtension(updateFile.getName());
 					dg.storeToPropFile(FTP_HOME+SEPARATOR+UPDATE_DIR+SEPARATOR+fileName+".hash");
