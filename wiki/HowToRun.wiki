@@ -44,7 +44,7 @@ Here we will see how to download MASON and setup it as a new Eclipse project.
 ==Launching D-MASON==
 D-MASON is built upon four components: an ActiveMQ server, one or more _Workers_, a _Master_ interface, a _Global Inspector_ (optional).
 
-In this tutorial, we’ll setup a D-MASON simulation using two workers. Also, we will run all of the component on a single machine, but in a real simulation environment you  may want to run the server and every worker on different machines.
+In this tutorial, we’ll setup a D-MASON simulation using two workers. Also, we will run all of the component on a single machine, but in a real simulation environment you  may want to run the server and every worker on different hosts.
 
 ===Launching the ActiveMQ server===
 You can download the ActiveMQ server from its official website: [http://activemq.apache.org/]. Download and launch it (it is written in Java so you can download the binaries without having to worry about recompilation).
@@ -53,7 +53,7 @@ You can download the ActiveMQ server from its official website: [http://activemq
   # In Eclipse, right-click on the `dmason.util.SystemManagement.StartWorker` file and select "Run As..." > "Java Application". The application will throw an exception and fail, but this will create a default launch configuration.
   # Right-click again on `dmason.util.SystemManagement.StartWorker` and selext "Export...".
   # Select "Runnable JAR file", click "Next".
-  # In "Launch configuration" select "StartWorker".
+  # In "Launch configuration" select "!StartWorker".
   # Select a valid export destination (i.e. C:/dmason/worker.jar), then click "Finish".
   # Open you command-line/terminal window and go into the directory where you saved the Runnable JAR.
   # Launch the worker using the command: `java -jar worker.jar 127.0.0.1 61616`:
@@ -64,7 +64,7 @@ You can download the ActiveMQ server from its official website: [http://activemq
   
 ===Launching the Master===
   # Launch the executable class `dmason.util.SystemManagement.JMasterUI`.
-  # You will be ask to select a simulation JAR file. Select the file you created in section "Exporting and running the Worker runnable  JAR".
+  # You will be ask to select a worker JAR file. Select the file you created in section "Exporting and running the Worker runnable  JAR".
   # In the "Connection" panel input IP Address and Port of the host running ActiveMQ. Leave IP `127.0.0.1` if the Master and ActiveMQ are running on the same host; leave port `61616` if you didn’t change default ActiveMQ’s configuration. Click "Ok", a "Connectione stabilished" message will display, followed by "All workers are ready".
   # You can either run a simulation embedded with the default D-MASON distribution, or you can deploy a simulation JAR you made. In this tutorial we will run an embedded simulation. In the "Setting panel" leave the default parameters and click "Set". A pop-up message will confirm the success of the operation, and two "Simulation cell ready" messages will appear. 
   # You can now press the PLAY button to start the simulation, but first you may want to launch the Global Inspector.
