@@ -1,0 +1,78 @@
+#summary One-sentence summary of this page.
+#labels Phase-Deploy
+
+=Getting and building D-MASON=
+
+The following tutorial will guide you through the download and setup of the D-MASON project into Eclipse. Of course you can use any IDE of your choice, or no one at all.
+
+Please note that in order to build D-MASON you will need to download ad setup MASON.
+
+==Prerequisites==
+  * [http://www.eclipse.org/ Eclipse "Helios" or newer].
+  * [http://subclipse.tigris.org/ Subversion plugin for Eclipse].
+
+==Downloading MASON as Eclipse Project==
+[http://cs.gmu.edu/~eclab/projects/mason/ MASON] is the non-distributed toolkit for multi-agent simulation developed by the MASON University. You can download the latest version from the SVN Repository.
+
+Here we will see how to download MASON and setup it as a new Eclipse project.
+
+  # Download the MASON’s libraries (http://cs.gmu.edu/~eclab/projects/mason/libraries.tar.gz or http://cs.gmu.edu/~eclab/projects/mason/libraries.zip) and unzip them in a directory of your choice.
+  # Open menu "File" > "New" > "Project" .
+  # Open folder "SVN" and select "Checkout Projects from SVN" .
+  # Select "Create a new repository location".
+  # Input MASON’s repository URL: http://mason.googlecode.com/svn/trunk/.
+  # Select the "mason" entry and click "Next".
+  # Select "Check out as a project configured using the New Project Wizard" and click "Finish".
+  # Open folder "Java" and select "Java Project", then click "Next".
+  # Name the project, click "Next".
+  # Open the "Libraries" tab and click "Add external JARs...".
+  # Select JAR files from the directory where you unzipped MASON’s libraries archive (the directory should contain itext, jcommon, jfreechart and jmf libraries) then click "Finish".
+  # Click "OK" when the "Confirm overwrite" dialog appears and wait for Eclipse to download MASON.
+  # You are ready to use MASON! You can run `sim.display.Console` if you want to execute MASON (running MASON is not needed for building nor running D-MASON).
+
+==Downloading D-MASON as Eclipse Project==
+  # Open menu "File" > "New" > "Project".
+  # Open folder "SVN" and select "Checkout Projects from SVN" .
+  # "Create a new repository location".
+  # Input D-MASON’s repository URL: http://d-mason.googlecode.com/svn/trunk/.
+  # Select the uppercase "DMASON" entry and click "Next".
+  # Name the project and click "Finish".
+  # Click "OK" when the "Confirm Overwrite" dialog appears and wait for Eclipse to download D-MASON.
+  # In the "Package Explorer", scroll down to the "libraries" folder and expand it. Select the contained libraries (they should be guava, log4j, slf4j, xstream), right click and select "Build path" > "Add to build path".
+  # You are now ready to execute D-MASON.
+
+==Launching D-MASON==
+D-MASON is built upon four components: an ActiveMQ server, one or more _Workers_, a _Master_ interface, a _Global Inspector_ (optional).
+
+In this tutorial, we’ll setup a D-MASON simulation using two workers. Also, we will run all of the component on a single machine, but in a real simulation environment you  may want to run the server and every worker on different machines.
+
+===Launching the ActiveMQ server===
+You can download the ActiveMQ server from its official website: [http://activemq.apache.org/]. Download and launch it (it is written in Java so you can download the binaries without having to worry about recompilation).
+
+===Exporting and running the Worker runnable JAR===
+  # In Eclipse, right-click on the `dmason.util.SystemManagement.StartWorker` file and select "Run As..." > "Java Application". The application will throw an exception and fail, but this will create a default launch configuration.
+  # Right-click again on `dmason.util.SystemManagement.StartWorker` and selext "Export...".
+  # Select "Runnable JAR file", click "Next".
+  # In "Launch configuration" select "StartWorker".
+  # Select a valid export destination (i.e. C:/dmason/worker.jar), then click "Finish".
+  # Open you command-line/terminal window and go into the directory where you saved the Runnable JAR.
+  # Launch the worker using the command: `java -jar worker.jar 127.0.0.1 61616`:
+    * Replace `worker.jar` with the name you input as export destination;
+    * Replace `127.0.0.1` with the IP address of the host running ActiveMQ (leave `127.0.0.1` if the worker and ActiveMQ are running on the same host);
+    * Replace `61616` with the port where ActiveMQ is listening (leave `61616` if you didn’t modify default ActiveMQ’s configuration).
+  # A "Ready to start" message should display.
+  
+===Launching the Master===
+  # Launch the executable class `dmason.util.SystemManagement.JMasterUI`.
+  # You will be ask to select a simulation JAR file. Select the file you created in section "Exporting and running the Worker runnable  JAR".
+  # In the "Connection" panel input IP Address and Port of the host running ActiveMQ. Leave IP `127.0.0.1` if the Master and ActiveMQ are running on the same host; leave port `61616` if you didn’t change default ActiveMQ’s configuration. Click "Ok", a "Connectione stabilished" message will display, followed by "All workers are ready".
+  # You can either run a simulation embedded with the default D-MASON distribution, or you can deploy a simulation JAR you made. In this tutorial we will run an embedded simulation. In the "Setting panel" leave the default parameters and click "Set". A pop-up message will confirm the success of the operation, and two "Simulation cell ready" messages will appear. 
+  # You can now press the PLAY button to start the simulation, but first you may want to launch the Global Inspector.
+
+===Launching the Global Inspector===
+  # Launch the executable class `dmason.util.visualization.LauncherViewer`.
+  # In the "Connection" panel you must input IP Address and Port of the host running ActiveMQ.
+  # In "Simulation info" you must input the same simulation parameters set when you launched the simulation using the Master. Since we didn’t change anything, just click "Connect".
+  # Click on the "Graphic" checkbox.
+  # Open the Master window and start the simulation.
+  # Open the Global Inspector window and behold the flock!
