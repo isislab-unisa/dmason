@@ -1,5 +1,5 @@
+#summary A quick tutorial about downloading, building and running D-MASON.
 #labels Phase-Deploy
-#A quick tutorial about downloading, building and running D-MASON.
 
 =Getting and building D-MASON=
 
