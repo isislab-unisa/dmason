@@ -1,5 +1,5 @@
-#summary One-sentence summary of this page.
 #labels Phase-Deploy
+#A quick tutorial about downloading, building and running D-MASON.
 
 =Getting and building D-MASON=
 
