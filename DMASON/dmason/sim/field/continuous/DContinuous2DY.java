@@ -1,8 +1,28 @@
+/**
+ * Copyright 2012 Università degli Studi di Salerno
+
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package dmason.sim.field.continuous;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,7 +33,10 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import sim.engine.SimState;
+import sim.util.Bag;
 import sim.util.Double2D;
+import sim.util.Int2D;
+import sim.util.MutableInt2D;
 import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.engine.RemoteAgent;
@@ -113,11 +136,18 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
 
 	private int numAgents;
+	private double width,height;
+	// --> only for testing
+	public PrintWriter printer;
+	public ArrayList<RemoteAgent<Int2D>> buffer_print=new ArrayList<RemoteAgent<Int2D>>();
+	// <--
 	
 	private String topicPrefix = "";
 	
 	/** List of parameters to trace */
 	private ArrayList<String> tracing = new ArrayList<String>();
+
+
 	
 	/**
 	 * Starts tracing a variable (or the graphic). To start tracing the graphic,
@@ -156,14 +186,19 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 	 * @param i i position in the field of the cell
 	 * @param j j position in the field of the cell
 	 * @param num_peers number of the peers
+	 * @param columns 
 	 * @param prefix 
 	 */
-	public DContinuous2DY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int num_peers, String name, String prefix)
+	public DContinuous2DY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix)
 	{
 		super(discretization, width, height);
+		this.width=width;
+		this.height=height;
 		this.sm = sm;		
 		this.jumpDistance = max_distance;
-		this.numPeers = num_peers;	
+		//this.numPeers = num_peers;
+		this.rows = rows;
+		this.columns = columns;
 		this.cellType = new CellType(i, j);
 		this.listeners = new ArrayList<MessageListener>();
 		this.updates_cache = new ArrayList<Region<Double,Double2D>>();
@@ -173,6 +208,14 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 		setConnection(((DistributedState)sm).getConnection());
 		numAgents=0;
 		createRegion();	
+		//RIPRODUCIBILITA'
+				// --> only for testing
+			/*	String curDir = System.getProperty("user.dir");
+			    try 
+			    {
+					printer=new PrintWriter(new FileOutputStream(curDir+"/test_"+cellType+"_"+columns+"_two.txt"));
+				} catch (FileNotFoundException e) { e.printStackTrace();}
+	*/
 	}
 	/**
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
@@ -180,13 +223,22 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 	 */
 	private boolean createRegion()
 	{
-		// Upper left corner's coordinates
-		own_x = (width / numPeers) * cellType.pos_j;
-		own_y = 0; 
+	
+			//upper left corner's coordinates
+			if(cellType.pos_j<(width%columns))
+				own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
+			else
+				own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
+
+			own_y=0; // in this mode the y coordinate is ever 0
+			
+			// own width and height
+			if(cellType.pos_j<(width%columns))
+				my_width=(int) Math.floor(width/columns+1);
+			else
+				my_width=(int) Math.floor(width/columns);
+			my_height=height;
 		
-		// Own width and height
-		my_width = (int)(width / numPeers);
-		my_height = height;
 		
 		//calculating the neighbors
 		int v1 = cellType.pos_j - 1;
@@ -195,7 +247,7 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 		{
 			neighborhood.add(cellType.getNeighbourLeft());
 		}
-		if( v2 <= numPeers - 1 )
+		if( v2 <= columns - 1 )
 		{
 			neighborhood.add(cellType.getNeighbourRight());
 		}	
@@ -320,6 +372,10 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 	 */
     public boolean setDistributedObjectLocation(final Double2D location,RemoteAgent<Double2D> rm,SimState sm)
     {  	
+    	/*if(sm.schedule.getSteps()==1){
+			printer.write(sm.schedule.getSteps()+" "+rm.getId()+" "+location.x+" "+location.y+"\r\n");
+			printer.flush();
+		}*/
     	numAgents++;
     	if(myfield.isMine(location.x,location.y))
     	{    
@@ -785,7 +841,20 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 		return numAgents;
 	}
 	@Override
-	public void resetNumAgents() {
+	public void resetParameters() {
 		numAgents=0;
 	}
+
+	@Override
+	public int getLeftMineSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getRightMineSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

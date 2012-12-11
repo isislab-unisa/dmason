@@ -1,3 +1,20 @@
+/**
+ * Copyright 2012 Università degli Studi di Salerno
+
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package dmason.sim.field.grid;
 
 import java.io.FileNotFoundException;
@@ -29,7 +46,9 @@ import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.connection.ConnectionWithJMS;
 import sim.engine.SimState;
+import sim.util.Bag;
 import sim.util.Int2D;
+import sim.util.MutableInt2D;
 
 /**
  *  <h3>This Field extends SparseGrid2D, to be used in a distributed environment. All the necessary informations for 
@@ -133,6 +152,9 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 	public PrintWriter printer;
 	public ArrayList<RemoteAgent<Int2D>> buffer_print=new ArrayList<RemoteAgent<Int2D>>();
 	private int numAgents;
+	private int width,height;
+	private int NUMPEERS;
+
 	// <--
 	
 	/*
@@ -155,15 +177,17 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 	 * @param name identifier of the field
 	 * @param prefix 
 	 */	
-	public DSparseGrid2DXYLB(int width, int height,SimState sm,int max_distance,int i,int j,int num_peers, String name, String prefix) 
+	public DSparseGrid2DXYLB(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns, String name, String prefix) 
 	{		
 		super(width, height);
+		this.width=width;
+		this.height=height;
 		this.NAME = name;
 		this.sm=sm;
 		this.topicPrefix = prefix;
 		cellType = new CellType(i, j);
 		MAX_DISTANCE=max_distance;
-		NUMPEERS=num_peers;
+		NUMPEERS=rows*columns;
 		toSendForBalance = new HashMap<Integer, MyCellInterface>();
 		toSendForUnion = new HashMap<Integer, MyCellInterface>();
 		outAgents = new RegionIntegerLB(0, 0, 0, 0, 0, 0);
@@ -5528,8 +5552,22 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 
 
 	@Override
-	public void resetNumAgents() {
+	public void resetParameters() {
 		numAgents=0;
 	}
-	
+
+
+	@Override
+	public int getLeftMineSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	@Override
+	public int getRightMineSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

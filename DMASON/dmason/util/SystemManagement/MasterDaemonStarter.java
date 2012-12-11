@@ -55,6 +55,8 @@ public class MasterDaemonStarter implements Observer
 	 */
 	private int numRegions;
 
+	public int rows;
+	public int columns;
 	/**
 	 * Max distance an agent can travel in a single step. 
 	 */
@@ -137,7 +139,9 @@ public class MasterDaemonStarter implements Observer
 	//public void start(int regions, int width, int height, int agents, int maxDistance, int mode, HashMap<String, EntryVal<Integer, Boolean>> config, String selSim, JMasterUI gui,Address ftpAddress)
 	public void start(GeneralParam params, HashMap<String, EntryVal<Integer, Boolean>> config, String selSim, JMasterUI gui,Address ftpAddress)
 	{
-		this.numRegions = params.getNumRegions();
+		//this.numRegions = params.getNumRegions();
+		this.rows = params.getRows();
+		this.columns = params.getColumns();
 		this.numAgents = params.getNumAgents();
 		this.width = params.getWidth();
 		this.height = params.getHeight();
@@ -185,7 +189,7 @@ public class MasterDaemonStarter implements Observer
 		}
 	
 	
-		if (fieldMode == DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE)
+		if (fieldMode == DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE || fieldMode == DSparseGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
 		{
 			int cnt = 0;
 			// Repeat for each worker
@@ -224,7 +228,7 @@ public class MasterDaemonStarter implements Observer
 					}
 					
 					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,0,cnt,DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE});
-					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getNumRegions(), params.getNumAgents(), params.getMode()); 
+					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode()); 
 					genParam.setI(0);
 					genParam.setJ(cnt);
 					genParam.setIp(ip);
@@ -245,24 +249,25 @@ public class MasterDaemonStarter implements Observer
 		{
 			// For each region...
 			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
-			for (int i=0;i<Math.sqrt(numRegions);i++){
-				for (int k=0;k<Math.sqrt(numRegions);k++){
+			for (int i=0;i<rows;i++){
+				for (int k=0;k<columns;k++){
 					StartUpData data = new StartUpData();
 					// Set step on the central region
 					if (i==k /*&& i == Math.sqrt(numRegions) / 2*/)
 						data.setStep(true);
 					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
-					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getNumRegions(), params.getNumAgents(), params.getMode()); 
+					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode()); 
 					genParam.setI(i);
 					genParam.setJ(k);
 					genParam.setIp(ip);
 					genParam.setPort(this.address.getPort());
-					data.setParam(params);
+					data.setParam(genParam);
 					data.setUploadDir(uploadDir);
 					defs.add(data);
 					data.graphic=false;
 				}
 			}
+			
 			int index=0;
 			for (String workerTopic : config.keySet())
 			{
@@ -298,6 +303,7 @@ public class MasterDaemonStarter implements Observer
 					index++;
 				}
 	
+				
 				if(connection.publishToTopic(classes, workerTopic, "classes")==true)
 				{
 					gui.setSystemSettingsEnabled(false);
@@ -310,15 +316,15 @@ public class MasterDaemonStarter implements Observer
 		} else if (fieldMode==DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE){
 			// For each region...
 			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
-			for (int i=0;i<Math.sqrt(numRegions);i++){
-				for (int k=0;k<Math.sqrt(numRegions);k++){
+			for (int i=0;i<rows;i++){
+				for (int k=0;k<columns;k++){
 					StartUpData data = new StartUpData();
 					// Set step on the central region
 					if (i==k)
 						data.setStep(true);
 					//data.setDef(DAntsForage.class);
 					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE});
-					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getNumRegions(), params.getNumAgents(), params.getMode()); 
+					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode()); 
 					genParam.setI(i);
 					genParam.setJ(k);
 					genParam.setIp(ip);
@@ -434,7 +440,7 @@ public class MasterDaemonStarter implements Observer
 
 	public void startBatch(GeneralParam params, HashMap<String, EntryVal<Integer, Boolean>> config, String selSim, List<EntryParam<String, Object>> simParam, Address ftpAddress, String topicPrefix, int testCounter)
 	{
-		this.numRegions = params.getNumRegions();
+		//this.numRegions = params.getNumRegions();
 		this.numAgents = params.getNumAgents();
 		this.width = params.getWidth();
 		this.height = params.getHeight();
@@ -523,7 +529,7 @@ public class MasterDaemonStarter implements Observer
 						}
 					}
 					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,0,cnt,DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE});
-					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getNumRegions(), params.getNumAgents(), params.getMode(),params.getMaxStep()); 
+					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getMaxStep()); 
 					genParam.setI(0);
 					genParam.setJ(cnt);
 					genParam.setIp(ip);

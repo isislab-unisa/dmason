@@ -43,8 +43,13 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
@@ -133,6 +138,8 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import sim.display.Console;
+import dmason.annotation.Thin;
+import dmason.annotation.batch;
 import dmason.batch.BatchExecutor;
 import dmason.batch.data.Batch;
 import dmason.batch.data.EntryParam;
@@ -152,6 +159,8 @@ import dmason.util.garbagecollector.Start;
 import dmason.util.trigger.Trigger;
 import dmason.util.trigger.TriggerListener;
 import javax.swing.JProgressBar;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 
 /**
@@ -176,6 +185,7 @@ import javax.swing.JProgressBar;
  */
 public class JMasterUI extends JFrame  implements Observer{
 
+	private int rows,columns;
 	private static final String FTP_HOME = "FTPHome";
 	private static final String SIMULATION_DIR = "simulation";
 	private static final String UPDATE_DIR = "update";
@@ -185,7 +195,7 @@ public class JMasterUI extends JFrame  implements Observer{
 	private File configFile;
 	private String xsdFilename = "batch.xsd";
 	private static String SEPARATOR;
-	
+	private boolean isHorizontal=true;
 	private WorkerUpdater wu;
 	
 	
@@ -273,15 +283,11 @@ public class JMasterUI extends JFrame  implements Observer{
 	private JPanel jPanelContainerSettings;
 	private JPanel jPanelSetDistribution;
 	private JPanel jPanelSettings;
-	private JRadioButton radioButtonHorizontal;
-	private JRadioButton radioButtonSquare;
 	private JLabel jLabelHorizontal;
 	private JLabel jLabelSquare;
-	private JLabel jLabelRegions;
 	private JLabel jLabelMaxDistance;
 	private JLabel jLabelWidth;
 	private JTextField textFieldMaxDistance;
-	private JComboBox jComboRegions;
 	private JComboBox jComboBoxNumRegionXPeer;
 	private JTextField textFieldWidth;
 	private JLabel jLabelHeight;
@@ -336,6 +342,9 @@ public class JMasterUI extends JFrame  implements Observer{
 	private int fineshed = 0;
 	private JCheckBox chckbxParallelBatch;
 	protected Logger batchLogger;
+	private JTextField textFieldRows;
+	private JTextField textFieldColumns;
+	protected boolean isThin;
 	
 	// fine codice profiling
 
@@ -401,6 +410,7 @@ public class JMasterUI extends JFrame  implements Observer{
 		setResizable(false);
 		starter = new Start();
 		
+		
 	  
 		curWorkerDigest = getCurWorkerDigest();
 		
@@ -449,15 +459,11 @@ public class JMasterUI extends JFrame  implements Observer{
 		jPanelContainerSettings = new JPanel();
 		jPanelSetDistribution = new JPanel();
 		jPanelSettings = new JPanel();
-		radioButtonHorizontal = new JRadioButton();
-		radioButtonSquare = new JRadioButton();
 		jLabelHorizontal = new JLabel();
 		jLabelSquare = new JLabel();
-		jLabelRegions = new JLabel();
 		jLabelMaxDistance = new JLabel();
 		jLabelWidth = new JLabel();
 		textFieldMaxDistance = new JTextField();
-		jComboRegions = new JComboBox();
 		textFieldWidth = new JTextField();
 		jLabelHeight = new JLabel();
 		textFieldHeight = new JTextField();
@@ -496,7 +502,7 @@ public class JMasterUI extends JFrame  implements Observer{
 		advancedConfirmBut = new JLabel();
 		graphicONcheckBox = new JCheckBox();
 		jCheckBoxLoadBalancing = new JCheckBox("Load Balancing", false);
-		jCheckBoxLoadBalancing.setEnabled(false);
+		jCheckBoxLoadBalancing.setEnabled(true);
 		jCheckBoxLoadBalancing.setSelected(false);
 		scrollPaneTree = new JScrollPane();
 		tree1 = new JTree();
@@ -511,9 +517,6 @@ public class JMasterUI extends JFrame  implements Observer{
 		peerInfoStatus1 = new JDesktopPane();
 		root = new DefaultMutableTreeNode("Simulation");
 		ButtonGroup b = new ButtonGroup();
-		b.add(radioButtonHorizontal);
-		b.add(radioButtonSquare);
-		radioButtonHorizontal.setSelected(true);
 		ip = textFieldAddress.getText();
 		port = textFieldPort.getText();
 		menuBar1 = new JMenuBar();
@@ -546,28 +549,22 @@ public class JMasterUI extends JFrame  implements Observer{
 
 		selectedSimulation = ((SimComboEntry)jComboBoxChooseSimulation.getSelectedItem()).fullSimName;
 		jComboBoxChooseSimulation.addItemListener(new ItemListener() {
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				// Prevent executing listener's actions two times
 				if (e.getStateChange() != ItemEvent.SELECTED)
 					return;
 				selectedSimulation = ((SimComboEntry)jComboBoxChooseSimulation.getSelectedItem()).fullSimName;
+				isThin=isThinSimulation(selectedSimulation);
+				jCheckBoxLoadBalancing.setEnabled(!isThin);
+				
 			}
 		});
 		
 
-		for(int i=2;i<100;i++)
-			jComboRegions.addItem(i);
-
-		jComboRegions.setSelectedItem(2);
-		jComboRegions.addItemListener(new ItemListener() {
-
-			@Override
-			public void itemStateChanged(ItemEvent arg0) {
-				if(!radioItemFlag)
-					initializeDefaultLabel();
-			}
-		});
+		/*for(int i=2;i<100;i++)
+			jComboRegions.addItem(i);*/
 
 		buttonRefreshServerLabel.addActionListener(new ActionListener() {
 			@Override
@@ -605,39 +602,20 @@ public class JMasterUI extends JFrame  implements Observer{
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if(jCheckBoxLoadBalancing.isSelected())
-					labelWriteDistrMode.setText("SQUARE BALANCED MODE");
-				else
-					labelWriteDistrMode.setText("SQUARE MODE");
-
-			}
-		});
-		
-		radioButtonHorizontal.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				radioItemFlag = true;
-				jComboRegions.removeAllItems();
-				for(int i=2;i<=100;i++)
-					jComboRegions.addItem(i);
-				initializeDefaultLabel();
-				radioItemFlag = false;
-				jCheckBoxLoadBalancing.setEnabled(false);
-			}
-		});
-
-		radioButtonSquare.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				radioItemFlag = true;
-				jComboRegions.removeAllItems();
-				for(int i=2;i<=30;i++)
-					jComboRegions.addItem(i*i);
-				initializeDefaultLabel();
-				radioItemFlag = false;
-				jCheckBoxLoadBalancing.setEnabled(true);
+				if(!isHorizontal){
+					if(jCheckBoxLoadBalancing.isSelected())
+						labelWriteDistrMode.setText("SQUARE BALANCED MODE");
+					else
+						labelWriteDistrMode.setText("SQUARE MODE");
+				}
+				
+				if(isHorizontal){
+					if(jCheckBoxLoadBalancing.isSelected())
+						labelWriteDistrMode.setText("HORIZONTAL BALANCED MODE");
+					else
+						labelWriteDistrMode.setText("HORIZONTAL MODE");
+				}
+				
 			}
 		});
 
@@ -912,19 +890,10 @@ public class JMasterUI extends JFrame  implements Observer{
 				//======== jPanelSettings ========
 				{
 
-					//---- radioButtonHorizontal ----
-					radioButtonHorizontal.setText("HORIZONTAL");
-
-					//---- radioButtonSquare ----
-					radioButtonSquare.setText("SQUARE");
-
-					jLabelHorizontal.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/hori.png")));
+					//jLabelHorizontal.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/hori.png")));
 
 					//---- jLabelSquare ----
-					jLabelSquare.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/square.png")));
-
-					//---- jLabelRegions ----
-					jLabelRegions.setText("REGIONS :");
+					//jLabelSquare.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/square.png")));
 
 					//---- jLabelMaxDistance ----
 					jLabelMaxDistance.setText("MAX_DISTANCE :");
@@ -1029,76 +998,139 @@ public class JMasterUI extends JFrame  implements Observer{
 
 					//---- jComboBoxChooseSimulation ----
 					jComboBoxChooseSimulation.setMaximumRowCount(10);
+					
+					JLabel lblRows = new JLabel("ROWS :");
+					
+					JLabel lblColumns = new JLabel("COLUMNS :");
+					
+					textFieldRows = new JTextField();
+					
+					textFieldRows.addFocusListener(new FocusAdapter() {
+						@Override
+						public void focusLost(FocusEvent e) {
+							
+						}
+					});
+					textFieldRows.addKeyListener(new KeyListener() {
+
+						@Override
+						public void keyTyped(KeyEvent e) {}
+
+						@Override
+						public void keyReleased(KeyEvent e) {
+							initializeDefaultLabel();
+							rows= Integer.parseInt(textFieldRows.getText());
+						}
+
+						@Override
+						public void keyPressed(KeyEvent e) {}
+					});
+					textFieldRows.setText("1");
+					textFieldRows.setEnabled(false);
+					textFieldRows.setColumns(10);
+					
+					rows= Integer.parseInt(textFieldRows.getText());
+					
+					textFieldColumns = new JTextField();
+					textFieldColumns.addFocusListener(new FocusAdapter() {
+						@Override
+						public void focusLost(FocusEvent arg0) {
+							
+						}
+					});
+					textFieldColumns.addKeyListener(new KeyListener() {
+
+						@Override
+						public void keyTyped(KeyEvent e) {}
+
+						@Override
+						public void keyReleased(KeyEvent e) {
+							initializeDefaultLabel();
+							columns= Integer.parseInt(textFieldColumns.getText());
+						}
+
+						@Override
+						public void keyPressed(KeyEvent e) {}
+					});
+					textFieldColumns.setText("2");
+					textFieldColumns.setEnabled(false);
+					textFieldColumns.setColumns(10);
+					columns= Integer.parseInt(textFieldColumns.getText());
 
 					GroupLayout jPanelSettingsLayout = new GroupLayout(jPanelSettings);
-					jPanelSettings.setLayout(jPanelSettingsLayout);
 					jPanelSettingsLayout.setHorizontalGroup(
-							jPanelSettingsLayout.createParallelGroup()
+						jPanelSettingsLayout.createParallelGroup(Alignment.LEADING)
 							.addGroup(jPanelSettingsLayout.createSequentialGroup()
-									.addGap(17, 17, 17)
-									.addGroup(jPanelSettingsLayout.createParallelGroup()
-											.addComponent(jLabelChooseSimulation, GroupLayout.PREFERRED_SIZE, 245, GroupLayout.PREFERRED_SIZE)
-											.addGroup(jPanelSettingsLayout.createSequentialGroup()
-													.addGroup(jPanelSettingsLayout.createParallelGroup()
-															.addComponent(jLabelMaxDistance)
-															.addComponent(jLabelWidth)
-															.addComponent(jLabelHeight)
-															.addComponent(jLabelRegions)
-															.addComponent(jLabelAgents))
-															.addGap(35, 35, 35)
-															.addGroup(jPanelSettingsLayout.createParallelGroup()
-																	.addComponent(textFieldAgents, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
-																	.addComponent(textFieldHeight, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
-																	.addComponent(textFieldWidth, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
-																	.addComponent(textFieldMaxDistance, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
-																	.addComponent(jComboRegions, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-																	.addGroup(jPanelSettingsLayout.createSequentialGroup()
-																			.addComponent(radioButtonHorizontal)
-																			.addGap(28, 28, 28)
-																			.addComponent(jLabelHorizontal))
-																			.addGroup(jPanelSettingsLayout.createSequentialGroup()
-																					.addComponent(radioButtonSquare)
-																					.addGap(52, 52, 52)
-																					.addComponent(jLabelSquare))
-																					.addComponent(jComboBoxChooseSimulation, GroupLayout.PREFERRED_SIZE, 214, GroupLayout.PREFERRED_SIZE)))
-							);
+								.addGap(17)
+								.addGroup(jPanelSettingsLayout.createParallelGroup(Alignment.LEADING)
+									.addComponent(jLabelChooseSimulation, GroupLayout.PREFERRED_SIZE, 245, GroupLayout.PREFERRED_SIZE)
+									.addGroup(jPanelSettingsLayout.createSequentialGroup()
+										.addGap(119)
+										.addComponent(jLabelHorizontal))
+									.addComponent(jComboBoxChooseSimulation, GroupLayout.PREFERRED_SIZE, 214, GroupLayout.PREFERRED_SIZE)
+									.addGroup(jPanelSettingsLayout.createSequentialGroup()
+										.addGroup(jPanelSettingsLayout.createParallelGroup(Alignment.TRAILING)
+											.addGroup(Alignment.LEADING, jPanelSettingsLayout.createSequentialGroup()
+												.addGroup(jPanelSettingsLayout.createParallelGroup(Alignment.LEADING)
+													.addComponent(lblRows, GroupLayout.PREFERRED_SIZE, 59, GroupLayout.PREFERRED_SIZE)
+													.addComponent(lblColumns))
+												.addGap(60)
+												.addGroup(jPanelSettingsLayout.createParallelGroup(Alignment.LEADING)
+													.addComponent(jLabelSquare)
+													.addComponent(textFieldColumns, GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
+													.addComponent(textFieldRows, GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)))
+											.addGroup(Alignment.LEADING, jPanelSettingsLayout.createSequentialGroup()
+												.addGroup(jPanelSettingsLayout.createParallelGroup(Alignment.LEADING)
+													.addComponent(jLabelMaxDistance)
+													.addComponent(jLabelWidth)
+													.addComponent(jLabelHeight)
+													.addComponent(jLabelAgents))
+												.addGap(35)
+												.addGroup(jPanelSettingsLayout.createParallelGroup(Alignment.LEADING)
+													.addComponent(textFieldAgents, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
+													.addComponent(textFieldHeight, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
+													.addComponent(textFieldWidth, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
+													.addComponent(textFieldMaxDistance, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE))))
+										.addGap(40))))
+					);
 					jPanelSettingsLayout.setVerticalGroup(
-							jPanelSettingsLayout.createParallelGroup()
+						jPanelSettingsLayout.createParallelGroup(Alignment.LEADING)
 							.addGroup(jPanelSettingsLayout.createSequentialGroup()
-									.addContainerGap()
-									.addGroup(jPanelSettingsLayout.createParallelGroup()
-											.addComponent(radioButtonHorizontal)
-											.addComponent(jLabelHorizontal))
-											.addGap(18, 18, 18)
-											.addGroup(jPanelSettingsLayout.createParallelGroup()
-													.addComponent(radioButtonSquare)
-													.addComponent(jLabelSquare))
-													.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-													.addGroup(jPanelSettingsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-															.addComponent(jLabelRegions)
-															.addComponent(jComboRegions, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-															.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-															.addGroup(jPanelSettingsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-																	.addComponent(jLabelMaxDistance)
-																	.addComponent(textFieldMaxDistance, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE))
-																	.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-																	.addGroup(jPanelSettingsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-																			.addComponent(jLabelWidth, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE)
-																			.addComponent(textFieldWidth, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE))
-																			.addGap(10, 10, 10)
-																			.addGroup(jPanelSettingsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-																					.addComponent(jLabelHeight, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE)
-																					.addComponent(textFieldHeight, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE))
-																					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-																					.addGroup(jPanelSettingsLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-																							.addComponent(jLabelAgents)
-																							.addComponent(textFieldAgents, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE))
-																							.addGap(35, 35, 35)
-																							.addComponent(jLabelChooseSimulation)
-																							.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-																							.addComponent(jComboBoxChooseSimulation, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-																							.addGap(52, 52, 52))
-							);
+								.addContainerGap()
+								.addComponent(jLabelHorizontal)
+								.addGap(41)
+								.addGroup(jPanelSettingsLayout.createParallelGroup(Alignment.LEADING)
+									.addComponent(jLabelSquare)
+									.addGroup(jPanelSettingsLayout.createParallelGroup(Alignment.BASELINE)
+										.addComponent(lblRows, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
+										.addComponent(textFieldRows, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+								.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addGroup(jPanelSettingsLayout.createParallelGroup(Alignment.BASELINE)
+									.addComponent(textFieldColumns, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addComponent(lblColumns))
+								.addGap(18)
+								.addGroup(jPanelSettingsLayout.createParallelGroup(Alignment.BASELINE)
+									.addComponent(jLabelMaxDistance)
+									.addComponent(textFieldMaxDistance, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addGroup(jPanelSettingsLayout.createParallelGroup(Alignment.BASELINE)
+									.addComponent(jLabelWidth, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE)
+									.addComponent(textFieldWidth, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE))
+								.addGap(10)
+								.addGroup(jPanelSettingsLayout.createParallelGroup(Alignment.BASELINE)
+									.addComponent(jLabelHeight, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE)
+									.addComponent(textFieldHeight, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addGroup(jPanelSettingsLayout.createParallelGroup(Alignment.BASELINE)
+									.addComponent(jLabelAgents)
+									.addComponent(textFieldAgents, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE))
+								.addGap(35)
+								.addComponent(jLabelChooseSimulation)
+								.addPreferredGap(ComponentPlacement.UNRELATED)
+								.addComponent(jComboBoxChooseSimulation, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addGap(52))
+					);
+					jPanelSettings.setLayout(jPanelSettingsLayout);
 				}
 
 				//======== jPanelContainerTabbedPane ========
@@ -1287,7 +1319,7 @@ public class JMasterUI extends JFrame  implements Observer{
 												jComboBoxNumRegionXPeer.setEnabled(true);
 												advancedConfirmBut.setEnabled(true);
 												graphicONcheckBox.setEnabled(true);
-												total = (Integer)jComboRegions.getSelectedItem();
+												total = Integer.parseInt(textFieldRows.getText()) * Integer.parseInt(textFieldColumns.getText()); //(Integer)jComboRegions.getSelectedItem();
 												res = total;
 												jComboBoxNumRegionXPeer.removeAllItems();
 												for(int i=1;i<res;i++)
@@ -2120,13 +2152,12 @@ public class JMasterUI extends JFrame  implements Observer{
 
 	public void setSystemSettingsEnabled(boolean enabled)
 	{
+		textFieldRows.setEnabled(enabled);
+		textFieldColumns.setEnabled(enabled);
 		textFieldAgents.setEnabled(enabled);
 		textFieldHeight.setEnabled(enabled);
 		textFieldWidth.setEnabled(enabled);
 		textFieldMaxDistance.setEnabled(enabled);
-		radioButtonHorizontal.setEnabled(enabled);
-		radioButtonSquare.setEnabled(enabled);
-		jComboRegions.setEnabled(enabled);
 		jComboBoxChooseSimulation.setEnabled(enabled);
 	}
 
@@ -2167,7 +2198,7 @@ public class JMasterUI extends JFrame  implements Observer{
 		}
 	}
 
-	private ArrayList<String> checkSyntaxForm(int num,int width,int height,int numAgentsForPeer){
+	/*private ArrayList<String> checkSyntaxForm(int num,int width,int height,int numAgentsForPeer){
 	
 		ArrayList<String> errors = new ArrayList<String>();	
 	
@@ -2191,7 +2222,7 @@ public class JMasterUI extends JFrame  implements Observer{
 			errors.add("Cannot divide field in Sqrt(REGIONS)*3 for the Load Balanced Mode,please check field parameter \n");
 	
 		return errors;
-	}
+	}*/
 
 	private void submitCustomizeMode()
 	{
@@ -2199,10 +2230,11 @@ public class JMasterUI extends JFrame  implements Observer{
 		ArrayList<String> errors = null;
 		WIDTH = Integer.parseInt(textFieldWidth.getText());   
 		HEIGHT = Integer.parseInt(textFieldHeight.getText());
-		numRegions = Integer.parseInt(""+jComboRegions.getSelectedItem());
+		//numRegions = Integer.parseInt(""+jComboRegions.getSelectedItem());
 		numAgents = Integer.parseInt(textFieldAgents.getText());
 		maxDistance = Integer.parseInt(textFieldMaxDistance.getText());
-		
+		rows= Integer.parseInt(textFieldRows.getText());
+		columns= Integer.parseInt(textFieldColumns.getText());
 		
 		
 		
@@ -2216,12 +2248,22 @@ public class JMasterUI extends JFrame  implements Observer{
 			logger.addAppender(file);
 			}
 		*/
-		if(radioButtonHorizontal.isSelected())
-			MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
-		else if(radioButtonSquare.isSelected() && !jCheckBoxLoadBalancing.isSelected())
-			MODE = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
-		else if(radioButtonSquare.isSelected() && jCheckBoxLoadBalancing.isSelected())
-			MODE = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
+		if(rows==0 || columns==0)
+			errors.add("Rows or Columns must not be equals to 0");
+		
+		if(rows==1)
+			if(!jCheckBoxLoadBalancing.isSelected())
+				MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
+			else
+				MODE = DSparseGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE;
+		else
+			if(!jCheckBoxLoadBalancing.isSelected())
+				MODE = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
+			else
+				MODE = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
+			
+		if(MODE == DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE && rows != columns && (Integer)WIDTH % 3*rows!=0)
+			errors.add("Width and height are not divisible by 3 * sqrt(rows*columns) or rows is not equal to columns");
 	
 	
 		if(!isSubmitted ) //for next simulations do not have to register again
@@ -2244,7 +2286,7 @@ public class JMasterUI extends JFrame  implements Observer{
 		//sim = files.getSelectedFile().getName();
 	
 		JOptionPane.showMessageDialog(null,"Setting completed !");
-		GeneralParam params = new GeneralParam((Integer)WIDTH, (Integer)HEIGHT, maxDistance, numRegions, numAgents, MODE);
+		GeneralParam params = new GeneralParam((Integer)WIDTH, (Integer)HEIGHT, maxDistance, rows, columns, numAgents, MODE);
 		//master.start(numRegions, (Integer)WIDTH, (Integer)HEIGHT, numAgents,maxDistance,MODE, config,selectedSimulation,this,getFPTAddress());
 		master.start(params, config,selectedSimulation,this,getFPTAddress());
 	}
@@ -2255,13 +2297,30 @@ public class JMasterUI extends JFrame  implements Observer{
 		//checkSyntaxForm(NUM_REGIONS,(Integer)WIDTH,(Integer)HEIGHT,NUM_AGENTS);
 		WIDTH = Integer.parseInt(textFieldWidth.getText());
 		HEIGHT = Integer.parseInt(textFieldHeight.getText());
-		numRegions = Integer.parseInt(""+jComboRegions.getSelectedItem());
+		//numRegions = Integer.parseInt(""+jComboRegions.getSelectedItem());
 		numAgents = Integer.parseInt(textFieldAgents.getText());
 		maxDistance = Integer.parseInt(textFieldMaxDistance.getText());
 		withGui = graphicONcheckBox2.isSelected();
+		rows= Integer.parseInt(textFieldRows.getText());
+		columns= Integer.parseInt(textFieldColumns.getText());
 		
+		if(rows==0 || columns==0)
+			errors.add("Rows or Columns must not be equals to 0");
 		
-		
+		if(rows==1)
+			if(!jCheckBoxLoadBalancing.isSelected())
+				MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
+			else
+				MODE = DSparseGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE;
+		else
+			if(!jCheckBoxLoadBalancing.isSelected())
+				MODE = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
+			else
+				MODE = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
+			
+		if(MODE == DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE && rows != columns && (Integer)WIDTH % 3*rows!=0)
+			errors.add("Width and height are not divisible by 3 * sqrt(rows*columns) or rows is not equal to columns");
+				
 		/*if(logger.getLevel()!=Level.OFF){
 		file = new FileAppender();
 		  file.setName("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT);
@@ -2282,7 +2341,7 @@ public class JMasterUI extends JFrame  implements Observer{
 	
 		
 	   
-	
+	/*
 		if(radioButtonHorizontal.isSelected())
 			MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
 		else if(radioButtonSquare.isSelected() && !jCheckBoxLoadBalancing.isSelected())
@@ -2295,11 +2354,11 @@ public class JMasterUI extends JFrame  implements Observer{
 		
 		//if (numRegions % root.getChildCount() != 0)
 		//	errors.add("NUM_REGIONS < > = NUM_PEERS\n,please set Advanced mode!");
-		
+		*/
 		
 		if(errors.size() == 0)
 		{
-			
+			numRegions = rows * columns;
 			int regionsToPeers = numRegions / root.getChildCount();
 			int remainder = numRegions % root.getChildCount();
 			
@@ -2359,7 +2418,7 @@ public class JMasterUI extends JFrame  implements Observer{
 
 			
 			
-			GeneralParam params = new GeneralParam((Integer)WIDTH, (Integer)HEIGHT, maxDistance, numRegions, numAgents, MODE);
+			GeneralParam params = new GeneralParam((Integer)WIDTH, (Integer)HEIGHT, maxDistance, rows, columns, numAgents, MODE);
 
 			//master.start(numRegions, (Integer)WIDTH, (Integer)HEIGHT, numAgents,maxDistance,MODE, config,selectedSimulation,this,getFPTAddress());
 			master.start(params, config,selectedSimulation,this,getFPTAddress());
@@ -2436,10 +2495,54 @@ public class JMasterUI extends JFrame  implements Observer{
 	private void initializeDefaultLabel(){
 	
 		//controllo solo numeri non negativi
-		String regex="(\\d)+|((\\d)+\\.(\\d)+)";
-	
-		numRegions = (Integer)jComboRegions.getSelectedItem();
+		
 		int numOfPeer = root.getChildCount();
+		String regex="(\\d)+|((\\d)+\\.(\\d)+)";
+
+		
+
+		if(textFieldRows.getText().equals("") || textFieldRows.getText().equals("0"))
+			textFieldRows.setText("1");
+	
+		boolean checkRows=true;
+	
+		while(checkRows){
+	
+			String dist=textFieldRows.getText();
+			boolean validateDist=dist.matches(regex);
+			if(!validateDist){	
+				String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+				textFieldRows.setText(newDist);
+			}
+	
+			else{
+				checkRows=false;
+				rows = Integer.parseInt(textFieldRows.getText());
+			}
+		}
+		
+		
+
+		if(textFieldColumns.getText().equals("") || textFieldColumns.getText().equals("0"))
+			textFieldColumns.setText("1");
+	
+		boolean checkColumns=true;
+	
+		while(checkColumns){
+	
+			String dist=textFieldColumns.getText();
+			boolean validateDist=dist.matches(regex);
+			if(!validateDist){	
+				String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+				textFieldColumns.setText(newDist);
+			}
+	
+			else{
+				checkColumns=false;
+				columns = Integer.parseInt(textFieldColumns.getText());
+			}
+		}
+		
 		
 		if(textFieldMaxDistance.getText().equals(""))
 			textFieldMaxDistance.setText("0");
@@ -2526,42 +2629,69 @@ public class JMasterUI extends JFrame  implements Observer{
 			}
 		}
 	
-		if(radioButtonHorizontal.isSelected()){
+		if(Integer.parseInt(textFieldRows.getText()) == 1)
+			isHorizontal = true;
+		else
+			isHorizontal = false;
+		
+		if(isHorizontal && !jCheckBoxLoadBalancing.isSelected()){
 			MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
 			String w="";
 			String h=""+HEIGHT;
-			if((Integer)WIDTH % numRegions == 0)
-				w = ""+(Integer)WIDTH/numRegions;
+			//if((Integer)WIDTH % columns == 0)
+				w = ""+(Integer)WIDTH/columns;
 			labelWriteRegWidth.setText(""+w);
 			labelWriteRegHeight.setText(""+h);
 			labelWriteDistrMode.setText("HORIZONTAL MODE");
 		}
-		else if(radioButtonSquare.isSelected() && !jCheckBoxLoadBalancing.isSelected()){
+		else if(!isHorizontal && !jCheckBoxLoadBalancing.isSelected()){
 			MODE = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
-			int rad = (int) Math.sqrt(numRegions);
+			//int rad = (int) Math.sqrt(numRegions);
 			String w="";
 			String h="";
-			if((Integer)WIDTH % rad == 0){
-				w = "" + (int)((Integer)WIDTH/Math.sqrt(numRegions));
-				h = "" + (int)((Integer)HEIGHT/Math.sqrt(numRegions));
-			}
+			//if((Integer)WIDTH % rad == 0){
+				w = "" + (int)((Integer)WIDTH/columns);
+				h = "" + (int)((Integer)HEIGHT/rows);
+			//}
 			labelWriteRegWidth.setText(""+w);
 			labelWriteRegHeight.setText(""+h);
 			labelWriteDistrMode.setText("SQUARE MODE");
 		}
-		else if (radioButtonSquare.isSelected() && jCheckBoxLoadBalancing.isSelected()){
+		else if (!isHorizontal && jCheckBoxLoadBalancing.isSelected()){
 			MODE = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
-			int rad = (int) Math.sqrt(numRegions);
+			int rad = (int) Math.sqrt(rows * columns);
 			String w="";
 			String h="";
 			if((Integer)WIDTH % rad == 0){
-				w = "" + (Integer)WIDTH/numRegions;
-				h = "" + (Integer)HEIGHT/numRegions;
+				w = "" + (Integer)WIDTH/columns;
+				h = "" + (Integer)HEIGHT/rows;
 			}
 			labelWriteRegWidth.setText(""+w);
 			labelWriteRegHeight.setText(""+h);
 			labelWriteDistrMode.setText("SQUARE BALANCED MODE");
 		}
+		else if(isHorizontal && jCheckBoxLoadBalancing.isSelected()){
+			MODE = DSparseGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE;
+			String w="";
+			String h=""+HEIGHT;
+			//if((Integer)WIDTH % numRegions == 0)
+				w = ""+(Integer)WIDTH/columns;
+			labelWriteRegWidth.setText(""+w);
+			labelWriteRegHeight.setText(""+h);
+			labelWriteDistrMode.setText("HORIZONTAL BALANCED MODE");
+		}
+		
+		labelWriteReg.setText(""+ rows*columns);
+		if(root.getChildCount() != 0)
+			labelWriteRegForPeer.setText(""+ (rows * columns)/root.getChildCount());
+	
+		if((rows < 3 && columns < 3 && rows == columns) || (rows != columns && rows > 1) || isThin)
+			jCheckBoxLoadBalancing.setEnabled(false);
+		else
+			jCheckBoxLoadBalancing.setEnabled(true);
+		
+
+		
 	}
 
 	private void confirm(){
@@ -2599,7 +2729,10 @@ public class JMasterUI extends JFrame  implements Observer{
 		jComboBoxChooseSimulation.addItem(new SimComboEntry("Flockers", "dmason.sim.app.DFlockers.DFlockers"));
 		jComboBoxChooseSimulation.addItem(new SimComboEntry("Particles", "dmason.sim.app.DParticles.DParticles"));
 		jComboBoxChooseSimulation.addItem(new SimComboEntry("Ants Foraging", "dmason.sim.app.DAntsForage.DAntsForage"));
-	
+		jComboBoxChooseSimulation.addItem(new SimComboEntry("Flockers Thin", "dmason.sim.app.DFlockersThin.DFlockers"));
+		jComboBoxChooseSimulation.addItem(new SimComboEntry("Particles Thin", "dmason.sim.app.DParticlesThin.DParticles"));
+		jComboBoxChooseSimulation.addItem(new SimComboEntry("Ants Foraging Thin", "dmason.sim.app.DAntsForageThin.DAntsForage"));
+
 		
 		// Then loads jar simulation from SIMULATION_DIR
 		File folder = new File(FTP_HOME+SEPARATOR+SIMULATION_DIR);
@@ -3156,5 +3289,61 @@ public class JMasterUI extends JFrame  implements Observer{
 		
 		jMenuItemUpdateWorker.setEnabled(false);
 		return jMenuItemUpdateWorker;
+	}
+	
+	
+	private boolean isThinSimulation(String simulation) {
+
+		URL url;
+		Class c;
+		Object instance;
+		try {
+			if(simulation.contains(".jar")){
+				File simFile=new File(FTP_HOME+SEPARATOR+SIMULATION_DIR+SEPARATOR+simulation);
+				url = new URL("file:" + simFile.getAbsolutePath());
+	
+				JarClassLoader cl = new JarClassLoader(url);
+	
+				cl.addToClassPath();
+	
+				String main = cl.getMainClassName();
+				System.out.println("main: "+main);
+
+				c = cl.loadClass(main);
+
+			}
+			else
+			{	
+				c = Class.forName(simulation);
+
+			}
+			return c.isAnnotationPresent(Thin.class);
+
+			
+		
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+
 	}
 }
