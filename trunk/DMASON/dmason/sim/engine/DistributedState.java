@@ -1,3 +1,20 @@
+/**
+ * Copyright 2012 Università degli Studi di Salerno
+
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package dmason.sim.engine;
 
 import java.util.ArrayList;
@@ -54,6 +71,8 @@ public abstract class DistributedState<E> extends SimState {
 	private UpdaterThreadForListener u6;
 	private UpdaterThreadForListener u7;
 	private UpdaterThreadForListener u8;
+	public int rows;
+	public int columns;
 
 	public void init_connection() {
 
@@ -90,7 +109,7 @@ public abstract class DistributedState<E> extends SimState {
 
 	private void connection_IS_toroidal() {
 
-		if (MODE == 0) { // HORIZONTAL_MODE
+		if (MODE == 0 || MODE == 3) { // HORIZONTAL_MODE
 
 			try {
 
@@ -284,7 +303,7 @@ public abstract class DistributedState<E> extends SimState {
 
 	private void connection_NO_toroidal() {
 
-		if (MODE == 0) { // HORIZONTAL_MODE
+		if (MODE == 0 || MODE == 3) { // HORIZONTAL_MODE
 
 			try {
 
@@ -461,14 +480,16 @@ public abstract class DistributedState<E> extends SimState {
 
 	}
 
-	public DistributedState(int max_d, int num_peers, int num_agents, int i,
+	public DistributedState(int max_d, int rows, int columns, int num_agents, int i,
 			int j, String ip, String port, int mode, boolean isToroidal,
 			DistributedMultiSchedule<E> sched, String prefix) {
 		super(null, sched);
 		this.TYPE = new CellType(i, j);
 		this.random = new MersenneTwisterFast(this.TYPE.getInitialValue());
 		this.MAX_DISTANCE = max_d;
-		this.NUMPEERS = num_peers;
+		this.NUMPEERS = rows*columns;
+		this.rows = rows;
+		this.columns = columns;
 		this.NUMAGENTS = num_agents;
 		this.count_id = NUMAGENTS * TYPE.getInitialValue();
 		this.ip = ip;
@@ -506,7 +527,7 @@ public abstract class DistributedState<E> extends SimState {
 	 * @param j
 	 *            column in the matrix of peers
 	 */
-	public DistributedState(int max_d, int num_peers, int num_agents, int i,
+	/*public DistributedState(int max_d, int num_peers, int num_agents, int i,
 			int j) {
 		super(null, new DistributedMultiSchedule<E>());
 		this.TYPE = new CellType(i, j);
@@ -516,7 +537,7 @@ public abstract class DistributedState<E> extends SimState {
 		this.NUMAGENTS = num_agents;
 		this.count_id = NUMAGENTS * TYPE.getInitialValue();
 
-	}
+	}*/
 
 	/**
 	 * 
@@ -535,7 +556,7 @@ public abstract class DistributedState<E> extends SimState {
 	 * @param j
 	 *            column in the matrix of peers
 	 */
-	public DistributedState(Object[] objs) {
+	/*public DistributedState(Object[] objs) {
 		super(null, new DistributedMultiSchedule<E>());
 		this.TYPE = new CellType((Integer) objs[5], (Integer) objs[6]);
 		this.random = new MersenneTwisterFast(this.TYPE.getInitialValue());
@@ -544,7 +565,7 @@ public abstract class DistributedState<E> extends SimState {
 		this.NUMAGENTS = (Integer) objs[2];
 		this.count_id = NUMAGENTS * TYPE.getInitialValue();
 
-	}
+	}*/
 
 	// abstract methods those must be implemented in the subclasses
 	public abstract DistributedField<E> getField();

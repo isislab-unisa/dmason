@@ -98,7 +98,7 @@ public class BatchExecutor extends Thread
 			
 			TestParam testParam = preProcess(testQueue.poll());
 
-			HashMap<String, EntryVal<Integer, Boolean>> config = assignRegions(testParam.getGenParams().getNumRegions(),numPeers);
+			HashMap<String, EntryVal<Integer, Boolean>> config = assignRegions(testParam.getGenParams().getRows()*testParam.getGenParams().getRows(),numPeers);
 			System.out.println("oooooo: "+config.toString());
 			
 			System.out.println("CURRENT TEST: "+currentTest);

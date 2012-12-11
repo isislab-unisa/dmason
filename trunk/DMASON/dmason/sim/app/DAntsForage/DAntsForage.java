@@ -140,7 +140,7 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
   
     public DAntsForage(GeneralParam params)
     { 
-    	super(params.getMaxDistance(),params.getNumRegions(),params.getNumAgents(),params.getI(),
+    	super(params.getMaxDistance(),params.getRows(),params.getColumns(),params.getNumAgents(),params.getI(),
     			params.getJ(),params.getIp(),params.getPort(),params.getMode(),
     			isToroidal,new DistributedMultiSchedule<Int2D>(),topicPrefix);
     	ip = params.getIp();
@@ -169,11 +169,11 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 
     	try 
     	{       	
-    		toFoodGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, false, "toFoodGrid", topicPrefix);
-    		toHomeGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, false, "toHomeGrid", topicPrefix);
-    		buggrid = DSparseGrid2DFactory.createDSparseGrid2d(GRID_WIDTH, GRID_HEIGHT,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.NUMPEERS,MODE, "buggrid", topicPrefix);
-    		sites = DIntGrid2DFactory.createDIntGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, true, "sites", topicPrefix);
-    		obstacles = DIntGrid2DFactory.createDIntGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.NUMPEERS, MODE, 0, true, "obstacles", topicPrefix);
+    		toFoodGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.rows,super.columns, MODE, 0, false, "toFoodGrid", topicPrefix);
+    		toHomeGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.rows,super.columns, MODE, 0, false, "toHomeGrid", topicPrefix);
+    		buggrid = DSparseGrid2DFactory.createDSparseGrid2D(GRID_WIDTH, GRID_HEIGHT,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE, "buggrid", topicPrefix);
+    		sites = DIntGrid2DFactory.createDIntGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.rows,super.columns, MODE, 0, true, "sites", topicPrefix);
+    		obstacles = DIntGrid2DFactory.createDIntGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.rows,super.columns, MODE, 0, true, "obstacles", topicPrefix);
     		init_connection();
     	}catch (DMasonException e) { e.printStackTrace();}
 

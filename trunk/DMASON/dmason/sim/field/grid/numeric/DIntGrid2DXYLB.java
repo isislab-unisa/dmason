@@ -1,3 +1,20 @@
+/**
+ * Copyright 2012 Università degli Studi di Salerno
+
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package dmason.sim.field.grid.numeric;
 
 import java.io.FileOutputStream;
@@ -126,7 +143,8 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	private HashMap<Integer, MyCellInterface> toSendForBalance;
 	private HashMap<Integer, MyCellInterface> toSendForUnion;
 	RegionIntegerNumericLB outAgents;
-	
+	private int width,height;
+
 	// codice profiling
 	private long totPub;
 	private long startPub;
@@ -138,6 +156,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	// fine codice profiling
 	
 	private String topicPrefix = "";
+	private int NUMPEERS;
 
 	/**
 	 * @param width field's width  
@@ -151,16 +170,18 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	 * @param initialGridValue is the initial value that we want to set at grid at begin simulation. 
 	 * @param prefix 
 	 */
-	public DIntGrid2DXYLB(int width, int height,SimState sm,int max_distance,int i,int j,int num_peers, 
+	public DIntGrid2DXYLB(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns, 
 			Integer initialGridValue, String name, String prefix) 
 	{		
 		super(width, height, initialGridValue);
+		this.width=width;
+		this.height=height;
 		this.NAME = name;
 		this.sm=sm;
 		this.topicPrefix = prefix;
 		cellType = new CellType(i, j);
 		MAX_DISTANCE=max_distance;
-		NUMPEERS=num_peers;
+		NUMPEERS=rows*columns;
 		toSendForBalance = new HashMap<Integer, MyCellInterface>();
 		toSendForUnion = new HashMap<Integer, MyCellInterface>();
 		
@@ -5256,8 +5277,21 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	}
 
 	@Override
-	public void resetNumAgents() {
+	public void resetParameters() {
 		numAgents=0;
 		
 	}
+
+	@Override
+	public int getLeftMineSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getRightMineSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
 }

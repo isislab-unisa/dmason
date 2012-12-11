@@ -1,3 +1,20 @@
+/**
+ * Copyright 2012 Università degli Studi di Salerno
+
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package dmason.sim.field.continuous;
 
 import java.awt.image.BufferedImage;
@@ -28,7 +45,9 @@ import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.visualization.RemoteSnap;
 import dmason.util.visualization.ZoomArrayList;
 import sim.engine.SimState;
+import sim.util.Bag;
 import sim.util.Double2D;
+import sim.util.MutableInt2D;
 
 /**
  *  <h3>This Field extends Continuous2D, to be used in a distributed environment. All the necessary informations 
@@ -134,7 +153,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	
 	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
 	private int numAgents;
-	
+	private double width,height;
 	private String topicPrefix = "";
 	/**
 	 * @param discretization the discretization of the field
@@ -147,11 +166,15 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	 * @param num_peers number of the peers
 	 * @param prefix 
 	 */
-	public DContinuous2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int num_peers, String name, String prefix) {
+	public DContinuous2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows,int columns, String name, String prefix) {
 		super(discretization, width, height);
+		this.width=width;
+		this.height=height;
 		this.sm = sm;	
 		this.jumpDistance = max_distance;
-		this.numPeers = num_peers;	
+		//this.numPeers = num_peers;
+		this.rows = rows;
+		this.columns = columns;
 		this.cellType = new CellType(i, j);
 		this.updates_cache = new ArrayList<Region<Double,Double2D>>();
 		this.name = name;
@@ -177,13 +200,31 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	 */
 	private boolean createRegion()
 	{		
-		//upper left corner's coordinates
-		own_x=(width/((int)Math.sqrt(numPeers)))* cellType.pos_j; //inversione
-		own_y=(height/((int)Math.sqrt(numPeers)))* cellType.pos_i;
+	
+			//upper left corner's coordinates
+			if(cellType.pos_j<(width%columns))
+				own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
+			else
+				own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
+			
+			if(cellType.pos_i<(height%rows))
+				own_y=(int)Math.floor(height/rows+1)*cellType.pos_i; 
+			else
+				own_y=(int)Math.floor(height/rows+1)*((height%rows))+(int)Math.floor(height/rows)*(cellType.pos_i-((height%rows))); 
+
+			
+			
+			// own width and height
+			if(cellType.pos_j<(width%columns))
+				my_width=(int) Math.floor(width/columns+1);
+			else
+				my_width=(int) Math.floor(width/columns);
+			
+			if(cellType.pos_i<(height%rows))
+				my_height=(int) Math.floor(height/rows+1);
+			else
+				my_height=(int) Math.floor(height/rows);
 		
-		// own width and height
-		my_width=(int) (width/Math.sqrt(numPeers));
-		my_height=(int) (height/Math.sqrt(numPeers));
 		
 		//calculating the neighbors
 		for (int k = -1; k <= 1; k++) 
@@ -192,7 +233,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 			{				
 				int v1=cellType.pos_i+k;
 				int v2=cellType.pos_j+k2;
-				if(v1>=0 && v2 >=0 && v1<Math.sqrt(numPeers) && v2<Math.sqrt(numPeers))
+				if(v1>=0 && v2 >=0 && v1<rows && v2<columns)
 					if( v1!=cellType.pos_i || v2!=cellType.pos_j)
 					{
 						neighborhood.add(v1+""+v2);
@@ -886,7 +927,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	}
 
 	@Override
-	public void resetNumAgents() {
+	public void resetParameters() {
 		numAgents=0;
 	}
 
@@ -910,4 +951,17 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 			actualStats.remove(param);
 		}
 	}
+
+	@Override
+	public int getLeftMineSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getRightMineSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

@@ -3,6 +3,7 @@ package dmason.sim.app.DParticles;
 import sim.engine.SimState;
 import sim.util.*;
 
+import dmason.annotation.Thin;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.engine.RemoteAgent;
 
@@ -35,8 +36,9 @@ public class DParticle extends RemoteParticle<Int2D>
         //tut.trails.setDistributedObjectLocation(1.0, location,state);
 
         try{
+        	//tut.trails.setElement(location.x, location.y, 1.0);
         	tut.trails.field[location.x][location.y] = 1.0;
-        	//tut.trails.setDistributedObjectLocation(1.0, location,state);
+        	tut.trails.setDistributedObjectLocation(1.0, location,state);
         }catch(NullPointerException e){
         	e.printStackTrace();
         	System.out.println("ERRORE QUI"+tut.TYPE+"--POSIZIONE: "+this.pos+" DIREZIONE="+xdir+"  "+ydir);
@@ -56,9 +58,9 @@ public class DParticle extends RemoteParticle<Int2D>
 
         // reverse course if hitting boundary
         if (newx < 0) { newx++; xdir = -xdir; }
-        else if (newx >= tut.trails.getWidth()) {newx--; xdir = -xdir; }
+        else if (newx >= tut.gridWidth) {newx--; xdir = -xdir; }
         if (newy < 0) { newy++ ; ydir = -ydir; }
-        else if (newy >= tut.trails.getHeight()) {newy--; ydir = -ydir; }
+        else if (newy >= tut.gridHeight) {newy--; ydir = -ydir; }
              
         // set my new location
         Int2D newloc = new Int2D(newx,newy);        

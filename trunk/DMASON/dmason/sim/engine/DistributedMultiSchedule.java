@@ -1,3 +1,20 @@
+/**
+ * Copyright 2012 Università degli Studi di Salerno
+
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package dmason.sim.engine;
 
 
@@ -108,7 +125,7 @@ public class DistributedMultiSchedule<E> extends Schedule
  	long endStep;
  	long numStep;
  	long time;
- 	//double sleepTime = 0.002;
+ 	double sleepTime = 0.0;
  	FileAppender file;
  	FileAppender file2;
 
@@ -226,9 +243,9 @@ public class DistributedMultiSchedule<E> extends Schedule
 		
 		numAgents = state.getField().getNumAgents();
 		startStep = System.currentTimeMillis();
-		state.getField().resetNumAgents();
+		state.getField().resetParameters();
 
-			/**
+			
 			//ants fattened
 			time = 0;
 			time = (long)(numAgents*sleepTime);
@@ -237,7 +254,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}*/
+			}
 		// end profiling code
 	
 		//if(state.TYPE.toString().equals("2-2"))
@@ -499,7 +516,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 	
 	private void verifyBalance(){
 
-		double average = state.NUMAGENTS/state.NUMPEERS;
+		double average = state.NUMAGENTS/(state.rows*state.columns);
 		double splitting=thresholdSplit*average;
 		double merging=thresholdMerge*average;
 
@@ -510,7 +527,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 		}
 		else 
 			if(((numAgents+externalAgents)<merging) && 
-					(state.TYPE.toString().equals(peers.get((getSteps()%(3*state.NUMPEERS))+""))))
+					(state.TYPE.toString().equals(peers.get((getSteps()%(3*state.rows*state.columns))+""))))
 			{
 				merge = true;
 				split = false;
@@ -533,6 +550,9 @@ public class DistributedMultiSchedule<E> extends Schedule
 
 	public void setThresholdMerge(double thresholdMerge) {
 		this.thresholdMerge = thresholdMerge;
+	}
+	public int getNumFields(){
+		return fields.size();
 	}
 
 }

@@ -14,7 +14,8 @@ public class Starter {
 
 	public static void main(String[] args) 
 	{		
-		int NUM_PEERS=9;
+		int rows = 3;
+		int columns = 3;
 		int MAX_DISTANCE=1;
 		int NUM_AGENTS=10;
 		int WIDTH=225;
@@ -29,9 +30,9 @@ public class Starter {
 		if(MODE==DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE)
 		{
 			ArrayList<Console> dants=new ArrayList<Console>();
-			for (int j = 0; j < NUM_PEERS; j++) 
+			for (int j = 0; j < columns; j++) 
 			{		
-				GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, NUM_PEERS,NUM_AGENTS, MODE); 
+				GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, 1,columns,NUM_AGENTS, MODE); 
 				genParam.setI(0);
 				genParam.setJ(j);
 				genParam.setIp("127.0.0.1");
@@ -48,10 +49,10 @@ public class Starter {
 			if(MODE==DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE)
 			{
 				ArrayList<Console> dants=new ArrayList<Console>();
-				for (int i = 0; i < Math.sqrt(NUM_PEERS); i++) {
-					for (int j = 0; j < Math.sqrt(NUM_PEERS); j++) {
+				for (int i = 0; i < rows; i++) {
+					for (int j = 0; j < columns; j++) {
 					
-						GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, NUM_PEERS,NUM_AGENTS, MODE); 
+						GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, rows,columns,NUM_AGENTS, MODE); 
 						genParam.setI(i);
 						genParam.setJ(j);
 						genParam.setIp("127.0.0.1");
@@ -66,10 +67,10 @@ public class Starter {
 			}else if(MODE==DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE)
 			{
 				ArrayList<Console> dpart=new ArrayList<Console>();
-				for (int i = 0; i < Math.sqrt(NUM_PEERS); i++) {
-				for (int j = 0; j < Math.sqrt(NUM_PEERS); j++) {
+				for (int i = 0; i < rows; i++) {
+					for (int j = 0; j < columns; j++) {
 					
-					GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, NUM_PEERS,NUM_AGENTS, MODE); 
+					GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, rows,columns,NUM_AGENTS, MODE); 
 					genParam.setI(i);
 					genParam.setJ(j);
 					genParam.setIp("127.0.0.1");
@@ -88,9 +89,9 @@ public class Starter {
 		if(TUTORIAL==2)
 			if(MODE==DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE){
 				ArrayList<Console> dants=new ArrayList<Console>();
-				for (int j = 0; j < NUM_PEERS; j++) 
+				for (int j = 0; j < columns; j++) 
 				{			
-					GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, NUM_PEERS,NUM_AGENTS, MODE); 
+					GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, 1,columns,NUM_AGENTS, MODE); 
 					genParam.setI(0);
 					genParam.setJ(j);
 					genParam.setIp("127.0.0.1");
@@ -106,10 +107,10 @@ public class Starter {
 			if(MODE==DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE)
 			{
 				ArrayList<Console> dants=new ArrayList<Console>();
-				for (int i = 0; i < Math.sqrt(NUM_PEERS); i++) {
-					for (int j = 0; j < Math.sqrt(NUM_PEERS); j++) {
+				for (int i = 0; i < rows; i++) {
+					for (int j = 0; j < columns; j++) {
 					
-						GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, NUM_PEERS,NUM_AGENTS, MODE); 
+						GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, rows,columns,NUM_AGENTS, MODE); 
 						genParam.setI(i);
 						genParam.setJ(j);
 						genParam.setIp("127.0.0.1");
@@ -126,9 +127,9 @@ public class Starter {
 	if(TUTORIAL==3)
 		if(MODE==DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE)
 		{
-			for (int j = 0; j < NUM_PEERS; j++) 
+			for (int j = 0; j < columns; j++) 
 			{				
-				GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, NUM_PEERS,NUM_AGENTS, MODE); 
+				GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, 1,columns,NUM_AGENTS, MODE); 
 				genParam.setI(0);
 				genParam.setJ(j);
 				genParam.setIp("127.0.0.1");
@@ -143,10 +144,10 @@ public class Starter {
 		if(TUTORIAL==3)
 			if(MODE==DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE){
 				ArrayList<Console> dants=new ArrayList<Console>();
-				for (int i = 0; i < Math.sqrt(NUM_PEERS); i++) {
-					for (int j = 0; j < Math.sqrt(NUM_PEERS); j++) {
+				for (int i = 0; i < rows; i++) {
+					for (int j = 0; j < columns; j++) {
 				
-						GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, NUM_PEERS,NUM_AGENTS, MODE); 
+						GeneralParam genParam = new GeneralParam(WIDTH, HEGHT, MAX_DISTANCE, rows,columns,NUM_AGENTS, MODE); 
 						genParam.setI(i);
 						genParam.setJ(j);
 						genParam.setIp("127.0.0.1");

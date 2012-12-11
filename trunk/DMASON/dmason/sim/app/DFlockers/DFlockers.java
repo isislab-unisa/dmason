@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import dmason.annotation.Thin;
 import dmason.annotation.batch;
 import dmason.batch.data.EntryParam;
 import dmason.batch.data.GeneralParam;
@@ -97,7 +98,7 @@ public class DFlockers extends DistributedState<Double2D>
     
     public DFlockers(GeneralParam params)
     {    	
-    	super(params.getMaxDistance(),params.getNumRegions(),params.getNumAgents(),params.getI(),
+    	super(params.getMaxDistance(),params.getRows(), params.getColumns(),params.getNumAgents(),params.getI(),
     			params.getJ(),params.getIp(),params.getPort(),params.getMode(),
     			isToroidal,new DistributedMultiSchedule<Double2D>(),topicPrefix);
     	ip = params.getIp();
@@ -109,7 +110,7 @@ public class DFlockers extends DistributedState<Double2D>
     
     public DFlockers(GeneralParam params,List<EntryParam<String, Object>> simParams, String prefix)
     {    	
-    	super(params.getMaxDistance(),params.getNumRegions(),params.getNumAgents(),params.getI(),
+    	super(params.getMaxDistance(),params.getRows(), params.getColumns(),params.getNumAgents(),params.getI(),
     			params.getJ(),params.getIp(),params.getPort(),params.getMode(),
     			isToroidal,new DistributedMultiSchedule<Double2D>(), prefix);
     	ip = params.getIp();
@@ -180,7 +181,7 @@ public class DFlockers extends DistributedState<Double2D>
     	try 
     	{
     		flockers = DContinuous2DFactory.createDContinuous2D(neighborhood/1.5,gridWidth, gridHeight,this,
-    				super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.NUMPEERS,MODE,"flockers", topicPrefix);
+    				super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,"flockers", topicPrefix);
     		init_connection();
     	} catch (DMasonException e) { e.printStackTrace(); }
 
@@ -230,6 +231,8 @@ public class DFlockers extends DistributedState<Double2D>
     public void addToField(RemoteAgent rm, Double2D loc) 
     {
     	flockers.setObjectLocation(rm,loc);
+        setPortrayalForObject(rm);
+
     }
 
     public SimState getState() 

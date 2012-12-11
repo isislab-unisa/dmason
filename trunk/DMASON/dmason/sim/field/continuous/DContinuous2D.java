@@ -1,3 +1,20 @@
+/**
+ * Copyright 2012 Università degli Studi di Salerno
+
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package dmason.sim.field.continuous;
 
 import java.util.ArrayList;
@@ -6,7 +23,10 @@ import java.util.HashMap;
 import sim.engine.SimState;
 import sim.field.continuous.Continuous2D;
 import sim.portrayal.continuous.ContinuousPortrayal2D;
+import sim.util.Bag;
 import sim.util.Double2D;
+import sim.util.Int2D;
+import sim.util.MutableInt2D;
 import dmason.sim.field.CellType;
 import dmason.sim.field.DistributedField;
 import dmason.sim.field.Region;
@@ -55,7 +75,11 @@ public abstract class DContinuous2D extends Continuous2D  implements Distributed
 	/**
 	 * The number of peers involved in the simulation.
 	 */
-	public int numPeers;
+	//public int numPeers;
+	
+	public int rows;
+
+	public int columns;
 	
 	/**
 	 * x coordinate of north-west corner.
@@ -100,5 +124,6 @@ public abstract class DContinuous2D extends Continuous2D  implements Distributed
 	
 	public  void attachPortrayal(ContinuousPortrayal2D p){this.p=p;}
 	public  ContinuousPortrayal2D getAttachedPortrayal(){return p;}
-	public abstract boolean setPortrayalForObject(Object o);	
+	public abstract boolean setPortrayalForObject(Object o);
+	
 }

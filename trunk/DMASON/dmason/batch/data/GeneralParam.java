@@ -23,8 +23,10 @@ public class GeneralParam implements Serializable
 {
 	public int Width;
 	public int Height;
+	public int Rows;
+	public int Columns;
 	public int MaxDistance;
-	public int NumRegions;
+	//public int NumRegions;
 	public int NumAgents;
 	public int Mode;
 	public long MaxStep;
@@ -37,24 +39,28 @@ public class GeneralParam implements Serializable
 	public boolean isBatch;
 	
 	public GeneralParam(int width, int height, int maxDistance,
-			int numRegions, int numAgents, int mode) {
+			int rows, int columns, int numAgents, int mode) {
 		super();
 		this.Width = width;
 		this.Height = height;
 		this.MaxDistance = maxDistance;
-		this.NumRegions = numRegions;
+		//this.NumRegions = numRegions;
+		this.Rows = rows;
+		this.Columns = columns;
 		this.NumAgents = numAgents;
 		this.Mode = mode;
 		this.isBatch = false;
 	}
 	
 	public GeneralParam(int width, int height, int maxDistance,
-			int numRegions, int numAgents, int mode, long MaxStep) {
+			int rows, int columns, int numAgents, int mode, long MaxStep) {
 		super();
 		this.Width = width;
 		this.Height = height;
 		this.MaxDistance = maxDistance;
-		this.NumRegions = numRegions;
+		//this.NumRegions = numRegions;
+		this.Rows = rows;
+		this.Columns = columns;
 		this.NumAgents = numAgents;
 		this.Mode = mode;
 		this.MaxStep = MaxStep;
@@ -63,6 +69,23 @@ public class GeneralParam implements Serializable
 
 	public GeneralParam() {
 		// TODO Auto-generated constructor stub
+	}
+
+	
+	public int getRows() {
+		return Rows;
+	}
+
+	public void setRows(int rows) {
+		Rows = rows;
+	}
+
+	public int getColumns() {
+		return Columns;
+	}
+
+	public void setColumns(int columns) {
+		Columns = columns;
 	}
 
 	public int getWidth() {
@@ -89,13 +112,13 @@ public class GeneralParam implements Serializable
 		this.MaxDistance = maxDistance;
 	}
 
-	public int getNumRegions() {
+	/*public int getNumRegions() {
 		return NumRegions;
 	}
 
 	public void setNumRegions(int numRegions) {
 		this.NumRegions = numRegions;
-	}
+	}*/
 
 	public int getNumAgents() {
 		return NumAgents;
@@ -158,10 +181,13 @@ public class GeneralParam implements Serializable
 	@Override
 	public String toString() {
 		return "GeneralParam [Width=" + Width + ", Height=" + Height
-				+ ", MaxDistance=" + MaxDistance + ", NumRegions=" + NumRegions
-				+ ", NumAgents=" + NumAgents + ", Mode=" + Mode + ", ip=" + ip
-				+ ", port=" + port + ", i=" + i + ", j=" + j + "]";
+				+ ", Rows=" + Rows + ", Columns=" + Columns + ", MaxDistance="
+				+ MaxDistance + ", NumAgents=" + NumAgents + ", Mode=" + Mode
+				+ ", MaxStep=" + MaxStep + ", ip=" + ip + ", port=" + port
+				+ ", i=" + i + ", j=" + j + ", isBatch=" + isBatch + "]";
 	}
+
+	
 	
 	
 	

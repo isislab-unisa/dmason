@@ -1,3 +1,20 @@
+/**
+ * Copyright 2012 Università degli Studi di Salerno
+
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package dmason.sim.field.grid.numeric;
 
 
@@ -133,7 +150,8 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	private HashMap<Integer, MyCellInterface> toSendForBalance;
 	private HashMap<Integer, MyCellInterface> toSendForUnion;
 	private RegionDoubleNumericLB outAgents;
-	
+	private int width,height;
+
 	// codice profiling
 	private long numStep;
 	private FileOutputStream f;
@@ -150,6 +168,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	
 	private String topicPrefix = "";
 	// fine codice profiling
+	private int NUMPEERS;
 	
 	/**
 	 * @param width field's width  
@@ -163,16 +182,18 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	 * @param initialGridValue is the initial value that we want to set at grid at begin simulation. 
 	 * @param prefix 
 	 */
-	public DDoubleGrid2DXYLB(int width, int height,SimState sm,int max_distance,int i,int j,int num_peers,
+	public DDoubleGrid2DXYLB(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns,
 			double initialGridValue, String name, String prefix) 
 	{	
 		super(width, height,initialGridValue);
+		this.width=width;
+		this.height=height;
 		this.NAME = name;
 		this.sm=sm;
 		this.topicPrefix = prefix;
 		cellType = new CellType(i, j);
 		MAX_DISTANCE=max_distance;
-		NUMPEERS=num_peers;
+		NUMPEERS=rows*columns;
 		toSendForBalance = new HashMap<Integer, MyCellInterface>();
 		toSendForUnion = new HashMap<Integer, MyCellInterface>();
 		//upper left corner's coordinates
@@ -5491,10 +5512,28 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	}
 
 	@Override
-	public void resetNumAgents() {
+	public void resetParameters() {
 		numAgents=0;
 	}
 
+	@Override
+	public int getLeftMineSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getRightMineSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	public void setElement(int i,int j, Double val){
+			field[i][j]=val;
+	}
+	public Double getElement(int i, int j){
+			return field[i][j];
+		
+	}
 
 
 }

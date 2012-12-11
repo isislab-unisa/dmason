@@ -191,6 +191,16 @@ public class StartUpData implements Serializable{
 
 	public String getJarName() { return jarName; }
 
+	@Override
+	public String toString() {
+		return "StartUpData [def=" + def + ", param=" + param + ", simParam="
+				+ simParam + ", graphic=" + graphic + ", step=" + step
+				+ ", pos_x=" + pos_x + ", pos_y=" + pos_y + ", local=" + local
+				+ ", jarName=" + jarName + ", FTPAddress=" + FTPAddress
+				+ ", uploadDir=" + uploadDir + ", topicPrefix=" + topicPrefix
+				+ "]";
+	}
+
 	
 	
 }

@@ -1,3 +1,20 @@
+/**
+ * Copyright 2012 Università degli Studi di Salerno
+
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package dmason.sim.field.continuous;
 
 import java.io.FileNotFoundException;
@@ -29,7 +46,9 @@ import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.connection.ConnectionWithJMS;
 import sim.engine.SimState;
+import sim.util.Bag;
 import sim.util.Double2D;
+import sim.util.MutableInt2D;
 
 
 /**
@@ -125,7 +144,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 	private boolean isUnited;
 	private int positionForUnion = -1;
 	private boolean unionDone;
-
+	
 	//Serve per dividere le celle per il load Balancing
 	private LoadBalancingInterface balance;
 	private HashMap<Integer, UpdatePositionDoubleField<DistributedRegion<Double,Double2D>>> hashUpdatesPosition;
@@ -137,8 +156,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 	public PrintWriter printer;
 	public ArrayList<RemoteAgent<Double2D>> buffer_print=new ArrayList<RemoteAgent<Double2D>>();
 	private int numAgents;
+	private double width,height;
 	private String topicPrefix = "";
 	// <--
+	private int numPeers;
 
 
 
@@ -157,15 +178,17 @@ public class DContinuous2DXYLB extends DContinuous2D
 	 */
 
 	public DContinuous2DXYLB(double discretization, double width, double height
-			,SimState sm,int max_distance,int i,int j,int num_peers, String name, String prefix) {
+			,SimState sm,int max_distance,int i,int j,int rows,int columns, String name, String prefix) {
 
 
 		super(discretization, width, height);
+		this.width=width;
+		this.height=height;
 		this.NAME = name;
 		this.sm=sm;	
 		this.topicPrefix = prefix;
 		MAX_DISTANCE=max_distance;
-		numPeers=num_peers;	
+		numPeers=rows*columns;	
 		cellType = new CellType(i, j);
 		toSendForBalance = new HashMap<Integer, MyCellInterface>();
 		toSendForUnion = new HashMap<Integer, MyCellInterface>();
@@ -5433,8 +5456,21 @@ public class DContinuous2DXYLB extends DContinuous2D
 	}
 
 	@Override
-	public void resetNumAgents() {
+	public void resetParameters() {
 		numAgents=0;
 		
 	}
+
+	@Override
+	public int getLeftMineSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getRightMineSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

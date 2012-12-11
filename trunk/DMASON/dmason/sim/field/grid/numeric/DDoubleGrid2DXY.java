@@ -1,3 +1,20 @@
+/**
+ * Copyright 2012 Università degli Studi di Salerno
+
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package dmason.sim.field.grid.numeric;
 
 import java.lang.reflect.Field;
@@ -108,9 +125,10 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	private ZoomArrayList<EntryNum<Double, Int2D>> tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
 	private ConnectionNFieldsWithActiveMQAPI connection;
 	private int numAgents;
+	private int width,height;
+
 	
 	private String topicPrefix = "";
-	
 	
 	/**
 	 * @param width field's width  
@@ -122,18 +140,21 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	 * @param num_peers number of the peers
 	 * @param name the name that we give at topic for the connection
 	 * @param initialGridValue is the initial value that we want to set at grid at begin simulation. 
-	 * @param prefix 
 	 */
-	public DDoubleGrid2DXY(int width, int height,SimState sm,int max_distance,int i,int j,int num_peers,
+	public DDoubleGrid2DXY(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns,
 			double initialGridValue, String name, String prefix) 
 	{	
 		super(width, height,initialGridValue);
+		this.width=width;
+		this.height=height;
 		this.NAME = name;
 		this.sm=sm;		
 		cellType = new CellType(i, j);
 		MAX_DISTANCE=max_distance;
-		NUMPEERS=num_peers;
-		this.topicPrefix = prefix;
+		//NUMPEERS=num_peers;
+		this.rows = rows;
+		this.columns = columns;
+		
 		updates_cache = new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
 
 		setConnection(((DistributedState)sm).getConnection());
@@ -146,14 +167,32 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	 * @return true if all is ok
 	 */
 	private boolean createRegion() {
-		//upper left corner's coordinates
-		own_x=(width/((int)Math.sqrt(NUMPEERS)))*cellType.pos_j; //inversione
-		own_y=(width/((int)Math.sqrt(NUMPEERS)))*cellType.pos_i;
+		
+			//upper left corner's coordinates
+			if(cellType.pos_j<(width%columns))
+				own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
+			else
+				own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
+			
+			if(cellType.pos_i<(height%rows))
+				own_y=(int)Math.floor(height/rows+1)*cellType.pos_i; 
+			else
+				own_y=(int)Math.floor(height/rows+1)*((height%rows))+(int)Math.floor(height/rows)*(cellType.pos_i-((height%rows))); 
 
-		// own width and height
-		my_width=(int) (width/Math.sqrt(NUMPEERS));
-		my_height=(int) (height/Math.sqrt(NUMPEERS));
-
+			
+			
+			// own width and height
+			if(cellType.pos_j<(width%columns))
+				my_width=(int) Math.floor(width/columns+1);
+			else
+				my_width=(int) Math.floor(width/columns);
+			
+			if(cellType.pos_i<(height%rows))
+				my_height=(int) Math.floor(height/rows+1);
+			else
+				my_height=(int) Math.floor(height/rows);
+		
+		
 		//calculating the neighbors
 		for (int k = -1; k <= 1; k++) 
 		{
@@ -161,13 +200,14 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 			{				
 				int v1=cellType.pos_i+k;
 				int v2=cellType.pos_j+k2;
-				if(v1>=0 && v2 >=0 && v1<Math.sqrt(NUMPEERS) && v2<Math.sqrt(NUMPEERS))
+				if(v1>=0 && v2 >=0 && v1<rows && v2<columns)
 					if( v1!=cellType.pos_i || v2!=cellType.pos_j)
 					{
 						neighborhood.add(v1+""+v2);
 					}	
 			}
 		}
+		
 		// Building the regions
 		rmap.left_out=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height-1),my_width, my_height, width, height);
 		if(rmap.left_out!=null)
@@ -808,7 +848,20 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	}
 
 	@Override
-	public void resetNumAgents() {
+	public void resetParameters() {
 		numAgents=0;
 	}
+
+	@Override
+	public int getLeftMineSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getRightMineSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
 }
