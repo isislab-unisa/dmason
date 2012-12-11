@@ -557,8 +557,9 @@ public class JMasterUI extends JFrame  implements Observer{
 					return;
 				selectedSimulation = ((SimComboEntry)jComboBoxChooseSimulation.getSelectedItem()).fullSimName;
 				isThin=isThinSimulation(selectedSimulation);
+				jCheckBoxLoadBalancing.setSelected(false);
 				jCheckBoxLoadBalancing.setEnabled(!isThin);
-				
+				initializeDefaultLabel();
 			}
 		});
 		
