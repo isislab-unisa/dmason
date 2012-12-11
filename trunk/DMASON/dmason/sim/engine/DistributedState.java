@@ -174,68 +174,68 @@ public abstract class DistributedState<E> extends SimState {
 				int i = TYPE.pos_i, j = TYPE.pos_j;
 				int sqrt = (int) Math.sqrt(NUMPEERS);
 
-				connection.subscribeToTopic(topicPrefix+((i + sqrt) % sqrt) + "-"
-						+ ((j + 1 + sqrt) % sqrt) + "L");
-				connection.subscribeToTopic(topicPrefix+((i + sqrt) % sqrt) + "-"
-						+ ((j - 1 + sqrt) % sqrt) + "R");
-				connection.subscribeToTopic(topicPrefix+((i + 1 + sqrt) % sqrt) + "-"
-						+ ((j + sqrt) % sqrt) + "U");
-				connection.subscribeToTopic(topicPrefix+((i - 1 + sqrt) % sqrt) + "-"
-						+ ((j + sqrt) % sqrt) + "D");
-				connection.subscribeToTopic(topicPrefix+((i - 1 + sqrt) % sqrt) + "-"
-						+ ((j - 1 + sqrt) % sqrt) + "CDDR");
-				connection.subscribeToTopic(topicPrefix+((i - 1 + sqrt) % sqrt) + "-"
-						+ ((j + 1 + sqrt) % sqrt) + "CDDL");
-				connection.subscribeToTopic(topicPrefix+((i + 1 + sqrt) % sqrt) + "-"
-						+ ((j - 1 + sqrt) % sqrt) + "CUDR");
-				connection.subscribeToTopic(topicPrefix+((i + 1 + sqrt) % sqrt) + "-"
-						+ ((j + 1 + sqrt) % sqrt) + "CUDL");
+				connection.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
+						+ ((j + 1 + columns) % columns) + "L");
+				connection.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
+						+ ((j - 1 + columns) % columns) + "R");
+				connection.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
+						+ ((j + columns) % columns) + "U");
+				connection.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
+						+ ((j + columns) % columns) + "D");
+				connection.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
+						+ ((j - 1 + columns) % columns) + "CDDR");
+				connection.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
+						+ ((j + 1 + columns) % columns) + "CDDL");
+				connection.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
+						+ ((j - 1 + columns) % columns) + "CUDR");
+				connection.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
+						+ ((j + 1 + columns) % columns) + "CUDL");
 
 				u1 = new UpdaterThreadForListener(
-						connection, topicPrefix+((i + sqrt) % sqrt) + "-"
-								+ ((j + 1 + sqrt) % sqrt) + "L",
+						connection, topicPrefix+((i + rows) % rows) + "-"
+								+ ((j + 1 + columns) % columns) + "L",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u1.start();
 
 				u2 = new UpdaterThreadForListener(
-						connection, topicPrefix+((i + sqrt) % sqrt) + "-"
-								+ ((j - 1 + sqrt) % sqrt) + "R",
+						connection, topicPrefix+((i + rows) % rows) + "-"
+								+ ((j - 1 + columns) % columns) + "R",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u2.start();
 
 				u3 = new UpdaterThreadForListener(
-						connection, topicPrefix+((i + 1 + sqrt) % sqrt) + "-"
-								+ ((j + sqrt) % sqrt) + "U",
+						connection, topicPrefix+((i + 1 + rows) % rows) + "-"
+								+ ((j + columns) % columns) + "U",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u3.start();
 
 				u4 = new UpdaterThreadForListener(
-						connection, topicPrefix+((i - 1 + sqrt) % sqrt) + "-"
-								+ ((j + sqrt) % sqrt) + "D",
+						connection, topicPrefix+((i - 1 + rows) % rows) + "-"
+								+ ((j + columns) % columns) + "D",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u4.start();
 
 				u5 = new UpdaterThreadForListener(
-						connection, topicPrefix+((i - 1 + sqrt) % sqrt) + "-"
-								+ ((j - 1 + sqrt) % sqrt) + "CDDR",
+						connection, topicPrefix+((i - 1 + rows) % rows) + "-"
+								+ ((j - 1 + columns) % columns) + "CDDR",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u5.start();
 
 				u6 = new UpdaterThreadForListener(
-						connection, topicPrefix+((i - 1 + sqrt) % sqrt) + "-"
-								+ ((j + 1 + sqrt) % sqrt) + "CDDL",
+						connection, topicPrefix+((i - 1 + rows) % rows) + "-"
+								+ ((j + 1 + columns) % columns) + "CDDL",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u6.start();
 
 				u7 = new UpdaterThreadForListener(
-						connection, topicPrefix+((i + 1 + sqrt) % sqrt) + "-"
-								+ ((j - 1 + sqrt) % sqrt) + "CUDR",
+						connection, topicPrefix+((i + 1 + rows) % rows) + "-"
+								+ ((j - 1 + columns) % columns) + "CUDR",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u7.start();
 
 				u8 = new UpdaterThreadForListener(
-						connection, topicPrefix+((i + 1 + sqrt) % sqrt) + "-"
-								+ ((j + 1 + sqrt) % sqrt) + "CUDL",
+						connection, topicPrefix+((i + 1 + rows) % rows) + "-"
+								+ ((j + 1 + columns) % columns) + "CUDL",
 						((DistributedMultiSchedule) schedule).fields, listeners);
 				u8.start();
 
