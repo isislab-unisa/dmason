@@ -47,6 +47,7 @@ import dmason.sim.loadbalancing.MyCellDoubleNumeric;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
+import dmason.util.visualization.VisualizationUpdateMap;
 import dmason.util.visualization.ZoomArrayList;
 
 
@@ -136,7 +137,11 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D {
 	private int width,height;
 	private String topicPrefix = "";
 
-	
+	// -----------------------------------------------------------------------
+	// GLOBAL PROPERTIES -----------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** Will contain globals properties */
+	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 	
 	
 	/**
@@ -1019,6 +1024,13 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D {
 	public int getRightMineSize() {
 		// TODO Auto-generated method stub
 		return rightMineSize;
+	}
+
+
+	@Override
+	public VisualizationUpdateMap<String, Object> getGlobals()
+	{
+		return globals;
 	}
 
 

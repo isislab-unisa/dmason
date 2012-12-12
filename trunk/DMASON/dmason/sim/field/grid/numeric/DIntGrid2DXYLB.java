@@ -43,6 +43,7 @@ import dmason.sim.loadbalancing.MyCellIntegerNumeric;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
+import dmason.util.visualization.VisualizationUpdateMap;
 import sim.engine.SimState;
 import sim.util.Int2D;
 
@@ -157,6 +158,12 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	
 	private String topicPrefix = "";
 	private int NUMPEERS;
+	
+	// -----------------------------------------------------------------------
+	// GLOBAL PROPERTIES -----------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** Will contain globals properties */
+	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
 	/**
 	 * @param width field's width  
@@ -5292,6 +5299,12 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	public int getRightMineSize() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public VisualizationUpdateMap<String, Object> getGlobals()
+	{
+		return globals;
 	}
 	
 }

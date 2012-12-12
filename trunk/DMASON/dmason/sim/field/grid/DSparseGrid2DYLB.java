@@ -54,6 +54,7 @@ import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.visualization.RemoteSnap;
+import dmason.util.visualization.VisualizationUpdateMap;
 import dmason.util.visualization.ZoomArrayList;
 import sim.engine.SimState;
 import sim.field.SparseField;
@@ -144,6 +145,11 @@ public class DSparseGrid2DYLB extends DSparseGrid2D
 		public ArrayList<RemoteAgent<Int2D>> buffer_print=new ArrayList<RemoteAgent<Int2D>>();
 		// <--
 	
+	// -----------------------------------------------------------------------
+	// GLOBAL PROPERTIES -----------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** Will contain globals properties */
+	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 	
 	/**
 	 * @param width field's width  
@@ -1015,4 +1021,12 @@ public class DSparseGrid2DYLB extends DSparseGrid2D
 		return rightMineSize;
 	}
 
+	@Override
+	public VisualizationUpdateMap<String, Object> getGlobals()
+	{
+		return globals;
+	}
+
+	
+	
 }

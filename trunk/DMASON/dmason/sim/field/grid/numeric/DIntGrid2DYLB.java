@@ -41,6 +41,7 @@ import dmason.sim.field.UpdateMap;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
+import dmason.util.visualization.VisualizationUpdateMap;
 import dmason.util.visualization.ZoomArrayList;
 
 
@@ -125,6 +126,11 @@ public class DIntGrid2DYLB extends DIntGrid2D {
 	private int width,height;
 	private String topicPrefix = "";
 
+	// -----------------------------------------------------------------------
+	// GLOBAL PROPERTIES -----------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** Will contain globals properties */
+	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 	
 	/**
 	 * @param width field's width  
@@ -935,6 +941,13 @@ public class DIntGrid2DYLB extends DIntGrid2D {
 				return al + Math.max(-MAX_DISTANCE, (int) Math.ceil((sr-sl)/2.0)*MAX_DISTANCE/er);
 		}
 		return al;
+	}
+
+
+	@Override
+	public VisualizationUpdateMap<String, Object> getGlobals()
+	{
+		return globals;
 	}
 
 }

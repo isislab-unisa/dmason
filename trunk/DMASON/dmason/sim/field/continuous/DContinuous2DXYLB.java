@@ -17,6 +17,7 @@
 
 package dmason.sim.field.continuous;
 
+import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
@@ -29,6 +30,7 @@ import java.util.PriorityQueue;
 import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.engine.RemoteAgent;import dmason.sim.field.grid.RegionInteger;
+import dmason.sim.field.util.GlobalInspectorUtils;
 import dmason.sim.field.CellType;
 import dmason.sim.field.DistributedRegion;
 import dmason.sim.field.Entry;
@@ -45,6 +47,7 @@ import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.connection.ConnectionWithJMS;
+import dmason.util.visualization.VisualizationUpdateMap;
 import sim.engine.SimState;
 import sim.util.Bag;
 import sim.util.Double2D;
@@ -160,6 +163,12 @@ public class DContinuous2DXYLB extends DContinuous2D
 	private String topicPrefix = "";
 	// <--
 	private int numPeers;
+	
+	// -----------------------------------------------------------------------
+	// GLOBAL PROPERTIES -----------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** Will contain globals properties */
+	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
 
 
@@ -494,7 +503,8 @@ public class DContinuous2DXYLB extends DContinuous2D
 	 * 	It's called after every step of schedule.
 	 */
 	public synchronized boolean synchro() 
-	{	
+	{
+
 		/**
 		if(sm.schedule.getSteps()==80){
 			String curDir = System.getProperty("user.dir");
@@ -5471,6 +5481,12 @@ public class DContinuous2DXYLB extends DContinuous2D
 	public int getRightMineSize() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public VisualizationUpdateMap<String, Object> getGlobals()
+	{
+		return globals;
 	}
 
 }

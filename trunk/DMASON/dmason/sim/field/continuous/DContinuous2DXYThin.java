@@ -43,6 +43,7 @@ import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.visualization.RemoteSnap;
+import dmason.util.visualization.VisualizationUpdateMap;
 import dmason.util.visualization.ZoomArrayList;
 import sim.engine.SimState;
 import sim.util.Bag;
@@ -156,6 +157,12 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 	private int numAgents;
 	private double width,height,field_width,field_height;
 	private String topicPrefix = "";
+	
+	// -----------------------------------------------------------------------
+	// GLOBAL PROPERTIES -----------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** Will contain globals properties */
+	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
 
 	/**
@@ -1001,5 +1008,11 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 		 int ownxD= (int)((own_x+2*jumpDistance) / discretization);
 		    int ownyD= (int)((own_y+2*jumpDistance) / discretization);
 			return super.getRawObjectsAtLocation(new Double2D((loc.x-ownxD), (loc.y-ownyD)));
+	}
+
+	@Override
+	public VisualizationUpdateMap<String, Object> getGlobals()
+	{
+		return globals;
 	}
 }

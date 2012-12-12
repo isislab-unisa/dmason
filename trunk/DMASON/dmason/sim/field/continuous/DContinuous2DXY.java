@@ -18,8 +18,6 @@
 package dmason.sim.field.continuous;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
-import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -28,7 +26,6 @@ import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
 import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.engine.RemoteAgent;
@@ -39,10 +36,11 @@ import dmason.sim.field.MessageListener;
 import dmason.sim.field.Region;
 import dmason.sim.field.TraceableField;
 import dmason.sim.field.UpdateMap;
+import dmason.sim.field.util.GlobalInspectorUtils;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
-import dmason.util.visualization.RemoteSnap;
+import dmason.util.visualization.VisualizationUpdateMap;
 import dmason.util.visualization.ZoomArrayList;
 import sim.engine.SimState;
 import sim.util.Bag;
@@ -124,37 +122,49 @@ import sim.util.MutableInt2D;
 
 public class DContinuous2DXY extends DContinuous2D implements TraceableField
 {	
+	private static final long serialVersionUID = 1L;
+
 	private static Logger logger = Logger.getLogger(DContinuous2DY.class.getCanonicalName());
 	
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
 	private String name;
-
-	private WritableRaster writer;
-	private int white[]={255,255,255};
+	
+	private double width, height;
+	
+	private int numAgents;
+	
+	private String topicPrefix = "";
 	
 	/*
 	private FileOutputStream file;
 	private PrintStream ps;
 	*/
 	
+	// -----------------------------------------------------------------------
+	// GLOBAL INSPECTOR ------------------------------------------------------
+	// -----------------------------------------------------------------------
 	/** List of parameters to trace */
-	private ArrayList<String> tracing = new ArrayList<String>();
+	private ArrayList<String> tracingFields = new ArrayList<String>();
 	/** The image to send */
-	private BufferedImage actualSnap;
-	
-	/** Simulation's time when the image was generated */
-	private double actualTime;
-	
+	private BufferedImage currentBitmap;
+	/** Simulation's time when currentBitmap was generated */
+	private double currentTime;
 	/** Statistics to send */
-	HashMap<String, Object> actualStats;
+	HashMap<String, Object> currentStats;
+	/** True if the global inspector requested graphics **/
+	boolean isTracingGraphics;
 	
-	/** True if the global viewer requested graphics **/
-	boolean isSendingGraphics;
+	// -----------------------------------------------------------------------
+	// GLOBAL PROPERTIES -----------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** Will contain globals properties */
+	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 	
-	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
-	private int numAgents;
-	private double width,height;
-	private String topicPrefix = "";
+	// -----------------------------------------------------------------------
+	// ZOOM VIEWER -----------------------------------------------------------
+	// -----------------------------------------------------------------------
+	private ZoomArrayList<RemoteAgent> tmp_zoom = new ZoomArrayList<RemoteAgent>();	
+
 	/**
 	 * @param discretization the discretization of the field
 	 * @param width field's width  
@@ -191,7 +201,13 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 		
 		setConnection(((DistributedState)sm).getConnection());
 		numAgents=0;
-		createRegion();		
+		createRegion();
+		
+		// Initialize variables for GloablInspector
+		currentBitmap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
+		currentTime = sm.schedule.getTime();
+		currentStats = new HashMap<String, Object>();
+		isTracingGraphics = false;
 	}
 	
 	/**
@@ -240,12 +256,6 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 					}	
 			}
 		}
-		
-		actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
-		actualTime = sm.schedule.getTime();
-		actualStats = new HashMap<String, Object>();
-		isSendingGraphics = false;
-		writer=actualSnap.getRaster();
 		
 		// Building the regions
 		
@@ -309,6 +319,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	 * @param sm The SimState of simulation
 	 * @return false if the object is null (null objects cannot be put into the grid)
 	 */
+	@Deprecated
 	public boolean setDistributedObjectLocationForPeer(final Double2D location,RemoteAgent<Double2D> rm,SimState sm)
 	{			
 		if(myfield.isMine(location.x,location.y) && this.getObjectsAtLocation(location)==null)
@@ -371,7 +382,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
     	if(myfield.isMine(location.x,location.y))
     	{    		
     		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-    			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
+    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location);
     		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
 			
@@ -391,82 +402,23 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	 */
 	public synchronized boolean synchro() 
 	{
-		// If there is any viewer, send a snap
+		// Send to Global Inspector
 		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
-			RemoteSnap snap = new RemoteSnap(cellType, sm.schedule.getSteps() - 1, actualTime);
-			actualTime = sm.schedule.getTime();
-			
-			if (isSendingGraphics)
-			{
-				try
-				{
-					ByteArrayOutputStream by = new ByteArrayOutputStream();
-					ImageIO.write(actualSnap, "png", by);
-					by.flush();
-					snap.image = by.toByteArray();
-					by.close();
-					actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
-					writer=actualSnap.getRaster();
-				} catch (Exception e) {
-					logger.severe("Error while serializing the snapshot");
-					e.printStackTrace();
-				}
-			}
-			
-			//if (isSendingGraphics || tracing.size() > 0)
-			/* The above line is commented because if we don't send the
-			 * RemoteSnap at every simulation step, the global viewer
-			 * will block waiting on the queue.
-			 */
-			{
-				try
-				{
-					snap.stats = actualStats;
-					connection.publishToTopic(snap, topicPrefix+"GRAPHICS", "GRAPHICS");
-				} catch (Exception e) {
-					logger.severe("Error while publishing the snap message");
-					e.printStackTrace();
-				}
-			}
-			
-			// Update statistics
-			Class<?> simClass = sm.getClass();
-			for (int i = 0; i < tracing.size(); i++)
-			{
-				try
-				{
-					Method m = simClass.getMethod("get" + tracing.get(i), (Class<?>[])null);
-					Object res = m.invoke(sm, new Object [0]);
-					snap.stats.put(tracing.get(i), res);
-				} catch (Exception e) {
-					logger.severe("Reflection error while calling get" + tracing.get(i));
-					e.printStackTrace();
-				}
-			}
-
-		} //numViewers > 0
+			GlobalInspectorUtils.synchronizeInspector(
+					(DistributedState<?>)sm,
+					connection,
+					cellType,
+					currentTime,
+					currentBitmap,
+					currentStats,
+					tracingFields,
+					isTracingGraphics);
+			currentTime = sm.schedule.getTime();
+		}
 		
-//		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-//		{
-//			RemoteSnap snap = new RemoteSnap(cellType, sm.schedule.getSteps() - 1, actualTime);
-//			
-//			try {
-//				ByteArrayOutputStream by = new ByteArrayOutputStream();
-//				ImageIO.write(actualSnap, "png", by);
-//				by.flush();
-//				
-//				connection.publishToTopic(new RemoteSnap(cellType, sm.schedule.getSteps()-1, by.toByteArray()), "GRAPHICS", "GRAPHICS");
-//				//System.out.println("PUBBLICO AL VISUALIZZATORE");
-//				by.close();
-//				actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
-//				writer=actualSnap.getRaster();
-//
-//			} catch (Exception e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			}
-//		}
+		
+
 		
 		for(Region<Double, Double2D> region : updates_cache)
 		{
@@ -770,7 +722,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	    				if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 	    					tmp_zoom.add(rm);
 	    				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-	    	    			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
+	    	    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location);
 	    			}
 	    			return region.addAgents(new Entry<Double2D>(rm, location));
 	    	    }    
@@ -935,21 +887,27 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	public void trace(String param)
 	{
 		if (param.equals("-GRAPHICS"))
-			isSendingGraphics = true;
+			isTracingGraphics = true;
 		else
-			tracing.add(param);
+			tracingFields.add(param);
 	}
 
 	@Override
 	public void untrace(String param)
 	{
 		if (param.equals("-GRAPHICS"))
-			isSendingGraphics = false;
+			isTracingGraphics = false;
 		else
 		{
-			tracing.remove(param);
-			actualStats.remove(param);
+			tracingFields.remove(param);
+			currentStats.remove(param);
 		}
+	}
+	
+	@Override
+	public VisualizationUpdateMap<String, Object> getGlobals()
+	{
+		return globals;
 	}
 
 	@Override

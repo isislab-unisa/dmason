@@ -49,6 +49,7 @@ import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.connection.MyHashMap;
+import dmason.util.visualization.VisualizationUpdateMap;
 import sim.engine.SimState;
 import sim.util.Int2D;
 
@@ -169,6 +170,12 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	private String topicPrefix = "";
 	// fine codice profiling
 	private int NUMPEERS;
+	
+	// -----------------------------------------------------------------------
+	// GLOBAL PROPERTIES -----------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** Will contain globals properties */
+	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 	
 	/**
 	 * @param width field's width  
@@ -5533,6 +5540,12 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	public Double getElement(int i, int j){
 			return field[i][j];
 		
+	}
+
+	@Override
+	public VisualizationUpdateMap<String, Object> getGlobals()
+	{
+		return globals;
 	}
 
 

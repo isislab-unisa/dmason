@@ -27,6 +27,7 @@ import dmason.sim.engine.DistributedState;
 import dmason.sim.engine.RemoteAgent;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
+import dmason.util.visualization.VisualizationUpdateMap;
 
 /**
  * An interface for all Distributed Fields 2D
@@ -135,4 +136,10 @@ public interface DistributedField<E> extends Serializable
 	public int getLeftMineSize();
 	
 	public int getRightMineSize();
+	
+	/**
+	 * User fot global parameters synchronization.
+	 * @return
+	 */
+	public VisualizationUpdateMap<String, Object> getGlobals();
 }
