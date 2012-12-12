@@ -50,6 +50,7 @@ import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.visualization.RemoteSnap;
+import dmason.util.visualization.VisualizationUpdateMap;
 import dmason.util.visualization.ZoomArrayList;
 import sim.engine.SimState;
 import sim.util.Bag;
@@ -137,6 +138,12 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 			// <--
 	
 	private String topicPrefix = "";
+	
+	// -----------------------------------------------------------------------
+	// GLOBAL PROPERTIES -----------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** Will contain globals properties */
+	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 	
 	
 	/**
@@ -818,6 +825,12 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 	public int getRightMineSize() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public VisualizationUpdateMap<String, Object> getGlobals()
+	{
+		return globals;
 	}	
 	
 	

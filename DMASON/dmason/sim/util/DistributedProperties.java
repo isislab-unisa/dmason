@@ -1,26 +1,44 @@
-/*
-  Copyright 2006 by Sean Luke and George Mason University
-  Licensed under the Academic Free License version 3.0
-  See the file "LICENSE" for more information
-*/
+/* 
+   Copyright 2012 Università degli Studi di Salerno
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 
 package dmason.sim.util;
+
 import java.util.*;
 import java.lang.reflect.*;
-
 import sim.util.Interval;
+
+/**
+ * This class extends the features of MASON's Properties class enabling the support
+ * for reduce.able parameters.
+ * @author Luca Vicidomini
+ *
+ */
 
 public class DistributedProperties extends sim.util.Properties implements java.io.Serializable
     {
     private static final long serialVersionUID = 1;
 
-    ArrayList reduceMethods = new ArrayList();
-    ArrayList mapMethods = new ArrayList();
+    ArrayList<Method> reduceMethods = new ArrayList<Method>();
+    ArrayList<Method> globalMethods = new ArrayList<Method>();
+    ArrayList<Method> mapMethods = new ArrayList<Method>();
     
-    ArrayList getMethods = new ArrayList();
-    ArrayList setMethods = new ArrayList(); // if no setters, that corresponding spot will be null
-    ArrayList domMethods = new ArrayList(); // if no domain, that corresponding spot will be null
-    ArrayList hideMethods = new ArrayList(); // if not hidden (or explicitly shown), that corresponding spot will be null
+    ArrayList<Method> getMethods = new ArrayList<Method>();
+    ArrayList<Method> setMethods = new ArrayList<Method>(); // if no setters, that corresponding spot will be null
+    ArrayList<Method> domMethods = new ArrayList<Method>(); // if no domain, that corresponding spot will be null
+    ArrayList<Method> hideMethods = new ArrayList<Method>(); // if not hidden (or explicitly shown), that corresponding spot will be null
     sim.util.Properties auxillary = null;  // if non-null, we use this properties instead
     
     /** Gathers all properties for the object, including ones defined in superclasses. 
@@ -51,9 +69,9 @@ public class DistributedProperties extends sim.util.Properties implements java.i
             try
                 {
                 // generate the properties
-                Class c = object.getClass();
+                Class<?> c = object.getClass();
 
-                // handle reduce/map properties
+                // handle reduce/map/globals properties
                 Method[] m = (includeSuperclasses ? c.getMethods() : c.getDeclaredMethods());
                 for(int x = 0 ; x < m.length; x++)
                     {
@@ -72,13 +90,14 @@ public class DistributedProperties extends sim.util.Properties implements java.i
                             Modifier.isPublic(modifier)) // no arguments, and public, non-abstract?
                             {
                             //// Add all properties...
-                            Class returnType = m[x].getReturnType();
+                            Class<?> returnType = m[x].getReturnType();
                             if (returnType!= Void.TYPE)
                                 {
                                 getMethods.add(m[x]);
                                 setMethods.add(getWriteProperty(m[x],c));
                                 domMethods.add(getDomain(m[x],c,includeExtensions));
                                 hideMethods.add(getHidden(m[x], c, includeExtensions));
+                                globalMethods.add(getGlobal(m[x], c, includeExtensions));
                                                                                                                                          
                                 // simple check for invalid Interval domains
                                 int lastIndex = domMethods.size() - 1;
@@ -132,7 +151,7 @@ public class DistributedProperties extends sim.util.Properties implements java.i
     /* If it exists, returns a method of the form 'public boolean hideFoo() { ...}'.  In this method the developer can declare
        whether or not he wants to hide this property.  If there is no such method, we must assume that the property is to be
        shown. */
-    Method getHidden(Method m, Class c, boolean includeExtensions)
+    Method getHidden(Method m, Class<?> c, boolean includeExtensions)
         {
         if (!includeExtensions) return null;
         try
@@ -155,7 +174,7 @@ public class DistributedProperties extends sim.util.Properties implements java.i
         return null;
         }
     
-    Method getWriteProperty(Method m, Class c)
+    Method getWriteProperty(Method m, Class<?> c)
         {
         try
             {
@@ -176,7 +195,7 @@ public class DistributedProperties extends sim.util.Properties implements java.i
             }
         }
     
-    Method getReduceProperty(Method m, Class c)
+    Method getReduceProperty(Method m, Class<?> c)
     {
     try
         {
@@ -197,7 +216,32 @@ public class DistributedProperties extends sim.util.Properties implements java.i
         }
     }
     
-    Method getDomain(Method m, Class c, boolean includeExtensions)
+     /* If it exists, returns a method of the form 'public boolean globalFoo() { ...}'.  In this method the developer can declare
+     whether or not this property is global.  If there is no such method, we must assume that the property is not global. */
+     Method getGlobal(Method m, Class<?> c, boolean includeExtensions)
+     {
+     if (!includeExtensions) return null;
+     try
+         {
+         if (m.getName().startsWith("get"))
+             {
+             Method m2 = c.getMethod("global" + (m.getName().substring(3)), new Class[] { });
+             if (m2.getReturnType() == Boolean.TYPE) return m2;
+             }
+         else if (m.getName().startsWith("is"))
+             {
+             Method m2 = c.getMethod("global" + (m.getName().substring(2)), new Class[] { });
+             if (m2.getReturnType() == Boolean.TYPE) return m2;
+             }
+         }
+     catch (Exception e)
+         {
+         // couldn't find a domain
+         }
+     return null;
+     }
+    
+    Method getDomain(Method m, Class<?> c, boolean includeExtensions)
         {
         if (!includeExtensions) return null;
         try
@@ -260,11 +304,11 @@ public class DistributedProperties extends sim.util.Properties implements java.i
 
     /** Returns the return type of the property (see the TYPE_... values)
         Returns -1 if the index is out of the range [0 ... numProperties() - 1 ]*/
-    public Class getType(int index)
+    public Class<?> getType(int index)
         {
         if (auxillary!=null) return auxillary.getType(index);
         if (index < 0 || index > numProperties()) return null;
-        Class returnType = ((Method)(getMethods.get(index))).getReturnType();
+        Class<?> returnType = ((Method)(getMethods.get(index))).getReturnType();
 
         return getTypeConversion(returnType);
         }
@@ -334,4 +378,20 @@ public class DistributedProperties extends sim.util.Properties implements java.i
             return false;
             }
         }
+    
+    public boolean isGlobal(int index)
+    	{
+    //if (auxillary!=null) return auxillary.isHidden(index);
+    if (index < 0 || index > numProperties()) return false;
+    try
+        {
+        if (globalMethods.get(index) == null) return false;
+        return ((Boolean)((Method)(globalMethods.get(index))).invoke(object, new Object[0])).booleanValue();
+        }
+    catch (Exception e)
+        {
+        e.printStackTrace();
+        return false;
+        }
+    }
     }

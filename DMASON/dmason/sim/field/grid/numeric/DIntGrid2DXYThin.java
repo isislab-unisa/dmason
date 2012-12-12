@@ -35,6 +35,7 @@ import dmason.sim.field.UpdateMap;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
+import dmason.util.visualization.VisualizationUpdateMap;
 import dmason.util.visualization.ZoomArrayList;
 import sim.engine.SimState;
 import sim.util.Int2D;
@@ -128,6 +129,12 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 	private int width,height,field_width,field_height;
 	private String topicPrefix = "";
 
+	// -----------------------------------------------------------------------
+	// GLOBAL PROPERTIES -----------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** Will contain globals properties */
+	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
+	
 	/**
 	 * @param width field's width  
 	 * @param height field's height
@@ -907,6 +914,13 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 			return field[i-own_x+2*MAX_DISTANCE][j-own_y+2*MAX_DISTANCE];
 		return Integer.MIN_VALUE;
 		
+	}
+
+
+	@Override
+	public VisualizationUpdateMap<String, Object> getGlobals()
+	{
+		return globals;
 	}
 
 }

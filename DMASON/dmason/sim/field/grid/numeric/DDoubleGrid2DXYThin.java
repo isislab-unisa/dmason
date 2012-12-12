@@ -36,6 +36,7 @@ import dmason.sim.field.UpdateMap;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
+import dmason.util.visualization.VisualizationUpdateMap;
 import dmason.util.visualization.ZoomArrayList;
 import sim.engine.SimState;
 import sim.util.Int2D;
@@ -163,6 +164,12 @@ public class DDoubleGrid2DXYThin extends DDoubleGrid2DThin {
 		createRegion();		
 
 	}
+	
+	// -----------------------------------------------------------------------
+	// GLOBAL PROPERTIES -----------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** Will contain globals properties */
+	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 	
 	/**
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
@@ -880,5 +887,11 @@ public class DDoubleGrid2DXYThin extends DDoubleGrid2DThin {
 			return field[i-own_x+2*MAX_DISTANCE][j-own_y+2*MAX_DISTANCE];
 		return Double.MIN_VALUE;
 		
+	}
+
+	@Override
+	public VisualizationUpdateMap<String, Object> getGlobals()
+	{
+		return globals;
 	}
 }

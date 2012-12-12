@@ -51,6 +51,7 @@ import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.visualization.RemoteSnap;
+import dmason.util.visualization.VisualizationUpdateMap;
 import dmason.util.visualization.ZoomArrayList;
 
 /**
@@ -145,6 +146,12 @@ public class DContinuous2DYThin extends DContinuous2DThin implements TraceableFi
 			public PrintWriter printer;
 			public ArrayList<RemoteAgent<Int2D>> buffer_print=new ArrayList<RemoteAgent<Int2D>>();
 			// <--
+			
+	// -----------------------------------------------------------------------
+	// GLOBAL PROPERTIES -----------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** Will contain globals properties */
+	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 	
 	/**
 	 * Starts tracing a variable (or the graphic). To start tracing the graphic,
@@ -916,6 +923,12 @@ public class DContinuous2DYThin extends DContinuous2DThin implements TraceableFi
 	public Bag getRawObjectsAtLocationThin(Int2D loc) {
 		int ownD= (int)((own_x+2*jumpDistance) / discretization);
 		return super.getRawObjectsAtLocation(new Double2D((loc.x-ownD), loc.y));
+	}
+
+	@Override
+	public VisualizationUpdateMap<String, Object> getGlobals()
+	{
+		return globals;
 	}
 	
 }

@@ -50,6 +50,7 @@ import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.visualization.RemoteSnap;
+import dmason.util.visualization.VisualizationUpdateMap;
 import dmason.util.visualization.ZoomArrayList;
 import sim.engine.SimState;
 import sim.field.grid.SparseGrid2D;
@@ -142,7 +143,11 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 			
 			// <--
 			
-	
+	// -----------------------------------------------------------------------
+	// GLOBAL PROPERTIES -----------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** Will contain globals properties */
+	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 	
 	/**
 	 * @param width field's width  
@@ -878,5 +883,11 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 	    	 Int2D loc=new Int2D(location.x-own_x+2*MAX_DISTANCE,location.y);
 			 return super.setObjectLocation(obj, loc.x,loc.y);
 	        }
+
+		@Override
+		public VisualizationUpdateMap<String, Object> getGlobals()
+		{
+			return globals;
+		}
 	 
 }

@@ -36,8 +36,6 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
-import com.javabi.sizeof.MemoryUtil;
-
 import sim.engine.SimState;
 import sim.util.Bag;
 import sim.util.Double2D;
@@ -60,6 +58,7 @@ import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.visualization.RemoteSnap;
+import dmason.util.visualization.VisualizationUpdateMap;
 import dmason.util.visualization.ZoomArrayList;
 
 /**
@@ -162,6 +161,12 @@ public class DContinuous2DYLB extends DContinuous2D implements TraceableField
 	private int leftMineSize;
 
 	private int rightMineSize;
+	
+	// -----------------------------------------------------------------------
+	// GLOBAL PROPERTIES -----------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** Will contain globals properties */
+	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 	
 	/**
 	 * Starts tracing a variable (or the graphic). To start tracing the graphic,
@@ -1037,6 +1042,12 @@ public class DContinuous2DYLB extends DContinuous2D implements TraceableField
 	public int getRightMineSize() {
 		// TODO Auto-generated method stub
 		return rightMineSize;
+	}
+
+	@Override
+	public VisualizationUpdateMap<String, Object> getGlobals()
+	{
+		return globals;
 	}
 
 	
