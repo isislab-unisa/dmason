@@ -26,6 +26,13 @@ import sim.util.MutableInt2D;
 public abstract class DSparseGrid2DThin extends DSparseGrid2D {
 
 	private int width,height;
+	/**
+	 * 
+	 * @param localWidth Effective width of the field
+	 * @param localHeight Effective height of the field
+	 * @param width Global width
+	 * @param height Global height
+	 */
 	public DSparseGrid2DThin(int localWidth, int localHeight, int width, int height) {
 
 		super(localWidth, localHeight);

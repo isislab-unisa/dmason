@@ -55,6 +55,18 @@ public class DistributedRegionLB<E,F> implements Serializable, DistributedRegion
 	public int mineNumAgents;
 	public E width;
 	
+	/**
+	 * Constructor of class with parameters:
+	 * 
+	 * @param mine RegionNumeric into field that send the updates
+	 * @param out RegionNumeric external field that send the updates
+	 * @param step the number of step in which send the updates
+	 * @param type the celltype of cell that send the updates
+	 * @param position Specify the position of this cell relative to the cell <code>type</code>
+	 * @param numAgents the number of agents of the region
+	 * @param mineNumAgents the number of agents in the left/right mine
+	 * @param width the width of the region
+	 */
 	public DistributedRegionLB(Region<E, F> mine,
 			Region<E, F> out, long step, CellType type,int position, 
 			int numAgents,int mineNumAgents,E width) {

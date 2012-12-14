@@ -127,14 +127,32 @@ public interface DistributedField<E> extends Serializable
 	
 	public HashMap<Integer, MyCellInterface> getToSendForUnion();
 
+
 	public void prepareForUnion(boolean prepareForUnion);
 	
+	/**
+	 * Get number of agents of a region
+	 * @return number of agents of a region
+	 */
 	public int getNumAgents();
 	
+	
+	/**
+	 * Reset all the local parameters of a region for a step
+	 */
 	public void resetParameters();
 	
+	/**
+	 * Get number of agents in the left mine
+	 * @return number of agents in the left mine
+	 */
 	public int getLeftMineSize();
 	
+	
+	/**
+	 * Get number of agents in the right mine
+	 * @return number of agents in the right mine
+	 */
 	public int getRightMineSize();
 	
 	/**

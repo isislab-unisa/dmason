@@ -27,6 +27,14 @@ import sim.util.MutableInt2D;
 
 public abstract class DContinuous2DThin extends DContinuous2D {
 	private double width,height,localWidth, localHeight;
+	/**
+	 * 
+	 * @param discretization Parameter for the MASON discretization of a continuous field
+	 * @param localWidth Effective width of the field
+	 * @param localHeight Effective height of the field
+	 * @param width Global width
+	 * @param height Global height
+	 */
 	public DContinuous2DThin(double discretization, double localWidth, double localHeight, double width, double height) {
 		super(discretization, localWidth, localHeight);
 		this.width=width;

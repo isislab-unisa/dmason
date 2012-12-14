@@ -27,9 +27,9 @@ import dmason.sim.field.grid.DSparseGrid2DYLB;
 import dmason.util.exception.DMasonException;
 
 /**
- * A Factory class to create the right distribution field according to two parameters
- *  HORIZONTAL_DISTRIBUTION_MODE and SQUARE_DISTRIBUTION_MODE.
- */
+*  A Factory class to create the right distribution field according to four parameters
+*  HORIZONTAL_DISTRIBUTION_MODE, SQUARE_DISTRIBUTION_MODE, SQUARE_BALANCED_DISTRIBUTION_MODE and HORIZONTAL_BALANCED_DISTRIBUTION_MODE.
+*/
 public class DDoubleGrid2DFactory {
 
 	public static final int HORIZONTAL_DISTRIBUTION_MODE=0;
@@ -45,11 +45,14 @@ public class DDoubleGrid2DFactory {
 	 * @param max_distance The maximum distance of shift of the agents
 	 * @param i i position in the field
 	 * @param j j position in the field
-	 * @param num_peers The number of peers
-	 * @param MODE The mode of simulation (horizontal or squared)
-	 * @param name is a value that we give at the topic, for the connection, for distinguish, updates from other region
-	 * @param initialGridValue  is the value that we want to set at begin simulation for all the grid
-	 * @return The right DDoubleGrid2D
+	 * @param rows number of rows in the division
+	 * @param columns number of columns in the division
+	 * @param MODE The mode of simulation (horizontal or squared, balanced or not)
+	 * @param initialGridValue Starting value of the matrix
+	 * @param fixed If it's true the field is read-only
+	 * @param name ID of a region
+	 * @param topicPrefix Prefix for the name of topics used only in Batch mode
+	 * @return The right DSparseGrid2D
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */
 	public static final DDoubleGrid2D createDDoubleGrid2D(int width, int height,SimState sm,int max_distance,int i,int j,int rows, int columns,int MODE, 
@@ -107,6 +110,27 @@ public class DDoubleGrid2DFactory {
 				throw new DMasonException("Illegal Distribution Mode");
 			}
 	}
+	
+	
+	/**
+	 * Method used only for Thin simulations
+	 * 
+	 * @param width The width of the simulated field
+	 * @param height The height of the simulated field
+	 * @param sm The SimState of simulation
+	 * @param max_distance The maximum distance of shift of the agents
+	 * @param i i position in the field
+	 * @param j j position in the field
+	 * @param rows number of rows in the division
+	 * @param columns number of columns in the division
+	 * @param MODE The mode of simulation (horizontal or squared, balanced or not)
+	 * @param initialGridValue Starting value of the matrix
+	 * @param fixed If it's true the field is read-only
+	 * @param name ID of a region
+	 * @param topicPrefix Prefix for the name of topics used only in Batch mode
+	 * @return The right DSparseGrid2DThin
+	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
+	 */
 	public static final DDoubleGrid2DThin createDDoubleGrid2DThin(int width, int height,SimState sm,int max_distance,int i,int j,int rows, int columns,int MODE, 
 			double initialGridValue, boolean fixed, String name, String topicPrefix)
 		throws DMasonException
