@@ -24,6 +24,15 @@ import sim.util.IntBag;
 
 public abstract class DDoubleGrid2DThin extends DDoubleGrid2D{
 	private int width,height,localWidth,localHeight;
+	
+	/**
+	 * 
+	 * @param localWidth Effective width of the field
+	 * @param localHeight Effective height of the field
+	 * @param width Global width
+	 * @param height Global height
+	 * @param initialValue Starting value of the matrix
+	 */
 	public DDoubleGrid2DThin(int localWidth, int localHeight, int width, int height, double initialValue) {
 		super(localWidth, localHeight,initialValue);
 		this.width=width;

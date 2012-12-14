@@ -182,8 +182,10 @@ public class DContinuous2DXYLB extends DContinuous2D
 	 * @param max_distance maximum shift distance of the agents
 	 * @param i i position in the field of the cell
 	 * @param j j position in the field of the cell
-	 * @param num_peers number of the peers
-	 * @param prefix 
+	 * @param rows number of rows in the division
+	 * @param columns number of columns in the division
+	 * @param name ID of a region
+	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
 
 	public DContinuous2DXYLB(double discretization, double width, double height

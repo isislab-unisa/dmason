@@ -197,6 +197,8 @@ public class DContinuous2DYLB extends DContinuous2D implements TraceableField
 	}	
 	
 	/**
+	 * Constructor of class with paramaters:
+	 * 
 	 * @param discretization the discretization of the field
 	 * @param width field's width  
 	 * @param height field's height
@@ -204,7 +206,10 @@ public class DContinuous2DYLB extends DContinuous2D implements TraceableField
 	 * @param max_distance maximum shift distance of the agents
 	 * @param i i position in the field of the cell
 	 * @param j j position in the field of the cell
-	 * @param num_peers number of the peers
+	 * @param rows number of rows in the division
+	 * @param columns number of columns in the division
+	 * @param name ID of a region
+	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
 	public DContinuous2DYLB(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix)
 	{
@@ -551,13 +556,13 @@ public class DContinuous2DYLB extends DContinuous2D implements TraceableField
 					//The region was the left in the previous step
 					if(balanceR>0){
 						//The width of the region was increased in the previous step
-						//So the right_mine and right_out must be restored on the start's dimensions but maintaining the new positions
+						//So the right_mine must be restored on the start's dimensions but maintaining the new positions
 						rmap.right_mine.setUpl_xx((own_x + my_width - jumpDistance + width) % width);
 
 					}
 					else if(balanceR<0){
 						//The width of the region was decreased in the previous step
-						//So the right_mine and right_out must be restored on the start's dimensions but maintaining the new positions
+						//So the right_out must be restored on the start's dimensions but maintaining the new positions
 						rmap.right_out.setDown_xx((own_x + my_width + jumpDistance + width) % width);
 					}
 					balanceR=0;
@@ -566,13 +571,13 @@ public class DContinuous2DYLB extends DContinuous2D implements TraceableField
 					//The region was the right in the previous step
 					if(balanceL>0){
 						//The width of the region was increased in the previous step
-						//So the left_mine and left_out must be restored on the start's dimensions but maintaining the new positions
+						//So the left_mine must be restored on the start's dimensions but maintaining the new positions
 						rmap.left_mine.setDown_xx((own_x + jumpDistance + width) % width);
 
 					}
 					else if(balanceL<0){
 						//The width of the region was increased in the previous step
-						//So the left_mine and left_out must be restored on the start's dimensions but maintaining the new positions
+						//So the left_out must be restored on the start's dimensions but maintaining the new positions
 						rmap.left_out.setUpl_xx((own_x - jumpDistance + width) % width);
 
 					}
@@ -598,13 +603,14 @@ public class DContinuous2DYLB extends DContinuous2D implements TraceableField
 								balanceR=dynamic3(my_width, ((DistributedState)sm).getField().getNumAgents(), region.numAgents, region.mineNumAgents, ((DistributedState)sm).getField().getRightMineSize())-my_width;
 
 							
-							//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null
-							if(balanceR>Math.min(region.width-jumpDistance-1,100000/(height*((DistributedMultiSchedule)(sm.schedule)).getNumFields())))
-								balanceR=Math.min(region.width-jumpDistance-1,100000/(height*((DistributedMultiSchedule)(sm.schedule)).getNumFields()));
-							//The balance can't be smaller than its width+AOI+1 otherwise this region becames null
-							if(balanceR<Math.max(-my_width+jumpDistance+1,-100000/(height*((DistributedMultiSchedule)(sm.schedule)).getNumFields())))
-								balanceR=Math.max(-my_width+jumpDistance+1,-100000/(height*((DistributedMultiSchedule)(sm.schedule)).getNumFields()));
-							
+								//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null
+								if(balanceR>region.width-jumpDistance-1){
+									balanceR=region.width-jumpDistance-1;
+								}
+								//The balance can't be smaller than its width+AOI+1 otherwise this region becames null
+								if(balanceR<-my_width+jumpDistance+1){
+									balanceR=-my_width+jumpDistance+1;
+								}
 
 							
 							if(balanceR<0){
@@ -645,13 +651,12 @@ public class DContinuous2DYLB extends DContinuous2D implements TraceableField
 								balanceL=region.width-dynamic3(region.width,region.numAgents, ((DistributedState)sm).getField().getNumAgents(),((DistributedState)sm).getField().getLeftMineSize(), region.mineNumAgents);
 
 							
-							//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null
-							if(balanceL>Math.min(region.width-jumpDistance-1,100000/(height*((DistributedMultiSchedule)(sm.schedule)).getNumFields())))
-								balanceL=Math.min(region.width-jumpDistance-1,100000/(height*((DistributedMultiSchedule)(sm.schedule)).getNumFields()));
-							//The balance can't be smaller than its width+AOI+1 otherwise this region becames null
-							if(balanceL<Math.max(-my_width+jumpDistance+1,-100000/(height*((DistributedMultiSchedule)(sm.schedule)).getNumFields())))
-								balanceL=Math.max(-my_width+jumpDistance+1,-100000/(height*((DistributedMultiSchedule)(sm.schedule)).getNumFields()));
-							
+								//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null
+								if(balanceL>region.width-jumpDistance-1)
+									balanceL=region.width-jumpDistance-1;
+								//The balance can't be smaller than its width+AOI+1 otherwise this region becames null
+								if(balanceL<-my_width+jumpDistance+1)
+									balanceL=-my_width+jumpDistance+1;
 
 							
 							if(balanceL<0){

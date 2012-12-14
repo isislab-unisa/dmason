@@ -25,8 +25,8 @@ import sim.engine.SimState;
 
 
 /**
-*  A Factory class to create the right distribution field according to two parameters
-*  HORIZONTAL_DISTRIBUTION_MODE and SQUARE_DISTRIBUTION_MODE.
+*  A Factory class to create the right distribution field according to four parameters
+*  HORIZONTAL_DISTRIBUTION_MODE, SQUARE_DISTRIBUTION_MODE, SQUARE_BALANCED_DISTRIBUTION_MODE and HORIZONTAL_BALANCED_DISTRIBUTION_MODE.
 */
 public final class DContinuous2DFactory 
 {	
@@ -35,18 +35,21 @@ public final class DContinuous2DFactory
 	public static final int SQUARE_BALANCED_DISTRIBUTION_MODE=2;
 	public static final int HORIZONTAL_BALANCED_DISTRIBUTION_MODE=3;
 
-
-	/** 
+	/**
+	 * 
+	 * @param discretization Parameter for the MASON discretization of a continuous field
 	 * @param width The width of the simulated field
 	 * @param height The height of the simulated field
 	 * @param sm The SimState of simulation
 	 * @param max_distance The maximum distance of shift of the agents
 	 * @param i i position in the field
 	 * @param j j position in the field
-	 * @param num_peers The number of peers
-	 * @param MODE The mode of simulation (horizontal or squared)
-	 * @param mODE2 
-	 * @return The right DSparseGrid2D
+	 * @param rows number of rows in the division
+	 * @param columns number of columns in the division
+	 * @param MODE The mode of simulation (horizontal or squared, balanced or not)
+	 * @param name ID of a region
+	 * @param topicPrefix Prefix for the name of topics used only in Batch mode
+	 * @return The right DContinuous2D
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */
 	public static final DContinuous2D createDContinuous2D(double discretization,double width, double height,SimState sm,int max_distance,int i,int j,int rows,int columns, int MODE, String name, String topicPrefix)
@@ -105,7 +108,24 @@ public final class DContinuous2DFactory
 			}
 	}
 	
-	
+	/**
+	 * Method used only for Thin simulations
+	 * 
+	 * @param discretization Parameter for the MASON discretization of a continuous field
+	 * @param width The width of the simulated field
+	 * @param height The height of the simulated field
+	 * @param sm The SimState of simulation
+	 * @param max_distance The maximum distance of shift of the agents
+	 * @param i i position in the field
+	 * @param j j position in the field
+	 * @param rows number of rows in the division
+	 * @param columns number of columns in the division
+	 * @param MODE The mode of simulation (horizontal or squared, balanced or not)
+	 * @param name ID of a region
+	 * @param topicPrefix Prefix for the name of topics used only in Batch mode
+	 * @return The right DContinuous2DThin
+	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
+	 */
 	public static final DContinuous2DThin createDContinuous2DThin(double discretization,double width, double height,SimState sm,int max_distance,int i,int j,int rows,int columns, int MODE, String name, String topicPrefix)
 			throws DMasonException
 		{

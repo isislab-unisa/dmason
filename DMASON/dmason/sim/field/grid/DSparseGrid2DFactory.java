@@ -24,9 +24,9 @@ import dmason.util.exception.DMasonException;
 import sim.engine.SimState;
 
 /**
- * A Factory class to create the right distribution field according to two parameters
- *  HORIZONTAL_DISTRIBUTION_MODE and SQUARE_DISTRIBUTION_MODE.
- */
+*  A Factory class to create the right distribution field according to four parameters
+*  HORIZONTAL_DISTRIBUTION_MODE, SQUARE_DISTRIBUTION_MODE, SQUARE_BALANCED_DISTRIBUTION_MODE and HORIZONTAL_BALANCED_DISTRIBUTION_MODE.
+*/
 public final class DSparseGrid2DFactory 
 {	
 	public static final int HORIZONTAL_DISTRIBUTION_MODE=0;
@@ -43,8 +43,11 @@ public final class DSparseGrid2DFactory
 	 * @param max_distance The maximum distance of shift of the agents
 	 * @param i i position in the field
 	 * @param j j position in the field
-	 * @param num_peers The number of peers
-	 * @param MODE The mode of simulation (orizontal or squared)
+	 * @param rows number of rows in the division
+	 * @param columns number of columns in the division
+	 * @param MODE The mode of simulation (horizontal or squared, balanced or not)
+	 * @param name ID of a region
+	 * @param topicPrefix Prefix for the name of topics used only in Batch mode
 	 * @return The right DSparseGrid2D
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */
@@ -105,6 +108,23 @@ public final class DSparseGrid2DFactory
 		
 	}
 	
+	/**
+	 * Method used only for Thin simulations
+	 * 
+	 * @param width The width of the simulated field
+	 * @param height The height of the simulated field
+	 * @param sm The SimState of simulation
+	 * @param max_distance The maximum distance of shift of the agents
+	 * @param i i position in the field
+	 * @param j j position in the field
+	 * @param rows number of rows in the division
+	 * @param columns number of columns in the division
+	 * @param MODE The mode of simulation (horizontal or squared, balanced or not)
+	 * @param name ID of a region
+	 * @param topicPrefix Prefix for the name of topics used only in Batch mode
+	 * @return The right DSparseGrid2DThin
+	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
+	 */
 	public static final DSparseGrid2DThin createDSparseGrid2DThin(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns,int MODE, String name, String topicPrefix)
 			throws DMasonException
 		{

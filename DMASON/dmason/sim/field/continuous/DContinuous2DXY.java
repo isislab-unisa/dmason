@@ -166,6 +166,8 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	private ZoomArrayList<RemoteAgent> tmp_zoom = new ZoomArrayList<RemoteAgent>();	
 
 	/**
+	 * Constructor of class with paramaters:
+	 * 
 	 * @param discretization the discretization of the field
 	 * @param width field's width  
 	 * @param height field's height
@@ -173,8 +175,10 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	 * @param max_distance maximum shift distance of the agents
 	 * @param i i position in the field of the cell
 	 * @param j j position in the field of the cell
-	 * @param num_peers number of the peers
-	 * @param prefix 
+	 * @param rows number of rows in the division
+	 * @param columns number of columns in the division
+	 * @param name ID of a region
+	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
 	public DContinuous2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows,int columns, String name, String prefix) {
 		super(discretization, width, height);

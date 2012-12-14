@@ -152,13 +152,18 @@ public class DSparseGrid2DYLB extends DSparseGrid2D
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 	
 	/**
+	 * Constructor of class with paramaters:
+	 * 
 	 * @param width field's width  
 	 * @param height field's height
 	 * @param sm The SimState of simulation
 	 * @param max_distance maximum shift distance of the agents
 	 * @param i i position in the field of the cell
 	 * @param j j position in the field of the cell
-	 * @param num_peers number of the peers
+	 * @param rows number of rows in the division
+	 * @param columns number of columns in the division
+	 * @param name ID of a region
+	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
 	public DSparseGrid2DYLB(int width, int height,SimState sm,int max_distance,int i,int j,int rows, int columns, String name, String prefix) 
 	{		
@@ -454,13 +459,13 @@ public class DSparseGrid2DYLB extends DSparseGrid2D
 			//The region was the left in the previous step
 			if(balanceR>0){
 				//The width of the region was increased in the previous step
-				//So the right_mine and right_out must be restored on the start's dimensions but maintaining the new positions
+				//So the right_mine must be restored on the start's dimensions but maintaining the new positions
 				rmap.right_mine.setUpl_xx(own_x + my_width -MAX_DISTANCE);
 			}
 			else if(balanceR<0){
 				
 				//The width of the region was decreased in the previous step
-				//So the right_mine and right_out must be restored on the start's dimensions but maintaining the new positions
+				//So the right_out must be restored on the start's dimensions but maintaining the new positions
 				rmap.right_out.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
 			}
 			balanceR=0;
@@ -469,13 +474,13 @@ public class DSparseGrid2DYLB extends DSparseGrid2D
 			//The region was the right in the previous step
 			if(balanceL>0){
 				//The width of the region was increased in the previous step
-				//So the left_mine and left_out must be restored on the start's dimensions but maintaining the new positions
+				//So the left_mine must be restored on the start's dimensions but maintaining the new positions
 				rmap.left_mine.setDown_xx(own_x + MAX_DISTANCE -1);
 			}
 			else if(balanceL<0){
 				
 				//The width of the region was increased in the previous step
-				//So the left_mine and left_out must be restored on the start's dimensions but maintaining the new positions
+				//So the left_out must be restored on the start's dimensions but maintaining the new positions
 				rmap.left_out.setUpl_xx(own_x-MAX_DISTANCE);
 			}
 			balanceL=0;

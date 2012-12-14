@@ -122,15 +122,19 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
 	/**
+	 * Constructor of class with paramaters:
+	 * 
 	 * @param width field's width  
 	 * @param height field's height
 	 * @param sm The SimState of simulation
 	 * @param max_distance maximum shift distance of the agents
 	 * @param i i position in the field of the cell
 	 * @param j j position in the field of the cell
-	 * @param num_peers number of the peers
-	 * @param name the name that we give at topic for the ((DistributedState)sm).getConnection()
-	 * @param initialGridValue is the initial value that we want to set at grid at begin simulation. 
+	 * @param rows number of rows in the division
+	 * @param columns number of columns in the division
+	 * @param initialGridValue the initial value that we want to set at grid at begin simulation 
+	 * @param name ID of a region
+	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
 	public DDoubleGrid2DYThin(int width, int height,int field_width,int field_height,SimState sm,int max_distance,int i,int j,int rows,int columns, double initialGridValue, String name, String prefix) {
 		

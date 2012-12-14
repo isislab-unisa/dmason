@@ -147,14 +147,18 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 	
 	
 	/**
+	 * Constructor of class with paramaters:
+	 * 
 	 * @param width field's width  
 	 * @param height field's height
 	 * @param sm The SimState of simulation
 	 * @param max_distance maximum shift distance of the agents
 	 * @param i i position in the field of the cell
 	 * @param j j position in the field of the cell
-	 * @param num_peers number of the peers
-	 * @param prefix 
+	 * @param rows number of rows in the division
+	 * @param columns number of columns in the division
+	 * @param name ID of a region
+	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
 	public DSparseGrid2DY(int width, int height,SimState sm,int max_distance,int i,int j,int rows, int columns, String name, String prefix) 
 	{		

@@ -161,16 +161,19 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 	
 	/**
+	 * Constructor of class with paramaters:
+	 * 
 	 * @param width field's width  
 	 * @param height field's height
 	 * @param sm The SimState of simulation
 	 * @param max_distance maximum shift distance of the agents
 	 * @param i i position in the field of the cell
 	 * @param j j position in the field of the cell
-	 * @param num_peers number of the peers
-	 * @param name identifier of the field
-	 * @param prefix 
-	 */	
+	 * @param rows number of rows in the division
+	 * @param columns number of columns in the division
+	 * @param name ID of a region
+	 * @param prefix Prefix for the name of topics used only in Batch mode
+	 */
 	public DSparseGrid2DXY(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns, String name, String prefix) 
 	{		
 		super(width, height);
@@ -185,15 +188,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		this.columns = columns;
 		this.topicPrefix = prefix;
 		
-		/*
-		try {
-			file = new FileOutputStream("Region-"+cellType+".txt");
-			ps = new PrintStream(file);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
+	
 		
 		updates_cache=new ArrayList<Region<Integer,Int2D>>();
 		
