@@ -46,6 +46,7 @@ import dmason.sim.field.RegionMap;
 import dmason.sim.field.TraceableField;
 import dmason.sim.field.UpdateMap;
 import dmason.sim.field.UpdaterThreadForListener;
+import dmason.sim.field.util.GlobalInspectorUtils;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
@@ -118,26 +119,31 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
 	private ConnectionNFieldsWithActiveMQAPI connection;
 	
-	private BufferedImage actualSnap;
-	private WritableRaster writer;
-	private int white[]={255,255,255};
 	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
 	private int numAgents;
-	private boolean isSendingGraphics;
 	private int width,height;
 
 	
-	/** List of parameters to trace */
-	private ArrayList<String> tracing = new ArrayList<String>();
-	
-	private double actualTime;
-	private HashMap<String, Object> actualStats;
 	// --> only for testing
 			public PrintWriter printer;
 			public ArrayList<RemoteAgent<Int2D>> buffer_print=new ArrayList<RemoteAgent<Int2D>>();
 			// <--
 	
 	private String topicPrefix = "";
+	
+	// -----------------------------------------------------------------------
+	// GLOBAL INSPECTOR ------------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** List of parameters to trace */
+	private ArrayList<String> tracingFields = new ArrayList<String>();
+	/** The image to send */
+	private BufferedImage currentBitmap;
+	/** Simulation's time when currentBitmap was generated */
+	private double currentTime;
+	/** Statistics to send */
+	HashMap<String, Object> currentStats;
+	/** True if the global inspector requested graphics **/
+	boolean isTracingGraphics;
 	
 	// -----------------------------------------------------------------------
 	// GLOBAL PROPERTIES -----------------------------------------------------
@@ -187,6 +193,12 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		} catch (FileNotFoundException e) { e.printStackTrace();}
 		// <--
 		*/
+		
+		// Initialize variables for GlobalInspector
+		currentBitmap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
+		currentTime = sm.schedule.getTime();
+		currentStats = new HashMap<String, Object>();
+		isTracingGraphics = false;
 	}
 	
 	/**
@@ -202,64 +214,58 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 			own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
 
 		own_y=0; // in this mode the y coordinate is ever 0
-		
+
 		// own width and height
 		if(cellType.pos_j<(width%columns))
 			my_width=(int) Math.floor(width/columns+1);
 		else
 			my_width=(int) Math.floor(width/columns);
 		my_height=height;
-	
-	
-	//calculating the neighbors
-	int v1 = cellType.pos_j - 1;
-	int v2 = cellType.pos_j + 1;
-	if( v1 >= 0 )
-	{
-		neighborhood.add(cellType.getNeighbourLeft());
-	}
-	if( v2 <= columns - 1 )
-	{
-		neighborhood.add(cellType.getNeighbourRight());
-	}	
-		
-		actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
-		actualTime = sm.schedule.getTime();
-		actualStats = new HashMap<String, Object>();
-		isSendingGraphics = false;
-		writer=actualSnap.getRaster();
-		
-	
+
+
+		//calculating the neighbors
+		int v1 = cellType.pos_j - 1;
+		int v2 = cellType.pos_j + 1;
+		if( v1 >= 0 )
+		{
+			neighborhood.add(cellType.getNeighbourLeft());
+		}
+		if( v2 <= columns - 1 )
+		{
+			neighborhood.add(cellType.getNeighbourRight());
+		}	
+
+
 		// Building the regions
 		rmap.left_out=RegionInteger.createRegion(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height),my_width, my_height, width, height);
 		if(rmap.left_out!=null)
 			rmap.left_mine=RegionInteger.createRegion(own_x,own_y,own_x + MAX_DISTANCE -1, (own_y+my_height)-1,my_width, my_height, width, height);
-		
+
 		rmap.right_out=RegionInteger.createRegion(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, (own_y+my_height)-1,my_width, my_height, width, height);
 		if(rmap.right_out!=null)
 			rmap.right_mine=RegionInteger.createRegion(own_x + my_width -MAX_DISTANCE,own_y,own_x +my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
-				
+
 		if(rmap.left_out == null)
 		{
 			//peer 0
 			myfield=new RegionInteger(own_x,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
 
 		}
-		
+
 		if(rmap.right_out == null)
 		{
 			//peer NUMPEERS-1
 			myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y, own_x+my_width-1, own_y+my_height-1);
 
 		}
-					
+
 		if(rmap.left_out!=null && rmap.right_out!=null)
 		{
 			myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
 
 		}
 
-	  return true;
+		return true;
 	}
 	
 	/**
@@ -274,6 +280,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 	 * @param sm The SimState of simulation
 	 * @return false if the object is null (null objects cannot be put into the grid)
 	 */
+	@Deprecated
 	public boolean setDistributedObjectLocationForPeer(final Int2D location,RemoteAgent<Int2D> rm,SimState sm)
 	{		
 	    if(myfield.isMine(location.x,location.y) && this.getObjectsAtLocation(location)==null)
@@ -343,7 +350,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
     	if(myfield.isMine(location.x,location.y))
     	{    		
     		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-    			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
+    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);
     		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
     		return myfield.addAgents(new Entry<Int2D>(rm, location));
@@ -362,60 +369,25 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 	 */
 	public synchronized boolean  synchro() 
 	{	
+		// Send to Global Inspector
 		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
-			RemoteSnap snap = new RemoteSnap(cellType, sm.schedule.getSteps() - 1, actualTime);
-			actualTime = sm.schedule.getTime();
+			GlobalInspectorUtils.synchronizeInspector(
+					(DistributedState<?>)sm,
+					connection,
+					topicPrefix,
+					cellType,
+					own_x,
+					own_y,
+					currentTime,
+					currentBitmap,
+					currentStats,
+					tracingFields,
+					isTracingGraphics);
+			currentTime = sm.schedule.getTime();
+		}
 			
-			if (isSendingGraphics)
-			{
-				try {
-					ByteArrayOutputStream by = new ByteArrayOutputStream();
-					ImageIO.write(actualSnap, "png", by);
-					by.flush();
-					snap.image = by.toByteArray();
-					//connection.publishToTopic(snap, "GRAPHICS", "GRAPHICS");
-					//System.out.println("PUBBLICO AL VISUALIZZATORE");
-					by.close();
-					actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
-					writer=actualSnap.getRaster();
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-			
-			//if (isSendingGraphics || tracing.size() > 0)
-			/* The above line is commented because if we don't send the
-			 * RemoteSnap at every simulation step, the global viewer
-			 * will block waiting on the queue.
-			 */
-			{
-				try
-				{
-					snap.stats = actualStats;
-					connection.publishToTopic(snap, topicPrefix+"GRAPHICS", "GRAPHICS");
-				} catch (Exception e) {
-					//logger.severe("Error while publishing the snap message");
-					e.printStackTrace();
-				}
-			}
-			
-			// Update statistics
-			Class<?> simClass = sm.getClass();
-			for (int i = 0; i < tracing.size(); i++)
-			{
-				try
-				{
-					Method m = simClass.getMethod("get" + tracing.get(i), (Class<?>[])null);
-					Object res = m.invoke(sm, new Object [0]);
-					snap.stats.put(tracing.get(i), res);
-				} catch (Exception e) {
-					//logger.severe("Reflection error while calling get" + tracing.get(i));
-					e.printStackTrace();
-				}
-			}
-		} // numViewers > 0
+		
 
 		for(Region<Integer,Int2D> region : updates_cache)
 		{
@@ -648,8 +620,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		    				}
 		    				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		    				{
-		    	    			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
-		    	    			
+		    	    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);		    	    			
 		    	    		}
 		    			}
 	    	    		return region.addAgents(new Entry<Int2D>(rm, location));
@@ -799,22 +770,22 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 	
 	@Override
 	public void trace(String param)
-	{ 
+	{
 		if (param.equals("-GRAPHICS"))
-			isSendingGraphics = true;
+			isTracingGraphics = true;
 		else
-			tracing.add(param);
+			tracingFields.add(param);
 	}
-	
+
 	@Override
 	public void untrace(String param)
 	{
 		if (param.equals("-GRAPHICS"))
-			isSendingGraphics = false;
+			isTracingGraphics = false;
 		else
 		{
-			tracing.remove(param);
-			actualStats.remove(param);
+			tracingFields.remove(param);
+			currentStats.remove(param);
 		}
 	}
 

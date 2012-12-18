@@ -277,6 +277,7 @@ public class LauncherViewer  {
 						
 						//---- chkLoadBalancing ----
 						chkLoadBalancing.setText("Load Balancing");
+						chkLoadBalancing.setVisible(false);
 						chkLoadBalancing.addItemListener(new ItemListener() {
 							@Override
 							public void itemStateChanged(ItemEvent e)

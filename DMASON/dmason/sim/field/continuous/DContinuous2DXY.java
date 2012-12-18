@@ -207,7 +207,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 		numAgents=0;
 		createRegion();
 		
-		// Initialize variables for GloablInspector
+		// Initialize variables for GlobalInspector
 		currentBitmap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
 		currentTime = sm.schedule.getTime();
 		currentStats = new HashMap<String, Object>();
@@ -386,7 +386,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
     	if(myfield.isMine(location.x,location.y))
     	{    		
     		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location);
+    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);
     		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
 			
@@ -412,7 +412,10 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 			GlobalInspectorUtils.synchronizeInspector(
 					(DistributedState<?>)sm,
 					connection,
+					topicPrefix,
 					cellType,
+					(int)own_x,
+					(int)own_y,
 					currentTime,
 					currentBitmap,
 					currentStats,
@@ -726,7 +729,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	    				if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 	    					tmp_zoom.add(rm);
 	    				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-	    	    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location);
+	    	    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 	    			}
 	    			return region.addAgents(new Entry<Double2D>(rm, location));
 	    	    }    

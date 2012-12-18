@@ -38,6 +38,7 @@ import dmason.sim.field.Region;
 import dmason.sim.field.RegionMap;
 import dmason.sim.field.TraceableField;
 import dmason.sim.field.UpdateMap;
+import dmason.sim.field.util.GlobalInspectorUtils;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
@@ -129,9 +130,6 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	private ConnectionWithJMS con = new ConnectionNFieldsWithActiveMQAPI();
 	private String NAME;
 	
-	private BufferedImage actualSnap;
-	private WritableRaster writer;
-	private int white[]={255,255,255};
 
 	/*
 	private FileOutputStream file;
@@ -140,19 +138,22 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
 	private int numAgents;
 	private int width,height;
-
-	
-	
-	
-	
-	private boolean isSendingGraphics;
-	
-	/** List of parameters to trace */
-	private ArrayList<String> tracing = new ArrayList<String>();
-	private double actualTime;
-	private HashMap<String, Object> actualStats;
 	
 	private String topicPrefix = "";
+	
+	// -----------------------------------------------------------------------
+	// GLOBAL INSPECTOR ------------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** List of parameters to trace */
+	private ArrayList<String> tracingFields = new ArrayList<String>();
+	/** The image to send */
+	private BufferedImage currentBitmap;
+	/** Simulation's time when currentBitmap was generated */
+	private double currentTime;
+	/** Statistics to send */
+	HashMap<String, Object> currentStats;
+	/** True if the global inspector requested graphics **/
+	boolean isTracingGraphics;
 	
 	// -----------------------------------------------------------------------
 	// GLOBAL PROPERTIES -----------------------------------------------------
@@ -194,7 +195,13 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		
 		setConnection(((DistributedState)sm).getConnection());
 		numAgents=0;
-		createRegion();	
+		createRegion();
+		
+		// Initialize variables for GlobalInspector
+		currentBitmap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
+		currentTime = sm.schedule.getTime();
+		currentStats = new HashMap<String, Object>();
+		isTracingGraphics = false;
 	}
 	
 	
@@ -209,90 +216,83 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
 		else
 			own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
-		
+
 		if(cellType.pos_i<(height%rows))
 			own_y=(int)Math.floor(height/rows+1)*cellType.pos_i; 
 		else
 			own_y=(int)Math.floor(height/rows+1)*((height%rows))+(int)Math.floor(height/rows)*(cellType.pos_i-((height%rows))); 
 
-		
-		
+
+
 		// own width and height
 		if(cellType.pos_j<(width%columns))
 			my_width=(int) Math.floor(width/columns+1);
 		else
 			my_width=(int) Math.floor(width/columns);
-		
+
 		if(cellType.pos_i<(height%rows))
 			my_height=(int) Math.floor(height/rows+1);
 		else
 			my_height=(int) Math.floor(height/rows);
-	
-	
-	//calculating the neighbors
-	for (int k = -1; k <= 1; k++) 
-	{
-		for (int k2 = -1; k2 <= 1; k2++) 
-		{				
-			int v1=cellType.pos_i+k;
-			int v2=cellType.pos_j+k2;
-			if(v1>=0 && v2 >=0 && v1<rows && v2<columns)
-				if( v1!=cellType.pos_i || v2!=cellType.pos_j)
-				{
-					neighborhood.add(v1+""+v2);
-				}	
+
+
+		//calculating the neighbors
+		for (int k = -1; k <= 1; k++) 
+		{
+			for (int k2 = -1; k2 <= 1; k2++) 
+			{				
+				int v1=cellType.pos_i+k;
+				int v2=cellType.pos_j+k2;
+				if(v1>=0 && v2 >=0 && v1<rows && v2<columns)
+					if( v1!=cellType.pos_i || v2!=cellType.pos_j)
+					{
+						neighborhood.add(v1+""+v2);
+					}	
+			}
 		}
-	}
-		
-		actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
-		actualTime = sm.schedule.getTime();
-		actualStats = new HashMap<String, Object>();
-		isSendingGraphics = false;
-		writer=actualSnap.getRaster();
-		
-		
+
+
 		// Building the regions
 		rmap.left_out=RegionInteger.createRegion(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height-1),my_width, my_height, width, height);
 		if(rmap.left_out!=null)
 		{
 			rmap.left_mine=RegionInteger.createRegion(own_x,own_y,own_x + MAX_DISTANCE -1, own_y+my_height-1,my_width, my_height, width, height);
 		}
-		
+
 		rmap.right_out=RegionInteger.createRegion(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
 		if(rmap.right_out!=null)
 		{
 			rmap.right_mine=RegionInteger.createRegion(own_x + my_width - MAX_DISTANCE,own_y,own_x +my_width - 1, own_y+my_height-1,my_width, my_height, width, height);
 		}
-		
+
 		rmap.up_out=RegionInteger.createRegion(own_x, own_y - MAX_DISTANCE,own_x+ my_width -1,own_y-1,my_width, my_height, width, height);
 		if(rmap.up_out!=null)
 		{
 			rmap.up_mine=RegionInteger.createRegion(own_x ,own_y,own_x+my_width-1, own_y + MAX_DISTANCE -1,my_width, my_height, width, height);
 		}
-		
+
 		rmap.down_out=RegionInteger.createRegion(own_x,own_y+my_height,own_x+my_width-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
 		if(rmap.down_out!=null)
 		{
 			rmap.down_mine=RegionInteger.createRegion(own_x,own_y+my_height-MAX_DISTANCE,own_x+my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
 		}
-				
+
 		if(rmap.left_out == null)
 		{
 			if(rmap.up_out == null)
 			{
 				//peer 0
 				myfield=new RegionInteger(own_x,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-MAX_DISTANCE-1);
-								
+
 				//corner down right
 				rmap.corner_out_down_right_diag_center=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
 				rmap.corner_mine_down_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1,my_width, my_height, width,height);
 			}
-			else
-			if(rmap.down_out==null)
+			else if(rmap.down_out==null)
 			{
 				//peer 6
 				myfield=new RegionInteger(own_x,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
-				
+
 				//corner up right
 				rmap.corner_out_up_right_diag_center = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
 				rmap.corner_mine_up_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
@@ -300,74 +300,70 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 			else
 			{
 				//peer 3
-			    myfield=new RegionInteger(own_x,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-MAX_DISTANCE-1);
-									
+				myfield=new RegionInteger(own_x,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-MAX_DISTANCE-1);
+
 				//corner up right
 				rmap.corner_out_up_right_diag_center = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1,my_width, my_height, width, height);
 				rmap.corner_mine_up_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1,my_width, my_height, width, height);
-				
+
 				//corner down right
 				rmap.corner_out_down_right_diag_center=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
 				rmap.corner_mine_down_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1, my_width, my_height, width,height);
 			}			
 		}
-		else
-		if(rmap.right_out==null)
+		else if(rmap.right_out==null)
 		{
 			if(rmap.up_out==null)
 			{
 				//peer 2
 				myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y, own_x+my_width-1, own_y+my_height-MAX_DISTANCE-1);
-					
+
 				//corner down left
 				rmap.corner_out_down_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
 				rmap.corner_mine_down_left=RegionInteger.createRegion(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
 			}
-			else
-			if(rmap.down_out==null)
+			else if(rmap.down_out==null)
 			{
 				//peer 8
 				myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-1, own_y+my_height-1);
-			
+
 				//corner up left	
 				rmap.corner_out_up_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
 				rmap.corner_mine_up_left=RegionInteger.createRegion(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
-				
+
 			}
 			else
 			{	
 				//peer 5
 				myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-1, own_y+my_height-MAX_DISTANCE-1);
-				
+
 				//corner up left					
 				rmap.corner_out_up_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
 				rmap.corner_mine_up_left=RegionInteger.createRegion(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
-				
+
 				//corner down left
 				rmap.corner_out_down_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
 				rmap.corner_mine_down_left=RegionInteger.createRegion(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1, my_width, my_height, width, height);
 			}
 		}
-		else
-		if(rmap.up_out==null)
+		else if(rmap.up_out==null)
 		{
 			//peer 1
 			myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-MAX_DISTANCE-1);
-	
+
 			//corner down left
 			rmap.corner_out_down_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
 			rmap.corner_mine_down_left=RegionInteger.createRegion(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
-			
+
 			//corner down right
 			rmap.corner_out_down_right_diag_center=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
 			rmap.corner_mine_down_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1, my_width, my_height, width,height);
 		}
-		else
-		if(rmap.down_out==null)
+		else if(rmap.down_out==null)
 		{
 			//peer 7
 			myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-1);
-			
+
 			//corner up left	
 			rmap.corner_out_up_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
 			rmap.corner_mine_up_left=RegionInteger.createRegion(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
@@ -379,23 +375,23 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		else
 		{
 			myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-MAX_DISTANCE-1);
-		
+
 			//corner up left
 			rmap.corner_out_up_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
 			rmap.corner_mine_up_left=RegionInteger.createRegion(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1,my_width, my_height, width, height);
-						
+
 			//corner up right
 			rmap.corner_out_up_right_diag_center = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
 			rmap.corner_mine_up_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
-			
+
 			//corner down left
 			rmap.corner_out_down_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
 			rmap.corner_mine_down_left=RegionInteger.createRegion(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
-			
+
 			//corner down right
 			rmap.corner_out_down_right_diag_center=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
 			rmap.corner_mine_down_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1,my_width, my_height, width,height);
-						
+
 		}
 		return true;
 	}
@@ -411,6 +407,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	 * @param sm The SimState of simulation
 	 * @return false if the object is null (null objects cannot be put into the grid)
 	 */
+	@Deprecated
 	public boolean setDistributedObjectLocationForPeer(final Int2D location,RemoteAgent<Int2D> rm,SimState sm)
 	{		
 		
@@ -473,9 +470,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
     	if(myfield.isMine(location.x,location.y))
     	{    		
     		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-    		{
-    			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
-    		}
+    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);
     		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
     		return myfield.addAgents(new Entry<Int2D>(rm, location));
@@ -494,77 +489,23 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	 */
 	public synchronized boolean synchro() 
 	{		
+		// Send to Global Inspector
 		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
-			RemoteSnap snap = new RemoteSnap(cellType, sm.schedule.getSteps() - 1, actualTime);
-			actualTime = sm.schedule.getTime();
-			
-			if (isSendingGraphics)
-			{
-				try {
-					ByteArrayOutputStream by = new ByteArrayOutputStream();
-					ImageIO.write(actualSnap, "png", by);
-					by.flush();
-					snap.image = by.toByteArray();
-					//connection.publishToTopic(snap, "GRAPHICS", "GRAPHICS");
-					//System.out.println("PUBBLICO AL VISUALIZZATORE");
-					by.close();
-					actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
-					writer=actualSnap.getRaster();
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-			
-			//if (isSendingGraphics || tracing.size() > 0)
-			/* The above line is commented because if we don't send the
-			 * RemoteSnap at every simulation step, the global viewer
-			 * will block waiting on the queue.
-			 */
-			{
-				try
-				{
-					snap.stats = actualStats;
-					connection.publishToTopic(snap, topicPrefix+"GRAPHICS", "GRAPHICS");
-				} catch (Exception e) {
-					//logger.severe("Error while publishing the snap message");
-					e.printStackTrace();
-				}
-			}
-			
-			// Update statistics
-			Class<?> simClass = sm.getClass();
-			for (int i = 0; i < tracing.size(); i++)
-			{
-				try
-				{
-					Method m = simClass.getMethod("get" + tracing.get(i), (Class<?>[])null);
-					Object res = m.invoke(sm, new Object [0]);
-					snap.stats.put(tracing.get(i), res);
-				} catch (Exception e) {
-					//logger.severe("Reflection error while calling get" + tracing.get(i));
-					e.printStackTrace();
-				}
-			}
-		} // numViewers > 0
-		
-//		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-//		{
-//			try {
-//				ByteArrayOutputStream by = new ByteArrayOutputStream();
-//				ImageIO.write(actualSnap, "png", by);
-//				by.flush();
-//				connection.publishToTopic(new RemoteSnap(cellType, sm.schedule.getSteps()-1, by.toByteArray()), "GRAPHICS", "GRAPHICS");
-//				by.close();
-//				actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
-//				writer=actualSnap.getRaster();
-//
-//			} catch (Exception e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			}
-//		}
+			GlobalInspectorUtils.synchronizeInspector(
+					(DistributedState<?>)sm,
+					connection,
+					topicPrefix,
+					cellType,
+					own_x,
+					own_y,
+					currentTime,
+					currentBitmap,
+					currentStats,
+					tracingFields,
+					isTracingGraphics);
+			currentTime = sm.schedule.getTime();
+		}
 
 		for(Region<Integer,Int2D> region : updates_cache)
 		{
@@ -864,7 +805,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	    					tmp_zoom.add(rm);
 	    				
 	    				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-	    	    			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
+	    					GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 	    			}
 	    			return region.addAgents(new Entry<Int2D>(rm, location));
 	    	    }    
@@ -1023,20 +964,20 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	public void trace(String param)
 	{ 
 		if (param.equals("-GRAPHICS"))
-			isSendingGraphics = true;
+			isTracingGraphics = true;
 		else
-			tracing.add(param);
+			tracingFields.add(param);
 	}
 	
 	@Override
 	public void untrace(String param)
 	{
 		if (param.equals("-GRAPHICS"))
-			isSendingGraphics = false;
+			isTracingGraphics = false;
 		else
 		{
-			tracing.remove(param);
-			actualStats.remove(param);
+			tracingFields.remove(param);
+			currentStats.remove(param);
 		}
 	}
 

@@ -389,7 +389,7 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
     	if(myfield.isMine(location.x,location.y))
     	{    
     		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location);
+    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);
     		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
     		return myfield.addAgents(new Entry<Double2D>(rm, location));
@@ -415,7 +415,10 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 			GlobalInspectorUtils.synchronizeInspector(
 					(DistributedState<?>)sm,
 					connection,
+					topicPrefix,
 					cellType,
+					(int)own_x,
+					(int)own_y,
 					currentTime,
 					currentBitmap,
 					currentStats,
@@ -676,7 +679,7 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 			    				
 		    					tmp_zoom.add(rm);
 		    				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-		    	    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location);
+		    	    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 		    			}
 	    	    		return region.addAgents(new Entry<Double2D>(rm, location));
 	    	    	}
