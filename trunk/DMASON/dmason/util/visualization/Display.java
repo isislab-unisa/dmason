@@ -168,8 +168,8 @@ public class Display extends GUIState
 								{
 									BufferedImage image = ImageIO.read(new ByteArrayInputStream(array));
 									tmpImage.createGraphics().drawImage(image, 
-											(width  / cellsPerDimension) * j,
-											(height / cellsPerDimension) * i,
+											snap.x, //(width  / cellsPerDimension) * j,
+											snap.y, //(height / cellsPerDimension) * i,
 											null);
 								}
 							} catch (Exception e) {

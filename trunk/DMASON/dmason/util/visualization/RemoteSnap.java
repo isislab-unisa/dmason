@@ -22,6 +22,19 @@ public class RemoteSnap implements Serializable
 	public short i, j;
 	
 	/**
+	 * Top and left coordinates of the image.
+	 */
+	/*
+	 * When the Global Inspector collects all the bitmap from the fields, it
+	 * have to compose the global image. Previously, every bitmap was shifted
+	 * by x*field_width and y*field_height, assuming that every field had same
+	 * dimensions. When using load balancing, field width and/or height may
+	 * vary, so we must explicitly set (x, y) coordinates in order to compose
+	 * the global image.
+	 */
+	public int x, y; 
+	
+	/**
 	 * Simulation's step these informations are referring to.
 	 */
 	public long step;

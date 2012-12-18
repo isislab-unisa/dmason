@@ -17,6 +17,8 @@
 
 package dmason.sim.field.grid;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
@@ -48,8 +50,10 @@ import dmason.sim.field.MessageListener;
 import dmason.sim.field.MessageListener;
 import dmason.sim.field.Region;
 import dmason.sim.field.RegionMap;
+import dmason.sim.field.TraceableField;
 import dmason.sim.field.UpdateMap;
 import dmason.sim.field.UpdaterThreadForListener;
+import dmason.sim.field.util.GlobalInspectorUtils;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
@@ -117,15 +121,12 @@ import sim.util.Int2D;
  * ----------------------------------------------------------------------------------------------------------
  * </PRE>
  */
-public class DSparseGrid2DYLB extends DSparseGrid2D
+public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField
 {	
 	private String NAME;
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
 	private ConnectionNFieldsWithActiveMQAPI connection;
 
-	private BufferedImage actualSnap;
-	private WritableRaster writer;
-	private int white[]={255,255,255};
 	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
 
 
@@ -145,6 +146,20 @@ public class DSparseGrid2DYLB extends DSparseGrid2D
 		public ArrayList<RemoteAgent<Int2D>> buffer_print=new ArrayList<RemoteAgent<Int2D>>();
 		// <--
 	
+	// -----------------------------------------------------------------------
+	// GLOBAL INSPECTOR ------------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** List of parameters to trace */
+	private ArrayList<String> tracingFields = new ArrayList<String>();
+	/** The image to send */
+	private BufferedImage currentBitmap;
+	/** Simulation's time when currentBitmap was generated */
+	private double currentTime;
+	/** Statistics to send */
+	HashMap<String, Object> currentStats;
+	/** True if the global inspector requested graphics **/
+	boolean isTracingGraphics;
+		
 	// -----------------------------------------------------------------------
 	// GLOBAL PROPERTIES -----------------------------------------------------
 	// -----------------------------------------------------------------------
@@ -198,6 +213,11 @@ public class DSparseGrid2DYLB extends DSparseGrid2D
     			} catch (FileNotFoundException e) { e.printStackTrace();}
     			// <--*/
     	
+    	// Initialize variables for GlobalInspector
+		currentBitmap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
+		currentTime = sm.schedule.getTime();
+		currentStats = new HashMap<String, Object>();
+		isTracingGraphics = false;
 	}
 
 	/**
@@ -235,8 +255,6 @@ public class DSparseGrid2DYLB extends DSparseGrid2D
 		neighborhood.add(cellType.getNeighbourRight());
 	}
 
-		actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
-		writer=actualSnap.getRaster();
 
 		// Building the regions
 		rmap.left_out=RegionInteger.createRegion(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height),my_width, my_height, width, height);
@@ -351,7 +369,7 @@ public class DSparseGrid2DYLB extends DSparseGrid2D
 		if(myfield.isMine(location.x,location.y))
 		{    		
 			if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-				writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
+				GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
 			return myfield.addAgents(new Entry<Int2D>(rm, location));
@@ -378,25 +396,41 @@ public class DSparseGrid2DYLB extends DSparseGrid2D
 			rightMineSize=rmap.right_mine.size();
 		
 		
+		// Send to Global Inspector
 		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
-			try {
-				ByteArrayOutputStream by = new ByteArrayOutputStream();
-				ImageIO.write(actualSnap, "png", by);
-				by.flush();
-
-				//connection.publishToTopic(new RemoteSnap(cellType, sm.schedule.getSteps()-1, by.toByteArray()), "GRAPHICS", "GRAPHICS");
-				//System.out.println("PUBBLICO AL VISUALIZZATORE");
-				by.close();
-				actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
-				writer=actualSnap.getRaster();
-
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			GlobalInspectorUtils.synchronizeInspector(
+					(DistributedState<?>)sm,
+					connection,
+					topicPrefix,
+					cellType,
+					own_x,
+					own_y,
+					currentTime,
+					currentBitmap,
+					currentStats,
+					tracingFields,
+					isTracingGraphics);
+			currentTime = sm.schedule.getTime();
 		}
-
+		
+		// Since the dimension of the field will vary at each step, we re-create the buffer
+		currentBitmap = new BufferedImage(
+				(int)my_width,
+				(int)my_height,
+				BufferedImage.TYPE_3BYTE_BGR);
+		
+		{
+			// TODO FOR DEBUG PURPOSES ONLY
+			Graphics g = currentBitmap.getGraphics();
+			Color oldCol = g.getColor();
+			Color newCol = new Color(0,
+					80 * ( (0+cellType.pos_j) % 2),
+					80 * ( (1+cellType.pos_j) % 2));
+			g.setColor(newCol);
+			g.fillRect(0, 0,(int)my_width, (int)my_height);
+			g.setColor(oldCol);
+		}
 
 
 		for(Region<Integer,Int2D> region : updates_cache)
@@ -834,8 +868,7 @@ public class DSparseGrid2DYLB extends DSparseGrid2D
 							}
 							if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 							{
-								writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
-
+								GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 							}
 						}
 						return region.addAgents(new Entry<Int2D>(rm, location));
@@ -1001,6 +1034,7 @@ public class DSparseGrid2DYLB extends DSparseGrid2D
 		// TODO Auto-generated method stub
 
 	}
+	
 	@Override
 	public int getNumAgents() {
 		return numAgents;
@@ -1016,13 +1050,11 @@ public class DSparseGrid2DYLB extends DSparseGrid2D
 
 	@Override
 	public int getLeftMineSize() {
-		// TODO Auto-generated method stub
 		return leftMineSize;
 	}
 
 	@Override
 	public int getRightMineSize() {
-		// TODO Auto-generated method stub
 		return rightMineSize;
 	}
 
@@ -1032,6 +1064,26 @@ public class DSparseGrid2DYLB extends DSparseGrid2D
 		return globals;
 	}
 
+	@Override
+	public void trace(String param)
+	{
+		if (param.equals("-GRAPHICS"))
+			isTracingGraphics = true;
+		else
+			tracingFields.add(param);
+	}
+
+	@Override
+	public void untrace(String param)
+	{
+		if (param.equals("-GRAPHICS"))
+			isTracingGraphics = false;
+		else
+		{
+			tracingFields.remove(param);
+			currentStats.remove(param);
+		}
+	}
 	
 	
 }
