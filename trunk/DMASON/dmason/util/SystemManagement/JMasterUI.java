@@ -17,14 +17,11 @@
 
 package dmason.util.SystemManagement;
 
-import it.sauronsoftware.ftp4j.FTPClient;
-
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.HeadlessException;
-import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
