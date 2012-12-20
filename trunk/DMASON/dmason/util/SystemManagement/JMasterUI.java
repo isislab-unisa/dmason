@@ -2332,7 +2332,11 @@ public class JMasterUI extends JFrame  implements Observer{
 			
 		if(MODE == DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE && rows != columns && (Integer)WIDTH % 3*rows!=0)
 			errors.add("Width and height are not divisible by 3 * sqrt(rows*columns) or rows is not equal to columns");
-				
+				if((Math.floor((Integer)WIDTH/columns)<2*maxDistance+1))
+			errors.add("MAX_DISTANCE too large for width of regions");
+		
+		if((Math.floor((Integer)HEIGHT/rows)<2*maxDistance+1))
+			errors.add("MAX_DISTANCE too large for height of regions");
 		/*if(logger.getLevel()!=Level.OFF){
 		file = new FileAppender();
 		  file.setName("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT);
