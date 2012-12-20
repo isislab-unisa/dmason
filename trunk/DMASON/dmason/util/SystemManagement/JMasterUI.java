@@ -2333,7 +2333,9 @@ public class JMasterUI extends JFrame  implements Observer{
 			else
 				MODE = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
 			
-		if(MODE == DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE && rows != columns && (Integer)WIDTH % 3*rows!=0)
+		
+	
+		if(MODE == DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE && (rows != columns || (Integer)WIDTH % 3*columns!=0 || (Integer)HEIGHT % 3*rows != 0 || maxDistance >= ((Integer)WIDTH/columns) / 3 / 2))
 			errors.add("Width and height are not divisible by 3 * sqrt(rows*columns) or rows is not equal to columns");
 				
 		if((Math.floor((Integer)WIDTH/columns)<2*maxDistance+1))
