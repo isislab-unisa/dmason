@@ -2319,6 +2319,9 @@ public class JMasterUI extends JFrame  implements Observer{
 		if(rows==0 || columns==0)
 			errors.add("Rows or Columns must not be equals to 0");
 		
+		if(rows == 1 && columns == 1)
+			errors.add("Both Rows and Columns must not be equals to 1");
+		
 		if(rows==1)
 			if(!jCheckBoxLoadBalancing.isSelected())
 				MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
@@ -2332,10 +2335,10 @@ public class JMasterUI extends JFrame  implements Observer{
 			
 		if(MODE == DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE && rows != columns && (Integer)WIDTH % 3*rows!=0)
 			errors.add("Width and height are not divisible by 3 * sqrt(rows*columns) or rows is not equal to columns");
-				if((Math.floor((Integer)WIDTH/columns)<2*maxDistance+1))
+				
+		if((Math.floor((Integer)WIDTH/columns)<2*maxDistance+1))
 			errors.add("MAX_DISTANCE too large for width of regions");
-		
-		if((Math.floor((Integer)HEIGHT/rows)<2*maxDistance+1))
+		else if((Math.floor((Integer)HEIGHT/rows)<2*maxDistance+1))
 			errors.add("MAX_DISTANCE too large for height of regions");
 		/*if(logger.getLevel()!=Level.OFF){
 		file = new FileAppender();
