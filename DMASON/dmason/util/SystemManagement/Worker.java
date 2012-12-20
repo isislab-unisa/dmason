@@ -434,9 +434,7 @@ public class Worker extends Observable
 			{
 				
 				URL url = Updater.getSimulationJar(data);
-				
 			    obj = getSimulationInstance(args_gen, url,gui);
-				
 				
 			} catch (Exception e) {
 				throw new RuntimeException("Exception occurred while trying to construct the simulation " + simClass + "\n" + e);			

@@ -17,11 +17,14 @@
 
 package dmason.util.SystemManagement;
 
+import it.sauronsoftware.ftp4j.FTPClient;
+
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.HeadlessException;
+import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -138,14 +141,22 @@ import sim.display.Console;
 import dmason.annotation.Thin;
 import dmason.annotation.batch;
 import dmason.batch.BatchExecutor;
+import dmason.batch.BatchWizard.DistributionType;
 import dmason.batch.data.Batch;
 import dmason.batch.data.EntryParam;
+import dmason.batch.data.EntryWorkerScore;
 import dmason.batch.data.GeneralParam;
 import dmason.batch.data.Param;
+import dmason.batch.data.ParamDistribution;
+import dmason.batch.data.ParamDistributionExponential;
+import dmason.batch.data.ParamDistributionNormal;
+import dmason.batch.data.ParamDistributionUniform;
 import dmason.batch.data.ParamFixed;
+import dmason.batch.data.ParamList;
 import dmason.batch.data.ParamRange;
 import dmason.batch.data.EntryParam.ParamType;
 import dmason.sim.field.grid.DSparseGrid2DFactory;
+import dmason.sim.util.StdRandom;
 import dmason.util.Util;
 import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
@@ -194,6 +205,7 @@ public class JMasterUI extends JFrame  implements Observer{
 	private static String SEPARATOR;
 	private boolean isHorizontal=true;
 	private WorkerUpdater wu;
+	List<EntryWorkerScore<Integer, String>> scoreList = new ArrayList<EntryWorkerScore<Integer,String>>();
 	
 	
 	private JMenuItem menuNewSim;
@@ -1641,7 +1653,7 @@ public class JMasterUI extends JFrame  implements Observer{
 					public void actionPerformed(ActionEvent e) {
 						
 						try {
-							if(validateXML(configFile, new File(xsdFilename)))
+							if(/*validateXML(configFile, new File(xsdFilename))*/true)
 							 {
 								 System.out.println("valid");
 								 
@@ -1662,8 +1674,10 @@ public class JMasterUI extends JFrame  implements Observer{
 											testQueue.offer(test);
 										 
 										 try {
-											List<List<String>> workersPartition = Util.chopped(master.getTopicList(), batch.getNeededWorkers());
+											
+											 List<List<EntryWorkerScore<Integer, String>>> workersPartition = Util.chopped(scoreList, batch.getNeededWorkers());
 										
+											
 											System.out.println(workersPartition.toString());
 											
 											testCount.set(0);
@@ -1678,11 +1692,11 @@ public class JMasterUI extends JFrame  implements Observer{
 											batchLogger.debug("Started at: "+System.currentTimeMillis());
 											int i = 1;
 											BatchExecutor batchExec;
-											for (List<String> workers : workersPartition)
+											for (List<EntryWorkerScore<Integer, String>> workers : workersPartition)
 											{
 												 try {
 													 	
-														batchExec = new BatchExecutor(batch.getSimulationName(),testQueue,master,connection,root.getChildCount(),getFPTAddress(),workers,"Batch"+i,1);
+														batchExec = new BatchExecutor(batch.getSimulationName(),batch.isBalanced(),testQueue,master,connection,root.getChildCount(),getFPTAddress(),workers,"Batch"+i,1);
 													
 														batchExec.getObservable().addObserver(JMasterUI.this);
 														batchExec.start();
@@ -1754,10 +1768,10 @@ public class JMasterUI extends JFrame  implements Observer{
 						} catch (HeadlessException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
-						} catch (IOException e1) {
+						} /*catch (IOException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
-						}
+						}*/
 					}
 				});
 				
@@ -2318,12 +2332,7 @@ public class JMasterUI extends JFrame  implements Observer{
 			
 		if(MODE == DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE && rows != columns && (Integer)WIDTH % 3*rows!=0)
 			errors.add("Width and height are not divisible by 3 * sqrt(rows*columns) or rows is not equal to columns");
-		
-		if((Math.floor((Integer)WIDTH/columns)<2*maxDistance+1))
-			errors.add("MAX_DISTANCE too large for width of regions");
-		
-		if((Math.floor((Integer)HEIGHT/rows)<2*maxDistance+1))
-			errors.add("MAX_DISTANCE too large for height of regions");
+				
 		/*if(logger.getLevel()!=Level.OFF){
 		file = new FileAppender();
 		  file.setName("test_cells_"+numRegions+"_agents_"+numAgents+"_width_"+WIDTH+"_height_"+HEIGHT);
@@ -3062,6 +3071,8 @@ public class JMasterUI extends JFrame  implements Observer{
 		{
 			System.out.println("null");
 		}
+		
+		scoreList.add(new EntryWorkerScore<Integer, String>(getPerformanceScore(workerInfo), workerInfo.getTopic()));
 		if(totPeers == peers.size())
 		{	
 			checkUpdate();
@@ -3074,6 +3085,15 @@ public class JMasterUI extends JFrame  implements Observer{
 				nextTest();
 			}
 		}
+	}
+	
+	private int getPerformanceScore(PeerStatusInfo workerInfo) {
+		double cpuFactor = 1;
+		double ramFactor = 1;
+		System.out.println("#core: "+workerInfo.getNum_core());
+		System.out.println("Ram: "+workerInfo.getMemory());
+		System.out.println("Memroy: "+(workerInfo.getMemory()/(1024*1024)));
+		return  (int) ((workerInfo.getNum_core()*cpuFactor) + ((workerInfo.getMemory()/(1024*1024))/1000)* ramFactor);
 	}
 	
 	private static Set<List<EntryParam<String, Object>>> generateTestsFrom(Batch batch)
@@ -3116,6 +3136,94 @@ public class JMasterUI extends JFrame  implements Observer{
 				}
 				totalTests *= s.size();
 			}
+			if(p.getMode().equals("list"))
+			{
+				ParamList pr = (ParamList) p;
+				s = new HashSet<EntryParam<String, Object>>();
+				
+				for (String item : pr.getValues()) {
+					if(pr.getType().equals("double"))
+						s.add(new EntryParam<String, Object>(pr.getName(),Double.parseDouble(item),ParamType.SIMULATION));
+					if(pr.getType().equals("int"))
+						s.add(new EntryParam<String, Object>(pr.getName(),Integer.parseInt(item),ParamType.SIMULATION));
+					if(pr.getType().equals("long"))
+						s.add(new EntryParam<String, Object>(pr.getName(),Long.parseLong(item),ParamType.SIMULATION));
+				}
+				
+				totalTests *= s.size();
+			}
+			if(p.getMode().equals("distribution"))
+			{
+				ParamDistribution pd = (ParamDistribution) p;
+				s = new HashSet<EntryParam<String, Object>>();
+				if(pd.getDistributionName().equals(DistributionType.uniform.name()))
+				{
+					ParamDistributionUniform pu = (ParamDistributionUniform) p;
+					for (int i = 0; i < pu.getNumberOfValues(); i++) {
+						if(pu.getType().equals("double"))
+						{
+							double value = StdRandom.uniform(Double.parseDouble(pu.getA()), Double.parseDouble(pu.getB()));
+							s.add(new EntryParam<String, Object>(pu.getName(),value,ParamType.SIMULATION));
+						}
+						if(pu.getType().equals("int"))
+						{
+							int value = (int) Math.round(StdRandom.uniform(Double.parseDouble(pu.getA()), Double.parseDouble(pu.getB())));
+							s.add(new EntryParam<String, Object>(pu.getName(),value,ParamType.SIMULATION));
+						}
+						if(pu.getType().equals("long"))
+						{
+							long value = Math.round(StdRandom.uniform(Double.parseDouble(pu.getA()), Double.parseDouble(pu.getB())));
+							s.add(new EntryParam<String, Object>(pu.getName(),value,ParamType.SIMULATION));
+						}
+							
+						
+					}
+				}
+				if(pd.getDistributionName().equals(DistributionType.exponential.name()))
+				{
+					ParamDistributionExponential pe = (ParamDistributionExponential) p;
+					for (int i = 0; i < pe.getNumberOfValues(); i++) {
+						if(pe.getType().equals("double"))
+						{
+							double value = StdRandom.exponential(Double.parseDouble(pe.getLambda()));
+							s.add(new EntryParam<String, Object>(pe.getName(),value,ParamType.SIMULATION));
+						}
+						if(pe.getType().equals("int"))
+						{
+							int value = (int) Math.round(StdRandom.exponential(Double.parseDouble(pe.getLambda())));
+							s.add(new EntryParam<String, Object>(pe.getName(),value,ParamType.SIMULATION));
+						}
+						if(pe.getType().equals("long"))
+						{
+							long value = Math.round(StdRandom.exponential(Double.parseDouble(pe.getLambda())));
+							s.add(new EntryParam<String, Object>(pe.getName(),value,ParamType.SIMULATION));
+						}
+					}
+				}
+				if(pd.getDistributionName().equals(DistributionType.normal.name()))
+				{
+					ParamDistributionNormal pn = (ParamDistributionNormal) p;
+					System.out.println("Name: "+pn.getName()+" #Value: "+pn.getNumberOfValues());
+					for (int i = 0; i < pn.getNumberOfValues(); i++) {
+						if(pn.getType().equals("double"))
+						{
+							double value = StdRandom.gaussian(Double.parseDouble(pn.getMean()), Double.parseDouble(pn.getStdDev()));
+							s.add(new EntryParam<String, Object>(pn.getName(),value,ParamType.SIMULATION));
+						}
+						if(pn.getType().equals("int"))
+						{
+							int value = (int) Math.round(StdRandom.gaussian(Double.parseDouble(pn.getMean()), Double.parseDouble(pn.getStdDev())));
+							s.add(new EntryParam<String, Object>(pn.getName(),value,ParamType.SIMULATION));
+						}
+						if(pn.getType().equals("long"))
+						{
+							long value = Math.round(StdRandom.gaussian(Double.parseDouble(pn.getMean()), Double.parseDouble(pn.getStdDev())));
+							s.add(new EntryParam<String, Object>(pn.getName(),value,ParamType.SIMULATION));
+						}
+					}
+				}
+				totalTests *= s.size();
+			}
 			if(s != null)
 				sets.add(s);
 		}
@@ -3155,6 +3263,95 @@ public class JMasterUI extends JFrame  implements Observer{
 				}
 				totalTests *= s.size();
 			}
+			if(p.getMode().equals("list"))
+			{
+				ParamList pr = (ParamList) p;
+				s = new HashSet<EntryParam<String, Object>>();
+				
+				for (String item : pr.getValues()) {
+					if(pr.getType().equals("double"))
+						s.add(new EntryParam<String, Object>(pr.getName(),Double.parseDouble(item),ParamType.GENERAL));
+					if(pr.getType().equals("int"))
+						s.add(new EntryParam<String, Object>(pr.getName(),Integer.parseInt(item),ParamType.GENERAL));
+					if(pr.getType().equals("long"))
+						s.add(new EntryParam<String, Object>(pr.getName(),Long.parseLong(item),ParamType.GENERAL));
+				}
+				
+				totalTests *= s.size();
+			}
+			if(p.getMode().equals("distribution"))
+			{
+				ParamDistribution pd = (ParamDistribution) p;
+				s = new HashSet<EntryParam<String, Object>>();
+				if(pd.getDistributionName().equals(DistributionType.uniform.name()))
+				{
+					ParamDistributionUniform pu = (ParamDistributionUniform) p;
+					for (int i = 0; i < pu.getNumberOfValues(); i++) {
+						if(pu.getType().equals("double"))
+						{
+							double value = StdRandom.uniform(Double.parseDouble(pu.getA()), Double.parseDouble(pu.getB()));
+							s.add(new EntryParam<String, Object>(pu.getName(),value,ParamType.GENERAL));
+						}
+						if(pu.getType().equals("int"))
+						{
+							int value = (int) Math.round(StdRandom.uniform(Double.parseDouble(pu.getA()), Double.parseDouble(pu.getB())));
+							s.add(new EntryParam<String, Object>(pu.getName(),value,ParamType.GENERAL));
+						}
+						if(pu.getType().equals("long"))
+						{
+							long value = Math.round(StdRandom.uniform(Double.parseDouble(pu.getA()), Double.parseDouble(pu.getB())));
+							s.add(new EntryParam<String, Object>(pu.getName(),value,ParamType.GENERAL));
+						}
+							
+						
+					}
+				}
+				if(pd.getDistributionName().equals(DistributionType.exponential.name()))
+				{
+					ParamDistributionExponential pe = (ParamDistributionExponential) p;
+					for (int i = 0; i < pe.getNumberOfValues(); i++) {
+						if(pe.getType().equals("double"))
+						{
+							double value = StdRandom.exponential(Double.parseDouble(pe.getLambda()));
+							s.add(new EntryParam<String, Object>(pe.getName(),value,ParamType.GENERAL));
+						}
+						if(pe.getType().equals("int"))
+						{
+							int value = (int) Math.round(StdRandom.exponential(Double.parseDouble(pe.getLambda())));
+							s.add(new EntryParam<String, Object>(pe.getName(),value,ParamType.GENERAL));
+						}
+						if(pe.getType().equals("long"))
+						{
+							long value = Math.round(StdRandom.exponential(Double.parseDouble(pe.getLambda())));
+							s.add(new EntryParam<String, Object>(pe.getName(),value,ParamType.GENERAL));
+						}
+					}
+				}
+				if(pd.getDistributionName().equals(DistributionType.normal.name()))
+				{
+					ParamDistributionNormal pn = (ParamDistributionNormal) p;
+					for (int i = 0; i < pn.getNumberOfValues(); i++) {
+						if(pn.getType().equals("double"))
+						{
+							double value = StdRandom.gaussian(Double.parseDouble(pn.getMean()), Double.parseDouble(pn.getStdDev()));
+							s.add(new EntryParam<String, Object>(pn.getName(),value,ParamType.GENERAL));
+						}
+						if(pn.getType().equals("double"))
+						{
+							int value = (int) Math.round(StdRandom.gaussian(Double.parseDouble(pn.getMean()), Double.parseDouble(pn.getStdDev())));
+							s.add(new EntryParam<String, Object>(pn.getName(),value,ParamType.GENERAL));
+						}
+						if(pn.getType().equals("double"))
+						{
+							long value = Math.round(StdRandom.gaussian(Double.parseDouble(pn.getMean()), Double.parseDouble(pn.getStdDev())));
+							s.add(new EntryParam<String, Object>(pn.getName(),value,ParamType.GENERAL));
+						}
+					}
+				}
+				
+				totalTests *= s.size();
+			}
+			
 			if(s != null)
 				sets.add(s);
 		}
@@ -3178,6 +3375,10 @@ public class JMasterUI extends JFrame  implements Observer{
 		xstream.processAnnotations(Param.class);
 		xstream.processAnnotations(ParamRange.class);
 		xstream.processAnnotations(ParamFixed.class);
+		xstream.processAnnotations(ParamDistributionExponential.class);
+		xstream.processAnnotations(ParamDistributionNormal.class);
+		xstream.processAnnotations(ParamDistributionUniform.class);
+		xstream.processAnnotations(ParamList.class);
 		
 		try {
 			return (Batch)xstream.fromXML(new FileReader(configFile.getAbsolutePath()));

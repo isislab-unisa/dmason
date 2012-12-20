@@ -26,20 +26,37 @@ public class Batch
 {
 	
 	private String simulationName;
+	private int neededWorkers;
+	private boolean isBalanced;
 	private ArrayList<Param> simulationParams;
 	private ArrayList<Param> generalParams;
-	private int neededWorkers;
+	
 	
 	
 	public Batch(ArrayList<Param> simulationParams,
-			ArrayList<Param> generalParams, String simName) {
+			ArrayList<Param> generalParams, String simName, int neededWokers, boolean balanced) {
 		super();
 		this.simulationParams = simulationParams;
 		this.generalParams = generalParams;
 		this.simulationName = simName;
+		this.neededWorkers = neededWokers;
+		this.isBalanced = balanced;
 	}
 
 	
+	
+	public boolean isBalanced() {
+		return isBalanced;
+	}
+
+
+
+	public void setBalanced(boolean isBalanced) {
+		this.isBalanced = isBalanced;
+	}
+
+
+
 	public int getNeededWorkers() {
 		return neededWorkers;
 	}

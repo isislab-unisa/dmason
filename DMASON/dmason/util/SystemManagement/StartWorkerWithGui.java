@@ -16,6 +16,8 @@
 */
 
 package dmason.util.SystemManagement;
+
+
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,6 +30,9 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketAddress;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.text.DateFormat;
@@ -52,7 +57,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
+import com.google.gson.Gson;
+
 import dmason.util.connection.Address;
+import dmason.util.connection.BeaconMessage;
+import dmason.util.connection.BeaconMessageListener;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.exception.NoDigestFoundException;
 
@@ -65,7 +74,9 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 {	
 	private static final long serialVersionUID = 1L;
 	
-	private static final String version = "2.0";
+	private static final String version = "1.0";
+
+	
 	
 	public boolean START = false;
 	
@@ -111,6 +122,10 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 	{
 		initComponents();
 
+		BeaconMessageListener  beaconListener = new BeaconMessageListener(cmbIp, cmbPort);
+		
+		beaconListener.start();
+		
 		connection = new ConnectionNFieldsWithActiveMQAPI();
 
 		connection.addObserver(this);
@@ -389,6 +404,10 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 		
 	}*/
 
+	
+	
+	
+	
 	private void btnConnectOnClick(ActionEvent e) {
 		
 		connect();

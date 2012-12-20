@@ -25,6 +25,7 @@ public class PeerStatusInfo implements Serializable{
 	private String oS="";
 	private String arch="";;
 	private int num_core;
+	private long memory;
 	private String address;
 	private String hostName;
 	
@@ -37,16 +38,25 @@ public class PeerStatusInfo implements Serializable{
 		super();
 	}
 	
-	public PeerStatusInfo(String oS, String arch, int num_core, String address,String hostName,String version) {
+	public PeerStatusInfo(String oS, String arch, int num_core,long memory, String address,String hostName,String version) {
 		super();
 		this.hostName=hostName;
 		this.oS = oS;
 		this.arch = arch;
 		this.num_core = num_core;
 		this.address = address;
+		this.memory = memory;
 	}
 
 	
+	public long getMemory() {
+		return memory;
+	}
+
+	public void setMemory(long memory) {
+		this.memory = memory;
+	}
+
 	public String getTopic() {
 		return topic;
 	}
