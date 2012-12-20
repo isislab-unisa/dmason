@@ -28,8 +28,10 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import dmason.batch.data.EntryParam;
 import dmason.batch.data.EntryParam.ParamType;
+import dmason.batch.data.EntryWorkerScore;
 import dmason.batch.data.GeneralParam;
 import dmason.batch.data.TestParam;
+import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.util.SystemManagement.EntryVal;
 import dmason.util.SystemManagement.MasterDaemonStarter;
 import dmason.util.connection.Address;
@@ -60,9 +62,12 @@ public class BatchExecutor extends Thread
 	
 	private List<String> myWorkers;
 	private static AtomicInteger testCounter = new AtomicInteger(1);
-	private int currentTest;	
+	private int currentTest;
+	private boolean isBalanced;
+	private int mode;
+	private GeneralParam genP;	
 
-	public BatchExecutor(String simName, ConcurrentLinkedQueue<List<EntryParam<String, Object>>> testQueue, MasterDaemonStarter master, ConnectionNFieldsWithActiveMQAPI con,int NumPeers,Address ftpAddress, List<String> workers,String prefix, int init) 
+	public BatchExecutor(String simName, boolean isBalanced, ConcurrentLinkedQueue<List<EntryParam<String, Object>>> testQueue, MasterDaemonStarter master, ConnectionNFieldsWithActiveMQAPI con,int NumPeers,Address ftpAddress, List<EntryWorkerScore<Integer, String>> workers,String prefix, int init) 
 	{
 		super();
 		this.testQueue = testQueue;
@@ -72,8 +77,13 @@ public class BatchExecutor extends Thread
 		this.connection = con;
 		this.numPeers = workers.size();
 		this.fptAddress =  ftpAddress;
-		this.myWorkers = workers;
+		List<String> workersList = new ArrayList<String>();
+		for (EntryWorkerScore<Integer, String> entryWorkerScore : workers) {
+			workersList.add(entryWorkerScore.getTopic());
+		}
+		this.myWorkers = workersList;
 		this.myTopic = prefix;
+		this.isBalanced = isBalanced;
 		
 		currentTest = this.testCounter.getAndIncrement();
 		
@@ -98,11 +108,18 @@ public class BatchExecutor extends Thread
 			
 			TestParam testParam = preProcess(testQueue.poll());
 
-			HashMap<String, EntryVal<Integer, Boolean>> config = assignRegions(testParam.getGenParams().getRows()*testParam.getGenParams().getRows(),numPeers);
+			genP = testParam.getGenParams();
+			HashMap<String, EntryVal<Integer, Boolean>> config = assignRegions(genP.getRows()*genP.getColumns(),numPeers);
 			System.out.println("oooooo: "+config.toString());
 			
+			int mode = getMode(genP.getRows(),genP.getColumns());
+			if(mode != -1)
+				genP.setMode(mode);
+			else
+				break;
+			
 			System.out.println("CURRENT TEST: "+currentTest);
-			master.startBatch(testParam.getGenParams(), config, simulationName , testParam.getSimParams(),fptAddress,myTopic,currentTest);
+			master.startBatch(genP, config, simulationName , testParam.getSimParams(),fptAddress,myTopic,currentTest);
 
 			System.out.println("Wait until the workes are ready");
 			while(!isCanStartAnother())
@@ -211,6 +228,29 @@ public class BatchExecutor extends Thread
 
 	public Observable getObservable() {return obs;}
 
+	private int getMode(int rows, int columns)
+	{
+		if(rows==0 || columns==0)
+			//errors.add("Rows or Columns must not be equals to 0");
+			return -1;
+		if(rows==1)
+			if(!isBalanced)
+				mode = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
+			else
+				mode = DSparseGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE;
+		else
+			if(!isBalanced)
+				mode = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
+			
+				mode = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
+			
+		if(mode == DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE && rows != columns && (Integer)genP.getWidth() % 3*rows != 0)
+		//	errors.add("Width and height are not divisible by 3 * sqrt(rows*columns) or rows is not equal to columns");
+			return -1;
+		
+		return mode;
+	}
+	
 	private HashMap<String, EntryVal<Integer, Boolean>> assignRegions(int numRegions, int numPeers) {
 		HashMap<String,EntryVal<Integer,Boolean>> config = new HashMap<String, EntryVal<Integer,Boolean>>();
 		

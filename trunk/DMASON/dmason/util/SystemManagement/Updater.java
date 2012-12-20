@@ -264,14 +264,13 @@ public class Updater
 	public static URL getSimulationJar(StartUpData data)
 	{
 		setSeparator();
-
 		FTPIP = data.getFTPAddress().getIPaddress();
 		FTPPORT = data.getFTPAddress().getPort();
 
 		//System.out.println("FTP IP: "+FTPIP+"FTP PORT: "+FTPPORT);
 		
 		downloadJar(data.getJarName(),"sim");
-
+		
 		File f = new File(DOWNLOADED_JAR_PATH+SEPARATOR+data.getJarName());
 		
 		//System.out.println("file:"+File.separator+f.getAbsolutePath());

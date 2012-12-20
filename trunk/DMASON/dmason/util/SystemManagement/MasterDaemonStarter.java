@@ -440,10 +440,12 @@ public class MasterDaemonStarter implements Observer
 
 	public void startBatch(GeneralParam params, HashMap<String, EntryVal<Integer, Boolean>> config, String selSim, List<EntryParam<String, Object>> simParam, Address ftpAddress, String topicPrefix, int testCounter)
 	{
-		//this.numRegions = params.getNumRegions();
+		this.numRegions = params.getRows() * params.getColumns();
 		this.numAgents = params.getNumAgents();
 		this.width = params.getWidth();
 		this.height = params.getHeight();
+		this.rows = params.getRows();
+		this.columns = params.getColumns();
 		this.fieldMode = params.getMode();
 		this.jumpDistance = params.getMaxDistance();
 		String ip = this.address.getIPaddress();
@@ -491,8 +493,9 @@ public class MasterDaemonStarter implements Observer
 		}
 	
 	
-		if (params.getMode() == DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE)
+		if (fieldMode == DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE || fieldMode == DSparseGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
 		{
+			
 			int cnt = 0;
 			// Repeat for each worker
 			for (String workerTopic : config.keySet())
@@ -548,6 +551,141 @@ public class MasterDaemonStarter implements Observer
 			}
 	
 			//gui.setSystemSettingsEnabled(false);
+		} else if(fieldMode == DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE)
+		{
+			// For each region...
+			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
+			for (int i=0;i<rows;i++){
+				for (int k=0;k<columns;k++){
+					StartUpData data = new StartUpData();
+					// Set step on the central region
+					if (i==k /*&& i == Math.sqrt(numRegions) / 2*/)
+						data.setStep(true);
+					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
+					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getMaxStep()); 
+					genParam.setI(i);
+					genParam.setJ(k);
+					genParam.setIp(ip);
+					genParam.setPort(this.address.getPort());
+					data.setParam(genParam);
+					data.setSimParam(simParam);
+					data.setUploadDir(uploadDir);
+					data.setTopicPrefix(topicPrefix);
+					data.setFTPAddress(ftpAddress);
+					defs.add(data);
+					data.graphic=false;
+				}
+			}
+			
+			int index=0;
+			for (String workerTopic : config.keySet())
+			{
+				ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
+				int fieldsInWorker = config.get(workerTopic).getNum();
+				for(int i=0;i<fieldsInWorker;i++)
+				{
+					
+					defs.get(index).graphic = config.get(workerTopic).isFlagTrue();
+					if(config.get(workerTopic).isFlagTrue())
+					{
+						if(!isJarSimulation)
+							defs.get(index).setDef(selClassUI);
+						else
+						{	
+							defs.get(index).setJarName(selSim);
+							//defs.get(index).setFTPAddress(addr);
+						}
+						//defs.get(index).setDef(selClassUI);
+					}
+					else
+					{
+						if(!isJarSimulation)
+							defs.get(index).setDef(selClass);
+						else
+						{	
+							defs.get(index).setJarName(selSim);
+							//defs.get(index).setFTPAddress(addr);
+						}
+						//defs.get(index).setDef(selClass);
+					}
+					classes.add(defs.get(index));					
+					index++;
+				}
+	
+				connection.publishToTopic(classes, workerTopic, "classes");
+				/*if(connection.publishToTopic(classes, workerTopic, "classes")==true)
+				{
+					gui.setSystemSettingsEnabled(false);
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(null,"Setting failed !");
+				}*/
+			}
+		}else if (fieldMode==DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE){
+			// For each region...
+			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
+			for (int i=0;i<rows;i++){
+				for (int k=0;k<columns;k++){
+					StartUpData data = new StartUpData();
+					// Set step on the central region
+					if (i==k)
+						data.setStep(true);
+					//data.setDef(DAntsForage.class);
+					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE});
+					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getMaxStep()); 
+					genParam.setI(i);
+					genParam.setJ(k);
+					genParam.setIp(ip);
+					genParam.setPort(this.address.getPort());
+					data.setParam(genParam);
+					data.setSimParam(simParam);
+					data.setUploadDir(uploadDir);
+					data.setTopicPrefix(topicPrefix);
+					data.setFTPAddress(ftpAddress);
+					defs.add(data);
+					data.graphic=false;
+				}
+			}
+			int index=0;
+			for (String workerTopic : config.keySet())
+			{
+				ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
+				int fieldsInWorker = config.get(workerTopic).getNum();
+				for(int i=0;i<fieldsInWorker;i++)
+				{
+					defs.get(index).graphic = config.get(workerTopic).isFlagTrue();
+					if(config.get(workerTopic).isFlagTrue())
+					{
+						//defs.get(index).setDef(selClassUI);
+						if(!isJarSimulation)
+							defs.get(index).setDef(selClassUI);
+						else
+						{	
+							defs.get(index).setJarName(selSim);
+						}
+					}
+					else
+					{
+						//defs.get(index).setDef(selClass);
+						
+						if(!isJarSimulation)
+							defs.get(index).setDef(selClass);
+						else
+						{	
+							defs.get(index).setJarName(selSim);
+						}
+					}
+					classes.add(defs.get(index));					
+					index++;
+				}
+	
+				try{
+					connection.publishToTopic(classes,workerTopic,"classes");	
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	
