@@ -307,24 +307,32 @@ public abstract class DistributedState<E> extends SimState {
 
 			try {
 
-				connection.createTopic(topicPrefix+TYPE + "R",
-						((DistributedMultiSchedule) super.schedule).fields
-								.size());
-				connection.createTopic(topicPrefix+TYPE + "L",
-						((DistributedMultiSchedule) super.schedule).fields
-								.size());
+				if(TYPE.pos_j < columns){
+					connection.createTopic(topicPrefix+TYPE + "R",
+							((DistributedMultiSchedule) super.schedule).fields
+									.size());
+					
+					connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "L");
+					UpdaterThreadForListener u2 = new UpdaterThreadForListener(
+							connection, topicPrefix+TYPE.getNeighbourRight() + "L",
+							((DistributedMultiSchedule) schedule).fields, listeners);
+					u2.start();
+					
+				}
+				if(TYPE.pos_j > 0){
+					connection.createTopic(topicPrefix+TYPE + "L",
+							((DistributedMultiSchedule) super.schedule).fields
+									.size());
+					
+					connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "R");
+					UpdaterThreadForListener u1 = new UpdaterThreadForListener(
+							connection, topicPrefix+TYPE.getNeighbourLeft() + "R",
+							((DistributedMultiSchedule) schedule).fields, listeners);
+					u1.start();
+				}
+				
 
-				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "R");
-				UpdaterThreadForListener u1 = new UpdaterThreadForListener(
-						connection, topicPrefix+TYPE.getNeighbourLeft() + "R",
-						((DistributedMultiSchedule) schedule).fields, listeners);
-				u1.start();
-
-				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "L");
-				UpdaterThreadForListener u2 = new UpdaterThreadForListener(
-						connection, topicPrefix+TYPE.getNeighbourRight() + "L",
-						((DistributedMultiSchedule) schedule).fields, listeners);
-				u2.start();
+			
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -335,84 +343,100 @@ public abstract class DistributedState<E> extends SimState {
 
 			try {
 
-				connection.createTopic(topicPrefix+TYPE + "L",
-						((DistributedMultiSchedule) super.schedule).fields
-								.size());
-				connection.createTopic(topicPrefix+TYPE + "R",
-						((DistributedMultiSchedule) super.schedule).fields
-								.size());
-				connection.createTopic(topicPrefix+TYPE + "U",
-						((DistributedMultiSchedule) super.schedule).fields
-								.size());
-				connection.createTopic(topicPrefix+TYPE + "D",
-						((DistributedMultiSchedule) super.schedule).fields
-								.size());
-				connection.createTopic(topicPrefix+TYPE + "CDDR",
-						((DistributedMultiSchedule) super.schedule).fields
-								.size());
-				connection.createTopic(topicPrefix+TYPE + "CUDR",
-						((DistributedMultiSchedule) super.schedule).fields
-								.size());
-				connection.createTopic(topicPrefix+TYPE + "CDDL",
-						((DistributedMultiSchedule) super.schedule).fields
-								.size());
-				connection.createTopic(topicPrefix+TYPE + "CUDL",
-						((DistributedMultiSchedule) super.schedule).fields
-								.size());
+				if(TYPE.pos_j > 0)
+					connection.createTopic(topicPrefix+TYPE + "L",
+							((DistributedMultiSchedule) super.schedule).fields
+									.size());
+				if(TYPE.pos_j < columns)
+					connection.createTopic(topicPrefix+TYPE + "R",
+							((DistributedMultiSchedule) super.schedule).fields
+									.size());
+				if(TYPE.pos_i > 0)
+					connection.createTopic(topicPrefix+TYPE + "U",
+							((DistributedMultiSchedule) super.schedule).fields
+									.size());
+				if(TYPE.pos_i < rows)
+					connection.createTopic(topicPrefix+TYPE + "D",
+							((DistributedMultiSchedule) super.schedule).fields
+									.size());
+				if(TYPE.pos_i < rows && TYPE.pos_j < columns)
+					connection.createTopic(topicPrefix+TYPE + "CDDR",
+							((DistributedMultiSchedule) super.schedule).fields
+									.size());
+				if(TYPE.pos_i > 0 && TYPE.pos_j < columns)
+					connection.createTopic(topicPrefix+TYPE + "CUDR",
+							((DistributedMultiSchedule) super.schedule).fields
+									.size());
+				if(TYPE.pos_i < rows && TYPE.pos_j > 0)
+					connection.createTopic(topicPrefix+TYPE + "CDDL",
+							((DistributedMultiSchedule) super.schedule).fields
+									.size());
+				if(TYPE.pos_i > 0 && TYPE.pos_j > 0)
+					connection.createTopic(topicPrefix+TYPE + "CUDL",
+							((DistributedMultiSchedule) super.schedule).fields
+									.size());
+				
+				if(TYPE.pos_i > 0 && TYPE.pos_j > 0){
+					connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagLeftUp()
+							+ "CDDR");
+					UpdaterThreadForListener u1 = new UpdaterThreadForListener(
+							connection, topicPrefix+TYPE.getNeighbourDiagLeftUp() + "CDDR",
+							((DistributedMultiSchedule) schedule).fields, listeners);
+					u1.start();
+				}
+				if(TYPE.pos_i > 0 && TYPE.pos_j < columns){
+					connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagRightUp()
+							+ "CDDL");
+					UpdaterThreadForListener u2 = new UpdaterThreadForListener(
+							connection, topicPrefix+TYPE.getNeighbourDiagRightUp() + "CDDL",
+							((DistributedMultiSchedule) schedule).fields, listeners);
+					u2.start();
+				}
 
-				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagLeftUp()
-						+ "CDDR");
-				UpdaterThreadForListener u1 = new UpdaterThreadForListener(
-						connection, topicPrefix+TYPE.getNeighbourDiagLeftUp() + "CDDR",
-						((DistributedMultiSchedule) schedule).fields, listeners);
-				u1.start();
-
-				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagRightUp()
-						+ "CDDL");
-				UpdaterThreadForListener u2 = new UpdaterThreadForListener(
-						connection, topicPrefix+TYPE.getNeighbourDiagRightUp() + "CDDL",
-						((DistributedMultiSchedule) schedule).fields, listeners);
-				u2.start();
-
-				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagLeftDown()
-						+ "CUDR");
-				UpdaterThreadForListener u3 = new UpdaterThreadForListener(
-						connection, topicPrefix+TYPE.getNeighbourDiagLeftDown() + "CUDR",
-						((DistributedMultiSchedule) schedule).fields, listeners);
-				u3.start();
-
-				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagRightDown()
-						+ "CUDL");
-				UpdaterThreadForListener u4 = new UpdaterThreadForListener(
-						connection, topicPrefix+TYPE.getNeighbourDiagRightDown() + "CUDL",
-						((DistributedMultiSchedule) schedule).fields, listeners);
-				u4.start();
-
-				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "R");
-				UpdaterThreadForListener u5 = new UpdaterThreadForListener(
-						connection, topicPrefix+TYPE.getNeighbourLeft() + "R",
-						((DistributedMultiSchedule) schedule).fields, listeners);
-				u5.start();
-
-				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "L");
-				UpdaterThreadForListener u6 = new UpdaterThreadForListener(
-						connection, topicPrefix+TYPE.getNeighbourRight() + "L",
-						((DistributedMultiSchedule) schedule).fields, listeners);
-				u6.start();
-
-				connection.subscribeToTopic(topicPrefix+(TYPE.getNeighbourUp() + "D"));
-				UpdaterThreadForListener u7 = new UpdaterThreadForListener(
-						connection, topicPrefix+TYPE.getNeighbourUp() + "D",
-						((DistributedMultiSchedule) schedule).fields, listeners);
-				u7.start();
-
-				connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourDown() + "U");
-
-				UpdaterThreadForListener u8 = new UpdaterThreadForListener(
-						connection, topicPrefix+TYPE.getNeighbourDown() + "U",
-						((DistributedMultiSchedule) schedule).fields, listeners);
-				u8.start();
-
+				if(TYPE.pos_i < rows && TYPE.pos_j > 0){
+					connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagLeftDown()
+							+ "CUDR");
+					UpdaterThreadForListener u3 = new UpdaterThreadForListener(
+							connection, topicPrefix+TYPE.getNeighbourDiagLeftDown() + "CUDR",
+							((DistributedMultiSchedule) schedule).fields, listeners);
+					u3.start();
+				}
+				if(TYPE.pos_i < rows && TYPE.pos_j < columns){
+					connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagRightDown()
+							+ "CUDL");
+					UpdaterThreadForListener u4 = new UpdaterThreadForListener(
+							connection, topicPrefix+TYPE.getNeighbourDiagRightDown() + "CUDL",
+							((DistributedMultiSchedule) schedule).fields, listeners);
+					u4.start();
+				}
+				if(TYPE.pos_j > 0){
+					connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "R");
+					UpdaterThreadForListener u5 = new UpdaterThreadForListener(
+							connection, topicPrefix+TYPE.getNeighbourLeft() + "R",
+							((DistributedMultiSchedule) schedule).fields, listeners);
+					u5.start();
+				}
+				if(TYPE.pos_j < columns){
+					connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "L");
+					UpdaterThreadForListener u6 = new UpdaterThreadForListener(
+							connection, topicPrefix+TYPE.getNeighbourRight() + "L",
+							((DistributedMultiSchedule) schedule).fields, listeners);
+					u6.start();
+				}
+				if(TYPE.pos_i > 0){	
+					connection.subscribeToTopic(topicPrefix+(TYPE.getNeighbourUp() + "D"));
+					UpdaterThreadForListener u7 = new UpdaterThreadForListener(
+							connection, topicPrefix+TYPE.getNeighbourUp() + "D",
+							((DistributedMultiSchedule) schedule).fields, listeners);
+					u7.start();
+				}
+				if(TYPE.pos_i < rows){
+					connection.subscribeToTopic(topicPrefix+TYPE.getNeighbourDown() + "U");
+					UpdaterThreadForListener u8 = new UpdaterThreadForListener(
+							connection, topicPrefix+TYPE.getNeighbourDown() + "U",
+							((DistributedMultiSchedule) schedule).fields, listeners);
+					u8.start();
+				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
