@@ -620,4 +620,56 @@ The reduce method takes an \texttt{Object[]} as parameter and the length of this
 
 A reduce method may have or not a return value. Remember that the global inspector reads the simulation status using getter methods so what the reduce method needs has to set a variable that will be read by the getter (in this case, \texttt{reduceNumAgents()}) set the variable \texttt{numAgents} that will be read by \texttt{getNumAgents()}.
 
+
+
+
+
+\section{Load balancing for Horizontal partition}
+
+\subsection{Introduction}
+The problems for the load balancing for horizontal partition are the same of the
+Grid.
+
+\subsection{The balancing mechanism}
+This load balancing extends or contracts the regions to preserve the equity of
+agents between the regions. A region more overloaded contracts its limits and
+gives the agents in the loosing part to the neighbors. A region alternates the balancing
+with the neighbors, so in a step balances with the right neighbor and in the
+next step balances with the left neighbor.
+
+\subsection{How to use}
+The load balancing for horizontal partition is simple to use. The field $rows$
+must be $1$ and the check button $Load$ $balancing$ must be selected.
+
+\section{Thin mode}
+
+\subsection{Introduction}
+D-MASON allocates by default the entire field for every region. For example if
+the field has $width=100$ and $height=100$ and there are two regions, each
+region allocates a field with $width=100$ and $height=100$. This is a limit
+because a part of field is allocated but not used. For this reason we
+implemented the Thin mode that allocates the portion of field really used. Note
+that there is a backword compatibility with previous simulations' implementation.
+
+\subsection{Difference with standard fields}
+In D-MASON, for example \texttt{DSparseGrid2D} as
+described previously, there is the method \texttt{createDSparseGrid2D} of the
+class \texttt{DSparseGrid2DFactory} for creating a new distributed field. For
+the \texttt{Thin mode} there is the method the method
+\texttt{createDSparseGrid2DThin} of the class \texttt{DSparseGrid2DFactory}
+that returns an instance of \texttt{DSparseGrid2DThin}. The process is the same
+with the other fields. Another difference is the invocation of the methods of
+the object returned from the factory: all the methods, invocated on the object,
+that are present in the MASON superclass must be invocated with \texttt{Thin}
+suffix without any additional parameter. For example \texttt{setObjectLocation}
+becames \texttt{setObjectLocationThin}. The last difference is on the the grid
+field not sparse. To get the value of a location $x,y$ in standard mode we have
+\texttt{field[x][y]}, in \texttt{Thin mode} is present a method
+\texttt{getThin(x,y)} that must be invocated on the object returned from the
+factory. To set a value $z$ in the location $x,y$ in standard mode we have
+\texttt{field[x][y]=z}, in \texttt{Thin mode} is present a method
+\texttt{setThin(x,y,z)} that must be invocated on the object returned from the
+factory.
+
+
 \end{document}
