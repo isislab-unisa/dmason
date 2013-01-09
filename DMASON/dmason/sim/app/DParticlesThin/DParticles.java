@@ -131,7 +131,7 @@ public class DParticles extends DistributedState<Int2D> {
         {
             public void step(SimState state)
             {
-            	trails.multiply(0.9);
+            	trails.multiplyThin(0.9);
             }
             static final long serialVersionUID = 6330208160095250478L;
         };
