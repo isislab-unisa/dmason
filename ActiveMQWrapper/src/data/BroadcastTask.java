@@ -39,8 +39,6 @@ public class BroadcastTask extends TimerTask
 	private DatagramSocket socket;
 	private DatagramPacket packet;
 	private byte[] beacon;
-	private String message;
-	
 	
 	public BroadcastTask(String ip, String port) 
 	{

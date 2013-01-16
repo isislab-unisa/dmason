@@ -69,8 +69,6 @@ public class ActiveMQWrapper implements Command
 		SUN_JMX = "--jmxurl service:jmx:rmi:///jndi/rmi://localhost:1616/jmxrmi";
 		ACTIVEMQ_CLASSPATH = ACTIVEMQ_CONF+";"+ACTIVEMQ_BASE+"/conf;"+ACTIVEMQ_CONF;
 		
-		
-		
 		try {
 			startActiveMQ();
 				
