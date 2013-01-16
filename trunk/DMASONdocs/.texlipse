@@ -1,0 +1,14 @@
+#TeXlipse project settings
+#Thu Jan 10 23:08:31 CET 2013
+markTmpDer=true
+builderNum=2
+outputDir=Tutorial-ParticlesToDParticles/
+makeIndSty=
+bibrefDir=
+outputFormat=pdf
+tempDir=Tutorial-ParticlesToDParticles
+mainTexFile=D-MASON_tutorial.tex
+outputFile=D-MASON_tutorial.pdf
+langSpell=
+markDer=true
+srcDir=Tutorial-ParticlesToDParticles/
