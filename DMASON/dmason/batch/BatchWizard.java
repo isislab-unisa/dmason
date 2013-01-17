@@ -25,6 +25,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -43,10 +45,13 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.ImageIcon;
+import javax.swing.InputVerifier;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -84,6 +89,8 @@ import dmason.util.SystemManagement.JarClassLoader;
 import java.awt.Dimension;
 import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class BatchWizard extends JFrame 
 {
@@ -222,7 +229,8 @@ public class BatchWizard extends JFrame
 					.addContainerGap())
 		);
 
-		JButton btnSave = new JButton("Save");
+		final JButton btnSave = new JButton("Save");
+		btnSave.setEnabled(false);
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
@@ -268,6 +276,29 @@ public class BatchWizard extends JFrame
 		textFieldNumberOfWorkers = new JTextField();
 		textFieldNumberOfWorkers.setText("1");
 		textFieldNumberOfWorkers.setColumns(10);
+		textFieldNumberOfWorkers.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				if(textFieldNumberOfWorkers.isVisible() )
+				{
+				boolean checkNumberOfWorkers=true;
+				
+				while(checkNumberOfWorkers){
+			
+					String dist=textFieldNumberOfWorkers.getText();
+					boolean validateDist=dist.matches("(\\d)+");
+					if(!validateDist){	
+						String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+						textFieldNumberOfWorkers.setText(newDist);
+					}
+			
+					else{
+						checkNumberOfWorkers=false;
+					}
+				}
+				}
+			}
+		});
 		
 		checkBoxLoadBalancing = new JCheckBox("Load Balancing", false);
 		checkBoxLoadBalancing.setEnabled(true);
@@ -313,6 +344,8 @@ public class BatchWizard extends JFrame
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeParams
 						.getLastSelectedPathComponent();
 			System.out.println(node.getParent()+"-"+simParams);
+			if(node.getParent() != null)
+			{
 				if (node.getParent() == simParams|| node.getParent().equals(generalParams)) {
 
 					selectedParam = (Param) node.getUserObject();
@@ -461,7 +494,7 @@ public class BatchWizard extends JFrame
 				{
 					System.out.println("OOOOOOOOOOOOOOOOOOOOO");
 				}
-
+			}
 			}
 		});
 
@@ -486,7 +519,7 @@ public class BatchWizard extends JFrame
 				}
 
 				lblTotTests.setText(totTestsMessage + " " + getTotTests());
-
+				btnSave.setEnabled(true);
 			}
 		});
 
@@ -567,28 +600,166 @@ public class BatchWizard extends JFrame
 		JLabel lblRuns = new JLabel("Runs:");
 		textFieldRuns = new JTextField();
 		textFieldRuns.setColumns(10);
+		textFieldRuns.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				if(textFieldRuns.isVisible())
+				{
+				boolean checkRuns=true;
+				
+				while(checkRuns){
+			
+					String dist=textFieldRuns.getText();
+					boolean validateDist=dist.matches("(\\d)+");
+					if(!validateDist){	
+						String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+						textFieldRuns.setText(newDist);
+					}
+			
+					else{
+						checkRuns=false;
+					}
+				}
+				}
+			}
+		});
 		JLabel lblParameterSpace = new JLabel("Parameter Space");
 		lblParameterSpace.setFont(new Font("Tahoma", Font.BOLD, 11));
 
 		lblValue = new JLabel("Value:");
 
 		textFieldValue = new JTextField();
+		textFieldValue.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				String regex="(\\d)+|((\\d)+\\.(\\d)+)";
+				if(textFieldValue.isVisible())
+				{
+				boolean checkValue=true;
+				
+				while(checkValue){
+			
+					String dist=textFieldValue.getText();
+					boolean validateDist=dist.matches(regex);
+					if(!validateDist){	
+						String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+						textFieldValue.setText(newDist);
+					}
+			
+					else{
+						checkValue=false;
+					}
+				}
+				}
+			}
+		});
 		textFieldValue.setColumns(10);
+		/*textFieldValue.addKeyListener(new KeyListener() {
 
+			@Override
+			public void keyTyped(KeyEvent arg0) {}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				checkError();
+
+
+			}
+
+			@Override
+			public void keyPressed(KeyEvent arg0) {}
+		});
+*/
 		lblStartValue = new JLabel("Start value:");
 
 		textFieldStartValue = new JTextField();
+		textFieldStartValue.setText("1");
 		textFieldStartValue.setColumns(10);
+		textFieldStartValue.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				String regex="(\\d)+|((\\d)+\\.(\\d)+)";
+				if(textFieldStartValue.isVisible() )
+				{
+				boolean checkStartValue=true;
+				
+				while(checkStartValue){
+			
+					String dist=textFieldStartValue.getText();
+					boolean validateDist=dist.matches(regex);
+					if(!validateDist){	
+						String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+						textFieldStartValue.setText(newDist);
+					}
+			
+					else{
+						checkStartValue=false;
+					}
+				}
+				}
+			}
+		});
 
 		lblEndValue = new JLabel("End value:");
 
 		textFieldEndValue = new JTextField();
+		textFieldEndValue.setText("1");
 		textFieldEndValue.setColumns(10);
+		textFieldEndValue.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				String regex="(\\d)+|((\\d)+\\.(\\d)+)";
+				if(textFieldEndValue.isVisible() )
+				{
+				boolean checkEndValue=true;
+				
+				while(checkEndValue){
+			
+					String dist=textFieldEndValue.getText();
+					boolean validateDist=dist.matches(regex);
+					if(!validateDist){	
+						String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+						textFieldEndValue.setText(newDist);
+					}
+			
+					else{
+						checkEndValue=false;
+					}
+				}
+				}
+			}
+		});
 
 		lblIncrement = new JLabel("Increment:");
 
 		textFieldIncrement = new JTextField();
+		textFieldIncrement.setText("1");
 		textFieldIncrement.setColumns(10);
+		textFieldIncrement.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				String regex="(\\d)+|((\\d)+\\.(\\d)+)";
+				if(textFieldIncrement.isVisible() )
+				{
+					
+				boolean checkIncrement=true;
+				
+				while(checkIncrement){
+			
+					String dist=textFieldIncrement.getText();
+					boolean validateDist=dist.matches(regex);
+					if(!validateDist){	
+						String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+						textFieldIncrement.setText(newDist);
+					}
+			
+					else{
+						checkIncrement=false;
+					}
+				}
+				}
+			}
+		});
 
 		rdbtnFixed = new JRadioButton("Fixed");
 		rdbtnFixed.setSelected(true);
@@ -808,7 +979,7 @@ public class BatchWizard extends JFrame
 				else
 					lblTotTests.setForeground(Color.BLACK);
 
-				lblTotTests.setText(totTestsMessage + " " + getTotTests());
+				lblTotTests.setText(totTestsMessage + " " + tot);
 
 			}
 		});
@@ -831,6 +1002,29 @@ public class BatchWizard extends JFrame
 		textFieldList.setVisible(false);
 		textFieldList.setToolTipText("Comma separated");
 		textFieldList.setColumns(10);
+		textFieldList.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				/*if(textFieldList.isVisible())
+				{
+				boolean checkList=true;
+				
+				while(checkList){
+			
+					String dist=textFieldList.getText();
+					boolean validateDist=dist.matches("(\\d)+|((\\d)+\\.(\\d)+)(,(\\d)+|((\\d)+\\.(\\d)+))*");
+					if(!validateDist){	
+						String	newDist=  JOptionPane.showInputDialog(null,"Insert comma separate number list","Number Format Error", 0);
+						textFieldList.setText(newDist);
+					}
+			
+					else{
+						checkList=false;
+					}
+				}
+				}*/
+			}
+		});
 		
 		lblDistribution = new JLabel("Distribution");
 		lblDistribution.setVisible(false);
@@ -839,16 +1033,67 @@ public class BatchWizard extends JFrame
 		lblA.setVisible(false);
 		
 		textFieldA = new JTextField();
+		textFieldA.setText("1");
 		textFieldA.setVisible(false);
 		textFieldA.setColumns(10);
+		textFieldA.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				String regex="(\\d)+|((\\d)+\\.(\\d)+)";
+
+				if(textFieldA.isVisible())
+				{
+					boolean checkA=true;
+					
+					while(checkA){
+				
+						String dist=textFieldA.getText();
+						boolean validateDist=dist.matches(regex);
+						if(!validateDist){	
+							String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+							textFieldA.setText(newDist);
+						}
+				
+						else{
+							checkA=false;
+						}
+					}
+				}
+			}
+		});
 		
 		lblB = new JLabel("b:");
 		lblB.setVisible(false);
 		
 		textFieldB = new JTextField();
+		textFieldB.setText("1");
 		textFieldB.setVisible(false);
 		textFieldB.setColumns(10);
-		
+		textFieldB.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				
+				String regex="(\\d)+|((\\d)+\\.(\\d)+)";
+				if(textFieldB.isVisible() )
+				{
+				boolean checkB=true;
+				
+				while(checkB){
+			
+					String dist=textFieldB.getText();
+					boolean validateDist=dist.matches(regex);
+					if(!validateDist){	
+						String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+						textFieldB.setText(newDist);
+					}
+			
+					else{
+						checkB=false;
+					}
+				}
+				}
+			}
+		});
 		jComboBoxDistribution = new JComboBox();
 		jComboBoxDistribution.setVisible(false);
 		jComboBoxDistribution.addItemListener(new ItemListener() {
@@ -870,8 +1115,32 @@ public class BatchWizard extends JFrame
 		lblOfValues.setVisible(false);
 		
 		textFieldNumberOfValues = new JTextField();
+		textFieldNumberOfValues.setText("1");
 		textFieldNumberOfValues.setVisible(false);
 		textFieldNumberOfValues.setColumns(10);
+		textFieldNumberOfValues.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				if(textFieldNumberOfValues.isVisible())
+				{
+				boolean checkNumberOfValues=true;
+				
+				while(checkNumberOfValues){
+			
+					String dist=textFieldNumberOfValues.getText();
+					boolean validateDist=dist.matches("(\\d)+");
+					if(!validateDist){	
+						String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+						textFieldNumberOfValues.setText(newDist);
+					}
+			
+					else{
+						checkNumberOfValues=false;
+					}
+				}
+				}
+			}
+		});
 		
 		lblSuggested = new JLabel("Suggested Value:");
 		
@@ -1027,6 +1296,204 @@ public class BatchWizard extends JFrame
 		loadDistribution();
 	}
 	
+	private void checkError(){
+		
+		//controllo solo numeri non negativi
+		
+		String regex="(\\d)+|((\\d)+\\.(\\d)+)";
+
+		if(textFieldA.isVisible() )
+		{
+			boolean checkA=true;
+			
+			while(checkA){
+		
+				String dist=textFieldA.getText();
+				boolean validateDist=dist.matches(regex);
+				if(!validateDist){	
+					String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+					textFieldA.setText(newDist);
+				}
+		
+				else{
+					checkA=false;
+				}
+			}
+		}
+		
+		if(textFieldB.isVisible() )
+		{
+		boolean checkB=true;
+		
+		while(checkB){
+	
+			String dist=textFieldB.getText();
+			boolean validateDist=dist.matches(regex);
+			if(!validateDist){	
+				String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+				textFieldB.setText(newDist);
+			}
+	
+			else{
+				checkB=false;
+			}
+		}
+		}
+		
+		if(textFieldEndValue.isVisible() )
+		{
+		boolean checkEndValue=true;
+		
+		while(checkEndValue){
+	
+			String dist=textFieldEndValue.getText();
+			boolean validateDist=dist.matches(regex);
+			if(!validateDist){	
+				String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+				textFieldEndValue.setText(newDist);
+			}
+	
+			else{
+				checkEndValue=false;
+			}
+		}
+		}
+		
+		if(textFieldIncrement.isVisible() )
+		{
+		boolean checkIncrement=true;
+		
+		while(checkIncrement){
+	
+			String dist=textFieldIncrement.getText();
+			boolean validateDist=dist.matches(regex);
+			if(!validateDist){	
+				String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+				textFieldIncrement.setText(newDist);
+			}
+	
+			else{
+				checkIncrement=false;
+			}
+		}
+		}
+		
+
+		if(textFieldStartValue.isVisible() )
+		{
+		boolean checkStartValue=true;
+		
+		while(checkStartValue){
+	
+			String dist=textFieldStartValue.getText();
+			boolean validateDist=dist.matches(regex);
+			if(!validateDist){	
+				String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+				textFieldStartValue.setText(newDist);
+			}
+	
+			else{
+				checkStartValue=false;
+			}
+		}
+		}
+		
+		if(textFieldValue.isVisible())
+		{
+		boolean checkValue=true;
+		
+		while(checkValue){
+	
+			String dist=textFieldValue.getText();
+			boolean validateDist=dist.matches(regex);
+			if(!validateDist){	
+				String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+				textFieldValue.setText(newDist);
+			}
+	
+			else{
+				checkValue=false;
+			}
+		}
+		}
+		
+		if(textFieldList.isVisible())
+		{
+		boolean checkList=true;
+		
+		while(checkList){
+	
+			String dist=textFieldList.getText();
+			boolean validateDist=dist.matches("(\\d)+|((\\d)+\\.(\\d)+)((,)(\\d)+|((\\d)+\\.(\\d)+))*");
+			if(!validateDist){	
+				String	newDist=  JOptionPane.showInputDialog(null,"Insert comma separate number list","Number Format Error", 0);
+				textFieldList.setText(newDist);
+			}
+	
+			else{
+				checkList=false;
+			}
+		}
+		}
+		
+		if(textFieldNumberOfValues.isVisible())
+		{
+		boolean checkNumberOfValues=true;
+		
+		while(checkNumberOfValues){
+	
+			String dist=textFieldNumberOfValues.getText();
+			boolean validateDist=dist.matches("(\\d)+");
+			if(!validateDist){	
+				String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+				textFieldNumberOfValues.setText(newDist);
+			}
+	
+			else{
+				checkNumberOfValues=false;
+			}
+		}
+		}
+		
+
+		if(textFieldNumberOfWorkers.isVisible() )
+		{
+		boolean checkNumberOfWorkers=true;
+		
+		while(checkNumberOfWorkers){
+	
+			String dist=textFieldNumberOfWorkers.getText();
+			boolean validateDist=dist.matches("(\\d)+");
+			if(!validateDist){	
+				String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+				textFieldNumberOfWorkers.setText(newDist);
+			}
+	
+			else{
+				checkNumberOfWorkers=false;
+			}
+		}
+		}
+		
+		if(textFieldRuns.isVisible())
+		{
+		boolean checkRuns=true;
+		
+		while(checkRuns){
+	
+			String dist=textFieldRuns.getText();
+			boolean validateDist=dist.matches("(\\d)+");
+			if(!validateDist){	
+				String	newDist=  JOptionPane.showInputDialog(null,"Insert a number","Number Format Error", 0);
+				textFieldRuns.setText(newDist);
+			}
+	
+			else{
+				checkRuns=false;
+			}
+		}
+		}
+	}
 	private void loadDistribution()
 	{
 		jComboBoxDistribution.setModel(new DefaultComboBoxModel(DistributionType.values()));
@@ -1041,6 +1508,9 @@ public class BatchWizard extends JFrame
 		btnModify.setEnabled(flag);
 		btnCancel.setEnabled(flag);
 		textFieldRuns.setEnabled(flag);
+		
+		textFieldNumberOfWorkers.setEnabled(flag);
+		checkBoxLoadBalancing.setEnabled(flag);
 
 	}
 
@@ -1209,8 +1679,10 @@ public class BatchWizard extends JFrame
 				tot *= 1;
 			if (child.getUserObject() instanceof ParamRange) {
 				ParamRange p = ((ParamRange) child.getUserObject());
-				tot *= ((Integer.parseInt(p.getEnd()) - Integer.parseInt(p.getStart()))
-						/Integer.parseInt(p.getIncrement())) + 1;
+				
+				tot *= (((p.getEnd().contains(".") ? Double.parseDouble(p.getEnd()):Integer.parseInt(p.getEnd())) - 
+						(p.getStart().contains(".") ? Double.parseDouble(p.getStart()):Integer.parseInt(p.getStart())))
+						/(p.getIncrement().contains(".") ? Double.parseDouble(p.getIncrement()):Integer.parseInt(p.getIncrement()))) + 1;
 			}
 			if (child.getUserObject() instanceof ParamDistribution) {
 				ParamDistribution p = ((ParamDistribution) child.getUserObject());
@@ -1228,9 +1700,10 @@ public class BatchWizard extends JFrame
 			if (child.getUserObject() instanceof ParamFixed)
 				tot *= 1;
 			if (child.getUserObject() instanceof ParamRange) {
-				ParamRange p = ((ParamRange) child.getUserObject());
-				tot *= ((Integer.parseInt(p.getEnd()) - Integer.parseInt(p.getStart()))
-						/Integer.parseInt(p.getIncrement())) + 1;
+				ParamRange p = ((ParamRange) child.getUserObject()); 
+				tot *= (((p.getEnd().contains(".") ? Double.parseDouble(p.getEnd()):Integer.parseInt(p.getEnd())) - 
+						(p.getStart().contains(".") ? Double.parseDouble(p.getStart()):Integer.parseInt(p.getStart())))
+						/(p.getIncrement().contains(".") ? Double.parseDouble(p.getIncrement()):Integer.parseInt(p.getIncrement()))) + 1;
 			}
 			
 			if (child.getUserObject() instanceof ParamDistribution) {

@@ -17,12 +17,14 @@
 
 package dmason.util.SystemManagement;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
@@ -30,7 +32,13 @@ import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Properties;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
+
+import javax.swing.text.DefaultEditorKit.BeepAction;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -38,13 +46,14 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import dmason.util.connection.Address;
+import dmason.util.connection.BeaconMessageListener;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.exception.NoDigestFoundException;
 
 /**
  * Executable, command-line version worker.
  */
-public class StartWorker implements StartWorkerInterface {
+public class StartWorker implements StartWorkerInterface,  Observer {
 	private static Logger logger;
 
 	private static boolean updated;
@@ -69,6 +78,17 @@ public class StartWorker implements StartWorkerInterface {
 	private static final String version = "1.0";
 	private String digest;
 
+	private static BeaconMessageListener beaconListener;
+	
+	
+	private static boolean isReady = false;
+	private final static ReentrantLock lock = new ReentrantLock();
+	private static Condition readyCondition = lock.newCondition();
+
+	private static String ip;
+
+	private static String port;
+
 	
 	
 	/**
@@ -79,8 +99,32 @@ public class StartWorker implements StartWorkerInterface {
 	 */
 	public StartWorker(String ip, String port, String topic)
 	{
+		this.ip = ip;
+		this.port = port;
+		if(!autoStart)
+		{
+			beaconListener = new BeaconMessageListener();
+			beaconListener.addObserver(this);
+			new Thread(beaconListener).start();
+			
+			while(!isReady)
+			{
+				lock.lock();
+				{
+					try {
+						readyCondition.await();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} //wait beacon
+				}
+				lock.unlock();
+			}
+			isReady = false;
+		}
+		System.out.println(this.ip+" "+this.port);
 		connection = new ConnectionNFieldsWithActiveMQAPI();
-	    ipAddress = new Address(ip, port);
+	    ipAddress = new Address(this.ip, this.port);
 	    
 	    myTopic = topic;
 	    
@@ -164,8 +208,8 @@ public class StartWorker implements StartWorkerInterface {
 		
 		
 		autoStart = false;	
-		String ip = null;
-		String port = null;
+		ip = null;
+		port = null;
 		String topic = null;
 		updated = false;
 		isBatch = false;
@@ -201,6 +245,8 @@ public class StartWorker implements StartWorkerInterface {
 				port = args[1];
 				topic = args[2];
 			}
+			
+			
 			
 			
 			StartWorker worker = new StartWorker(ip,port,topic);
@@ -247,6 +293,42 @@ public class StartWorker implements StartWorkerInterface {
 	public void exit() {
 		// TODO Auto-generated method stub
 		System.exit(0);
+	}
+
+	//Notify from BeaconMessageListener
+	@Override
+	public void update(Observable o, Object arg) {
+		
+		System.out.println("Found an instance of ActiveMQ at ip: "+beaconListener.getIp()+" and port: "+beaconListener.getPort()
+				+" Do you want use it? (y or n)");
+		BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+		
+		try {
+			String answer = stdin.readLine();
+			while(!((answer.equals("y") || (answer.endsWith("n")))))
+			{
+				System.out.println("Type y or n");
+				answer = stdin.readLine();
+			}
+			
+			if(answer.equals("y"))
+			{	
+				ip = beaconListener.getIp();
+				port = beaconListener.getPort();
+			}
+			
+			isReady = true;
+			lock.lock();
+			{
+				readyCondition.signalAll();
+			}
+			lock.unlock();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 
 }

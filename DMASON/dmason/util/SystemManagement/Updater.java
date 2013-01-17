@@ -570,7 +570,8 @@ public class Updater
 			for (File file : fileToBackup) {
 
 				try {
-					FileUtils.copyFileToDirectory(file, dirToCopy,true);
+					if(file.exists())
+						FileUtils.copyFileToDirectory(file, dirToCopy,true);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

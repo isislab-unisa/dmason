@@ -17,16 +17,15 @@
 
 package dmason.util.SystemManagement;
 
-import it.sauronsoftware.ftp4j.FTPClient;
-
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.HeadlessException;
-import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -43,8 +42,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -52,10 +49,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -64,12 +64,12 @@ import java.util.Observer;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -89,7 +89,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
@@ -133,17 +133,20 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
+import sim.display.Console;
+
+import activemqWrapper.rmi.Command;
+
 import com.google.common.collect.Sets;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-import sim.display.Console;
 import dmason.annotation.Thin;
-import dmason.annotation.batch;
 import dmason.batch.BatchExecutor;
 import dmason.batch.BatchWizard.DistributionType;
 import dmason.batch.data.Batch;
 import dmason.batch.data.EntryParam;
+import dmason.batch.data.EntryParam.ParamType;
 import dmason.batch.data.EntryWorkerScore;
 import dmason.batch.data.GeneralParam;
 import dmason.batch.data.Param;
@@ -154,10 +157,10 @@ import dmason.batch.data.ParamDistributionUniform;
 import dmason.batch.data.ParamFixed;
 import dmason.batch.data.ParamList;
 import dmason.batch.data.ParamRange;
-import dmason.batch.data.EntryParam.ParamType;
 import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.sim.util.StdRandom;
 import dmason.util.Util;
+import dmason.util.connection.ActiveMQManager;
 import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.connection.MyHashMap;
@@ -166,9 +169,8 @@ import dmason.util.exception.NoDigestFoundException;
 import dmason.util.garbagecollector.Start;
 import dmason.util.trigger.Trigger;
 import dmason.util.trigger.TriggerListener;
-import javax.swing.JProgressBar;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.awt.Component;
+import javax.swing.JScrollBar;
 
 
 /**
@@ -198,10 +200,14 @@ public class JMasterUI extends JFrame  implements Observer{
 	private static final String SIMULATION_DIR = "simulation";
 	private static final String UPDATE_DIR = "update";
 	private static final String FTP_PORT = "18786";
+	
+	private static final int RMI_PORT = 61617;
+	private static String RMI_IP;
+	
 	private File updateFile;
 	private File simulationFile;
 	private File configFile;
-	private String xsdFilename = "batch.xsd";
+	private String xsdFilename = "batchSchema.xsd";
 	private static String SEPARATOR;
 	private boolean isHorizontal=true;
 	private WorkerUpdater wu;
@@ -251,6 +257,7 @@ public class JMasterUI extends JFrame  implements Observer{
 	private BatchExecutor batchExec;
 	
 	private boolean isBatchTest = false;
+	private long batchStartedTime;
 	
 	private AtomicInteger testCount = new AtomicInteger();
 	private int totalTests;
@@ -327,9 +334,9 @@ public class JMasterUI extends JFrame  implements Observer{
 	private JPanel jPanelAdvanced;
 	private JPanel jPanelAdvancedMain;
 	private JPanel jPanelSetButton2;
-	private JPanel jPanelSimParams;
 	private JButton buttonSetConfigDefault2;
 	private JScrollPane scrollPane3;
+	private JScrollPane scrollPane4;
 	private JTextArea notifyArea;
 
 
@@ -354,6 +361,13 @@ public class JMasterUI extends JFrame  implements Observer{
 	private JTextField textFieldRows;
 	private JTextField textFieldColumns;
 	protected boolean isThin;
+	private JLabel lblStatusIcon;
+	private JButton buttonActiveMQRestart;
+	private JButton buttonActiveMQStart;
+	private JButton buttonActiveMQStop;
+	private ActiveMQManager csManager;
+	private JButton btnCheckPeers;
+	private JTextArea textAreaBatchInfo;
 	
 	// fine codice profiling
 
@@ -425,9 +439,44 @@ public class JMasterUI extends JFrame  implements Observer{
 		
 		if(curWorkerDigest == null)
 			loadUpdateFile();
+		
+		if(RMI_IP != null)
+		{
+			csManager = new ActiveMQManager(RMI_IP, 61617); //"172.16.15.127"
+			checkCommunicationServerStatus();
+			textFieldAddress.setText(RMI_IP);
+			if(!csManager.isUnknow())
+				setEnableActiveMQControl(true);
+		}
+		else
+		{
+			setEnableActiveMQControl(false);
+			lblStatusIcon.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/status-unknow.png")));
+		}
+	}
+
+	private void setEnableActiveMQControl(boolean flag)
+	{
+		buttonActiveMQStart.setEnabled(flag);
+		buttonActiveMQStop.setEnabled(flag);
+		buttonActiveMQRestart.setEnabled(flag);
+	}
+	private void checkCommunicationServerStatus() {
+
+		if(csManager.isUnknow())
+			lblStatusIcon.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/status-unknow.png")));
+		else
+		{
+			if(csManager.isStarted())
+				lblStatusIcon.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/status-up.png")));
+			else
+				lblStatusIcon.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/status-down.png")));
+		}
+		
 	}
 
 	public static void main(String[] args){
+		System.setProperty("java.security.policy","policyall.policy");
 		//used for set the name of logger in log4j.properties
 		System.setProperty("masterlogfile.name","masterUI");
 		logger = Logger.getLogger(JMasterUI.class.getCanonicalName());
@@ -437,12 +486,21 @@ public class JMasterUI extends JFrame  implements Observer{
 		// check the dir for FTP
 		checkFTPHOME();
 		
+		if(args.length == 1)
+			RMI_IP = args[0];
+			
+		if(args.length == 0)
+			RMI_IP = null;
+		if(args.length != 0 && args.length != 1)
+		{
+			System.out.println("Usage JMasterUI IP");
+			System.exit(0);
+		}
+		
 		JFrame a = new JMasterUI();
 		a.setVisible(true);
 		
 		startFTPServer();
-		
-		 
 	}
 
 	private void initComponents() {
@@ -536,6 +594,7 @@ public class JMasterUI extends JFrame  implements Observer{
 		menuItemInfo = new JMenuItem();
 		menuItemHelp = new JMenuItem();
 		scrollPane3 = new JScrollPane();
+		scrollPane4 = new JScrollPane();
 		notifyArea = new JTextArea();
 		panelConsole = new JPanel();
 		buttonSetConfigDefault2 = new JButton();
@@ -824,43 +883,135 @@ public class JMasterUI extends JFrame  implements Observer{
 
 					//---- buttonRefreshServerLabel ----
 					buttonRefreshServerLabel.setText("OK");
+					
+					JLabel lblStatus = new JLabel("Communication Server status :");
+					
+					lblStatusIcon = new JLabel("");
+					lblStatusIcon.setIcon(new ImageIcon(JMasterUI.class.getResource("/dmason/resource/image/status-down.png")));
+					
+					buttonActiveMQRestart = new JButton("");
+					buttonActiveMQRestart.setEnabled(false);
+					buttonActiveMQRestart.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							
+							notifyArea.append("ActiveMQ restarting...\n");
+							if(csManager.restartActiveMQ())
+								notifyArea.append("ActiveMQ restarted!\n");
+							
+							checkCommunicationServerStatus();
+							
+						}
+					});
+					buttonActiveMQRestart.setMinimumSize(new Dimension(24, 24));
+					buttonActiveMQRestart.setMaximumSize(new Dimension(24, 24));
+					buttonActiveMQRestart.setPreferredSize(new Dimension(24, 24));
+					buttonActiveMQRestart.setIcon(new ImageIcon(JMasterUI.class.getResource("/dmason/resource/image/LH2 - Restart.png")));
+					
+					buttonActiveMQStart = new JButton("");
+					buttonActiveMQStart.setEnabled(false);
+					buttonActiveMQStart.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							notifyArea.append("ActiveMQ starting...\n");
+							if(csManager.startActiveMQ())
+								notifyArea.append("ActiveMQ started!\n");
+							
+							checkCommunicationServerStatus();
+						}
+					});
+					buttonActiveMQStart.setPreferredSize(new Dimension(24, 24));
+					buttonActiveMQStart.setMinimumSize(new Dimension(24, 24));
+					buttonActiveMQStart.setMaximumSize(new Dimension(24, 24));
+					buttonActiveMQStart.setIcon(new ImageIcon(JMasterUI.class.getResource("/dmason/resource/image/LH2 - Shutdown.png")));
+					
+					buttonActiveMQStop = new JButton("");
+					buttonActiveMQStop.setEnabled(false);
+					buttonActiveMQStop.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							notifyArea.append("ActiveMQ stopping...\n");
+							if(csManager.stopActiveMQ())
+								notifyArea.append("ActiveMQ stopped!\n");
+							
+							checkCommunicationServerStatus();
+						}
+					});
+					buttonActiveMQStop.setPreferredSize(new Dimension(24, 24));
+					buttonActiveMQStop.setMinimumSize(new Dimension(24, 24));
+					buttonActiveMQStop.setMaximumSize(new Dimension(24, 24));
+					buttonActiveMQStop.setIcon(new ImageIcon(JMasterUI.class.getResource("/dmason/resource/image/LH2 - Stop.png")));
+					
+					btnCheckPeers = new JButton("Check Peers");
+					btnCheckPeers.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							try {
+								checkPeers();
+							} catch (Exception e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						}
+					});
 
 					GroupLayout jPanelConnectionLayout = new GroupLayout(jPanelConnection);
-					jPanelConnection.setLayout(jPanelConnectionLayout);
 					jPanelConnectionLayout.setHorizontalGroup(
-							jPanelConnectionLayout.createParallelGroup()
+						jPanelConnectionLayout.createParallelGroup(Alignment.LEADING)
 							.addGroup(jPanelConnectionLayout.createSequentialGroup()
-									.addGap(29, 29, 29)
-									.addComponent(jLabelAddress)
-									.addGap(18, 18, 18)
-									.addComponent(textFieldAddress, GroupLayout.PREFERRED_SIZE, 177, GroupLayout.PREFERRED_SIZE)
-									.addGap(59, 59, 59)
-									.addComponent(jLabelPort)
-									.addGap(18, 18, 18)
-									.addComponent(textFieldPort, GroupLayout.PREFERRED_SIZE, 177, GroupLayout.PREFERRED_SIZE)
-									.addGap(78, 78, 78)
-									.addComponent(refreshServerLabel)
-									.addGap(18, 18, 18)
-									.addComponent(buttonRefreshServerLabel)
-									.addContainerGap(76, Short.MAX_VALUE))
-							);
+								.addGroup(jPanelConnectionLayout.createParallelGroup(Alignment.LEADING)
+									.addGroup(jPanelConnectionLayout.createSequentialGroup()
+										.addGroup(jPanelConnectionLayout.createParallelGroup(Alignment.TRAILING)
+											.addComponent(refreshServerLabel)
+											.addGroup(jPanelConnectionLayout.createSequentialGroup()
+												.addComponent(buttonActiveMQStart, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(buttonActiveMQRestart, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(buttonActiveMQStop, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+												.addGap(111)
+												.addComponent(jLabelAddress)
+												.addGap(18)
+												.addComponent(textFieldAddress, GroupLayout.PREFERRED_SIZE, 91, GroupLayout.PREFERRED_SIZE)
+												.addGap(18)
+												.addComponent(jLabelPort)
+												.addGap(18)
+												.addComponent(textFieldPort, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
+												.addGap(46)
+												.addComponent(buttonRefreshServerLabel)))
+										.addGap(51)
+										.addComponent(btnCheckPeers))
+									.addGroup(jPanelConnectionLayout.createSequentialGroup()
+										.addComponent(lblStatus)
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(lblStatusIcon)))
+								.addContainerGap(71, Short.MAX_VALUE))
+					);
 					jPanelConnectionLayout.setVerticalGroup(
-							jPanelConnectionLayout.createParallelGroup()
+						jPanelConnectionLayout.createParallelGroup(Alignment.TRAILING)
 							.addGroup(jPanelConnectionLayout.createSequentialGroup()
-									.addContainerGap()
-									.addGroup(jPanelConnectionLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-											.addComponent(jLabelAddress)
+								.addGroup(jPanelConnectionLayout.createParallelGroup(Alignment.LEADING)
+									.addGroup(jPanelConnectionLayout.createSequentialGroup()
+										.addGroup(jPanelConnectionLayout.createParallelGroup(Alignment.LEADING)
+											.addComponent(lblStatus)
+											.addComponent(lblStatusIcon))
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addGroup(jPanelConnectionLayout.createParallelGroup(Alignment.LEADING)
+											.addComponent(buttonActiveMQRestart, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addComponent(buttonActiveMQStart, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addComponent(buttonActiveMQStop, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+										.addPreferredGap(ComponentPlacement.RELATED, 1, Short.MAX_VALUE))
+									.addGroup(jPanelConnectionLayout.createSequentialGroup()
+										.addContainerGap(18, Short.MAX_VALUE)
+										.addComponent(refreshServerLabel)
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addGroup(jPanelConnectionLayout.createParallelGroup(Alignment.BASELINE)
+											.addComponent(buttonRefreshServerLabel)
 											.addComponent(jLabelPort)
 											.addComponent(textFieldPort, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
-											.addComponent(textFieldAddress, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE))
-											.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-											.addGroup(GroupLayout.Alignment.TRAILING, jPanelConnectionLayout.createSequentialGroup()
-													.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-													.addGroup(jPanelConnectionLayout.createParallelGroup()
-															.addComponent(buttonRefreshServerLabel)
-															.addComponent(refreshServerLabel))
-															.addContainerGap())
-							);
+											.addComponent(jLabelAddress)
+											.addComponent(textFieldAddress, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
+											.addComponent(btnCheckPeers))))
+								.addGap(10))
+					);
+					jPanelConnectionLayout.linkSize(SwingConstants.HORIZONTAL, new Component[] {buttonActiveMQRestart, buttonActiveMQStart, buttonActiveMQStop});
+					jPanelConnection.setLayout(jPanelConnectionLayout);
 				}
 
 				GroupLayout jPanelContainerConnectionLayout = new GroupLayout(jPanelContainerConnection);
@@ -1232,7 +1383,7 @@ public class JMasterUI extends JFrame  implements Observer{
 									.addGroup(jPanelDefaultLayout.createSequentialGroup()
 										.addContainerGap()
 										.addGroup(jPanelDefaultLayout.createParallelGroup(Alignment.LEADING)
-											.addComponent(labelSimulationConfigSet, GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
+											.addComponent(labelSimulationConfigSet, GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
 											.addGroup(jPanelDefaultLayout.createSequentialGroup()
 												.addGap(6)
 												.addGroup(jPanelDefaultLayout.createParallelGroup(Alignment.LEADING)
@@ -1244,7 +1395,7 @@ public class JMasterUI extends JFrame  implements Observer{
 															.addComponent(labelheightRegion)
 															.addComponent(labelDistrMode)
 															.addComponent(labelRegionsResume))
-														.addPreferredGap(ComponentPlacement.RELATED, 204, Short.MAX_VALUE)
+														.addPreferredGap(ComponentPlacement.RELATED, 218, Short.MAX_VALUE)
 														.addGroup(jPanelDefaultLayout.createParallelGroup(Alignment.LEADING)
 															.addComponent(labelWriteNumOfPeer, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
 															.addComponent(labelWriteReg)
@@ -1255,7 +1406,9 @@ public class JMasterUI extends JFrame  implements Observer{
 														.addGap(118))
 													.addComponent(graphicONcheckBox2))))
 										.addGap(211))
-									.addComponent(jPanelSetButton, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 685, Short.MAX_VALUE)
+									.addGroup(jPanelDefaultLayout.createSequentialGroup()
+										.addComponent(jPanelSetButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addContainerGap(23, Short.MAX_VALUE))
 							);
 							jPanelDefaultLayout.setVerticalGroup(
 								jPanelDefaultLayout.createParallelGroup(Alignment.LEADING)
@@ -1291,7 +1444,7 @@ public class JMasterUI extends JFrame  implements Observer{
 												.addGap(8)))
 										.addPreferredGap(ComponentPlacement.UNRELATED)
 										.addComponent(graphicONcheckBox2)
-										.addPreferredGap(ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
+										.addPreferredGap(ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
 										.addComponent(jPanelSetButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 							);
 							jPanelDefault.setLayout(jPanelDefaultLayout);
@@ -1472,32 +1625,26 @@ public class JMasterUI extends JFrame  implements Observer{
 							}
 
 							GroupLayout jPanelAdvancedLayout = new GroupLayout(jPanelAdvanced);
-							jPanelAdvanced.setLayout(jPanelAdvancedLayout);
 							jPanelAdvancedLayout.setHorizontalGroup(
-									jPanelAdvancedLayout.createParallelGroup()
-									.addComponent(jPanelSetButton2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								jPanelAdvancedLayout.createParallelGroup(Alignment.LEADING)
 									.addGroup(jPanelAdvancedLayout.createSequentialGroup()
-											.addComponent(jPanelAdvancedMain, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-											.addContainerGap())
-									);
+										.addGroup(jPanelAdvancedLayout.createParallelGroup(Alignment.LEADING)
+											.addComponent(jPanelAdvancedMain, GroupLayout.DEFAULT_SIZE, 689, Short.MAX_VALUE)
+											.addComponent(jPanelSetButton2, GroupLayout.PREFERRED_SIZE, 681, GroupLayout.PREFERRED_SIZE))
+										.addContainerGap())
+							);
 							jPanelAdvancedLayout.setVerticalGroup(
-									jPanelAdvancedLayout.createParallelGroup()
-									.addGroup(GroupLayout.Alignment.TRAILING, jPanelAdvancedLayout.createSequentialGroup()
-											.addContainerGap()
-											.addComponent(jPanelAdvancedMain, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-											.addGap(18, 18, 18)
-											.addComponent(jPanelSetButton2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-									);
+								jPanelAdvancedLayout.createParallelGroup(Alignment.TRAILING)
+									.addGroup(jPanelAdvancedLayout.createSequentialGroup()
+										.addContainerGap()
+										.addComponent(jPanelAdvancedMain, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addGap(18)
+										.addComponent(jPanelSetButton2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							);
+							jPanelAdvanced.setLayout(jPanelAdvancedLayout);
 						}
 						tabbedPane2.addTab("Advanced", jPanelAdvanced);
 
-					}
-					
-					//======== jPanel Simulation Parameters
-					jPanelSimParams = new JPanel();
-					{
-						jPanelSimParams.setBorder(new EtchedBorder());
-						tabbedPane2.addTab("Simulation parameters", jPanelSimParams);
 					}
 
 					//======== panelConsole ========
@@ -1536,24 +1683,24 @@ public class JMasterUI extends JFrame  implements Observer{
 					}
 
 					GroupLayout jPanelContainerTabbedPaneLayout = new GroupLayout(jPanelContainerTabbedPane);
-					jPanelContainerTabbedPane.setLayout(jPanelContainerTabbedPaneLayout);
 					jPanelContainerTabbedPaneLayout.setHorizontalGroup(
-							jPanelContainerTabbedPaneLayout.createParallelGroup()
-							.addGroup(GroupLayout.Alignment.TRAILING, jPanelContainerTabbedPaneLayout.createSequentialGroup()
-									.addContainerGap()
-									.addGroup(jPanelContainerTabbedPaneLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-											.addComponent(panelConsole, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-											.addComponent(tabbedPane2, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 679, Short.MAX_VALUE))
-											.addContainerGap())
-							);
-					jPanelContainerTabbedPaneLayout.setVerticalGroup(
-							jPanelContainerTabbedPaneLayout.createParallelGroup()
+						jPanelContainerTabbedPaneLayout.createParallelGroup(Alignment.LEADING)
 							.addGroup(jPanelContainerTabbedPaneLayout.createSequentialGroup()
-									.addGap(3, 3, 3)
-									.addComponent(tabbedPane2, GroupLayout.PREFERRED_SIZE, 384, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-									.addComponent(panelConsole, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-							);
+								.addContainerGap()
+								.addGroup(jPanelContainerTabbedPaneLayout.createParallelGroup(Alignment.LEADING)
+									.addComponent(tabbedPane2, GroupLayout.PREFERRED_SIZE, 686, GroupLayout.PREFERRED_SIZE)
+									.addComponent(panelConsole, GroupLayout.DEFAULT_SIZE, 708, Short.MAX_VALUE))
+								.addContainerGap())
+					);
+					jPanelContainerTabbedPaneLayout.setVerticalGroup(
+						jPanelContainerTabbedPaneLayout.createParallelGroup(Alignment.LEADING)
+							.addGroup(jPanelContainerTabbedPaneLayout.createSequentialGroup()
+								.addGap(3)
+								.addComponent(tabbedPane2, GroupLayout.PREFERRED_SIZE, 384, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(panelConsole, GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE))
+					);
+					jPanelContainerTabbedPane.setLayout(jPanelContainerTabbedPaneLayout);
 				}
 				{
 					jPanelDeploying = new JPanel();
@@ -1645,134 +1792,124 @@ public class JMasterUI extends JFrame  implements Observer{
 				});
 				buttonChooseConfigFile.setIcon(new ImageIcon(JMasterUI.class.getResource("/dmason/resource/image/openFolder.png")));
 				
-				JButton buttonLoadConfig = new JButton("Load Configuration");
+				JButton buttonLoadConfig = new JButton("Start");
 				buttonLoadConfig.addActionListener(new ActionListener() {
-					
+
+
+
 					
 
 					public void actionPerformed(ActionEvent e) {
-						
+
 						try {
-							if(/*validateXML(configFile, new File(xsdFilename))*/true)
-							 {
-								 System.out.println("valid");
-								 
-								 Batch batch = loadConfigFromXML(configFile);
-								 
-								 if(batch != null)
-								 {
-									 if(batch.getNeededWorkers() > peers.size() || batch.getNeededWorkers() == 0)
-										 JOptionPane.showMessageDialog(JMasterUI.this, "There are not enough workers to start the simulation");
-									 else
-									 {
-										 System.out.println("Needed Worker: "+batch.getNeededWorkers());
-										 Set<List<EntryParam<String, Object>>> testList = generateTestsFrom(batch);
-											
-										 ConcurrentLinkedQueue<List<EntryParam<String, Object>>> testQueue = new ConcurrentLinkedQueue<List<EntryParam<String,Object>>>();
-										 
-										 for (List<EntryParam<String, Object>> test : testList) 
-											testQueue.offer(test);
-										 
-										 try {
-											
-											 List<List<EntryWorkerScore<Integer, String>>> workersPartition = Util.chopped(scoreList, batch.getNeededWorkers());
-										
-											
-											System.out.println(workersPartition.toString());
-											
-											testCount.set(0);
-											totalTests =  testList.size();
-											
-											progressBarBatchTest.setValue(0);
-											progressBarBatchTest.setString("0 %");
-											progressBarBatchTest.setStringPainted(true);
-											
-											batchLogger = Logger.getLogger(BatchExecutor.class.getCanonicalName());
-											
-											batchLogger.debug("Started at: "+System.currentTimeMillis());
-											int i = 1;
-											BatchExecutor batchExec;
-											for (List<EntryWorkerScore<Integer, String>> workers : workersPartition)
+							if(configFile.getName().contains(".xml"))
+							{
+								File xsd = new File(xsdFilename);
+								if(xsd.exists())
+								{
+									if(validateXML(configFile, xsd))
+									{
+
+										Batch batch = loadConfigFromXML(configFile);
+
+										if(batch != null)
+										{
+											textAreaBatchInfo.append(configFile.getName()+" loaded.\n");
+											if(batch.getNeededWorkers() > peers.size() || batch.getNeededWorkers() == 0)
+												JOptionPane.showMessageDialog(JMasterUI.this, "There are not enough workers to start the simulation");
+											else
 											{
-												 try {
-													 	
-														batchExec = new BatchExecutor(batch.getSimulationName(),batch.isBalanced(),testQueue,master,connection,root.getChildCount(),getFPTAddress(),workers,"Batch"+i,1);
-													
-														batchExec.getObservable().addObserver(JMasterUI.this);
-														batchExec.start();
-														
-														//Thread.sleep(2000);
-														System.out.println("Batch"+i+" started");
-														 
-														 i++;
-														 
-														 //not paraller simulation, I use only one batch executor
-														 if(!chckbxParallelBatch.isSelected())
-															 break;
-												 	} catch (Exception e1) {
-														// TODO Auto-generated catch block
-														e1.printStackTrace();
+												textAreaBatchInfo.append("Simulation: "+batch.getSimulationName()+"\n");
+												textAreaBatchInfo.append("Needed Worker: "+batch.getNeededWorkers()+"\n");
+												textAreaBatchInfo.append("Balance: "+batch.isBalanced()+"\n");
+
+												Set<List<EntryParam<String, Object>>> testList = generateTestsFrom(batch);
+
+												textAreaBatchInfo.append("--------------------------------------\n");
+												textAreaBatchInfo.append("Number of experiments: "+testList.size()+"\n");
+												ConcurrentLinkedQueue<List<EntryParam<String, Object>>> testQueue = new ConcurrentLinkedQueue<List<EntryParam<String,Object>>>();
+
+												for (List<EntryParam<String, Object>> test : testList) 
+													testQueue.offer(test);
+
+												//System.out.println("Test queue: "+testQueue.size());
+
+												try {
+
+													List<List<EntryWorkerScore<Integer, String>>> workersPartition = Util.chopped(scoreList, batch.getNeededWorkers());
+
+
+													//System.out.println(workersPartition.toString());
+
+													testCount.set(0);
+													totalTests =  testList.size();
+
+													progressBarBatchTest.setValue(0);
+													progressBarBatchTest.setString("0 %");
+													progressBarBatchTest.setStringPainted(true);
+
+													batchLogger = Logger.getLogger(BatchExecutor.class.getCanonicalName());
+													batchStartedTime = System.currentTimeMillis();
+
+													textAreaBatchInfo.append("Batch started at: "+Util.getCurrentDateTime(batchStartedTime)+"\n");
+													textAreaBatchInfo.append("--------------------------------------\n");
+													batchLogger.debug("Started at: "+batchStartedTime);
+													int i = 1;
+													BatchExecutor batchExec;
+													for (List<EntryWorkerScore<Integer, String>> workers : workersPartition)
+													{
+														try {
+
+															batchExec = new BatchExecutor(batch.getSimulationName(),batch.isBalanced(),testQueue,master,connection,root.getChildCount(),getFPTAddress(),workers,"Batch"+i,1,textAreaBatchInfo);
+
+															batchExec.getObservable().addObserver(JMasterUI.this);
+															batchExec.start();
+
+															//Thread.sleep(2000);
+															//textAreaBatchInfo.append("Batch Executor "+i+" started\n");
+
+															i++;
+
+															//not paraller simulation, I use only one batch executor
+															if(!chckbxParallelBatch.isSelected())
+																break;
+														} catch (Exception e1) {
+															// TODO Auto-generated catch block
+															e1.printStackTrace();
+														}
+
 													}
-													
+
+												} catch (Exception e3) {
+													// TODO Auto-generated catch block
+													e3.printStackTrace();
+												}
+
 											}
-										 
-										 } catch (Exception e3) {
-											// TODO Auto-generated catch block
-											e3.printStackTrace();
+
 										}
-										
-										/* ArrayList<String> worker1 = new ArrayList<String>();
-										 ArrayList<String> worker2 = new ArrayList<String>();
-										 try {
-											 worker1.add(master.getTopicList().get(0));
-											worker2.add(master.getTopicList().get(1));
-										} catch (Exception e2) {
-											// TODO Auto-generated catch block
-											e2.printStackTrace();
-										}
-										 
-										 try {
-											batchExec = new BatchExecutor(batch.getSimulationName(),testQueue,master,progressBarBatchTest,connection,root.getChildCount(),getFPTAddress(),worker1,"Batch1");
-										} catch (Exception e1) {
-											// TODO Auto-generated catch block
-											e1.printStackTrace();
-										}
-										 batchExec.registerListener();
-										 
-										 batchExec.start();
-										 
-										 System.out.println("Batch started1");
-										 try {
-												BatchExecutor batchExec1 = new BatchExecutor(batch.getSimulationName(),testQueue,master,progressBarBatchTest,connection,root.getChildCount(),getFPTAddress(),worker2,"Batch2");
-												 batchExec1 .registerListener();
-												 
-												 batchExec1 .start();
-										 } catch (Exception e1) {
-												// TODO Auto-generated catch block
-												e1.printStackTrace();
-											}
-										
-										 
-										 isBatchTest = true;
-										 
-										 System.out.println("Batch started2"); */
-									 }
-									 
-								 }
-								 else
-									 JOptionPane.showMessageDialog(JMasterUI.this, "Error when loading config file");
-							 }
-								 
-							 else
-								 System.out.println("not valids");
+										else
+											JOptionPane.showMessageDialog(JMasterUI.this, "Error when loading config file");
+									}
+									else
+										JOptionPane.showMessageDialog(JMasterUI.this, "The configuration file is not a valid file");
+								}
+								else
+									JOptionPane.showMessageDialog(JMasterUI.this, xsdFilename +" not exists, can't validate configuration file.");
+							}
+							else
+								JOptionPane.showMessageDialog(JMasterUI.this, "The file "+configFile.getName()+ "is not a configuration file.");
 						} catch (HeadlessException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
-						} /*catch (IOException e1) {
+						} catch (IOException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
-						}*/
+						}
+
 					}
+
+
 				});
 				
 				JPanel panel = new JPanel();
@@ -1788,35 +1925,31 @@ public class JMasterUI extends JFrame  implements Observer{
 							.addContainerGap()
 							.addGroup(gl_jPanelRunBatchTests.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_jPanelRunBatchTests.createSequentialGroup()
+									.addComponent(lblSelectConfigurationFile, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(textFieldConfigFilePath, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE)
+									.addGap(10)
+									.addComponent(buttonChooseConfigFile, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
+								.addGroup(gl_jPanelRunBatchTests.createSequentialGroup()
 									.addComponent(chckbxParallelBatch)
-									.addContainerGap())
-								.addGroup(gl_jPanelRunBatchTests.createParallelGroup(Alignment.LEADING)
-									.addGroup(gl_jPanelRunBatchTests.createSequentialGroup()
-										.addComponent(panel, GroupLayout.DEFAULT_SIZE, 669, Short.MAX_VALUE)
-										.addContainerGap())
-									.addGroup(gl_jPanelRunBatchTests.createSequentialGroup()
-										.addComponent(lblSelectConfigurationFile, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(textFieldConfigFilePath, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE)
-										.addGap(10)
-										.addComponent(buttonChooseConfigFile, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-										.addGap(18)
-										.addComponent(buttonLoadConfig)
-										.addGap(119)))))
+									.addGap(18)
+									.addComponent(buttonLoadConfig))
+								.addComponent(panel, GroupLayout.PREFERRED_SIZE, 666, GroupLayout.PREFERRED_SIZE))
+							.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 				);
 				gl_jPanelRunBatchTests.setVerticalGroup(
 					gl_jPanelRunBatchTests.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_jPanelRunBatchTests.createSequentialGroup()
 							.addContainerGap()
 							.addGroup(gl_jPanelRunBatchTests.createParallelGroup(Alignment.TRAILING)
-								.addComponent(buttonLoadConfig)
 								.addComponent(buttonChooseConfigFile, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-								.addGroup(gl_jPanelRunBatchTests.createParallelGroup(Alignment.BASELINE)
-									.addComponent(textFieldConfigFilePath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addComponent(lblSelectConfigurationFile)))
+								.addComponent(textFieldConfigFilePath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblSelectConfigurationFile))
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(chckbxParallelBatch)
-							.addPreferredGap(ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+							.addGroup(gl_jPanelRunBatchTests.createParallelGroup(Alignment.BASELINE)
+								.addComponent(chckbxParallelBatch)
+								.addComponent(buttonLoadConfig))
+							.addPreferredGap(ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
 							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 261, GroupLayout.PREFERRED_SIZE)
 							.addContainerGap())
 				);
@@ -1829,10 +1962,13 @@ public class JMasterUI extends JFrame  implements Observer{
 					gl_panel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panel.createSequentialGroup()
 							.addContainerGap()
-							.addComponent(lblProgress)
-							.addGap(18)
-							.addComponent(progressBarBatchTest, GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap(234, Short.MAX_VALUE))
+							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+								.addComponent(scrollPane4, GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE)
+								.addGroup(gl_panel.createSequentialGroup()
+									.addComponent(lblProgress)
+									.addGap(18)
+									.addComponent(progressBarBatchTest, GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE)))
+							.addContainerGap())
 				);
 				gl_panel.setVerticalGroup(
 					gl_panel.createParallelGroup(Alignment.LEADING)
@@ -1841,29 +1977,38 @@ public class JMasterUI extends JFrame  implements Observer{
 							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 								.addComponent(lblProgress)
 								.addComponent(progressBarBatchTest, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addContainerGap(201, Short.MAX_VALUE))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(scrollPane4, GroupLayout.PREFERRED_SIZE, 202, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 				);
 				panel.setLayout(gl_panel);
 				jPanelRunBatchTests.setLayout(gl_jPanelRunBatchTests);
 				GroupLayout jPanelSetDistributionLayout = new GroupLayout(jPanelSetDistribution);
-				jPanelSetDistribution.setLayout(jPanelSetDistributionLayout);
 				jPanelSetDistributionLayout.setHorizontalGroup(
-						jPanelSetDistributionLayout.createParallelGroup()
+					jPanelSetDistributionLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(jPanelSetDistributionLayout.createSequentialGroup()
-								.addComponent(jPanelSettings, GroupLayout.PREFERRED_SIZE, 254, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-								.addComponent(jPanelContainerTabbedPane, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-						);
+							.addComponent(jPanelSettings, GroupLayout.PREFERRED_SIZE, 254, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(jPanelContainerTabbedPane, GroupLayout.PREFERRED_SIZE, 707, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap(21, Short.MAX_VALUE))
+				);
 				jPanelSetDistributionLayout.setVerticalGroup(
-						jPanelSetDistributionLayout.createParallelGroup()
+					jPanelSetDistributionLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(jPanelSetDistributionLayout.createSequentialGroup()
-								.addGroup(jPanelSetDistributionLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-										.addComponent(jPanelContainerTabbedPane, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(jPanelSettings, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-										.addContainerGap())
-						);
+							.addGroup(jPanelSetDistributionLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(jPanelSettings, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(jPanelContainerTabbedPane, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+							.addContainerGap())
+				);
+				jPanelSetDistribution.setLayout(jPanelSetDistributionLayout);
 			}
 
+			textAreaBatchInfo = new JTextArea();
+			textAreaBatchInfo.setEditable(false);
+			DefaultCaret caret = (DefaultCaret)textAreaBatchInfo.getCaret();
+			caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+			scrollPane4.setViewportView(textAreaBatchInfo);
+			
 			//---- jLabelPlayButton ----
 			jLabelPlayButton.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/NotStopped.png")));
 
@@ -2067,7 +2212,7 @@ public class JMasterUI extends JFrame  implements Observer{
 						.addGroup(panelMainLayout.createParallelGroup(Alignment.LEADING)
 							.addComponent(jPanelSetDistribution, 0, 986, Short.MAX_VALUE)
 							.addGroup(panelMainLayout.createSequentialGroup()
-								.addGap(589)
+								.addGap(636)
 								.addGroup(panelMainLayout.createParallelGroup(Alignment.TRAILING)
 									.addComponent(jLabelStep, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 									.addGroup(panelMainLayout.createSequentialGroup()
@@ -2106,13 +2251,13 @@ public class JMasterUI extends JFrame  implements Observer{
 							.addComponent(jLabelPlayButton, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addComponent(jLabelPauseButton, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addComponent(jLabelResetButton, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
+							.addGroup(panelMainLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(writeStepLabel, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblTotalSteps))
 							.addGroup(panelMainLayout.createSequentialGroup()
 								.addComponent(jLabelStep, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(jPanelNumStep, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
-							.addGroup(panelMainLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(writeStepLabel, GroupLayout.PREFERRED_SIZE, 16, GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblTotalSteps)))
+								.addComponent(jPanelNumStep, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)))
 						.addContainerGap(13, Short.MAX_VALUE))
 			);
 			panelMain.setLayout(panelMainLayout);
@@ -2176,7 +2321,13 @@ public class JMasterUI extends JFrame  implements Observer{
 	private void connect(){
 		try
 		{
-			
+			if(csManager == null)
+			{
+				RMI_IP = textFieldAddress.getText(); 
+				csManager = new ActiveMQManager(RMI_IP, 61617); //"172.16.15.127"
+				checkCommunicationServerStatus();
+				setEnableActiveMQControl(true);
+			}
 			
 			ip = textFieldAddress.getText();			    
 			port = textFieldPort.getText();  
@@ -2194,13 +2345,7 @@ public class JMasterUI extends JFrame  implements Observer{
 				
 				notifyArea.append("Connection estabilished.\n");
 				connected = true;
-				peers = master.getTopicList();
-				for(String p : peers)
-				{
-					master.info(p);
-					root.add(new DefaultMutableTreeNode(p));
-				}
-				labelWriteNumOfPeer.setText(""+peers.size());
+				checkPeers();
 				dont = true;
 				
 				
@@ -2208,6 +2353,16 @@ public class JMasterUI extends JFrame  implements Observer{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void checkPeers() throws Exception {
+		peers = master.getTopicList();
+		for(String p : peers)
+		{
+			master.info(p);
+			root.add(new DefaultMutableTreeNode(p));
+		}
+		labelWriteNumOfPeer.setText(""+peers.size());
 	}
 
 	/*private ArrayList<String> checkSyntaxForm(int num,int width,int height,int numAgentsForPeer){
@@ -2992,8 +3147,13 @@ public class JMasterUI extends JFrame  implements Observer{
 			if(value ==  totalTests)
 			{
 				progressBarBatchTest.setString("Done!");
-				
-				batchLogger.debug("Ended at: "+System.currentTimeMillis());
+				long end = System.currentTimeMillis();
+				long seconds = TimeUnit.SECONDS.convert((end - batchStartedTime), TimeUnit.MILLISECONDS) % 60;
+				long minutes = TimeUnit.MINUTES.convert((end - batchStartedTime), TimeUnit.MILLISECONDS);
+				long hours = TimeUnit.HOURS.convert((end - batchStartedTime), TimeUnit.MILLISECONDS);
+				textAreaBatchInfo.append("Batch Ended at: "+Util.getCurrentDateTime(end)+"\n");
+				textAreaBatchInfo.append("Batch execution time (h:m:s): "+hours+":"+minutes+":"+seconds+"\n");
+				batchLogger.debug("Ended at: "+end);
 			}
 		}
 	}
@@ -3101,7 +3261,7 @@ public class JMasterUI extends JFrame  implements Observer{
 		double ramFactor = 1;
 		System.out.println("#core: "+workerInfo.getNum_core());
 		System.out.println("Ram: "+workerInfo.getMemory());
-		System.out.println("Memroy: "+(workerInfo.getMemory()/(1024*1024)));
+		System.out.println("Memory: "+(workerInfo.getMemory()/(1024*1024)));
 		return  (int) ((workerInfo.getNum_core()*cpuFactor) + ((workerInfo.getMemory()/(1024*1024))/1000)* ramFactor);
 	}
 	
@@ -3118,7 +3278,6 @@ public class JMasterUI extends JFrame  implements Observer{
 			{
 				ParamFixed pf = (ParamFixed) p;
 				s = new HashSet<EntryParam<String, Object>>();
-				// da aggiungere anche per range e per altri tipi
 				if(pf.getType().equals("double"))
 					s.add(new EntryParam<String, Object>(pf.getName(),Double.parseDouble(pf.getValue()),ParamType.SIMULATION));
 				if(pf.getType().equals("int"))
@@ -3132,17 +3291,36 @@ public class JMasterUI extends JFrame  implements Observer{
 			{
 				ParamRange pr = (ParamRange) p;
 				s = new HashSet<EntryParam<String, Object>>();
-				int end = Integer.parseInt(pr.getEnd());
-				int inc = Integer.parseInt(pr.getIncrement());
-				int start = Integer.parseInt(pr.getStart());
-				int limit = (end-start)/inc;
-				int last = start;
-				s.add(new EntryParam<String, Object>(pr.getName(),start,ParamType.SIMULATION));
-				for(int i=0;i<limit;i++)
-				{		
-					s.add(new EntryParam<String, Object>(pr.getName(),last+inc,ParamType.SIMULATION));
-					last += inc;
+				if(pr.getType().equals("int"))
+				{
+					int end = Integer.parseInt(pr.getEnd());
+					int inc = Integer.parseInt(pr.getIncrement());
+					int start = Integer.parseInt(pr.getStart());
+					int limit = (end-start)/inc;
+					int last = start;
+					s.add(new EntryParam<String, Object>(pr.getName(),start,ParamType.SIMULATION));
+					for(int i=0;i<limit;i++)
+					{		
+						s.add(new EntryParam<String, Object>(pr.getName(),last+inc,ParamType.SIMULATION));
+						last += inc;
+					}
 				}
+				if(pr.getType().equals("double"))
+				{
+					double end = Double.parseDouble(pr.getEnd());
+					double inc = Double.parseDouble(pr.getIncrement());
+					double start = Double.parseDouble(pr.getStart());
+					double limit = (end-start)/inc;
+					double last = start;
+					s.add(new EntryParam<String, Object>(pr.getName(),start,ParamType.SIMULATION));
+					for(int i=0;i<limit;i++)
+					{		
+						s.add(new EntryParam<String, Object>(pr.getName(),last+inc,ParamType.SIMULATION));
+						last += inc;
+					}
+				}
+				
+				
 				totalTests *= s.size();
 			}
 			if(p.getMode().equals("list"))
@@ -3259,16 +3437,33 @@ public class JMasterUI extends JFrame  implements Observer{
 			{
 				ParamRange pr = (ParamRange) p;
 				s = new HashSet<EntryParam<String, Object>>();
-				int end = Integer.parseInt(pr.getEnd());
-				int inc = Integer.parseInt(pr.getIncrement());
-				int start = Integer.parseInt(pr.getStart());
-				int limit = (end-start)/inc;
-				int last = start;
-				s.add(new EntryParam<String, Object>(pr.getName(),start,ParamType.GENERAL));
-				for(int i=0;i<limit;i++)
-				{		
-					s.add(new EntryParam<String, Object>(pr.getName(),last+inc,ParamType.GENERAL));
-					last += inc;
+				if(pr.getType().equals("int"))
+				{
+					int end = Integer.parseInt(pr.getEnd());
+					int inc = Integer.parseInt(pr.getIncrement());
+					int start = Integer.parseInt(pr.getStart());
+					int limit = (end-start)/inc;
+					int last = start;
+					s.add(new EntryParam<String, Object>(pr.getName(),start,ParamType.GENERAL));
+					for(int i=0;i<limit;i++)
+					{		
+						s.add(new EntryParam<String, Object>(pr.getName(),last+inc,ParamType.GENERAL));
+						last += inc;
+					}
+				}
+				if(pr.getType().equals("double"))
+				{
+					double end = Double.parseDouble(pr.getEnd());
+					double inc = Double.parseDouble(pr.getIncrement());
+					double start = Double.parseDouble(pr.getStart());
+					double limit = (end-start)/inc;
+					double last = start;
+					s.add(new EntryParam<String, Object>(pr.getName(),start,ParamType.GENERAL));
+					for(int i=0;i<limit;i++)
+					{		
+						s.add(new EntryParam<String, Object>(pr.getName(),last+inc,ParamType.GENERAL));
+						last += inc;
+					}
 				}
 				totalTests *= s.size();
 			}
@@ -3503,6 +3698,7 @@ public class JMasterUI extends JFrame  implements Observer{
 		jMenuItemUpdateWorker.setEnabled(false);
 		return jMenuItemUpdateWorker;
 	}
+	
 	
 	
 	private boolean isThinSimulation(String simulation) {
