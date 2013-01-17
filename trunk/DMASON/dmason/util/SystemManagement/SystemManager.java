@@ -23,6 +23,8 @@ public class SystemManager {
 		info.setArch(os.getArch());
 		info.setAddress(InetAddress.getLocalHost().getHostAddress());
 		info.setNum_core(os.getAvailableProcessors());
+		com.sun.management.OperatingSystemMXBean sunBean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+		info.setMemory(sunBean.getTotalPhysicalMemorySize());
 		info.setoS(os.getName()+" v"+os.getVersion());
 		info.setHostName(id);
 		return info;

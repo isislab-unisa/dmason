@@ -17,14 +17,18 @@
 
 package dmason.batch;
 
+import java.awt.Container;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+
+import javax.swing.JTextArea;
 
 import dmason.batch.data.EntryParam;
 import dmason.batch.data.EntryParam.ParamType;
@@ -32,6 +36,7 @@ import dmason.batch.data.EntryWorkerScore;
 import dmason.batch.data.GeneralParam;
 import dmason.batch.data.TestParam;
 import dmason.sim.field.grid.DSparseGrid2DFactory;
+import dmason.util.Util;
 import dmason.util.SystemManagement.EntryVal;
 import dmason.util.SystemManagement.MasterDaemonStarter;
 import dmason.util.connection.Address;
@@ -65,9 +70,10 @@ public class BatchExecutor extends Thread
 	private int currentTest;
 	private boolean isBalanced;
 	private int mode;
-	private GeneralParam genP;	
+	private GeneralParam genP;
+	private JTextArea notifyArea;	
 
-	public BatchExecutor(String simName, boolean isBalanced, ConcurrentLinkedQueue<List<EntryParam<String, Object>>> testQueue, MasterDaemonStarter master, ConnectionNFieldsWithActiveMQAPI con,int NumPeers,Address ftpAddress, List<EntryWorkerScore<Integer, String>> workers,String prefix, int init) 
+	public BatchExecutor(String simName, boolean isBalanced, ConcurrentLinkedQueue<List<EntryParam<String, Object>>> testQueue, MasterDaemonStarter master, ConnectionNFieldsWithActiveMQAPI con,int NumPeers,Address ftpAddress, List<EntryWorkerScore<Integer, String>> workers,String prefix, int init, JTextArea textAreaBatchInfo) 
 	{
 		super();
 		this.testQueue = testQueue;
@@ -85,6 +91,8 @@ public class BatchExecutor extends Thread
 		this.myTopic = prefix;
 		this.isBalanced = isBalanced;
 		
+		this.notifyArea = textAreaBatchInfo;
+		
 		currentTest = this.testCounter.getAndIncrement();
 		
 		
@@ -99,18 +107,18 @@ public class BatchExecutor extends Thread
 		// TODO Auto-generated method stub
 		super.run();
 
-		System.out.println("Test: "+testQueue.size());
+		//System.out.println("Test: "+testQueue.size());
 
 		while(!testQueue.isEmpty())
 		//for (List<EntryParam<String, Object>> paramList : testQueue) 
 		{
-			System.out.println("Params: "+testQueue.peek());
+			notifyArea.append("["+myTopic+"] "+"Experiment #"+currentTest+" params: "+testQueue.peek()+"\n");
 			
 			TestParam testParam = preProcess(testQueue.poll());
 
 			genP = testParam.getGenParams();
 			HashMap<String, EntryVal<Integer, Boolean>> config = assignRegions(genP.getRows()*genP.getColumns(),numPeers);
-			System.out.println("oooooo: "+config.toString());
+			//System.out.println("oooooo: "+config.toString());
 			
 			int mode = getMode(genP.getRows(),genP.getColumns());
 			if(mode != -1)
@@ -118,10 +126,18 @@ public class BatchExecutor extends Thread
 			else
 				break;
 			
-			System.out.println("CURRENT TEST: "+currentTest);
+			ArrayList<String> errors = checkParams(genP);
+			if(!errors.isEmpty())
+			{
+				notifyArea.append("["+myTopic+"] "+"Experiment #"+currentTest+" has wrong parameters: \n"+errors.toString());
+				continue;
+			}
+				
+			//System.out.println("CURRENT TEST: "+currentTest);
 			master.startBatch(genP, config, simulationName , testParam.getSimParams(),fptAddress,myTopic,currentTest);
 
-			System.out.println("Wait until the workes are ready");
+			notifyArea.append("["+myTopic+"] "+"Wait until the workes are ready"+"\n");
+			
 			while(!isCanStartAnother())
 			{
 				lock.lock();
@@ -136,7 +152,10 @@ public class BatchExecutor extends Thread
 			}
 			canStartAnother = false;
 			
-			System.out.println("play");
+			long startedTime = System.currentTimeMillis();
+			
+			notifyArea.append("Experiment #"+currentTest+ " started at: "+Util.getCurrentDateTime(startedTime)+"\n");
+			notifyArea.append("["+myTopic+"] "+"Start workers"+"\n");
 			try {
 				master.play(myWorkers);
 			} catch (Exception e) {
@@ -145,7 +164,7 @@ public class BatchExecutor extends Thread
 
 			try {
 
-				System.out.println("Wait until the test are done");
+				notifyArea.append("["+myTopic+"] "+"Wait execution"+"\n");
 				while(!isCanStartAnother())
 				{
 					lock.lock();
@@ -156,7 +175,8 @@ public class BatchExecutor extends Thread
 				}
 				canStartAnother = false;
 
-				System.out.println("test Done!!!");
+				notifyArea.append("["+myTopic+"] "+"Execution done!"+"\n");
+				
 				
 				// must clear topic
 				connection.resetBatchTopic(myTopic);
@@ -167,7 +187,7 @@ public class BatchExecutor extends Thread
 
 					master.reset(myWorkers);
 
-					System.out.println("Wait until the worker are reset");
+					notifyArea.append("["+myTopic+"] "+"Preparing next experiment"+"\n");
 					while(!isCanStartAnother())
 					{
 						lock.lock();
@@ -177,7 +197,6 @@ public class BatchExecutor extends Thread
 						lock.unlock();
 					}
 					canStartAnother = false;	
-					System.out.println("resetted");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -188,7 +207,16 @@ public class BatchExecutor extends Thread
 				obs.setChanged();
 				obs.notifyObservers("Test done");
 				
+				long endTime = System.currentTimeMillis();
+				notifyArea.append("Experiment #"+currentTest+ " ended at: "+Util.getCurrentDateTime(endTime)+"\n");
 				
+				long seconds = TimeUnit.SECONDS.convert((endTime - startedTime), TimeUnit.MILLISECONDS) % 60;
+				long minutes = TimeUnit.MINUTES.convert((endTime - startedTime), TimeUnit.MILLISECONDS);
+				long hours = TimeUnit.HOURS.convert((endTime - startedTime), TimeUnit.MILLISECONDS);
+				notifyArea.append("Experiment #"+currentTest+ " execution time (h:m:s): "+hours+":"+minutes+":"+seconds+"\n");
+				
+				if(myTopic.contains("1"))
+					notifyArea.append("-----------------------------------------------\n");
 				currentTest = testCounter.getAndIncrement();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -201,6 +229,10 @@ public class BatchExecutor extends Thread
 		System.out.println("Finished!!!");
 		
 	}
+
+
+
+
 
 
 
@@ -228,26 +260,51 @@ public class BatchExecutor extends Thread
 
 	public Observable getObservable() {return obs;}
 
+	private ArrayList<String> checkParams(GeneralParam params) {
+		
+		ArrayList<String> errors = new ArrayList<String>();
+		int WIDTH = params.getWidth();
+		int HEIGHT = params.getHeight();
+		int maxDistance = params.getMaxDistance();
+		int rows = params.getRows();
+		int columns = params.getColumns();
+		int MODE = params.getMode();
+		
+		if(rows == 0 || columns == 0)
+			errors.add("Rows or Columns must not be equals to 0\n");
+		
+		if(rows == 1 && columns == 1)
+			errors.add("Both Rows and Columns must not be equals to 1\n");
+		
+	
+		if(MODE == DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE && (rows != columns || (Integer)WIDTH % 3*columns!=0 || (Integer)HEIGHT % 3*rows != 0 || maxDistance >= ((Integer)WIDTH/columns) / 3 / 2))
+			errors.add("Width and height are not divisible by 3 * sqrt(rows*columns) or rows is not equal to columns\n");
+				
+		if((Math.floor((Integer)WIDTH/columns)<2*maxDistance+1))
+			errors.add("MAX_DISTANCE too large for width of regions\n");
+		else if((Math.floor((Integer)HEIGHT/rows)<2*maxDistance+1))
+			errors.add("MAX_DISTANCE too large for height of regions\n");
+		
+		
+		return errors;
+	}
 	private int getMode(int rows, int columns)
 	{
-		if(rows==0 || columns==0)
-			//errors.add("Rows or Columns must not be equals to 0");
-			return -1;
 		if(rows==1)
+		{
 			if(!isBalanced)
 				mode = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
 			else
 				mode = DSparseGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE;
+		}
 		else
+		{	
 			if(!isBalanced)
 				mode = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
-			
+			else
 				mode = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
-			
-		if(mode == DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE && rows != columns && (Integer)genP.getWidth() % 3*rows != 0)
-		//	errors.add("Width and height are not divisible by 3 * sqrt(rows*columns) or rows is not equal to columns");
-			return -1;
-		
+		}
+	
 		return mode;
 	}
 	

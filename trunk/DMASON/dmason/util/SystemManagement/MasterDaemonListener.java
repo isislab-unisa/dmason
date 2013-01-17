@@ -56,7 +56,7 @@ public class MasterDaemonListener extends MyMessageListener
 			
 			if(mh.get("info")!=null)
 			{
-				System.out.println("Ricevuto infoooooooooooooooo");
+				//System.out.println("Ricevuto infoooooooooooooooo");
 				PeerStatusInfo info = (PeerStatusInfo) mh.get("info");
 				infos.put(info.getHostName(), info);
 				

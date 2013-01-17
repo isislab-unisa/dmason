@@ -118,13 +118,16 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 	
 	private String digest;
 
+	private BeaconMessageListener beaconListener;
+
 	public StartWorkerWithGui(boolean start, boolean up, boolean batch, String topic,String ipCS,String portCS)
 	{
 		initComponents();
 
-		BeaconMessageListener  beaconListener = new BeaconMessageListener(cmbIp, cmbPort);
+		beaconListener = new BeaconMessageListener();
+		beaconListener.addObserver(this);
 		
-		beaconListener.start();
+		new Thread(beaconListener).start();
 		
 		connection = new ConnectionNFieldsWithActiveMQAPI();
 
@@ -216,8 +219,7 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 			if(logPath.exists())
 				FileUtils.cleanDirectory(logPath);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//not a problem
 		}
 		
 		logger = Logger.getLogger(StartWorker.class.getCanonicalName());
@@ -446,11 +448,21 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 	public void update(Observable arg0, Object arg1) {
 		// TODO Auto-generated method stub
 		
-		if(connection.isConnected())
-			textArea.append("Connection restabilished\n");
-		
+		if(arg1.equals("Beacon"))
+		{
+			cmbIp.addItem(beaconListener.getIp());
+			cmbPort.addItem(beaconListener.getPort());
+			System.out.println("Ip: "+beaconListener.getIp()+" Port: "+beaconListener.getPort());
+		}
 		else
-			textArea.append("Connection refused\n");
+		{
+			if(connection.isConnected())
+				textArea.append("Connection restabilished\n");
+			
+			else
+				textArea.append("Connection refused\n");
+		}
+		
 	}
 	
 	public void exit()

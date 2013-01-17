@@ -1,7 +1,10 @@
 package dmason.util;
 
 import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -57,5 +60,22 @@ public final class Util
 	        );
 	    }
 	    return parts;
+	}
+	
+	public static String getCurrentDateTime(long now) {
+		//
+		// Create a DateFormatter object for displaying date information.
+		//
+		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS");
+		 
+
+		//
+		// Create a calendar object that will convert the date and time value
+		// in milliseconds to date. We use the setTimeInMillis() method of the
+		// Calendar object.
+		//
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(now);
+		return formatter.format(calendar.getTime());
 	}
 }
