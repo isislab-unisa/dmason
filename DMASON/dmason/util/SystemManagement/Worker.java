@@ -228,7 +228,7 @@ public class Worker extends Observable
 			try
 			{
 				if (gui)
-					connection.publishToTopic(console.simulation.state.schedule.getSteps(), "step","step");
+					connection.publishToTopic(console.getSimulation().state.schedule.getSteps(), "step","step");
 				else
 					connection.publishToTopic(state.schedule.getSteps()-1,"step","step"); 
 						

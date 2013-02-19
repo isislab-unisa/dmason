@@ -74,7 +74,7 @@ public class ConsoleZoom extends sim.display.Console {
     		sendAck();
     		pressStop();  
     	
-            simulation.quit();  
+            getSimulation().quit();  
     		dispose();
     	    allControllers.remove(this);
     	    
@@ -83,7 +83,7 @@ public class ConsoleZoom extends sim.display.Console {
     		   
     			Display display = new Display(con, mode, 
     					numCell, width, 
-    					height, absolutePath,simul,simulation.getSimulationInspectedObject().getClass().getCanonicalName());
+    					height, absolutePath,simul,getSimulation().getSimulationInspectedObject().getClass().getCanonicalName());
     			   			
 		
 		} catch (Exception e) {
