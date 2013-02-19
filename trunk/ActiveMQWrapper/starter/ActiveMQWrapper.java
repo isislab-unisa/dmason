@@ -49,7 +49,7 @@ public class ActiveMQWrapper implements Command
 	private static String SUN_JMX;// = "--jmxurl service:jmx:rmi:///jndi/rmi://localhost:1616/jmxrmi";
 	private static String ACTIVEMQ_CLASSPATH;// = ACTIVEMQ_CONF+";"+ACTIVEMQ_BASE+"/conf;"+ACTIVEMQ_CONF;
 	
-	private final static String WRAPPER_CONF = "wrapperConf";
+	private final static String WRAPPER_CONF = "configuration";
 	private static ArrayList<String> command = new ArrayList<String>();
 	
 	private static long delay = 1;
