@@ -1,6 +1,5 @@
-/**
- * Copyright 2012 Università degli Studi di Salerno
-
+/* 
+   Copyright 2012 Università degli Studi di Salerno
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,11 +14,14 @@
    limitations under the License.
  */
 
-package dmason.sim.field;
+package dmason.sim.globals;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import dmason.sim.field.DistributedField;
+import dmason.sim.field.MessageListener;
+import dmason.sim.field.UpdaterThreadForListener;
 import dmason.util.connection.ConnectionWithJMS;
 
 /**
@@ -28,34 +30,24 @@ import dmason.util.connection.ConnectionWithJMS;
  * @param <E> the type of coordinates
  * @param <F> the type of locations
  */
-public class UpdaterThreadForListener extends Thread implements Serializable
+public class UpdaterThreadForGlobalsDataListener extends UpdaterThreadForListener
 {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	protected ConnectionWithJMS con;
-	CellType type;
-	protected ArrayList<DistributedField> fields;
-	protected ArrayList<MessageListener> listeners;
-	public String topic;
+	Reducer reducer;
 
-
-	public UpdaterThreadForListener(ConnectionWithJMS con,String topic,ArrayList<DistributedField> fields, ArrayList<MessageListener> listeners) {
-
-		this.con=con;
-		this.fields=fields;
-		this.topic=topic;
-		this.listeners = listeners;
-	
+	public UpdaterThreadForGlobalsDataListener(ConnectionWithJMS con, Reducer reducer, String topic, ArrayList<MessageListener> listeners) {
+		
+		super( con, topic, null, listeners);
+		this.reducer = reducer;
 	}
 
 	public void run()
 	{
 		try 
 		{
-			//System.out.println("TOPIC"+topic);
-			MessageListener m = new MessageListener(fields, topic);
+			MessageListenerGlobalsData m = new MessageListenerGlobalsData(reducer, topic);
 			listeners.add(m);
 			con.asynchronousReceive(topic,m);
 		} catch (Exception e) { e.printStackTrace(); }

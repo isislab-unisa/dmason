@@ -36,6 +36,7 @@ import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.connection.ConnectionWithJMS;
 import dmason.util.connection.ProxyConnection;
+import dmason.util.visualization.VisualizationUpdateMap;
 
 /**
  *  Abstract class for Distributed Continuous 2D
@@ -100,7 +101,12 @@ public abstract class DContinuous2D extends Continuous2D  implements Distributed
 	 * This field's height.
 	 */
 	public double my_height;
+	
+	
 	public int MAX_DISTANCE;
+	
+	/** Will contain globals parameters */
+	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
 	public RegionDouble myfield;
 	public RegionMap<Double,Double2D> rmap=new RegionMap<Double,Double2D>();
@@ -109,7 +115,7 @@ public abstract class DContinuous2D extends Continuous2D  implements Distributed
 	public UpdateMap<Double,Double2D> updates=new UpdateMap<Double,Double2D>();
 	public HashMap<Integer,HashMap<CellType, MyCellInterface>> listGrid;
 	public ArrayList<ArrayList<Region<Double, Double2D>>> updates_cacheLB;
-	public SimState sm ;
+	public SimState sm;
     public ConnectionWithJMS connection=new ConnectionNFieldsWithActiveMQAPI();
 	public ArrayList<String> neighborhood=new ArrayList<String>();
 	public ContinuousPortrayal2D p;

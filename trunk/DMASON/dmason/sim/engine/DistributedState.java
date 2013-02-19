@@ -21,17 +21,18 @@ import java.util.ArrayList;
 
 import javax.jms.JMSException;
 
+import sim.engine.SimState;
 import dmason.sim.field.CellType;
 import dmason.sim.field.DistributedField;
 import dmason.sim.field.MessageListener;
 import dmason.sim.field.UpdaterThreadForListener;
+import dmason.sim.globals.UpdaterThreadForGlobalsListener;
 import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.trigger.Trigger;
 import dmason.util.visualization.ThreadVisualizationCellMessageListener;
 import dmason.util.visualization.ThreadZoomInCellMessageListener;
 import ec.util.MersenneTwisterFast;
-import sim.engine.SimState;
 
 /**
  * An abstract class that inherits all SimState functionalities and adds
@@ -76,14 +77,6 @@ public abstract class DistributedState<E> extends SimState {
 
 	public void init_connection() {
 
-		try {
-			connection.createTopic(topicPrefix+"GRAPHICS", 1);
-			connection.subscribeToTopic(topicPrefix+"GRAPHICS");
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		ThreadVisualizationCellMessageListener thread = new ThreadVisualizationCellMessageListener(
 				(ConnectionNFieldsWithActiveMQAPI) connection,
 				((DistributedMultiSchedule) this.schedule));
@@ -105,6 +98,20 @@ public abstract class DistributedState<E> extends SimState {
 			connection_IS_toroidal();
 		else
 			connection_NO_toroidal();
+		
+		// Support for Global Parameters
+		try {
+			connection.subscribeToTopic(topicPrefix + "GLOBAL_REDUCED");
+			UpdaterThreadForGlobalsListener ug = new UpdaterThreadForGlobalsListener(
+					connection,
+					topicPrefix + "GLOBAL_REDUCED",
+					((DistributedMultiSchedule) schedule).fields,
+					listeners);
+			ug.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	private void connection_IS_toroidal() {
@@ -330,9 +337,6 @@ public abstract class DistributedState<E> extends SimState {
 							((DistributedMultiSchedule) schedule).fields, listeners);
 					u1.start();
 				}
-				
-
-			
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

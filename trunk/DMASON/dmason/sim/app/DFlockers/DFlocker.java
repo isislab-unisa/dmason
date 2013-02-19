@@ -136,7 +136,7 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
 	{     
 		final DFlockers flock = (DFlockers)state;
 		loc = flock.flockers.getObjectLocation(this);
-
+		
 		if (dead) return;
     	        
 		Bag b = getNeighbors((DistributedState)state);
