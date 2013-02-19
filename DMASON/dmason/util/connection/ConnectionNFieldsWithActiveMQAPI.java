@@ -25,8 +25,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Set;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.logging.Logger;
 
 import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
@@ -45,15 +43,10 @@ import org.apache.activemq.ActiveMQTopicPublisher;
 import org.apache.activemq.ActiveMQTopicSession;
 import org.apache.activemq.ActiveMQTopicSubscriber;
 import org.apache.activemq.advisory.DestinationSource;
-import org.apache.activemq.broker.BrokerFactory;
-import org.apache.activemq.broker.BrokerService;
-import org.apache.activemq.broker.jmx.BrokerView;
 import org.apache.activemq.broker.jmx.BrokerViewMBean;
-import org.apache.activemq.broker.jmx.ManagedRegionBroker;
 import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.activemq.transport.TransportListener;
-import org.apache.activemq.xbean.BrokerFactoryBean;
 
 public class ConnectionNFieldsWithActiveMQAPI extends Observable implements ConnectionWithJMS, Serializable, TransportListener 
 {
@@ -115,21 +108,6 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	@Override
 	public boolean setupConnection(Address providerAddr)
 	{
-		/*
-		 * As current strategy in dmason.util.visualization, 
-		 * since I need to use reflection on the simulation's class
-		 * instance, I just use the standard constructor (the one
-		 * accepting an Object[] as parameter). This will cause the
-		 * instance to try to connect to ActiveMQ. In order to
-		 * prevent the instance to actually connect to the server,
-		 * I just pass invalid values for Address and IP.
-		 * BUT! Using failover will make the instance to wait forever.
-		 * So, just for developing purposes, I will disable failover
-		 * at the moment. If this copy of the class is found on the SVN...
-		 * forgive me, it was a mistake :P
-		 * 
-		 * Luca Vicidomini
-		 */
 		String strAddr = "failover:tcp://" + providerAddr.getIPaddress() + ":" + providerAddr.getPort();
 
 		// Create an ActiveMQConnectionFactory

@@ -3,6 +3,7 @@ package dmason.sim.field.util;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 import sim.engine.SimState;
 import dmason.sim.engine.DistributedState;
@@ -27,7 +28,7 @@ public class GlobalParametersUtils
 	 * @param globalsNames
 	 * @param globalsMethods
 	 */
-	public static void buildGlobalsList(DistributedState sm, ConnectionWithJMS connection, ArrayList<String> globalsNames, ArrayList<Method> globalsMethods)
+	public static void buildGlobalsList(DistributedState sm, ConnectionWithJMS connection, String topicPrefix, ArrayList<String> globalsNames, ArrayList<Method> globalsMethods)
 	{
 		Class<?> simClass = sm.getClass();
 		
@@ -42,11 +43,14 @@ public class GlobalParametersUtils
 		{
 			try {
 				/*
-				 * Create/subscribe topic "GLOBALS". This topic isn't related
+				 * Create/subscribe topic "GLOBAL_DATA". This topic isn't related
 				 * to any field, so we pass '1' as second parameter so getUpdates()
 				 * will work.
 				 */
-				connection.createTopic("GLOBALS", 1);
+				connection.createTopic(topicPrefix + "GLOBAL_DATA", 1);
+				connection.createTopic(topicPrefix + "GLOBAL_REDUCED", 1);
+				//connection.subscribeToTopic(topicPrefix + "GLOBAL_DATA");
+				connection.subscribeToTopic(topicPrefix + "GLOBAL_REDUCED");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -60,7 +64,8 @@ public class GlobalParametersUtils
 					try {
 						// Build the list containing global parameters' method reference
 						// This list allows for faster calling later.
-						globalsMethods.add(simClass.getMethod("reduce" + ds.getName(pi), Object[].class));
+						//globalsMethods.add(simClass.getMethod("reduce" + ds.getName(pi), Object[].class));
+						globalsMethods.add(simClass.getMethod("setGlobal" + ds.getName(pi), Object.class));
 					} catch (SecurityException e) {
 						e.printStackTrace();
 					} catch (NoSuchMethodException e) {
@@ -84,10 +89,10 @@ public class GlobalParametersUtils
 	 * @param globalsNames
 	 * @param connection
 	 */
-	public static void sendGlobalParameters(SimState sm, ConnectionWithJMS connection, CellType cellId, double currentTime, ArrayList<String> globalsNames)
+	public static void sendGlobalParameters(SimState sm, ConnectionWithJMS connection, String topicPrefix, CellType cellId, double currentTime, ArrayList<String> globalsNames)
 	{
 		Class<?> simClass = sm.getClass();
-		
+				
 		// Prepare the object that will contain names and values of the globals 
 		RemoteSnap globalMap = new RemoteSnap(
 				cellId,
@@ -108,14 +113,44 @@ public class GlobalParametersUtils
 			}
 		}
 		
-		// Publish global parameters to topic "GLOBALS" 
+		// Publish global parameters to topic "GLOBAL_DATA" 
 		try
 		{
-			connection.publishToTopic(globalMap, "GLOBALS", "GLOBALS");
+			connection.publishToTopic(globalMap, topicPrefix + "GLOBAL_DATA", "GLOBALS");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	public static void receiveAndUpdate(DistributedField field, ArrayList<String> globalsNames, ArrayList<Method> globalsMethods)
+	{
+		SimState sm = field.getState();
+		Class<?> simClass = sm.getClass();
+		HashMap<String, Object> globalUpdates = null;
+		try {
+			// Second parameter is 1 because we receive a single, reduced, message
+			globalUpdates = field.getGlobals().getUpdates(sm.schedule.getSteps(), 1);
+			RemoteSnap globalSnap = (RemoteSnap)(globalUpdates.values().toArray()[0]);
+			Set<String> propertyNames = globalSnap.stats.keySet();
+			for (String propName : propertyNames)
+			{
+				Method m;
+				try {
+					m = simClass.getMethod("setGlobal" + propName, Object.class);
+					m.invoke(sm, new Object[] { globalSnap.stats.get(propName) } );
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			globalUpdates = new HashMap<String, Object>();
+		}
+		return;
+	}
+	
 	
 	/**
 	 * This method should be called by a field after the call to

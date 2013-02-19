@@ -18,33 +18,23 @@
 package dmason.sim.engine;
 
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 
-
-
-
-
-
-
+import sim.engine.Schedule;
+import sim.engine.SimState;
+import sim.engine.Steppable;
 import dmason.sim.field.CellType;
 import dmason.sim.field.DistributedField;
 import dmason.sim.field.UpdatePositionInterface;
 import dmason.sim.loadbalancing.LoadBalancingInterface;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.visualization.ViewerMonitor;
-import sim.engine.Schedule;
-import sim.engine.SimState;
-import sim.engine.Steppable;
 
 
 /**
@@ -211,8 +201,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 
 					loggerBalance.addAppender(file2); */
 			}
-
-				
+								
 				numStep = getSteps();
 				// end profiling code
 		

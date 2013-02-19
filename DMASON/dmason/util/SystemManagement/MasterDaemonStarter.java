@@ -202,7 +202,10 @@ public class MasterDaemonStarter implements Observer
 				{
 					StartUpData data = new StartUpData();
 					if (cnt == numRegions / 2)
+					{
 						data.setStep(true);
+						data.reducer = true;
+					}
 	
 					if (config.get(workerTopic).isFlagTrue())
 					{
@@ -253,8 +256,15 @@ public class MasterDaemonStarter implements Observer
 				for (int k=0;k<columns;k++){
 					StartUpData data = new StartUpData();
 					// Set step on the central region
-					if (i==k /*&& i == Math.sqrt(numRegions) / 2*/)
+					if (i==k /*&& i == Math.sqrt(numRegions) / 2*/) {
 						data.setStep(true);
+					}
+					
+					if (i == rows / 2 && k == columns / 2)
+					{
+						data.reducer = true;
+					}
+					
 					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
 					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode()); 
 					genParam.setI(i);
@@ -320,8 +330,10 @@ public class MasterDaemonStarter implements Observer
 				for (int k=0;k<columns;k++){
 					StartUpData data = new StartUpData();
 					// Set step on the central region
-					if (i==k)
+					if (i==k) {
 						data.setStep(true);
+						data.reducer = true;
+					}
 					//data.setDef(DAntsForage.class);
 					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE});
 					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode()); 
@@ -506,8 +518,10 @@ public class MasterDaemonStarter implements Observer
 				for (int i = 0; i < fieldsInWorker; i++)
 				{
 					StartUpData data = new StartUpData();
-					if (cnt == numRegions / 2)
+					if (cnt == numRegions / 2) {
 						data.setStep(true);
+						data.reducer = true;
+					}
 	
 					if (config.get(workerTopic).isFlagTrue())
 					{
@@ -561,6 +575,10 @@ public class MasterDaemonStarter implements Observer
 					// Set step on the central region
 					if (i==k /*&& i == Math.sqrt(numRegions) / 2*/)
 						data.setStep(true);
+					
+					if (i==rows/2 && k==rows/2)
+						data.reducer = true;
+					
 					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
 					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getMaxStep()); 
 					genParam.setI(i);

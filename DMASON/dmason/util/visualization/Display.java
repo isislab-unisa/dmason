@@ -116,9 +116,6 @@ public class Display extends GUIState
 						BufferedImage tmpImage = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 						String comboCell = "ALL";//(String)comboBoxCell.getSelectedItem();
 						
-						// Used for drawing
-						int cellsPerDimension = fieldMode == DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE ? numCells : (int)Math.sqrt(numCells);
-						
 						// Overwrite current list of active cells
 						short activeCellsI = 0;
 						
@@ -190,7 +187,7 @@ public class Display extends GUIState
 						imageView.repaint();
 						step++;
 						
-						// Update the simulation object (if anty)
+						// Update the simulation object (if any)
 						if (state != null)
 						{
 							((InspectableSchedule)Display.this.state.schedule).timeWarp(step, time);
@@ -344,7 +341,7 @@ public class Display extends GUIState
 		
 		try {
 			con.createTopic("GRAPHICS",1);
-			con.subscribeToTopic("GRAPHICS");
+			//con.subscribeToTopic("GRAPHICS");
 			con.publishToTopic("ENTER", "GRAPHICS", "GRAPHICS");
 			
 			// Save the list of active workers
@@ -454,7 +451,7 @@ public class Display extends GUIState
 			 * Another solution may be to create a dedicate constructor
 			 * for this goal.
 			 */
-			Class<?> simClass = Class.forName(simulationClassName + "Insp");
+			Class<?> simClass = Class.forName(simulationClassName);
 			Constructor<?> constructor = simClass.getConstructor();
 			Object simObj = constructor.newInstance(new Object[] { });
 			super.state = (InspectableState)simObj;

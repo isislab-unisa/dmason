@@ -41,6 +41,10 @@ public class StartUpData implements Serializable{
 	private GeneralParam param;
 	private List<EntryParam<String, Object>> simParam;
 	
+	/**
+	 * True if this worker must create and run the Reducer
+	 */
+	public boolean reducer = false;
 	
 	/**
 	 * <code>true</code> if GUI must be shown on workers.
@@ -68,7 +72,11 @@ public class StartUpData implements Serializable{
 
 	private String uploadDir;
 
-	private String topicPrefix;
+	/**
+	 * Stores an univoque identifier for a batch run. It will be empty
+	 * if the simulation is not part of a batch.
+	 */
+	private String topicPrefix = "";
 	
 	
 	

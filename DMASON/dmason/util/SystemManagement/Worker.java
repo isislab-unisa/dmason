@@ -17,20 +17,14 @@
 
 package dmason.util.SystemManagement;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Observable;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -41,12 +35,11 @@ import org.apache.log4j.Logger;
 
 import sim.display.Console;
 import sim.display.GUIState;
-import dmason.batch.data.EntryParam;
 import dmason.batch.data.GeneralParam;
-import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.field.MessageListener;
 import dmason.sim.field.TraceableField;
+import dmason.sim.globals.Reducer;
 import dmason.util.connection.Address;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
@@ -79,6 +72,8 @@ public class Worker extends Observable
 	private long totSteps = 0;
 	private Logger logger;
 	private String stepTopic;
+	
+	private Reducer reducer;
 	
 	
 	public Worker(StartUpData data, Connection con)
@@ -115,10 +110,8 @@ public class Worker extends Observable
 		// If this worker must publish to the "step" topic
 		if (step)
 		{
-			if(data.getParam().isBatch)
-				stepTopic = data.getTopicPrefix()+"step";
-			else
-				stepTopic = "step";
+			stepTopic = data.getTopicPrefix()+"step";
+		
 			
 			connection.createTopic(stepTopic, 1);
 			
@@ -140,6 +133,16 @@ public class Worker extends Observable
 				logger.debug(data.getSimParam()+"\n");
 		    
 			
+		}
+		
+		if (data.reducer)
+		{
+			reducer = new Reducer(
+					data.getDef(), // Simulation class
+					connection,
+					data.getParam().getRows() * data.getParam().getColumns(), // numPeers
+					data.getTopicPrefix());
+			reducer.start();
 		}
 				
 		if (!gui)

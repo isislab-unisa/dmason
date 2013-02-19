@@ -210,7 +210,7 @@ public class StartWorker implements StartWorkerInterface,  Observer {
 		autoStart = false;	
 		ip = null;
 		port = null;
-		String topic = null;
+		String topic = "";
 		updated = false;
 		isBatch = false;
 		topicPrefix = "";

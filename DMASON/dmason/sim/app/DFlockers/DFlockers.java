@@ -1,9 +1,11 @@
 package dmason.sim.app.DFlockers;
 
 import java.awt.Color;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import dmason.util.inspection.InspectableState;
 import dmason.annotation.Thin;
 import dmason.annotation.batch;
 import dmason.batch.data.EntryParam;
@@ -83,6 +85,20 @@ public class DFlockers extends DistributedState<Double2D>
     public int MODE;
     
     public static String topicPrefix = "";
+    
+    
+//    int localTest = 1; int globalTest = -1;
+//    public int getTest() { return localTest; }
+//    public void setTest(int value) { localTest = value; }
+//    public boolean globalTest() { return true; }
+//    public int getGlobalTest() { return globalTest; }
+//    public void setGlobalTest(Object value) { globalTest = (Integer)value; }
+//    public Integer reduceTest(Object[] shard) {
+//    	int globalTest = 0;
+//    	for (int i = 0; i < shard.length; i++) globalTest +=  ((Integer)shard[i]).intValue();
+//    	return globalTest;
+//    } 
+    
     
    /* public DFlockers(Object[] params)
     {    	
@@ -185,8 +201,14 @@ public class DFlockers extends DistributedState<Double2D>
     		init_connection();
     	} catch (DMasonException e) { e.printStackTrace(); }
 
-    	DFlocker f=new DFlocker(this,new Double2D(0,0));
-    	int j=0;
+    	
+    	
+    	if ( (TYPE.pos_i == 0 && TYPE.pos_j == 0) )
+    	{
+    		
+    		DFlocker f=new DFlocker(this,new Double2D(0,0));
+        	int j=0;
+        	
     	while(flockers.size() != super.NUMAGENTS)
     	{
     		f.setPos(flockers.setAvailableRandomLocation(f));
@@ -207,6 +229,7 @@ public class DFlockers extends DistributedState<Double2D>
 
     		j++;
 
+    	}
     	}
 
     	try {
