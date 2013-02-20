@@ -1,0 +1,5 @@
+#summary A list of error messages and how to solve them.
+
+_(this page is under construnction and will be updated soon)_
+
+Agent _AGENT-ID_ tried to set position (_X_, _Y_): out of boundary on cell _CELL-ID_.
