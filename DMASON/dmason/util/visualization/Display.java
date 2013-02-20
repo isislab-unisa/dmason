@@ -104,7 +104,7 @@ public class Display extends GUIState
 			// Will contain the list of cell from which we will take data
 			String[] activeCells = new String[numCells];
 			
-			actualSnap = new BufferedImage(100, 100, BufferedImage.TYPE_3BYTE_BGR);
+			actualSnap = new BufferedImage(1, 1, BufferedImage.TYPE_3BYTE_BGR);
 
 			while(isActive)
 			{
@@ -341,12 +341,12 @@ public class Display extends GUIState
 		
 		try {
 			con.createTopic("GRAPHICS",1);
-			//con.subscribeToTopic("GRAPHICS");
 			con.publishToTopic("ENTER", "GRAPHICS", "GRAPHICS");
 			
 			// Save the list of active workers
 			// Needed for (un-)trace commands
-			for(String topicName : con.getTopicList())
+			ArrayList<String> topicList = con.getTopicList();
+			for(String topicName : topicList)
 			{
 				if(topicName.startsWith("SERVICE"))
 				{

@@ -98,19 +98,7 @@ public class DFlockers extends DistributedState<Double2D>
 //    	for (int i = 0; i < shard.length; i++) globalTest +=  ((Integer)shard[i]).intValue();
 //    	return globalTest;
 //    } 
-    
-    
-   /* public DFlockers(Object[] params)
-    {    	
-    	super((Integer)params[2],(Integer)params[3],(Integer)params[4],(Integer)params[7],
-    			(Integer)params[8],(String)params[0],(String)params[1],(Integer)params[9],
-    			isToroidal,new DistributedMultiSchedule<Double2D>());
-    	ip = params[0]+"";
-    	port = params[1]+"";
-    	this.MODE=(Integer)params[9];
-    	gridWidth=(Integer)params[5];
-    	gridHeight=(Integer)params[6];
-    }*/
+   
     
     public DFlockers(GeneralParam params)
     {    	
@@ -202,35 +190,37 @@ public class DFlockers extends DistributedState<Double2D>
     	} catch (DMasonException e) { e.printStackTrace(); }
 
     	
-    	
+    	/*
+    	 * Spawn agents only on cell 0-0
+    	 */
     	if ( (TYPE.pos_i == 0 && TYPE.pos_j == 0) )
     	{
-    		
+
     		DFlocker f=new DFlocker(this,new Double2D(0,0));
-        	int j=0;
-        	
-    	while(flockers.size() != super.NUMAGENTS)
-    	{
-    		f.setPos(flockers.setAvailableRandomLocation(f));
-    		if (random.nextBoolean(deadFlockerProbability)) f.dead = true;
+    		int j=0;
 
-    		//if(flockers.setDistributedObjectLocationForPeer(new Double2D(f.pos.getX(),f.pos.getY()), f, this))
-    			//if(flockers.setDistributedObjectLocation(new Double2D(f.pos.getX(),f.pos.getY()), f, this))
-    		if(flockers.setObjectLocation(f, f.loc))
+    		while(flockers.size() != super.NUMAGENTS)
     		{
-    			Color c=new Color(
-    					128 + this.random.nextInt(128),
-    					128 + this.random.nextInt(128),
-    					128 + this.random.nextInt(128));
-    			f.setColor(c);
-    			schedule.scheduleOnce(f);
-    			f=new DFlocker(this,new Double2D(0,0));
+    			f.setPos(flockers.setAvailableRandomLocation(f));
+    			
+    			if (random.nextBoolean(deadFlockerProbability))
+    				f.dead = true;
+
+    			if(flockers.setObjectLocation(f, f.loc))
+    			{
+    				Color c=new Color(
+    						128 + this.random.nextInt(128),
+    						128 + this.random.nextInt(128),
+    						128 + this.random.nextInt(128));
+    				f.setColor(c);
+    				schedule.scheduleOnce(f);
+    				f=new DFlocker(this,new Double2D(0,0));
+    			}
+
+    			j++;
+
     		}
-
-    		j++;
-
-    	}
-    	}
+    	} //if ( (TYPE.pos_i == 0 && TYPE.pos_j == 0) )
 
     	try {
 			getTrigger().publishToTriggerTopic("Simulation cell "+flockers.cellType+" ready...");
