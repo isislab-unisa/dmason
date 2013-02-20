@@ -126,7 +126,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 {	
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(DContinuous2DY.class.getCanonicalName());
+	private static Logger logger = Logger.getLogger(DContinuous2DXY.class.getCanonicalName());
 	
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
 	
@@ -419,12 +419,17 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 			
     		return myfield.addAgents(new Entry<Double2D>(rm, location));
     	}
+    	else if(setAgents(rm, location))
+    	{
+    		return true;
+    	}
     	else
-    		if(setAgents(rm, location))
-    			return true;
-    		else
-    				System.out.println(cellType+")OH MY GOD! " + location.x + "," + location.y); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
-    	return false;
+    	{
+    		String errorMessage = String.format("Agent %d tried to set position (%f, %f): out of boundaries on cell %s.",
+    					rm.getId(), location.x, location.y, cellType);
+    		logger.severe( errorMessage );
+    		return false;
+    	}
     }
 	
 	/**

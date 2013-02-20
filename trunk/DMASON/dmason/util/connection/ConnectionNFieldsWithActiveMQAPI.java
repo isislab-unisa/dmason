@@ -284,6 +284,10 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 		
 		// The list is retrieved using a DestinationSource object
 		DestinationSource provider = connection.getDestinationSource();
+		/* If we call getDestinationSource() and then immediately after we call getTopics(),
+		 * the latter may return an incomplete list. Waiting a second before building the list
+		 * tries to address the problem. */
+		Thread.sleep(1000);
 		Set<ActiveMQTopic> topics = provider.getTopics();
 		ArrayList<String> list = new ArrayList<String>();
 		Iterator<ActiveMQTopic> iter = topics.iterator();

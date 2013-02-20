@@ -27,6 +27,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
+import java.util.logging.Logger;
+
 import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.engine.RemoteAgent;import dmason.sim.field.grid.RegionInteger;
@@ -134,6 +136,9 @@ public class DContinuous2DXYLB extends DContinuous2D
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private static Logger logger = Logger.getLogger(DContinuous2DXYLB.class.getCanonicalName());
+	
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
 	private String NAME;
 	private ConnectionWithJMS con = new ConnectionNFieldsWithActiveMQAPI();
@@ -492,10 +497,14 @@ public class DContinuous2DXYLB extends DContinuous2D
 			    	}
 		    	}    	
     	if(fl) 
+    	{
     		return true;
+    	}
     	else
     	{
-	    	System.out.println(cellType+")OH MY GOD!"+"  location: "+location+" ID= "+rm.getId()); // it should never happen (don't tell it to anyone shhhhhhhh! ;P) 
+    		String errorMessage = String.format("Agent %d tried to set position (%f, %f): out of boundaries on cell %s.",
+					rm.getId(), location.x, location.y, cellType);
+    		logger.severe( errorMessage );
 	    	return false;
     	}
 	}

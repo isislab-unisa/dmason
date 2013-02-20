@@ -379,29 +379,33 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 	 * @param sm SimState of simulation
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
 	 */
-    public boolean setDistributedObjectLocation(final Double2D location,RemoteAgent<Double2D> rm,SimState sm)
-    {  	
-    	/*if(sm.schedule.getSteps()==1){
+	public boolean setDistributedObjectLocation(final Double2D location,RemoteAgent<Double2D> rm,SimState sm)
+	{  	
+		/*if(sm.schedule.getSteps()==1){
 			printer.write(sm.schedule.getSteps()+" "+rm.getId()+" "+location.x+" "+location.y+"\r\n");
 			printer.flush();
 		}*/
-    	numAgents++;
-    	if(myfield.isMine(location.x,location.y))
-    	{    
-    		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-    		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+		numAgents++;
+		if(myfield.isMine(location.x,location.y))
+		{    
+			if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
+				GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);
+			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
-    		return myfield.addAgents(new Entry<Double2D>(rm, location));
-    	}
-    	else if(setAgents(rm, location))
-    		 {
-    			 return true;
-    		 }
-    		 else
-    				System.out.println(cellType+")OH MY GOD!"+ rm.getId()); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
-    	return false;
-    }
+			return myfield.addAgents(new Entry<Double2D>(rm, location));
+		}
+		else if(setAgents(rm, location))
+		{
+			return true;
+		}
+		else
+		{
+			String errorMessage = String.format("Agent %d tried to set position (%f, %f): out of boundaries on cell %s.",
+					rm.getId(), location.x, location.y, cellType);
+			logger.severe( errorMessage );
+			return false;
+		}
+	}
 
     /**
 	 * 	This method provides the synchronization in the distributed environment.
