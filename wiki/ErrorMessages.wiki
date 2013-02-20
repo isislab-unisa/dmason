@@ -1,5 +1,40 @@
-#summary A list of error messages and how to solve them.
+#summary Common errors and how to solve them.
 
-_(this page is under construnction and will be updated soon)_
+=Troubleshooting=
 
-Agent _AGENT-ID_ tried to set position (_X_, _Y_): out of boundary on cell _CELL-ID_.
+== Agent {AGENT-ID} tried to set position {COORDINATES}: out of boundaries on cell {CELL-ID}. =
+
+If this error appears while creating new agents, it is probably due a common mistake in the simulation design, rather than an error in D-MASON.
+
+Let's think about this simulation:
+  * Simulation class: {{{DFlockers}}} (shipped width D-MASON)
+  * Agent class: {{{DFlocker}}}
+  * Field size: 400x400 (width x height)
+  * Field partitioning: 4x4 (rows x columns) regions of size 100x100 (width x height)
+
+A common way to initialize a simulation is to put the following lines in the {{{DFlockers.start()}}} method: 
+
+<code language="java">
+DFlocker flocker = new DFlocker(this, new Double2D(0,0));
+flockers.setObjectLocation(flocker, flocker.loc);
+schedule.scheduleOnce(flocker);</code>
+
+Where {{{flockers}}} is the name of the distributed continuous 2D field. Now, let this be our partitioned field (each cell of the table is a region identified by its row and column numbers):
+
+|| 0-0 || 0-1 || 0-2 || 0-3 ||
+|| 1-0 || 1-1 || 1-2 || 1-3 ||
+|| 2-0 || 2-1 || 2-2 || 2-3 ||
+|| 3-0 || 3-1 || 3-2 || 3-3 ||
+
+The code above creates a new agent and sets its position to (0, 0), that is the top-left corner of the field. {{{DFlockers.start()}}} is executed on all of the 16 regions, but there are regions that are not in the neighborhood of position (0, 0). For example, the code above will result in an error in cell 2-2 and the agent will not be scheduled.
+
+A way to address this problem is to set an agent to a random position within its birth region using {{{setAvailableRandomLocation}}}:
+
+<code language="java">
+DFlocker flocker = new DFlocker(this, new Double2D(0,0));
+flockers.setAvailableRandomLocation(flocker);
+schedule.scheduleOnce(flocker);</code>
+
+This will prevent the new flocker to be positioned on invalid coordinates.
+
+Should this error pop up while a simulation is running, please [http://isis.dia.unisa.it/projects/dmason/ contact us] or fill a [http://code.google.com/p/d-mason/issues/list new issue] on this website.
