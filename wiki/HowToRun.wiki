@@ -3,6 +3,8 @@
 
 =Getting and building D-MASON=
 
+<wiki:toc />
+
 The following tutorial will guide you through the download and setup of the D-MASON project into Eclipse. Of course you can use any IDE of your choice, or no one at all.
 
 Please note that in order to build D-MASON you will need to download ad setup MASON.
