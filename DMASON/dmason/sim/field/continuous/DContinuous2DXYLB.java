@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.engine.RemoteAgent;import dmason.sim.field.grid.RegionInteger;
-import dmason.sim.field.util.GlobalInspectorUtils;
+import dmason.sim.field.util.GlobalInspectorHelper;
 import dmason.sim.field.CellType;
 import dmason.sim.field.DistributedRegion;
 import dmason.sim.field.Entry;

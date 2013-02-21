@@ -56,7 +56,7 @@ import dmason.sim.field.Region;
 import dmason.sim.field.TraceableField;
 import dmason.sim.field.UpdateMap;
 import dmason.sim.field.grid.RegionInteger;
-import dmason.sim.field.util.GlobalInspectorUtils;
+import dmason.sim.field.util.GlobalInspectorHelper;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
@@ -412,7 +412,7 @@ public class DContinuous2DYLB extends DContinuous2D implements TraceableField
 		if(myfield.isMine(location.x,location.y))
 		{    
 			if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-				GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);
+				GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
 			return myfield.addAgents(new Entry<Double2D>(rm, location));
@@ -436,7 +436,7 @@ public class DContinuous2DYLB extends DContinuous2D implements TraceableField
 	 */
 	public synchronized boolean synchro() 
 	{
-		GlobalInspectorUtils.synchronizeInspector(
+		GlobalInspectorHelper.synchronizeInspector(
 				(DistributedState<?>)sm,
 				connection,
 				topicPrefix, 
@@ -864,7 +864,7 @@ public class DContinuous2DYLB extends DContinuous2D implements TraceableField
 		    					tmp_zoom.add(rm);
 		    				
 		    				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-		    					GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);
+		    					GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 		    			}
 	    	    		return region.addAgents(new Entry<Double2D>(rm, location));
 	    	    	}

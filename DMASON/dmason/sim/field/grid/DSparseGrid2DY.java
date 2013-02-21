@@ -46,7 +46,7 @@ import dmason.sim.field.RegionMap;
 import dmason.sim.field.TraceableField;
 import dmason.sim.field.UpdateMap;
 import dmason.sim.field.UpdaterThreadForListener;
-import dmason.sim.field.util.GlobalInspectorUtils;
+import dmason.sim.field.util.GlobalInspectorHelper;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
@@ -350,7 +350,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
     	if(myfield.isMine(location.x,location.y))
     	{    		
     		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);
+    			GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
     		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
     		return myfield.addAgents(new Entry<Int2D>(rm, location));
@@ -372,7 +372,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		// Send to Global Inspector
 		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
-			GlobalInspectorUtils.synchronizeInspector(
+			GlobalInspectorHelper.synchronizeInspector(
 					(DistributedState<?>)sm,
 					connection,
 					topicPrefix,
@@ -620,7 +620,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		    				}
 		    				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		    				{
-		    	    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);		    	    			
+		    	    			GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);		    	    			
 		    	    		}
 		    			}
 	    	    		return region.addAgents(new Entry<Int2D>(rm, location));

@@ -1,8 +1,8 @@
 package dmason.sim.field.util;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import sim.engine.SimState;
@@ -14,21 +14,21 @@ import dmason.util.connection.ConnectionWithJMS;
 import dmason.util.visualization.RemoteSnap;
 
 /**
- * 
+ * Contains static methods useful to manage Global Parameters. These methods should be used
+ * within <code>DistributedField</code>s' <code>synchro()</code> method.
  * @author Luca Vicidomini
- *
  */
-public class GlobalParametersUtils
+public class GlobalParametersHelper
 {
 	/**
 	 * Builds globalsNames and globalsMethods. This method should be called in a
-	 * DistributedField's constructor.
-	 * @param sm
-	 * @param connection
-	 * @param globalsNames
-	 * @param globalsMethods
+	 * <code>DistributedField</code>'s constructor.
+	 * @param sm Current simulation instance.
+	 * @param connection Current connection server. 
+	 * @param globalsNames A list that will be filled with discovered global parameters' names.
+	 * @param globalsMethods A list that will be filled with discovered global parameters' methods.
 	 */
-	public static void buildGlobalsList(DistributedState sm, ConnectionWithJMS connection, String topicPrefix, ArrayList<String> globalsNames, ArrayList<Method> globalsMethods)
+	public static void buildGlobalsList(DistributedState<?> sm, ConnectionWithJMS connection, String topicPrefix, List<String> globalsNames, List<Method> globalsMethods)
 	{
 		Class<?> simClass = sm.getClass();
 		
@@ -64,7 +64,6 @@ public class GlobalParametersUtils
 					try {
 						// Build the list containing global parameters' method reference
 						// This list allows for faster calling later.
-						//globalsMethods.add(simClass.getMethod("reduce" + ds.getName(pi), Object[].class));
 						globalsMethods.add(simClass.getMethod("setGlobal" + ds.getName(pi), Object.class));
 					} catch (SecurityException e) {
 						e.printStackTrace();
@@ -89,7 +88,7 @@ public class GlobalParametersUtils
 	 * @param globalsNames
 	 * @param connection
 	 */
-	public static void sendGlobalParameters(SimState sm, ConnectionWithJMS connection, String topicPrefix, CellType cellId, double currentTime, ArrayList<String> globalsNames)
+	public static void sendGlobalParameters(SimState sm, ConnectionWithJMS connection, String topicPrefix, CellType cellId, double currentTime, List<String> globalsNames)
 	{
 		Class<?> simClass = sm.getClass();
 				
@@ -122,8 +121,16 @@ public class GlobalParametersUtils
 		}
 	}
 	
-	
-	public static void receiveAndUpdate(DistributedField field, ArrayList<String> globalsNames, ArrayList<Method> globalsMethods)
+	/**
+	 * This method should be called by a field after the call to
+	 * GlobalParametersUtils.sendGlobalParameters and BEFORE the simulation
+	 * phase of the current step begins.
+	 * @param field
+	 * @param numPeers 
+	 * @param globalsNames
+	 * @param globalsMethods
+	 */
+	public static void receiveAndUpdate(DistributedField<?> field, List<String> globalsNames, List<Method> globalsMethods)
 	{
 		SimState sm = field.getState();
 		Class<?> simClass = sm.getClass();
@@ -149,81 +156,6 @@ public class GlobalParametersUtils
 			globalUpdates = new HashMap<String, Object>();
 		}
 		return;
-	}
-	
-	
-	/**
-	 * This method should be called by a field after the call to
-	 * GlobalParametersUtils.sendGlobalParameters and BEFORE the simulation
-	 * phase of the current step begins.
-	 * @param field
-	 * @param numPeers 
-	 * @param globalsNames
-	 * @param globalsMethods
-	 */
-	public static void receiveAndUpdate(DistributedField field, int numPeers, ArrayList<String> globalsNames, ArrayList<Method> globalsMethods)
-	{
-		SimState sm = field.getState();
-		
-		/*
-		 * globalUpdates is an hash map that will contain entries
-		 * like ("region name", RemoteSnap).
-		 */
-		HashMap<String, Object> globalUpdates;
-		try {
-			globalUpdates = field.getGlobals().getUpdates(sm.schedule.getSteps(), numPeers);
-		} catch (InterruptedException e1) {
-			globalUpdates = new HashMap<String, Object>();
-			e1.printStackTrace();
-		}
-		
-		// Extract RemoteSnaps from globalUpdates. 
-		RemoteSnap[] globalSnaps = new RemoteSnap[globalUpdates.size()];
-		int i = 0;
-		for(java.util.Map.Entry<String, Object> entry : globalUpdates.entrySet())
-		{
-			globalSnaps[i++] = (RemoteSnap)entry.getValue();
-		}
-		
-		/*
-		 * RemoteSnaps in globalUpdates refer to the same simulation step,
-		 * so we can inspect an arbitrary RemoteSnap to extract some common
-		 * information (such as number of properties).
-		 * So we inspect the first RemoteSnap of the list, the we build an array
-		 * containing global parameters' names (propNames) and a matrix of
-		 * values (props).   
-		 */
-		RemoteSnap zeroSnap = globalSnaps[0];
-		int numProps = zeroSnap.stats.size();
-		Object[] propNames = zeroSnap.stats.keySet().toArray();
-		Object[][] props = new Object[numProps][numPeers];
-		for (i = 0; i < globalSnaps.length; i++)
-		{
-			RemoteSnap snap = (RemoteSnap)globalSnaps[i];
-			for (int j = 0; j < numProps; j++)
-			{
-				// Cells on the columns, Properties on the rows
-				props[j][i] = snap.stats.get(propNames[j]);
-			}
-		}
-		
-		// Update the simulation
-		for (int propertyI = 0; propertyI < numProps; propertyI++)
-		{
-			String propName = (String)propNames[propertyI];
-			try
-			{
-				int methodI = globalsNames.indexOf(propName);
-				Method m = globalsMethods.get(methodI);
-				/* Invoke the reduce method for a certain global parameter,
-				 * passing an array containing a value for each cell for that
-				 * global parameter.
-				 */
-				m.invoke(sm, new Object[] { props[propertyI] } );
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 }

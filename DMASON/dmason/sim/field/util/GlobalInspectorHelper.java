@@ -3,8 +3,8 @@ package dmason.sim.field.util;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -16,11 +16,30 @@ import dmason.util.visualization.RemoteSnap;
 import sim.util.Double2D;
 import sim.util.Int2D;
 
-public class GlobalInspectorUtils
+/**
+ * Contains static methods useful to manage Global Inspector. These methods should be used
+ * within <code>DistributedField</code>s' <code>synchro()</code> method.
+ * @author Luca Vicidomini
+ */
+public class GlobalInspectorHelper
 {
 	private static int[] white = { 255, 255, 255 }; 
 	
-	public static void synchronizeInspector(DistributedState<?> sim, ConnectionWithJMS connection, String topicPrefix, CellType cellId, int x, int y, double currentTime, BufferedImage currentSnap, HashMap<String, Object> currentStats, ArrayList<String> tracingFields, boolean traceGraphics)
+	/**
+	 * This should be called at the beginning of a <code>DistributedField</code>'s <code>synchro()</code> method.
+	 * @param sim Current simulation.
+	 * @param connection Current connection to server.
+	 * @param topicPrefix Topic prefix of this batch run (empty string if this run is not in a batch).
+	 * @param cellId Cell identifier.
+	 * @param x X offset of the region relative to field's top-left (0,0) coordinate.
+	 * @param y Y offset of the region relative to field's top-left (0,0) coordinate.
+	 * @param currentTime Current simulation time.
+	 * @param currentSnap Current image depicting agents' positions.
+	 * @param currentStats A map of inspected parameters to send to the Global Inspector.
+	 * @param tracingFields A list of field names the user chose to inspect.
+	 * @param traceGraphics True if user requested an image depicting agents' positions.
+	 */
+	public static void synchronizeInspector(DistributedState<?> sim, ConnectionWithJMS connection, String topicPrefix, CellType cellId, int x, int y, double currentTime, BufferedImage currentSnap, HashMap<String, Object> currentStats, List<String> tracingFields, boolean traceGraphics)
 	{
 		RemoteSnap snap = new RemoteSnap(cellId, sim.schedule.getSteps() - 1, currentTime);
 		if (traceGraphics)
@@ -70,6 +89,14 @@ public class GlobalInspectorUtils
 		}
 	}
 	
+	/**
+	 * Paints an agent position on the bitmap.
+	 * @param remoteSnap Current bitmap depicting agents' position.
+	 * @param remoteAgent The agent to paint.
+	 * @param location New agent's position.
+	 * @param x X offset of the bitmap relative to field's top-left (0,0) coordinate.
+	 * @param y Y offset of the bitmap relative to field's top-left (0,0) coordinate.
+	 */
 	public static void updateBitmap(BufferedImage remoteSnap, RemoteAgent<?> remoteAgent, Double2D location, double x, double y)
 	{
 		remoteSnap.getRaster().setPixel(
@@ -78,6 +105,14 @@ public class GlobalInspectorUtils
 				white);
 	}
 	
+	/**
+	 * Paints an agent position on the bitmap.
+	 * @param remoteSnap Current bitmap depicting agents' position.
+	 * @param remoteAgent The agent to paint.
+	 * @param location New agent's position.
+	 * @param x X offset of the region relative to field's top-left (0,0) coordinate.
+	 * @param y Y offset of the region relative to field's top-left (0,0) coordinate.
+	 */
 	public static void updateBitmap(BufferedImage remoteSnap, RemoteAgent<?> remoteAgent, Int2D location, int x, int y)
 	{
 		remoteSnap.getRaster().setPixel(
