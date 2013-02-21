@@ -2,8 +2,6 @@
 
 This page outlines certain goals, nothing is guaranteed to land in a specific release.
 
-= TBA =
-
 = 2.0.1 (Soon) =
   * Automatic update of workers _(Mario)_
   * Automatic deploy of simulations _(Mario)_
