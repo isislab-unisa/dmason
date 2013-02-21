@@ -36,8 +36,8 @@ import dmason.sim.field.MessageListener;
 import dmason.sim.field.Region;
 import dmason.sim.field.TraceableField;
 import dmason.sim.field.UpdateMap;
-import dmason.sim.field.util.GlobalInspectorUtils;
-import dmason.sim.field.util.GlobalParametersUtils;
+import dmason.sim.field.util.GlobalInspectorHelper;
+import dmason.sim.field.util.GlobalParametersHelper;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
@@ -239,7 +239,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 		globals = new VisualizationUpdateMap<String, Object>();
 		globalsNames = new ArrayList<String>();
 		globalsMethods = new ArrayList<Method>();
-		GlobalParametersUtils.buildGlobalsList((DistributedState)sm, connection, topicPrefix, globalsNames, globalsMethods);
+		GlobalParametersHelper.buildGlobalsList((DistributedState)sm, connection, topicPrefix, globalsNames, globalsMethods);
 	}
 	
 	/**
@@ -413,7 +413,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
     	if(myfield.isMine(location.x,location.y))
     	{    		
     		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);
+    			GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
     		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
 			
@@ -442,7 +442,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 		// If there is any viewer, send a snap
 		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
-			GlobalInspectorUtils.synchronizeInspector(
+			GlobalInspectorHelper.synchronizeInspector(
 					(DistributedState<?>)sm,
 					connection,
 					topicPrefix,
@@ -465,7 +465,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 		if (globalsNames.size() > 0)
 		{
 			// Update and send global parameters
-			GlobalParametersUtils.sendGlobalParameters(
+			GlobalParametersHelper.sendGlobalParameters(
 					sm,
 					connection,
 					topicPrefix,
@@ -473,9 +473,8 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 					currentTime,
 					globalsNames);
 			// Receive global parameters from previous step and update the model
-			GlobalParametersUtils.receiveAndUpdate(
+			GlobalParametersHelper.receiveAndUpdate(
 					this,
-					//rows * columns,
 					globalsNames,
 					globalsMethods);
 		}
@@ -804,7 +803,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	    				if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 	    					tmp_zoom.add(rm);
 	    				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-	    	    			GlobalInspectorUtils.updateBitmap(currentBitmap, rm, location, own_x, own_y);
+	    	    			GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 	    			}
 	    			return region.addAgents(new Entry<Double2D>(rm, location));
 	    	    }    
