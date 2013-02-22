@@ -5,13 +5,17 @@ This page outlines certain goals, nothing is guaranteed to land in a specific re
 = 2.0.1 (Soon) =
   * Automatic update of workers _(Mario)_
   * Automatic deploy of simulations _(Mario)_
-  * Include license _(Fabio, Luca, Mario)_
-  * Support for arbitrary field size (not only multiple of partitioning rows/columns) _(Fabio)_
-  * Support for non-square fields using grid partitioning _(Fabio)_
-  * Automatically select linear or grid partitioning depending on the selected number of rows and columns _(Fabio, Mario)_
+  * Batch execution _(Mario)_
+  * Parameters space exploration tool _(Mario)_
+  * Automatically assign regions to workers when number of regions is not multiple of number of workers _(Mario)_
   * Fields initialization refactoring
     * Remove the Object[] param from the constructors _(Mario)_
     * Allow passing arbitrary simulation parameter for initialization  _(Mario)_
+  * Manage ActiveMQ using D-MASON's master through ActiveMQWrapper _(Mario)_
+  * Automatically select linear or grid partitioning depending on the selected number of rows and columns _(Fabio, Mario)_
+  * Support for arbitrary field size (not only multiple of partitioning rows/columns) _(Fabio)_
+  * Support for non-square fields using grid partitioning _(Fabio)_
+  * Include license _(Fabio, Luca, Mario)_
   * Simulation-global properties _(Luca)_
 
 = Further releases =
