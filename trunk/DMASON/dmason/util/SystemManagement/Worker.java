@@ -18,8 +18,6 @@
 package dmason.util.SystemManagement;
 
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -46,16 +44,15 @@ import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 
 public class Worker extends Observable
 {
-	//used for FTP
+	// Used for FTP
 	private static final String DOWNLOADED_JAR_PATH = "TMP";
 	private static final String SIMULATION_DIR = "simulation";
 	private static final String TEST_PARAM_NAME = "Logs/workers/params.conf";
-	private static String SEPARATOR;
 	
 	private Address address;
 	private final ReentrantLock lock = new ReentrantLock();
 	private final Condition block1 = lock.newCondition();
-	private DistributedState state;
+	private DistributedState<?> state;
 	private boolean gui;
 	private boolean flag;
 	private boolean step;
@@ -85,8 +82,6 @@ public class Worker extends Observable
 		logger = Logger.getLogger(Worker.class.getCanonicalName());
 		
 		bootstrap();
-		
-		
 	}
 	
 	public void bootstrap()
@@ -94,16 +89,11 @@ public class Worker extends Observable
 		step = data.isStep();
 		gui = data.isGraphic();
 		address = connection.getAddress();
-		
-		System.out.println("Params :"+ data.getParam());
-	
 		totSteps = data.getParam().getMaxStep();
 		
-		
-		System.out.println("Tot steps: "+totSteps);
-		setSeparator();
-		
-		
+		logger.info("Received simulation parameters: " + data.getParam());
+		logger.info("Number of steps: " + totSteps);
+				
 		state = this.makeState(data.getDef(), data.getParam());
 		
 		
@@ -112,29 +102,14 @@ public class Worker extends Observable
 		{
 			stepTopic = data.getTopicPrefix()+"step";
 		
-			
 			connection.createTopic(stepTopic, 1);
-			
-			
-			/*FileOutputStream paramFile;
-			try {
-				paramFile = new FileOutputStream(TEST_PARAM_NAME);
-				PrintStream writer = new PrintStream(paramFile);
-				writer.println(data.getParam()+"\n");
-				if(data.getParam().isBatch)
-					writer.println(data.getSimParam()+"\n");
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
 			
 			logger.debug(data.getParam()+"\n");
 			if(data.getParam().isBatch)
-				logger.debug(data.getSimParam()+"\n");
-		    
-			
+				logger.debug(data.getSimParam()+"\n");	
 		}
 		
+		// If the simulation requires Global Parameters
 		if (data.reducer)
 		{
 			reducer = new Reducer(
@@ -149,52 +124,32 @@ public class Worker extends Observable
 		{
 			state.start();
 		}
-		
-		
-	}
-	
-	
-
-	private static void setSeparator() 
-	{
-		OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
-		
-		if(os.getName().contains("Windows"))
-			SEPARATOR = "\\";
-		if(os.getName().contains("Linux") || os.getName().contains("OS X"))
-			SEPARATOR = "/";
-	}
-	
+	}	
 	
 	public boolean isGUI()
 	{
 		return gui;
 	}
+	
 	public Console getConsole()
 	{
 		return console;
 	}
 	
-	//add
 	public void kill()
 	{
 		if (gui)
 		{   
 			console.pressStop();	
-			//console.dispose();
-			//console.doClose();
 			
 			try {
 				((DistributedState)state).closeConnection();
 			} catch (JMSException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
 		}
 		else
 		{
-			
 			lock.lock();
 			{
 				resetted = true;
@@ -206,11 +161,7 @@ public class Worker extends Observable
 			
 			if(blocked)
 				signal();
-			
 		}
-		
-		
-		
 	}
 	
 	public void oneStep()
@@ -230,8 +181,7 @@ public class Worker extends Observable
 				if (gui)
 					connection.publishToTopic(console.getSimulation().state.schedule.getSteps(), "step","step");
 				else
-					connection.publishToTopic(state.schedule.getSteps()-1,"step","step"); 
-						
+					connection.publishToTopic(state.schedule.getSteps()-1,"step","step"); 						
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -410,23 +360,7 @@ public class Worker extends Observable
 					System.out.println(c.getName()+" "+(c.getParameterTypes().length == 2 ? c.getParameterTypes()[1] : c.getParameterTypes()[0]));
 				}*/
 				
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			
@@ -445,9 +379,8 @@ public class Worker extends Observable
 		}
 		
 		
-		if(obj instanceof DistributedState)
+		if (obj instanceof DistributedState)
 		{
-			
 			// The instantiated class is the proper simulation class
 			return (DistributedState)obj;
 		}
@@ -462,17 +395,7 @@ public class Worker extends Observable
 			// Read as "get <state> variable from object <obj>"
 			try {
 				return (DistributedState)obj.getClass().getField("state").get(obj);
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchFieldException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
 			} 
 		 }
@@ -489,7 +412,6 @@ public class Worker extends Observable
 
 		cl.addToClassPath();
 
-		// String name = "dmason.sim.app.DAntsForage.DAntsForage";
 		String name = null;
 		try {
 			name = cl.getMainClassName();
@@ -499,18 +421,16 @@ public class Worker extends Observable
 			System.exit(1);
 		}
 		if (name == null) {
-			System.out.println("Specified jar file does not contain a 'Main-Class'" +
-					" manifest attribute");
+			System.out.println("Specified jar file does not contain a 'Main-Class' manifest attribute");
 		}
 
 		if(isGui)
 		{
-
 			name += "WithUI";
 		}
+		
 		if(data.getParam().isBatch) //batch test simulation
 		{
-			
 			return cl.getInstance(name, args_gen, data.getSimParam(), data.getTopicPrefix());
 		}
 		else
@@ -529,7 +449,7 @@ public class Worker extends Observable
 	{
 		this.table = table;
 		if(state.getField() == null)
-			System.out.println("O_O");
+			logger.error("state.getField() is null. This should never happens...");
 		state.getField().setTable(this.table);
 	}
 }
