@@ -50,9 +50,6 @@ import org.apache.activemq.transport.TransportListener;
 
 public class ConnectionNFieldsWithActiveMQAPI extends Observable implements ConnectionWithJMS, Serializable, TransportListener 
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -3803252417146440187L;
 
 	private ActiveMQConnection connection;
@@ -297,14 +294,11 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 		}
 		return list;
 	}
-	
-	public void printPublischers()
-	{
-		System.out.println(publishers.toString());
-	}
+		
 	@Override
 	public void setTable(HashMap table)
-	{	
+	{
+		
 	}
 
 	public void cleanBeforeUpdate(String mytopic)
@@ -316,8 +310,6 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 
 
 			for (ObjectName topic : mbean.getTopics()) {
-
-
 				// da sistemare! Non mi piace!
 				String topicDestination = topic.getKeyProperty("Destination");
 				if(topicDestination.contains(mytopic))

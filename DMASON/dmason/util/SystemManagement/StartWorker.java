@@ -122,7 +122,7 @@ public class StartWorker implements StartWorkerInterface,  Observer {
 			}
 			isReady = false;
 		}
-		System.out.println(this.ip+" "+this.port);
+
 		connection = new ConnectionNFieldsWithActiveMQAPI();
 	    ipAddress = new Address(this.ip, this.port);
 	    

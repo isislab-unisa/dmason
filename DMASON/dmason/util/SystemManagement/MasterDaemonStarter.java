@@ -230,7 +230,6 @@ public class MasterDaemonStarter implements Observer
 						}
 					}
 					
-					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,0,cnt,DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE});
 					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode()); 
 					genParam.setI(0);
 					genParam.setJ(cnt);
@@ -238,7 +237,6 @@ public class MasterDaemonStarter implements Observer
 					genParam.setPort(this.address.getPort());
 					data.setParam(genParam);
 					data.setUploadDir(uploadDir);
-					System.out.println("Params: "+ genParam);
 					classes.add(data);
 					cnt++;
 				}
@@ -407,45 +405,8 @@ public class MasterDaemonStarter implements Observer
 		String uploadDir = batch+selSim+"_"+dateFormat.format(date);
 		try {
 			client.createDirectory(uploadDir);
-		} catch (IllegalStateException e3) {
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
-		} catch (IOException e3) {
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
-		} catch (FTPIllegalReplyException e3) {
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
-		} catch (FTPException e3) {
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
-			//Updater.login(client);
-			/*try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			date = new Date();
-			dateFormat.format(date);
-			
-			uploadDir = selSim+"_"+dateFormat.format(date);
-			
-			try {
-				client.createDirectory(uploadDir);
-			} catch (IllegalStateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (FTPIllegalReplyException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (FTPException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return uploadDir;
 	}

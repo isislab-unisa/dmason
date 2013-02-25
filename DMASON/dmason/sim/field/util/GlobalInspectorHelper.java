@@ -42,6 +42,8 @@ public class GlobalInspectorHelper
 	public static void synchronizeInspector(DistributedState<?> sim, ConnectionWithJMS connection, String topicPrefix, CellType cellId, int x, int y, double currentTime, BufferedImage currentSnap, HashMap<String, Object> currentStats, List<String> tracingFields, boolean traceGraphics)
 	{
 		RemoteSnap snap = new RemoteSnap(cellId, sim.schedule.getSteps() - 1, currentTime);
+		
+		// Pack the bitmap (if enabled) into RemoteSnap, then clear the bitmap buffer 
 		if (traceGraphics)
 		{
 			try
@@ -57,11 +59,11 @@ public class GlobalInspectorHelper
 				// TODO investigate
 				currentSnap.getGraphics().clearRect(0, 0, currentSnap.getWidth(), currentSnap.getHeight());
 			} catch (Exception e) {
-				//logger.severe("Error while serializing the snapshot");
 				e.printStackTrace();
 			}
 		}
 
+		// Add the HashMap of the traced parameters into RemoteSnap and sends it
 		try
 		{
 			snap.stats = currentStats;
@@ -69,11 +71,10 @@ public class GlobalInspectorHelper
 			snap.y = y;
 			connection.publishToTopic(snap, topicPrefix + "GRAPHICS", "GRAPHICS");
 		} catch (Exception e) {
-			//logger.severe("Error while publishing the snap message");
 			e.printStackTrace();
 		}
 
-		// Update statistics
+		// Update statistics for the next step
 		Class<?> simClass = sim.getClass();
 		for (int i = 0; i < tracingFields.size(); i++)
 		{
@@ -83,7 +84,6 @@ public class GlobalInspectorHelper
 				Object res = m.invoke(sim, new Object [0]);
 				snap.stats.put(tracingFields.get(i), res);
 			} catch (Exception e) {
-				//logger.severe("Reflection error while calling get" + tracingFields.get(i));
 				e.printStackTrace();
 			}
 		}

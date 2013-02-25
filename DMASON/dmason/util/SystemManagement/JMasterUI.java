@@ -3238,7 +3238,7 @@ public class JMasterUI extends JFrame  implements Observer{
 		}
 		else
 		{
-			System.out.println("null");
+			// System.out.println("workerInfo.getDigest() is null");
 		}
 		
 		scoreList.add(new EntryWorkerScore<Integer, String>(getPerformanceScore(workerInfo), workerInfo.getTopic()));
@@ -3246,11 +3246,8 @@ public class JMasterUI extends JFrame  implements Observer{
 		{	
 			checkUpdate();
 			totPeers = 0;
-			
-			System.out.println("ok");
 			if(isBatchTest)
-			{
-				
+			{	
 				nextTest();
 			}
 		}
@@ -3259,9 +3256,6 @@ public class JMasterUI extends JFrame  implements Observer{
 	private int getPerformanceScore(PeerStatusInfo workerInfo) {
 		double cpuFactor = 1;
 		double ramFactor = 1;
-		System.out.println("#core: "+workerInfo.getNum_core());
-		System.out.println("Ram: "+workerInfo.getMemory());
-		System.out.println("Memory: "+(workerInfo.getMemory()/(1024*1024)));
 		return  (int) ((workerInfo.getNum_core()*cpuFactor) + ((workerInfo.getMemory()/(1024*1024))/1000)* ramFactor);
 	}
 	
@@ -3271,7 +3265,7 @@ public class JMasterUI extends JFrame  implements Observer{
 		int totalTests = 1;
 		for (Param p : batch.getSimulationParams())
 		{
-			System.out.println("Param: "+p.getName()+" mode "+p.getMode());
+			// System.out.println("Param: "+p.getName()+" mode "+p.getMode());
 			
 			Set<EntryParam<String, Object>> s = null;
 			if(p.getMode().equals("fixed"))

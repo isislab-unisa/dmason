@@ -132,9 +132,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	
 	/** Name of the field. Used to identify fields in simulation using several fields. */
 	private String name;
-	
-	//private double width, height; // ???
-	
+		
 	private int numAgents;
 	
 	private String topicPrefix = "";
@@ -200,7 +198,6 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
-	@SuppressWarnings("rawtypes")
 	public DContinuous2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix, int numNeighbours) {
 		super(discretization, width, height);
 		this.width=width;

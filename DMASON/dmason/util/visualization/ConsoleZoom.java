@@ -1,27 +1,7 @@
 package dmason.util.visualization;
 
-import javax.swing.*;
-import java.awt.event.*;
-import javax.swing.event.*;
-import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
-import sim.display.Controller;
-import sim.display.Display2D;
 import sim.display.GUIState;
-import sim.display.Prefs;
-import sim.display.SimApplet;
-import sim.display.SimpleController;
-import sim.engine.*;
-import java.awt.*;
-import java.text.*;
-import java.util.*;
-import ec.util.*;
-import java.io.*;
-import sim.util.*;
-import sim.util.gui.*;
-import sim.portrayal.*;
-import java.lang.ref.*;
-import java.lang.reflect.*;
-import java.util.prefs.*;
+import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 
 
 public class ConsoleZoom extends sim.display.Console {
@@ -64,8 +44,7 @@ public class ConsoleZoom extends sim.display.Console {
     		try {
 				con.publishToTopic("EXIT_ZOOM", "GRAPHICS"+id_cell,"GRAPHICS"+id_cell);
     		} catch (Exception e) {
-    			System.out.println(
-    					"Zoom uncorrectly disconnect. Possible problem in your simulation...");
+    			System.out.println("Zoom uncorrectly disconnect. Possible problem in your simulation...");
     			e.printStackTrace();
     		}	
     }
@@ -80,7 +59,6 @@ public class ConsoleZoom extends sim.display.Console {
     	    
 			
     	   try {
-    		   
     			Display display = new Display(con, mode, 
     					numCell, width, 
     					height, absolutePath,simul,getSimulation().getSimulationInspectedObject().getClass().getCanonicalName());

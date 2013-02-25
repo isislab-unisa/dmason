@@ -40,15 +40,8 @@ import data.BroadcastTask;
 
 public class ActiveMQWrapper implements Command
 {
-	private static String ACTIVEMQ_HOME; //"C:/Users/marvit/Desktop/DMASON/apache-activemq-5.6.0-bin/apache-activemq-5.6.0";
-	private static String ACTIVEMQ_BASE;// = ACTIVEMQ_HOME;
-	private static String ACTIVEMQ_CONF;// = ACTIVEMQ_HOME+"/conf";
-	private static String ACTIVEMQ_DATA;// = ACTIVEMQ_HOME+"/data";
-	private static String ACTIVEMQ_TMP;// = ACTIVEMQ_HOME+"/tmp";
-	private static String ACTIVEMQ_OPTS;// = "-Dorg.apache.activemq.UseDedicatedTaskRunner=true -Djava.util.logging.config.file=logging.properties";
-	private static String SUN_JMX;// = "--jmxurl service:jmx:rmi:///jndi/rmi://localhost:1616/jmxrmi";
-	private static String ACTIVEMQ_CLASSPATH;// = ACTIVEMQ_CONF+";"+ACTIVEMQ_BASE+"/conf;"+ACTIVEMQ_CONF;
-	
+	private static String ACTIVEMQ_HOME;
+
 	private final static String WRAPPER_CONF = "configuration";
 	private static ArrayList<String> command = new ArrayList<String>();
 	
@@ -59,16 +52,7 @@ public class ActiveMQWrapper implements Command
 	private boolean isStarted = false;
 	
 	public ActiveMQWrapper() 
-	{
-		
-		ACTIVEMQ_BASE = ACTIVEMQ_HOME;
-		ACTIVEMQ_CONF = ACTIVEMQ_HOME+"/conf";
-		ACTIVEMQ_DATA = ACTIVEMQ_HOME+"/data";
-		ACTIVEMQ_TMP = ACTIVEMQ_HOME+"/tmp";
-		ACTIVEMQ_OPTS = "-Dorg.apache.activemq.UseDedicatedTaskRunner=true -Djava.util.logging.config.file=logging.properties";
-		SUN_JMX = "--jmxurl service:jmx:rmi:///jndi/rmi://localhost:1616/jmxrmi";
-		ACTIVEMQ_CLASSPATH = ACTIVEMQ_CONF+";"+ACTIVEMQ_BASE+"/conf;"+ACTIVEMQ_CONF;
-		
+	{		
 		try {
 			startActiveMQ();
 				
