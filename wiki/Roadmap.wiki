@@ -2,7 +2,7 @@
 
 This page outlines certain goals, nothing is guaranteed to land in a specific release.
 
-= 2.0.1 (Soon) =
+= 2.1 (Soon) =
   * Automatic update of workers _(Mario)_
   * Automatic deploy of simulations _(Mario)_
   * Batch execution _(Mario)_
