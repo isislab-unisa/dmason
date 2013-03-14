@@ -1,5 +1,7 @@
 #summary How to download D-Mason's binaries and try it.
 
-# = Introduction =
+<wiki:comment>
+= Introduction =
+</wiki:comment>
 
 This page is under construction.
