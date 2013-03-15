@@ -1,4 +1,4 @@
-  * [EasyMode Trying D-Mason on your computer]
+  * [EasyMode EasyMode: Trying D-Mason on your computer]
   * [GetSource Getting and building D-Mason] 
   * [ErrorMessages Troubleshooting] 
   * [Roadmap Roadmap] 
