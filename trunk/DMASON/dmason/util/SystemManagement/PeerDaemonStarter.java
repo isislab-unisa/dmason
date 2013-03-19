@@ -82,7 +82,7 @@ public class PeerDaemonStarter extends Thread
 			connection.asynchronousReceive(myTopic, new PeerDaemonListener(this, connection,myTopic,isWorkerUI));
 	
 			if (connection.createTopic(masterTopic, 1))
-				ui.writeMessage("Ready to Start!\n");
+				ui.writeMessage("Connection successfull! Ready to start...\n");
 			else   
 				ui.writeMessage("Connection Refused\nUnable to Connect to " + connection.getAddress().getIPaddress() + "\n");
 		} catch (Exception e) { 
@@ -118,7 +118,7 @@ public class PeerDaemonStarter extends Thread
 			
 			if (connection.createTopic(masterTopic, 1))
 			{
-				ui.writeMessage("Ready to Start!\n");
+				ui.writeMessage("Connection successfull! Ready to start...\n");
 				
 				if(updated)
 					updateDone();

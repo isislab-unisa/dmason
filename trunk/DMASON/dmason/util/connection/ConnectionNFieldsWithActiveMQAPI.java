@@ -108,8 +108,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 		String strAddr = "failover:tcp://" + providerAddr.getIPaddress() + ":" + providerAddr.getPort();
 
 		// Create an ActiveMQConnectionFactory
-		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(strAddr);
-		
+		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(strAddr);		
 		
 		try
 		{

@@ -4,7 +4,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import activemqWrapper.rmi.Command;
+import dmason.wrapper.activemq.rmi.Command;
+
 
 public class ActiveMQManager {
 
