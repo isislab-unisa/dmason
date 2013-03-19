@@ -68,7 +68,9 @@ import dmason.util.exception.NoDigestFoundException;
 /**
  * Executable, GUI version worker.
  *
- *@author Mario Fiore Vitale (reconnection,reset simulation, update)
+ * @author unascribed
+ * @author Mario Fiore Vitale (reconnection,reset simulation, update)
+ * @author Luca Vicidomini
  */
 public class StartWorkerWithGui extends JFrame implements StartWorkerInterface , Observer
 {	
@@ -232,7 +234,19 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 		updated = false;
 		isBatch = false;
 		topicPrefix = "";
-		if(args.length == 4)
+		
+		// ip, post, autoconnect
+		if (args.length == 3)
+		{
+			ip = args[0];
+			port = args[1];
+			if (args[2].equals("autoconnect"))
+			{
+				autoStart = true;
+			}
+		}
+		// ip, post, topic, event 
+		if (args.length == 4)
 		{
 			autoStart = true;
 			if(args[3].equals("update"))
@@ -419,23 +433,34 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 	private void connect()
 	{
 		
+		System.out.println("CONNECT: autoStart " + autoStart + ", updated " + updated + ", batch " + isBatch);
 		try {
-			if(autoStart)
+			if (autoStart)
+			{
 				connection.setupConnection(new Address(ip, port));
+				// The worker could be launched with 'autoconnect' option of being restarted after an action on the master
+				if (updated || isBatch)
+				{
+					new PeerDaemonStarter(connection, this,myTopic,version,digest,updated,isBatch,topicPrefix);
+				}
+				else
+				{
+					new PeerDaemonStarter(connection, this,version,digest);
+				}
+			}
 			else
+			{
 				connection.setupConnection(new Address((String)cmbIp.getSelectedItem(), (String)cmbPort.getSelectedItem()));
+				new PeerDaemonStarter(connection, this,version,digest);
+			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
-		
-		if(!autoStart)
-			new PeerDaemonStarter(connection, this,version,digest);
-		else // the worker was updated and then reconnected to the same topic
-		 new PeerDaemonStarter(connection, this,myTopic,version,digest,updated,isBatch,topicPrefix);
-		
-		cmbIp.setEditable(false);
-		cmbPort.setEditable(false);
+		}		 
+		;
+		cmbIp.setEnabled(false);
+		cmbPort.setEnabled(false);
+		btnConnect.setEnabled(false);
 	}
 	@Override
 	public void writeMessage(String message) {

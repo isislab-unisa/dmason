@@ -18,6 +18,7 @@
 package dmason.util.SystemManagement;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -49,13 +50,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.sql.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -135,8 +130,6 @@ import org.xml.sax.SAXException;
 
 import sim.display.Console;
 
-import activemqWrapper.rmi.Command;
-
 import com.google.common.collect.Sets;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -169,8 +162,6 @@ import dmason.util.exception.NoDigestFoundException;
 import dmason.util.garbagecollector.Start;
 import dmason.util.trigger.Trigger;
 import dmason.util.trigger.TriggerListener;
-import java.awt.Component;
-import javax.swing.JScrollBar;
 
 
 /**
@@ -203,6 +194,8 @@ public class JMasterUI extends JFrame  implements Observer{
 	
 	private static final int RMI_PORT = 61617;
 	private static String RMI_IP;
+	
+	private static boolean autoconnect = false;
 	
 	private File updateFile;
 	private File simulationFile;
@@ -342,6 +335,7 @@ public class JMasterUI extends JFrame  implements Observer{
 
 	// codice profiling
 	private static Logger logger;
+	
  	FileAppender file;
 	private int limitStep;
 	private JLabel lblTotalSteps;
@@ -437,7 +431,8 @@ public class JMasterUI extends JFrame  implements Observer{
 	  
 		curWorkerDigest = getCurWorkerDigest();
 		
-		if(curWorkerDigest == null)
+		// Don't check workers' version on autoconnect (intended for easymode)
+		if(curWorkerDigest == null && !autoconnect)
 			loadUpdateFile();
 		
 		if(RMI_IP != null)
@@ -474,11 +469,12 @@ public class JMasterUI extends JFrame  implements Observer{
 		}
 		
 	}
-
-	public static void main(String[] args){
-		System.setProperty("java.security.policy","policyall.policy");
+	
+	public static void main(String[] args){	
+		System.setProperty("java.security.policy", ClassLoader.getSystemClassLoader().getResource("configuration/policyall.policy").toString());
+		
 		//used for set the name of logger in log4j.properties
-		System.setProperty("masterlogfile.name","masterUI");
+		System.setProperty("masterlogfile.name","master-ui");
 		logger = Logger.getLogger(JMasterUI.class.getCanonicalName());
 		// check if the OS
 		setSeparator();
@@ -486,21 +482,32 @@ public class JMasterUI extends JFrame  implements Observer{
 		// check the dir for FTP
 		checkFTPHOME();
 		
-		if(args.length == 1)
+		if(args.length >= 1)
 			RMI_IP = args[0];
 			
 		if(args.length == 0)
 			RMI_IP = null;
-		if(args.length != 0 && args.length != 1)
+		
+		if (args.length >= 2 && args[1].equals("autoconnect") )
 		{
-			System.out.println("Usage JMasterUI IP");
+			autoconnect = true;
+		}
+		
+		if(args.length > 1 && !autoconnect)
+		{
+			System.out.println("Usage JMasterUI IP [autoconnect]");
 			System.exit(0);
 		}
 		
 		JFrame a = new JMasterUI();
 		a.setVisible(true);
+		if (autoconnect)
+		{
+			((JMasterUI)a).connect();
+		}
 		
 		startFTPServer();
+		
 	}
 
 	private void initComponents() {
@@ -2316,6 +2323,10 @@ public class JMasterUI extends JFrame  implements Observer{
 		textFieldWidth.setEnabled(enabled);
 		textFieldMaxDistance.setEnabled(enabled);
 		jComboBoxChooseSimulation.setEnabled(enabled);
+		
+		buttonSetConfigDefault.setEnabled(enabled);
+		buttonSetConfigDefault2.setEnabled(enabled);
+		buttonSetConfigAdvanced.setEnabled(enabled);
 	}
 
 	private void connect(){
@@ -2348,7 +2359,9 @@ public class JMasterUI extends JFrame  implements Observer{
 				checkPeers();
 				dont = true;
 				
-				
+				textFieldAddress.setEnabled(false);
+				textFieldPort.setEnabled(false);
+				buttonRefreshServerLabel.setEnabled(false);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2925,7 +2938,7 @@ public class JMasterUI extends JFrame  implements Observer{
 	private void checkUpdate()
 	{
 		
-		if(toUpdate.isEmpty()) // All workers are updated
+		if(autoconnect || toUpdate.isEmpty()) // All workers are updated
 		{	
 			
 			notifyArea.append("All workers are ready!\n");
@@ -2962,7 +2975,18 @@ public class JMasterUI extends JFrame  implements Observer{
 	}
 
 	private void loadUpdateFile() {
-		int res = JOptionPane.showConfirmDialog(this, "Current Worker file does not exist! Do you want to load it?");
+		String message =
+			  "There is no reference worker JAR. Do you want to specify a reference\n "
+			+ "JAR for the worker?\n"
+			+ "\n"
+			+ "If you choose Yes, D-Mason will ensure that every worker is running an\n"
+			+ "instance of the reference JAR and update them automatically.\n"
+			+ "If you choose No, D-Mason wont't perform any check (this is highly\n"
+			+ "discouraged as it may lead to unreported errors during the simulation).\n"
+			+ "If you choose Cancel, D-Mason will exit.\n\n";
+		
+		int res = JOptionPane.showConfirmDialog(this, message);
+		
 		if(res == JOptionPane.OK_OPTION)
 		{
 			updateFile = showFileChooser();
@@ -2992,18 +3016,17 @@ public class JMasterUI extends JFrame  implements Observer{
 					e.printStackTrace();
 				}
 			}
-			else
-			{
-				JOptionPane.showMessageDialog(this,"You must to have the worker file!");
-				this.dispose();
-				System.exit(EXIT_ON_CLOSE);
-			}
+//			else
+//			{
+//				JOptionPane.showMessageDialog(this, "User aborted, D-Mason will now exit.");
+//				this.dispose();
+//				System.exit(EXIT_ON_CLOSE);
+//			}
 			
 		}
-		if(res == JOptionPane.NO_OPTION || res == JOptionPane.CANCEL_OPTION 
-				|| res == JOptionPane.CLOSED_OPTION)
+		if(updateFile == null || res == JOptionPane.CANCEL_OPTION || res == JOptionPane.CLOSED_OPTION)
 		{
-			JOptionPane.showMessageDialog(this,"You must to have the worker file!");
+			JOptionPane.showMessageDialog(this, "User aborted, D-Mason will now exit.");
 			this.dispose();
 			System.exit(EXIT_ON_CLOSE);
 		}
@@ -3014,12 +3037,15 @@ public class JMasterUI extends JFrame  implements Observer{
 
 	private static void setSeparator() 
 	{
+		SEPARATOR = System.getProperty("file.separator");
+		/*
 		OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
 		
 		if(os.getName().contains("Windows"))
 			SEPARATOR = "\\";
 		if(os.getName().contains("Linux") || os.getName().contains("OS X"))
 			SEPARATOR = "/";
+			*/
 	}
 	
 
