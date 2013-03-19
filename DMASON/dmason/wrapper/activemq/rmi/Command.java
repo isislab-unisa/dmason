@@ -16,7 +16,7 @@
 */
 
 
-package activemqWrapper.rmi;
+package dmason.wrapper.activemq.rmi;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
