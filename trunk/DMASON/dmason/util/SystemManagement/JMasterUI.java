@@ -3024,7 +3024,11 @@ public class JMasterUI extends JFrame  implements Observer{
 //			}
 			
 		}
-		if(updateFile == null || res == JOptionPane.CANCEL_OPTION || res == JOptionPane.CLOSED_OPTION)
+		else if (res == JOptionPane.NO_OPTION)
+		{
+			return;
+		}
+		if (updateFile == null || res == JOptionPane.CANCEL_OPTION || res == JOptionPane.CLOSED_OPTION)
 		{
 			JOptionPane.showMessageDialog(this, "User aborted, D-Mason will now exit.");
 			this.dispose();
