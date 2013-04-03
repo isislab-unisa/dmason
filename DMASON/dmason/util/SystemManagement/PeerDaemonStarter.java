@@ -18,6 +18,8 @@
 package dmason.util.SystemManagement;
 
 import java.net.InetAddress;
+import java.rmi.server.UID;
+
 import dmason.util.connection.Address;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
@@ -74,7 +76,9 @@ public class PeerDaemonStarter extends Thread
 		try
 		{
 			connection = (ConnectionNFieldsWithActiveMQAPI)conn;
-			myTopic = "SERVICE" + "-" + InetAddress.getLocalHost().getHostAddress() + "-" + System.currentTimeMillis();
+			
+			// We create a global univoque topic name by concatenating localhosts's IP and a Java RMI UID
+			myTopic = "SERVICE" + "-" + InetAddress.getLocalHost().getHostAddress() + "-" + new UID();
 			connection.createTopic(myTopic, 1);
 			connection.subscribeToTopic(myTopic);
 			
