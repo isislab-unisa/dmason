@@ -79,6 +79,11 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	private HashMap<String,ActiveMQTopic> topics;
 	private MessageListener listener;
 	
+	/**
+	 * Allows getting the list of topics.
+	 */
+	DestinationSource provider;
+	
 	
 	private boolean isConnected = false;
 	
@@ -134,6 +139,8 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 			
 			
 			isConnected = true;
+			
+			provider = connection.getDestinationSource();
 			
 			return true;
 		}catch (Exception e) {
@@ -279,11 +286,11 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	{
 		
 		// The list is retrieved using a DestinationSource object
-		DestinationSource provider = connection.getDestinationSource();
+		//DestinationSource provider = connection.getDestinationSource();
 		/* If we call getDestinationSource() and then immediately after we call getTopics(),
 		 * the latter may return an incomplete list. Waiting a second before building the list
 		 * tries to address the problem. */
-		Thread.sleep(1000);
+		//Thread.sleep(1000);
 		Set<ActiveMQTopic> topics = provider.getTopics();
 		ArrayList<String> list = new ArrayList<String>();
 		Iterator<ActiveMQTopic> iter = topics.iterator();
