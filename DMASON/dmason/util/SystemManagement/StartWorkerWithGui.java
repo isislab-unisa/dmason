@@ -465,6 +465,7 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 	@Override
 	public void writeMessage(String message) {
 		textArea.append(message);
+		logger.info(message);
 	}
 
 	// used for show change about connection reconnection

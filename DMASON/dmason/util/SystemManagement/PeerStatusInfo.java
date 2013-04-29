@@ -19,35 +19,105 @@ package dmason.util.SystemManagement;
 
 import java.io.Serializable;
 
-public class PeerStatusInfo implements Serializable{
+public class PeerStatusInfo implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private String oS="";
-	private String arch="";;
-	private int num_core;
+	
+	/** A mnemonic name users can assign to this worker */
+	private String alias = "";
+	
+	/** Operative System running this worker */
+	private String os="";
+	
+	/** CPU Architecture (i.e. 32bit, 64bit) */ 
+	private String architecture = "";
+	
+	/** Total number of cores */
+	private int numCores;
+	
+	/** Available system memory */
 	private long memory;
+	
+	/** Name of simulation being ran (if any) */
+	private String simulationName;
+	
+	/** Status of the worker (running, idle, paused, ...) */
+	private String status;
+	
+	/** IP address of the host running the worker */
 	private String address;
-	private String hostName;
+	
+	/** Hostname of the host running the worker */
+	private String hostname;
 	
 	private String version;
+	
+	/** Worker's executable digest (identify a generic version of the worker) */
 	private String digest;
+	
+	/** Topic name */
 	private String topic;
+	
+	/** Unique distributed ID */
+	private String id;
 	
 
 	public PeerStatusInfo() {
 		super();
 	}
 	
-	public PeerStatusInfo(String oS, String arch, int num_core,long memory, String address,String hostName,String version) {
-		super();
-		this.hostName=hostName;
-		this.oS = oS;
-		this.arch = arch;
-		this.num_core = num_core;
-		this.address = address;
-		this.memory = memory;
+	public String getAddress() {
+		return address;
 	}
 
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	
+	public String getAlias()
+	{
+		return alias;
+	}
+
+	public void setAlias(String alias)
+	{
+		this.alias = alias;
+	}
+	
+	public String getArchitecture() {
+		return architecture;
+	}
+
+	public void setArchitecture(String arch) {
+		this.architecture = arch;
+	}
+	
+	public String getDigest() {
+		return digest;
+	}
+
+	public void setDigest(String digest) {
+		this.digest = digest;
+	}
+	
+	public String getHostname() {
+		return hostname;
+	}
+	
+	public void setHostname(String hostname)
+	{
+		this.hostname = hostname;
+	}
+	
+	public String getId()
+	{
+		return id;
+	}
+
+	public void setId(String id)
+	{
+		this.id = id;
+	}
 	
 	public long getMemory() {
 		return memory;
@@ -56,7 +126,43 @@ public class PeerStatusInfo implements Serializable{
 	public void setMemory(long memory) {
 		this.memory = memory;
 	}
+	
+	public int getNumCores() {
+		return numCores;
+	}
 
+	public void setNumCores(int num_core) {
+		this.numCores = num_core;
+	}
+	
+	public String getOS() {
+		return os;
+	}
+
+	public void setOS(String oS) {
+		this.os = oS;
+	}
+	
+	public String getSimulationName()
+	{
+		return simulationName;
+	}
+
+	public void setSimulationName(String simulationName)
+	{
+		this.simulationName = simulationName;
+	}
+	
+	public String getStatus()
+	{
+		return status;
+	}
+
+	public void setStatus(String status)
+	{
+		this.status = status;
+	}
+	
 	public String getTopic() {
 		return topic;
 	}
@@ -64,64 +170,26 @@ public class PeerStatusInfo implements Serializable{
 	public void setTopic(String topic) {
 		this.topic = topic;
 	}
-
-	public String getDigest() {
-		return digest;
-	}
-
-	public void setDigest(String digest) {
-		this.digest = digest;
-	}
+	
 	public String getVersion()
 	{
 		return version;
 	}
+	
 	public void setVersion(String vers)
 	{
 		this.version = vers;
 	}
-	public String getoS() {
-		return oS;
-	}
 
-	public void setoS(String oS) {
-		this.oS = oS;
-	}
-
-	public String getArch() {
-		return arch;
-	}
-
-	public void setArch(String arch) {
-		this.arch = arch;
-	}
-
-	public int getNum_core() {
-		return num_core;
-	}
-
-	public void setNum_core(int num_core) {
-		this.num_core = num_core;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public String getHostName() {
-		return hostName;
-	}
-
-	public void setHostName(String hostName) {
-		this.hostName = hostName;
-	}
-
-	public String toString(){
-		return "HOST = "+address+"\n"+"--- diagnostic network info ---"+"\n"+"Operating System = "+oS+"\n"+
-		"Architecture = "+arch+"\n"+"Number of available processors = "+num_core+"\n";
+	@Override
+	public String toString()
+	{
+		return "PeerStatusInfo@" + Integer.toHexString(hashCode())
+				+ " [address=" + address + ", hostname=" + hostname
+				+ ", id=" + id + ", alias=" + alias + ", os=" + os
+				+ ", architecture=" + architecture + ", numCores=" + numCores
+				+ ", memory=" + memory + ", topic=" + topic + ", digest="
+				+ digest + ", status=" + status + ", simulationName="
+				+ simulationName + "]";
 	}
 }
