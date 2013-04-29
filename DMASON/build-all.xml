@@ -22,7 +22,8 @@
     	Luca Vicidomini
     -->
     <!--ANT 1.7 is required                                        -->
-	<property name="OutDir" value="C:/Users/Luca/Desktop/dmason"></property>
+	<property name="OutDir" value="${basedir}/build"></property>
+	<property name="MasonDir" value="${basedir}/../mason/"></property>
     <target name="create_run_jar">
     	<mkdir dir="${OutDir}"/>
         <jar destfile="${OutDir}/dmason.jar">
@@ -59,13 +60,17 @@
             	<exclude name="build-*.xml" />
             	<exclude name="FTPHome/" />
             	<exclude name="libraries/" />
+            	<exclude name="build/" />
             </fileset>
-            <fileset dir="${basedir}/../mason/">
+            <fileset dir="${MasonDir}">
             	<exclude name="docs/" />
             	<exclude name="jar/" />
             	<exclude name="start/" />
             </fileset>
         </jar>
+    	<copy todir="${OutDir}/libraries/">
+    		<fileset dir="${basedir}/libraries" />
+    	</copy>
     	<jar destfile="${OutDir}/dmason-launcher.jar">
 			<manifest>
 				<attribute name="Main-Class" value="dmason.launcher.Launcher" />
