@@ -1,7 +1,7 @@
 #summary A quick tutorial about downloading, building and running D-MASON.
 #labels Phase-Deploy
 
-(This page is being update in view of versione 2.1)
+(This page is being update in view of version 2.1)
 
 <wiki:comment>
 Last updated: 29 Apr 2013, D-MASON version 2.1
