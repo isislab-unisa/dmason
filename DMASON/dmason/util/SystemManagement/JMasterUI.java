@@ -1808,8 +1808,10 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 						try {
 							if(configFile.getName().contains(".xml"))
 							{
-								File xsd = new File(xsdFilename);
-								if(xsd.exists())
+								//File xsd = new File(xsdFilename);
+								InputStream xsd = ClassLoader.getSystemClassLoader().getSystemResourceAsStream("batchSchema.xsd");
+								
+								if(xsd != null)
 								{
 									if(validateXML(configFile, xsd))
 									{
@@ -3614,7 +3616,7 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 			return null;
 		}
 	}
-	private static boolean validateXML(File configFile,File xsdFile) throws IOException
+	private static boolean validateXML(File configFile,InputStream xsdFile) throws IOException
 	{
 		Source schemaFile = new StreamSource(xsdFile);
 		Source xmlFile = new StreamSource(configFile);
