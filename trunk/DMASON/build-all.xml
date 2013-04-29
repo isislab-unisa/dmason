@@ -84,6 +84,18 @@
                 <attribute name="Class-Path" value="./ dmason.jar" />
 			</manifest>
         </jar>
+    	<jar destfile="${OutDir}/dmason-worker.jar">
+			<manifest>
+				<attribute name="Main-Class" value="dmason.util.SystemManagement.StartWorker" />
+                <attribute name="Class-Path" value="./ dmason.jar" />
+			</manifest>
+        </jar>
+    	<jar destfile="${OutDir}/dmason-worker-gui.jar">
+			<manifest>
+				<attribute name="Main-Class" value="dmason.util.SystemManagement.StartWorkerWithGui" />
+                <attribute name="Class-Path" value="./ dmason.jar" />
+			</manifest>
+        </jar>
 		<jar destfile="${OutDir}/dmason-batch-wizard.jar">
 			<manifest>
 				<attribute name="Main-Class" value="dmason.batch.BatchWizard" />

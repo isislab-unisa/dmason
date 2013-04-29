@@ -41,8 +41,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -150,6 +148,7 @@ import dmason.batch.data.ParamDistributionUniform;
 import dmason.batch.data.ParamFixed;
 import dmason.batch.data.ParamList;
 import dmason.batch.data.ParamRange;
+import dmason.master.MasterListener;
 import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.sim.util.StdRandom;
 import dmason.util.Util;
@@ -184,7 +183,7 @@ import dmason.util.trigger.TriggerListener;
  * @author Mario Fiore Vitale
  *
  */
-public class JMasterUI extends JFrame  implements Observer{
+public class JMasterUI extends JFrame  implements Observer, MasterListener {
 
 	private int rows,columns;
 	private static final String FTP_HOME = "FTPHome";
@@ -193,7 +192,7 @@ public class JMasterUI extends JFrame  implements Observer{
 	private static final String FTP_PORT = "18786";
 	
 	private static final int RMI_PORT = 61617;
-	private static String RMI_IP;
+	private static String rmiIp;
 	
 	private static boolean autoconnect = false;
 	
@@ -201,7 +200,7 @@ public class JMasterUI extends JFrame  implements Observer{
 	private File simulationFile;
 	private File configFile;
 	private String xsdFilename = "batchSchema.xsd";
-	private static String SEPARATOR;
+	private static String dirSeparator;
 	private boolean isHorizontal=true;
 	private WorkerUpdater wu;
 	List<EntryWorkerScore<Integer, String>> scoreList = new ArrayList<EntryWorkerScore<Integer,String>>();
@@ -398,18 +397,17 @@ public class JMasterUI extends JFrame  implements Observer{
 	
 	public JMasterUI()
 	{	
-		
-			
-		// Get the path from which worker was started
+		// Get the path from which MasterUI was started
 		String path;
 		try {
 			path = URLDecoder.decode(StartWorkerWithGui.class.getProtectionDomain().getCodeSource().getLocation().getFile(),"UTF-8");
+			logger.debug("Path: " + path);
 		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
-			path = "";
+			logger.error("Unable to retrieve current working directory");
+			path = null;
 		}
-		logger.debug("Path: "+path);
+		
 
 		enableReset = true;
 		// disabled for debug
@@ -435,11 +433,11 @@ public class JMasterUI extends JFrame  implements Observer{
 		if(curWorkerDigest == null && !autoconnect)
 			loadUpdateFile();
 		
-		if(RMI_IP != null)
+		if(rmiIp != null)
 		{
-			csManager = new ActiveMQManager(RMI_IP, 61617); //"172.16.15.127"
+			csManager = new ActiveMQManager(rmiIp, 61617); //"172.16.15.127"
 			checkCommunicationServerStatus();
-			textFieldAddress.setText(RMI_IP);
+			textFieldAddress.setText(rmiIp);
 			if(!csManager.isUnknow())
 				setEnableActiveMQControl(true);
 		}
@@ -471,22 +469,24 @@ public class JMasterUI extends JFrame  implements Observer{
 	}
 	
 	public static void main(String[] args){	
+		// Needed for Java RMI support
 		System.setProperty("java.security.policy", ClassLoader.getSystemClassLoader().getResource("configuration/policyall.policy").toString());
 		
-		//used for set the name of logger in log4j.properties
-		System.setProperty("masterlogfile.name","master-ui");
+		// Set the name of logger in log4j.properties, then loads the logger
+		System.setProperty("masterlogfile.name", "master-ui");
 		logger = Logger.getLogger(JMasterUI.class.getCanonicalName());
-		// check if the OS
-		setSeparator();
 		
-		// check the dir for FTP
-		checkFTPHOME();
+		// Set directory separator
+		dirSeparator = System.getProperty("file.separator");
+		
+		// Check if FTP directories exist, or create them
+		checkFtpDirectories();
 		
 		if(args.length >= 1)
-			RMI_IP = args[0];
+			rmiIp = args[0];
 			
 		if(args.length == 0)
-			RMI_IP = null;
+			rmiIp = null;
 		
 		if (args.length >= 2 && args[1].equals("autoconnect") )
 		{
@@ -506,14 +506,11 @@ public class JMasterUI extends JFrame  implements Observer{
 			((JMasterUI)a).connect();
 		}
 		
-		startFTPServer();
+		startFtpServer();
 		
 	}
 
 	private void initComponents() {
-		
-		
-
 		menuBar1 = new JMenuBar();
 		jMenuFile = new JMenu();
 		//menuItemOpen = new JMenuItem();
@@ -1724,7 +1721,7 @@ public class JMasterUI extends JFrame  implements Observer{
 								if( simulationFile != null)
 								{
 									
-									File dest = new File(FTP_HOME+SEPARATOR+SIMULATION_DIR+SEPARATOR+simulationFile.getName());
+									File dest = new File(FTP_HOME+dirSeparator+SIMULATION_DIR+dirSeparator+simulationFile.getName());
 									try {
 										FileUtils.copyFile(simulationFile, dest);
 									
@@ -1740,7 +1737,7 @@ public class JMasterUI extends JFrame  implements Observer{
 								    		
 								    		String fileName = FilenameUtils.removeExtension(simulationFile.getName());
 								    		//save properties to project root folder
-								    		prop.store(new FileOutputStream(FTP_HOME+SEPARATOR+SIMULATION_DIR+SEPARATOR+fileName+".hash"), null);
+								    		prop.store(new FileOutputStream(FTP_HOME+dirSeparator+SIMULATION_DIR+dirSeparator+fileName+".hash"), null);
 								 
 								    	} catch (IOException ex) {
 								    		ex.printStackTrace();
@@ -2334,8 +2331,8 @@ public class JMasterUI extends JFrame  implements Observer{
 		{
 			if(csManager == null)
 			{
-				RMI_IP = textFieldAddress.getText(); 
-				csManager = new ActiveMQManager(RMI_IP, 61617); //"172.16.15.127"
+				rmiIp = textFieldAddress.getText(); 
+				csManager = new ActiveMQManager(rmiIp, 61617); //"172.16.15.127"
 				checkCommunicationServerStatus();
 				setEnableActiveMQControl(true);
 			}
@@ -2345,7 +2342,7 @@ public class JMasterUI extends JFrame  implements Observer{
 			address = new Address(textFieldAddress.getText(),textFieldPort.getText());
 			connection = new ConnectionNFieldsWithActiveMQAPI();
 			connection.setupConnection(address);
-			master = new MasterDaemonStarter(connection,this);
+			master = new MasterDaemonStarter(connection, this);
 	
 			if (!master.connectToServer())
 			{
@@ -2631,7 +2628,7 @@ public class JMasterUI extends JFrame  implements Observer{
 			
 				info = master.getLatestUpdate(key);
 				if(info!=null)
-					architectureLabel.setText("IP : "+info.getAddress()+"\n"+"OS : "+info.getoS()+"\n"+"Architecture : "+info.getArch()+"\n"+"Number of Core : "+info.getNum_core()+"\n"+"Worker Version : "+info.getVersion());
+					architectureLabel.setText("IP : "+info.getAddress()+"\n"+"OS : "+info.getOS()+"\n"+"Architecture : "+info.getArchitecture()+"\n"+"Number of Core : "+info.getNumCores()+"\n"+"Worker Version : "+info.getVersion());
 			}
 		}
 	}
@@ -2924,7 +2921,7 @@ public class JMasterUI extends JFrame  implements Observer{
 
 		
 		// Then loads jar simulation from SIMULATION_DIR
-		File folder = new File(FTP_HOME+SEPARATOR+SIMULATION_DIR);
+		File folder = new File(FTP_HOME+dirSeparator+SIMULATION_DIR);
 		File[] listOfFiles = folder.listFiles(); 
 
 		for (File file : listOfFiles) {
@@ -2954,13 +2951,13 @@ public class JMasterUI extends JFrame  implements Observer{
 				//System.out.println("ToUPDATE :"+toUpdate.size());
 				JOptionPane.showMessageDialog(this,"Not all worker have the same version! Update needed");
 				
-				wu = new WorkerUpdater(getFPTAddress(),FTP_HOME,SEPARATOR,master,toUpdate.size(),UPDATE_DIR,toUpdate);
+				wu = new WorkerUpdater(getFPTAddress(),FTP_HOME,dirSeparator,master,toUpdate.size(),UPDATE_DIR,toUpdate);
 				wu.setVisible(true);
 				
 				//Needs to know when the process is done
 				wu.getObservable().addObserver(JMasterUI.this);
 				
-				File updFile = new File(FTP_HOME+SEPARATOR+UPDATE_DIR+SEPARATOR+workerJarName);
+				File updFile = new File(FTP_HOME+dirSeparator+UPDATE_DIR+dirSeparator+workerJarName);
 				wu.setUpdateFile(updFile);
 				wu.startAutoUpdate();
 				
@@ -2981,7 +2978,7 @@ public class JMasterUI extends JFrame  implements Observer{
 			+ "\n"
 			+ "If you choose Yes, D-Mason will ensure that every worker is running an\n"
 			+ "instance of the reference JAR and update them automatically.\n"
-			+ "If you choose No, D-Mason wont't perform any check (this is highly\n"
+			+ "If you choose No, D-Mason won't perform any check (this is highly\n"
 			+ "discouraged as it may lead to unreported errors during the simulation).\n"
 			+ "If you choose Cancel, D-Mason will exit.\n\n";
 		
@@ -2993,7 +2990,7 @@ public class JMasterUI extends JFrame  implements Observer{
 			
 			if(updateFile != null)
 			{
-				File dest = new File(FTP_HOME+SEPARATOR+UPDATE_DIR+SEPARATOR+updateFile.getName());
+				File dest = new File(FTP_HOME+dirSeparator+UPDATE_DIR+dirSeparator+updateFile.getName());
 				
 				try {
 					FileUtils.copyFile(updateFile, dest);
@@ -3005,7 +3002,7 @@ public class JMasterUI extends JFrame  implements Observer{
 					workerJarName = updateFile.getName();
 					
 					String fileName = FilenameUtils.removeExtension(updateFile.getName());
-					dg.storeToPropFile(FTP_HOME+SEPARATOR+UPDATE_DIR+SEPARATOR+fileName+".hash");
+					dg.storeToPropFile(FTP_HOME+dirSeparator+UPDATE_DIR+dirSeparator+fileName+".hash");
 					
 
 				} catch (IOException e) {
@@ -3039,18 +3036,18 @@ public class JMasterUI extends JFrame  implements Observer{
 	
 
 
+	/*
+	 * Why this? We can just use System.getProperty("file.separator");
 	private static void setSeparator() 
 	{
-		SEPARATOR = System.getProperty("file.separator");
-		/*
 		OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
 		
 		if(os.getName().contains("Windows"))
 			SEPARATOR = "\\";
 		if(os.getName().contains("Linux") || os.getName().contains("OS X"))
 			SEPARATOR = "/";
-			*/
 	}
+	 */
 	
 
 	private Address getFPTAddress()
@@ -3066,7 +3063,7 @@ public class JMasterUI extends JFrame  implements Observer{
 		return null;
 	}
 	
-	private static void startFTPServer()
+	private static void startFtpServer()
 	{
 		FtpServerFactory serverFactory = new FtpServerFactory();
 
@@ -3118,7 +3115,7 @@ public class JMasterUI extends JFrame  implements Observer{
 	}
 
 	//Creates the directories structures if not exists
-	private static void checkFTPHOME() 
+	private static void checkFtpDirectories() 
 	{
 		boolean result;
 		File homedir = new File(FTP_HOME);
@@ -3130,27 +3127,27 @@ public class JMasterUI extends JFrame  implements Observer{
 			if(result){    
 				System.out.println("DIR "+ FTP_HOME+" created");  
 				
-				File simdir = new File(FTP_HOME+SEPARATOR+SIMULATION_DIR);
+				File simdir = new File(FTP_HOME+dirSeparator+SIMULATION_DIR);
 				result = simdir.mkdir();
 				if(result)   
-					System.out.println("DIR "+ FTP_HOME+SEPARATOR+SIMULATION_DIR+" created");
-				File updatedir = new File(FTP_HOME+SEPARATOR+UPDATE_DIR);
+					System.out.println("DIR "+ FTP_HOME+dirSeparator+SIMULATION_DIR+" created");
+				File updatedir = new File(FTP_HOME+dirSeparator+UPDATE_DIR);
 				result = updatedir.mkdir();
 				if(result)   
-					System.out.println("DIR "+ FTP_HOME+SEPARATOR+UPDATE_DIR+" created");
+					System.out.println("DIR "+ FTP_HOME+dirSeparator+UPDATE_DIR+" created");
 			}
 
 		}
 		else
 		{
-			File simdir = new File(FTP_HOME+SEPARATOR+SIMULATION_DIR);
+			File simdir = new File(FTP_HOME+dirSeparator+SIMULATION_DIR);
 			result = simdir.mkdir();
 			if(result)   
-				System.out.println("DIR "+ FTP_HOME+SEPARATOR+SIMULATION_DIR+" created");
-			File updatedir = new File(FTP_HOME+SEPARATOR+UPDATE_DIR);
+				System.out.println("DIR "+ FTP_HOME+dirSeparator+SIMULATION_DIR+" created");
+			File updatedir = new File(FTP_HOME+dirSeparator+UPDATE_DIR);
 			result = updatedir.mkdir();
 			if(result)   
-				System.out.println("DIR "+ FTP_HOME+SEPARATOR+UPDATE_DIR+" created");
+				System.out.println("DIR "+ FTP_HOME+dirSeparator+UPDATE_DIR+" created");
 		}
 	}
 
@@ -3202,7 +3199,7 @@ public class JMasterUI extends JFrame  implements Observer{
 	 */
 	private int getCurWorkerJarName()
 	{
-		File file = new File(FTP_HOME+SEPARATOR+UPDATE_DIR);  
+		File file = new File(FTP_HOME+dirSeparator+UPDATE_DIR);  
 		File[] files = file.listFiles();
 
 		if(files.length == 0)
@@ -3237,14 +3234,14 @@ public class JMasterUI extends JFrame  implements Observer{
 		}
 		if(res == 2)
 		{
-			File jarFile = new File(FTP_HOME+SEPARATOR+UPDATE_DIR+SEPARATOR+workerJarName);
+			File jarFile = new File(FTP_HOME+dirSeparator+UPDATE_DIR+dirSeparator+workerJarName);
 			if(jarFile.exists())
 			{
 				String digestFile = FilenameUtils.removeExtension(workerJarName)+".hash";
 				
 				Digester dg = new Digester(DigestAlgorithm.MD5);
 				
-				return dg.loadFromPropFile(FTP_HOME+SEPARATOR+UPDATE_DIR+SEPARATOR+digestFile);
+				return dg.loadFromPropFile(FTP_HOME+dirSeparator+UPDATE_DIR+dirSeparator+digestFile);
 			}
 			else
 				return null;
@@ -3257,7 +3254,7 @@ public class JMasterUI extends JFrame  implements Observer{
 	}
 
 	// Called by MasterDeamonStarter when receives WorkerInfo
-	public void addToUpdate(PeerStatusInfo workerInfo) 
+	public void workerInfo(PeerStatusInfo workerInfo) 
 	{
 		totPeers++;
 		if(workerInfo.getDigest() != null)
@@ -3286,7 +3283,7 @@ public class JMasterUI extends JFrame  implements Observer{
 	private int getPerformanceScore(PeerStatusInfo workerInfo) {
 		double cpuFactor = 1;
 		double ramFactor = 1;
-		return  (int) ((workerInfo.getNum_core()*cpuFactor) + ((workerInfo.getMemory()/(1024*1024))/1000)* ramFactor);
+		return  (int) ((workerInfo.getNumCores()*cpuFactor) + ((workerInfo.getMemory()/(1024*1024))/1000)* ramFactor);
 	}
 	
 	private static Set<List<EntryParam<String, Object>>> generateTestsFrom(Batch batch)
@@ -3710,7 +3707,7 @@ public class JMasterUI extends JFrame  implements Observer{
 				public void actionPerformed(ActionEvent e) {
 					
 					
-					wu = new WorkerUpdater(getFPTAddress(),FTP_HOME,SEPARATOR,master,peers.size(),UPDATE_DIR,JMasterUI.this);
+					wu = new WorkerUpdater(getFPTAddress(),FTP_HOME,dirSeparator,master,peers.size(),UPDATE_DIR,JMasterUI.this);
 					wu.setVisible(true);
 					
 					wu.getObservable().addObserver(JMasterUI.this);
@@ -3732,7 +3729,7 @@ public class JMasterUI extends JFrame  implements Observer{
 		Object instance;
 		try {
 			if(simulation.contains(".jar")){
-				File simFile=new File(FTP_HOME+SEPARATOR+SIMULATION_DIR+SEPARATOR+simulation);
+				File simFile=new File(FTP_HOME+dirSeparator+SIMULATION_DIR+dirSeparator+simulation);
 				url = new URL("file:" + simFile.getAbsolutePath());
 	
 				JarClassLoader cl = new JarClassLoader(url);
@@ -3779,4 +3776,5 @@ public class JMasterUI extends JFrame  implements Observer{
 		return false;
 
 	}
+
 }

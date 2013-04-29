@@ -58,7 +58,7 @@ public class MasterDaemonListener extends MyMessageListener
 			{
 				//System.out.println("Ricevuto infoooooooooooooooo");
 				PeerStatusInfo info = (PeerStatusInfo) mh.get("info");
-				infos.put(info.getHostName(), info);
+				infos.put(info.getHostname(), info);
 				
 				//notify MasterDeamonStarter
 				obs.setChanged();
@@ -73,7 +73,7 @@ public class MasterDaemonListener extends MyMessageListener
 					isFirst = false;
 				}*/
 				PeerStatusInfo info = (PeerStatusInfo) mh.get("updated");
-				infos.put(info.getHostName(), info);
+				infos.put(info.getHostname(), info);
 				
 				//Notify MasterDeamonStarter
 				obs.setChanged();

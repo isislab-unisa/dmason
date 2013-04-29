@@ -23,6 +23,8 @@ import java.util.Observer;
 
 import javax.jms.Message;
 
+import org.apache.log4j.Logger;
+
 import dmason.sim.field.MessageListener;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
@@ -53,16 +55,35 @@ import dmason.util.connection.MyMessageListener;
  */
 public class PeerDaemonListener extends MyMessageListener implements Observer
 {
-	// Valid values for status
+	/** <code>status</code> value meaning the worker is running a simulation */ 
 	static final int RUNNING = 0;
+	
+	/** <code>status</code> value meaning the worker is paused */
 	static final int PAUSED  = 1;
+	
+	/** <code>status</code> value meaning the worker is stopped */
 	static final int STOPPED = 2;
+	
+	/** <code>status</code> value meaning the worker received the simulation class but hasn't started yet */
 	static final int STARTED = 3;
+	
+	/** <code>status</code> value meaning the worker is waiting for a simulation class */
+	static final int IDLE = 4;
+	
+	/** Statuses' descriptions. */
+	static final String[] statusMessage = {
+		"Running", 
+		"Paused", 
+		"Stopped", 
+		"Ready",
+		"Idle"
+	};
 	
 	static int cnt;
 	
 	Object t;
-	//String NumPeer;
+
+	/** Current status. */
 	int status = STARTED;
 	
 	public int step = 0;
@@ -81,6 +102,8 @@ public class PeerDaemonListener extends MyMessageListener implements Observer
 	
 	private int stoppedWorker = 0;
 	private String topicPrefix;
+	
+	private static Logger logger;
 
 	public PeerDaemonListener(PeerDaemonStarter pds, Connection con, String topic, boolean WorkerUI)
 	{
@@ -90,15 +113,19 @@ public class PeerDaemonListener extends MyMessageListener implements Observer
 		this.connection = (ConnectionNFieldsWithActiveMQAPI)con;
 		this.myTopic = topic;
 		this.isWorkerUI = WorkerUI;
+		
+		logger = Logger.getLogger(this.getClass().getCanonicalName());
 	}
 
+	/**
+	 * Process a message received on worker's topic.
+	 */
 	@Override
 	public void onMessage(Message msg)
 	{
 		try
 		{
-			
-			//System.out.println("Topic :" + msg.getJMSDestination().toString());
+			// Retrieve the actual message from ActiveMQ message envelope
 			MyHashMap mh = (MyHashMap)parseMessage(msg);
 			
 			// Received startup data
@@ -113,9 +140,9 @@ public class PeerDaemonListener extends MyMessageListener implements Observer
 				updateDir =  regions.get(0).getUploadDir();
 				topicPrefix = regions.get(0).getTopicPrefix();
 				started = new ArrayList<Thread>();
+				
 				for (StartUpData data : regions)
 				{
-					
 					Worker wui = new Worker(data, connection);
 					//register for notification about stop after totSteps
 					wui.addObserver(this);
@@ -127,15 +154,17 @@ public class PeerDaemonListener extends MyMessageListener implements Observer
 				if(regions.get(0).getParam().isBatch)
 				{
 					starter.subscribeToBatch(topicPrefix); 
-				
 					starter.sendBatchInfo("ready");
 				}
+				
+				status = STARTED;
 			}
 
 			// Received request to publish peer informations
 			if (mh.get("info") != null)
 			{
-				starter.info();
+			
+				starter.info(statusMessage[status]);
 			}
 
 			// Received command to start the simulation
@@ -153,13 +182,10 @@ public class PeerDaemonListener extends MyMessageListener implements Observer
 					for (Thread w : started)
 						w.start();
 					status = RUNNING;
-					
 				}
-				// Worked was previously paused
+				// Worker was previously paused
 				else if (status == PAUSED)
 				{
-					gui.writeMessage("---> Resume\n");
-
 					gui.writeMessage("Resume\n");
 
 					for (Worker w : workers)

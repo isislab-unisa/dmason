@@ -18,10 +18,7 @@
 package dmason.util.SystemManagement;
 
 import it.sauronsoftware.ftp4j.FTPClient;
-import it.sauronsoftware.ftp4j.FTPException;
-import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
@@ -35,12 +32,11 @@ import java.util.Observer;
 
 import javax.swing.JOptionPane;
 
-import sun.instrument.InstrumentationImpl;
-
 import com.sun.jmx.remote.internal.ArrayQueue;
 
 import dmason.batch.data.EntryParam;
 import dmason.batch.data.GeneralParam;
+import dmason.master.MasterListener;
 import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.util.connection.Address;
 import dmason.util.connection.Connection;
@@ -51,19 +47,38 @@ public class MasterDaemonStarter implements Observer
 
 
 	/**
-	 * The number of regions the field is split in.
+	 * The number of regions (rows*columns) the field is split in.
 	 */
 	private int numRegions;
 
+	/**
+	 * The number of rows the field is split in.
+	 */
 	public int rows;
+	
+	/**
+	 * The number of columns the field is split in.
+	 */
 	public int columns;
+	
 	/**
 	 * Max distance an agent can travel in a single step. 
 	 */
 	private int jumpDistance;
 
+	/**
+	 * Initial Number of agents.
+	 */
 	private int numAgents = 25;
+	
+	/**
+	 * Field global width.
+	 */
 	private int width = 201;
+	
+	/**
+	 * Field global height.
+	 */
 	private int height = 201;
 
 	/**
@@ -96,7 +111,7 @@ public class MasterDaemonStarter implements Observer
 
 	private Address addr;
 
-	private JMasterUI masterUi;
+	private MasterListener masterUi;
 
 	private int testCounter;
 
@@ -106,7 +121,7 @@ public class MasterDaemonStarter implements Observer
 	 * Constructor.
 	 * @param conn Connection with a provider.
 	 */
-	public MasterDaemonStarter(Connection conn, JMasterUI ui)
+	public MasterDaemonStarter(Connection conn, MasterListener ui)
 	{
 		connection = (ConnectionNFieldsWithActiveMQAPI)conn;
 		address = connection.getAddress();
@@ -680,11 +695,18 @@ public class MasterDaemonStarter implements Observer
 
 					myml.getObservable().addObserver(this);
 				}
-				else return false;
+				else
+				{
+					return false;
+				}
 			}
-			else return false;
+			else
+			{
+				return false;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
 		}
 		return true;
 	}
@@ -821,45 +843,46 @@ public class MasterDaemonStarter implements Observer
 		else
 		{  //automatic update, used for check worker version
 			PeerStatusInfo workerInfo = (PeerStatusInfo) arg1;
-			masterUi.addToUpdate(workerInfo);
+			masterUi.workerInfo(workerInfo);
 		}
 		
 		
 	
 	}
 
-	public void hilbert(ArrayList<StartUpData> defs,ArrayList<String> clients)
-	{
-		ArrayQueue<StartUpData> queue = new ArrayQueue<StartUpData>(25);
-		queue.add(defs.get(0));
-		queue.add(defs.get(1));
-		queue.add(defs.get(5));
-		queue.add(defs.get(6));
-		queue.add(defs.get(2));
-		queue.add(defs.get(7));
-		queue.add(defs.get(12));
-		queue.add(defs.get(17));
-		queue.add(defs.get(16));
-		queue.add(defs.get(11));
-		queue.add(defs.get(10));
-		queue.add(defs.get(15));
-		queue.add(defs.get(20));
-		queue.add(defs.get(21));
-		queue.add(defs.get(22));
-		queue.add(defs.get(23));
-		queue.add(defs.get(24));
-		queue.add(defs.get(19));
-		queue.add(defs.get(18));
-		queue.add(defs.get(13));
-		queue.add(defs.get(14));
-		queue.add(defs.get(9));
-		queue.add(defs.get(8));
-		queue.add(defs.get(3));
-		queue.add(defs.get(4));
-		/*CentralGuiState g = new CentralGuiState(new CentralSimState());
-		Console c = (Console) g.createController();
-		c.pressPause();*/
-	}
+//	Looks like this isn't used anymore
+//	public void hilbert(ArrayList<StartUpData> defs,ArrayList<String> clients)
+//	{
+//		ArrayQueue<StartUpData> queue = new ArrayQueue<StartUpData>(25);
+//		queue.add(defs.get(0));
+//		queue.add(defs.get(1));
+//		queue.add(defs.get(5));
+//		queue.add(defs.get(6));
+//		queue.add(defs.get(2));
+//		queue.add(defs.get(7));
+//		queue.add(defs.get(12));
+//		queue.add(defs.get(17));
+//		queue.add(defs.get(16));
+//		queue.add(defs.get(11));
+//		queue.add(defs.get(10));
+//		queue.add(defs.get(15));
+//		queue.add(defs.get(20));
+//		queue.add(defs.get(21));
+//		queue.add(defs.get(22));
+//		queue.add(defs.get(23));
+//		queue.add(defs.get(24));
+//		queue.add(defs.get(19));
+//		queue.add(defs.get(18));
+//		queue.add(defs.get(13));
+//		queue.add(defs.get(14));
+//		queue.add(defs.get(9));
+//		queue.add(defs.get(8));
+//		queue.add(defs.get(3));
+//		queue.add(defs.get(4));
+//		/*CentralGuiState g = new CentralGuiState(new CentralSimState());
+//		Console c = (Console) g.createController();
+//		c.pressPause();*/
+//	}
 
 	
 

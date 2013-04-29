@@ -20,13 +20,15 @@ public class SystemManager {
 	
 	public PeerStatusInfo generate() throws Exception{
 		PeerStatusInfo info = new PeerStatusInfo();
-		info.setArch(os.getArch());
+		info.setArchitecture(os.getArch());
 		info.setAddress(InetAddress.getLocalHost().getHostAddress());
-		info.setNum_core(os.getAvailableProcessors());
+		info.setNumCores(os.getAvailableProcessors());
 		com.sun.management.OperatingSystemMXBean sunBean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 		info.setMemory(sunBean.getTotalPhysicalMemorySize());
-		info.setoS(os.getName()+" v"+os.getVersion());
-		info.setHostName(id);
+		info.setOS(os.getName()+" v"+os.getVersion());
+		info.setHostname(InetAddress.getLocalHost().getHostName());
+		info.setId(id);
+		info.setStatus("Idle");
 		return info;
 	}
 

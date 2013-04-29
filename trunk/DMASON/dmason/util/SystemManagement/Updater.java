@@ -23,8 +23,6 @@ import it.sauronsoftware.ftp4j.FTPDataTransferException;
 import it.sauronsoftware.ftp4j.FTPException;
 import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -41,22 +39,17 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Properties;
-
-import javax.swing.Timer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import org.apache.log4j.Logger;
+
 import dmason.util.connection.Address;
-import dmason.util.exception.NoDigestFoundException;
 
 
-/**
+/*
  * This code was edited or generated using CloudGarden's Jigloo
  * SWT/Swing GUI Builder, which is free for non-commercial
  * use. If Jigloo is being used commercially (ie, by a corporation,
@@ -89,10 +82,11 @@ public class Updater
 	private static String FTPPORT;
 	private static String logPath;
 	
-
-
+	private static Logger logger = Logger.getLogger(Updater.class.getCanonicalName());
+	
 	public static void updateWithGUI(Address FTPaddress, String name, String myTopic, Address address) 
 	{
+		logger.debug("Update (with GUI) command received");
 		FTPIP = FTPaddress.getIPaddress();
 		FTPPORT = FTPaddress.getPort();
 		jarName = name;
@@ -112,16 +106,21 @@ public class Updater
 				ArrayList<String> command = new ArrayList<String>();
 
 				command.add("java");
-				command.add("-jar");
+				//command.add("-jar");
+				command.add("-cp");
+				command.add(fDest.getAbsolutePath());
+				command.add(StartWorkerWithGui.class.getName());
 				command.add(fDest.getAbsolutePath());
 				command.add(address.getIPaddress());
 				command.add(address.getPort());
 				command.add(myTopic);
 				command.add("update");
-
+				
+				logger.info("Restarting with command: " + command.toString());
+		
 				ProcessBuilder builder = new ProcessBuilder(command);	
 				Process process = builder.start();
-				
+							
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -148,8 +147,9 @@ public class Updater
 
 	}
 
-	public static void updateNoGUI(Address ftpAddress, String name, String myTopic,
-			Address address) {
+	public static void updateNoGUI(Address ftpAddress, String name, String myTopic, Address address) {
+		
+		logger.debug("Update (with CLI) command received");
 
 		FTPIP = ftpAddress.getIPaddress();
 		FTPPORT = ftpAddress.getPort();
@@ -180,17 +180,21 @@ public class Updater
 				ArrayList<String> command = new ArrayList<String>();
 
 				command.add("java");
-				command.add("-jar");
+				//command.add("-jar");
+				command.add("-cp");
 				command.add(fDest.getAbsolutePath());
+				command.add(StartWorker.class.getName());
 				command.add(address.getIPaddress());
 				command.add(address.getPort());
 				command.add(myTopic);
 				command.add("update");
 
-
+				System.out.println(command);
+				
+				logger.info("Restarting with command: " + command.toString());
+				
 				ProcessBuilder builder = new ProcessBuilder(command);	
-				Process process = builder.start();	
-
+				Process process = builder.start();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -220,6 +224,8 @@ public class Updater
 	}
 	public static void restart(String myTopic, Address address, boolean isBatch, String topicPrefix) 
 	{
+		logger.debug("Restart command received");
+		
 		// TODO Auto-generated method stub
 		 String path;
 			try {
@@ -237,6 +243,7 @@ public class Updater
 		    	try {
 					ArrayList<String> command = new ArrayList<String>();
 
+					
 					command.add("java");
 					command.add("-jar");
 					command.add(jarfile.getAbsolutePath());
@@ -248,7 +255,7 @@ public class Updater
 					else
 						command.add(topicPrefix);
 
-
+					logger.info("Restarting with command: " + command.toString());
 
 					ProcessBuilder builder = new ProcessBuilder(command);	
 					Process process = builder.start();	

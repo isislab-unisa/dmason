@@ -20,7 +20,6 @@ package dmason.util.SystemManagement;
 import java.net.InetAddress;
 import java.rmi.server.UID;
 
-import dmason.util.connection.Address;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 
@@ -166,10 +165,17 @@ public class PeerDaemonStarter extends Thread
 	 * provides more technical informations as Java heap memory space,
 	 * system load average, Java Virtual Machine version, etc... 
 	 */
-	public void info() throws Exception
+	public void info(String statusMessage) throws Exception
 	{
 		PeerStatusInfo info = getInfo();
+		info.setStatus(statusMessage);
 		connection.publishToTopic(info, masterTopic, "info");
+	}
+	
+	public void info() throws Exception
+	{
+		// TODO Should remove info() since workers should always specify their status
+		info("");
 	}
 
 	private PeerStatusInfo getInfo() throws Exception {
