@@ -1,5 +1,11 @@
 #summary A quick tutorial about downloading, building and running D-MASON.
-#labels Phase-Implementation
+#labels Phase-Deploy
+
+(This page is being update in view of versione 2.1)
+
+<wiki:comment>
+Last updated: 29 Apr 2013, D-MASON version 2.1
+</wiki:comment>
 
 =Getting and building D-MASON=
 
@@ -12,7 +18,7 @@ Please note that in order to build D-MASON you will need to download ad setup MA
 ==Prerequisites==
   * [http://www.eclipse.org/ Eclipse "Helios" or newer].
   * [http://subclipse.tigris.org/ Subversion plugin for Eclipse].
-
+  
 ==Downloading MASON as Eclipse Project==
 [http://cs.gmu.edu/~eclab/projects/mason/ MASON] is the non-distributed toolkit for multi-agent simulation developed by the MASON University. You can download the latest version from the SVN Repository.
 
@@ -39,9 +45,34 @@ Here we will see how to download MASON and setup it as a new Eclipse project.
   # Input D-MASON’s repository URL: http://d-mason.googlecode.com/svn/trunk/.
   # Select the uppercase "DMASON" entry and click "Next".
   # Name the project and click "Finish".
-  # Click "OK" when the "Confirm Overwrite" dialog appears and wait for Eclipse to download D-MASON.
-  # In the "Package Explorer", scroll down to the "libraries" folder and expand it. Select the contained libraries (they should be guava, log4j, slf4j, xstream), right click and select "Build path" > "Add to build path".
-  # You are now ready to execute D-MASON.
+  # You are now ready to build D-MASON.
+  
+==Building D-MASON==
+D-MASON is meant to be deployed as a collection of jar files. A typical distribution consists in the following directory structure:
+
+{{{
+    + dmason
+	|--+ apache-activemq-5.6.0
+	|  \--- (...)
+	|--+ libraries
+	|  \--- (...)
+	|--- dmason.jar
+	|--- dmason-batch-wizard.jar
+	|--- dmason-launcher.jar
+	|--- dmason-master.jar
+	|--- dmason-server.jar
+	|--- dmason-worker.jar
+	\--- dmason-worker-gui.jar
+}}}
+
+{{{dmason.jar}}} contains the D-MASON executable, while the other JARfiles are just  _shortcuts_ useful in order to launch the different D-MASON's components. DMASON can be built using the {{{build-all.xml}}} ANT script you will find in the project directory. Before launching it, please check these two lines on your file:
+
+{{{
+	<property name="OutDir" value="${basedir}/build"></property>
+	<property name="MasonDir" value="${basedir}/../mason/"></property>
+}}}
+
+{{{OutDir}}} allows you to specify where to build D-MASON. {{{MasonDir}}} is required to successfully build D-MASON and *must point* to MASON project's home.
 
 ==Launching D-MASON==
 D-MASON is built upon four components: an ActiveMQ server, one or more _Workers_, a _Master_ interface, a _Global Inspector_ (optional).
