@@ -110,7 +110,6 @@ public class Updater
 				command.add("-cp");
 				command.add(fDest.getAbsolutePath());
 				command.add(StartWorkerWithGui.class.getName());
-				command.add(fDest.getAbsolutePath());
 				command.add(address.getIPaddress());
 				command.add(address.getPort());
 				command.add(myTopic);

@@ -227,10 +227,11 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 		logger = Logger.getLogger(StartWorker.class.getCanonicalName());
 		logger.debug("StartWorker "+version);
 		
-		String topic = "";
+		autoStart = false;
+		
 		String ip = null;
 		String port = null;
-		autoStart = false;
+		String topic = "";
 		updated = false;
 		isBatch = false;
 		topicPrefix = "";
@@ -250,7 +251,9 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 		{
 			autoStart = true;
 			if(args[3].equals("update"))
+			{
 				updated = true;
+			}
 			if(args[3].equals("reset"))
 			{
 				updated = false;

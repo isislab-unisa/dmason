@@ -269,7 +269,11 @@ public class StartWorker implements StartWorkerInterface,  Observer {
 		}
 		else
 		{
-			logger.info("Could not connect to " + ip + ":" + port);	
+			logger.info("CONNECTION FAILED:");	
+			logger.debug("   IP     : " + worker.ipAddress.getIPaddress());
+			logger.debug("   Port   : " + worker.ipAddress.getPort());
+			logger.debug("   Prefix : " + worker.topicPrefix);
+			logger.debug("   Topic  : " + worker.myTopic);
 		}
 	}
 
