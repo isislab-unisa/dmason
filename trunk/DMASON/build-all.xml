@@ -101,6 +101,12 @@
                 <attribute name="Class-Path" value="./ dmason.jar" />
 			</manifest>
         </jar>
+    	<jar destfile="${OutDir}/dmason-inspector.jar">
+    				<manifest>
+    					<attribute name="Main-Class" value="dmason.util.visualization.LauncherViewer" />
+    	                <attribute name="Class-Path" value="./ dmason.jar" />
+    				</manifest>
+    	        </jar>
 		<jar destfile="${OutDir}/dmason-batch-wizard.jar">
 			<manifest>
 				<attribute name="Main-Class" value="dmason.batch.BatchWizard" />
