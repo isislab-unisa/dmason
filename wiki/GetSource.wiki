@@ -1,11 +1,7 @@
 #summary A quick tutorial about downloading, building and running D-MASON.
 #labels Phase-Deploy
 
-(This page is being updated in view of version 2.1)
-
-<wiki:comment>
-Last updated: 29 Apr 2013, D-MASON version 2.1
-</wiki:comment>
+Last updated: 30 Apr 2013, D-MASON version 2.1
 
 =Getting and building D-MASON=
 
@@ -75,7 +71,7 @@ D-MASON is meant to be deployed as a collection of jar files. A typical distribu
  * {{{OutDir}}} allows you to specify where to build D-MASON. If your {{{OutDir}}} is under {{{${basedir}}}} we suggest you to add {{{OutDir}}} to the exclude list (look for XML element {{{<fileset dir="${basedir}/">}}} under the {{{<jar destfile="${OutDir}/dmason.jar">}}} element).
  * {{{MasonDir}}} is required to successfully build D-MASON and *must point* to MASON project's home.
 
-The ANT script will build the directory structure shown above. Download out pre-configured version of Apache ActiveMQ 5.6 and place it under {{{OutDir}}} so it respects the directory structure shown above.
+The ANT script will build the directory structure shown above. [https://code.google.com/p/d-mason/downloads/detail?name=apache-activemq-5.6.0.zip&can=2&q= Download out pre-configured version of Apache ActiveMQ] 5.6 and place it under {{{OutDir}}} so it respects the directory structure shown above.
 
 You are now ready to launch D-MASON.
 
@@ -85,7 +81,7 @@ D-MASON is built upon four components: an ActiveMQ server, one or more _Workers_
 In this tutorial, we’ll setup a D-MASON simulation using two workers. Also, we will run all of the component on a single machine, but in a real simulation environment you  may want to run the server and every worker on different hosts.
 
 ===Launching the ActiveMQ server===
-We offer a customized version of ActiveMQ (it differs from the official distribution just in the configuration) that you can download from this site.
+We offer a customized version of ActiveMQ (it differs from the official distribution just in the configuration) that you can [https://code.google.com/p/d-mason/downloads/detail?name=apache-activemq-5.6.0.zip&can=2&q= download from this site].
 Extract the archive under your D-MASON's directory, so the latter one contains the {{{apache-activemq-5.6.0}}} directory.
 
 The double-click on {{{dmason-server.jar}}} or launch via command line:
