@@ -51,28 +51,33 @@ Here we will see how to download MASON and setup it as a new Eclipse project.
 D-MASON is meant to be deployed as a collection of jar files. A typical distribution consists in the following directory structure:
 
 {{{
-    + dmason
-	|--+ apache-activemq-5.6.0
-	|  \--- (...)
-	|--+ libraries
-	|  \--- (...)
-	|--- dmason.jar
-	|--- dmason-batch-wizard.jar
-	|--- dmason-launcher.jar
-	|--- dmason-master.jar
-	|--- dmason-server.jar
-	|--- dmason-worker.jar
-	\--- dmason-worker-gui.jar
++ dmason
+    |--+ apache-activemq-5.6.0
+    |  \--- (...)
+    |--+ libraries
+    |  \--- (...)
+    |--- dmason.jar
+    |--- dmason-batch-wizard.jar
+    |--- dmason-launcher.jar
+    |--- dmason-master.jar
+    |--- dmason-server.jar
+    |--- dmason-worker.jar
+    \--- dmason-worker-gui.jar
 }}}
 
 {{{dmason.jar}}} contains the D-MASON executable, while the other JARfiles are just  _shortcuts_ useful in order to launch the different D-MASON's components. DMASON can be built using the {{{build-all.xml}}} ANT script you will find in the project directory. Before launching it, please check these two lines on your file:
 
 {{{
-	<property name="OutDir" value="${basedir}/build"></property>
-	<property name="MasonDir" value="${basedir}/../mason/"></property>
+<property name="OutDir" value="${basedir}/build"></property>
+<property name="MasonDir" value="${basedir}/../mason/"></property>
 }}}
 
-{{{OutDir}}} allows you to specify where to build D-MASON. {{{MasonDir}}} is required to successfully build D-MASON and *must point* to MASON project's home.
+ * {{{OutDir}}} allows you to specify where to build D-MASON. If your {{{OutDir}}} is under {{{${basedir}}}} we suggest you to add {{{OutDir}}} to the exclude list (look for XML element {{{<fileset dir="${basedir}/">}}} under the {{{<jar destfile="${OutDir}/dmason.jar">}}} element).
+ * {{{MasonDir}}} is required to successfully build D-MASON and *must point* to MASON project's home.
+
+The ANT script will build the directory structure shown above. Download out pre-configured version of Apache ActiveMQ 5.6 and place it under {{{OutDir}}} so it respects the directory structure shown above.
+
+You are now ready to launch D-MASON.
 
 ==Launching D-MASON==
 D-MASON is built upon four components: an ActiveMQ server, one or more _Workers_, a _Master_ interface, a _Global Inspector_ (optional).
@@ -80,30 +85,46 @@ D-MASON is built upon four components: an ActiveMQ server, one or more _Workers_
 In this tutorial, we’ll setup a D-MASON simulation using two workers. Also, we will run all of the component on a single machine, but in a real simulation environment you  may want to run the server and every worker on different hosts.
 
 ===Launching the ActiveMQ server===
-You can download the ActiveMQ server from its official website: [http://activemq.apache.org/]. Download and launch it (it is written in Java so you can download the binaries without having to worry about recompilation).
+We offer a customized version of ActiveMQ (it differs from the official distribution just in the configuration) that you can download from this site.
+Extract the archive under your D-MASON's directory, so the latter one contains the {{{apache-activemq-5.6.0}}} directory.
+
+The double-click on {{{dmason-server.jar}}} or launch via command line:
+
+{{{
+java -jar dmason-server.jar
+}}}
 
 ===Exporting and running the Worker runnable JAR===
-  # In Eclipse, right-click on the `dmason.util.SystemManagement.StartWorker` file and select "Run As..." > "Java Application". The application will throw an exception and fail, but this will create a default launch configuration.
-  # Right-click again on `dmason.util.SystemManagement.StartWorker` and selext "Export...".
-  # Select "Runnable JAR file", click "Next".
-  # In "Launch configuration" select "!StartWorker".
-  # Select a valid export destination (i.e. C:/dmason/worker.jar), then click "Finish".
-  # Open you command-line/terminal window and go into the directory where you saved the Runnable JAR.
-  # Launch the worker using the command: `java -jar worker.jar 127.0.0.1 61616`:
-    * Replace `worker.jar` with the name you input as export destination;
-    * Replace `127.0.0.1` with the IP address of the host running ActiveMQ (leave `127.0.0.1` if the worker and ActiveMQ are running on the same host);
-    * Replace `61616` with the port where ActiveMQ is listening (leave `61616` if you didn’t modify default ActiveMQ’s configuration).
-  # A "Ready to start" message should display.
+You can use the command-line or the GUI version of the worker. If you launch {{{dmason-worker-gui.jar}}} the GUI version will start. You must enter the IP address of the host running ActiveMQ and the port where ActiveMQ is listening.
+
+You can also use the command-line versione by launching:
+
+{{{
+java -jar dmason-worker.jar 127.0.0.1 61616
+}}}
+
+Please note that we are passing two argument: the IP address of the host running ActiveMQ and the port where ActiveMQ is listening.
+
+A {{{Ready to start!}}} message should appear, meaning the connection was successfull.
+
   
 ===Launching the Master===
-  # Launch the executable class `dmason.util.SystemManagement.JMasterUI`.
-  # You will be ask to select a worker JAR file. Select the file you created in section "Exporting and running the Worker runnable  JAR".
+Launch the master either by double-clicking {{{dmason-master.jar}} or by typing on your shell/command line:
+
+{{{
+java -jar dmason-master.java
+}}}
+
+  # You will be asked to select a worker JAR file. Select {{{dmason.jar}}}.
   # In the "Connection" panel input IP Address and Port of the host running ActiveMQ. Leave IP `127.0.0.1` if the Master and ActiveMQ are running on the same host; leave port `61616` if you didn’t change default ActiveMQ’s configuration. Click "Ok", a "Connectione stabilished" message will display, followed by "All workers are ready".
   # You can either run a simulation embedded with the default D-MASON distribution, or you can deploy a simulation JAR you made. In this tutorial we will run an embedded simulation. In the "Setting panel" leave the default parameters and click "Set". A pop-up message will confirm the success of the operation, and two "Simulation cell ready" messages will appear. 
   # You can now press the PLAY button to start the simulation, but first you may want to launch the Global Inspector.
 
 ===Launching the Global Inspector===
-  # Launch the executable class `dmason.util.visualization.LauncherViewer`.
+  # Launch the Global Inspector by either double-clicking {{dmason-inspector.jar}}} or entering in your shell/command-line:
+{{{
+java -jar dmason-inspector.jar
+}}}
   # In the "Connection" panel you must input IP Address and Port of the host running ActiveMQ.
   # In "Simulation info" you must input the same simulation parameters set when you launched the simulation using the Master. Since we didn’t change anything, just click "Connect".
   # Click on the "Graphic" checkbox.
