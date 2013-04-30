@@ -109,7 +109,7 @@ A {{{Ready to start!}}} message should appear, meaning the connection was succes
 
   
 ===Launching the Master===
-Launch the master either by double-clicking {{{dmason-master.jar}} or by typing on your shell/command line:
+  # Launch the master either by double-clicking {{{dmason-master.jar}} or by typing on your shell/command line:
 
 {{{
 java -jar dmason-master.java
