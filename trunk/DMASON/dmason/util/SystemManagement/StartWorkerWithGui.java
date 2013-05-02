@@ -76,7 +76,7 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 {	
 	private static final long serialVersionUID = 1L;
 	
-	private static final String version = "1.0";
+	private static final String VERSION = "1.0";
 
 	
 	
@@ -225,7 +225,7 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 		}
 		
 		logger = Logger.getLogger(StartWorker.class.getCanonicalName());
-		logger.debug("StartWorker "+version);
+		logger.debug("StartWorker "+VERSION);
 		
 		autoStart = false;
 		
@@ -296,7 +296,7 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 		cmbIp = new JComboBox();
 		
 		//======== this ========
-		setTitle("D.MASON WORKER "+version);
+		setTitle(Release.PRODUCT_RELEASE + " Worker " + VERSION);
 		Container contentPane = getContentPane();
 	
 		//======== scrollPane1 ========
@@ -444,17 +444,17 @@ public class StartWorkerWithGui extends JFrame implements StartWorkerInterface ,
 				// The worker could be launched with 'autoconnect' option of being restarted after an action on the master
 				if (updated || isBatch)
 				{
-					new PeerDaemonStarter(connection, this,myTopic,version,digest,updated,isBatch,topicPrefix);
+					new PeerDaemonStarter(connection, this,myTopic,VERSION,digest,updated,isBatch,topicPrefix);
 				}
 				else
 				{
-					new PeerDaemonStarter(connection, this,version,digest);
+					new PeerDaemonStarter(connection, this,VERSION,digest);
 				}
 			}
 			else
 			{
 				connection.setupConnection(new Address((String)cmbIp.getSelectedItem(), (String)cmbPort.getSelectedItem()));
-				new PeerDaemonStarter(connection, this,version,digest);
+				new PeerDaemonStarter(connection, this,VERSION,digest);
 			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
