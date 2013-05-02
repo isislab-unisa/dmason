@@ -2,6 +2,8 @@
 
 =Troubleshooting=
 
+<wiki:toc />
+
 == Agent {AGENT-ID} tried to set position {COORDINATES}: out of boundaries on cell {CELL-ID}. =
 
 If this error appears while creating new agents, it is probably due a common mistake in the simulation design, rather than an error in D-MASON.
