@@ -792,7 +792,7 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						JOptionPane.showMessageDialog(null, "D-MASON version 2.0","Info",1);
+						JOptionPane.showMessageDialog(null, Release.PRODUCT_RELEASE, "Info", 1);
 					
 						
 					}
@@ -2920,6 +2920,7 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 		jComboBoxChooseSimulation.addItem(new SimComboEntry("Flockers Thin", "dmason.sim.app.DFlockersThin.DFlockers"));
 		jComboBoxChooseSimulation.addItem(new SimComboEntry("Particles Thin", "dmason.sim.app.DParticlesThin.DParticles"));
 		jComboBoxChooseSimulation.addItem(new SimComboEntry("Ants Foraging Thin", "dmason.sim.app.DAntsForageThin.DAntsForage"));
+		jComboBoxChooseSimulation.addItem(new SimComboEntry("DVampires", "dmason.sim.app.DVampires.DSimulation"));
 
 		
 		// Then loads jar simulation from SIMULATION_DIR
@@ -3005,8 +3006,6 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 					
 					String fileName = FilenameUtils.removeExtension(updateFile.getName());
 					dg.storeToPropFile(FTP_HOME+dirSeparator+UPDATE_DIR+dirSeparator+fileName+".hash");
-					
-
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -3025,6 +3024,8 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 		}
 		else if (res == JOptionPane.NO_OPTION)
 		{
+			// Setting autoconnect=true will prevent JMaster to update workers
+			autoconnect = true;
 			return;
 		}
 		if (updateFile == null || res == JOptionPane.CANCEL_OPTION || res == JOptionPane.CLOSED_OPTION)
