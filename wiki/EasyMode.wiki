@@ -1,7 +1,5 @@
-#summary How to download D-Mason's binaries and try it.
+#summary The fastest way to run D-Mason on your computer.
 
-<wiki:comment>
-= Introduction =
-</wiki:comment>
+= Running D-Mason in EasyMode =
 
 This page is under construction.
