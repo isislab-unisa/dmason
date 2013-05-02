@@ -113,10 +113,8 @@ public class Worker extends Observable
 		if (data.reducer)
 		{
 			reducer = new Reducer(
-					data.getDef(), // Simulation class
-					connection,
-					data.getParam().getRows() * data.getParam().getColumns(), // numPeers
-					data.getTopicPrefix());
+					data,
+					connection);
 			reducer.start();
 		}
 				

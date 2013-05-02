@@ -1,14 +1,24 @@
 package dmason.sim.globals;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 
+import sim.display.Console;
+import sim.display.GUIState;
+
+import dmason.batch.data.GeneralParam;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.field.CellType;
 import dmason.sim.field.MessageListener;
+import dmason.util.SystemManagement.JarClassLoader;
+import dmason.util.SystemManagement.StartUpData;
+import dmason.util.SystemManagement.Updater;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.visualization.RemoteSnap;
 import dmason.util.visualization.VisualizationUpdateMap;
@@ -25,23 +35,51 @@ public class Reducer extends Thread
 	private int numPeers;
 	String topicPrefix;
 	
-	public Reducer(Class<?> simClass, ConnectionNFieldsWithActiveMQAPI connection, int numPeers, String topicPrefix)
+	/**
+	 * True if the simulation uses global parameters, false otherwise
+	 */
+	private boolean isValid;
+	
+	public Reducer(StartUpData data, ConnectionNFieldsWithActiveMQAPI connection)
 	{
 		this.connection = connection;
-		this.numPeers = numPeers;
-		this.topicPrefix = topicPrefix;
+		this.numPeers = data.getParam().getRows() * data.getParam().getColumns();
+		this.topicPrefix = data.getTopicPrefix();
 		this.queue = new PriorityQueue<RemoteSnap>();
 		
-		Constructor<?> constructor;
-		try {
-			constructor = simClass.getConstructor();
-			simulationInstance = (DistributedState)constructor.newInstance(new Object[] { });
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		simulationInstance = makeState(data.getDef(), data.getParam(), data);
+		
+		if (simulationInstance != null)
+		{
+			createTopics(connection, topicPrefix);
+			isValid = true;
+		}
+		else
+		{
+			isValid = false;
 		}
 		
-				
+//		Constructor<?> constructor;
+//		try {
+//			constructor = simClass.getConstructor();
+//			simulationInstance = (DistributedState)constructor.newInstance(new Object[] { });
+//			createTopics(connection, topicPrefix);
+//		} catch (NoSuchMethodException e) {
+//			/*
+//			 * NoSuchMethodException means that the simulation doesn't have a void
+//			 * constructor, so probably it doesn't support Global Parameters,
+//			 * hence the Reducer won't start.
+//			 */
+//			isValid = false;
+//		} catch (Exception e) {
+//			// Fallback
+//			e.printStackTrace();
+//		}
+	}
+
+
+	void createTopics(ConnectionNFieldsWithActiveMQAPI connection, String topicPrefix)
+	{
 		try {
 			// Publish reduced data
 			connection.createTopic(topicPrefix + "GLOBAL_REDUCED", 1);
@@ -49,7 +87,11 @@ public class Reducer extends Thread
 			// Gather globals data from workers
 			connection.subscribeToTopic(topicPrefix + "GLOBAL_DATA");
 			listeners = new ArrayList<MessageListener>();
-			Thread listener = new UpdaterThreadForGlobalsDataListener(connection, this, topicPrefix + "GLOBAL_DATA", listeners);
+			Thread listener = new UpdaterThreadForGlobalsDataListener(
+					connection, 
+					this, 
+					topicPrefix + "GLOBAL_DATA", 
+					listeners);
 			listener.start();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -60,6 +102,11 @@ public class Reducer extends Thread
 	@Override
 	public void run()
 	{
+		if (!isValid)
+		{
+			return;
+		}
+		
 		// Cache this
 		CellType cellId = new CellType(-1, -1);
 		
@@ -128,6 +175,82 @@ public class Reducer extends Thread
 	public VisualizationUpdateMap<Long, RemoteSnap> getUpdatesMap()
 	{
 		return updates;
+	}
+	
+	// -------------------------------------------------------------------
+	// SAME AS WORKER.JAVA
+	
+	public DistributedState makeState(Class simClass, GeneralParam args_gen, StartUpData data)
+	{
+		Object obj = null;
+
+		if(simClass != null) //hardcoded simulation
+		{
+			Constructor constr;
+			try {
+				constr = simClass.getConstructor();
+				obj = constr.newInstance(new Object[]{ });
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		else // Jar simulation
+		{
+			try
+			{
+				URL url = Updater.getSimulationJar(data);
+				obj = getSimulationInstance(args_gen, url, false);
+			} catch (Exception e) {
+				throw new RuntimeException("Exception occurred while trying to construct the simulation " + simClass + "\n" + e);			
+			}
+		}
+
+
+		if (obj instanceof DistributedState)
+		{
+			// The instantiated class is the proper simulation class
+			return (DistributedState)obj;
+		}
+		else
+		{
+			// Read as "get <state> variable from object <obj>"
+			try {
+				return (DistributedState)obj.getClass().getField("state").get(obj);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} 
+		}
+
+		return null;
+	}
+
+	private Object getSimulationInstance(GeneralParam args_gen, URL url, boolean isGui)
+			throws NoSuchMethodException, IllegalAccessException,
+			InvocationTargetException, ClassNotFoundException,
+			InstantiationException 
+			{
+		JarClassLoader cl = new JarClassLoader(url);
+
+		cl.addToClassPath();
+
+		String name = null;
+		try {
+			name = cl.getMainClassName();
+		} catch (IOException e) {
+			System.err.println("I/O error while loading JAR file:");
+			e.printStackTrace();
+			System.exit(1);
+		}
+		if (name == null) {
+			System.out.println("Specified jar file does not contain a 'Main-Class' manifest attribute");
+		}
+
+		if(isGui)
+		{
+			name += "WithUI";
+		}
+		
+		return cl.getInstance(name, args_gen);
 	}
 
 
