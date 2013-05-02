@@ -3,7 +3,7 @@
 
 Last updated: 30 Apr 2013, D-MASON version 2.1
 
-=Getting and building D-MASON=
+=Building D-Mason from source=
 
 <wiki:toc />
 
