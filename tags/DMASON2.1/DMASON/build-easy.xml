@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Creates a single runnable JAR that executes D-Mason using easy mode.">
+	<!--
+		Copyright 2012 Università degli Studi di Salerno
+		
+		   Licensed under the Apache License, Version 2.0 (the "License");
+		   you may not use this file except in compliance with the License.
+		   You may obtain a copy of the License at
+		
+		       http://www.apache.org/licenses/LICENSE-2.0
+		
+		   Unless required by applicable law or agreed to in writing, software
+		   distributed under the License is distributed on an "AS IS" BASIS,
+		   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+		   See the License for the specific language governing permissions and
+		   limitations under the License.
+		   														   -->
+    <!--
+    	This ANT file wraps up the whole D-Mason (and Mason) classes and
+    	resources in a single JAR file. It also creates several empty JAR files
+    	that act as a link to specific D-Mason components.
+    	Luca Vicidomini
+    -->
+    <!--ANT 1.7 is required                                        -->
+	<property name="OutDir" value="C:/Users/Luca/Desktop/dmason"></property>
+    <target name="create_run_jar">
+    	<mkdir dir="${OutDir}"/>
+        <jar destfile="${OutDir}/dmason-easymode.jar">
+            <manifest>
+            	<!--
+            	<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="dmason.launcher.Launcher"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./"/>
+                -->
+            	<attribute name="Main-Class" value="dmason.launcher.Launcher"/>
+            	<attribute name="Class-Path" value="."/>
+            </manifest>
+        	<fileset dir="${basedir}">
+        		<exclude name="**/*.java" />
+        		<exclude name="/libraries/**" />
+        	</fileset>
+            <fileset dir="${basedir}/../mason">
+            	<exclude name="**/*.java" />
+            	<exclude name="/docs/**" />
+            	<exclude name="/jar/**" />
+            	<exclude name="/sim/app/**" />
+            	<exclude name="/start/**" />
+        	</fileset>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/libraries/activemq-all-5.5.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/libraries/itext-1.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/libraries/jcommon-1.0.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/libraries/jfreechart-1.0.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/libraries/jmf.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/libraries/mina-core-2.0.0-RC1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/libraries/quaqua-colorchooser-only-for-osx.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/libraries/commons-codec-1.7.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/libraries/commons-io-2.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/libraries/ftp4j-1.7.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/libraries/ftplet-api-1.0.5.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/libraries/ftpserver-core-1.0.5.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/libraries/gson-2.2.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/libraries/guava-13.0.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/libraries/log4j-1.2.14.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/libraries/slf4j-log4j12-1.5.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/libraries/xstream-1.4.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/../mason-libraries/itext-1.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/../mason-libraries/jcommon-1.0.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/../mason-libraries/jfreechart-1.0.13.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/../mason-libraries/jmf.jar"/>
+        </jar>
+    </target>
+</project>

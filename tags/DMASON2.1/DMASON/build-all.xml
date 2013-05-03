@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Creates a runnable JAR, plus manifest-only runnable JARS for every D-Mason component.">
+	<!--
+		Copyright 2012 Università degli Studi di Salerno
+		
+		   Licensed under the Apache License, Version 2.0 (the "License");
+		   you may not use this file except in compliance with the License.
+		   You may obtain a copy of the License at
+		
+		       http://www.apache.org/licenses/LICENSE-2.0
+		
+		   Unless required by applicable law or agreed to in writing, software
+		   distributed under the License is distributed on an "AS IS" BASIS,
+		   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+		   See the License for the specific language governing permissions and
+		   limitations under the License.
+		   														   -->
+    <!--
+    	This ANT file wraps up the whole D-Mason (and Mason) classes and
+    	resources in a single JAR file. It also creates several empty JAR files
+    	that act as a link to specific D-Mason components.
+    	Luca Vicidomini
+    -->
+    <!--ANT 1.7 is required                                        -->
+	<property name="OutDir" value="${basedir}/build"></property>
+	<property name="MasonDir" value="${basedir}/../mason/"></property>
+    <target name="create_run_jar">
+    	<mkdir dir="${OutDir}"/>
+        <jar destfile="${OutDir}/dmason.jar">
+            <manifest>
+                <attribute name="Class-Path" value="
+                	./ 
+                	libraries/activemq-all-5.5.1.jar 
+                	libraries/commons-codec-1.7.jar 
+                	libraries/commons-io-2.4.jar 
+                	libraries/ftp4j-1.7.1.jar 
+                	libraries/ftplet-api-1.0.5.jar 
+                	libraries/ftpserver-core-1.0.5.jar 
+                	libraries/guava-13.0.1.jar
+                	libraries/gson-2.2.2.jar
+                	libraries/itext-1.2.jar 
+                	libraries/jcommon-1.0.0.jar 
+                	libraries/jfreechart-1.0.1.jar 
+                	libraries/jmf.jar 
+                	libraries/jms.jar 
+                	libraries/log4j-1.2.14.jar 
+                	libraries/log4j-1.2.17.jar 
+                	libraries/mina-core-2.0.0-RC1.jar 
+                	libraries/quaqua-colorchooser-only-for-osx.jar 
+                	libraries/slf4j-api-1.5.2.jar 
+                	libraries/slf4j-jdk14-1.6.1.jar 
+                	libraries/slf4j-log4j12-1.5.2.jar 
+                	libraries/xstream-1.4.3.jar
+                	" />
+            	<attribute name="Implementation-Version" value="2.1.0-beta" />
+            </manifest>
+            <fileset dir="${basedir}/">
+            	<exclude name=".classpath" />
+            	<exclude name=".project" />
+            	<exclude name="build-*.xml" />
+            	<exclude name="FTPHome/" />
+            	<exclude name="libraries/" />
+            	<exclude name="build/" />
+            </fileset>
+            <fileset dir="${MasonDir}">
+            	<exclude name="docs/" />
+            	<exclude name="jar/" />
+            	<exclude name="start/" />
+            </fileset>
+        </jar>
+    	<copy todir="${OutDir}/libraries/">
+    		<fileset dir="${basedir}/libraries" />
+    	</copy>
+    	<jar destfile="${OutDir}/dmason-launcher.jar">
+			<manifest>
+				<attribute name="Main-Class" value="dmason.launcher.Launcher" />
+                <attribute name="Class-Path" value="./ dmason.jar" />
+			</manifest>
+        </jar>
+		<jar destfile="${OutDir}/dmason-server.jar">
+			<manifest>
+				<attribute name="Main-Class" value="dmason.wrapper.activemq.launcher.ActiveMQWrapper" />
+                <attribute name="Class-Path" value="./ dmason.jar" />
+			</manifest>
+        </jar>
+		<jar destfile="${OutDir}/dmason-master.jar">
+			<manifest>
+				<attribute name="Main-Class" value="dmason.util.SystemManagement.JMasterUI" />
+                <attribute name="Class-Path" value="./ dmason.jar" />
+			</manifest>
+        </jar>
+    	<jar destfile="${OutDir}/dmason-worker.jar">
+			<manifest>
+				<attribute name="Main-Class" value="dmason.util.SystemManagement.StartWorker" />
+                <attribute name="Class-Path" value="./ dmason.jar" />
+			</manifest>
+        </jar>
+    	<jar destfile="${OutDir}/dmason-worker-gui.jar">
+			<manifest>
+				<attribute name="Main-Class" value="dmason.util.SystemManagement.StartWorkerWithGui" />
+                <attribute name="Class-Path" value="./ dmason.jar" />
+			</manifest>
+        </jar>
+    	<jar destfile="${OutDir}/dmason-inspector.jar">
+    				<manifest>
+    					<attribute name="Main-Class" value="dmason.util.visualization.LauncherViewer" />
+    	                <attribute name="Class-Path" value="./ dmason.jar" />
+    				</manifest>
+    	        </jar>
+		<jar destfile="${OutDir}/dmason-batch-wizard.jar">
+			<manifest>
+				<attribute name="Main-Class" value="dmason.batch.BatchWizard" />
+                <attribute name="Class-Path" value="./ dmason.jar" />
+			</manifest>
+        </jar>
+    </target>
+</project>
