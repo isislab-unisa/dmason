@@ -196,6 +196,8 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 	
 	private static boolean autoconnect = false;
 	
+	private static boolean enableWorkersUpdate = true;
+	
 	private File updateFile;
 	private File simulationFile;
 	private File configFile;
@@ -2938,7 +2940,8 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 	private void checkUpdate()
 	{
 		
-		if(autoconnect || toUpdate.isEmpty()) // All workers are updated
+		//if(autoconnect || toUpdate.isEmpty()) // All workers are updated
+		if (!enableWorkersUpdate || toUpdate.isEmpty()) // All workers are update, or th euser choose not to update
 		{	
 			
 			notifyArea.append("All workers are ready!\n");
@@ -3024,8 +3027,7 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 		}
 		else if (res == JOptionPane.NO_OPTION)
 		{
-			// Setting autoconnect=true will prevent JMaster to update workers
-			autoconnect = true;
+			enableWorkersUpdate = false;
 			return;
 		}
 		if (updateFile == null || res == JOptionPane.CANCEL_OPTION || res == JOptionPane.CLOSED_OPTION)
