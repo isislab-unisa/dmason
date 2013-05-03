@@ -2,7 +2,7 @@
 
 This page outlines certain goals, nothing is guaranteed to land in a specific release.
 
-= 2.1 (Soon) =
+= 2.1 (03 May 2013) =
   * Automatic update of workers _(Mario)_
   * Automatic deploy of simulations _(Mario)_
   * Batch execution _(Mario)_
@@ -27,6 +27,6 @@ This page outlines certain goals, nothing is guaranteed to land in a specific re
   * Test D-Mason on cluster _(Fabio)_
   * Test D-Mason's FTP server (how many connection can it handle?) _(Mario)_
 
-= The vision (DMason future) =
+= The vision (D-Mason future) =
   * Improved transparency of distribution with enhanced support of the user...
   * Other fields (e.g. Network field with dynamic data)
