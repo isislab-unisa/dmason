@@ -1,5 +1,26 @@
 #summary The fastest way to run D-Mason on your computer.
 
-= Running D-Mason in EasyMode =
+= Running D-Mason in !EasyMode =
 
-This page is under construction.
+!EasyMode is a package including D-Mason's binaries, libraries and ActiveMQ. It is a simple way to test D-Mason on your machine.
+
+----
+*!EasyMode must be run in a GUI environment!*
+----
+
+  * Download the !EasyMode package from [https://code.google.com/p/d-mason/downloads/list Downloads page]
+  * Extract the package into a directory on your computer. It will contain a file named {{{dmason-easymode.jar}}} and a directory named {{{apache-activemq-5.6.0}}}
+  * Launch the executable JAR by either double-clicking on {{{dmason-easymode.jar}}} (if your operative system supports it) or by typing in commandline:
+{{{java -jar dmason-easymode.jar}}}
+  * The wizard will show you an introductory page; hit "Next".
+  * Click the button "Launch the Wrapper"; the wizard will launch ActiveMQ and move to the next step.
+  * Next, D-Mason will ask you how many worker you would like to run. You can accept the default setting or modify the number from 1 to 8. Click on "Launch workers"; D-Mason will launch the selected number of workers and they will automatically connect to ActiveMQ and show a confirmation message.
+  * Next, click on "Launch the Master". It will automatically connect.
+    * First, choose a simulation from the combo box.
+    * Leave all of the parameters unchanged.
+    * Specify an higher number of agents instead of 15 (100 or 200 will be fine).
+    * Click the "Set" button.
+    * Click the play button. The simulation should run and number of step increase with time.
+  * Back to the !EasyMode wizard, click the "Launch the Inspector" button.
+    * Select the same simulation you chose on the Master component and then click on "Connect".
+    * Click on the "Graphic" checkbox to enable the visualization of agents' positions.
