@@ -1,4 +1,4 @@
-# List of changes in D-Mason's releases
+#summary List of changes in D-Mason's releases
 
 = 2.1 (03 May 2013) =
   * Automatic update of workers _(Mario)_
