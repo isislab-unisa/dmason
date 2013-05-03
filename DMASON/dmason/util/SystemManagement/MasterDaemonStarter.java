@@ -216,7 +216,8 @@ public class MasterDaemonStarter implements Observer
 				for (int i = 0; i < fieldsInWorker; i++)
 				{
 					StartUpData data = new StartUpData();
-					if (cnt == numRegions / 2)
+					//if (cnt == numRegions / 2)
+					if (cnt == 0)
 					{
 						data.setStep(true);
 						data.reducer = true;
@@ -494,7 +495,9 @@ public class MasterDaemonStarter implements Observer
 				for (int i = 0; i < fieldsInWorker; i++)
 				{
 					StartUpData data = new StartUpData();
-					if (cnt == numRegions / 2) {
+					//if (cnt == numRegions / 2)
+					if (cnt == 0)
+					{
 						data.setStep(true);
 						data.reducer = true;
 					}
