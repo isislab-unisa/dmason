@@ -1,6 +1,6 @@
 #summary The fastest way to run D-Mason on your computer.
 
-Last updated: 30 Apr 2013, D-MASON version 2.1 / EasyMode 0.1.1
+Last updated: 30 Apr 2013, D-MASON version 2.1 / !EasyMode 0.1.1
 
 = Running D-Mason in !EasyMode =
 
