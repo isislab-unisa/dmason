@@ -1,5 +1,7 @@
 #summary The fastest way to run D-Mason on your computer.
 
+Last updated: 30 Apr 2013, D-MASON version 2.1 / EasyMode 0.1.1
+
 = Running D-Mason in !EasyMode =
 
 !EasyMode is a package including D-Mason's binaries, libraries and ActiveMQ. It is a simple way to test D-Mason on your machine.
