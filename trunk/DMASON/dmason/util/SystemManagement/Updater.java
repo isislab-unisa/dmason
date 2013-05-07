@@ -242,10 +242,12 @@ public class Updater
 		    	try {
 					ArrayList<String> command = new ArrayList<String>();
 
-					
+				
+				// Luca Vicidomini
 					command.add("java");
-					command.add("-jar");
+					command.add("-cp");
 					command.add(jarfile.getAbsolutePath());
+					command.add(StartWorker.class.getName());
 					command.add(address.getIPaddress());
 					command.add(address.getPort());
 					command.add(myTopic);
@@ -253,8 +255,21 @@ public class Updater
 						command.add("reset");
 					else
 						command.add(topicPrefix);
+					
+					// As wrote by Mario
+//					command.add("java");
+//					command.add("-jar");
+//					command.add(jarfile.getAbsolutePath());
+//					command.add(address.getIPaddress());
+//					command.add(address.getPort());
+//					command.add(myTopic);
+//					if(!isBatch)
+//						command.add("reset");
+//					else
+//						command.add(topicPrefix);
 
 					logger.info("Restarting with command: " + command.toString());
+					System.out.println("Restarting with command: " + command);
 
 					ProcessBuilder builder = new ProcessBuilder(command);	
 					Process process = builder.start();	
