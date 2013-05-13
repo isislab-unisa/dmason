@@ -12,5 +12,9 @@ This page outlines certain goals, nothing is guaranteed to land in a specific re
   * Test D-Mason's FTP server (how many connection can it handle?) _(Mario)_
 
 = The vision (D-Mason future) =
+  * Improved Master
+    * Better cluster handling
+    * Track workers' status
+    * More detailed tracking and reporting of batch executions
   * Improved transparency of distribution with enhanced support of the user...
   * Other fields (e.g. Network field with dynamic data)
