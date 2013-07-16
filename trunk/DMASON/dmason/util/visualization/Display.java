@@ -200,7 +200,8 @@ public class Display extends GUIState
 								{
 									Method m = simClass.getMethod("reduce" + propName, Object[].class);
 									m.invoke(Display.this.state, new Object[] { props[propertyI] } );
-								} catch (Exception e) {		
+								} catch (Exception e) {
+									
 									e.printStackTrace();
 								}
 							}
@@ -451,7 +452,7 @@ public class Display extends GUIState
 			 * Another solution may be to create a dedicate constructor
 			 * for this goal.
 			 */
-			Class<?> simClass = Class.forName(simulationClassName);
+			Class<?> simClass = Class.forName(simulationClassName + "Inspectable");
 			Constructor<?> constructor = simClass.getConstructor();
 			Object simObj = constructor.newInstance(new Object[] { });
 			super.state = (InspectableState)simObj;

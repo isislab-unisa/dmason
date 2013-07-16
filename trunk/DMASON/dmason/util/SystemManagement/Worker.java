@@ -114,7 +114,9 @@ public class Worker extends Observable
 		{
 			reducer = new Reducer(
 					data,
-					connection);
+					connection,
+					state);
+					
 			reducer.start();
 		}
 				
@@ -436,6 +438,11 @@ public class Worker extends Observable
 	
 		
 		
+	}
+	
+	public long getSteps()
+	{
+		return state.schedule.getSteps();
 	}
 	
 	public ArrayList<MessageListener> getListeners()

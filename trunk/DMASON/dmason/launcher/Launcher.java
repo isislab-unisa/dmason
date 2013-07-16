@@ -157,7 +157,7 @@ public class Launcher
 	{
 		Forker masterFork = new Forker(MASTER_CLASS);
 		masterFork.add("127.0.0.1");
-		masterFork.add("autoconnect");
+		//masterFork.add("autoconnect");
 		masterProcess = masterFork.launch();
 	}
 	

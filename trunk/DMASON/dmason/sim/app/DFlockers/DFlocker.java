@@ -133,7 +133,7 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
     }
     
 	public void step(SimState state)
-	{     
+	{     		
 		final DFlockers flock = (DFlockers)state;
 		loc = flock.flockers.getObjectLocation(this);
 		

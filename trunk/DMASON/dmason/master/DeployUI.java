@@ -54,7 +54,7 @@ public class DeployUI extends JFrame
 		this.add(pnlProgress);
 		
 		// pnlProgress > lblProgressInfo
-		JLabel lblProgressInfo = new JLabel(updatableWorkers.length + " workers will be updated. Please choose the file to deploy.");
+		JLabel lblProgressInfo = new JLabel(updatableWorkers.length + (updatableWorkers.length == 1 ? " worker" : " workers") + " will be updated. Please choose the file to deploy.");
 		pnlProgress.add(lblProgressInfo);
 		pnlProgress.add(Box.createVerticalStrut(10));
 		

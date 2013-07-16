@@ -1,5 +1,6 @@
 package dmason.sim.field.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +17,7 @@ import dmason.util.visualization.RemoteSnap;
 /**
  * Contains static methods useful to manage Global Parameters. These methods should be used
  * within <code>DistributedField</code>s' <code>synchro()</code> method.
- * @author Luca Vicidomini
+ * @author Luca Vicidomini, Michele Carillo, Ada Mancuso, Flavio Serrapica, Carmine Spagnuolo, Francesco Raia
  */
 public class GlobalParametersHelper
 {
@@ -50,7 +51,7 @@ public class GlobalParametersHelper
 				connection.createTopic(topicPrefix + "GLOBAL_DATA", 1);
 				connection.createTopic(topicPrefix + "GLOBAL_REDUCED", 1);
 				//connection.subscribeToTopic(topicPrefix + "GLOBAL_DATA");
-				connection.subscribeToTopic(topicPrefix + "GLOBAL_REDUCED");
+				//connection.subscribeToTopic(topicPrefix + "GLOBAL_REDUCED");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -104,9 +105,33 @@ public class GlobalParametersHelper
 		{
 			try
 			{
+				
 				Method m = simClass.getMethod("get" + globalsNames.get(i), (Class<?>[])null);
 				Object res = m.invoke(sm, new Object [0]);
 				globalMap.stats.put(globalsNames.get(i), res);
+				
+				/*if(!globalsNames.get(i).contains("Every"))
+				{
+					Method m = simClass.getMethod("get" + globalsNames.get(i), (Class<?>[])null);
+					Object res = m.invoke(sm, new Object [0]);
+					globalMap.stats.put(globalsNames.get(i), res);
+				}
+				else
+				{
+					
+					Method m2 = simClass.getMethod("get" + globalsNames.get(i)+"ValueOf", (Class<?>[])null);
+					long EVERY_STEP = (Long)m2.invoke(sm, new Object [0]);
+					if((sm.schedule.getSteps()%EVERY_STEP)==0) 
+					{
+						
+						Method m = simClass.getMethod("get" + globalsNames.get(i), (Class<?>[])null);
+						Object res = m.invoke(sm, new Object [0]);
+						globalMap.stats.put(globalsNames.get(i), res);
+					}
+				}*/
+				//Method m = simClass.getMethod("getEveryValueOf" + globalsNames.get(i), (Class<?>[])null);
+				//long EVERY_STEP =(long)m.invoke(sm, new Object [0]);
+				//if(/*STEP==EVERY_STEP*/)DO
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -140,20 +165,36 @@ public class GlobalParametersHelper
 			globalUpdates = field.getGlobals().getUpdates(sm.schedule.getSteps(), 1);
 			RemoteSnap globalSnap = (RemoteSnap)(globalUpdates.values().toArray()[0]);
 			Set<String> propertyNames = globalSnap.stats.keySet();
+			HashMap<Method, Object[]> reinitMethod = new HashMap<Method, Object[]>();
 			for (String propName : propertyNames)
 			{
 				Method m;
 				try {
+				
 					m = simClass.getMethod("setGlobal" + propName, Object.class);
+					if (m.getName().contains("Reinitialize")) {
+						reinitMethod.put(m, new Object[] { globalSnap.stats.get(propName) }); 
+						continue;
+					}
 					m.invoke(sm, new Object[] { globalSnap.stats.get(propName) } );
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} 
 			}
+			for (Method method : reinitMethod.keySet()) { method.invoke(sm, reinitMethod.get(method));}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			globalUpdates = new HashMap<String, Object>();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return;
 	}

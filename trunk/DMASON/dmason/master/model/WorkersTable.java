@@ -9,6 +9,13 @@ import javax.swing.table.TableModel;
 import dmason.master.Master.WorkerInfoList;
 import dmason.util.SystemManagement.PeerStatusInfo;
 
+/**
+ * This is the model class used to display workers statuses in the 
+ * "Cluster Management" tab in the Master.
+ * 
+ * @author Luca Vicidomini
+ *
+ */
 public class WorkersTable implements TableModel
 {
 	private final static boolean[] columnEditable = { true,    false,  false,  false,    false,    false        };
@@ -68,7 +75,10 @@ public class WorkersTable implements TableModel
 		case 1: return workers.get(rowIndex).getHostname();
 		case 2: return workers.get(rowIndex).getId();
 		case 3: return workers.get(rowIndex).getDigest();
-		case 4: return workers.get(rowIndex).getStatus();
+		case 4:
+			long steps = workers.get(rowIndex).getSteps();
+			String strSteps = steps > 0 ? " (" + steps + ")" : "";
+			return workers.get(rowIndex).getStatus() + strSteps;
 		case 5: return workers.get(rowIndex).getSimulationName();
 		default: return "";
 		}
@@ -97,7 +107,5 @@ public class WorkersTable implements TableModel
 		// TODO Auto-generated method stub
 		
 	}
-
-	
 
 }

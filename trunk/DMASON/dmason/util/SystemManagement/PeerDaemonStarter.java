@@ -165,17 +165,18 @@ public class PeerDaemonStarter extends Thread
 	 * provides more technical informations as Java heap memory space,
 	 * system load average, Java Virtual Machine version, etc... 
 	 */
-	public void info(String statusMessage) throws Exception
+	public void info(String statusMessage, long steps) throws Exception
 	{
 		PeerStatusInfo info = getInfo();
 		info.setStatus(statusMessage);
+		info.setSteps(steps);
 		connection.publishToTopic(info, masterTopic, "info");
 	}
 	
 	public void info() throws Exception
 	{
 		// TODO Should remove info() since workers should always specify their status
-		info("");
+		info("", -1);
 	}
 
 	private PeerStatusInfo getInfo() throws Exception {

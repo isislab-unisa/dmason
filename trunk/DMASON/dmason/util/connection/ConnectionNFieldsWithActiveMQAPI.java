@@ -111,6 +111,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	public boolean setupConnection(Address providerAddr)
 	{
 		String strAddr = "failover:tcp://" + providerAddr.getIPaddress() + ":" + providerAddr.getPort();
+		
 
 		// Create an ActiveMQConnectionFactory
 		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(strAddr);		
@@ -193,7 +194,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 			{				
 				ActiveMQObjectMessage msg ;
 				try
-				{				
+				{		
 					msg = (ActiveMQObjectMessage) pubSession.createObjectMessage(contObj.get(topicName));
 					publishers.get(topicName).publish(topics.get(topicName), msg);
 					MyHashMap mm = new MyHashMap(mh.NUMBER_FIELDS);

@@ -21,6 +21,16 @@ import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.exception.NoDigestFoundException;
 
+/**
+ * The Master component of D-Mason. This class represents the 'Controller'
+ * part of D-Mason Master's MVC architecture.
+ * 
+ * @author unascribed
+ * @author Luca Vicidomini
+ * @author Fabio Fulgido
+ * @author Mario Fiore Vitale
+ *
+ */
 public class Master extends Observable implements MasterListener 
 {
 	public final String ftpDir = "ftp-home";
@@ -28,7 +38,7 @@ public class Master extends Observable implements MasterListener
 	public final String updateDir = "update";
 	private final String separator = System.getProperty("file.separator");
 	
-	private ActiveMQManager activeMqManager = null;
+	ActiveMQManager activeMqManager = null;
 	
 	private String rmiHostname = null;
 	private int rmiPort = 61617;
@@ -41,12 +51,22 @@ public class Master extends Observable implements MasterListener
 	private boolean isConnected = false;
 
 	/**
-	 * Daemon for ActiveMQ communication. Start a new simulation.
+	 * Daemon for ActiveMQ communication. Starts a new simulation.
 	 */
 	private MasterDaemonStarter masterDaemon = null;
 	
+	/**
+	 * List of known workers.
+	 */
 	private WorkerInfoList workersInfo = new WorkerInfoList();
 
+	/**
+	 * Connects to ActiveMQ server.
+	 * 
+	 * @param address Address (IP or hostname) of ActiveMQ host
+	 * @param port Port where ActiveMQ is listening
+	 * @return true if connection was successful, false otherwise
+	 */
 	public boolean connect(String address, String port)
 	{
 		try
@@ -64,7 +84,8 @@ public class Master extends Observable implements MasterListener
 			activeMqAddress = new Address(activeMqHostname, activeMqPort);
 			
 			connection = new ConnectionNFieldsWithActiveMQAPI();
-			connection.setupConnection(activeMqAddress);
+			isConnected = connection.setupConnection(activeMqAddress);	
+			
 			masterDaemon = new MasterDaemonStarter(connection, this);
 	
 			if (!masterDaemon.connectToServer())
@@ -72,7 +93,6 @@ public class Master extends Observable implements MasterListener
 				return false;
 			}
 	
-			isConnected = true;
 			refreshWorkerList();
 			//dont = true;
 			
@@ -124,18 +144,21 @@ public class Master extends Observable implements MasterListener
 		if (activeMqManager.isUnknow())
 		{
 			// TODO Handle
+			log("ActiveMQ Wrapper NOT found at address " + rmiHostname + ":" + rmiPort + ", can't monitor ActiveMQ.");
 			System.out.println("UNCATCHED BEHAVIOUR IN MASTER.JAVA isUnknow");
 			//lblStatusIcon.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/status-unknow.png")));
 		}
 		else if (activeMqManager.isStarted())
 		{
 			// TODO Handle
+			log("ActiveMQ Wrapper found at address " + rmiHostname + ":" + rmiPort + ". ActiveMQ is running.");
 			System.out.println("UNCATCHED BEHAVIOUR IN MASTER.JAVA isStarted");
 			//lblStatusIcon.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/status-up.png")));
 		}
 		else
 		{
 			// TODO Handle
+			log("ActiveMQ Wrapper found at address " + rmiHostname + ":" + rmiPort + ". ActiveMQ is stopped.");
 			System.out.println("UNCATCHED BEHAVIOUR IN MASTER.JAVA notStarted");
 			//lblStatusIcon.setIcon(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("dmason/resource/image/status-down.png")));
 		}
@@ -167,6 +190,11 @@ public class Master extends Observable implements MasterListener
 			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	public void log(String message)
+	{
+		System.out.println(message);
 	}
 	
 	public class WorkerInfoList extends HashMap<String, PeerStatusInfo>

@@ -1,6 +1,7 @@
 package dmason.master;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -16,8 +17,10 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -25,32 +28,43 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import dmason.master.Master.WorkerInfoList;
 import dmason.master.model.WorkersTable;
+import dmason.util.SystemManagement.Release;
 
+/**
+ * The D-Mason Master's UI. This class represents the 'View'
+ * part of D-Mason Master's MVC architecture.
+ * 
+ * @author Luca Vicidomini
+ *
+ */
 public class JMasterUI extends JFrame implements Observer
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private static final String TAB_KEY_CLUSTER_MANAGEMENT = "CLUSTER_MANAGEMENT";
 	private static final String TAB_KEY_CREATE_SIMULATION = "CREATE_SIMULATION";
 	
-	private HashMap<String, JPanel> tabs = new HashMap<String, JPanel>();
-
 	private static ConnectionUI connectionFrame;
 	private static Master master;
 	private static JMasterUI masterUI;
 	
-	private JTable tblWorkers;
+	private HashMap<String, JPanel> tabs = new HashMap<String, JPanel>();
+	JLabel lblInfo;
+	
+	
+	JTable tblWorkers;
+	JButton btnDeploy;
+	JButton btnRestart;
 
 	public JMasterUI() {
 		super();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setTitle("D-Mason Master UI");
+		this.setTitle(Release.PRODUCT_NAME + " Master UI");
 		setupLayout();
 		this.pack();
 		this.setLocationRelativeTo(null);
@@ -65,10 +79,26 @@ public class JMasterUI extends JFrame implements Observer
 		JMenuBar menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
 		
-		// this > menuBar > menuAbout
-		JMenuItem menuAbout = new JMenuItem("About...");
-		menuBar.add(menuAbout);
+		// this > menuBar > menuHelp
+		JMenu menuHelp = new JMenu("?");
+		menuBar.add(menuHelp);
 		
+		// this > menuBar > menuHelp > menuAbout
+		JMenuItem menuAbout = new JMenuItem("About...");
+		menuHelp.add(menuAbout);
+		menuAbout.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				JOptionPane.showMessageDialog(
+						JMasterUI.this,
+						Release.PRODUCT_RELEASE + "\n"
+						+ "ISISLab - Dipartimento di Informatica" + "\n"
+						+ "Università degli Studi di Salerno - ITALY" + "\n"
+						+ "http://www.dmason.org/");
+			}
+		});
+				
 		// this > navigationTabs
 		JTabbedPane navigationTabs = new JTabbedPane();
 		this.add(navigationTabs, BorderLayout.CENTER);
@@ -100,21 +130,41 @@ public class JMasterUI extends JFrame implements Observer
 		panel.add(pnlServerControl, BorderLayout.NORTH);
 		
 		// panel > pnlServerControl > lblInfo
-		JLabel lblInfo = new JLabel("Connected @ 127.0.0.1 : 61616");
-		lblInfo.setAlignmentX(CENTER_ALIGNMENT);
+		lblInfo = new JLabel("Connecting...");
 		pnlServerControl.add(lblInfo, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 10, 5, 10), 0, 0));
 		
 		// panel > pnlServerControl > btnServerControlStart
 		JButton btnServerControlStart = new JButton("Start");
-		pnlServerControl.add(btnServerControlStart, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 10, 10, 0), 0, 0));
+		pnlServerControl.add(btnServerControlStart, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 10, 10, 0), 0, 0));
+		btnServerControlStart.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				master.activeMqManager.startActiveMQ();
+			}
+		});
 		
 		// panel > pnlServerControl > btnServerControlRestart
 		JButton btnServerControlRestart = new JButton("Restart");
 		pnlServerControl.add(btnServerControlRestart, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 5, 10, 5), 0, 0));
+		btnServerControlRestart.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				master.activeMqManager.restartActiveMQ();
+			}
+		});
 		
 		// panel > pnlServerControl > btnServerControlStop
 		JButton btnServerControlStop = new JButton("Stop");
 		pnlServerControl.add(btnServerControlStop, new GridBagConstraints(2, 1, 3, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 10, 10), 0, 0));
+		btnServerControlStop.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				master.activeMqManager.stopActiveMQ();
+			}
+		});
 		
 		// panel > pnlWorkers
 		JPanel pnlWorkers = new JPanel();
@@ -130,6 +180,23 @@ public class JMasterUI extends JFrame implements Observer
 		tblWorkers.setRowSelectionAllowed(true);
 		JScrollPane sclWorkers = new JScrollPane(tblWorkers);
 		pnlWorkers.add(sclWorkers, BorderLayout.CENTER);
+		tblWorkers.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e)
+			{
+				ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+				if (lsm.isSelectionEmpty())
+				{
+					JMasterUI.this.btnDeploy.setEnabled(false);
+					JMasterUI.this.btnRestart.setEnabled(false);
+				}
+				else
+				{
+					JMasterUI.this.btnDeploy.setEnabled(true);
+					JMasterUI.this.btnRestart.setEnabled(true);
+				}
+			}
+		});
 		
 		// panel > pnlWorkers > pnlWorkersControl
 		JPanel pnlWorkersControl = new JPanel();
@@ -161,17 +228,44 @@ public class JMasterUI extends JFrame implements Observer
 		// panel > pnlWorkers > pnlWorkersControl > 1 > btnSelectAll
 		JButton btnSelectAll = new JButton("Select all");
 		pnlWorkersControl_1.add(btnSelectAll);
+		btnSelectAll.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				tblWorkers.selectAll();
+			}
+		});
 		
 		// panel > pnlWorkers > pnlWorkersControl > 1 > btnSelectNone
 		JButton btnSelectNone = new JButton("Select none");
 		pnlWorkersControl_1.add(btnSelectNone);
+		btnSelectNone.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				tblWorkers.removeRowSelectionInterval(0, tblWorkers.getRowCount() - 1);
+			}
+		});
 		
 		// panel > pnlWorkers > pnlWorkersControl > 1 > btnSelectInvert
 		JButton btnSelectInvert = new JButton("Select invert");
 		pnlWorkersControl_1.add(btnSelectInvert);
+		btnSelectInvert.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				int[] oldSelectedIndices = tblWorkers.getSelectedRows();
+				tblWorkers.selectAll();
+				for (int oldSelected : oldSelectedIndices)
+				{
+					tblWorkers.removeRowSelectionInterval(oldSelected, oldSelected);
+				}
+			}
+		});
 		
-		// panel > pnlWorkers > pnlWorkersControl > 2 > btnUpdate
-		JButton btnDeploy = new JButton("Deploy");
+		// panel > pnlWorkers > pnlWorkersControl > 2 > btnDeploy
+		btnDeploy = new JButton("Deploy");
+		btnDeploy.setEnabled(false);
 		pnlWorkersControl_2.add(btnDeploy);
 		btnDeploy.addActionListener(new ActionListener() {
 			@Override
@@ -185,14 +279,17 @@ public class JMasterUI extends JFrame implements Observer
 		});
 		
 		// panel > pnlWorkers > pnlWorkersControl > 2 > btnRestart
-		JButton btnSelectRestart = new JButton("Restart");
-		pnlWorkersControl_2.add(btnSelectRestart);
+		btnRestart = new JButton("Restart");
+		btnRestart.setEnabled(false);
+		pnlWorkersControl_2.add(btnRestart);
 	}
 	
 	private void setupLayout_CreateSimulation(JPanel panel)
 	{
-		// TODO Auto-generated method stub
+		// panel
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		
+		// 
 	}
 
 	public static void main(String[] args)
@@ -213,15 +310,19 @@ public class JMasterUI extends JFrame implements Observer
 					master.addObserver(masterUI);	
 				}
 				
-				boolean connected = master.connect(connectionFrame.getAddress(), connectionFrame.getPort());
+				String address = connectionFrame.getAddress().trim();
+				String port = connectionFrame.getPort().trim();
+				
+				boolean connected = master.connect(address, port);
 				if (connected)
 				{
+					masterUI.lblInfo.setText("Connected @ " + address + " : " + port);
 					connectionFrame.setVisible(false);
 					masterUI.setVisible(true);
 				}
 				else
 				{
-					// TODO Handle
+					JOptionPane.showMessageDialog(null, "Can't connect.");
 				}
 			}
 		});
