@@ -42,7 +42,7 @@ public class ConnectionUI extends JFrame
 		Dimension addressDimensions = txtAddress.getPreferredSize();
 		addressDimensions.width = 200;
 		txtAddress.setPreferredSize(addressDimensions);
-		
+
 		JLabel lblPort = new JLabel("Port:");
 		txtPort = new JTextField("61616");
 		Dimension portDimensions = txtPort.getPreferredSize();
@@ -68,6 +68,8 @@ public class ConnectionUI extends JFrame
 		this.add(lblPort, new GridBagConstraints(0, 1, 1, 1, .0, .0, GridBagConstraints.BASELINE_TRAILING, GridBagConstraints.NONE, new Insets(10, 10, 0, 10), 0, 0));
 		this.add(txtPort, new GridBagConstraints(1, 1, 1, 1, .0, .0, GridBagConstraints.BASELINE_LEADING, GridBagConstraints.NONE, new Insets(10, 0, 0, 10), 0, 0));
 		this.add(btnConnect, new GridBagConstraints(1, 2, 1, 1, .0, .0, GridBagConstraints.BASELINE_LEADING, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
+		
+		btnConnect.getRootPane().setDefaultButton(btnConnect);
 	}
 
 

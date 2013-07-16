@@ -41,6 +41,9 @@ public class PeerStatusInfo implements Serializable {
 	/** Name of simulation being ran (if any) */
 	private String simulationName;
 	
+	/** Current simulation step (if running any) */
+	private long steps;
+	
 	/** Status of the worker (running, idle, paused, ...) */
 	private String status;
 	
@@ -179,6 +182,26 @@ public class PeerStatusInfo implements Serializable {
 	public void setVersion(String vers)
 	{
 		this.version = vers;
+	}
+
+	public String getOs()
+	{
+		return os;
+	}
+
+	public void setOs(String os)
+	{
+		this.os = os;
+	}
+
+	public long getSteps()
+	{
+		return steps;
+	}
+
+	public void setSteps(long steps)
+	{
+		this.steps = steps;
 	}
 
 	@Override

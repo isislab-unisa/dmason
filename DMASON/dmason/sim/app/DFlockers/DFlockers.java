@@ -26,6 +26,10 @@ import sim.util.*;
 
 public class DFlockers extends DistributedState<Double2D>
 {
+	
+	public long debug_lastStep = -10;
+	public int debug_numAgent = 0;
+	
     /**
 	 * 
 	 */
@@ -193,13 +197,13 @@ public class DFlockers extends DistributedState<Double2D>
     	/*
     	 * Spawn agents only on cell 0-0
     	 */
-    	if ( (TYPE.pos_i == 0 && TYPE.pos_j == 0) )
+    	//if ( (TYPE.pos_i == 0 && TYPE.pos_j == 0) )
     	{
 
     		DFlocker f=new DFlocker(this,new Double2D(0,0));
     		int j=0;
 
-    		while(flockers.size() != super.NUMAGENTS)
+    		while(flockers.size() != super.NUMAGENTS / super.NUMPEERS)
     		{
     			f.setPos(flockers.setAvailableRandomLocation(f));
     			
@@ -218,7 +222,6 @@ public class DFlockers extends DistributedState<Double2D>
     			}
 
     			j++;
-
     		}
     	} //if ( (TYPE.pos_i == 0 && TYPE.pos_j == 0) )
 

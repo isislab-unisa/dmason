@@ -56,6 +56,10 @@ public class DParticles extends DistributedState<Int2D> {
    // public ArrayList<RemoteAgent<Int2D>> buffer_print=new ArrayList<RemoteAgent<Int2D>>();
     //public PrintWriter printer;
   
+    public DParticles()
+    {
+    	super();
+    }
   
     public DParticles(GeneralParam params)
     {    	

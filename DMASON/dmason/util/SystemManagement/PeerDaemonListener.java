@@ -35,7 +35,7 @@ import dmason.util.connection.MyMessageListener;
 /**
  * Even if it seems a little bit complex, this is just a listener that receive
  * all commands from the MasterDaemonStarter and executes them.
- * For out System Management architecture we've chosen a Master-Worker view,
+ * For our System Management architecture we've chosen a Master-Worker view,
  * in which Master commands and Workers execute. To make a Worker reusable
  * after a simulation, in order to having not need of restarting it, I've 
  * created a Master Worker that only connects to the server and many
@@ -163,8 +163,10 @@ public class PeerDaemonListener extends MyMessageListener implements Observer
 			// Received request to publish peer informations
 			if (mh.get("info") != null)
 			{
-			
-				starter.info(statusMessage[status]);
+				// If a simulation is loaded and is started,
+				// retrieve steps
+				long steps = workers != null && workers.size() > 0 ? workers.get(0).getSteps() : 0; 
+				starter.info(statusMessage[status], steps);
 			}
 
 			// Received command to start the simulation

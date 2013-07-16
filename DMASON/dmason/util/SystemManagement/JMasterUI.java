@@ -309,6 +309,7 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 	private JPanel jPanelContainerTabbedPane;
 	private JTabbedPane tabbedPane2;
 	private JPanel jPanelDefault;
+	private ModelPanel jPanelSimulation;
 	private JLabel labelSimulationConfigSet;
 	private JLabel labelRegionsResume;
 	private JLabel labelNumOfPeerResume;
@@ -548,6 +549,7 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 		jPanelContainerTabbedPane = new JPanel();
 		tabbedPane2 = new JTabbedPane();
 		jPanelDefault = new JPanel();
+		jPanelSimulation = new ModelPanel(tabbedPane2);
 		labelSimulationConfigSet = new JLabel();
 		labelRegionsResume = new JLabel();
 		labelNumOfPeerResume = new JLabel();
@@ -622,6 +624,7 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 		loadSimulation();
 
 		selectedSimulation = ((SimComboEntry)jComboBoxChooseSimulation.getSelectedItem()).fullSimName;
+		jPanelSimulation.updateHTML(selectedSimulation);
 		jComboBoxChooseSimulation.addItemListener(new ItemListener() {
 
 			@Override
@@ -630,6 +633,7 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 				if (e.getStateChange() != ItemEvent.SELECTED)
 					return;
 				selectedSimulation = ((SimComboEntry)jComboBoxChooseSimulation.getSelectedItem()).fullSimName;
+				jPanelSimulation.updateHTML(selectedSimulation);
 				isThin=isThinSimulation(selectedSimulation);
 				jCheckBoxLoadBalancing.setSelected(false);
 				jCheckBoxLoadBalancing.setEnabled(!isThin);
@@ -1458,6 +1462,11 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 						tabbedPane2.addTab("Default", jPanelDefault);
 
 
+						//======== jPanelSimulation ========
+						
+						
+						tabbedPane2.addTab("Simulation", jPanelSimulation);
+						//======== End jPanelSimulation ========
 						//======== jPanelAdvanced ========
 						{
 							jPanelAdvanced.setBorder(new EtchedBorder());
@@ -2467,7 +2476,13 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 		//sim = files.getSelectedFile().getName();
 	
 		JOptionPane.showMessageDialog(null,"Setting completed !");
-		GeneralParam params = new GeneralParam((Integer)WIDTH, (Integer)HEIGHT, maxDistance, rows, columns, numAgents, MODE);
+		
+		GeneralParam params = new GeneralParam(
+					(Integer)WIDTH, (Integer)HEIGHT, 
+					maxDistance, rows, columns, numAgents, MODE,
+					jPanelSimulation.getAllParameters()
+				);
+	
 		//master.start(numRegions, (Integer)WIDTH, (Integer)HEIGHT, numAgents,maxDistance,MODE, config,selectedSimulation,this,getFPTAddress());
 		master.start(params, config,selectedSimulation,this,getFPTAddress());
 	}
@@ -2608,7 +2623,16 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 
 			
 			
-			GeneralParam params = new GeneralParam((Integer)WIDTH, (Integer)HEIGHT, maxDistance, rows, columns, numAgents, MODE);
+			//GeneralParam params = new GeneralParam((Integer)WIDTH, (Integer)HEIGHT, maxDistance, rows, columns, numAgents, MODE);
+			GeneralParam params = new GeneralParam(
+					(Integer)WIDTH, 
+					(Integer)HEIGHT, 
+					maxDistance, 
+					rows, 
+					columns, 
+					numAgents, 
+					MODE, 
+					jPanelSimulation.getAllParameters());
 
 			//master.start(numRegions, (Integer)WIDTH, (Integer)HEIGHT, numAgents,maxDistance,MODE, config,selectedSimulation,this,getFPTAddress());
 			master.start(params, config,selectedSimulation,this,getFPTAddress());
@@ -2923,7 +2947,7 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 		jComboBoxChooseSimulation.addItem(new SimComboEntry("Particles Thin", "dmason.sim.app.DParticlesThin.DParticles"));
 		jComboBoxChooseSimulation.addItem(new SimComboEntry("Ants Foraging Thin", "dmason.sim.app.DAntsForageThin.DAntsForage"));
 		jComboBoxChooseSimulation.addItem(new SimComboEntry("DVampires", "dmason.sim.app.DVampires.DSimulation"));
-
+		jComboBoxChooseSimulation.addItem(new SimComboEntry("DSlime", "dmason.sim.app.DSlime.DTurtles"));
 		
 		// Then loads jar simulation from SIMULATION_DIR
 		File folder = new File(FTP_HOME+dirSeparator+SIMULATION_DIR);

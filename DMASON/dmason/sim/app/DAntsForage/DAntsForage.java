@@ -137,6 +137,11 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
     	HYMAX = (HOME_YMAX * GRID_HEIGHT)/100;
     	
         }*/
+    
+    public DAntsForage()
+    {
+    	super();
+    }
   
     public DAntsForage(GeneralParam params)
     { 

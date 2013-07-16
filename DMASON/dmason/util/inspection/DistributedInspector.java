@@ -78,7 +78,7 @@ public class DistributedInspector extends JPanel
     }
     
     /**
-     * If no inspectable class is available, just shot the Graphics checkbox.
+     * If no inspectable class is available, just show the Graphics checkbox.
      * @param guiState
      */
     public DistributedInspector(GUIState guiState)

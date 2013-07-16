@@ -18,15 +18,20 @@
 package dmason.sim.engine;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.jms.JMSException;
 
 import sim.engine.SimState;
+import dmason.batch.data.EntryParam;
+import dmason.batch.data.GeneralParam;
 import dmason.sim.field.CellType;
 import dmason.sim.field.DistributedField;
 import dmason.sim.field.MessageListener;
 import dmason.sim.field.UpdaterThreadForListener;
 import dmason.sim.globals.UpdaterThreadForGlobalsListener;
+import dmason.sim.globals.util.UpdateGlobalVarAtStep;
 import dmason.util.connection.Address;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.trigger.Trigger;
@@ -75,8 +80,11 @@ public abstract class DistributedState<E> extends SimState {
 	public int rows;
 	public int columns;
 
+	public UpdateGlobalVarAtStep upVar = null;
 	public void init_connection() {
 
+		//only for global variables
+		upVar=new UpdateGlobalVarAtStep(this);
 		ThreadVisualizationCellMessageListener thread = new ThreadVisualizationCellMessageListener(
 				(ConnectionNFieldsWithActiveMQAPI) connection,
 				((DistributedMultiSchedule) this.schedule));
@@ -512,8 +520,22 @@ public abstract class DistributedState<E> extends SimState {
 			int j, String ip, String port, int mode, boolean isToroidal,
 			DistributedMultiSchedule<E> sched, String prefix) {
 		super(null, sched);
+		
+		long randomizer = 0;
+		if (prefix.startsWith("Batch"))
+		{
+			/*
+			String num = prefix.substring( (new String("Batch")).length() );
+			randomizer = Integer.parseInt(num);
+			// Increase randomizer by some magnitude
+			randomizer *= randomizer * 1024 * 1024;
+			randomizer--;
+			*/
+			randomizer = System.currentTimeMillis();
+		}
+		
 		this.TYPE = new CellType(i, j);
-		this.random = new MersenneTwisterFast(this.TYPE.getInitialValue());
+		this.random = new MersenneTwisterFast(randomizer + this.TYPE.getInitialValue());
 		this.MAX_DISTANCE = max_d;
 		this.NUMPEERS = rows*columns;
 		this.rows = rows;
@@ -638,6 +660,27 @@ public abstract class DistributedState<E> extends SimState {
 	public void closeConnection() throws JMSException
 	{
 		connection.close();
+	}
+	
+	protected void setSimulationParameters(List<EntryParam<String, Object>> simulationParameters)
+	{
+		for (EntryParam<String, Object> entryParam : simulationParameters) {
+			try {
+				this.getClass().getDeclaredField(entryParam.getParamName()).set(this, entryParam.getParamValue());
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchFieldException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

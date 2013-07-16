@@ -18,6 +18,9 @@
 package dmason.sim.field.continuous;
 
 import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -38,7 +41,9 @@ import dmason.sim.field.TraceableField;
 import dmason.sim.field.UpdateMap;
 import dmason.sim.field.util.GlobalInspectorHelper;
 import dmason.sim.field.util.GlobalParametersHelper;
+import dmason.sim.globals.util.UpdateGlobalVarAtStep;
 import dmason.sim.loadbalancing.MyCellInterface;
+import dmason.util.Util;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.connection.ConnectionWithJMS;
@@ -140,10 +145,11 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	/** Number of neighbors of this cell, that is also the number of regions to create and of topics to publish/subscribe */ 
 	protected int numNeighbors;
 	
-	/*
-	private FileOutputStream file;
-	private PrintStream ps;
-	*/
+
+	//private FileOutputStream file;
+	//private PrintStream ps;
+	private ArrayList<RemoteAgent<Double2D>> buffer_printer = new ArrayList<RemoteAgent<Double2D>>();
+
 
 	// -----------------------------------------------------------------------
 	// GLOBAL INSPECTOR ------------------------------------------------------
@@ -406,6 +412,8 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	 */
     public boolean setDistributedObjectLocation(final Double2D location,RemoteAgent<Double2D> rm,SimState sm)
     {
+		//Riproducibilit?
+		buffer_printer.add(rm);
     	numAgents++;
     	if(myfield.isMine(location.x,location.y))
     	{    		
@@ -422,7 +430,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
     	}
     	else
     	{
-    		String errorMessage = String.format("Agent %d tried to set position (%f, %f): out of boundaries on cell %s.",
+    		String errorMessage = String.format("Agent %s tried to set position (%f, %f): out of boundaries on cell %s.",
     					rm.getId(), location.x, location.y, cellType);
     		logger.severe( errorMessage );
     		return false;
@@ -459,7 +467,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 		// -------------------------------------------------------------------
 		
 		// If there are global parameters, synchronize
-		if (globalsNames.size() > 0)
+		/*if (globalsNames.size() > 0)
 		{
 			// Update and send global parameters
 			GlobalParametersHelper.sendGlobalParameters(
@@ -474,7 +482,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 					this,
 					globalsNames,
 					globalsMethods);
-		}
+		}*/
 
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
@@ -507,6 +515,31 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 		//
 		memorizeRegionOut();
 		
+		ArrayList<String> actualVar=
+				((DistributedState<?>)sm).
+				upVar.getAllGlobalVarForStep(sm.schedule.getSteps());
+		//upVar.getAllGlobalVarForStep(sm.schedule.getSteps()-1);
+		if (actualVar != null)
+		{
+
+			// Update and send global parameters
+			GlobalParametersHelper.sendGlobalParameters(
+					sm,
+					connection,
+					topicPrefix,
+					cellType,
+					currentTime,
+					actualVar
+					);
+
+			// Receive global parameters from previous step and update the model
+			GlobalParametersHelper.receiveAndUpdate(
+					this,
+					actualVar,
+					globalsMethods);
+
+		}
+
 		// Publish the regions to correspondent topics for the neighbors
 		publishRegions();
 		
@@ -998,6 +1031,157 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	public int getRightMineSize() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+
+	public ArrayList<Entry<Double2D>> getAllVisibleAgent() {
+
+		ArrayList<Entry<Double2D>> thor=myfield.clone();
+		Class o=rmap.getClass();
+
+		Field[] fields = o.getDeclaredFields();
+		for (int z = 0; z < fields.length; z++)
+		{
+			fields[z].setAccessible(true);
+			try
+			{
+				String name=fields[z].getName();
+
+				Method method = o.getMethod("get"+name, null);
+				Object returnValue = method.invoke(rmap, null);
+
+				if(returnValue!=null)
+				{
+					Region<Double,Double2D> region=((Region<Double,Double2D>)returnValue);
+					for(Entry<Double2D> e: region)
+						thor.add(e);		    		
+
+				}
+			}
+			catch (IllegalArgumentException e){e.printStackTrace();} 
+			catch (IllegalAccessException e) {e.printStackTrace();} 
+			catch (SecurityException e) {e.printStackTrace();} 
+			catch (NoSuchMethodException e) {e.printStackTrace();} 
+			catch (InvocationTargetException e) {e.printStackTrace();}
+		}
+		//System.out.println("ALL_VISIBLE_THOR="+thor.size());
+		return thor;
+
+	}
+	public ArrayList<Entry<Double2D>> getMineAgent() {
+		ArrayList<Entry<Double2D>> thor=myfield.clone();
+		Class o=rmap.getClass();
+
+		Field[] fields = o.getDeclaredFields();
+		for (int z = 0; z < fields.length; z++)
+		{
+			fields[z].setAccessible(true);
+			try
+			{
+				String name=fields[z].getName();
+
+				Method method = o.getMethod("get"+name, null);
+				Object returnValue = method.invoke(rmap, null);
+
+				if(returnValue!=null)
+				{
+					Region<Double,Double2D> region=((Region<Double,Double2D>)returnValue);
+					if(name.contains("mine"))
+						for(Entry<Double2D> e: region)
+							thor.add(e);		    		
+					//					thor.addAll(region);
+
+				}
+			}
+			catch (IllegalArgumentException e){e.printStackTrace();} 
+			catch (IllegalAccessException e) {e.printStackTrace();} 
+			catch (SecurityException e) {e.printStackTrace();} 
+			catch (NoSuchMethodException e) {e.printStackTrace();} 
+			catch (InvocationTargetException e) {e.printStackTrace();}
+		}
+//		System.out.println("THOR_MINE_AGENT="+thor.size());
+		return thor;
+
+	}
+	/**
+	 * This method insert all agents in the field and in the corresponding region,
+	 * for this method you must use position of the actual cell
+	 * @param agents
+	 * @return
+	 */
+	public boolean resetAddAll(ArrayList<RemoteAgent<Double2D>> agents)
+	{
+		reset();
+		int x=0;
+		for (RemoteAgent<Double2D> remoteAgent : agents) {
+
+			Double2D pos=remoteAgent.getPos();
+			boolean inserito=false;
+			ArrayList<RemoteAgent<Double2D>> tmp=new ArrayList<RemoteAgent<Double2D>>();
+			if(myfield.isMine(pos.x, pos.y))
+			{
+				this.remove(remoteAgent);
+				sm.schedule.scheduleOnce(remoteAgent);
+				((DistributedState<Double2D>)sm).addToField(remoteAgent,pos);
+				inserito=true;
+				//System.out.println(remoteAgent.getId()+"MF");
+				x++;
+			}
+			else{
+				Class o=rmap.getClass();
+
+				Field[] fields = o.getDeclaredFields();
+				for (int z = 0; z < fields.length; z++)
+				{
+					fields[z].setAccessible(true);
+					try
+					{
+						String name=fields[z].getName();
+						Method method = o.getMethod("get"+name, null);
+						Object returnValue = method.invoke(rmap, null);
+
+						if(returnValue!=null)
+						{
+							Region<Double,Double2D> region=((Region<Double,Double2D>)returnValue);
+							if(region.isMine(pos.x,pos.y))
+							{   
+							
+								if(!tmp.contains(remoteAgent)) 
+								{
+									tmp.add(remoteAgent);
+									if(name.contains("mine")){
+										
+										this.remove(remoteAgent);
+										sm.schedule.scheduleOnce(remoteAgent);
+										((DistributedState<Double2D>)sm).addToField(remoteAgent,pos);
+										inserito=true;
+										x++;
+										//System.out.println(remoteAgent.getId()+"mine");
+									}
+									else if(name.contains("out"))
+									{
+										region.addAgents(new Entry<Double2D>(remoteAgent,pos));
+										((DistributedState<Double2D>)sm).addToField(remoteAgent,pos);
+										inserito=true;
+										//System.out.println(remoteAgent.getId()+"out");
+										x++;
+									}
+								}	
+							}    
+						}
+					}
+					catch (IllegalArgumentException e){e.printStackTrace();} 
+					catch (IllegalAccessException e) {e.printStackTrace();} 
+					catch (SecurityException e) {e.printStackTrace();} 
+					catch (NoSuchMethodException e) {e.printStackTrace();} 
+					catch (InvocationTargetException e) {e.printStackTrace();}
+				}
+
+			} 
+			if(!inserito) return false;
+		}
+		//System.out.println("INSERITI="+x+" con un bag di="+agents.size());
+		return true;
 	}
 
 }

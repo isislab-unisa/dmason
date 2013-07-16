@@ -18,6 +18,7 @@
 package dmason.batch.data;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 public class GeneralParam implements Serializable
 {
@@ -36,21 +37,23 @@ public class GeneralParam implements Serializable
 	public int i;
 	public int j;
 	
+	public HashMap<String, Object> model_params;
+
 	public boolean isBatch;
 	
-	public GeneralParam(int width, int height, int maxDistance,
-			int rows, int columns, int numAgents, int mode) {
-		super();
-		this.Width = width;
-		this.Height = height;
-		this.MaxDistance = maxDistance;
-		//this.NumRegions = numRegions;
-		this.Rows = rows;
-		this.Columns = columns;
-		this.NumAgents = numAgents;
-		this.Mode = mode;
-		this.isBatch = false;
-	}
+//	public GeneralParam(int width, int height, int maxDistance,
+//			int rows, int columns, int numAgents, int mode) {
+//		super();
+//		this.Width = width;
+//		this.Height = height;
+//		this.MaxDistance = maxDistance;
+//		//this.NumRegions = numRegions;
+//		this.Rows = rows;
+//		this.Columns = columns;
+//		this.NumAgents = numAgents;
+//		this.Mode = mode;
+//		this.isBatch = false;
+//	}
 	
 	public GeneralParam(int width, int height, int maxDistance,
 			int rows, int columns, int numAgents, int mode, long MaxStep) {
@@ -66,12 +69,31 @@ public class GeneralParam implements Serializable
 		this.MaxStep = MaxStep;
 		this.isBatch = true;
 	}
+	
+	public GeneralParam(int width, int height, int maxDistance,
+			int rows, int columns, int numAgents, int mode, 
+			HashMap<String, Object> model_params) {
+		super();
+		this.Width = width;
+		this.Height = height;
+		this.MaxDistance = maxDistance;
+		//this.NumRegions = numRegions;
+		this.Rows = rows;
+		this.Columns = columns;
+		this.NumAgents = numAgents;
+		this.Mode = mode;
+		this.MaxStep = MaxStep;
+		this.isBatch = true;
+		this.model_params=model_params;
+
+	}
 
 	public GeneralParam() {
 		// TODO Auto-generated constructor stub
 	}
 
 	
+
 	public int getRows() {
 		return Rows;
 	}

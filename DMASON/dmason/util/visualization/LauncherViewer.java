@@ -91,7 +91,7 @@ public class LauncherViewer  {
 					Integer.parseInt(fieldWidth.getText()),
 					Integer.parseInt(fieldHeight.getText()),
 					path,
-					((SimComboEntry)comboSim.getSelectedItem()).fullZoomName,
+					((SimComboEntry)comboSim.getSelectedItem()).fullSimName,
 					((SimComboEntry)comboSim.getSelectedItem()).fullSimName);
 			this.LauncherViewer.dispose();
 		}
@@ -156,6 +156,7 @@ public class LauncherViewer  {
         comboSim.addItem(new SimComboEntry("Flockers", "dmason.util.visualization.DFlockers.FlockersWithUIView", "dmason.sim.app.DFlockers.DFlockers"));
         comboSim.addItem(new SimComboEntry("Particles", "dmason.util.visualization.DParticles.Tutorial3ViewWithUI", "dmason.sim.app.DParticles.DParticles"));
         comboSim.addItem(new SimComboEntry("Ants Foraging", "dmason.util.visualization.DAntsForage.AntsForageWithUIZoom", "dmason.sim.app.DAntsForage.DAntsForage"));
+        comboSim.addItem(new SimComboEntry("Vampires", "dmason.sim.app.DVampires.DSimulationWithUI", "dmason.sim.app.DVampires.DSimulation"));
 		
 		path = System.getProperty("user.dir");
 		

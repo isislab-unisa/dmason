@@ -16,6 +16,7 @@ import dmason.batch.data.GeneralParam;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.field.CellType;
 import dmason.sim.field.MessageListener;
+import dmason.sim.globals.util.UpdateGlobalVarAtStep;
 import dmason.util.SystemManagement.JarClassLoader;
 import dmason.util.SystemManagement.StartUpData;
 import dmason.util.SystemManagement.Updater;
@@ -23,7 +24,11 @@ import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.visualization.RemoteSnap;
 import dmason.util.visualization.VisualizationUpdateMap;
 
-
+/**
+ * @author Luca Vicidomini
+ * @author Michele Carillo, Ada Mancuso, Flavio Serrapica, Carmine Spagnuolo, Francesco Raia 
+ *
+ */
 public class Reducer extends Thread
 {
 	private ConnectionNFieldsWithActiveMQAPI connection;
@@ -40,14 +45,19 @@ public class Reducer extends Thread
 	 */
 	private boolean isValid;
 	
-	public Reducer(StartUpData data, ConnectionNFieldsWithActiveMQAPI connection)
+	public Reducer(StartUpData data, ConnectionNFieldsWithActiveMQAPI connection, Object state)
 	{
 		this.connection = connection;
 		this.numPeers = data.getParam().getRows() * data.getParam().getColumns();
 		this.topicPrefix = data.getTopicPrefix();
 		this.queue = new PriorityQueue<RemoteSnap>();
-		
-		simulationInstance = makeState(data.getDef(), data.getParam(), data);
+		if( state instanceof GUIState)
+		{
+			simulationInstance =(DistributedState)((GUIState)state).state;
+		}
+		else simulationInstance =(DistributedState)state;
+		// TODO NOTA I RAGAZZI HANNO SOSTITUITO QUESTA RIGA COL BLOCCO DI SOPRA, PER ORA COMMENTO. Luca
+		// simulationInstance = makeState(data.getDef(), data.getParam(), data);
 		
 		if (simulationInstance != null)
 		{
@@ -112,12 +122,17 @@ public class Reducer extends Thread
 		
 		// Set current simulation step to 1, since Reducer will be active from the beginning of the simulation
 		long step = 1;
+		UpdateGlobalVarAtStep upVar=new UpdateGlobalVarAtStep(simulationInstance);
 		
 		// Through the whole simulation
 		while (true)
 		{
 			try {				
 				// Retrieve data from workers
+				if( upVar.getAllGlobalVarForStep(step) == null ){
+					step++;
+					continue;
+				}
 				HashMap<String,Object> snaps = (HashMap<String,Object>)updates.getUpdates(step, numPeers);
 				
 				// This will contain reduced data
@@ -146,6 +161,7 @@ public class Reducer extends Thread
 						propValues[propIndex][snapIndex] = snap.stats.get(propNames[propIndex]);
 					}
 				}
+				HashMap<Method, Object[]> reinitMethod = new HashMap<Method, Object[]>();
 				
 				// Perform reduction
 				for (int propertyI = 0; propertyI < propCount; propertyI++)
@@ -153,14 +169,40 @@ public class Reducer extends Thread
 					String propName = (String)propNames[propertyI];
 					try
 					{
-						Method reductionMethod = simulationInstance.getClass().getMethod("reduce" + propName, Object[].class);
-						Object value = reductionMethod.invoke(simulationInstance, new Object[] { propValues[propertyI] } );
-						reducedSnap.stats.put(propName, value);
+							Method reductionMethod = simulationInstance.getClass().getMethod("reduce" + propName, Object[].class);
+							// the reinitialize method must be invoke last
+							if (reductionMethod.getName().contains("Reinitialize")) {
+								reinitMethod.put(reductionMethod, new Object[] { propValues[propertyI] }); 
+								continue;
+							}
+							System.out.println("Reducer: Invoco "+reductionMethod.getName());	
+							Object value = reductionMethod.invoke(simulationInstance, new Object[] { propValues[propertyI] } );
+							reducedSnap.stats.put(propName, value);
+	
 					} catch (Exception e) {		
 						e.printStackTrace();
 					}
 				}
 				
+				// invoke ReinitialMethod
+				for (Method method : reinitMethod.keySet()) {
+					Object value;
+					try {
+						value = method.invoke(simulationInstance, reinitMethod.get(method) );
+						reducedSnap.stats.put(method.getName().substring(6), value);
+						System.out.println("Reducer: Invoco "+method.getName());
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
 				// Send reduced data to GLOBAL_REDUCED
 				connection.publishToTopic(reducedSnap, topicPrefix + "GLOBAL_REDUCED", "GLOBALS");
 				
@@ -247,7 +289,7 @@ public class Reducer extends Thread
 
 		if(isGui)
 		{
-			name += "WithUI";
+			//name += "WithUI";
 		}
 		
 		return cl.getInstance(name, args_gen);
