@@ -1,12 +1,11 @@
 package dmason.sim.app.DParticles;
 
 import java.awt.Color;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
 
-import dmason.annotation.Thin;
+import sim.engine.Schedule;
+import sim.engine.SimState;
+import sim.engine.Steppable;
+import sim.util.Int2D;
 import dmason.batch.data.GeneralParam;
 import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
@@ -17,9 +16,6 @@ import dmason.sim.field.grid.DSparseGrid2DFactory;
 import dmason.sim.field.grid.numeric.DDoubleGrid2D;
 import dmason.sim.field.grid.numeric.DDoubleGrid2DFactory;
 import dmason.util.exception.DMasonException;
-import sim.engine.*;
-import sim.field.grid.DoubleGrid2D;
-import sim.util.*;
 public class DParticles extends DistributedState<Int2D> {
     
 	private static boolean isToroidal=false;

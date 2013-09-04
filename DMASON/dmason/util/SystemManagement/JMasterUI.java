@@ -2948,7 +2948,6 @@ public class JMasterUI extends JFrame  implements Observer, MasterListener {
 		jComboBoxChooseSimulation.addItem(new SimComboEntry("Ants Foraging Thin", "dmason.sim.app.DAntsForageThin.DAntsForage"));
 		jComboBoxChooseSimulation.addItem(new SimComboEntry("Students", "dmason.sim.app.DStudents.DStudents"));
 		jComboBoxChooseSimulation.addItem(new SimComboEntry("DVampires", "dmason.sim.app.DVampires.DSimulation"));
-		jComboBoxChooseSimulation.addItem(new SimComboEntry("DSlime", "dmason.sim.app.DSlime.DTurtles"));
 		
 		// Then loads jar simulation from SIMULATION_DIR
 		File folder = new File(FTP_HOME+dirSeparator+SIMULATION_DIR);

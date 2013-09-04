@@ -18,10 +18,6 @@
 package dmason.sim.field.continuous;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -31,12 +27,9 @@ import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
 import sim.engine.SimState;
-import sim.util.Bag;
 import sim.util.Double2D;
 import sim.util.Int2D;
-import sim.util.MutableInt2D;
 import dmason.sim.engine.DistributedMultiSchedule;
 import dmason.sim.engine.DistributedState;
 import dmason.sim.engine.RemoteAgent;
@@ -51,7 +44,6 @@ import dmason.sim.field.util.GlobalInspectorHelper;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
-import dmason.util.visualization.RemoteSnap;
 import dmason.util.visualization.VisualizationUpdateMap;
 import dmason.util.visualization.ZoomArrayList;
 
@@ -210,7 +202,6 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 		this.updates_cache = new ArrayList<Region<Double,Double2D>>();
 		this.name = name;
 		this.topicPrefix = prefix;
-		
 		setConnection(((DistributedState)sm).getConnection());
 		numAgents=0;
 		createRegion();
@@ -470,7 +461,7 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 			{				
 				connection.publishToTopic(dr1, topicPrefix+cellType + "L", name);
 			} catch (Exception e1) {
-				logger.severe("Unable to publish region to topic: " + cellType + "L");
+				logger.severe("Unable to publish region to topic: " + topicPrefix+cellType + "L");
 			}
 		}
 		
@@ -487,7 +478,7 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 			{		
 				connection.publishToTopic(dr2, topicPrefix+cellType + "R", name);
 			} catch (Exception e1) {
-				logger.severe("Unable to publish region to topic: " + cellType + "R");
+				logger.severe("Unable to publish region to topic: " + topicPrefix+cellType + "R");
 			}
 		}
 		
