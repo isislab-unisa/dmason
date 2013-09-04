@@ -383,6 +383,8 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	@Override
 	public boolean synchro() {
 
+		//System.out.println("Start Int");
+		
 		if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
 		{
 			tmp_zoom=new ZoomArrayList<EntryNum<Integer, Int2D>>();
@@ -541,7 +543,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 		}	
 		
 		this.reset();
-
+		//System.out.println("end Int");
 		return true;
 	}
 

@@ -414,7 +414,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	@Override
 	public boolean synchro() {
 		
-	
+		//System.out.println("LOOOOOOOOOOL START DOUBLEGRIDDXY");
 		//every value in the myfield region is setted
 		for(EntryNum<Double, Int2D> e: myfield)
 		{			
@@ -574,8 +574,10 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 			}
 		}	
 		this.reset();
-	
+		
+		//System.out.println("LOOOOOOOOOOL END DOUBLEGRIDDXY");
 		return true;
+		
 	}
 
 	@Override

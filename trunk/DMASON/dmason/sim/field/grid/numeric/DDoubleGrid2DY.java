@@ -341,7 +341,6 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 		}	
 		
 		this.reset();
-		
 		return true;
 	}
 

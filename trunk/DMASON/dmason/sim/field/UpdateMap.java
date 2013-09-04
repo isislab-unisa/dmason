@@ -24,6 +24,8 @@ import java.util.PriorityQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import sim.util.Double2D;
+
 /**
  * A hash map supporting concurrency for methods put and get.
  * The DistributedRegions are saved using the number of step as key.
@@ -51,6 +53,7 @@ public class UpdateMap<E,F> extends HashMap<Long,PriorityQueue<Object>> implemen
      */
 	public  PriorityQueue<Object> getUpdates(long step,int num_updates) throws InterruptedException
 	{
+		//long starttime = System.currentTimeMillis();
 		lock.lock();
 		PriorityQueue<Object> tmp=this.get(step);
 
@@ -62,10 +65,12 @@ public class UpdateMap<E,F> extends HashMap<Long,PriorityQueue<Object>> implemen
 		
 		while(tmp.size()!=num_updates)
 		{
+			//System.out.println("SIZE NUM_UPDATE: "+tmp.size()+" "+num_updates);
 			block.await();
 		}
 		this.remove(step);
 		lock.unlock();
+		//System.out.println("getUpdates("+step+","+num_updates+") " + (System.currentTimeMillis() - starttime));
 		return tmp;
 	}
 	
@@ -87,6 +92,10 @@ public class UpdateMap<E,F> extends HashMap<Long,PriorityQueue<Object>> implemen
 		}
 		else
 		{
+			/*if (d_reg instanceof DistributedRegion<?, ?>)
+				System.out.println("SI è una instanza di DristributedRegion");
+			else System.out.println("NON E' UNA INSTANZA DI DISTRIBUTEDREGION");*/
+			
 			/*initial capacity of the Priority Queue is set to eight because it is the number of
 			 neighbors in a 2D field*/
 			PriorityQueue<Object> queue_update=new PriorityQueue<Object>(8,

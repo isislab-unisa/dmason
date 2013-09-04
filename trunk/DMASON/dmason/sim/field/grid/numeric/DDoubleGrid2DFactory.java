@@ -74,7 +74,6 @@ public class DDoubleGrid2DFactory {
 			if(MODE==SQUARE_DISTRIBUTION_MODE)
 			{
 					DistributedField field = new DDoubleGrid2DXY(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name,topicPrefix);
-
 					if(!fixed)
 						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 					return (DDoubleGrid2D)field;

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import javax.jms.JMSException;
 
+import dmason.sim.field.network.DNetwork;
 import dmason.util.connection.MyHashMap;
 import dmason.util.connection.MyMessageListener;
 /**
@@ -61,6 +62,9 @@ public class MessageListener extends MyMessageListener
 			MyHashMap bo = (MyHashMap)parseMessage(arg0);
 
 			for (DistributedField field : fields) {
+				
+				if(field instanceof DNetwork<?>)
+					continue;
 				
 				DistributedRegionInterface obj = (DistributedRegionInterface)bo.get(field.getID());
 				
