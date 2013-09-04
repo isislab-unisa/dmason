@@ -489,6 +489,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	 */
 	public synchronized boolean synchro() 
 	{		
+		//System.out.println("start  SparseGriddxy2");
 		// Send to Global Inspector
 		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
@@ -660,6 +661,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 				e1.printStackTrace();
 			}
 		}
+		//System.out.println("end  SparseGriddxy2");
 		return true;
 	}
 	

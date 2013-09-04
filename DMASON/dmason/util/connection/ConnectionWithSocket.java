@@ -182,4 +182,11 @@ public class ConnectionWithSocket implements Connection{
 			}
 		}
 	}
+
+
+	@Override
+	public boolean unsubscribe(String topicName) throws Exception {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

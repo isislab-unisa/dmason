@@ -123,11 +123,10 @@ public abstract class DistributedState<E> extends SimState {
 	}
 
 	private void connection_IS_toroidal() {
-
+		
 		if (MODE == 0 || MODE == 3) { // HORIZONTAL_MODE
 
 			try {
-
 				connection.createTopic(topicPrefix+TYPE.pos_i + "-" + TYPE.pos_j + "L",
 						((DistributedMultiSchedule) super.schedule).fields
 								.size());

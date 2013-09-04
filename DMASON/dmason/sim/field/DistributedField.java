@@ -25,6 +25,7 @@ import sim.engine.SimState;
 
 import dmason.sim.engine.DistributedState;
 import dmason.sim.engine.RemoteAgent;
+import dmason.sim.field.network.UpdateMapNet;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.Connection;
 import dmason.util.visualization.VisualizationUpdateMap;
@@ -84,6 +85,8 @@ public interface DistributedField<E> extends Serializable
 	
 	@SuppressWarnings("rawtypes")
 	public UpdateMap getUpdates();
+	
+	//public  UpdateMapNet  getUpdatesNet();
 	
 	
 	
@@ -160,4 +163,5 @@ public interface DistributedField<E> extends Serializable
 	 * @return
 	 */
 	public VisualizationUpdateMap<String, Object> getGlobals();
+	
 }

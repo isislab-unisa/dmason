@@ -47,5 +47,8 @@ public interface Connection {
 	 * Retrieves the list of active topics on the provider.
 	 */
 	public ArrayList<String> getTopicList() throws Exception;
+	
+	//modificato aggiunto da me
+	public boolean unsubscribe(String topicName) throws Exception;
 
 }

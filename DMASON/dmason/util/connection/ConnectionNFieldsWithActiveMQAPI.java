@@ -173,7 +173,6 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 		try
 		{
 			subscribers.put(topicName, (ActiveMQTopicSubscriber) subSession.createSubscriber(subSession.createTopic(topicName)));
-		
 			return true;
 		} catch (Exception e) {
 			System.err.println("Unable to subscribe to topic: " + topicName);
@@ -181,7 +180,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 			return false;
 		}
 	}
-
+	
 	@Override
 	public synchronized boolean publishToTopic(Serializable object, String topicName, String key)
 	{
@@ -245,6 +244,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 		{
 			subscribers.get(key).setMessageListener(listener);
 			
+			
 			return true;
 		} catch (Exception e) {
 			System.err.println("Failed to enable asynchronous reception.");
@@ -252,6 +252,42 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 			return false;
 		}
 	}
+	
+	// metodo che dovrebbe cancellare la sottoscrizone al topic ma in realtà non si capisce come fare per farlo????
+		public boolean unsubscribe(String topicName) throws Exception{
+			try{
+				//pubSession.unsubscribe(topicName);
+				//System.out.println("topicName: "+topicName);
+				if (subscribers.get(topicName)==null)
+					return false;
+				subscribers.get(topicName).setMessageListener(null);
+				subscribers.get(topicName).close();
+				subscribers.get(topicName).stop();
+				subscribers.remove(topicName);
+				
+				
+				//publishers.remove(topicName);
+
+				//subscribers.get(topicName).dispose();
+				
+				//subscribers.remove(topicName);
+				
+				/*Set<String> set=subscribers.keySet();
+				Iterator<String> iter=set.iterator();
+				String s;
+				while(iter.hasNext()){
+					s=iter.next();
+					ActiveMQTopicSubscriber a=subscribers.get(s);
+					System.out.println(a.toString());    
+				}*/
+				
+				return true;
+			}catch (Exception e) {
+				System.err.println("Unable to unsubscribe to topic: " + topicName);
+				e.printStackTrace();
+				return false;
+			}
+		}
 	
 
 	/**

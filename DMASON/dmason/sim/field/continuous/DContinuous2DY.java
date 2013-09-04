@@ -116,20 +116,18 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 {	
 	private static final long serialVersionUID = 1L;
 
+	private double start,finish;
 	private static Logger logger = Logger.getLogger(DContinuous2DY.class.getCanonicalName());
 	
 	public ArrayList<MessageListener> listeners;
 	private String name;
-	
 	private ZoomArrayList<RemoteAgent> tmp_zoom=new ZoomArrayList<RemoteAgent>();
-
 	private int numAgents;
 	private double width,height;
 	// --> only for testing
 	public PrintWriter printer;
 	public ArrayList<RemoteAgent<Int2D>> buffer_print=new ArrayList<RemoteAgent<Int2D>>();
 	// <--
-	
 	private String topicPrefix = "";
 	
 	// -----------------------------------------------------------------------
@@ -400,7 +398,7 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 		}
 		else
 		{
-			String errorMessage = String.format("Agent %d tried to set position (%f, %f): out of boundaries on cell %s.",
+			String errorMessage = String.format("Agent %s tried to set position (%f, %f): out of boundaries on cell %s.",
 					rm.getId(), location.x, location.y, cellType);
 			logger.severe( errorMessage );
 			return false;
@@ -508,7 +506,7 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
-		
+		//System.out.println("Ciao");
 		for(Region<Double, Double2D> region : updates_cache)
 			for(Entry<Double2D> e_m : region)
 			{
@@ -531,6 +529,26 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 				e1.printStackTrace();
 			}
 		}
+		
+		if (network!=null){
+			for ( Region<Double,Double2D> region:updates_cache){
+				for(Entry<Double2D> e:region){
+					network.changeListaOut(e.r);
+				}
+			}
+			//network.ListaOut();
+		}
+		if (network!=null)
+			network.unLock();
+		//System.out.println("fine synchro Cont "+sm.schedule.getSteps());
+		/* if (sm.schedule.getSteps()==1)
+				start=System.currentTimeMillis();
+			if (sm.schedule.getSteps()==10000){
+				finish=System.currentTimeMillis();
+				System.out.println("TEMPO: "+(finish-start));
+		}*/
+		
+		
 		return true;
 	}
 	
@@ -551,6 +569,12 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 			RemoteAgent<Double2D> rm=e_m.r;
 			((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
 			rm.setPos(e_m.l);
+			if (network!=null){
+	  			//notifica lo spostamento alla cello che lo riceve...
+	  			//System.out.println("ID VERIFYUPDATES l'agente appena arrivato in questa regione è: "+rm.getId()+" la pos è: "+rm.getPos()+ " sm: "+sm.schedule.getSteps());
+	  			network.addNewExternNode(rm);
+	  			//System.out.println("HO FINITO LA CALLBACK");
+	  		}
 			setPortrayalForObject(rm);
 			sm.schedule.scheduleOnce(rm);
 		}
@@ -623,6 +647,10 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 			  	 {
 		    		 for(Entry<Double2D> e: region)
 		   			 {
+		    			//notifica alla network lo spostamento alla cella che sta abbandonando;
+		    			 if (network!=null){
+		    				 network.changeOut(e.r);
+		    			 }
 		    			 RemoteAgent<Double2D> rm=e.r;
 		    			 rm.setPos(e.l);		    			
 			    		 this.remove(rm);
@@ -736,13 +764,25 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 	/**
 	 * Implemented method from the abstract class.
 	 */
-	public DistributedState<Double2D> getState() { return (DistributedState<Double2D>)sm; }
+	public DistributedState<Double2D> getState() {
+		return (DistributedState<Double2D>)sm; 
+	}
     
 	//getters and setters
-	public double getOwn_x() { return own_x; }
-	public void setOwn_x(double own_x) { this.own_x = own_x; }
-	public double getOwn_y() {	return own_y; }
-	public void setOwn_y(double own_y) { this.own_y = own_y; }
+	public double getOwn_x() {
+		return own_x; 
+	}
+	
+	public void setOwn_x(double own_x) {
+		this.own_x = own_x; 
+	}
+	
+	public double getOwn_y() {
+		return own_y; 
+	}
+	public void setOwn_y(double own_y) {
+		this.own_y = own_y; 
+	}
 	
 	@Override
 	public ArrayList<MessageListener> getLocalListener() {

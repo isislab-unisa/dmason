@@ -96,7 +96,6 @@ public class Worker extends Observable
 				
 		state = this.makeState(data.getDef(), data.getParam());
 		
-		
 		// If this worker must publish to the "step" topic
 		if (step)
 		{

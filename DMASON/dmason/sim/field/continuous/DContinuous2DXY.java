@@ -20,7 +20,7 @@ package dmason.sim.field.continuous;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -130,7 +130,7 @@ import sim.util.MutableInt2D;
 public class DContinuous2DXY extends DContinuous2D implements TraceableField
 {	
 	private static final long serialVersionUID = 1L;
-
+	
 	private static Logger logger = Logger.getLogger(DContinuous2DXY.class.getCanonicalName());
 	
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
@@ -145,7 +145,6 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	/** Number of neighbors of this cell, that is also the number of regions to create and of topics to publish/subscribe */ 
 	protected int numNeighbors;
 	
-
 	//private FileOutputStream file;
 	//private PrintStream ps;
 	private ArrayList<RemoteAgent<Double2D>> buffer_printer = new ArrayList<RemoteAgent<Double2D>>();
@@ -435,7 +434,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
     		logger.severe( errorMessage );
     		return false;
     	}
-    }
+   }
 	
 	/**
 	 * 	This method provides the synchronization in the distributed environment.
@@ -510,7 +509,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	
 		// Update fields using reflection
 		updateFields();
-		updates_cache = new ArrayList<Region<Double,Double2D>>();
+		updates_cache=new ArrayList<Region<Double,Double2D>>();
 		
 		//
 		memorizeRegionOut();
@@ -566,7 +565,24 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
+		
+		// Network management
+		if (network!=null){
+			for ( Region<Double,Double2D> region:updates_cache){
+				for(Entry<Double2D> e:region){
+					network.changeListaOut(e.r);
+				}
+			}
+			//network.ListaOut();
+		}
+		if (network!=null)
+			network.unLock();
+			//network.synchro();
 
+		// -------------------------------------------------------------------
+		// -------------------------------------------------------------------
+		// -------------------------------------------------------------------
+		
 		return true;
 	}
 
@@ -689,6 +705,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 				
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
+
 	}
 	
 	/**
@@ -713,6 +730,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 		    	 if(name.contains("out"))
 			  	 {
 		    		 updates_cache.add(region.clone());
+		 
 			  	 }
 		     }
 	       }
@@ -734,13 +752,19 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	private void verifyUpdates(DistributedRegion<Double,Double2D> box)
 	{
 		Region<Double,Double2D> r_mine=box.out;
-		Region<Double,Double2D> r_out=box.mine;
-		
+		Region<Double,Double2D> r_out=box.mine;		
+				
 		for(Entry<Double2D> e_m: r_mine)
 		{
 			RemoteAgent<Double2D> rm=e_m.r;
 			((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
 		  		rm.setPos(e_m.l);
+		  		if (network!=null){
+		  			//notifica lo spostamento alla cello che lo riceve...
+		  			//System.out.println("ID VERIFYUPDATES l'agente appena arrivato in questa regione è: "+rm.getId()+" la pos è: "+rm.getPos()+ " sm: "+sm.schedule.getSteps());
+		  			network.addNewExternNode(rm);
+		  			//System.out.println("HO FINITO LA CALLBACK");
+		  		}
 		  		setPortrayalForObject(rm);
 		  		sm.schedule.scheduleOnce(rm);
 		}
@@ -773,8 +797,14 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 		    	 Region<Double,Double2D> region=((Region<Double,Double2D>)returnValue);
 		    	 if(name.contains("out"))
 			  	 {
+		    		 
 		    		 for(Entry<Double2D> e: region)
 		   			 {
+		    			 //notifica alla network lo spostamento alla cella che sta abbandonando;
+		    			 if (network!=null){
+		    				 network.changeOut(e.r);
+		    			 }
+		    			 
 		    			 RemoteAgent<Double2D> rm=e.r;
 		    			 rm.setPos(e.l);
 			    		 this.remove(rm);

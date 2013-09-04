@@ -32,6 +32,7 @@ import dmason.sim.field.DistributedField;
 import dmason.sim.field.Region;
 import dmason.sim.field.RegionMap;
 import dmason.sim.field.UpdateMap;
+import dmason.sim.field.network.DNetwork;
 import dmason.sim.loadbalancing.MyCellInterface;
 import dmason.util.connection.ConnectionNFieldsWithActiveMQAPI;
 import dmason.util.connection.ConnectionWithJMS;
@@ -120,6 +121,9 @@ public abstract class DContinuous2D extends Continuous2D  implements Distributed
 	public ArrayList<String> neighborhood=new ArrayList<String>();
 	public ContinuousPortrayal2D p;
 	public boolean gui=true;
+	
+	//network
+	public DNetwork network=null;
 	
 	// <-- instance variables
 		
