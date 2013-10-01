@@ -52,7 +52,7 @@
                 	libraries/slf4j-log4j12-1.5.2.jar 
                 	libraries/xstream-1.4.3.jar
                 	" />
-            	<attribute name="Implementation-Version" value="2.1.0-beta" />
+            	<attribute name="Implementation-Version" value="2.2" />
             </manifest>
             <fileset dir="${basedir}/">
             	<exclude name=".classpath" />
