@@ -7,7 +7,8 @@ Agent-based simulation models are an increasingly popular tool for research and 
 
 Among the motivations to our focus on distributing the simulation on several machines, we can underline how the need for efficiency among the Agent-Based modeling tools is well recognized in literature: many reviews of state-of-the-art frameworks place “speed” upfront as one of the most general and important issues. While a consistent work has been done to allow the distribution of agents on several computing nodes, our approach here is different in principle: we want to introduce the distribution at the framework level, so that the scientists that use the framework (domain experts but with limited knowledge of computer programming and systems) can be unaware of such distribution.
 
-
+### Changelog DMASON 3.0.2
+1. [Changelog list](https://github.com/isislab-unisa/dmason/blob/master/CHANGELOG.md)
 #Compiling DMASON from src/ to target/ using Apache Maven
 
     $ mvn clean package
