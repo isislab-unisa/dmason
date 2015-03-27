@@ -14,40 +14,40 @@ Among the motivations to our focus on distributing the simulation on several mac
     $ mvn clean package
 
 
-	target	
-	├── archive-tmp
-	├── classes
-	│   └── it
-	├── dmason-3.0.1-lib.jar
-	├── dmason-global-viewer-3.0.1-jar-with-dependencies.jar
-	├── dmason-master-3.0.1-jar-with-dependencies.jar
-	├── dmason-worker-gui-3.0.1-jar-with-dependencies.jar
-	├── dmason-worker-no-gui-3.0.1-jar-with-dependencies.jar
-	├── examples
-	│   └── resources
-	│   ├── dmason-test-ant-forage-3.0.1-jar-with-dependencies.jar
-	│   ├── dmason-test-ant-forage-thin-3.0.1-jar-with-dependencies.jar
-	│   ├── dmason-test-flcokers-3.0.1-jar-with-dependencies.jar
-	│   ├── dmason-test-flcokers-state-memory-3.0.1-jar-with-dependencies.jar
-	│   ├── dmason-test-flcokers-thin-3.0.1-jar-with-dependencies.jar
-	│   ├── dmason-test-network-3.0.1-jar-with-dependencies.jar
-	│   ├── dmason-test-particles-3.0.1-jar-with-dependencies.jar
-	│   └── dmason-test-particles-thin-3.0.1-jar-with-dependencies.jar
-	├── generated-sources
-	│   └── annotations
-	├── maven-archiver
-	│   └── pom.properties
-	├── maven-status
-	│   └── maven-compiler-plugin
-	└── resources
-	 ├── app
-	 ├── batch
-	 ├── file
-	 ├── files
-	 ├── image
-	 ├── javadoc-style
-	 ├── metis
-	 └── util
+		target	
+		├── archive-tmp
+		├── classes
+		│   └── it
+		├── dmason-3.0.1-lib.jar
+		├── dmason-global-viewer-3.0.1-jar-with-dependencies.jar
+		├── dmason-master-3.0.1-jar-with-dependencies.jar
+		├── dmason-worker-gui-3.0.1-jar-with-dependencies.jar
+		├── dmason-worker-no-gui-3.0.1-jar-with-dependencies.jar
+		├── examples
+		│   └── resources
+		│   ├── dmason-test-ant-forage-3.0.1-jar-with-dependencies.jar
+		│   ├── dmason-test-ant-forage-thin-3.0.1-jar-with-dependencies.jar
+		│   ├── dmason-test-flcokers-3.0.1-jar-with-dependencies.jar
+		│   ├── dmason-test-flcokers-state-memory-3.0.1-jar-with-dependencies.jar
+		│   ├── dmason-test-flcokers-thin-3.0.1-jar-with-dependencies.jar
+		│   ├── dmason-test-network-3.0.1-jar-with-dependencies.jar
+		│   ├── dmason-test-particles-3.0.1-jar-with-dependencies.jar
+		│   └── dmason-test-particles-thin-3.0.1-jar-with-dependencies.jar
+		├── generated-sources
+		│   └── annotations
+		├── maven-archiver
+		│   └── pom.properties
+		├── maven-status
+		│   └── maven-compiler-plugin
+		└── resources
+		 ├── app
+		 ├── batch
+		 ├── file
+		 ├── files
+		 ├── image
+		 ├── javadoc-style
+		 ├── metis
+		 └── util
 
 Generate build without runs test suite:
 
