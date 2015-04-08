@@ -454,6 +454,12 @@ public class DistributedStateConnectionJMSTester {
 			return null;
 		}
 
+		@Override
+		public boolean verifyPosition(Double2D pos) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
 	}
 
 	/** The variable to test. */

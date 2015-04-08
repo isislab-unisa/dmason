@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.PriorityQueue;
 
 import sim.engine.SimState;
+import sim.util.Double2D;
 import sim.util.Int2D;
 
 
@@ -969,6 +970,12 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	@Override
+	public boolean verifyPosition(Int2D pos) {
+		
+		//we have to implement this
+		return false;
 
+	}
 
 }

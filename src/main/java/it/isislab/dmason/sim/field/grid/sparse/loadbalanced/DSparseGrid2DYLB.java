@@ -1079,6 +1079,12 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField
 			currentStats.remove(param);
 		}
 	}
+	@Override
+	public boolean verifyPosition(Int2D pos) {
+		
+		//we have to implement this
+		return false;
 
+	}
 
 }

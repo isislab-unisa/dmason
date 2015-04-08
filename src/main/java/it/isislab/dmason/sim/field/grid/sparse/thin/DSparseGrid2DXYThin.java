@@ -1212,5 +1212,11 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 	{
 		return globals;
 	}
+	@Override
+	public boolean verifyPosition(Int2D pos) {
+		
+		//we have to implement this
+		return false;
 
+	}
 }

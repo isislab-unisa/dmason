@@ -145,7 +145,7 @@ public class DistributedStateConnectionFake<E> extends DistributedStateConnectio
 			}
 		}
 //		//only for global variables
-//		dm.upVar=new UpdateGlobalVarAtStep(dm);
+		dm.upVar=new UpdateGlobalVarAtStep(dm);
 //		ThreadVisualizationCellMessageListener thread = new ThreadVisualizationCellMessageListener(
 //				connectionJMS,
 //				((DistributedMultiSchedule) this.schedule));

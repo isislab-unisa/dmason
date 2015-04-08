@@ -59,4 +59,6 @@ public interface DistributedField2D<E> extends DistributedField<E>
 	
 	public void setToroidal(boolean isToroidal);
 	
+	public boolean verifyPosition(E pos);
+	
 }

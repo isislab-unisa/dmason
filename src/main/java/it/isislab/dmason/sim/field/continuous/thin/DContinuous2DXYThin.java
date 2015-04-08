@@ -1062,4 +1062,11 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 	{
 		return globals;
 	}
+	@Override
+	public boolean verifyPosition(Double2D pos) {
+		
+		//we have to implement this
+		return false;
+
+	}
 }

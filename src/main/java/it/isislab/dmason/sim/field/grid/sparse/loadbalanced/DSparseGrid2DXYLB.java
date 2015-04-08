@@ -5590,5 +5590,11 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 		// TODO Auto-generated method stub
 		return globals;
 	}
+	@Override
+	public boolean verifyPosition(Int2D pos) {
+		
+		//we have to implement this
+		return false;
 
+	}
 }

@@ -857,5 +857,11 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 	{
 		return globals;
 	}
+	@Override
+	public boolean verifyPosition(Int2D pos) {
+		
+		//we have to implement this
+		return false;
 
+	}
 }

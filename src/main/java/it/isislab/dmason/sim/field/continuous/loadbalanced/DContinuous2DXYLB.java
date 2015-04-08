@@ -5520,5 +5520,12 @@ public class DContinuous2DXYLB extends DContinuous2D
 	{
 		return globals;
 	}
+	@Override
+	public boolean verifyPosition(Double2D pos) {
+		
+		//we have to implement this
+		return false;
+
+	}
 
 }

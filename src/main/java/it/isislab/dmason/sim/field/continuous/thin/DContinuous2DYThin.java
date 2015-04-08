@@ -877,5 +877,12 @@ public class DContinuous2DYThin extends DContinuous2DThin implements TraceableFi
 	{
 		return globals;
 	}
+	@Override
+	public boolean verifyPosition(Double2D pos) {
+		
+		//we have to implement this
+		return false;
+
+	}
 
 }

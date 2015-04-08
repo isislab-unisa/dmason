@@ -748,5 +748,11 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 	{
 		return globals;
 	}
+	@Override
+	public boolean verifyPosition(Int2D pos) {
+		
+		//we have to implement this
+		return false;
 
+	}
 }

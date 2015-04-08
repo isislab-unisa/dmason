@@ -1042,6 +1042,13 @@ public class DContinuous2DYLB extends DContinuous2D implements TraceableField
 	{
 		return globals;
 	}
+	@Override
+	public boolean verifyPosition(Double2D pos) {
+		
+		//we have to implement this
+		return false;
+
+	}
 
 
 }

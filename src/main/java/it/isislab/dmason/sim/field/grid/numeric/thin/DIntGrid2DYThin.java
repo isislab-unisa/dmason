@@ -710,4 +710,11 @@ public class DIntGrid2DYThin extends DIntGrid2DThin {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	@Override
+	public boolean verifyPosition(Int2D pos) {
+		
+		//we have to implement this
+		return false;
+
+	}
 }

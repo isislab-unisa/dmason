@@ -1092,5 +1092,12 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	{
 		return globals;
 	}
+	@Override
+	public boolean verifyPosition(Int2D pos) {
+		
+		//we have to implement this
+		return false;
+
+	}
 
 }

@@ -981,5 +981,11 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	{
 		return globals;
 	}
+	@Override
+	public boolean verifyPosition(Int2D pos) {
+		
+		//we have to implement this
+		return false;
 
+	}
 }

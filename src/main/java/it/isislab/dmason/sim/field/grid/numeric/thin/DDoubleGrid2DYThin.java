@@ -737,5 +737,11 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	{
 		return globals;
 	}
-	
+	@Override
+	public boolean verifyPosition(Int2D pos) {
+		
+		//we have to implement this
+		return false;
+
+	}
 }
