@@ -1,4 +1,4 @@
-package it.isislab.dmason.test.util.connection;
+package it.isislab.dmason.util.connection.testconnection;
 
 import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;

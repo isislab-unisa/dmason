@@ -15,7 +15,7 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.test.util.connection;
+package it.isislab.dmason.util.connection.testconnection;
 
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.util.connection.Address;
@@ -214,7 +214,7 @@ public class VirtualConnectionNFieldsWithVirtualJMS extends Observable
 			ArrayList<VirtualMessageListener> lists = vsubscribers.get(key);
 			lists = (lists == null) ? new ArrayList<VirtualMessageListener>()
 					: lists;
-			lists.add((it.isislab.dmason.test.util.connection.VirtualMessageListener) listener);
+			lists.add((it.isislab.dmason.util.connection.testconnection.VirtualMessageListener) listener);
 
 			return vsubscribers.put(key, lists) != null;
 

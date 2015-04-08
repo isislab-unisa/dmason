@@ -19,29 +19,16 @@ package it.isislab.dmason.test.sim.app.DFlockers;
  * THIS CLASS HAS BEEN USED FOR TESTING PURPOSES IN THE BEGINNINGS,
  */
 import static org.junit.Assert.assertEquals;
-import it.isislab.dmason.test.sim.app.DFlockers.DFlockers;
-import it.isislab.dmason.test.sim.app.DFlockers.DFlockersWithUI;
 import it.isislab.dmason.exception.DMasonException;
-import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.continuous.DContinuous2DFactory;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.connection.ConnectionType;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 
-import org.junit.Before;
 import org.junit.Test;
-
-import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
-
-import sim.display.Console;
-import sim.util.Bag;
-import sim.util.Double2D;
 
 /**
  * 

@@ -1,4 +1,4 @@
-package it.isislab.dmason.test.sim.engine;
+package it.isislab.dmason.sim.engine.test;
 
 /**
  * Copyright 2012 Universita' degli Studi di Salerno
@@ -29,16 +29,17 @@ import it.isislab.dmason.sim.field.DistributedFieldNetwork;
 import it.isislab.dmason.sim.field.network.DNetwork;
 import it.isislab.dmason.sim.field.support.network.DNetworkJMSMessageListener;
 import it.isislab.dmason.sim.field.support.network.UpdaterThreadJMSForNetworkListener;
-import it.isislab.dmason.test.sim.field.FakeUpdaterThreadForListener;
-import it.isislab.dmason.test.util.connection.VirtualConnectionNFieldsWithVirtualJMS;
-import it.isislab.dmason.test.util.connection.VirtualMessageListener;
 import it.isislab.dmason.util.SystemManagement.globals.util.UpdateGlobalVarAtStep;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
+import it.isislab.dmason.util.connection.testconnection.VirtualConnectionNFieldsWithVirtualJMS;
+import it.isislab.dmason.util.connection.testconnection.VirtualMessageListener;
 import it.isislab.dmason.util.trigger.Trigger;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
+
 import javax.jms.JMSException;
 
 /**

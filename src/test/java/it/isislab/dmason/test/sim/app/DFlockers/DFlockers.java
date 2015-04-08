@@ -21,10 +21,10 @@ import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
+import it.isislab.dmason.sim.engine.test.DistributedStateConnectionFake;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.continuous.DContinuous2D;
 import it.isislab.dmason.sim.field.continuous.DContinuous2DFactory;
-import it.isislab.dmason.test.sim.engine.DistributedStateConnectionFake;
 import it.isislab.dmason.tools.batch.data.EntryParam;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 
