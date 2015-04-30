@@ -31,6 +31,9 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.jms.JMSException;
 
@@ -46,6 +49,41 @@ import org.apache.activemq.transport.TransportListener;
 
 public class VirtualConnectionNFieldsWithVirtualJMS extends Observable
 		implements ConnectionJMS, Serializable, TransportListener {
+	
+	 static class SyncroAccessData{
+			private  Lock aLock = new ReentrantLock();
+			private  Condition condVar = aLock.newCondition();
+			
+			public SyncroAccessData() {
+				// TODO Auto-generated constructor stub
+			}
+			private void ensureAccess(String topic_name)
+			{
+				aLock.lock();
+				
+				while((vsubscribers.get(topic_name)==null) /*|| (vsubscribers.get(topic_name).size()!=8)*/)
+				{
+					System.out.println(topic_name+" "+vsubscribers);
+					try {
+						condVar.await();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}finally {
+						System.out.println("unlock");
+			            aLock.unlock();
+			        }
+				}
+
+				aLock.unlock();
+			}
+			public void addSubscriber()
+			{
+				aLock.lock();
+				 condVar.signalAll();
+				aLock.unlock();
+			}
+		}
 	private static final long serialVersionUID = -3803252417146440187L;
 
 	private ActiveMQConnection connection;
@@ -141,10 +179,18 @@ public class VirtualConnectionNFieldsWithVirtualJMS extends Observable
 			return false;
 		}
 	}
-
+	
+	
+    SyncroAccessData accesstotopic=new VirtualConnectionNFieldsWithVirtualJMS.SyncroAccessData();
+	
+	
 	@Override
 	public synchronized boolean publishToTopic(Serializable object,
 			String topicName, String key) {
+		
+		accesstotopic.ensureAccess(topicName);
+	
+
 		if (!topicName.equals("") || !(object == null)) {
 			MyHashMap mh = contObj.get(topicName);
 			mh.put(key, object);
@@ -156,11 +202,10 @@ public class VirtualConnectionNFieldsWithVirtualJMS extends Observable
 					ActiveMQObjectMessage msg = new ActiveMQObjectMessage();
 					msg.setObjectProperty("data", mh);
 
-					//
 					try {
-
 						for (VirtualMessageListener listener : vsubscribers
 								.get(topicName)) {
+							
 							listener.onMessage(msg);
 						}
 						MyHashMap mm = new MyHashMap(mh.NUMBER_FIELDS);
@@ -183,6 +228,34 @@ public class VirtualConnectionNFieldsWithVirtualJMS extends Observable
 		}
 
 		return false;
+	}
+	/**
+	 * Given a string, creates a topic's identifier, referring to a physical
+	 * topic on the provider. Also creates a publisher, because when a peer
+	 * creates a topic, certainly it will publish on it.
+	 * 
+	 * @param topicName
+	 *            Identifier to assign to the newly created topic.
+	 * @param numFields
+	 * @return <code>true</code> if the connection was successfully established.
+	 */
+	@Override
+	public boolean createTopic(String topicName, int numFields) {
+		try {
+			ActiveMQTopic topic = new ActiveMQTopic(topicName);
+			topics.put(topicName, topic);
+			contObj.put(topicName, new MyHashMap(numFields));
+		
+			// ActiveMQTopicPublisher p = (ActiveMQTopicPublisher)
+			// pubSession.createPublisher(topic);
+			// p.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+			// publishers.put(topicName,p);
+			return true;
+		} catch (Exception e) {
+			System.err.println("Unable to create topic: " + topicName);
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	static ConcurrentHashMap<String, ArrayList<VirtualMessageListener>> vsubscribers = new ConcurrentHashMap<String, ArrayList<VirtualMessageListener>>();
@@ -212,10 +285,10 @@ public class VirtualConnectionNFieldsWithVirtualJMS extends Observable
 		try {
 			// subscribers.get(key).setMessageListener(listener);
 			ArrayList<VirtualMessageListener> lists = vsubscribers.get(key);
-			lists = (lists == null) ? new ArrayList<VirtualMessageListener>()
-					: lists;
+			lists = (lists == null) ? new ArrayList<VirtualMessageListener>(): lists;
 			lists.add((it.isislab.dmason.util.connection.testconnection.VirtualMessageListener) listener);
-
+			accesstotopic.addSubscriber();
+			
 			return vsubscribers.put(key, lists) != null;
 
 			// return true;
@@ -233,34 +306,7 @@ public class VirtualConnectionNFieldsWithVirtualJMS extends Observable
 		return vsubscribers.remove(topicName) == null;
 	}
 
-	/**
-	 * Given a string, creates a topic's identifier, referring to a physical
-	 * topic on the provider. Also creates a publisher, because when a peer
-	 * creates a topic, certainly it will publish on it.
-	 * 
-	 * @param topicName
-	 *            Identifier to assign to the newly created topic.
-	 * @param numFields
-	 * @return <code>true</code> if the connection was successfully established.
-	 */
-	@Override
-	public boolean createTopic(String topicName, int numFields) {
-		try {
-			ActiveMQTopic topic = new ActiveMQTopic(topicName);
-			topics.put(topicName, topic);
-			contObj.put(topicName, new MyHashMap(numFields));
 
-			// ActiveMQTopicPublisher p = (ActiveMQTopicPublisher)
-			// pubSession.createPublisher(topic);
-			// p.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-			// publishers.put(topicName,p);
-			return true;
-		} catch (Exception e) {
-			System.err.println("Unable to create topic: " + topicName);
-			e.printStackTrace();
-			return false;
-		}
-	}
 
 	@Override
 	public ArrayList<String> getTopicList() throws Exception {
@@ -352,6 +398,9 @@ public class VirtualConnectionNFieldsWithVirtualJMS extends Observable
 			two.asynchronousReceive("MARIO-WORK", new VirtualMessageListener(
 					fakefieldtwo, "MARIO-WORK", "mario"));
 
+			
+			
+			
 			one.publishToTopic("Come va a casa mario?", "MARIO-HOME",
 					"firstfieldone");
 			one.publishToTopic("Come va a casa mario 2 ?", "MARIO-HOME",

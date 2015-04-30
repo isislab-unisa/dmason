@@ -1272,52 +1272,18 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 	@Override
 	public boolean verifyPosition(Double2D pos) {
 		
-		if(rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(pos.x,pos.y))
-		{
-			return true;
-		}
-		else
-			if(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(pos.x,pos.y))
-			{
-				return true;
-			}
-			else
-				if(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(pos.x,pos.y))
-				{
-					return true;
-				}
-				else
-					if(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(pos.x,pos.y))
-					{
-						return true;
-					}
-					else
-						if(rmap.left_mine != null && rmap.left_mine.isMine(pos.x,pos.y))
-						{
-							return true;
-						}
-						else
-							if(rmap.right_mine != null && rmap.right_mine.isMine(pos.x,pos.y))
-							{
-								return true;
-							}
-							else
-								if(rmap.up_mine != null && rmap.up_mine.isMine(pos.x,pos.y))
-								{
-									return true;
-								}
-								else
-									if(rmap.down_mine != null && rmap.down_mine.isMine(pos.x,pos.y))
-									{
-										return true;
-									}
-									else
-										if(myfield.isMine(pos.x,pos.y))
-										{
-											return true;
-										}
-										else
-											return false;
+		return (rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(pos.x,pos.y))||
+		
+			(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(pos.x,pos.y))
+			||
+				(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(pos.x,pos.y))
+				||(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(pos.x,pos.y))
+					||(rmap.left_mine != null && rmap.left_mine.isMine(pos.x,pos.y))
+						||(rmap.right_mine != null && rmap.right_mine.isMine(pos.x,pos.y))
+							||(rmap.up_mine != null && rmap.up_mine.isMine(pos.x,pos.y))
+								||(rmap.down_mine != null && rmap.down_mine.isMine(pos.x,pos.y))
+									||(myfield.isMine(pos.x,pos.y));
+										
 
 	}
 
