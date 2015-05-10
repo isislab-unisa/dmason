@@ -86,7 +86,7 @@ public class TestStart15 {
 				}
 				else
 				{
-					Vertexes15 sim = new Vertexes15(genParam,"resources/app/DNetworkTest/Examples-graph/karate.gexf"); 
+					Vertexes15 sim = new Vertexes15(genParam,"resources/app/DNetworkTest/Examples-graph/karate.gexf",""); 
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}

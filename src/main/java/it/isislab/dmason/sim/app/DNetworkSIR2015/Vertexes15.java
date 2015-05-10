@@ -26,6 +26,11 @@ import it.isislab.dmason.sim.engine.RemoteUnpositionedAgent;
 import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.network.DNetwork;
 import it.isislab.dmason.sim.field.network.DNetworkFactory;
+import it.isislab.dmason.sim.field.network.kway.graph.Edge;
+import it.isislab.dmason.sim.field.network.kway.graph.Graph;
+import it.isislab.dmason.sim.field.network.kway.graph.Vertex;
+import it.isislab.dmason.sim.field.network.kway.util.NetworkPartition;
+import it.isislab.dmason.sim.field.network.kway.util.PartitionManager;
 import it.isislab.dmason.sim.field.network.partitioning.Partitioner;
 import it.isislab.dmason.sim.field.network.partitioning.algo.dendogram.util.GraphMLImpoter;
 import it.isislab.dmason.sim.field.network.partitioning.algo.dendogram.util.ImportException;
@@ -38,9 +43,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Set;
-
-import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultWeightedEdge;
 
 import sim.engine.SimState;
 import sim.field.continuous.Continuous2D;
@@ -57,18 +59,19 @@ public class Vertexes15 extends DistributedState<Double2D>{
 	public DNetwork network;
 	public Continuous2D yard = new Continuous2D(1.0,100,100);
 	private GeneralParam params;
-	public Graph<LabelVertex<Integer>, DefaultWeightedEdge> part = null;
 
 	public Vertexes15()
 	{
 		super();
 	}
 	public String graph_path;
-	public Vertexes15(GeneralParam params,String graph_path)
+	public String graph_parts_path;
+	public Vertexes15(GeneralParam params,String graph_path,String graph_parts_path)
 	{    	
 		super(params,new DistributedMultiSchedule<Double2D>(),topicPrefix,params.getConnectionType());
 		this.params=params;
 		this.graph_path=graph_path;
+		this.graph_parts_path=graph_parts_path;
 	}
 
 	@Override
@@ -76,70 +79,34 @@ public class Vertexes15 extends DistributedState<Double2D>{
 	{
 		super.start();
 		
-		GraphMLImpoter<Integer,
-		DefaultWeightedEdge> gImp = null;
-		try {
-			gImp = new GraphMLImpoter(graph_path);
-		} catch (ImportException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-		try {
-			part = Partitioner.executeUKWayPart(this.TYPE, gImp.getGraph(), params.getColumns()*params.getRows());
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (InterruptedException e1) { 
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (DMasonException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
 		
 		
 		int commID = (TYPE.pos_i*rows)+TYPE.pos_j;
-		Graph<LabelVertex<Integer>, DefaultWeightedEdge> myCommunity = Partitioner.getCommunity(part, DefaultWeightedEdge.class, commID);
-		
-		GraphSubscribersEdgeList grpsub = new GraphSubscribersEdgeList();
-		Set<DefaultWeightedEdge> edgeSet = myCommunity.edgeSet();
-		
-//		System.out.println("comm: " + commID + "size: " + edgeSet.size());
-		for (DefaultWeightedEdge e : edgeSet) {
-			LabelVertex source = (LabelVertex) myCommunity.getEdgeSource(e);
-			LabelVertex target = (LabelVertex) myCommunity.getEdgeTarget(e);
-			int sourceComm = source.getCommunity();
-			int targetComm = target.getCommunity();
-			if(sourceComm!=targetComm)
-			{
-				grpsub.addEdge(sourceComm, targetComm, false);
-			}
-		}
-		HashMap<String, Vertex15> myVertexes = new HashMap<String,Vertex15>();
+		NetworkPartition parts_data=PartitionManager.getNetworkPartition(graph_path, graph_parts_path, commID);
 
-		network = DNetworkFactory.createDNetworkField(this, super.rows, super.columns, TYPE.pos_i, TYPE.pos_j, grpsub,"mygraph", topicPrefix);
-
+		network = DNetworkFactory.createDNetworkField(this, super.rows, super.columns, TYPE.pos_i, TYPE.pos_j, parts_data.getEdges_subscriber_lsit(),"mygraph", topicPrefix);
+		HashMap<Integer, Vertex15> myVertexes = new HashMap<Integer,Vertex15>();
 		// clear the yard
 		yard.clear();
 
 		// clear the network
 		network.clear();
 		Random r = new Random(System.currentTimeMillis());
-		for (DefaultWeightedEdge e : edgeSet) {
+		for (Edge e : parts_data.getOriginal_graph().edgeSet()) {
 
-			GraphVertex<String> source = (GraphVertex) myCommunity.getEdgeSource(e);
-			GraphVertex<String> target = (GraphVertex) myCommunity.getEdgeTarget(e);
-			int sourceComm = source.getCommunity();
-			int targetComm = target.getCommunity();
+			Vertex source = (Vertex)  parts_data.getOriginal_graph().getEdgeSource(e);
+			Vertex target = (Vertex)  parts_data.getOriginal_graph().getEdgeTarget(e);
+			Integer sourceComm =  parts_data.getGraph2parts().get(source);
+			Integer targetComm = parts_data.getGraph2parts().get(target);
+		
 			Vertex15 netSource = null;
 			Vertex15 netTarget = null;
-			boolean sourceFlag = (int)Float.parseFloat(source.getLabel())==1;
-			boolean targetFlag = (int)Float.parseFloat(target.getLabel())==1;
 
-			netSource = myVertexes.get(source.getLabel());
-			netTarget = myVertexes.get(target.getLabel());
+			netSource = myVertexes.get(source.getId());
+			netTarget = myVertexes.get(target.getId());
 
+			boolean sourceFlag = source.getId()==1;
+			boolean targetFlag = target.getId()==1;
 			if(netSource==null)
 			{
 				Double2D pos=new Double2D(yard.getWidth() * r.nextDouble(), yard.getHeight() * r.nextDouble());
@@ -147,10 +114,10 @@ public class Vertexes15 extends DistributedState<Double2D>{
 				netSource = (Vertex15) DistributedAgentFactory.newIstance(
 						Vertex15.class,
 						new Class[]{SimState.class,Integer.class,Boolean.class,String.class,Double2D.class},
-						new Object[]{this,sourceComm, sourceFlag, source.getLabel()+"", pos},
+						new Object[]{this,sourceComm, sourceFlag, source.getId()+"", pos},
 						DVertexState15.class);
 						
-				myVertexes.put(source.getLabel(), netSource);
+				myVertexes.put(source.getId(), netSource);
 				//System.out.println("creo nodo "+);
 				if(sourceComm == commID) 
 					schedule.scheduleOnce(netSource);
@@ -160,19 +127,18 @@ public class Vertexes15 extends DistributedState<Double2D>{
 
 			if(netTarget==null)
 			{
-				
-				
 				Double2D pos=new Double2D(yard.getWidth() * r.nextDouble(), yard.getHeight() * r.nextDouble());
 				netTarget = (Vertex15) DistributedAgentFactory.newIstance(
 						Vertex15.class,
 						new Class[]{SimState.class,Integer.class,Boolean.class,String.class,Double2D.class},
-						new Object[]{this,targetComm, targetFlag, target.getLabel()+"", pos},
+						new Object[]{this,targetComm, targetFlag, target.getId()+"", pos},
 						DVertexState15.class);
 						
 						//new Vertex(this, targetComm, targetFlag, target.getLabel()+"", pos);
-				myVertexes.put(target.getLabel(), netTarget);
+				myVertexes.put(target.getId(), netTarget);
 				if(targetComm == commID)
 					schedule.scheduleOnce(netTarget);
+				
 				network.addNode(netTarget);
 				yard.setObjectLocation(netTarget, pos);
 			}

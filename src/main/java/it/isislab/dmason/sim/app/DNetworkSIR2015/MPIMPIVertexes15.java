@@ -103,7 +103,7 @@ public class MPIMPIVertexes15 {
 //		}
 //		else
 		{
-			state=new Vertexes15(genParam,args[3]);
+			state=new Vertexes15(genParam,args[3],"");
 		}
 		if(MPI.COMM_WORLD.getRank()==0)
 		System.out.println("After init...");
@@ -156,23 +156,23 @@ public class MPIMPIVertexes15 {
 
 			}
 			/*Debug: you can omit this code (4) */
-			if(MPI.COMM_WORLD.getRank()==0 && logOn)
-			{
-				print.println(System.currentTimeMillis()-start_time);
-				System.out.println("end Simulation");
-				
-				SuperGraphStats sg = Partitioner.generateSuperGraphStat(state.part);
-				
-				print.print("peso: " + sg.getWeigth() + "\n#edges: " + sg.getNoe());
-				
-				try{
-					print.close();
-					out.close();
-				}catch (Exception e) {
-					System.out.println("Error file writing: "+file);
-
-				}
-			}
+//			if(MPI.COMM_WORLD.getRank()==0 && logOn)
+//			{
+//				print.println(System.currentTimeMillis()-start_time);
+//				System.out.println("end Simulation");
+//				
+//				SuperGraphStats sg = Partitioner.generateSuperGraphStat(state.part);
+//				
+//				print.print("peso: " + sg.getWeigth() + "\n#edges: " + sg.getNoe());
+//				
+//				try{
+//					print.close();
+//					out.close();
+//				}catch (Exception e) {
+//					System.out.println("Error file writing: "+file);
+//
+//				}
+//			}
 			/*End (4)*/
 			MPI.Finalize();
 			System.exit(0);

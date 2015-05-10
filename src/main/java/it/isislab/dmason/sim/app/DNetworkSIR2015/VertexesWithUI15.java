@@ -46,7 +46,7 @@ public class VertexesWithUI15 extends GUIState
 
 	public VertexesWithUI15(GeneralParam args) 
 	{ 
-		super(new Vertexes15(args,"resources/app/DNetworkTest/Examples-graph/karate.gexf"));
+		super(new Vertexes15(args,"resources/app/DNetworkTest/Examples-graph/karate.gexf",""));
 
 		name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
 	}
