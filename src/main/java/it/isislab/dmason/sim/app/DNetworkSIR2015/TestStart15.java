@@ -34,10 +34,10 @@ import sim.display.Console;
 		)
 public class TestStart15 {
 
-	private static boolean graphicsOn=true; //with or without graphics?
+	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 100; //only graphicsOn=false
 	private static int rows = 1; //number of rows
-	private static int columns = 4; //number of columns
+	private static int columns = 16; //number of columns
 	private static int MAX_DISTANCE=1; //max distance
 	private static int NUM_AGENTS=0; //number of agents
 	private static int WIDTH=0; //field width
@@ -60,13 +60,13 @@ public class TestStart15 {
 			@Override
 			public void run() {
 
-				//				int i=0;
+								int i=0;
 				while(true)
-					//				{
-					////					System.out.println(i);
+									{
+										System.out.println(i);
 					ds.schedule.step(ds);
-				//					i++;
-				//				}
+									i++;
+								}
 			}
 		}
 
@@ -79,14 +79,14 @@ public class TestStart15 {
 				genParam.setJ(j);
 				genParam.setIp(ip);
 				genParam.setPort(port);
-				if(!(i==0 && j==0))
+				if((i==0 && j==0))
 				{
-					VertexesWithUI15 sim =new VertexesWithUI15(genParam);
+					VertexesWithUI15 sim =new VertexesWithUI15(genParam,"resources/app/testgraph/test_16-1/add20.graph","resources/app/testgraph/test_16-1/Metis/add20.graph.part.16.csv");
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
-					Vertexes15 sim = new Vertexes15(genParam,"resources/app/DNetworkTest/Examples-graph/karate.gexf",""); 
+					Vertexes15 sim = new Vertexes15(genParam,"resources/app/testgraph/test_16-1/add20.graph","resources/app/testgraph/test_16-1/Metis/add20.graph.part.16.csv"); 
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}

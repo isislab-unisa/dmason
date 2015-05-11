@@ -32,17 +32,19 @@ public class PartitionManager {
 
 		for(Vertex v: superGraph.vertexSet())
 		{
-			if(v.getId()==super_vertex_id)
-			{
-				Set<Edge> edges=superGraph.edgesOf(v);
-				for(Edge e: edges)
-				{
-					int source=e.getSource().getId();
-					int target=e.getSource().getId();
-					grpsub.addEdge(source, target, false);
-				}
-				break;
-			}
+//			if(v.getId()==super_vertex_id)
+//			{
+					Set<Edge> edges=superGraph.edgesOf(v);
+					for(Edge e: edges)
+					{
+						int source=e.getSource().getId();
+						int target=e.getTarget().getId();
+						if(source!=target)
+						   grpsub.addEdge(source, target, false);
+					}
+				
+//				break;
+//			}
 		}
 		HashMap<Integer, Vertex> parts2graph=new HashMap<Integer, Vertex>();
 		HashMap<Integer, Integer> parts2graph_id=new HashMap<Integer, Integer>();

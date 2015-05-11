@@ -184,7 +184,7 @@ public class Graph extends SimpleGraph<Vertex,Edge>{
 			 int vertexI = Integer.parseInt(vertexId);
 			 Vertex v = new Vertex(vertexI);		//vertex creation
 			 int numPart = Integer.parseInt(numP);	
-			 
+			
 			 vertex_part.put(vertexI, numPart);		//mapping vertex-partition
 			 
 			partitionVertex.get(numPart).add(v);

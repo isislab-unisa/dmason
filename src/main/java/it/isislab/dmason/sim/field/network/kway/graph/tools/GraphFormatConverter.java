@@ -819,7 +819,7 @@ public class GraphFormatConverter {
 		String verticesAdj = "", separator = "";
 		Vertex firstV;
 		Vertex secondV;
-		int id = 0;
+		int id = 1;//start from 1
 
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(
@@ -838,8 +838,8 @@ public class GraphFormatConverter {
 
 				for(int i=0; i<vertices.length - 1; i++){
 					String id_two = vertices[i];
-
-					secondV = new Vertex(Integer.parseInt(id_two) - 1);
+					if(id_two.length()<=0) continue;
+					secondV = new Vertex(Integer.parseInt(id_two));//tolto -1
 
 					if(!g.containsVertex(secondV)){
 						g.addVertex(secondV);

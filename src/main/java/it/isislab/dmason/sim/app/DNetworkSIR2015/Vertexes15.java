@@ -77,6 +77,7 @@ public class Vertexes15 extends DistributedState<Double2D>{
 
 		// clear the network
 		network.clear();
+		int nu_of_vertices=0;
 		Random r = new Random(System.currentTimeMillis());
 		for (Edge e : parts_data.getOriginal_graph().edgeSet()) {
 
@@ -93,6 +94,7 @@ public class Vertexes15 extends DistributedState<Double2D>{
 
 			boolean sourceFlag = source.getId()==1;
 			boolean targetFlag = target.getId()==1;
+			
 			if(netSource==null)
 			{
 				Double2D pos=new Double2D(yard.getWidth() * r.nextDouble(), yard.getHeight() * r.nextDouble());
@@ -103,7 +105,10 @@ public class Vertexes15 extends DistributedState<Double2D>{
 						DVertexState15.class);
 						
 				myVertexes.put(source.getId(), netSource);
-				if(sourceComm == commID)  schedule.scheduleOnce(netSource);
+				if(sourceComm == commID) {
+					schedule.scheduleOnce(netSource);
+					nu_of_vertices++;
+				}
 				network.addNode(netSource);
 				yard.setObjectLocation(netSource, pos);
 			}
@@ -118,13 +123,16 @@ public class Vertexes15 extends DistributedState<Double2D>{
 						DVertexState15.class);
 						
 				myVertexes.put(target.getId(), netTarget);
-				if(targetComm == commID) schedule.scheduleOnce(netTarget);
+				if(targetComm == commID){
+					schedule.scheduleOnce(netTarget);
+					nu_of_vertices++;
+				}
 				network.addNode(netTarget);
 				yard.setObjectLocation(netTarget, pos);
 			}
 			network.addEdge(netSource, netTarget, null);
 		}
-
+		System.out.println(nu_of_vertices);
 		init_connection();
 
 		try {

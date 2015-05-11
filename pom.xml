@@ -296,6 +296,46 @@
 					</execution>
 					<!-- Examples Test -->
 					<execution>
+						<id>dmason-network-sir-2015-MPI</id>
+						<configuration>
+							<outputDirectory>${project.build.directory}/examples</outputDirectory>
+							<appendAssemblyId>true</appendAssemblyId>
+							<archive>
+								<manifest>
+									<mainClass>it.isislab.dmason.sim.app.DNetworkSIR2015.MPIMPIVertexes15</mainClass>
+								</manifest>
+							</archive>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<finalName>${project.artifactId}-test-network-sir-2015-MPI-${project.version}</finalName>
+						</configuration>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>dmason-network-sir-2015-AMQ</id>
+						<configuration>
+							<outputDirectory>${project.build.directory}/examples</outputDirectory>
+							<appendAssemblyId>true</appendAssemblyId>
+							<archive>
+								<manifest>
+									<mainClass>it.isislab.dmason.sim.app.DNetworkSIR2015.MPIAMQVertexes15</mainClass>
+								</manifest>
+							</archive>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<finalName>${project.artifactId}-test-network-sir-2015-AMQ-${project.version}</finalName>
+						</configuration>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+					<execution>
 						<id>dmason-test-ant</id>
 						<configuration>
 							<outputDirectory>${project.build.directory}/examples</outputDirectory>

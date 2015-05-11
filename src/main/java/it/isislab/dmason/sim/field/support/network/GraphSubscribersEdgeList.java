@@ -60,8 +60,10 @@ public class GraphSubscribersEdgeList {
 
 		if(!toSubscribeList.get(to).contains(from))
 			toSubscribeList.get(to).add(from);
+		
 		if(!toPublishList.get(from).contains(to))
 			toPublishList.get(from).add(to);
+		
 		if(!isDirected)
 		{
 			if(!toSubscribeList.get(from).contains(to))

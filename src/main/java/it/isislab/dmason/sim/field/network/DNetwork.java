@@ -239,7 +239,8 @@ public class DNetwork extends Network implements DistributedFieldNetwork{
 					
 					//if the node is not in this field there is something wrong in messages
 					if(nodeFound) nodeFound=false;
-					else throw new Exception("Oh My Node! "+rnNew+" community: "+my_community+" on community "+(((DistributedState)sm).TYPE.pos_i*((DistributedState)sm).rows)+(((DistributedState)sm).TYPE.pos_j));
+					else throw new Exception("Oh My Node! "+rnNew+" with community: "+rnNew.getCommunityId()+" on community "+
+					(((DistributedState)sm).TYPE.pos_i*((DistributedState)sm).rows)+(((DistributedState)sm).TYPE.pos_j));
 				}
 			}
 		} catch (Exception e1) { e1.printStackTrace(); }

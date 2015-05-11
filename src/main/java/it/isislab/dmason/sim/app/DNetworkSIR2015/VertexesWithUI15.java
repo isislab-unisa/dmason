@@ -44,9 +44,9 @@ public class VertexesWithUI15 extends GUIState
 	NetworkPortrayal2D networkPortrayal = new NetworkPortrayal2D();
 	private static String name;
 
-	public VertexesWithUI15(GeneralParam args) 
+	public VertexesWithUI15(GeneralParam args,String path_graph,String path_graph_parts) 
 	{ 
-		super(new Vertexes15(args,"resources/app/DNetworkTest/Examples-graph/karate.gexf",""));
+		super(new Vertexes15(args,path_graph,path_graph_parts));
 
 		name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
 	}
