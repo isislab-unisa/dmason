@@ -73,6 +73,10 @@ After that you must put the output data in the `repository` folder of DMASON Git
 
 #Release notes
 
+### Apache ActiveMQ notes
+
+Please use the Apache ActiveMQ [5.5.1](http://activemq.apache.org/activemq-551-release.html) version.
+
 ### License
 Copyright ISISLab, 2015 Università degli Studi di Salerno.
 
