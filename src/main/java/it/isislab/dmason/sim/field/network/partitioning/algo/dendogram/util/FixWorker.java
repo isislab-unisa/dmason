@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-
+@Deprecated
 public class FixWorker<V,E> implements Runnable{
 
 	private HashMap<Integer, ArrayList<V>> new_community;

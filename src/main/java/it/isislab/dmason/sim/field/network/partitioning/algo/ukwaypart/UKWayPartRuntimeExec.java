@@ -24,6 +24,7 @@ import org.jgrapht.ext.GmlExporter;
  * @author Andrea Solda' @ ISISLab
  *
  */
+@Deprecated
 public class UKWayPartRuntimeExec<E, V> {
 
 	//WARNING!! Directory called "resource" must be in the current working directory

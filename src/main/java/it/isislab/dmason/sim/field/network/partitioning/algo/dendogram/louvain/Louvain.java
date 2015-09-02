@@ -9,11 +9,7 @@ import java.util.TreeSet;
 
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
-
-/**
- *
- * @author pjmcswee
- */
+@Deprecated
 public class Louvain<V,E>{
 
     private CommunityStructure structure;

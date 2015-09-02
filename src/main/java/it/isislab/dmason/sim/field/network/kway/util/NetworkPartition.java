@@ -1,5 +1,6 @@
 package it.isislab.dmason.sim.field.network.kway.util;
 
+import it.isislab.dmason.annotation.AuthorAnnotation;
 import it.isislab.dmason.sim.field.network.kway.graph.Graph;
 import it.isislab.dmason.sim.field.network.kway.graph.SuperVertex;
 import it.isislab.dmason.sim.field.network.kway.graph.Vertex;
@@ -7,6 +8,14 @@ import it.isislab.dmason.sim.field.support.network.GraphSubscribersEdgeList;
 
 import java.util.HashMap;
 
+/**
+ * Stores information about a graph
+ * and its partitioning
+ */
+@AuthorAnnotation(
+		author = {"Alessia Antelmi", "Carmine Spagnuolo"},
+		date = "20/7/2015"
+		)
 public class NetworkPartition{
 	private Graph original_graph;
 	private Graph super_graph;

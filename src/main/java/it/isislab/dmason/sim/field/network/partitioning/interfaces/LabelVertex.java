@@ -1,5 +1,5 @@
 package it.isislab.dmason.sim.field.network.partitioning.interfaces;
-
+@Deprecated
 public interface LabelVertex<V> {
 	
 	public V getLabel();

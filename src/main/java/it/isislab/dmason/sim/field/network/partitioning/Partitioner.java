@@ -21,6 +21,7 @@ import org.jgrapht.alg.NeighborIndex;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleGraph;
 
+@Deprecated
 public class Partitioner {
 	
 	@SuppressWarnings("rawtypes")

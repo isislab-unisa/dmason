@@ -17,7 +17,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
+@Deprecated
 public class GraphMLImpoter<V,E> implements GraphImporter<V, E>{
 
 	private InputStream toImport;

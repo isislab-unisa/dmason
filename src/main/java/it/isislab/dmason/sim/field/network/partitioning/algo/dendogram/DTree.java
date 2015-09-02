@@ -6,7 +6,7 @@ import java.util.TreeSet;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.Subgraph;
 
-
+@Deprecated
 public class DTree<V,E> {
 
 	private DNode<V,E> root;

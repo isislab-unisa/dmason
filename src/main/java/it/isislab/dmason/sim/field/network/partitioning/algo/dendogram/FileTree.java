@@ -12,7 +12,7 @@ import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-
+@Deprecated
 public class FileTree {
 //
 //    public static void main(String[] args) {

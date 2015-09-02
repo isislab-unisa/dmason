@@ -1,16 +1,32 @@
 package it.isislab.dmason.sim.field.network.kway.graph.tools;
 
+import it.isislab.dmason.annotation.AuthorAnnotation;
+
 import java.io.File;
 import java.io.FilenameFilter;
 
+@AuthorAnnotation(
+		author = {"Alessia Antelmi", "Carmine Spagnuolo"},
+		date = "20/7/2015"
+		)
+
+/**
+ * auxiliary class that removes all output files
+ * written by executing algorithms 
+ */
 public class Cleaner {
 		
+	/**
+	 * removes all output files in the path specified
+	 * and with a specified name
+	 * @param path - path where cleaning up
+	 * @param graph_name - only files starting with this name will be deleted
+	 */
 	public static void cleanOutput(File path, final String graph_name){
 		
 		if(path.exists()){
 			
 			FilenameFilter nameFilter = new FilenameFilter() {
-				@Override
 				public boolean accept(File dir, String name) {
 					
 					if(name.startsWith(graph_name))
@@ -27,24 +43,69 @@ public class Cleaner {
 				else{
 					
 					f.delete();
-				}
-						
-			}	
+				}			
+			}
 		}
 	}
 	
 	
-	private static void cleanDir(File dir){
-		File[] files = dir.listFiles();
-		for(File f : files){
-			if(f.isDirectory())
-				cleanDir(f);
-			else{
+	/**
+	 * removes all files in the specified path
+	 * representing a vertex partitioning (file .part)
+	 * @param path - path where cleaning up
+	 */
+	public static void cleanOutputPartition(File path){
+		
+		if(path.exists()){
 				
-				f.delete();
-			}	
+			FilenameFilter nameFilter = new FilenameFilter() {
+				public boolean accept(File dir, String name) {
+					
+					if((name.matches("^.*[0-9]$")))
+						return true;
+					
+					return false;
+				}
+			};
+			
+			File[] files = path.listFiles(nameFilter);
+			
+			for(File f : files)
+				f.delete();					
 		}
-		dir.delete();
+	}
+	
+	
+	/**
+	 * removes a dir and all its content
+	 * @param dir - the directory to remove
+	 */
+	public static void cleanDir(File dir){
+		
+		if(dir.exists()){
+			File[] files = dir.listFiles();
+			for(File f : files){
+				if(f.isDirectory())
+					cleanDir(f);
+				else{	
+					f.delete();
+				}	
+			}
+			dir.delete();
+		}
 	}
 	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

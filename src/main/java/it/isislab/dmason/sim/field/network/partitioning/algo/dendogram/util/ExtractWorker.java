@@ -10,7 +10,7 @@ import java.util.TreeSet;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.Subgraph;
-
+@Deprecated
 public class ExtractWorker<V,E> implements Runnable{
 
 	private DNode<V,E> dNode;

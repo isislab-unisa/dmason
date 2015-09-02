@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.Subgraph;
-
+@Deprecated
 public class DendrogramExtractSubGraph<V,E> {
 
 	private int worker;

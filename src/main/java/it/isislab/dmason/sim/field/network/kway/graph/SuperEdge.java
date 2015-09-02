@@ -1,15 +1,15 @@
 package it.isislab.dmason.sim.field.network.kway.graph;
 
+import it.isislab.dmason.annotation.AuthorAnnotation;
+
 import java.util.HashSet;
 
 /**
- * this class represents a superEdge, that spans over multiple partitions.
+ * this class represents a superedge.
  * It stores a collection of edges, 
  * and its weight is the sum of the weights of the edges it stores
- * 
- * @author aleant
  */
-
+@AuthorAnnotation(author = { "Alessia Antelmi", "Gennaro Cordasco", "Carmine Spagnuolo" }, date = "20/7/2015")
 public class SuperEdge extends Edge{
 
 	private static final long serialVersionUID = -73145959729902958L;

@@ -151,6 +151,11 @@
 			<artifactId>ftplet-api</artifactId>
 			<version>1.0.5</version>
 		</dependency>
+		<dependency>
+			<groupId>org.graphchi</groupId>
+			<artifactId>graphchi-java_2.10</artifactId>
+			<version>0.2.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>

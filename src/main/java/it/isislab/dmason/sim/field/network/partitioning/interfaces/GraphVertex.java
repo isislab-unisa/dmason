@@ -1,6 +1,6 @@
 package it.isislab.dmason.sim.field.network.partitioning.interfaces;
 
-
+@Deprecated
 public class GraphVertex<V> implements LabelVertex<V>, Comparable<GraphVertex<V>>{
 
 	private V id;

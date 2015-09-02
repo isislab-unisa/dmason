@@ -1,5 +1,6 @@
 package it.isislab.dmason.sim.field.network.kway.graph.tools;
 
+import it.isislab.dmason.annotation.AuthorAnnotation;
 import it.isislab.dmason.sim.field.network.kway.graph.Edge;
 import it.isislab.dmason.sim.field.network.kway.graph.Graph;
 import it.isislab.dmason.sim.field.network.kway.graph.SuperEdge;
@@ -11,47 +12,30 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 
+@AuthorAnnotation(
+		author = {"Alessia Antelmi", "Carmine Spagnuolo"},
+		date = "20/7/2015"
+		)
 /**
  * Stores information about a superGraph:
- * 		- total number of edges
- * 		- total weight of superEdges
- * 		- variance of supervertex dimension
- * @author aleant
- *
+ * 		- number of super edges
+ * 		- weight of super edges
+ * 		- variance of super vertex dimension
+ * 		- imbalance
  */
 public class Metrics {
 
-	public Metrics(Graph g){
-		
-		this.numEdges = calculateNumberEdges(g);
+public Metrics(Graph g){
+		this.numSuperEdges = calculateNumberSuperEdges(g);
 		this.weightSuperEdges = calculateWeightSuperEdges(g);
 		this.variance = calculateVarianceSuperVertex(g);
 		this.imbalance = calculateImbalanceSupervertex(g);
 	}
 	
-	private long calculateNumberEdges(Graph g){
-		long numE = 0;
-	
-		Iterator<Vertex> iter = g.vertexSet().iterator();
-		
-		/* get the number of self edges per vertex */
-		while(iter.hasNext()){
-			SuperVertex v = (SuperVertex) iter.next();
-			numE += v.getNumberSelfEdges();
-		}
-		
-		Iterator<Edge> iterE = g.edgeSet().iterator();
-		
-		/* get the number of edges composing a superedge */
-		while(iterE.hasNext()){
-			SuperEdge e = (SuperEdge) iterE.next();
-			
-			numE += e.getOriginal_edges().size();
-		}
-		
-		return numE;
+	private long calculateNumberSuperEdges(Graph g){
+		return g.edgeSet().size();
 	}
-	
+		
 	private long calculateWeightSuperEdges(Graph g){
 		long weight = 0;
 		
@@ -94,7 +78,7 @@ public class Metrics {
 		
 		Iterator<Vertex> iter = g.vertexSet().iterator();
 		
-		/* calculates max size of a supervertex */
+		/* calculates max size of a super vertex */
 		iter = g.vertexSet().iterator();
 		
 		while(iter.hasNext()){
@@ -130,7 +114,7 @@ public class Metrics {
 		try {
 			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(filename + ".metrics.csv"));
 			
-			String metrics = numEdges + ";" + weightSuperEdges + ";" + variance;
+			String metrics = numSuperEdges + ";" + weightSuperEdges + ";" + variance + imbalance;
 			
 			out.write(metrics.getBytes());
 			out.close();
@@ -139,13 +123,14 @@ public class Metrics {
 			e.printStackTrace();
 		}
 	}
-	
+		
 	public String toCSVString(){
-		return numEdges + ";" + weightSuperEdges + ";" + variance + ";" + imbalance;
+		return numSuperEdges + ";" + weightSuperEdges + ";" + variance + ";" + imbalance;
 	}
 	
+	
 	/* getters*/
-	public long getNumEdges(){	return numEdges;	}
+	public long getNumEdges(){	return numSuperEdges;	}
 	
 	public long getWeightSuperEdges() {return weightSuperEdges;	}
 
@@ -154,10 +139,11 @@ public class Metrics {
 	public double getImbalance(){	return imbalance;	}
 	
 	
- private long numEdges;
+	
+ private long numSuperEdges;
  private long weightSuperEdges;
- private double variance;	//variance dimension supervertex
- private double imbalance;  //??????
+ private double variance;	//variance of super vertex dimension
+ private double imbalance;  //partitions imbalance
 }
 
 

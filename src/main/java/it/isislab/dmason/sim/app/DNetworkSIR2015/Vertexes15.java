@@ -37,8 +37,8 @@ import sim.field.continuous.Continuous2D;
 import sim.util.Double2D;
 
 @AuthorAnnotation(
-		author = {"Francesco Milone","Carmine Spagnuolo"},
-		date = "6/3/2014"
+		author = {"Alessia Antelmi","Carmine Spagnuolo"},
+		date = "24/08/2015"
 		)
 public class Vertexes15 extends DistributedState<Double2D>{
 
@@ -68,7 +68,7 @@ public class Vertexes15 extends DistributedState<Double2D>{
 		super.start();
 		
 		int commID = (TYPE.pos_i*rows)+TYPE.pos_j;
-		NetworkPartition parts_data=PartitionManager.getNetworkPartition(graph_path, graph_parts_path, commID);
+		NetworkPartition parts_data=PartitionManager.getNetworkPartition(graph_path, graph_parts_path);
 
 		network = DNetworkFactory.createDNetworkField(this, super.rows, super.columns, TYPE.pos_i, TYPE.pos_j, parts_data.getEdges_subscriber_lsit(),"mygraph", topicPrefix);
 		HashMap<Integer, Vertex15> myVertexes = new HashMap<Integer,Vertex15>();

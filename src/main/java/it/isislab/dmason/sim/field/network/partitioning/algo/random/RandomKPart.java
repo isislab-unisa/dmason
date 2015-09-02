@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleGraph;
-
+@Deprecated
 public class RandomKPart {
 	
 	SimpleGraph<LabelVertex, DefaultWeightedEdge> graph;

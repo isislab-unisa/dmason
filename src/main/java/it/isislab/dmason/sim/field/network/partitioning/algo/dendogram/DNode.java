@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.Subgraph;
-
+@Deprecated
 public class DNode<V,E>{
 
 	private boolean processed;

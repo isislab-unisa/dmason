@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.jgrapht.Graph;
-
+@Deprecated
 public class DendrogramFixCommunity<V,E> {
 
 	private int worker;

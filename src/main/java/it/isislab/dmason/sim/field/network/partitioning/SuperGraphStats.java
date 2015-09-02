@@ -1,7 +1,7 @@
 package it.isislab.dmason.sim.field.network.partitioning;
 
 import org.jgrapht.Graph;
-
+@Deprecated
 public class  SuperGraphStats<V, E> {
 	private long weigth, noe;
 	public Graph<V, E> g;

@@ -82,13 +82,13 @@ public class TestStart15 {
 				if((i==0 && j==0))
 				{
 					VertexesWithUI15 sim =new VertexesWithUI15(genParam,"resources/app/DNetworkSIR2015/uk_network/uk.graph",
-							"resources/app/DNetworkSIR2015/uk_network/4/Metis/uk.graph.part.4.csv");
+							"resources/app/DNetworkSIR2015/uk_network/4/Metis/uk.graph.part.4");
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
 					Vertexes15 sim = new Vertexes15(genParam,"resources/app/DNetworkSIR2015/uk_network/uk.graph",
-							"resources/app/DNetworkSIR2015/uk_network/4/Metis/uk.graph.part.4.csv");
+							"resources/app/DNetworkSIR2015/uk_network/4/Metis/uk.graph.part.4");
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}

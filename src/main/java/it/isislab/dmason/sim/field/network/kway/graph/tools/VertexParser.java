@@ -1,5 +1,8 @@
 package it.isislab.dmason.sim.field.network.kway.graph.tools;
 
+
+import it.isislab.dmason.annotation.AuthorAnnotation;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,10 +10,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.TreeMap;
 
-
+@AuthorAnnotation(
+		author = {"Alessia Antelmi", "Carmine Spagnuolo"},
+		date = "20/7/2015"
+		)
 public class VertexParser {
-
-	//private static Logger logger = Logger.getLogger("vertex-parser");
 	
 	/**
 	 * Reads a graph described as edgelist 
@@ -31,7 +35,7 @@ public class VertexParser {
 			
 			while((edge = in.readLine()) != null){
 				
-				separator = findSeparator(edge);
+				separator = Utility.findSeparator(edge);
 				vertices = edge.split(separator);
 				
 				int firstId = Integer.parseInt(vertices[0]);
@@ -50,30 +54,9 @@ public class VertexParser {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-//		
-//		List<Integer> c=new ArrayList<Integer>(ids.keySet());
-//		Collections.sort(c);
-//		for (int i = 1; i < c.size(); i++) {
-//			if(c.get(i)!=(c.get(i-1)+1)) {
-//				System.out.println(c.get(i-1)+" "+c.get(i));
-//				//System.exit(-1);
-//			}
-//		}
+
 		return ids;
 	}
 	
-	private static String findSeparator(String info){
-		String separator = "";
-		
-		for(int i=0; i<info.length(); i++){
-			char c = info.charAt(i);
-			
-			if(!Character.isDigit(c)){
-				separator = c + "";
-				break;
-			}	
-		}
-		
-		return separator;
-	}
+
 }
