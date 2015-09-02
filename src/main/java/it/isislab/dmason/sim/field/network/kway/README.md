@@ -1,4 +1,4 @@
-#DMASON it.isislab.dmason.sim.field.network.kway Package
+#DMASON kway Package
 
 This package contains several classes that you can use to evaluate the performance of some partitioning algorithms. Moreover, you can include this work in your simulations to partition the field Network of D-MASON. Here you can find the definition of the data structures used with some utilities classes.
 
