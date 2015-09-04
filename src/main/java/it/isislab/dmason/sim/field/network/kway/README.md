@@ -55,10 +55,10 @@ in order to compare the quality of the partitions produced by a partitioning alg
 ### Algorithms 
 
 In this tool, we have considered the following partitioning algorithms:
-* [Metis] (http://glaros.dtc.umn.edu/gkhome/node/110).
-* [Metis-Relaxed] (http://glaros.dtc.umn.edu/gkhome/node/110).
-* Kaffpa and KaffpaE, from the [KaHIP suite] (http://algo2.iti.kit.edu/documents/kahip/index.html).
-* [Ja-be-Ja] (http://glaros.dtc.umn.edu/gkhome/node/110).
+* [Metis](http://glaros.dtc.umn.edu/gkhome/node/110).
+* [Metis-Relaxed](http://glaros.dtc.umn.edu/gkhome/node/110).
+* Kaffpa and KaffpaE, from the [KaHIP suite](http://algo2.iti.kit.edu/documents/kahip/index.html).
+* [Ja-be-Ja](http://glaros.dtc.umn.edu/gkhome/node/110).
 * Random
   * (our baseline)
 
