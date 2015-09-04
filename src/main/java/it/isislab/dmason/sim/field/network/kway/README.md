@@ -6,21 +6,14 @@ This package contains several classes that you can use to evaluate the performan
 ## Usage in your simulation
 You generate the information about the partitioning of the field Network through this code:
  
-		`NetworkPartition parts_data=PartitionManager.getNetworkPartition(graph_path, graph_parts_path, commID);`
+		`NetworkPartition parts_data=PartitionManager.getNetworkPartition(graph_path, graph_parts_path);`
 		
 The params in input are:
 
-- graph_path: the path of the graph that will be used in the simulation. 
-			  The formats allowed to describe the graph are edgelist and graph.
+- graph_path: the path of the graph that will be used in the simulation. The formats allowed to describe the graph are edgelist and graph.
 
-- graph_parts_path: the path of the file describing the partitioning of the graph. 
-					This file looks like the standard format provided by Metis and by the suite KaHIP;		
-					it is named with the convention *.part.k, where k is the number of blocks given as 
-					input to the partitioning program. This file contains n lines. In each line the block ID 					of the corresponding vertex is given, i.e. line i contains the block ID of the vertex i
-					(here the vertices are numbered from 0 to n-1). The block IDs are numbered consecutively 					from 0 to k-1.
-					You can generate this file invoking the method partitioning(), implemented by the classes 					which represent the algorithms.
+- graph_parts_path: the path of the file describing the partitioning of the graph. This file looks like the standard format provided by Metis and by the suite KaHIP; it is named with the convention *.part.k, where k is the number of blocks given as input to the partitioning program. This file contains n lines. In each line the block ID of the corresponding vertex is given, i.e. line i contains the block ID of the vertex i (here the vertices are numbered from 0 to n-1). The block IDs are numbered consecutively from 0 to k-1. You can generate this file invoking the method partitioning(), implemented by the classes which represent the algorithms.
 				
-- the community id
 
 NetworkPartition is an object that stores the following information:
 
@@ -62,16 +55,10 @@ in order to compare the quality of the partitions produced by a partitioning alg
 ### Algorithms 
 
 In this tool, we have considered the following partitioning algorithms:
-* Metis
-  * [reference](http://glaros.dtc.umn.edu/gkhome/node/110)
-* Metis-Relaxed
-  * [reference](http://glaros.dtc.umn.edu/gkhome/node/110)
-* Kaffpa
-  * [reference](http://algo2.iti.kit.edu/documents/kahip/index.html)
-* KaffpaE
-  * [reference](http://algo2.iti.kit.edu/documents/kahip/index.html)
-* Ja-be-Ja
-  * [reference](http://glaros.dtc.umn.edu/gkhome/node/110)
+* [Metis] (http://glaros.dtc.umn.edu/gkhome/node/110).
+* [Metis-Relaxed] (http://glaros.dtc.umn.edu/gkhome/node/110).
+* Kaffpa and KaffpaE, from the [KaHIP suite] (http://algo2.iti.kit.edu/documents/kahip/index.html).
+* [Ja-be-Ja] (http://glaros.dtc.umn.edu/gkhome/node/110).
 * Random
   * (our baseline)
 
@@ -86,8 +73,7 @@ you have to make them available in the system environment (see each install inst
 
 For each supergraph, the following values are calculated:
 * number of superedges, that is the number of communication channels 
-* total weight of superedges 
-  * that is the sum of the weight of edges composing a superedge
+* total weight of superedges, i.e. the sum of the weight of edges composing a superedge
 * variance about the dimension of a supervertex
 * partitions imbalance
 
