@@ -101,7 +101,7 @@ To do this, you need to execute the executeTest() method of the AlgoBenchmark cl
 The execution of these algorithms will produce in output a file ***.part.numberOfComponents**,
 where each line, representing a vertex, contains the id of the belonging partition of the vertex.
 
-To perform the creation of the supergraph, we have considered:
+To perform the creation of the supergraph we have considered:
 * that all nodes belonging to the same partition will be inserted in the same supervertex 
 * each partition as a supervertex
 
