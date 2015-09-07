@@ -32,7 +32,7 @@ public class Random implements PartitioningAlgorithm {
 		String[] info = graph_path.split("\\.");
 		String format = info[info.length - 1];
 		
-		// all vertices in the graph
+		// All vertices in the graph
 		if (format.equalsIgnoreCase("edgelist")) {
 			vertices = GraphFormatConverter.createMappingNamesGraphEdgelist(graph_path);
 		} else if(format.equalsIgnoreCase("graph")) {
