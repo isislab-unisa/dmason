@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 @AuthorAnnotation(author = { "Alessia Antelmi", "Carmine Spagnuolo" }, date = "22/7/2015")
 public class Random implements PartitioningAlgorithm {
-
+	
 	/**
 	 * @param graph_path - path of the graph to partition
 	 * @param k - number of partitions
@@ -28,8 +28,19 @@ public class Random implements PartitioningAlgorithm {
 	public String partitioning() throws IOException, InterruptedException {
 
 		ArrayList<Integer> list = new ArrayList<Integer>();
+		Integer[] vertices = null;
+		String[] info = graph_path.split("\\.");
+		String format = info[info.length - 1];
+		
 		// all vertices in the graph
-		Integer[] vertices = GraphFormatConverter.createMappingNamesGraphDotGraph(graph_path);
+		if (format.equalsIgnoreCase("edgelist")) {
+			vertices = GraphFormatConverter.createMappingNamesGraphEdgelist(graph_path);
+		} else if(format.equalsIgnoreCase("graph")) {
+			vertices = GraphFormatConverter.createMappingNamesGraphDotGraph(graph_path);
+		}else {
+			throw new IllegalArgumentException("Format Unknown.");
+		}
+		
 		Integer[] partitions = new Integer[nPart];
 		Arrays.fill(partitions, 0);
 		int p = 0;
@@ -47,13 +58,11 @@ public class Random implements PartitioningAlgorithm {
 		Collections.shuffle(list);
 
 		for (Integer i : list) {
-
 			if (list.size() % nPart == 0) {
 				if (partitions[p] < list.size() / nPart) {
 					mapVertexPart.put(i, p);
 					partitions[p]++;
 				}
-
 				p = (p + 1) % nPart;
 			} else {
 
