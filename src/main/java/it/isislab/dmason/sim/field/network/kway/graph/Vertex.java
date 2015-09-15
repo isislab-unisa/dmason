@@ -13,6 +13,7 @@ public class Vertex implements Serializable, VertexFactory<Vertex> {
 	private int id;
 	private int threshold;
 	private int cost;
+	private double dispersion;
 
 	public Vertex() {
 		threshold = 0;
@@ -57,6 +58,14 @@ public class Vertex implements Serializable, VertexFactory<Vertex> {
 
 	public void setCost(int cost) {
 		this.cost = cost;
+	}
+	
+	public double getDispersion() {
+		return dispersion;
+	}
+
+	public void setDispersion(double dispersion) {
+		this.dispersion = dispersion;
 	}
 
 	@Override
