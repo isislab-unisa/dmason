@@ -17,6 +17,7 @@
 
  package it.isislab.dmason.sim.field.support.field2D.region;
 
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.field.support.field2D.Entry;
 
 import java.io.Serializable;
@@ -98,4 +99,46 @@ public abstract class Region<E,F> extends ArrayList<Entry<F>> implements Seriali
 	public void setDown_xx(E down_xx) { this.down_xx = down_xx; }
 	public E getDown_yy() { return down_yy; }
 	public void setDown_yy(E down_yy) { this.down_yy = down_yy; }
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		/*if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;*/
+		Region other = (Region) obj;
+		if (down_xx == null) {
+			if (other.down_xx != null)
+				return false;
+		} else if (!down_xx.equals(other.down_xx))
+			return false;
+		if (down_yy == null) {
+			if (other.down_yy != null)
+				return false;
+		} else if (!down_yy.equals(other.down_yy))
+			return false;
+		if (upl_xx == null) {
+			if (other.upl_xx != null)
+				return false;
+		} else if (!upl_xx.equals(other.upl_xx))
+			return false;
+		if (upl_yy == null) {
+			if (other.upl_yy != null)
+				return false;
+		} else if (!upl_yy.equals(other.upl_yy))
+			return false;
+		
+		for(int i=0; i<this.size(); i++){
+			
+			if(!this.get(i).equals(other.get(i)))
+				return false;
+		}
+		
+		return true;
+	}
+	
+	
 }

@@ -54,4 +54,5 @@ public interface RemotePositionedAgent<E> extends RemoteAgent, Serializable{
 	 */
 	public void setId(String id);
 	
+	
 }

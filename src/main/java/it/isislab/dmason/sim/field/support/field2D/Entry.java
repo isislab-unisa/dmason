@@ -48,4 +48,29 @@ public class Entry<E> implements Serializable
 		this.r=r;
 		this.l=l;
 	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Entry other = (Entry) obj;
+		if (l == null) {
+			if (other.l != null)
+				return false;
+		} else if (!l.equals(other.l))
+			return false;
+		if (r == null) {
+			if (other.r != null)
+				return false;
+		} else if (!r.equals(other.r))
+			return false;
+		return true;
+	}
+	
+	
 }

@@ -17,6 +17,7 @@
 
  package it.isislab.dmason.sim.field.continuous.region;
 
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.support.field2D.Entry;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
@@ -87,8 +88,11 @@ public class RegionDouble extends Region<Double,Double2D>
 	}
 
 	@Override
-	public boolean addAgents(Entry<Double2D> e) 
+	public boolean addAgents(Entry<Double2D> e)  
 	{
+		if(e == null || e.l == null || e.r == null) return false;
+		
 		return this.add(e);
 	}	
+	
 }

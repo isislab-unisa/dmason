@@ -18,6 +18,7 @@
 package it.isislab.dmason.sim.field;
 
 
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellIntegerField;
 
 import java.io.Serializable;
@@ -63,8 +64,14 @@ public class UpdateCell<E,F> extends HashMap<Long,PriorityQueue<MyCellIntegerFie
      * @return an ArrayList with DistributedRegion at the same step
      * @throws InterruptedException 
      */
-	public  PriorityQueue<MyCellIntegerField> getUpdates(long step,int num_updates) throws InterruptedException
+	public  PriorityQueue<MyCellIntegerField> getUpdates(long step,int num_updates) throws InterruptedException,DMasonException
 	{
+		/*	result of failed test UpdateCellTester 
+		 * 	on method testGetUpdatesNegativeNumUpdates
+		 * */
+		if(num_updates < 0)
+			throw new DMasonException("Number of updates must be positive");
+		
 		lock.lock();
 		PriorityQueue<MyCellIntegerField> tmp=this.get(step);
 
@@ -73,6 +80,12 @@ public class UpdateCell<E,F> extends HashMap<Long,PriorityQueue<MyCellIntegerFie
 			block.await();
 			tmp=this.get(step);
 		}
+		
+		/*	result of failed test UpdateCellTester 
+		 * 	on method testGetUpdatesOverQueueLength
+		 * */
+		if(tmp.size() < num_updates)
+			throw new DMasonException("The number of updates is not correct");
 		
 		while(tmp.size()!=num_updates)
 		{

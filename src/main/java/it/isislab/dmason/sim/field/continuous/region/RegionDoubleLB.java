@@ -31,7 +31,6 @@ public class RegionDoubleLB extends Region<Double,Double2D>
 	public static double width,height;
 	
 	
-	
 	/**
 	 * Constructor of class,it use the costructor of superclass and adds two parameters : width and height
 	 * 
@@ -98,7 +97,7 @@ public class RegionDoubleLB extends Region<Double,Double2D>
 	@Override
 	public Region<Double, Double2D> clone() 
 	{
-		RegionDouble r=new RegionDouble(upl_xx, upl_yy, down_xx, down_yy,width,height);
+		RegionDoubleLB r=new RegionDoubleLB(upl_xx, upl_yy, down_xx, down_yy,width,height);
 		for(Entry<Double2D> e: this)
 		{
 			r.add(new Entry(((RemotePositionedAgent<Double2D>)(Util.clone(e.r))),e.l));
@@ -115,6 +114,13 @@ public class RegionDoubleLB extends Region<Double,Double2D>
      @Override
 	public boolean addAgents(Entry<Double2D> e) 
 	{
-		return this.add(e);
+    	if(e == null)
+    		return false;
+    	else if (e.l == null || e.r == null)
+    		return false;
+    				
+    	return this.add(e);
 	}	
+     
+     
 }

@@ -61,5 +61,29 @@ public abstract class RemoteFlock<E> implements Serializable, RemotePositionedAg
     @Override
 	public String getId() {return id;	}
     @Override
-	public void setId(String id) {this.id = id;}	
+	public void setId(String id) {this.id = id;}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RemoteFlock other = (RemoteFlock) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (pos == null) {
+			if (other.pos != null)
+				return false;
+		} else if (!pos.equals(other.pos))
+			return false;
+		return true;
+	}	
+    
 }

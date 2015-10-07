@@ -9,6 +9,7 @@ import sim.util.Double2D;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.continuous.region.RegionDoubleLB;
 import it.isislab.dmason.sim.field.support.field2D.Entry;
+import it.isislab.dmason.test.sim.app.DFlockers.DFlocker;
 import junit.framework.TestCase;
 
 // TODO: Auto-generated Javadoc
@@ -232,7 +233,7 @@ public class RegionDoubleLBTester {
 		 * mi fa inserire un entry con valori null
 		 * */
 		Entry<Double2D> e = new Entry<Double2D>(c, f);
-		assertTrue(rd.addAgents(e));
+		assertFalse(rd.addAgents(e));
 	}
 	
 	/**
@@ -240,8 +241,8 @@ public class RegionDoubleLBTester {
 	 */
 	@Test
 	public void testAddAgentsVerify() {
-		RemotePositionedAgent<Double2D> c = null;
-		Double2D f = null;
+		RemotePositionedAgent<Double2D> c = new DFlocker();
+		Double2D f = new Double2D();
 		Entry<Double2D> e = new Entry<Double2D>(c, f);
 		rd.addAgents(e);
 		assertEquals(e,rd.get(0));
@@ -264,8 +265,8 @@ public class RegionDoubleLBTester {
 	 */
 	@Test
 	public void testCloneWithEntry() {
-		RemotePositionedAgent<Double2D> c = null;
-		Double2D f = null;
+		RemotePositionedAgent<Double2D> c = new DFlocker();
+		Double2D f = new Double2D();
 		Entry<Double2D> e = new Entry<Double2D>(c, f);
 		rd.addAgents(e);
 		RegionDoubleLB clone=null;
@@ -275,6 +276,7 @@ public class RegionDoubleLBTester {
 		}catch(Exception err){
 			fail("clone fail");
 		}
-		assertEquals("incorrect copy of entry",e, clone);
+		//assertEquals("incorrect copy of entry",e, clone);
+		assertEquals("incorrect copy of entry",rd, clone);
 	}
 }

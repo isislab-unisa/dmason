@@ -75,6 +75,9 @@ public class UpdateCellTester {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			fail(e.getMessage());
+		} catch (DMasonException e) {
+			// TODO Auto-generated catch block
+			fail(e.getMessage());
 		}
 		assertEquals("[" + app + "]", ts);
 	}
@@ -96,6 +99,9 @@ public class UpdateCellTester {
 		try {
 			ts = uc.getUpdates(0, 2).toString();
 		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			fail(e.getMessage());
+		} catch (DMasonException e) {
 			// TODO Auto-generated catch block
 			fail(e.getMessage());
 		}
@@ -123,6 +129,9 @@ public class UpdateCellTester {
 		try {
 			ts = uc.getUpdates(0, numLoop).toString();
 		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			fail(e.getMessage());
+		} catch (DMasonException e) {
 			// TODO Auto-generated catch block
 			fail(e.getMessage());
 		}
@@ -171,6 +180,9 @@ public class UpdateCellTester {
 			ts = uc.getUpdates(10, 0).toString();
 			fail("must be launch an exception");
 		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			fail(e.getMessage());
+		}catch (DMasonException e) {
 			// TODO Auto-generated catch block
 			fail(e.getMessage());
 		}
