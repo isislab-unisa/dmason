@@ -57,14 +57,11 @@
 	└── testsuite
 	    └── TestSuite.java
 
-# Bug detected (last update 20/06/2015)
+# Bug detected (last update 07/10/2015)
 ------------------------------------------------------------------
 
 ###R1 [dmason.sim.field.continuous.region.RegionDouble]###
 1. The createRegion method use at the return the instance variables width and heigth while should use variables WIDTH and heigth passed as parameters.
-2. addAgents can do insert a null entry.
-3. The clone method returns a region, when it should return a RegionDouble.
-4. The clone method does not copy the Entries in the region.
 
 ###R2 [dmason.sim.field.continuous.region.RegionDoubleLB]###
 1. The same mistakes of RegionDouble
