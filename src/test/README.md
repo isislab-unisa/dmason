@@ -1,11 +1,67 @@
-Bug detected
+# Test Suite Contents
+	.
+	├── sim
+	│   ├── app
+	│   │   └── DFlockers
+	│   │       ├── DFlocker.java
+	│   │       ├── DFlockers.java
+	│   │       ├── DFlockersWithUI.java
+	│   │       ├── icon.png
+	│   │       ├── icoRed.png
+	│   │       ├── index.html
+	│   │       ├── package.html
+	│   │       ├── RemoteFlock.java
+	│   │       └── TestDFlockers.java
+	│   ├── engine
+	│   │   └── DistributedStateConnectionJMSTester.java
+	│   └── field
+	│       ├── CellTypeTester.java
+	│       ├── continuous
+	│       │   ├── DContinuous2DFactoryTester.java
+	│       │   ├── DContinuous2DXYTester.java
+	│       │   ├── loadbalanced
+	│       │   │   └── DContinuous2DXYLBTester.java
+	│       │   ├── region
+	│       │   │   ├── RegionDoubleLBTester.java
+	│       │   │   └── RegionDoubleTester.java
+	│       │   └── thin
+	│       │       └── DContinuous2DXYThinTester.java
+	│       ├── grid
+	│       │   ├── numeric
+	│       │   │   ├── DDoubleGrid2DFactoryTester.java
+	│       │   │   ├── DDoubleGrid2DXYTester.java
+	│       │   │   ├── DIntGrid2DFactoryTester.java
+	│       │   │   ├── DIntGrid2DXYTester.java
+	│       │   │   ├── loadbalanced
+	│       │   │   │   ├── DDoubleGrid2DXYLBTester.java
+	│       │   │   │   └── DIntGrid2DXYLBTester.java
+	│       │   │   ├── region
+	│       │   │   │   ├── RegionDoubleNumericTester.java
+	│       │   │   │   └── RegionIntegerNumericTester.java
+	│       │   │   └── thin
+	│       │   │       ├── DDoubleGrid2DXYThinTester.java
+	│       │   │       └── DIntGrid2DXYThinTester.java
+	│       │   ├── region
+	│       │   │   ├── RegionIntegerLBTester.java
+	│       │   │   └── RegionIntegerTester.java
+	│       │   └── sparse
+	│       │       ├── DSparseGrid2DXYTester.java
+	│       │       ├── loadbalanced
+	│       │       │   └── DSparseGrid2DXYLBTester.java
+	│       │       └── thin
+	│       │           └── DSparseGrid2DXYThinTester.java
+	│       ├── support
+	│       │   └── field2D
+	│       │       └── UpdateMapTester.java
+	│       └── UpdateCellTester.java
+	└── testsuite
+	    └── TestSuite.java
+
+# Bug detected (last update 07/10/2015)
 ------------------------------------------------------------------
 
 ###R1 [dmason.sim.field.continuous.region.RegionDouble]###
 1. The createRegion method use at the return the instance variables width and heigth while should use variables WIDTH and heigth passed as parameters.
-2. addAgents can do insert a null entry.
-3. The clone method returns a region, when it should return a RegionDouble.
-4. The clone method does not copy the Entries in the region.
 
 ###R2 [dmason.sim.field.continuous.region.RegionDoubleLB]###
 1. The same mistakes of RegionDouble
