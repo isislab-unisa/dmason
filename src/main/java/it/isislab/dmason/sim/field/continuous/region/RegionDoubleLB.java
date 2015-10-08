@@ -56,43 +56,6 @@ public class RegionDoubleLB extends Region<Double,Double2D>
 			super.down_yy=height;
 	}
 
-	
-	/**
-	 * @deprecated 
-	 * 
-	 * The method create a region of Double
-	 * 
-	 * @param upl_xx
-	 * @param upl_yy
-	 * @param down_xx
-	 * @param down_yy
-	 * @param MY_WIDTH
-	 * @param MY_HEIGHT
-	 * @param WIDTH
-	 * @param HEIGHT
-	 * @return
-	 */
-	@Deprecated
-	public static Region<Double,Double2D> createRegion(Double upl_xx,Double upl_yy, Double down_xx,
-			Double down_yy, Double MY_WIDTH, Double MY_HEIGHT, Double WIDTH, Double HEIGHT) 
-			{
-		int xx0=Double.compare(upl_xx, 0);
-		int yy0=Double.compare(upl_yy, 0);
-		int xxW=Double.compare(upl_xx, WIDTH);
-		int yyH=Double.compare(upl_yy, HEIGHT);
-		
-		if(xx0 < 0 || yy0 < 0)
-		{				
-				return null;
-		}
-		
-		if( xxW >= 0 || yyH >= 0)
-		{
-			return null;
-		}
-		
-	  return new RegionDouble(upl_xx,upl_yy,down_xx,down_yy,width,height);
-	}
 
 	
 	@Override
