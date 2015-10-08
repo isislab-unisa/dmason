@@ -59,5 +59,30 @@ public abstract class RemoteAnt<E> extends OvalPortrayal2D implements Serializab
     @Override
 	public String getId() {return id;	}
     @Override
-	public void setId(String id) {this.id = id;}	
+	public void setId(String id) {this.id = id;}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RemoteAnt other = (RemoteAnt) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (pos == null) {
+			if (other.pos != null)
+				return false;
+		} else if (!pos.equals(other.pos))
+			return false;
+		return true;
+	}	
 }

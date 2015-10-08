@@ -17,7 +17,6 @@
 
  package it.isislab.dmason.sim.field.support.field2D.region;
 
-import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.field.support.field2D.Entry;
 
 import java.io.Serializable;
@@ -105,10 +104,7 @@ public abstract class Region<E,F> extends ArrayList<Entry<F>> implements Seriali
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		/*if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;*/
+		
 		Region other = (Region) obj;
 		if (down_xx == null) {
 			if (other.down_xx != null)
