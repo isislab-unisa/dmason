@@ -35,6 +35,9 @@ import org.junit.runners.Suite.SuiteClasses;
 	 * The Class TestSuite. Call all classes of tests.
 	 * 
 	 * @author Mario Capuozzo
+	 * @author Carmine Spagnuolo
+	 * @author Flavio Serrapica
+	 * @author Michele Carillo
 	 */
 	@RunWith(Suite.class)
 	@SuiteClasses({

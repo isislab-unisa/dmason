@@ -107,107 +107,107 @@ public class RegionDoubleTester {
 
 	}
 
-	// createRegion
-	/**
-	 * Test create region xx under0.
-	 */
-	@Test
-	public void testCreateRegionXXUnder0() {
-
-		assertNull(rd.createRegion(-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0));
-
-	}
-
-	/**
-	 * Test create region yy under0.
-	 */
-	@Test
-	public void testCreateRegionYYUnder0() {
-
-		assertNull(rd.createRegion(0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0));
-
-	}
-
-	/**
-	 * Test create region xx over0.
-	 */
-	@Test
-	public void testCreateRegionXXOver0() {
-
-		assertNotNull(rd.createRegion(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0));
-
-	}
-
-	/**
-	 * Test create region yy over0.
-	 */
-	@Test
-	public void testCreateRegionYYOver0() {
-
-		assertNotNull(rd.createRegion(0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0));
-
-	}
-
-	/**
-	 * Test create region xxw over w.
-	 */
-	@Test
-	public void testCreateRegionXxwOverW() {
-
-		assertNull(rd.createRegion(11.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0));
-
-	}
-
-	/**
-	 * Test create region xxw equal w.
-	 */
-	@Test
-	public void testCreateRegionXxwEqualW() {
-
-		assertNull(rd.createRegion(10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0));
-
-	}
-
-	/**
-	 * Test create region yyh over h.
-	 */
-	@Test
-	public void testCreateRegionYyhOverH() {
-
-		assertNull(rd.createRegion(0.0, 11.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0));
-
-	}
-
-	/**
-	 * Test create region yyh equal h.
-	 */
-	@Test
-	public void testCreateRegionYyhEqualH() {
-
-		assertNull(rd.createRegion(0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0));
-
-	}
-
-	/**
-	 * Test create region whidth6.
-	 */
-	@Test
-	public void testCreateRegionWhidth6() {
-		
-		rd.createRegion(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 6.0, 10.0);
-		assertEquals(6,rd.width,0); //because height is static
-
-	}
-
-	/**
-	 * Test create region heigth6.
-	 */
-	@Test
-	public void testCreateRegionHeigth6() {
-
-		rd.createRegion(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 6.0);
-		assertEquals(6,rd.height,0); //because height is static
-	}
+//	// createRegion
+//	/**
+//	 * Test create region xx under0.
+//	 */
+//	@Test
+//	public void testCreateRegionXXUnder0() {
+//
+//		assertNull(rd.createRegion(-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0));
+//
+//	}
+//
+//	/**
+//	 * Test create region yy under0.
+//	 */
+//	@Test
+//	public void testCreateRegionYYUnder0() {
+//
+//		assertNull(rd.createRegion(0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0));
+//
+//	}
+//
+//	/**
+//	 * Test create region xx over0.
+//	 */
+//	@Test
+//	public void testCreateRegionXXOver0() {
+//
+//		assertNotNull(rd.createRegion(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0));
+//
+//	}
+//
+//	/**
+//	 * Test create region yy over0.
+//	 */
+//	@Test
+//	public void testCreateRegionYYOver0() {
+//
+//		assertNotNull(rd.createRegion(0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0));
+//
+//	}
+//
+//	/**
+//	 * Test create region xxw over w.
+//	 */
+//	@Test
+//	public void testCreateRegionXxwOverW() {
+//
+//		assertNull(rd.createRegion(11.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0));
+//
+//	}
+//
+//	/**
+//	 * Test create region xxw equal w.
+//	 */
+//	@Test
+//	public void testCreateRegionXxwEqualW() {
+//
+//		assertNull(rd.createRegion(10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0));
+//
+//	}
+//
+//	/**
+//	 * Test create region yyh over h.
+//	 */
+//	@Test
+//	public void testCreateRegionYyhOverH() {
+//
+//		assertNull(rd.createRegion(0.0, 11.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0));
+//
+//	}
+//
+//	/**
+//	 * Test create region yyh equal h.
+//	 */
+//	@Test
+//	public void testCreateRegionYyhEqualH() {
+//
+//		assertNull(rd.createRegion(0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0));
+//
+//	}
+//
+//	/**
+//	 * Test create region whidth6.
+//	 */
+//	@Test
+//	public void testCreateRegionWhidth6() {
+//		
+//		rd.createRegion(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 6.0, 10.0);
+//		assertEquals(6,rd.width,0); //because height is static
+//
+//	}
+//
+//	/**
+//	 * Test create region heigth6.
+//	 */
+//	@Test
+//	public void testCreateRegionHeigth6() {
+//
+//		rd.createRegion(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 6.0);
+//		assertEquals(6,rd.height,0); //because height is static
+//	}
 
 	// addAgents
 
