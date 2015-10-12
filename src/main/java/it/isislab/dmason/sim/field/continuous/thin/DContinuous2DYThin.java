@@ -17,6 +17,7 @@
 
 package it.isislab.dmason.sim.field.continuous.thin;
 
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
@@ -510,6 +511,9 @@ public class DContinuous2DYThin extends DContinuous2DThin implements TraceableFi
 				verifyUpdates(region);
 			}
 		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		} catch (DMasonException e1) {
+			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
