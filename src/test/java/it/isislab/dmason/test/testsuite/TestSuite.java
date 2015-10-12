@@ -44,7 +44,7 @@ import org.junit.runners.Suite.SuiteClasses;
 //		TestDFlockers.class,
 //		CellTypeTester.class,
 //		UpdateCellTester.class,
-		RegionDoubleTester.class,
+//		RegionDoubleTester.class,
 //		RegionDoubleLBTester.class,
 //		DContinuous2DFactoryTester.class,
 //		DDoubleGrid2DFactoryTester.class,
