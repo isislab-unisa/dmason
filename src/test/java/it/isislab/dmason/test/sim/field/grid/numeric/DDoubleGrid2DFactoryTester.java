@@ -3,6 +3,8 @@ package it.isislab.dmason.test.sim.field.grid.numeric;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 
 import it.isislab.dmason.exception.DMasonException;
@@ -33,7 +35,7 @@ public class DDoubleGrid2DFactoryTester {
 	
 	/** The num of loop of tests. */
 	int numLoop = 8;
-
+ 
 	/**
 	 * The Class StubDistributedState.
 	 */
@@ -109,14 +111,13 @@ public class DDoubleGrid2DFactoryTester {
 	@Test
 	public void testHorizontalDistributionModeWidthHeight() {
 
-		for (int i = 1; i < numLoop; i++) {
-
+		for (int i = 1; i <= numLoop; i++) {
 			for (int j = 1; j < numLoop; j++) {
 				try {
-
+					
 					df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */i, /* height */
 							j, /* simState */new StubDistributedState(),/* max_distance */
-							1, /* i */0,/* j */1, /* rows */1, /* columns */10,
+							1, /* i */0,/* j */1, /* rows */1, /* columns */2,
 							DDoubleGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
 							1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 							"", /* isToroidal */false);
@@ -403,13 +404,13 @@ public class DDoubleGrid2DFactoryTester {
 
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
-					1, /* i */0,/* j */1, /* rows */10, /* columns */10,
+					1, /* i */0,/* j */1, /* rows */1, /* columns */10,
 					DDoubleGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
 					1.0, /* fixed */false, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 			assertEquals("width", 10, df.getWidth());
 			assertEquals("height", 10, df.getHeight());
-			assertEquals("rows", 10, df.rows);
+			assertEquals("rows", 1, df.rows);
 			assertEquals("columns", 10, df.columns);
 		} catch (DMasonException e) {
 			fail(e.getMessage());
@@ -444,26 +445,199 @@ public class DDoubleGrid2DFactoryTester {
 	 */
 	@Test
 	public void testSDMWidthHeight() {
-
-		for (int i = 1; i < numLoop; i++) {
-			for (int j = 1; j < numLoop; j++) {
+		int width = 125;
+		int height = 100;
+				
+		/* Celltype
+		 * 00 - 01 - 02
+		 * 10 - 11 - 12
+		 */
+		int rows=2;
+		int columns=3;
+		
+		DDoubleGrid2D[][] regions = new DDoubleGrid2D[rows][columns];
+		
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
 				try {
-
-					df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */i, /* height */
-							j, /* simState */new StubDistributedState(),/* max_distance */
-							1, /* i */0,/* j */1, /* rows */10, /* columns */10,
-							DDoubleGrid2DFactory.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
-							1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
-							"", /* isToroidal */false);
-
-					assertEquals("error for height=" + j, j, (int) df.my_height);
-					assertEquals("error for width=" + i, i, (int) df.my_width);
+					
+					df = DDoubleGrid2DFactory.createDDoubleGrid2D( width , height,
+							/* simState */new StubDistributedState(),
+							/* max_distance */1, /* Celltype i */i,/*Celltype j */j, 
+							/* rows */rows, /* columns */columns,
+							DDoubleGrid2DFactory.SQUARE_DISTRIBUTION_MODE, 
+							/* initialGridValue */ 1.0, /* fixed */true, /* name */"testGrid",
+							/* topicPrefix */"", /* isToroidal */false);
+					regions[i][j] = df;
 				} catch (DMasonException e) {
 					// TODO Auto-generated catch block
 					fail(e.getMessage());
 				}
 			}
 		}
+		int effectiveWidth=0;
+		int effectiveHeight =0;
+		
+		int fixedRow =0;
+		for(int j=0; j<columns; j++ )
+			effectiveWidth+=regions[fixedRow][j].my_width;
+		
+		int fixedColumn =0;
+		for(int i=0; i<rows; i++ )
+			effectiveHeight+=regions[i][fixedColumn].my_height;
+		
+		
+		assertEquals("error for height=" + height, height, effectiveHeight);
+		assertEquals("error for width=" + width, width, effectiveWidth);
+	}
+	
+	/**
+	 * Test for square distribution mode variable rows.
+	 */
+	@Test
+	public void testSDMVariableRows() {
+		int width = 125;
+		int height = 100;
+		
+		int columns=3;
+		DDoubleGrid2D[][] regions = null;
+		
+		for(int rows =1; rows <= 10; rows ++)
+		{		
+			regions = new DDoubleGrid2D[rows][columns];
+
+			for (int i = 0; i < rows; i++) {
+				for (int j = 0; j < columns; j++) {
+					try {
+
+						df = DDoubleGrid2DFactory.createDDoubleGrid2D( width , height,
+								/* simState */new StubDistributedState(),
+								/* max_distance */1, /* Celltype i */i,/*Celltype j */j, 
+								/* rows */rows, /* columns */columns,
+								DDoubleGrid2DFactory.SQUARE_DISTRIBUTION_MODE, 
+								/* initialGridValue */ 1.0, /* fixed */true, /* name */"testGrid",
+								/* topicPrefix */"", /* isToroidal */false);
+						regions[i][j] = df;
+					} catch (DMasonException e) {
+						// TODO Auto-generated catch block
+						fail(e.getMessage());
+					}
+				}
+			}
+			int effectiveWidth=0;
+			int effectiveHeight =0;
+
+			int fixedRow =0;
+			for(int j=0; j<columns; j++ )
+				effectiveWidth+=regions[fixedRow][j].my_width;
+
+			int fixedColumn =0;
+			for(int i=0; i<rows; i++ )
+				effectiveHeight+=regions[i][fixedColumn].my_height;
+
+
+			assertEquals("error for height=" + height + "with rows "+rows, height, effectiveHeight);
+			assertEquals("error for width=" + width + "with columns "+columns, width, effectiveWidth);
+		}
+	}
+	
+	/**
+	 * Test for square distribution mode variable columns.
+	 */
+	@Test
+	public void testSDMVariableColumns() {
+		int width = 125;
+		int height = 100;
+	
+		int rows=3;
+		DDoubleGrid2D[][] regions = null;
+		
+		for(int columns =1; columns <= 10; columns ++)
+		{		
+			regions = new DDoubleGrid2D[rows][columns];
+
+			for (int i = 0; i < rows; i++) {
+				for (int j = 0; j < columns; j++) {
+					try {
+
+						df = DDoubleGrid2DFactory.createDDoubleGrid2D( width , height,
+								/* simState */new StubDistributedState(),
+								/* max_distance */1, /* Celltype i */i,/*Celltype j */j, 
+								/* rows */rows, /* columns */columns,
+								DDoubleGrid2DFactory.SQUARE_DISTRIBUTION_MODE, 
+								/* initialGridValue */ 1.0, /* fixed */true, /* name */"testGrid",
+								/* topicPrefix */"", /* isToroidal */false);
+						regions[i][j] = df;
+					} catch (DMasonException e) {
+						// TODO Auto-generated catch block
+						fail(e.getMessage());
+					}
+				}
+			}
+			int effectiveWidth=0;
+			int effectiveHeight =0;
+
+			int fixedRow =0;
+			for(int j=0; j<columns; j++ )
+				effectiveWidth+=regions[fixedRow][j].my_width;
+
+			int fixedColumn =0;
+			for(int i=0; i<rows; i++ )
+				effectiveHeight+=regions[i][fixedColumn].my_height;
+
+
+			assertEquals("error for height=" + height + "with rows "+rows, height, effectiveHeight);
+			assertEquals("error for width=" + width + "with columns "+columns, width, effectiveWidth);
+		}
+	}
+	
+	/**
+	 * Test for square distribution mode variable columns.
+	 */
+	@Test
+	public void testSDMVariableRowsColumns() {
+		int width = 250;
+		int height = 125;
+	
+		DDoubleGrid2D[][] regions = null;
+		for(int rows = 1; rows <=12; rows ++)
+			for(int columns =1; columns <= 15; columns ++)
+			{		
+				regions = new DDoubleGrid2D[rows][columns];
+
+				for (int i = 0; i < rows; i++) {
+					for (int j = 0; j < columns; j++) {
+						try {
+
+							df = DDoubleGrid2DFactory.createDDoubleGrid2D( width , height,
+									/* simState */new StubDistributedState(),
+									/* max_distance */1, /* Celltype i */i,/*Celltype j */j, 
+									/* rows */rows, /* columns */columns,
+									DDoubleGrid2DFactory.SQUARE_DISTRIBUTION_MODE, 
+									/* initialGridValue */ 1.0, /* fixed */true, /* name */"testGrid",
+									/* topicPrefix */"", /* isToroidal */false);
+							regions[i][j] = df;
+						} catch (DMasonException e) {
+							// TODO Auto-generated catch block
+							fail(e.getMessage());
+						}
+					}
+				}
+				int effectiveWidth=0;
+				int effectiveHeight =0;
+
+				int fixedRow =0;
+				for(int j=0; j<columns; j++ )
+					effectiveWidth+=regions[fixedRow][j].my_width;
+
+				int fixedColumn =0;
+				for(int i=0; i<rows; i++ )
+					effectiveHeight+=regions[i][fixedColumn].my_height;
+
+
+				assertEquals("error for height=" + height + "with rows "+rows, height, effectiveHeight);
+				assertEquals("error for width=" + width + "with columns "+columns, width, effectiveWidth);
+			}
 	}
 
 	/**
@@ -757,13 +931,13 @@ public class DDoubleGrid2DFactoryTester {
 
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
-					1, /* i */0,/* j */1, /* rows */10, /* columns */10,
+					1, /* i */0,/* j */1, /* rows */1, /* columns */10,
 					DDoubleGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 					1.0, /* fixed */false, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 			assertEquals("width", 10, df.getWidth());
 			assertEquals("height", 10, df.getHeight());
-			assertEquals("rows", 10, df.rows);
+			assertEquals("rows", 1, df.rows);
 			assertEquals("columns", 10, df.columns);
 		} catch (DMasonException e) {
 			fail(e.getMessage());
@@ -782,14 +956,14 @@ public class DDoubleGrid2DFactoryTester {
 
 					df = DDoubleGrid2DFactory
 							.createDDoubleGrid2D(
-									/* width */i, /* height */
-									j, /* simState */
-									new StubDistributedState(),/* max_distance */
-									1, /* i */
-									0,/* j */
-									1, /* rows */
-									1, /* columns */
-									10,
+									/* width */i,
+									/* height */j,
+									/* simState */new StubDistributedState(),
+									/* max_distance */1,
+									/* i */	0,
+									/* j */	1,
+									/* rows */ 1,
+									/* columns */ 10,
 									DDoubleGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 									1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 									"", /* isToroidal */false);

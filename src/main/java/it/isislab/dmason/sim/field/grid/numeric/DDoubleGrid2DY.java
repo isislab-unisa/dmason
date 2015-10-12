@@ -166,6 +166,7 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 		this.NAME = name;
 		this.sm=sm;		 
 		MAX_DISTANCE=max_distance;
+				
 		//NUMPEERS=num_peers;
 		this.rows = rows;
 		this.columns = columns;
@@ -211,6 +212,7 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 			my_width=(int) Math.floor(width/columns+1);
 		else
 			my_width=(int) Math.floor(width/columns);
+		
 		my_height=height;
 
 

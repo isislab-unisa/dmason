@@ -67,9 +67,19 @@ public class DDoubleGrid2DFactory {
 	public static final DDoubleGrid2D createDDoubleGrid2D(int width, int height,SimState sm,int max_distance,int i,int j,int rows, int columns,int MODE, 
 			double initialGridValue, boolean fixed, String name, String topicPrefix,boolean isToroidal)
 					throws DMasonException
-					{
+	{
+		if(width <=0 ) throw new DMasonException("Width cannot be less than zero");
+		if(height <=0 ) throw new DMasonException("Height cannot be less than zero");
+		if(width >=Integer.MAX_VALUE ) throw new DMasonException("Width cannot exceed the maximum integer value");
+		if(height >=Integer.MAX_VALUE ) throw new DMasonException("Height cannot exceed the maximum integer value");
+		if(max_distance <0 ) throw new DMasonException("AOI (max_discante) cannot be negative");
+		if(rows <=0 ) throw new DMasonException("Rows cannot be less than zero");
+		if(columns <=0 ) throw new DMasonException("Columns cannot be less than zero");
+
 		if(MODE==HORIZONTAL_DISTRIBUTION_MODE)
 		{
+
+			if(rows >1) throw new DMasonException("In HORIZONTAL MODE the rows must be 1");
 
 			DistributedField2D field = new DDoubleGrid2DY(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name,topicPrefix);
 			field.setToroidal(isToroidal);
@@ -105,6 +115,8 @@ public class DDoubleGrid2DFactory {
 			else
 				if(MODE==HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
 				{
+					if(rows >1) throw new DMasonException("In HORIZONTAL MODE the rows must be 1");
+
 					DistributedField2D field = new DDoubleGrid2DYLB(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name, topicPrefix);
 					field.setToroidal(isToroidal);
 					if(!fixed)
@@ -118,7 +130,7 @@ public class DDoubleGrid2DFactory {
 				{
 					throw new DMasonException("Illegal Distribution Mode");
 				}
-					}
+	}
 
 
 	/**
@@ -143,7 +155,7 @@ public class DDoubleGrid2DFactory {
 	public static final DDoubleGrid2DThin createDDoubleGrid2DThin(int width, int height,SimState sm,int max_distance,int i,int j,int rows, int columns,int MODE, 
 			double initialGridValue, boolean fixed, String name, String topicPrefix, boolean isToroidal)
 					throws DMasonException
-					{
+	{
 		if(MODE==HORIZONTAL_DISTRIBUTION_MODE)
 		{
 			int field_width,field_height;
@@ -193,5 +205,5 @@ public class DDoubleGrid2DFactory {
 			{
 				throw new DMasonException("Illegal Distribution Mode");
 			}
-					}
+	}
 }
