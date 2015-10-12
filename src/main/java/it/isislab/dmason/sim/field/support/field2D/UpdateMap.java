@@ -24,6 +24,8 @@ import java.util.PriorityQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import it.isislab.dmason.exception.DMasonException;
+
 /**
  * A hash map supporting concurrency for methods put and get.
  * The DistributedRegions are saved using the number of step as key.
@@ -56,10 +58,13 @@ public class UpdateMap<E,F> extends HashMap<Long,PriorityQueue<Object>> implemen
      * @param num_updates The number of updates
      * @return an ArrayList with DistributedRegion at the same step
      * @throws InterruptedException 
+     * @throws DMasonException 
      */
-	public  PriorityQueue<Object> getUpdates(long step,int num_updates) throws InterruptedException
+	public  PriorityQueue<Object> getUpdates(long step,int num_updates) throws InterruptedException, DMasonException
 	{
 		//long starttime = System.currentTimeMillis();
+		if(num_updates<0){throw new DMasonException("num_updates value of UpdateMap can not less than zero"); }
+		
 		lock.lock();
 		PriorityQueue<Object> tmp=this.get(step);
 

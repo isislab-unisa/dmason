@@ -48,7 +48,7 @@ import org.junit.runners.Suite.SuiteClasses;
 //		RegionDoubleLBTester.class,
 //		DContinuous2DFactoryTester.class,
 //		DDoubleGrid2DFactoryTester.class,
-//		UpdateMapTester.class,
+		UpdateMapTester.class,
 //		DIntGrid2DFactoryTester.class,
 //		DContinuous2DXYTester.class,
 //		DistributedStateConnectionJMSTester.class,

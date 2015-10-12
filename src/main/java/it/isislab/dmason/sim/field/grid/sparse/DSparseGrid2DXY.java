@@ -17,6 +17,7 @@
 
 package it.isislab.dmason.sim.field.grid.sparse;
 
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
@@ -656,7 +657,10 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 				verifyUpdates(region);	
 			}			
 
-		}catch (InterruptedException e1) {e1.printStackTrace(); }
+		}catch (InterruptedException e1) {e1.printStackTrace(); } catch (DMasonException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		for(Region<Integer,Int2D> region : updates_cache)
 			for(Entry<Int2D> e_m: region)

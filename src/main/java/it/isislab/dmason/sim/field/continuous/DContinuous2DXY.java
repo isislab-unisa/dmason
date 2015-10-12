@@ -17,6 +17,7 @@
 
 package it.isislab.dmason.sim.field.continuous;
 
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
@@ -596,7 +597,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 				DistributedRegion<Double, Double2D> region=(DistributedRegion<Double,Double2D>)q.poll();
 				verifyUpdates(region);
 			}
-		} catch (InterruptedException e1) {e1.printStackTrace(); }
+		} catch (InterruptedException e1) {e1.printStackTrace(); } catch (DMasonException e1) {e1.printStackTrace(); }
 
 		for(Region<Double, Double2D> region : updates_cache)
 			for(Entry<Double2D> e_m: region)

@@ -112,6 +112,9 @@ public class UpdateMapTester {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			fail(e.getMessage());
+		} catch (DMasonException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		assertEquals("[" + app + "]", ts);
 	}
@@ -133,6 +136,9 @@ public class UpdateMapTester {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			fail(e.getMessage());
+		} catch (DMasonException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		String tr[] = ts.split(", ");
@@ -159,6 +165,9 @@ public class UpdateMapTester {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			fail(e.getMessage());
+		} catch (DMasonException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		String tr[] = ts.split(", ");
@@ -205,6 +214,9 @@ public class UpdateMapTester {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			fail(e.getMessage());
+		} catch (DMasonException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}

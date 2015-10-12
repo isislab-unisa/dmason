@@ -17,6 +17,7 @@
 
 package it.isislab.dmason.sim.field.grid.numeric.thin;
 
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
@@ -340,7 +341,10 @@ public class DIntGrid2DYThin extends DIntGrid2DThin {
 				DistributedRegionNumeric<Integer, EntryNum<Integer,Int2D>> region=(DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>)q.poll();
 				verifyUpdates(region);
 			}
-		} catch (InterruptedException e1) {e1.printStackTrace(); }
+		} catch (InterruptedException e1) {e1.printStackTrace(); } catch (DMasonException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		for(RegionNumeric<Integer,EntryNum<Integer,Int2D>> region : updates_cache)
 		{
