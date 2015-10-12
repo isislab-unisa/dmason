@@ -76,7 +76,7 @@
 and this has the following bug:
 
 	1. Infinite loop if numUpdate>queue size
-	2. Infinite loop if numUpdates>0
+	2. Infinite loop if numUpdates<0
 
 ###R4 [dmason.sim.field.continuous.DContinuous2DFactory]###
 In the method createContinuous2DXY problems are found in the blocks of code that implement the following procedures:
