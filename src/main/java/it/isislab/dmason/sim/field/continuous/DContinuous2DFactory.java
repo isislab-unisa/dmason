@@ -88,7 +88,7 @@ public final class DContinuous2DFactory
 		{
 			    //horizontal mode 1 row fixed and columns value 0<j<=n 
 			    if(rows!=1){throw new DMasonException("Illegal rows dimension for horizontal mode, it must have one row");}
-			    if(columns==0){throw new DMasonException("Illegal columns dimension for horizontal mode, horizontal mode can not have zero columns");}
+			    //if(columns==0){throw new DMasonException("Illegal columns dimension for horizontal mode, horizontal mode can not have zero columns");}
 			    
 				DistributedField2D field = new DContinuous2DY(discretization,width, height,sm, max_distance, i, j, rows,columns,name,topicPrefix);	
 				field.setToroidal(isToroidal);
