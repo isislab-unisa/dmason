@@ -81,11 +81,6 @@ public class UpdateCell<E,F> extends HashMap<Long,PriorityQueue<MyCellIntegerFie
 			tmp=this.get(step);
 		}
 		
-		/*	result of failed test UpdateCellTester 
-		 * 	on method testGetUpdatesOverQueueLength
-		 * */
-		if(tmp.size() < num_updates)
-			throw new DMasonException("The number of updates is not correct");
 		
 		while(tmp.size()!=num_updates)
 		{
