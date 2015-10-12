@@ -447,13 +447,13 @@ public class DIntGrid2DFactoryTester {
 
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
-					1, /* i */0, /* j */0, /* rows */10, /* columns */10, /* MODE */
+					1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
 					DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
 					1, /* fixed */false, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 			assertEquals("width", 10, dint.getWidth());
 			assertEquals("height", 10, dint.getHeight());
-			assertEquals("rows", 10, dint.rows);
+			assertEquals("rows", 1, dint.rows);
 			assertEquals("columns", 10, dint.columns);
 
 		} catch (DMasonException e) {
@@ -655,14 +655,14 @@ public class DIntGrid2DFactoryTester {
 	}
 
 	/**
-	 * Test for square distribution mode with differents rows columns.
+	 * Test for square distribution mode with different rows columns.
 	 */
 	@Test
 	public void testSDMRowsColumns() {
 
 		try {
 
-			for (int i = 0; i < numLoop; i++) {
+			for (int i = 1; i < numLoop; i++) {
 				for (int j = 1; j < numLoop; j++) {
 
 					dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
