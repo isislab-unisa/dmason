@@ -92,7 +92,7 @@ public class DContinuous2DFactoryTester {
 
 
 	/**
-	 * test for horizontal distribution mothe with int width and height
+	 * test for horizontal distribution mode with int width and height
 	 */
 
 	@Test
@@ -390,9 +390,9 @@ public class DContinuous2DFactoryTester {
 					0,/* rows */1,/* colums */2,/* mode */
 					DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
-
+			fail("max_distance exceeds max integer value");
 		} catch (DMasonException e) {
-			fail(e.getMessage());
+			//ok
 		}
 
 	}
@@ -466,9 +466,10 @@ public class DContinuous2DFactoryTester {
 						DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 						"test", /* topicPrefix */"",/* isToroidal */true);
 
-				assertEquals(1, dcon.rows);
-				assertEquals(j, dcon.columns);
-
+				assertEquals("rows value failure",1, dcon.rows);
+				assertEquals("columns value failure",j, dcon.columns);
+				
+				
 			} catch (DMasonException e) {
 				fail(e.getMessage());
 			}
@@ -692,6 +693,7 @@ public class DContinuous2DFactoryTester {
 					DContinuous2DFactory.SQUARE_DISTRIBUTION_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
+			fail("errore");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -743,7 +745,7 @@ public class DContinuous2DFactoryTester {
 	}
 
 	/**
-	 * Test square balanced distribution mode with maxdistance = 0 and width and height multiple of 3 colums and rows.
+	 * Test square balanced distribution mode with max_distance = 0 and width and height multiple of 3 colums and rows.
 	 */
 	@Test
 	public void testSquareBalancedDistributionModeX3() {
@@ -807,7 +809,7 @@ public class DContinuous2DFactoryTester {
 						/* numAgents */1,
 						/* mode */DSparseGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE,
 						ConnectionType.pureActiveMQ);
-
+				
 				dcon = DContinuous2DFactory
 						.createDContinuous2D(
 								/* discretization */1.0 / 1.5,/* width */
