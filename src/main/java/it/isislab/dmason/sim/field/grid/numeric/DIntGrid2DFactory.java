@@ -68,8 +68,20 @@ public class DIntGrid2DFactory {
 			int initialGridValue, boolean fixed, String name, String topicPrefix, boolean isToroidal)
 					throws DMasonException
 					{
+		//general parameters check
+		if(columns<=0 || rows <=0){throw new DMasonException("Illegal value : columns value and rows value must be greater than 0");}
+		if(width<=0) {throw new DMasonException("Illegal value: Field width <= 0 is not defined");}
+		if(height<=0) {throw new DMasonException("Illegal value: Field height <= 0 is not defined");}
+		if(width>=Integer.MAX_VALUE) {throw new DMasonException("Illegal value : width value exceeds Integer max value");}
+		if(height>=Integer.MAX_VALUE) {throw new DMasonException("Illegal value : height value exceeds Integer max value");}
+		if(max_distance<0){throw new DMasonException("Illegal value, max_distance value must be greater than 0");}
+		if(max_distance>=Integer.MAX_VALUE ){throw new DMasonException("Illegal value : max_distance value exceded Integer max value");}
+		
+		
 		if(MODE==HORIZONTAL_DISTRIBUTION_MODE)
 		{
+			if(rows!=1){throw new DMasonException("Illegal rows dimension for horizontal mode, it must have one row");}
+			  
 			DIntGrid2D field = new DIntGrid2DY(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name,topicPrefix);
 			field.setToroidal(isToroidal);
 			if(!fixed)
