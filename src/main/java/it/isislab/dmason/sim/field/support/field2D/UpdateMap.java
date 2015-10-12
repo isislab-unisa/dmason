@@ -67,7 +67,7 @@ public class UpdateMap<E,F> extends HashMap<Long,PriorityQueue<Object>> implemen
 		
 		lock.lock();
 		PriorityQueue<Object> tmp=this.get(step);
-
+         
 		while(tmp==null)
 		{
 			block.await();
