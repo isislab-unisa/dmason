@@ -70,24 +70,15 @@ public final class DContinuous2DFactory
 		throws DMasonException
 	{	
 		
+		//general parameters check for value   
 		
-		if(MODE== HORIZONTAL_DISTRIBUTION_MODE){
-			if(rows>1){throw new DMasonException("Illegal arguments: horizontal mode can not have more than one rows");}
-			if(rows==0){throw new DMasonException("Illegal arguments: horizontal mode can not zero rows");}
-			if(rows<0){throw new DMasonException("Illegal arguments: rows value can not less than 0");}
-			if(columns==0){throw new DMasonException("Illegal arguments: horizontal mode can not zero rows");}
-			}
-		
-		
-		
-		if(width<=0) {throw new DMasonException("Illegal value: Field width <= 0 is not defined");}
 		if(width>=Double.MAX_VALUE) {throw new DMasonException("Illegal value : width value exceeds Double max value");}
 		if(height<=0) {throw new DMasonException("Illegal value: Field height <= 0 is not defined");}
 		if(height>=Double.MAX_VALUE) {throw new DMasonException("Illegal value : height value exceeds Double max value");}
 		if(max_distance<0){throw new DMasonException("Illegal value, max_distance value must be greater than 0");}
 		if(max_distance>=Integer.MAX_VALUE ){throw new DMasonException("Illegal value : max_distance value exceded Integer max value");}
-		if(rows<0){throw new DMasonException("Illegal value : rows value must be greater than 0");}
-		if(columns<0){throw new DMasonException("Illegal value : columns value must be greater than 0");}
+		if(width<=0) {throw new DMasonException("Illegal value: Field width <= 0 is not defined");}
+		if(columns<=0 || rows <=0){throw new DMasonException("Illegal value : columns value and rows value must be greater than 0");}
 		
 		
 		
@@ -95,6 +86,10 @@ public final class DContinuous2DFactory
 		
 		if(MODE==HORIZONTAL_DISTRIBUTION_MODE)
 		{
+			    //horizontal mode 1 row fixed and columns value 0<j<=n 
+			    if(rows!=1){throw new DMasonException("Illegal rows dimension for horizontal mode, it must have one row");}
+			    if(columns==0){throw new DMasonException("Illegal columns dimension for horizontal mode, horizontal mode can not have zero columns");}
+			    
 				DistributedField2D field = new DContinuous2DY(discretization,width, height,sm, max_distance, i, j, rows,columns,name,topicPrefix);	
 				field.setToroidal(isToroidal);
 				((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
