@@ -100,8 +100,9 @@ public final class DContinuous2DFactory
 		else
 			if(MODE==SQUARE_DISTRIBUTION_MODE)
 			{
-			
-					DistributedField2D field = new DContinuous2DXY(discretization,width, height,sm, max_distance, i, j, rows,columns,name,topicPrefix);
+				    if(rows!=columns){throw new DMasonException("Square mode numbers of rows and columns must be equals!");}
+					
+				    DistributedField2D field = new DContinuous2DXY(discretization,width, height,sm, max_distance, i, j, rows,columns,name,topicPrefix);
 					field.setToroidal(isToroidal);
 					((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 					
@@ -111,9 +112,11 @@ public final class DContinuous2DFactory
 			else
 				if(MODE==SQUARE_BALANCED_DISTRIBUTION_MODE)
 				{
+					if(rows!=columns){throw new DMasonException("Square balanced mode numbers of rows and columns must be equals!");}
+					
 					int my_width=(int) (width/columns);
 					int my_height=(int) (height/rows);
-					int safezone = my_width /3;
+					double safezone = my_width /3;
 					if(((width% columns == 0) && (height% rows == 0)) && 
 							(((width/ columns)%3 == 0) && ((height/ rows)%3 == 0)) && max_distance < safezone/2 ){
 
@@ -128,7 +131,7 @@ public final class DContinuous2DFactory
 				}
 				else if(MODE==HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
 				{
-
+					if(rows!=1){throw new DMasonException("Illegal rows dimension for horizontal balanced mode, it must have one row");}
 					DistributedField2D field = new DContinuous2DYLB(discretization,width, height,sm, max_distance, i, j, rows,columns,name,topicPrefix);	
 					field.setToroidal(isToroidal);
 					((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);

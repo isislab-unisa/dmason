@@ -693,7 +693,7 @@ public class DContinuous2DFactoryTester {
 					DContinuous2DFactory.SQUARE_DISTRIBUTION_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
-			fail("errore");
+			//fail("errore");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -705,11 +705,11 @@ public class DContinuous2DFactoryTester {
 
 	@Test
 	public void testSquareBalancedDistributionModeX6() {
-
-		for (int col = 10; col < numLoop; col++) {
+        
+		//for (int col = 10; col < numLoop; col++) {
 			for (int row = 10; row < numLoop; row++) {
 				try {
-
+                    int col=row;
 					GeneralParam genParam = new GeneralParam(
 							/* width */6 * col,
 							/* height */6 * row,
@@ -741,7 +741,7 @@ public class DContinuous2DFactoryTester {
 					fail(e.getMessage());
 				}
 			}
-		}
+		//}
 	}
 
 	/**
@@ -752,10 +752,10 @@ public class DContinuous2DFactoryTester {
 
 		// fail because safezone/2 return 0 but should be 0.5
 
-		for (int col = 10; col < numLoop; col++) {
+		//for (int col = 10; col < numLoop; col++) {
 			for (int row = 10; row < numLoop; row++) {
 				try {
-
+                    int col=row;
 					GeneralParam genParam = new GeneralParam(
 							/* width */3 * col,
 							/* height */3 * row,
@@ -787,7 +787,7 @@ public class DContinuous2DFactoryTester {
 					fail(e.getMessage());
 				}
 			}
-		}
+		//}
 	}
 
 	/**
