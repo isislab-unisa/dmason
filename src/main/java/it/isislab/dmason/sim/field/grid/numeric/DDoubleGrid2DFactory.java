@@ -92,6 +92,7 @@ public class DDoubleGrid2DFactory {
 		else
 			if(MODE==SQUARE_DISTRIBUTION_MODE)
 			{
+				if(rows!=columns) throw new DMasonException("In square mode rows and columns must be equal!");
 				DistributedField2D field = new DDoubleGrid2DXY(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name,topicPrefix);
 				field.setToroidal(isToroidal);
 				if(!fixed)
@@ -100,6 +101,7 @@ public class DDoubleGrid2DFactory {
 
 			}
 			else if (MODE==SQUARE_BALANCED_DISTRIBUTION_MODE){
+				if(rows!=columns) throw new DMasonException("In square mode rows and columns must be equal!");
 				if(((width% columns == 0) && (height% rows == 0)) && 
 						(((width/ columns)%3 == 0) && ((height/ rows)%3 == 0)))
 				{
