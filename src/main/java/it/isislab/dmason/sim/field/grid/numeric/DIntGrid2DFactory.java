@@ -93,7 +93,7 @@ public class DIntGrid2DFactory {
 		else
 			if(MODE==SQUARE_DISTRIBUTION_MODE)
 			{
-
+                if(rows!=columns){throw new DMasonException("In square mode rows and columns must be equals!");}
 				DIntGrid2D field = new DIntGrid2DXY(width, height,sm, max_distance, i, j,rows,columns, initialGridValue, name,topicPrefix); 
 				field.setToroidal(isToroidal);
 				if(!fixed)
@@ -103,6 +103,7 @@ public class DIntGrid2DFactory {
 
 			}
 			else if (MODE==SQUARE_BALANCED_DISTRIBUTION_MODE){
+				if(rows!=columns){throw new DMasonException("In square mode rows and columns must be equals!");}
 				if(((width% columns == 0) && (height% rows == 0)) && 
 						(((width/ columns)%3 == 0) && ((height/ rows)%3 == 0)))
 				{
@@ -120,7 +121,7 @@ public class DIntGrid2DFactory {
 			else
 				if(MODE==HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
 				{
-
+					
 					DIntGrid2D field = new DIntGrid2DYLB(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name,topicPrefix);
 					field.setToroidal(isToroidal);
 					if(!fixed)
