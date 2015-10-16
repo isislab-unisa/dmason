@@ -104,9 +104,9 @@ In the method createContinuous2DXY problems are found in the blocks of code that
 1. The same errors indicated for DContinuous2DFactory.
 
 ###R8 [dmason.sim.field.continuous.DContinuous2DXY]###
-1. The method getAllVisibleAgent is never used in DMASON, and still would not work because it forces the use of clone on an interface, then launching a InstantiationException.
+1. The method getAllVisibleAgent is never used in DMASON, and still would not work because it forces the use of clone on an interface, then launching a InstantiationException.(Used by SociallyDmagingBehaviours only) 
 2. GetMineAgents is never used.
-3. ResetAddAll is never used.
+3. ResetAddAll used by SociallyDamagingBehaviour only.
 4. SetDistributedObjectLocation.
 	1. If you pass an agent already exists, this is not moved, but creates another agent equal to a new location.
 	2. With a stress-test (numLoop> 8) manifests a bug due to the representation of numbers in java.
