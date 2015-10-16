@@ -29,7 +29,7 @@ public class DIntGrid2DFactoryTester {
 
 	/** The grid. */
 	DIntGrid2D dint;
-	
+
 	/** The num loop. */
 	int numLoop = 100;
 
@@ -233,7 +233,7 @@ public class DIntGrid2DFactoryTester {
 		try {
 
 			dint = DIntGrid2DFactory.createDIntGrid2D(
-			/* width */Integer.MAX_VALUE, /* height */
+					/* width */Integer.MAX_VALUE, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
 					DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
@@ -304,13 +304,13 @@ public class DIntGrid2DFactoryTester {
 		try {
 
 			GeneralParam genParam = new GeneralParam(
-			/* width */10,
-			/* height */10,
-			/* maxDistance */10,
-			/* rows */2,
-			/* columns */2,
-			/* numAgents */1,
-			/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+					/* width */10,
+					/* height */10,
+					/* maxDistance */10,
+					/* rows */2,
+					/* columns */2,
+					/* numAgents */1,
+					/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
@@ -592,7 +592,7 @@ public class DIntGrid2DFactoryTester {
 		try {
 
 			dint = DIntGrid2DFactory.createDIntGrid2D(
-			/* width */Integer.MAX_VALUE, /* height */
+					/* width */Integer.MAX_VALUE, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */10, /* columns */10, /* MODE */
 					DIntGrid2DFactory.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
@@ -663,7 +663,8 @@ public class DIntGrid2DFactoryTester {
 		try {
 
 			for (int i = 1; i < numLoop; i++) {
-				for (int j = 1; j < numLoop; j++) {
+				int j=i;
+				//for (int j = 1; j < numLoop; j++) {
 
 					dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 							10, /* SimState */new StubDistributedState(),/* max_distance */
@@ -673,7 +674,7 @@ public class DIntGrid2DFactoryTester {
 							"",/* isToroidal */false);
 					assertEquals(i, dint.rows);
 					assertEquals(j, dint.columns);
-				}
+				//}
 			}
 		} catch (DMasonException e) {
 			fail(e.getMessage());
@@ -927,7 +928,7 @@ public class DIntGrid2DFactoryTester {
 		try {
 
 			dint = DIntGrid2DFactory.createDIntGrid2D(
-			/* width */Integer.MAX_VALUE, /* height */
+					/* width */Integer.MAX_VALUE, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
 					DIntGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
