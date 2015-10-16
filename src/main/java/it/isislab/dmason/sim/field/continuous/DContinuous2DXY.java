@@ -1124,7 +1124,9 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 		return 0;
 	}
 
-
+   /**
+    * Used by SociallyDamaginBehaviour because ...
+    */
 	public ArrayList<Entry<Double2D>> getAllVisibleAgent() {
 
 		ArrayList<Entry<Double2D>> thor=myfield.clone();
@@ -1158,6 +1160,7 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 		
 		return thor;
 	}
+	/*
 	public ArrayList<Entry<Double2D>> getMineAgent() {
 		ArrayList<Entry<Double2D>> thor=myfield.clone();
 		Class o=rmap.getClass();
@@ -1191,8 +1194,10 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 		}
 		
 		return thor;
-	}
+	}*/
 	/**
+	 * Used by SociallyDamaginBehaviour
+	 * 
 	 * This method insert all agents in the field and in the corresponding region,
 	 * for this method you must use position of the actual cell
 	 * @param agents
