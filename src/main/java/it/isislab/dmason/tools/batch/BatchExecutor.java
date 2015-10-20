@@ -17,6 +17,7 @@
 
 package it.isislab.dmason.tools.batch;
 
+import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.tools.batch.data.EntryParam;
 import it.isislab.dmason.tools.batch.data.EntryWorkerScore;
@@ -261,7 +262,7 @@ public class BatchExecutor extends Thread
 			errors.add("Both Rows and Columns must not be equals to 1\n");
 
 
-		if(MODE == DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE && (rows != columns || WIDTH % 3*columns!=0 || HEIGHT % 3*rows != 0 || maxDistance >= (WIDTH/columns) / 3 / 2))
+		if(MODE == DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE && (rows != columns || WIDTH % 3*columns!=0 || HEIGHT % 3*rows != 0 || maxDistance >= (WIDTH/columns) / 3 / 2))
 			errors.add("Width and height are not divisible by 3 * sqrt(rows*columns) or rows is not equal to columns\n");
 
 		if((Math.floor(WIDTH/columns)<2*maxDistance+1))
@@ -277,16 +278,16 @@ public class BatchExecutor extends Thread
 		if(rows==1)
 		{
 			if(!isBalanced)
-				mode = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
+				mode = DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE;
 			else
-				mode = DSparseGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE;
+				mode = DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE;
 		}
 		else
 		{	
 			if(!isBalanced)
-				mode = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
+				mode = DistributedField2D.SQUARE_DISTRIBUTION_MODE;
 			else
-				mode = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
+				mode = DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE;
 		}
 
 		return mode;
