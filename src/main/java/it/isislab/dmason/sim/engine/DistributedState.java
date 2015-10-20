@@ -24,6 +24,7 @@ import it.isislab.dmason.tools.batch.data.EntryParam;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.SystemManagement.globals.util.UpdateGlobalVarAtStep;
 import it.isislab.dmason.util.connection.Connection;
+import it.isislab.dmason.util.connection.ConnectionType;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.trigger.Trigger;
 
@@ -126,21 +127,67 @@ public abstract class DistributedState<E> extends SimState {
 		this.MODE = params.getMode();
 		this.topicPrefix = prefix;
 
-		if (typeOfConnection == 0) {
+		switch (typeOfConnection) {
+		case ConnectionType.pureActiveMQ:
 			serviceJMS = new DistributedStateConnectionJMS(this,
 					params.getIp(), params.getPort());
 			isPureAMQ = true;
-		} else if (typeOfConnection > 0) {
-			serviceMPI = new DistributedStateConnectionMPI(this,
-					typeOfConnection);
-			isPureMPI = true;
-		} else {
+			break;
+		case ConnectionType.hybridActiveMQMPIBcast:
 			serviceJMS = new DistributedStateConnectionJMS(this,
 					params.getIp(), params.getPort());
 			serviceMPI = new DistributedStateConnectionMPI(this,
 					typeOfConnection);
 			isHybrid = true;
+			break;
+		case ConnectionType.hybridActiveMQMPIGather:
+			serviceJMS = new DistributedStateConnectionJMS(this,
+					params.getIp(), params.getPort());
+			serviceMPI = new DistributedStateConnectionMPI(this,
+					typeOfConnection);
+			isHybrid = true;
+			break;
+		case ConnectionType.hybridActiveMQMPIParallel:
+			serviceJMS = new DistributedStateConnectionJMS(this,
+					params.getIp(), params.getPort());
+			serviceMPI = new DistributedStateConnectionMPI(this,
+					typeOfConnection);
+			isHybrid = true;
+			break;
+		case ConnectionType.hybridMPIMultipleThreads:
+			serviceJMS = new DistributedStateConnectionJMS(this,
+					params.getIp(), params.getPort());
+			serviceMPI = new DistributedStateConnectionMPI(this,
+					typeOfConnection);
+			isHybrid = true;
+			break;
+		case ConnectionType.pureMPIBcast:
+			serviceMPI = new DistributedStateConnectionMPI(this,
+					typeOfConnection);
+			isPureMPI = true;
+			break;
+		case ConnectionType.pureMPIGather:
+			serviceMPI = new DistributedStateConnectionMPI(this,
+					typeOfConnection);
+			isPureMPI = true;
+			break;
+		case ConnectionType.pureMPIParallel:
+			serviceMPI = new DistributedStateConnectionMPI(this,
+					typeOfConnection);
+			isPureMPI = true;
+			break;
+		case ConnectionType.pureMPIMultipleThreads:
+			serviceMPI = new DistributedStateConnectionMPI(this,
+					typeOfConnection);
+			isPureMPI = true;
+			break;
+		case ConnectionType.fakeUnitTestJMS:
+
+			break;
+		default:
+			break;
 		}
+
 	}
 
 	public DistributedState(GeneralParam params,
@@ -251,7 +298,7 @@ public abstract class DistributedState<E> extends SimState {
 		for (EntryParam<String, Object> entryParam : simulationParameters) {
 			try {
 				this.getClass().getDeclaredField(entryParam.getParamName())
-						.set(this, entryParam.getParamValue());
+				.set(this, entryParam.getParamValue());
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

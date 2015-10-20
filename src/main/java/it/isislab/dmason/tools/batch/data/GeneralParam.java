@@ -38,6 +38,30 @@ public class GeneralParam implements Serializable
 	private boolean isBatch;
 	private int connectionType;
 	
+	private int P;
+	
+	public GeneralParam(int width, int height, int maxDistance,
+			int P, int numAgents, int mode, int connectionType) {
+		super();
+		this.Width = width;
+		this.Height = height;
+		this.MaxDistance = maxDistance;
+		//this.NumRegions = numRegions;
+		this.P=P;
+		this.NumAgents = numAgents;
+		this.Mode = mode;
+		this.isBatch = false;
+		this.connectionType=connectionType;
+	}
+	
+	public int getP() {
+		return P;
+	}
+
+	public void setP(int p) {
+		P = p;
+	}
+
 	public GeneralParam(int width, int height, int maxDistance,
 			int rows, int columns, int numAgents, int mode, int connectionType) {
 		super();
@@ -45,6 +69,7 @@ public class GeneralParam implements Serializable
 		this.Height = height;
 		this.MaxDistance = maxDistance;
 		//this.NumRegions = numRegions;
+		this.P=rows*columns;
 		this.Rows = rows;
 		this.Columns = columns;
 		this.NumAgents = numAgents;
@@ -60,6 +85,7 @@ public class GeneralParam implements Serializable
 		this.Height = height;
 		this.MaxDistance = maxDistance;
 		//this.NumRegions = numRegions;
+		this.P=rows*columns;
 		this.Rows = rows;
 		this.Columns = columns;
 		this.NumAgents = numAgents;
@@ -76,6 +102,7 @@ public class GeneralParam implements Serializable
 		this.Width = width;
 		this.Height = height;
 		this.MaxDistance = maxDistance;
+		this.P=rows*columns;
 		//this.NumRegions = numRegions;
 		this.Rows = rows;
 		this.Columns = columns;

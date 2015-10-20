@@ -14,9 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package it.isislab.dmason.test.sim.app.DFlockers;
-import it.isislab.dmason.test.sim.app.DFlockers.DFlockers;
-import it.isislab.dmason.test.sim.app.DFlockers.RemoteFlock;
+package it.isislab.dmason.sim.app.DFlockersNonUniformPartitioning;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.continuous.DContinuous2D;
 
@@ -39,14 +37,14 @@ import ec.util.MersenneTwisterFast;
  * @author Carmine Spagnuolo
  *
  */
-public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
+public class DFlockerNonUniformPartitioning extends RemoteFlockNonUniformPartitioning<Double2D> implements Orientable2D
 {
     public Double2D lastd = new Double2D(0,0);
     public Color color;
     public boolean dead = false;
 
-    public DFlocker(){}
-    public DFlocker(DistributedState<Double2D> sm,Double2D location) 
+    public DFlockerNonUniformPartitioning(){}
+    public DFlockerNonUniformPartitioning(DistributedState<Double2D> sm,Double2D location) 
     { 
     	super(sm);
     	pos = location;
@@ -54,7 +52,7 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
     
     public Bag getNeighbors(DistributedState<Double2D> sm)
     {
-        return ((DContinuous2D)sm.getField()).getObjectsExactlyWithinDistance(pos, ((DFlockers)sm).neighborhood, true);
+        return ((DContinuous2D)sm.getField()).getObjectsExactlyWithinDistance(pos, ((DFlockersNonUniformPartitioning)sm).neighborhood, true);
     }
     
     public double getOrientation() { return orientation2D(); }
@@ -89,12 +87,12 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
         int count = 0;
         for(i=0;i<b.numObjs;i++)
         {
-            DFlocker other = (DFlocker)(b.objs[i]);
+            DFlockerNonUniformPartitioning other = (DFlockerNonUniformPartitioning)(b.objs[i]);
             if (!other.dead)
             {
                 double dx = flockers.tdx(pos.x,other.pos.x);
                 double dy = flockers.tdy(pos.y,other.pos.y);
-                Double2D m = ((DFlocker)b.objs[i]).momentum();
+                Double2D m = ((DFlockerNonUniformPartitioning)b.objs[i]).momentum();
                 count++;
                 x += m.x;
                 y += m.y;
@@ -115,7 +113,7 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
         int i =0;
         for(i=0;i<b.numObjs;i++)
         {
-            DFlocker other = (DFlocker)(b.objs[i]);
+            DFlockerNonUniformPartitioning other = (DFlockerNonUniformPartitioning)(b.objs[i]);
             if (!other.dead)
             {
                 double dx = flockers.tdx(pos.x,other.pos.x);
@@ -140,7 +138,7 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
 
         for(i=0;i<b.numObjs;i++)
         {
-            DFlocker other = (DFlocker)(b.objs[i]);
+            DFlockerNonUniformPartitioning other = (DFlockerNonUniformPartitioning)(b.objs[i]);
             if (other != this )
             {
                 double dx = flockers.tdx(pos.x,other.pos.x);
@@ -166,7 +164,8 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
 	@Override
 	public void step(SimState state)
 	{     	
-		final DFlockers flock = (DFlockers)state;
+		
+		final DFlockersNonUniformPartitioning flock = (DFlockersNonUniformPartitioning)state;
 		pos = flock.flockers.getObjectLocation(this);
 		
 		if (dead) return;
@@ -204,5 +203,4 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
 	{
 		this.color = color;
 	}
- 
 }

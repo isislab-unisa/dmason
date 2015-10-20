@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 public final class ConnectionType implements Serializable{
 
-		public static final int fakeUnitTestJMS = -1;
+		public static final int fakeUnitTestJMS = -5;
 	
 		public static final int pureMPIBcast = 1;
 		public static final int pureMPIGather = 2;
@@ -19,6 +19,6 @@ public final class ConnectionType implements Serializable{
 		public static final int hybridActiveMQMPIParallel = -3;
 		public static final int hybridMPIMultipleThreads = -4;
 		
-		private static int ConnectionType = pureMPIParallel;
+		private static int ConnectionType = pureActiveMQ;
 	
 }

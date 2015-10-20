@@ -14,14 +14,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package it.isislab.dmason.sim.app.DFlockers;
+package it.isislab.dmason.sim.app.DFlockersNonUniformPartitioning;
 
 import it.isislab.dmason.annotation.BatchAnnotation;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
-import it.isislab.dmason.sim.engine.test.DistributedStateConnectionFake;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.continuous.DContinuous2D;
 import it.isislab.dmason.sim.field.continuous.DContinuous2DFactory;
@@ -51,9 +50,9 @@ import sim.util.Double2D;
  * @author Carmine Spagnuolo
  *
  */
-public class DFlockers extends DistributedState<Double2D>
+public class DFlockersNonUniformPartitioning extends DistributedState<Double2D>
 {
-	public DFlockers()
+	public DFlockersNonUniformPartitioning()
 	{
 		super();
 	}
@@ -127,9 +126,22 @@ public class DFlockers extends DistributedState<Double2D>
  	private boolean  checkAgentDuplication = false;
  	private FileOutputStream file = null;
  	private PrintStream ps = null;
-
     
-    public DFlockers(GeneralParam params)
+    
+//    int localTest = 1; int globalTest = -1;
+//    public int getTest() { return localTest; }
+//    public void setTest(int value) { localTest = value; }
+//    public boolean globalTest() { return true; }
+//    public int getGlobalTest() { return globalTest; }
+//    public void setGlobalTest(Object value) { globalTest = (Integer)value; }
+//    public Integer reduceTest(Object[] shard) {
+//    	int globalTest = 0;
+//    	for (int i = 0; i < shard.length; i++) globalTest +=  ((Integer)shard[i]).intValue();
+//    	return globalTest;
+//    } 
+   
+    
+    public DFlockersNonUniformPartitioning(GeneralParam params)
     {    	
     	super(params,new DistributedMultiSchedule<Double2D>(),topicPrefix,params.getConnectionType());
     	this.MODE=params.getMode();
@@ -147,7 +159,7 @@ public class DFlockers extends DistributedState<Double2D>
 		}
     }
     
-    public DFlockers(GeneralParam params,List<EntryParam<String, Object>> simParams, String prefix)
+    public DFlockersNonUniformPartitioning(GeneralParam params,List<EntryParam<String, Object>> simParams, String prefix)
     {    	
     	super(params,new DistributedMultiSchedule<Double2D>(), prefix,params.getConnectionType());
     	this.MODE=params.getMode();
@@ -211,7 +223,6 @@ public class DFlockers extends DistributedState<Double2D>
     @Override
 	public void start()
     {
-
     	super.start();
 
     	// set up the flockers field.  It looks like a discretization
@@ -233,7 +244,7 @@ public class DFlockers extends DistributedState<Double2D>
     	//if ( (TYPE.pos_i == 0 && TYPE.pos_j == 0) )
     	{
 
-    		DFlocker f=new DFlocker(this,new Double2D(0,0));
+    		DFlockerNonUniformPartitioning f=new DFlockerNonUniformPartitioning(this,new Double2D(0,0));
     		int j=0;
 
     		while(flockers.size() != super.NUMAGENTS / super.NUMPEERS)
@@ -260,7 +271,7 @@ public class DFlockers extends DistributedState<Double2D>
     						128 + this.random.nextInt(128));
     				f.setColor(c);
     				schedule.scheduleOnce(f);
-    				f=new DFlocker(this,new Double2D(0,0));
+    				f=new DFlockerNonUniformPartitioning(this,new Double2D(0,0));
     			}
 
     			j++;
@@ -278,7 +289,7 @@ public class DFlockers extends DistributedState<Double2D>
 
     public static void main(String[] args)
     {
-    	doLoop(DFlockers.class, args);
+    	doLoop(DFlockersNonUniformPartitioning.class, args);
     	System.exit(0);
     }
 
@@ -307,7 +318,7 @@ public class DFlockers extends DistributedState<Double2D>
     {
     	if(flockers.p!=null)
     	{
-    		DFlocker f=(DFlocker)o;
+    		DFlockerNonUniformPartitioning f=(DFlockerNonUniformPartitioning)o;
     		SimplePortrayal2D pp = new AdjustablePortrayal2D(new MovablePortrayal2D(new OrientedPortrayal2D(new SimplePortrayal2D(),0,4.0,
     				f.getColor(),
     				OrientedPortrayal2D.SHAPE_COMPASS)));
