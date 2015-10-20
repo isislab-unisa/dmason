@@ -168,7 +168,7 @@ public class DistributedStateConnectionMPI<E> {
 
 	private void connection_IS_toroidal() {
 
-		if (MODE == 0 || MODE == 3) { // HORIZONTAL_MODE
+		if (MODE == DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE || MODE == DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE) { // HORIZONTAL_MODE
 
 			try {
 
@@ -198,7 +198,7 @@ public class DistributedStateConnectionMPI<E> {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} else if (MODE==1){// SQUARE_MODE
+		} else if (MODE== DistributedField2D.SQUARE_DISTRIBUTION_MODE){// SQUARE_MODE
 
 			try {
 
@@ -298,7 +298,7 @@ public class DistributedStateConnectionMPI<E> {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}else if (MODE == 2) { // SQUARE BALANCED
+		}else if (MODE ==  DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE) { // SQUARE BALANCED
 
 			try {
 
@@ -364,7 +364,7 @@ public class DistributedStateConnectionMPI<E> {
 
 	private void connection_NO_toroidal() {
 
-		if (MODE == 0 || MODE == 3) { // HORIZONTAL_MODE
+		if (MODE ==  DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE || MODE ==  DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE) { // HORIZONTAL_MODE
 
 			try {
 
@@ -403,7 +403,7 @@ public class DistributedStateConnectionMPI<E> {
 				e.printStackTrace();
 			}
 
-		} else if (MODE == 1) { // SQUARE NOT BALANCED
+		} else if (MODE ==  DistributedField2D.SQUARE_DISTRIBUTION_MODE) { // SQUARE NOT BALANCED
 
 			try {
 

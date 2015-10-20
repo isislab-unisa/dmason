@@ -87,14 +87,14 @@ public class DistributedStateConnectionJMS<E> {
 
 	public DistributedStateConnectionJMS()
 	{
-		
+
 	}
 	public DistributedStateConnectionJMS(DistributedState dm, String ip,String port) {
 		this.ip = ip;
 		this.port = port;
 		this.dm=dm;
 		connectionJMS = new ConnectionNFieldsWithActiveMQAPI();
-		
+
 		/**
 		 * 		try {
 			connectionJMS.setupConnection(new Address(ip, port));
@@ -113,13 +113,13 @@ public class DistributedStateConnectionJMS<E> {
 		columns=dm.columns;
 		networkNumberOfSubscribersForField=dm.networkNumberOfSubscribersForField;
 	}
-	
+
 	//this is only for test
 	public DistributedStateConnectionJMS(DistributedState dm, String ip,String port,ConnectionJMS connectionJMS,boolean thisIsATest) {
 		this.ip = ip;
 		this.port = port;
 		this.dm=dm;
-		
+
 		this.connectionJMS = new ConnectionNFieldsWithActiveMQAPI();
 		//this.connectionJMS=connectionJMS;
 		/**
@@ -140,16 +140,16 @@ public class DistributedStateConnectionJMS<E> {
 		columns=dm.columns;
 		networkNumberOfSubscribersForField=dm.networkNumberOfSubscribersForField;
 	}
-	
-	
+
+
 	/**THIS CONSTRUCTOR WAS CREATED ONLY FOR THE TEST, SO DON'T USE AND DON'T TOUCH IT PLEASE :)*/
 	public DistributedStateConnectionJMS(DistributedState dm, String ip,String port, ConnectionJMS connectionJMS) {
 		this.ip = ip;
 		this.port = port;
 		this.dm=dm;
 		this.connectionJMS = connectionJMS;
-		
-	
+
+
 		schedule=(DistributedMultiSchedule<E>)dm.schedule;
 		topicPrefix=dm.topicPrefix;
 		TYPE=dm.TYPE;
@@ -159,9 +159,9 @@ public class DistributedStateConnectionJMS<E> {
 		columns=dm.columns;
 		networkNumberOfSubscribersForField=dm.networkNumberOfSubscribersForField;
 	}
-	
+
 	public void init_connection() {
-		
+
 		try {
 			connectionJMS.setupConnection(new Address(ip, port));
 		} catch (Exception e) {
@@ -418,6 +418,60 @@ public class DistributedStateConnectionJMS<E> {
 				e.printStackTrace();
 			}
 		}
+		else if (MODE == DistributedField2D.NON_UNIFORM_DISTRIBUTION_MODE) { // NON UNFIRORM DISTRIBUTION MODE TOROIDAL
+
+			try {
+
+//				connectionJMS.createTopic(topicPrefix+TYPE+"L",((DistributedMultiSchedule)schedule).fields2D.size());
+//				connectionJMS.createTopic(topicPrefix+TYPE+"R",((DistributedMultiSchedule)schedule).fields2D.size());
+//				connectionJMS.createTopic(topicPrefix+TYPE+"D",((DistributedMultiSchedule)schedule).fields2D.size());
+//				connectionJMS.createTopic(topicPrefix+TYPE+"U",((DistributedMultiSchedule)schedule).fields2D.size());
+//				connectionJMS.createTopic(topicPrefix+TYPE+"CUDL",((DistributedMultiSchedule)schedule).fields2D.size());
+//				connectionJMS.createTopic(topicPrefix+TYPE+"CUDR",((DistributedMultiSchedule)schedule).fields2D.size());
+//				connectionJMS.createTopic(topicPrefix+TYPE+"CDDL",((DistributedMultiSchedule)schedule).fields2D.size());
+//				connectionJMS.createTopic(topicPrefix+TYPE+"CDDR",((DistributedMultiSchedule)schedule).fields2D.size());
+//
+//				int i=TYPE.pos_i,j=TYPE.pos_j;
+//				int sqrt=(int)Math.sqrt(NUMPEERS);
+//
+//				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L");
+//				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R");
+//				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U");
+//				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D");
+//				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR");
+//				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL");
+//				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR");
+//				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL");
+//
+//				u1 = new UpdaterThreadForListener(connectionJMS,topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L",((DistributedMultiSchedule)schedule).fields2D,listeners);
+//				u1.start();
+//
+//				u2 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R",((DistributedMultiSchedule)schedule).fields2D,listeners);
+//				u2.start();
+//
+//				u3 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U",((DistributedMultiSchedule)schedule).fields2D,listeners);
+//				u3.start();
+//
+//				u4 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D",((DistributedMultiSchedule)schedule).fields2D,listeners);
+//				u4.start();
+//
+//				u5 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR",((DistributedMultiSchedule)schedule).fields2D,listeners);
+//				u5.start();
+//
+//				u6 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL",((DistributedMultiSchedule)schedule).fields2D,listeners);
+//				u6.start();	
+//
+//				u7 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR",((DistributedMultiSchedule)schedule).fields2D,listeners);
+//				u7.start();		
+//
+//				u8 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL",((DistributedMultiSchedule)schedule).fields2D,listeners);
+//				u8.start();
+
+			}catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
 
 	}
@@ -460,7 +514,7 @@ public class DistributedStateConnectionJMS<E> {
 		} else if (MODE == DistributedField2D.SQUARE_DISTRIBUTION_MODE) { // SQUARE NOT BALANCED
 
 			try {
-				
+
 				if(TYPE.pos_j > 0)					
 					connectionJMS.createTopic(topicPrefix+TYPE + "L",
 							schedule.fields2D
@@ -632,8 +686,8 @@ public class DistributedStateConnectionJMS<E> {
 
 		HashMap<String, ArrayList<DistributedField>> listToPublish = new HashMap<String, ArrayList<DistributedField>>();
 		HashMap<String, ArrayList<DNetwork>> listToSubscribe = new HashMap<String, ArrayList<DNetwork>>();
-		
-		
+
+
 		for (DNetwork distributedNetwork : networkLists) {
 			int my_community = (TYPE.pos_i*rows)+TYPE.pos_j;
 			ArrayList<Integer> myPublishNeighborhood = distributedNetwork.grpsub.getSubscribers(my_community);
@@ -648,7 +702,7 @@ public class DistributedStateConnectionJMS<E> {
 			}
 			ArrayList<Integer> myNeighborhood = distributedNetwork.grpsub.getPublisher(my_community);
 			for (Integer integer : myNeighborhood) {
-				
+
 				toSubscribe=topicPrefix+"-Network-"+integer+"-"+my_community;
 				if(listToSubscribe.get(toSubscribe)==null)
 				{
