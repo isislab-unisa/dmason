@@ -4,12 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.DistributedField;
+import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.sparse.thin.DSparseGrid2DXYThin;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
@@ -239,7 +239,7 @@ public class DSparseGrid2DXYThinTester {
 		rows = 10;
 		columns = 10;
 		numAgents = numLoop;
-		mode = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
+		mode = DistributedField2D.SQUARE_DISTRIBUTION_MODE;
 		connectionType = ConnectionType.pureActiveMQ;
 
 		GeneralParam genParam = new GeneralParam(width, height, maxDistance,

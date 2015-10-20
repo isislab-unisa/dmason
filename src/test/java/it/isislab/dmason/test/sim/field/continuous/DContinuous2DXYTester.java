@@ -15,6 +15,7 @@ import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.DistributedField;
+import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.continuous.DContinuous2DFactory;
 import it.isislab.dmason.sim.field.continuous.DContinuous2DXY;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
@@ -241,7 +242,7 @@ public class DContinuous2DXYTester {
 		rows = 10;
 		columns = 10;
 		numAgents = numLoop;
-		mode = DContinuous2DFactory.SQUARE_DISTRIBUTION_MODE;
+		mode = DistributedField2D.SQUARE_DISTRIBUTION_MODE;
 		connectionType = ConnectionType.pureActiveMQ;
 
 		GeneralParam genParam = new GeneralParam(width, height, maxDistance,

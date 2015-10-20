@@ -11,9 +11,9 @@ import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.DistributedField;
+import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.continuous.DContinuous2D;
 import it.isislab.dmason.sim.field.continuous.DContinuous2DFactory;
-import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.connection.ConnectionType;
 
@@ -109,7 +109,7 @@ public class DContinuous2DFactoryTester {
 							/* rows */1,
 							/* columns */2,
 							/* numAgents */1,
-							/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+							/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 							ConnectionType.pureActiveMQ);
 
 					dcon = DContinuous2DFactory.createDContinuous2D(
@@ -123,7 +123,7 @@ public class DContinuous2DFactoryTester {
 							10, /* i */
 							0, /* j */
 							0,/* rows */1,/* colums */2,/* mode */
-							DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+							DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 							"test", /* topicPrefix */"",/* isToroidal */true);
 
 					assertEquals("error for height=" + j, j, (int) dcon.height);
@@ -151,7 +151,7 @@ public class DContinuous2DFactoryTester {
 			/* rows */1,
 			/* columns */2,
 			/* numAgents */1,
-			/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DContinuous2DFactory.createDContinuous2D(
@@ -163,7 +163,7 @@ public class DContinuous2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */10, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */2,/* mode */
-					DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("should throw an exception for width=0");
@@ -188,7 +188,7 @@ public class DContinuous2DFactoryTester {
 			/* rows */1,
 			/* columns */2,
 			/* numAgents */1,
-			/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DContinuous2DFactory.createDContinuous2D(
@@ -200,7 +200,7 @@ public class DContinuous2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */10, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */2,/* mode */
-					DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("should throw an exception for height=0");
@@ -225,7 +225,7 @@ public class DContinuous2DFactoryTester {
 			/* rows */1,
 			/* columns */2,
 			/* numAgents */1,
-			/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DContinuous2DFactory.createDContinuous2D(
@@ -238,7 +238,7 @@ public class DContinuous2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */10, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */2,/* mode */
-					DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("should throw an exception for width<0");
@@ -263,7 +263,7 @@ public class DContinuous2DFactoryTester {
 			/* rows */1,
 			/* columns */2,
 			/* numAgents */1,
-			/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DContinuous2DFactory.createDContinuous2D(
@@ -275,7 +275,7 @@ public class DContinuous2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */10, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */2,/* mode */
-					DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("should throw an exception for width<0");
@@ -301,7 +301,7 @@ public class DContinuous2DFactoryTester {
 			/* rows */1,
 			/* columns */2,
 			/* numAgents */1,
-			/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DContinuous2DFactory.createDContinuous2D(
@@ -314,7 +314,7 @@ public class DContinuous2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */10, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */2,/* mode */
-					DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 			fail("should throw an exception");
 		} catch (DMasonException e) {
@@ -339,7 +339,7 @@ public class DContinuous2DFactoryTester {
 			/* rows */1,
 			/* columns */2,
 			/* numAgents */1,
-			/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DContinuous2DFactory.createDContinuous2D(
@@ -351,7 +351,7 @@ public class DContinuous2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */10, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */2,/* mode */
-					DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 			fail("should throw an exception");
 		} catch (DMasonException e) {
@@ -376,7 +376,7 @@ public class DContinuous2DFactoryTester {
 			/* rows */1,
 			/* columns */2,
 			/* numAgents */1,
-			/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DContinuous2DFactory.createDContinuous2D(
@@ -388,7 +388,7 @@ public class DContinuous2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */app, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */2,/* mode */
-					DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 			fail("max_distance exceeds max integer value");
 		} catch (DMasonException e) {
@@ -412,7 +412,7 @@ public class DContinuous2DFactoryTester {
 			/* rows */1,
 			/* columns */2,
 			/* numAgents */1,
-			/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DContinuous2DFactory.createDContinuous2D(
@@ -424,7 +424,7 @@ public class DContinuous2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */-3, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */2,/* mode */
-					DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("really you can measure a distance with a negative number??");
@@ -450,7 +450,7 @@ public class DContinuous2DFactoryTester {
 				/* rows */1,
 				/* columns */j,
 				/* numAgents */1,
-				/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+				/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 						ConnectionType.pureActiveMQ);
 
 				dcon = DContinuous2DFactory.createDContinuous2D(
@@ -463,7 +463,7 @@ public class DContinuous2DFactoryTester {
 						new StubDistributedState(genParam),/* maxDistance */1, /* i */
 						0, /* j */
 						0,/* rows */1,/* colums */j,/* mode */
-						DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+						DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 						"test", /* topicPrefix */"",/* isToroidal */true);
 
 				assertEquals("rows value failure",1, dcon.rows);
@@ -492,7 +492,7 @@ public class DContinuous2DFactoryTester {
 			/* rows */0,
 			/* columns */2,
 			/* numAgents */1,
-			/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DContinuous2DFactory.createDContinuous2D(
@@ -504,7 +504,7 @@ public class DContinuous2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */1, /* i */
 					0, /* j */
 					0,/* rows */0,/* colums */2,/* mode */
-					DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("really you can have 0 rows??");
@@ -529,7 +529,7 @@ public class DContinuous2DFactoryTester {
 			/* rows */2,
 			/* columns */2,
 			/* numAgents */1,
-			/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DContinuous2DFactory.createDContinuous2D(
@@ -541,7 +541,7 @@ public class DContinuous2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */1, /* i */
 					0, /* j */
 					0,/* rows */2,/* colums */2,/* mode */
-					DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("horizontal mode can not have more than one column");
@@ -566,7 +566,7 @@ public class DContinuous2DFactoryTester {
 			/* rows */1,
 			/* columns */0,
 			/* numAgents */1,
-			/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DContinuous2DFactory.createDContinuous2D(
@@ -578,7 +578,7 @@ public class DContinuous2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */1, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */0,/* mode */
-					DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("really you can have 0 colums??");
@@ -603,7 +603,7 @@ public class DContinuous2DFactoryTester {
 			/* rows */-1,
 			/* columns */2,
 			/* numAgents */1,
-			/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DContinuous2DFactory.createDContinuous2D(
@@ -615,7 +615,7 @@ public class DContinuous2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */1, /* i */
 					0, /* j */
 					0,/* rows */-1,/* colums */2,/* mode */
-					DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("really you can have 0 rows??");
@@ -640,7 +640,7 @@ public class DContinuous2DFactoryTester {
 			/* rows */1,
 			/* columns */-1,
 			/* numAgents */1,
-			/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DContinuous2DFactory.createDContinuous2D(
@@ -652,7 +652,7 @@ public class DContinuous2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */1, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */-1,/* mode */
-					DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("really you can have negative colums??");
@@ -678,7 +678,7 @@ public class DContinuous2DFactoryTester {
 			/* rows */2,
 			/* columns */2,
 			/* numAgents */1,
-			/* mode */DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE,
+			/* mode */DistributedField2D.SQUARE_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DContinuous2DFactory.createDContinuous2D(
@@ -690,7 +690,7 @@ public class DContinuous2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */10, /* i */
 					0, /* j */
 					0,/* rows */2,/* colums */2,/* mode */
-					DContinuous2DFactory.SQUARE_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			//fail("errore");
@@ -717,7 +717,7 @@ public class DContinuous2DFactoryTester {
 							/* rows */row,
 							/* columns */col,
 							/* numAgents */1,
-							/* mode */DContinuous2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE,
+							/* mode */DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE,
 							ConnectionType.pureActiveMQ);
 
 					dcon = DContinuous2DFactory
@@ -733,7 +733,7 @@ public class DContinuous2DFactoryTester {
 									0,/* rows */
 									row,/* colums */
 									col,/* mode */
-									DContinuous2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE, /* name */
+									DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE, /* name */
 									"test", /* topicPrefix */"",/* isToroidal */
 									true);
 
@@ -763,7 +763,7 @@ public class DContinuous2DFactoryTester {
 							/* rows */row,
 							/* columns */col,
 							/* numAgents */1,
-							/* mode */DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE,
+							/* mode */DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE,
 							ConnectionType.pureActiveMQ);
 
 					dcon = DContinuous2DFactory
@@ -779,7 +779,7 @@ public class DContinuous2DFactoryTester {
 									0,/* rows */
 									row,/* colums */
 									col,/* mode */
-									DContinuous2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE, /* name */
+									DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE, /* name */
 									"test", /* topicPrefix */"",/* isToroidal */
 									true);
 
@@ -807,7 +807,7 @@ public class DContinuous2DFactoryTester {
 						/* rows */1,
 						/* columns */j,
 						/* numAgents */1,
-						/* mode */DSparseGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE,
+						/* mode */DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE,
 						ConnectionType.pureActiveMQ);
 				
 				dcon = DContinuous2DFactory
@@ -823,7 +823,7 @@ public class DContinuous2DFactoryTester {
 								0,/* rows */
 								1,/* colums */
 								j,/* mode */
-								DContinuous2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* name */
+								DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* name */
 								"test", /* topicPrefix */"",/* isToroidal */
 								true);
 
@@ -854,7 +854,7 @@ public class DContinuous2DFactoryTester {
 				/* rows */1,
 				/* columns */j,
 				/* numAgents */1,
-				/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+				/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 						ConnectionType.pureActiveMQ);
 
 				dcon = DContinuous2DFactory.createDContinuous2DThin(
@@ -867,7 +867,7 @@ public class DContinuous2DFactoryTester {
 						new StubDistributedState(genParam),/* maxDistance */1, /* i */
 						0, /* j */
 						0,/* rows */1,/* colums */j,/* mode */
-						DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+						DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
 						"test", /* topicPrefix */"",/* isToroidal */true);
 
 				assertEquals(1, dcon.rows);
@@ -898,7 +898,7 @@ public class DContinuous2DFactoryTester {
 					/* rows */i,
 					/* columns */j,
 					/* numAgents */1,
-					/* mode */DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.SQUARE_DISTRIBUTION_MODE,
 							ConnectionType.pureActiveMQ);
 
 					dcon = DContinuous2DFactory.createDContinuous2DThin(
@@ -912,7 +912,7 @@ public class DContinuous2DFactoryTester {
 							1, /* i */
 							0, /* j */
 							0,/* rows */i,/* colums */j,/* mode */
-							DContinuous2DFactory.SQUARE_DISTRIBUTION_MODE, /* name */
+							DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* name */
 							"test", /* topicPrefix */"",/* isToroidal */true);
 
 					assertEquals(i, dcon.rows);

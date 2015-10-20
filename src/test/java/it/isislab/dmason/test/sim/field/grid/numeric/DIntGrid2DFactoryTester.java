@@ -11,7 +11,7 @@ import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.DistributedField;
-
+import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2D;
 import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2DFactory;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
@@ -310,7 +310,7 @@ public class DIntGrid2DFactoryTester {
 					/* rows */2,
 					/* columns */2,
 					/* numAgents */1,
-					/* mode */DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */

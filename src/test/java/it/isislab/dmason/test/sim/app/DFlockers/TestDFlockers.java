@@ -20,6 +20,7 @@ package it.isislab.dmason.test.sim.app.DFlockers;
  */
 import static org.junit.Assert.assertEquals;
 import it.isislab.dmason.exception.DMasonException;
+import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.continuous.DContinuous2DFactory;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.connection.ConnectionType;
@@ -69,7 +70,7 @@ public class TestDFlockers {
 
 	//don't modify this...
 	//private static int MODE = (rows==1 || columns==1)? DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE : DContinuous2DFactory.SQUARE_DISTRIBUTION_MODE; 
-	private static int MODE = (rows==1 || columns==1)? DContinuous2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE : DContinuous2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE; 
+	private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE : DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE; 
 
 	ArrayList<DFlocker> initial_agents = new ArrayList<DFlocker>();
 	ArrayList<DFlocker> end_agents = new ArrayList<DFlocker>();

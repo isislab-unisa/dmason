@@ -41,10 +41,6 @@ import sim.engine.SimState;
 */
 public final class DSparseGrid2DFactory 
 {	
-	public static final int HORIZONTAL_DISTRIBUTION_MODE=0;
-	public static final int SQUARE_DISTRIBUTION_MODE=1;
-	public static final int SQUARE_BALANCED_DISTRIBUTION_MODE=2;
-	public static final int HORIZONTAL_BALANCED_DISTRIBUTION_MODE=3;
 
 
 	/**
@@ -66,7 +62,7 @@ public final class DSparseGrid2DFactory
 	public static final DSparseGrid2D createDSparseGrid2D(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns,int MODE, String name, String topicPrefix, boolean isToroidal)
 		throws DMasonException
 	{
-		if(MODE==HORIZONTAL_DISTRIBUTION_MODE)
+		if(MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE)
 		{
 			
 						DistributedField2D field=new DSparseGrid2DY(width, height,sm, max_distance, i, j, rows,columns, name,topicPrefix);
@@ -78,7 +74,7 @@ public final class DSparseGrid2DFactory
 		
 		}
 		else
-			if(MODE==SQUARE_DISTRIBUTION_MODE)
+			if(MODE==DistributedField2D.SQUARE_DISTRIBUTION_MODE)
 			{
 			        if(rows!=columns){throw new DMasonException("In square mode rows and columns must be equals!");}
 					DistributedField2D field = new DSparseGrid2DXY(width, height,sm, max_distance, i, j, rows,columns, name,topicPrefix);
@@ -88,7 +84,7 @@ public final class DSparseGrid2DFactory
 				
 			}
 			else
-				if(MODE==SQUARE_BALANCED_DISTRIBUTION_MODE)
+				if(MODE==DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE)
 				{
 					if(rows!=columns){throw new DMasonException("In square mode rows and columns must be equals!");}
 					if(((width% columns == 0) && (height% rows == 0)) && 
@@ -103,7 +99,7 @@ public final class DSparseGrid2DFactory
 						throw new DMasonException("Illegal width or height dimension for NUM_PEERS:"+(rows*columns));
 				}
 				else
-					if(MODE==HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
+					if(MODE==DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
 				{
 							
 								DistributedField2D field=new DSparseGrid2DYLB(width, height,sm, max_distance, i, j, rows,columns, name,topicPrefix);
@@ -141,7 +137,7 @@ public final class DSparseGrid2DFactory
 	public static final DSparseGrid2DThin createDSparseGrid2DThin(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns,int MODE, String name, String topicPrefix, boolean isToroidal)
 			throws DMasonException
 		{
-		if(MODE==HORIZONTAL_DISTRIBUTION_MODE)
+		if(MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE)
 		{
 			int field_width,field_height;
 			
@@ -162,7 +158,7 @@ public final class DSparseGrid2DFactory
 		
 		}
 		else
-			if(MODE==SQUARE_DISTRIBUTION_MODE)
+			if(MODE==DistributedField2D.SQUARE_DISTRIBUTION_MODE)
 			{
 				int field_width,field_height;
 

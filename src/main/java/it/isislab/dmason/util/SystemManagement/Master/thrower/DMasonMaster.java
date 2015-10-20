@@ -19,6 +19,7 @@ package it.isislab.dmason.util.SystemManagement.Master.thrower;
 
 import it.isislab.dmason.annotation.ThinAnnotation;
 import it.isislab.dmason.exception.NoDigestFoundException;
+import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.tools.batch.BatchExecutor;
 import it.isislab.dmason.tools.batch.BatchWizard.DistributionType;
@@ -2595,16 +2596,16 @@ public class DMasonMaster extends JFrame  implements Observer{
 
 		if(rows==1)
 			if(!jCheckBoxLoadBalancing.isSelected())
-				MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
+				MODE = DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE;
 			else
-				MODE = DSparseGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE;
+				MODE = DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE;
 		else
 			if(!jCheckBoxLoadBalancing.isSelected())
-				MODE = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
+				MODE = DistributedField2D.SQUARE_DISTRIBUTION_MODE;
 			else
-				MODE = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
+				MODE = DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE;
 
-		if(MODE == DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE && rows != columns && (Integer)WIDTH % 3*rows!=0)
+		if(MODE == DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE && rows != columns && (Integer)WIDTH % 3*rows!=0)
 			errors.add("Width and height are not divisible by 3 * sqrt(rows*columns) or rows is not equal to columns");
 
 
@@ -2666,18 +2667,18 @@ public class DMasonMaster extends JFrame  implements Observer{
 
 		if(rows==1)
 			if(!jCheckBoxLoadBalancing.isSelected())
-				MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
+				MODE = DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE;
 			else
-				MODE = DSparseGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE;
+				MODE = DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE;
 		else
 			if(!jCheckBoxLoadBalancing.isSelected())
-				MODE = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
+				MODE = DistributedField2D.SQUARE_DISTRIBUTION_MODE;
 			else
-				MODE = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
+				MODE = DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE;
 
 
 
-		if(MODE == DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE && (rows != columns || (Integer)WIDTH % 3*columns!=0 || (Integer)HEIGHT % 3*rows != 0 || maxDistance >= ((Integer)WIDTH/columns) / 3 / 2))
+		if(MODE == DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE && (rows != columns || (Integer)WIDTH % 3*columns!=0 || (Integer)HEIGHT % 3*rows != 0 || maxDistance >= ((Integer)WIDTH/columns) / 3 / 2))
 			errors.add("Width and height are not divisible by 3 * sqrt(rows*columns) or rows is not equal to columns");
 
 		if((Math.floor((Integer)WIDTH/columns)<2*maxDistance+1))
@@ -2992,7 +2993,7 @@ public class DMasonMaster extends JFrame  implements Observer{
 			isHorizontal = false;
 
 		if(isHorizontal && !jCheckBoxLoadBalancing.isSelected()){
-			MODE = DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE;
+			MODE = DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE;
 			String w="";
 			String h=""+HEIGHT;
 			//if((Integer)WIDTH % columns == 0)
@@ -3002,7 +3003,7 @@ public class DMasonMaster extends JFrame  implements Observer{
 			labelWriteDistrMode.setText("HORIZONTAL MODE");
 		}
 		else if(!isHorizontal && !jCheckBoxLoadBalancing.isSelected()){
-			MODE = DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE;
+			MODE = DistributedField2D.SQUARE_DISTRIBUTION_MODE;
 			//int rad = (int) Math.sqrt(numRegions);
 			String w="";
 			String h="";
@@ -3015,7 +3016,7 @@ public class DMasonMaster extends JFrame  implements Observer{
 			labelWriteDistrMode.setText("SQUARE MODE");
 		}
 		else if (!isHorizontal && jCheckBoxLoadBalancing.isSelected()){
-			MODE = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
+			MODE = DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE;
 			int rad = (int) Math.sqrt(rows * columns);
 			String w="";
 			String h="";
@@ -3028,7 +3029,7 @@ public class DMasonMaster extends JFrame  implements Observer{
 			labelWriteDistrMode.setText("SQUARE BALANCED MODE");
 		}
 		else if(isHorizontal && jCheckBoxLoadBalancing.isSelected()){
-			MODE = DSparseGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE;
+			MODE = DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE;
 			String w="";
 			String h=""+HEIGHT;
 			//if((Integer)WIDTH % numRegions == 0)

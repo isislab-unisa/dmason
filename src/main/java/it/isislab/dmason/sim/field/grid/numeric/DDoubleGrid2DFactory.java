@@ -41,10 +41,7 @@ import sim.engine.SimState;
  */
 public class DDoubleGrid2DFactory {
 
-	public static final int HORIZONTAL_DISTRIBUTION_MODE=0;
-	public static final int SQUARE_DISTRIBUTION_MODE=1;
-	public static final int SQUARE_BALANCED_DISTRIBUTION_MODE=2;
-	public static final int HORIZONTAL_BALANCED_DISTRIBUTION_MODE=3;
+
 
 	/**
 	 * 
@@ -76,7 +73,7 @@ public class DDoubleGrid2DFactory {
 		if(rows <=0 ) throw new DMasonException("Rows cannot be less than zero");
 		if(columns <=0 ) throw new DMasonException("Columns cannot be less than zero");
 
-		if(MODE==HORIZONTAL_DISTRIBUTION_MODE)
+		if(MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE)
 		{
 
 			if(rows >1) throw new DMasonException("In HORIZONTAL MODE the rows must be 1");
@@ -90,7 +87,7 @@ public class DDoubleGrid2DFactory {
 
 		}
 		else
-			if(MODE==SQUARE_DISTRIBUTION_MODE)
+			if(MODE==DistributedField2D.SQUARE_DISTRIBUTION_MODE)
 			{
 				if(rows!=columns) throw new DMasonException("In square mode rows and columns must be equal!");
 				DistributedField2D field = new DDoubleGrid2DXY(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name,topicPrefix);
@@ -100,7 +97,7 @@ public class DDoubleGrid2DFactory {
 				return (DDoubleGrid2D)field;
 
 			}
-			else if (MODE==SQUARE_BALANCED_DISTRIBUTION_MODE){
+			else if (MODE==DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE){
 				if(rows!=columns) throw new DMasonException("In square mode rows and columns must be equal!");
 				if(((width% columns == 0) && (height% rows == 0)) && 
 						(((width/ columns)%3 == 0) && ((height/ rows)%3 == 0)))
@@ -115,7 +112,7 @@ public class DDoubleGrid2DFactory {
 					throw new DMasonException("Illegal width or height dimension for NUM_PEERS:"+(rows*columns));
 			}
 			else
-				if(MODE==HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
+				if(MODE==DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
 				{
 					if(rows >1) throw new DMasonException("In HORIZONTAL MODE the rows must be 1");
 
@@ -158,7 +155,7 @@ public class DDoubleGrid2DFactory {
 			double initialGridValue, boolean fixed, String name, String topicPrefix, boolean isToroidal)
 					throws DMasonException
 	{
-		if(MODE==HORIZONTAL_DISTRIBUTION_MODE)
+		if(MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE)
 		{
 			int field_width,field_height;
 
@@ -180,7 +177,7 @@ public class DDoubleGrid2DFactory {
 
 		}
 		else
-			if(MODE==SQUARE_DISTRIBUTION_MODE)
+			if(MODE==DistributedField2D.SQUARE_DISTRIBUTION_MODE)
 			{
 				int field_width,field_height;
 

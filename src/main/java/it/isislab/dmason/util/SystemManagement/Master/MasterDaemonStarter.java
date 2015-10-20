@@ -17,6 +17,7 @@
 
 package it.isislab.dmason.util.SystemManagement.Master;
 
+import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.tools.batch.data.EntryParam;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
@@ -215,7 +216,7 @@ public class MasterDaemonStarter implements Observer
 		}
 	
 	
-		if (fieldMode == DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE || fieldMode == DSparseGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
+		if (fieldMode == DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE || fieldMode == DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
 		{
 			int cnt = 0;
 			// Repeat for each worker
@@ -287,7 +288,7 @@ public class MasterDaemonStarter implements Observer
 	
 			gui.setSystemSettingsEnabled(false);
 		}
-		else if(fieldMode == DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE)
+		else if(fieldMode == DistributedField2D.SQUARE_DISTRIBUTION_MODE)
 		{
 	
 			// For each region...
@@ -368,7 +369,7 @@ public class MasterDaemonStarter implements Observer
 					JOptionPane.showMessageDialog(null,"Setting failed !");
 				}
 			}
-		} else if (fieldMode==DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE){
+		} else if (fieldMode==DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE){
 			// For each region...
 			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
 			for (int i=0;i<rows;i++){
@@ -519,7 +520,7 @@ public class MasterDaemonStarter implements Observer
 		}
 	
 	
-		if (fieldMode == DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE || fieldMode == DSparseGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
+		if (fieldMode == DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE || fieldMode == DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
 		{
 			
 			int cnt = 0;
@@ -585,7 +586,7 @@ public class MasterDaemonStarter implements Observer
 			}
 	
 			//gui.setSystemSettingsEnabled(false);
-		} else if(fieldMode == DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE)
+		} else if(fieldMode == DistributedField2D.SQUARE_DISTRIBUTION_MODE)
 		{
 			// For each region...
 			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
@@ -661,7 +662,7 @@ public class MasterDaemonStarter implements Observer
 					JOptionPane.showMessageDialog(null,"Setting failed !");
 				}*/
 			}
-		}else if (fieldMode==DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE){
+		}else if (fieldMode==DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE){
 			// For each region...
 			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
 			for (int i=0;i<rows;i++){
@@ -985,7 +986,7 @@ public class MasterDaemonStarter implements Observer
 		}
 	
 	
-		if (fieldMode == DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE || fieldMode == DSparseGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
+		if (fieldMode == DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE || fieldMode == DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
 		{
 			int cnt = 0;
 			// Repeat for each worker
@@ -1051,7 +1052,7 @@ public class MasterDaemonStarter implements Observer
 			}
 	
 		}
-		else if(fieldMode == DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE)
+		else if(fieldMode == DistributedField2D.SQUARE_DISTRIBUTION_MODE)
 		{
 			// For each region...
 			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
@@ -1120,7 +1121,7 @@ public class MasterDaemonStarter implements Observer
 				if(!connection.publishToTopic(classes, workerTopic, "classes"))
 					System.err.println("Setting failed !");
 			}
-		} else if (fieldMode==DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE){
+		} else if (fieldMode==DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE){
 			// For each region...
 			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
 			for (int i=0;i<rows;i++){

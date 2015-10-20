@@ -1,5 +1,6 @@
 package it.isislab.dmason.sim.app.DFlockers;
 
+import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.connection.ConnectionType;
@@ -55,7 +56,7 @@ public class MPIGUIWorker {
 				/*rows*/Integer.parseInt(args[3]),
 				/*columns*/Integer.parseInt(args[4]),
 				/*numAgents*/agent_number,
-				/*mode*/DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE,
+				/*mode*/DistributedField2D.SQUARE_DISTRIBUTION_MODE,
 				ConnectionType.pureMPIParallel);
 
 		printParams(args, agent_number);

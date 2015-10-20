@@ -16,6 +16,7 @@
  */
  package it.isislab.dmason.util.visualization.globalviewer;
 
+import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.continuous.DContinuous2DFactory;
 import it.isislab.dmason.util.DistributedProperties;
 import it.isislab.dmason.util.SystemManagement.inspection.DistributedInspector;
@@ -157,7 +158,7 @@ public class Display extends GUIState
 						{
 							activeCells[activeCellsI++] = comboCell;
 						}
-						else if (fieldMode == DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE)
+						else if (fieldMode == DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE)
 						{
 							for (int j = 0; j < numCells; j++)
 								activeCells[activeCellsI++] = "0-" + j;

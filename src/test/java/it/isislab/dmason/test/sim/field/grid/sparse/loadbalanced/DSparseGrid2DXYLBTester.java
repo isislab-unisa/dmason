@@ -10,6 +10,7 @@ import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.DistributedField;
+import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.sim.field.grid.sparse.loadbalanced.DSparseGrid2DXYLB;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
@@ -239,7 +240,7 @@ public class DSparseGrid2DXYLBTester {
 		width = 6 * columns;
 		height = 6 * rows;
 		numAgents = numLoop;
-		mode = DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE;
+		mode = DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE;
 		connectionType = ConnectionType.pureActiveMQ;
 
 		GeneralParam genParam = new GeneralParam(width, height, maxDistance,
