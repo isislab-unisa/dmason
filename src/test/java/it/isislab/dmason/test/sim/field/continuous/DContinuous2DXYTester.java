@@ -3,6 +3,7 @@ package it.isislab.dmason.test.sim.field.continuous;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -18,6 +19,7 @@ import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.continuous.DContinuous2DFactory;
 import it.isislab.dmason.sim.field.continuous.DContinuous2DXY;
+import it.isislab.dmason.sim.field.grid.numeric.DDoubleGrid2D;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
@@ -163,7 +165,9 @@ public class DContinuous2DXYTester {
 		 */
 		public StubRemotePositionedAgent() {
 			super();
-			id = "stub";
+			Random r = new Random();
+			
+			id = "stub-"+r.nextInt();
 		}
 
 		/*
@@ -236,9 +240,9 @@ public class DContinuous2DXYTester {
 	@Before
 	public void setUp() throws Exception {
 
-		width = 10;
-		height = 10;
-		maxDistance = 10;
+		width = 111;
+		height = 111;
+		maxDistance = 7;
 		rows = 10;
 		columns = 10;
 		numAgents = numLoop;
@@ -296,6 +300,7 @@ public class DContinuous2DXYTester {
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Double2D location = toTest.getAvailableRandomLocation();
+			System.out.println(location);
 			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
 					sa, /* SimState */ss);
 		}
@@ -310,8 +315,9 @@ public class DContinuous2DXYTester {
 		// i'm positioning more agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Double2D location = toTest.getAvailableRandomLocation();
-			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					new StubRemotePositionedAgent(), /* SimState */ss);
+			toTest.setDistributedObjectLocation(location,
+					/* RemotePositionedAgent */	new StubRemotePositionedAgent(),
+					/* SimState */ss);
 		}
 		assertEquals(numLoop, toTest.getNumAgents());
 	}

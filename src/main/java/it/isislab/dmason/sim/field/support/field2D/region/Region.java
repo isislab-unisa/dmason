@@ -127,14 +127,19 @@ public abstract class Region<E,F> extends ArrayList<Entry<F>> implements Seriali
 		} else if (!upl_yy.equals(other.upl_yy))
 			return false;
 		
+		if(other.size()!=this.size())
+			return false;
+		
 		for(int i=0; i<this.size(); i++){
 			
-			if(!this.get(i).equals(other.get(i)))
+			if(!other.contains(this.get(i)))
 				return false;
 		}
 		
 		return true;
 	}
+	
+	
 	
 	
 }

@@ -433,10 +433,11 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 		if(checkAgentDuplication && sm.schedule.getSteps()==99)
 			psDup.println(rm.getId());
 		
-		numAgents++;
+		
 
 		if(setAgents(rm, location))
 		{
+			//numAgents++;
 			return true;
 		}
 		else
@@ -1077,6 +1078,34 @@ public class DContinuous2DXY extends DContinuous2D implements TraceableField
 
 	@Override
 	public int getNumAgents() {
+		numAgents += myfield.size();
+		
+		Class o=rmap.getClass();
+
+		Field[] fields = o.getDeclaredFields();
+		for (int z = 0; z < fields.length; z++)
+		{
+			fields[z].setAccessible(true);
+			try
+			{
+				String name=fields[z].getName();
+				if(!name.contains("mine"))
+					continue;
+				Method method = o.getMethod("get"+name, null);
+				Object returnValue = method.invoke(rmap, null);
+
+				if(returnValue!=null)
+				{
+					Region<Double,Double2D> region=((Region<Double,Double2D>)returnValue);
+					numAgents+=region.size();
+				}
+			}
+			catch (IllegalArgumentException e){e.printStackTrace();} 
+			catch (IllegalAccessException e) {e.printStackTrace();} 
+			catch (SecurityException e) {e.printStackTrace();} 
+			catch (NoSuchMethodException e) {e.printStackTrace();} 
+			catch (InvocationTargetException e) {e.printStackTrace();}
+		}
 		return numAgents;
 	}
 

@@ -72,8 +72,21 @@ public class RegionDouble extends Region<Double,Double2D>
 	public boolean addAgents(Entry<Double2D> e)  
 	{
 		if(e == null || e.l == null || e.r == null) return false;
+		if(this.contains(e)) return true;
 		
+		removeAgents(e.r);
 		return this.add(e);
 	}	
+	
+	private boolean removeAgents( RemotePositionedAgent<Double2D> r){
+		 Entry<Double2D> toRemove = null;
+		for(Entry e: this)
+			if(e.r.getId().equals(r.getId())){
+				toRemove = e;
+				break;
+			}
+		
+		return toRemove!=null?this.remove(toRemove):false;
+	}
 	
 }
