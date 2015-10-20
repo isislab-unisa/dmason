@@ -105,12 +105,12 @@ In the method createContinuous2DXY problems are found in the blocks of code that
 
 ###R8 [dmason.sim.field.continuous.DContinuous2DXY]###
 1. The method getAllVisibleAgent is never used in DMASON, and still would not work because it forces the use of clone on an interface, then launching a InstantiationException.(Used by SociallyDmagingBehaviours only) 
-2. GetMineAgents is never used.
-3. ResetAddAll used by SociallyDamagingBehaviour only.
-4. SetDistributedObjectLocation.
+2. ResetAddAll used by SociallyDamagingBehaviour only.
+3. SetDistributedObjectLocation.
 	1. If you pass an agent already exists, this is not moved, but creates another agent equal to a new location.
 	2. With a stress-test (numLoop> 8) manifests a bug due to the representation of numbers in java.
-	3. The instance variable numAgents is not corroborated properly.
+4. getNumAgents.
+	1. When an agent moves from a region to another one the agent will be counted twice if the regions belong to the same DistributedField and don't overlap 
 
 ###R9[dmason.sim.engine.DistributedStateConnectionJMS]###
 1. Mode HorizontalDistributionMode in a space not toroidal is created topic 0-lastCellR, this is semantically incorrect because having to do with a space not toroidal, it is not possible that there is a cell that sign up to the topic in question.
