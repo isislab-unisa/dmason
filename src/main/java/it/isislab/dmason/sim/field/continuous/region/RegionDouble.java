@@ -79,7 +79,9 @@ public class RegionDouble extends Region<Double,Double2D>
 	}	
 	
 	private boolean removeAgents( RemotePositionedAgent<Double2D> r){
-		 Entry<Double2D> toRemove = null;
+		
+		Entry<Double2D> toRemove = null;
+		
 		for(Entry e: this)
 			if(e.r.getId().equals(r.getId())){
 				toRemove = e;

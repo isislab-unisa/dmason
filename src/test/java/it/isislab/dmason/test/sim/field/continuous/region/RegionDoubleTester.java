@@ -187,9 +187,9 @@ public class RegionDoubleTester {
 	 */
 	@Test
 	public void testCloneWithMultipleEntries() {
-		rd.clear();
-		RemotePositionedAgent<Double2D> c = new DFlocker();
 		Double2D f = new Double2D(10.0,22.0);
+		RemotePositionedAgent<Double2D> c = new DFlocker();
+		c.setId("fake");
 		Entry<Double2D> e = new Entry<Double2D>(c, f);
 		rd.addAgents(e);
 		f= new Double2D(10.0,11.0);
@@ -198,7 +198,7 @@ public class RegionDoubleTester {
 		RegionDouble clone = null;
 		try {
 			clone = (RegionDouble) rd.clone(); // per poter funzionare bisogna implementare il metodo equals 
-											   // alla classe Region ed Entry -> implica che ogni RemotePositionedAgent deve implementare il metodo equals
+											   // alle classi Region ed Entry -> implica che ogni RemotePositionedAgent deve implementare il metodo equals
 
 		} catch (NullPointerException err) {
 			fail("clone fail");

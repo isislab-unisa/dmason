@@ -98,14 +98,14 @@ public class DContinuous2DFactoryTester {
 	@Test
 	public void testHorizontalDistributionModeIntWidthHeight() {
 
-		for (int i = 1; i < numLoop; i++) {
-			for (int j = 1; j < numLoop; j++) {
+		for (int i = 5; i < 701; i++) {
+			for (int j = 7; j < 683; j++) {
 				try {
 
 					GeneralParam genParam = new GeneralParam(
 							/* width */i,
 							/* height */j,
-							/* maxDistance */10,
+							/* maxDistance */1,
 							/* rows */1,
 							/* columns */2,
 							/* numAgents */1,
@@ -120,7 +120,7 @@ public class DContinuous2DFactoryTester {
 																		 * SimState
 																		 */
 							new StubDistributedState(genParam),/* maxDistance */
-							10, /* i */
+							1, /* i */
 							0, /* j */
 							0,/* rows */1,/* colums */2,/* mode */
 							DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
@@ -674,7 +674,7 @@ public class DContinuous2DFactoryTester {
 			GeneralParam genParam = new GeneralParam(
 			/* width */10,
 			/* height */10,
-			/* maxDistance */10,
+			/* maxDistance */1,
 			/* rows */2,
 			/* columns */2,
 			/* numAgents */1,
@@ -687,7 +687,7 @@ public class DContinuous2DFactoryTester {
 																	 * but is
 																	 * SimState
 																	 */
-					new StubDistributedState(genParam),/* maxDistance */10, /* i */
+					new StubDistributedState(genParam),/* maxDistance */1, /* i */
 					0, /* j */
 					0,/* rows */2,/* colums */2,/* mode */
 					DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* name */
@@ -695,7 +695,7 @@ public class DContinuous2DFactoryTester {
 
 			//fail("errore");
 		} catch (Exception e) {
-			e.printStackTrace();
+			fail(e.getMessage());
 		}
 	}
 

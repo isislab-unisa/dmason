@@ -240,11 +240,11 @@ public class DContinuous2DXYTester {
 	@Before
 	public void setUp() throws Exception {
 
-		width = 111;
-		height = 111;
-		maxDistance = 7;
-		rows = 10;
-		columns = 10;
+		width = 11;
+		height = 11;
+		maxDistance = 1;
+		rows = 5;
+		columns = 5;
 		numAgents = numLoop;
 		mode = DistributedField2D.SQUARE_DISTRIBUTION_MODE;
 		connectionType = ConnectionType.pureActiveMQ;
@@ -300,7 +300,6 @@ public class DContinuous2DXYTester {
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Double2D location = toTest.getAvailableRandomLocation();
-			System.out.println(location);
 			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
 					sa, /* SimState */ss);
 		}

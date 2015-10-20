@@ -74,7 +74,7 @@ public final class DContinuous2DFactory
 		if(height>=Double.MAX_VALUE) {throw new DMasonException("Illegal value : height value exceeds Double max value");}
 		if(max_distance<0){throw new DMasonException("Illegal value, max_distance value must be greater than 0");}
 		if(max_distance>=Integer.MAX_VALUE ){throw new DMasonException("Illegal value : max_distance value exceded Integer max value");}
-		if(max_distance>=width ){throw new DMasonException("Illegal value : max_distance value exceded width value");}
+		if(max_distance>=width ){throw new DMasonException(String.format("Illegal value : max_distance (%d) value exceded width(%f) value",max_distance,width));}
 		if(width<=0) {throw new DMasonException("Illegal value: Field width <= 0 is not defined");}
 		if(columns<=0 || rows <=0){throw new DMasonException("Illegal value : columns value and rows value must be greater than 0");}
 		

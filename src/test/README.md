@@ -57,7 +57,7 @@
 	└── testsuite
 	    └── TestSuite.java
 
-# Bug detected (last update 07/10/2015)
+# Bug detected (last update 20/10/2015)
 ------------------------------------------------------------------
 
 ###R1 [dmason.sim.field.continuous.region.RegionDouble]###
@@ -76,23 +76,11 @@
 and this has the following bug:
 
 	1. Infinite loop if numUpdate>queue size
-	2. Infinite loop if numUpdates<0
 
 ###R4 [dmason.sim.field.continuous.DContinuous2DFactory]###
 In the method createContinuous2DXY problems are found in the blocks of code that implement the following procedures:
 
-1. HORIZONTAL_DISTRIBUTION_MODE.
-	1. Do not spear except for height too high.
-	2. Do not spear exception width too high.
-	3. Makes enter a number <= 0 of rows.
-	4. Makes enter a number <= 0 of colums.
-	5. It put a height <= 0.
-	6. He put a maxDistance negative.
-	7. Makes enter a width <= 0.
-	8. It put more than one line.
-2. SQUARE_BALANCED_DISTRIBUTION.
-	1. Safezone / 2 = 0 but it should be 0.5 (with safezone = 1).
-3. Instance variables my_width and my_height are not properly instantiated.
+1. Instance variables my_width and my_height are not properly instantiated.
 
 ###R5 [dmason.sim.field.grid.numeric.DDoubleGrid2DFactory]###
 1. The same errors indicated for DContinuous2DFactory, except for the mode SQUARE_BALANCED_DISTRIBUTION.
@@ -110,7 +98,8 @@ In the method createContinuous2DXY problems are found in the blocks of code that
 	1. If you pass an agent already exists, this is not moved, but creates another agent equal to a new location.
 	2. With a stress-test (numLoop> 8) manifests a bug due to the representation of numbers in java.
 4. getNumAgents.
-	1. When an agent moves from a region to another one the agent will be counted twice if the regions belong to the same DistributedField and don't overlap 
+	1. An agent positioned in overlapping regions will be counted more than once
+	2. When an agent moves from a region to another one the agent will be counted twice if the regions belong to the same DistributedField and don't overlap 
 
 ###R9[dmason.sim.engine.DistributedStateConnectionJMS]###
 1. Mode HorizontalDistributionMode in a space not toroidal is created topic 0-lastCellR, this is semantically incorrect because having to do with a space not toroidal, it is not possible that there is a cell that sign up to the topic in question.
@@ -147,7 +136,6 @@ In DContinuous2DXY (and also for all other classes like) I have found that in th
 6. corner_out_up_left_diag_up
 7. corner_out_down_left_diag_left
 8. corner_out_down_right_diag_right
-
 
 Modifications for the testing
 ----
@@ -190,3 +178,5 @@ The error is due to a kind used for the operation of division: safezone and 2 ar
 It would be appropriate to throw exceptions of type DMasonException before they are made divisions by zero or created field conceptually incorrect.
 ###SB5 [R8.5]###
 It would be appropriate to throw exceptions to prevent the user is given the opportunity to provide input on the type indicated, otherwise the results (of course inconsistent) would make the work of the unconscious user inconsistent.
+###SB6 [R4.2.1]###
+The variable **safezone** was declared Integer, so the operation **/** returned a integer casted value
