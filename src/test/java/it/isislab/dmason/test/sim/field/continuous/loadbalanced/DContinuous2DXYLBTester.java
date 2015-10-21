@@ -279,7 +279,6 @@ public class DContinuous2DXYLBTester {
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Double2D location = toTest.getAvailableRandomLocation();
-			System.out.println(location);
 			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
 					sa, /* SimState */ss);
 		}
