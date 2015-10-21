@@ -98,8 +98,8 @@ In the method createContinuous2DXY problems are found in the blocks of code that
 	1. If you pass an agent already exists, this is not moved, but creates another agent equal to a new location.
 	2. With a stress-test (numLoop> 8) manifests a bug due to the representation of numbers in java.
 4. getNumAgents.
-	1. An agent positioned in overlapping regions will be counted more than once
-	2. When an agent moves from a region to another one the agent will be counted twice if the regions belong to the same DistributedField and don't overlap 
+	1. An agent positioned in overlapping regions for the same simulation step will be counted more than once
+	2. In the same simulation step when an agent moves from a region to another one the agent will be counted twice if the regions belong to the same DistributedField and don't overlap 
 
 ###R9[dmason.sim.engine.DistributedStateConnectionJMS]###
 1. Mode HorizontalDistributionMode in a space not toroidal is created topic 0-lastCellR, this is semantically incorrect because having to do with a space not toroidal, it is not possible that there is a cell that sign up to the topic in question.
