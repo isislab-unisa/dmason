@@ -265,9 +265,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test set distributed object location.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testSetDistributedObjectLocation() {
+	public void testSetDistributedObjectLocation() throws DMasonException {
 
 		for (int i = 0; i < numLoop; i++) {
 			Double2D location = toTest.getAvailableRandomLocation();
@@ -278,9 +279,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test get state.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetState() {
+	public void testGetState() throws DMasonException {
 
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
@@ -294,9 +296,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test get num agent for same agent.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetNumAgentForSameAgent() {
+	public void testGetNumAgentForSameAgent() throws DMasonException {
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Double2D location = toTest.getAvailableRandomLocation();
@@ -308,9 +311,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test get num agent different agent.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetNumAgentDifferentAgent() {
+	public void testGetNumAgentDifferentAgent() throws DMasonException {
 		// i'm positioning more agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Double2D location = toTest.getAvailableRandomLocation();
@@ -332,9 +336,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test get all visible agent x.
+	 * @throws DMasonException 
 	 */
 	@Ignore
-	public void testGetAllVisibleAgentX() {
+	public void testGetAllVisibleAgentX() throws DMasonException {
 		for (int i = 0; i < numLoop; i++) {
 
 			Double2D location = toTest.getAvailableRandomLocation();
@@ -348,9 +353,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test reset add all true.
+	 * @throws DMasonException 
 	 */
 	@Ignore
-	public void testResetAddAllTrue() {
+	public void testResetAddAllTrue() throws DMasonException {
 		for (int i = 0; i < numLoop; i++) {
 
 			Double2D location = toTest.getAvailableRandomLocation();
@@ -369,9 +375,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test corner mine up left.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testCornerMineUpLeft() {
+	public void testCornerMineUpLeft() throws DMasonException {
 
 		double i = toTest.rmap.corner_mine_up_left.upl_xx;
 		double j = toTest.rmap.corner_mine_up_left.upl_yy;
@@ -404,9 +411,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test boundary value corner mine up left.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testBoundaryValueCornerMineUpLeft() {
+	public void testBoundaryValueCornerMineUpLeft() throws DMasonException {
 
 		double i = toTest.rmap.corner_mine_up_left.upl_xx;
 		double j = toTest.rmap.corner_mine_up_left.upl_yy;
@@ -424,9 +432,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test corner mine up right.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testCornerMineUpRight() {
+	public void testCornerMineUpRight() throws DMasonException {
 
 		double i = toTest.rmap.corner_mine_up_right.upl_xx;
 		double j = toTest.rmap.corner_mine_up_right.upl_yy;
@@ -459,9 +468,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test boundary value corner mine up right.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testBoundaryValueCornerMineUpRight() {
+	public void testBoundaryValueCornerMineUpRight() throws DMasonException {
 
 		double i = toTest.rmap.corner_mine_up_right.upl_xx;
 		double j = toTest.rmap.corner_mine_up_right.upl_yy;
@@ -479,9 +489,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test corner mine down left.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testCornerMineDownLeft() {
+	public void testCornerMineDownLeft() throws DMasonException {
 
 		double i = toTest.rmap.corner_mine_down_left.upl_xx;
 		double j = toTest.rmap.corner_mine_down_left.upl_yy;
@@ -514,9 +525,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test boundary value corner mine down left.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testBoundaryValueCornerMineDownLeft() {
+	public void testBoundaryValueCornerMineDownLeft() throws DMasonException {
 
 		double i = toTest.rmap.corner_mine_down_left.upl_xx;
 		double j = toTest.rmap.corner_mine_down_left.upl_yy;
@@ -534,9 +546,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test corner mine down right.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testCornerMineDownRight() {
+	public void testCornerMineDownRight() throws DMasonException {
 
 		double i = toTest.rmap.corner_mine_down_right.upl_xx;
 		double j = toTest.rmap.corner_mine_down_right.upl_yy;
@@ -569,9 +582,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test boundary value corner mine down right.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testBoundaryValueCornerMineDownRight() {
+	public void testBoundaryValueCornerMineDownRight() throws DMasonException {
 
 		double i = toTest.rmap.corner_mine_down_right.upl_xx;
 		double j = toTest.rmap.corner_mine_down_right.upl_yy;
@@ -589,9 +603,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test down mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testDownMine() {
+	public void testDownMine() throws DMasonException {
 
 		double i = toTest.rmap.down_mine.upl_xx;
 		double j = toTest.rmap.down_mine.upl_yy;
@@ -623,9 +638,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test boundary value down mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testBoundaryValueDownMine() {
+	public void testBoundaryValueDownMine() throws DMasonException {
 
 		double i = toTest.rmap.down_mine.upl_xx;
 		double j = toTest.rmap.down_mine.upl_yy;
@@ -642,9 +658,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test left mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testLeftMine() {
+	public void testLeftMine() throws DMasonException {
 
 		double i = toTest.rmap.left_mine.upl_xx;
 		double j = toTest.rmap.left_mine.upl_yy;
@@ -677,9 +694,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test boundary value left mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testBoundaryValueLeftMine() {
+	public void testBoundaryValueLeftMine() throws DMasonException {
 
 		double i = toTest.rmap.left_mine.upl_xx;
 		double j = toTest.rmap.left_mine.upl_yy;
@@ -696,9 +714,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test right mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testRightMine() {
+	public void testRightMine() throws DMasonException {
 
 		double i = toTest.rmap.right_mine.upl_xx;
 		double j = toTest.rmap.right_mine.upl_yy;
@@ -731,9 +750,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test boundary value right mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testBoundaryValueRightMine() {
+	public void testBoundaryValueRightMine() throws DMasonException {
 
 		double i = toTest.rmap.right_mine.upl_xx;
 		double j = toTest.rmap.right_mine.upl_yy;
@@ -750,9 +770,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test up mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testUpMine() {
+	public void testUpMine() throws DMasonException {
 
 		double i = toTest.rmap.up_mine.upl_xx;
 		double j = toTest.rmap.up_mine.upl_yy;
@@ -785,9 +806,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test boundary value up mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testBoundaryValueUpMine() {
+	public void testBoundaryValueUpMine() throws DMasonException {
 
 		double i = toTest.rmap.up_mine.upl_xx;
 		double j = toTest.rmap.up_mine.upl_yy;
@@ -804,9 +826,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test set distributed object location congruence size.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testSetDistributedObjectLocationCongruenceSize() {
+	public void testSetDistributedObjectLocationCongruenceSize() throws DMasonException {
 		double i = toTest.rmap.up_mine.upl_xx;
 		double j = toTest.rmap.up_mine.upl_yy;
 
@@ -832,9 +855,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test double set distributed object location god agent.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testDoubleSetDistributedObjectLocationGodAgent() {
+	public void testDoubleSetDistributedObjectLocationGodAgent() throws DMasonException {
 		double i = toTest.rmap.up_mine.upl_xx;
 		double j = toTest.rmap.up_mine.upl_yy;
 
@@ -869,9 +893,10 @@ public class DContinuous2DXYTester {
 
 	/**
 	 * Test set distributed object location change position.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testSetDistributedObjectLocationChangePosition() {
+	public void testSetDistributedObjectLocationChangePosition() throws DMasonException {
 		double i = toTest.rmap.up_mine.upl_xx;
 		double j = toTest.rmap.up_mine.upl_yy;
 

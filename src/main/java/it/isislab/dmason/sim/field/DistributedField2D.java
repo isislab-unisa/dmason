@@ -17,6 +17,7 @@
 
 package it.isislab.dmason.sim.field;
 
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import sim.engine.SimState;
 
@@ -45,11 +46,11 @@ public interface DistributedField2D<E> extends DistributedField<E>
 	/**  
 	 * Provide the shift logic of the agents among the peers
 	 * @param location The new location of the remote agent
-	 * @param rm The remote agent to be stepped
+	 * @param o The remote agent to be stepped or the value 
 	 * @param sm SimState of simulation
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
 	 */
-	public boolean setDistributedObjectLocation(final E location,RemotePositionedAgent<E> rm,SimState sm);
+	public boolean setDistributedObjectLocation(final E location,Object o,SimState sm) throws DMasonException;
 	
 
 	/**

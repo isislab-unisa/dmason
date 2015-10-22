@@ -514,13 +514,7 @@ public class DIntGrid2DY extends DIntGrid2D {
 		return true;
 	}
 
-	@Override
-	public boolean setDistributedObjectLocation(Int2D location,
-			RemotePositionedAgent<Int2D> rm, SimState sm) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
+	
 	/**
 	 * Provide the double value shift logic among the peers
 	 * @param d
@@ -528,9 +522,14 @@ public class DIntGrid2DY extends DIntGrid2D {
 	 * @param sm
 	 * @return
 	 */
-	public boolean setDistributedObjectLocation(int i, Int2D l, SimState sm){
+	public boolean setDistributedObjectLocation( Int2D l, Object o ,SimState sm) throws DMasonException{
 
-		//This 'if' is for debug 
+		int i=Integer.MAX_VALUE; // se il controllo sotto non va a buon fine OH MY GOD
+		
+		if(o instanceof Integer){
+			i=(Integer) o;
+		}else
+		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");}		//This 'if' is for debug 
 		if(checkReproducibility)
 			ps.println(i+" "+l.x+" "+l.y);
 

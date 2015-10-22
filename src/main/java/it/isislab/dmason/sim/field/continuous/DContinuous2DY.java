@@ -365,9 +365,16 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 	 * @param sm SimState of simulation
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
 	 */
-	@Override
-	public boolean setDistributedObjectLocation(final Double2D location,RemotePositionedAgent<Double2D> rm,SimState sm)
-	{  	
+	public boolean setDistributedObjectLocation(final Double2D location,Object o,SimState sm) throws DMasonException
+	{	
+		RemotePositionedAgent<Double2D> rm=null;
+		
+		if(o instanceof RemotePositionedAgent || ((RemotePositionedAgent)o).getPos() instanceof Double2D){
+			rm=(RemotePositionedAgent<Double2D>) o;	
+		}
+		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<Double2D>");}
+		
+		
 		//This 'if' is for debug 
 		if(checkReproducibility)
 			ps.println(rm.getId()+" "+rm.getPos().x+" "+rm.getPos().y);
