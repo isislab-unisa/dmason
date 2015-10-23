@@ -260,9 +260,10 @@ public class DIntGrid2DXYTester {
 
 	/**
 	 * Test set distributed object location.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testSetDistributedObjectLocation() {
+	public void testSetDistributedObjectLocation() throws DMasonException {
 
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
@@ -273,9 +274,10 @@ public class DIntGrid2DXYTester {
 
 	/**
 	 * Test get state.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetState() {
+	public void testGetState() throws DMasonException {
 
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
@@ -289,9 +291,10 @@ public class DIntGrid2DXYTester {
 
 	/**
 	 * Test get num agent for same agent.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetNumAgentForSameAgent() {
+	public void testGetNumAgentForSameAgent() throws DMasonException {
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
@@ -303,9 +306,10 @@ public class DIntGrid2DXYTester {
 
 	/**
 	 * Test get num agent different agent.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetNumAgentDifferentAgent() {
+	public void testGetNumAgentDifferentAgent() throws DMasonException {
 		// i'm positioning more agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
@@ -319,9 +323,10 @@ public class DIntGrid2DXYTester {
 
 	/**
 	 * Test corner mine up left.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testCornerMineUpLeft() {
+	public void testCornerMineUpLeft() throws DMasonException {
 
 		int i = toTest.rmap.corner_mine_up_left.upl_xx;
 		int j = toTest.rmap.corner_mine_up_left.upl_yy;
@@ -354,9 +359,10 @@ public class DIntGrid2DXYTester {
 
 	/**
 	 * Test corner mine up right.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testCornerMineUpRight() {
+	public void testCornerMineUpRight() throws DMasonException {
 
 		int i = toTest.rmap.corner_mine_up_right.upl_xx;
 		int j = toTest.rmap.corner_mine_up_right.upl_yy;
@@ -389,9 +395,10 @@ public class DIntGrid2DXYTester {
 
 	/**
 	 * Test corner mine down left.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testCornerMineDownLeft() {
+	public void testCornerMineDownLeft() throws DMasonException {
 
 		int i = toTest.rmap.corner_mine_down_left.upl_xx;
 		int j = toTest.rmap.corner_mine_down_left.upl_yy;
@@ -424,9 +431,10 @@ public class DIntGrid2DXYTester {
 
 	/**
 	 * Test corner mine down right.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testCornerMineDownRight() {
+	public void testCornerMineDownRight() throws DMasonException {
 
 		int i = toTest.rmap.corner_mine_down_right.upl_xx;
 		int j = toTest.rmap.corner_mine_down_right.upl_yy;
@@ -459,9 +467,10 @@ public class DIntGrid2DXYTester {
 
 	/**
 	 * Test down mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testDownMine() {
+	public void testDownMine() throws DMasonException {
 
 		int i = toTest.rmap.down_mine.upl_xx;
 		int j = toTest.rmap.down_mine.upl_yy;
@@ -493,9 +502,10 @@ public class DIntGrid2DXYTester {
 
 	/**
 	 * Test left mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testLeftMine() {
+	public void testLeftMine() throws DMasonException {
 
 		int i = toTest.rmap.left_mine.upl_xx;
 		int j = toTest.rmap.left_mine.upl_yy;
@@ -528,9 +538,10 @@ public class DIntGrid2DXYTester {
 
 	/**
 	 * Test right mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testRightMine() {
+	public void testRightMine() throws DMasonException {
 
 		int i = toTest.rmap.right_mine.upl_xx;
 		int j = toTest.rmap.right_mine.upl_yy;
@@ -563,9 +574,10 @@ public class DIntGrid2DXYTester {
 
 	/**
 	 * Test up mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testUpMine() {
+	public void testUpMine() throws DMasonException {
 
 		int i = toTest.rmap.up_mine.upl_xx;
 		int j = toTest.rmap.up_mine.upl_yy;
@@ -598,9 +610,10 @@ public class DIntGrid2DXYTester {
 
 	/**
 	 * Test double set distributed object location god agent.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testDoubleSetDistributedObjectLocationGodAgent() {
+	public void testDoubleSetDistributedObjectLocationGodAgent() throws DMasonException {
 		int i = toTest.rmap.up_mine.upl_xx;
 		int j = toTest.rmap.up_mine.upl_yy;
 
