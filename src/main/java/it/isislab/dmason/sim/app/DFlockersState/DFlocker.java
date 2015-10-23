@@ -15,6 +15,7 @@
    limitations under the License.
  */
 package it.isislab.dmason.sim.app.DFlockersState;
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedAgentFactory;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
@@ -232,7 +233,12 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
 		}
 
 		
-		flock.flockers.setDistributedObjectLocation(pos, this, state);	
+		try {
+			flock.flockers.setDistributedObjectLocation(pos, this, state);
+		} catch (DMasonException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 	}
 	
 	public Color getColor() 

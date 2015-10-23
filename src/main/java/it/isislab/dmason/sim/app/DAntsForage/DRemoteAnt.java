@@ -16,6 +16,7 @@
  */
 package it.isislab.dmason.sim.app.DAntsForage;
 
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
 
 import java.awt.Color;
@@ -104,7 +105,12 @@ public class DRemoteAnt extends RemoteAnt<Int2D>
 
 					//}
 				//af.toFoodGrid.field[x][y] = max;
-				af.toFoodGrid.setDistributedObjectLocation(max, new Int2D(x, y), state);     
+				try {
+					af.toFoodGrid.setDistributedObjectLocation(new Int2D(x, y),max, state);
+				} catch (DMasonException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}     
 			}
 			else
 			{
@@ -127,7 +133,12 @@ public class DRemoteAnt extends RemoteAnt<Int2D>
 						}
 					//}
 				//af.toHomeGrid.field[x][y] = max;
-				af.toHomeGrid.setDistributedObjectLocation(max, new Int2D(x, y), state);
+				try {
+					af.toHomeGrid.setDistributedObjectLocation(new Int2D(x, y),max, state);
+				} catch (DMasonException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 
@@ -192,7 +203,12 @@ public class DRemoteAnt extends RemoteAnt<Int2D>
 				if (!(xd == 0 && yd == 0) && xm >= 0 && xm < af.GRID_WIDTH && ym >= 0 && ym < af.GRID_HEIGHT && af.obstacles.field[xm][ym] == 0)
 				{ max_x = xm; max_y = ym; }
 			}
-			af.buggrid.setDistributedObjectLocation(new Int2D(max_x, max_y), this, state);      
+			try {
+				af.buggrid.setDistributedObjectLocation(new Int2D(max_x, max_y), this, state);
+			} catch (DMasonException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}      
 			//af.buggrid.setObjectLocation(this, new Int2D(max_x, max_y));
 			if (af.sites.field[max_x][max_y] == DAntsForage.HOME)  // reward me next time!  And change my status
 			{ reward = af.reward ; hasFoodItem = ! hasFoodItem; 
@@ -258,7 +274,12 @@ public class DRemoteAnt extends RemoteAnt<Int2D>
 				{ max_x = xm; max_y = ym; }
 			}
 			//af.buggrid.setObjectLocation(this, new Int2D(max_x, max_y));
-			af.buggrid.setDistributedObjectLocation(new Int2D(max_x, max_y), this, state);      
+			try {
+				af.buggrid.setDistributedObjectLocation(new Int2D(max_x, max_y), this, state);
+			} catch (DMasonException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}      
 			if (af.sites.field[max_x][max_y] == DAntsForage.FOOD)  // reward me next time!  And change my status
 			{ reward = af.reward; hasFoodItem = ! hasFoodItem; 
 
