@@ -292,8 +292,23 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
 	 */
 	@Override
-	public boolean setDistributedObjectLocation(final Int2D location,RemotePositionedAgent<Int2D> rm,SimState sm)
-	{  	
+	//public boolean setDistributedObjectLocation(final Int2D location,RemotePositionedAgent<Int2D> rm,SimState sm){
+	public boolean setDistributedObjectLocation(final Int2D location, Object o,SimState sm) throws DMasonException
+	{
+		
+		
+		RemotePositionedAgent<Int2D> rm=null;
+		
+		if(o instanceof RemotePositionedAgent ){
+			if(((RemotePositionedAgent)o).getPos() instanceof Int2D){
+			
+			rm=(RemotePositionedAgent<Int2D>) o;	
+			}
+			else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter RemotePositionedAgent<E>, E must be a Int2D");}
+		}
+		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}		//This 'if' is for debug 
+	
+		
 		/*if(sm.schedule.getSteps()==8000){
 			printer.write(sm.schedule.getSteps()+" "+rm.getId()+" "+rm.getPos().x+" "+rm.getPos().y+"\r\n");
 			printer.flush();
