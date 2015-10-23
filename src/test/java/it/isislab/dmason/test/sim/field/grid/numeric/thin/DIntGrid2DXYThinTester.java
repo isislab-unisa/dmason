@@ -39,7 +39,7 @@ public class DIntGrid2DXYThinTester {
 	StubDistributedState ss;
 
 	/** The remote agent. */
-	StubRemotePositionedAgent sa;
+	//StubRemotePositionedAgent sa; values and not agents int sa;
 
 	/** The num of loop of the tests. */
 	int numLoop = 8; // the max value for numLoop is 8 because for numLoop>8
@@ -149,84 +149,85 @@ public class DIntGrid2DXYThinTester {
 
 	/**
 	 * The Class StubRemotePositionedAgent.
+	 * ERROR set values and not agents
 	 */
-	public class StubRemotePositionedAgent implements
-			RemotePositionedAgent<Int2D> {
-
-		/** The id. */
-		String id;
-
-		/** The Constant serialVersionUID. */
-		private static final long serialVersionUID = 1L;
-
-		/**
-		 * Instantiates a new stub remote positioned agent.
-		 */
-		public StubRemotePositionedAgent() {
-			super();
-			id = "stub";
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see sim.engine.Steppable#step(sim.engine.SimState)
-		 */
-		@Override
-		public void step(SimState arg0) {
-			// TODO Auto-generated method stub
-
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.engine.RemotePositionedAgent#getPos()
-		 */
-		@Override
-		public Int2D getPos() {
-			// TODO Auto-generated method stub
-			return new Int2D(0, 0);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * it.isislab.dmason.sim.engine.RemotePositionedAgent#setPos(java.lang
-		 * .Object)
-		 */
-		@Override
-		public void setPos(Int2D pos) {
-			// TODO Auto-generated method stub
-
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.engine.RemotePositionedAgent#getId()
-		 */
-		@Override
-		public String getId() {
-			// TODO Auto-generated method stub
-			return id;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * it.isislab.dmason.sim.engine.RemotePositionedAgent#setId(java.lang
-		 * .String)
-		 */
-		@Override
-		public void setId(String id) {
-			// TODO Auto-generated method stub
-			this.id = id;
-		}
-
-	}
+//	public class StubRemotePositionedAgent implements
+//			RemotePositionedAgent<Int2D> {
+//
+//		/** The id. */
+//		String id;
+//
+//		/** The Constant serialVersionUID. */
+//		private static final long serialVersionUID = 1L;
+//
+//		/**
+//		 * Instantiates a new stub remote positioned agent.
+//		 */
+//		public StubRemotePositionedAgent() {
+//			super();
+//			id = "stub";
+//		}
+//
+//		/*
+//		 * (non-Javadoc)
+//		 * 
+//		 * @see sim.engine.Steppable#step(sim.engine.SimState)
+//		 */
+//		@Override
+//		public void step(SimState arg0) {
+//			// TODO Auto-generated method stub
+//
+//		}
+//
+//		/*
+//		 * (non-Javadoc)
+//		 * 
+//		 * @see it.isislab.dmason.sim.engine.RemotePositionedAgent#getPos()
+//		 */
+//		@Override
+//		public Int2D getPos() {
+//			// TODO Auto-generated method stub
+//			return new Int2D(0, 0);
+//		}
+//
+//		/*
+//		 * (non-Javadoc)
+//		 * 
+//		 * @see
+//		 * it.isislab.dmason.sim.engine.RemotePositionedAgent#setPos(java.lang
+//		 * .Object)
+//		 */
+//		@Override
+//		public void setPos(Int2D pos) {
+//			// TODO Auto-generated method stub
+//
+//		}
+//
+//		/*
+//		 * (non-Javadoc)
+//		 * 
+//		 * @see it.isislab.dmason.sim.engine.RemotePositionedAgent#getId()
+//		 */
+//		@Override
+//		public String getId() {
+//			// TODO Auto-generated method stub
+//			return id;
+//		}
+//
+//		/*
+//		 * (non-Javadoc)
+//		 * 
+//		 * @see
+//		 * it.isislab.dmason.sim.engine.RemotePositionedAgent#setId(java.lang
+//		 * .String)
+//		 */
+//		@Override
+//		public void setId(String id) {
+//			// TODO Auto-generated method stub
+//			this.id = id;
+//		}
+//
+//	}
 
 	/**
 	 * Sets the enviroment.
