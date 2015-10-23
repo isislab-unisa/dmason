@@ -760,12 +760,6 @@ public class DIntGrid2DYLB extends DIntGrid2D {
 		return true;
 	}
 
-	@Override
-	public boolean setDistributedObjectLocation(Int2D location,
-			RemotePositionedAgent<Int2D> rm, SimState sm) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 	
 	/**
 	 * Provide the double value shift logic among the peers
@@ -774,7 +768,17 @@ public class DIntGrid2DYLB extends DIntGrid2D {
 	 * @param sm
 	 * @return
 	 */
-	public boolean setDistributedObjectLocation(int i, Int2D l, SimState sm){
+	//public boolean setDistributedObjectLocation(int i, Int2D l, SimState sm){
+	public boolean setDistributedObjectLocation( Int2D l, Object ob ,SimState sm) throws DMasonException{
+
+		int i=Integer.MAX_VALUE; // se il controllo sotto non va a buon fine OH MY GOD
+		
+		if(ob instanceof Integer){
+			i=(Integer) ob;
+		}else
+		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");}
+		
+		
 		numAgents++;
 		if(myfield.isMine(l.getX(), l.getY()))
     	{    		

@@ -315,8 +315,20 @@ public class DContinuous2DXYLB extends DContinuous2D
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
 	 */
 	@Override
-	public boolean setDistributedObjectLocation(final Double2D location,RemotePositionedAgent<Double2D> rm,SimState sm)
+	public boolean setDistributedObjectLocation(final Double2D location,/*RemotePositionedAgent<Double2D> rm*/Object ob,SimState sm) throws DMasonException
 	{
+
+		RemotePositionedAgent<Double2D> rm=null;
+
+		if(ob instanceof RemotePositionedAgent ){
+			if(((RemotePositionedAgent)ob).getPos() instanceof Double2D){
+
+				rm=(RemotePositionedAgent<Double2D>) ob;	
+			}
+			else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter RemotePositionedAgent<E>, E must be a Double2D");}
+		}
+		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}
+
 
 		//This 'if' is for debug 
 		if(checkReproducibility)
@@ -5526,7 +5538,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 	}
 	@Override
 	public boolean verifyPosition(Double2D pos) {
-		
+
 		//we have to implement this
 		return false;
 

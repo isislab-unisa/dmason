@@ -813,12 +813,6 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D {
 		return true;
 	}
 	
-	@Override
-	public boolean setDistributedObjectLocation(Int2D location,
-			RemotePositionedAgent<Int2D> rm, SimState sm) {
-    	return false;
-	}
-	
 	/**
 	 * Provide the double value shift logic among the peers
 	 * @param d
@@ -827,8 +821,19 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D {
 	 * @return
 	 */
 	@Override
-	public boolean setDistributedObjectLocation(double d, Int2D l, SimState sm){
-		numAgents++;
+	//public boolean setDistributedObjectLocation(double d, Int2D l, SimState sm){
+	public boolean setDistributedObjectLocation(Int2D l, /*double d*/Object ob, SimState sm) throws DMasonException
+	{
+		double d=Double.MAX_VALUE; // se il controllo sotto non va a buon fine OH MY GOD
+
+		if(ob instanceof Double){
+			d=(Double) ob;
+		}else
+		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a double");}
+	
+	
+	
+	numAgents++;
 		if(myfield.isMine(l.getX(), l.getY()))
     	{    		
     		return myfield.addEntryNum(new EntryNum<Double,Int2D>(d, l));

@@ -133,7 +133,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	 * It represents the initial value of the field
 	 */	
 	private double initialValue;
-	
+
 	//quando ricevo cellette e ho splittato a mia volta imposto i topic diversamente delle cellette
 	private boolean isSplitted;
 	private boolean splitDone;
@@ -164,17 +164,17 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	private long startPostWork;
 	private long endPostWork;
 	private int numAgents;
-	
+
 	private String topicPrefix = "";
 	// fine codice profiling
 	private int NUMPEERS;
-	
+
 	// -----------------------------------------------------------------------
 	// GLOBAL PROPERTIES -----------------------------------------------------
 	// -----------------------------------------------------------------------
 	/** Will contain globals properties */
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
-	
+
 	/**
 	 * Constructor of class with paramaters:
 	 * 
@@ -216,22 +216,22 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 		balance = new LoadBalancingDoubleNumeric();
 
 		int [] lP = {0,1,2,7,8,3,6,5,4};
-		
+
 		//contiene le celle divise inizialmente
 		ArrayList<MyCellDoubleNumeric> listOriginalCell = balance.createRegions(this,my_width,my_height,MAX_DISTANCE,own_x,own_y,NUMPEERS);
 
 		//struttura in cui vengono inserite le MyCellForDouble
 		listGrid = new HashMap<Integer,HashMap<CellType, MyCellInterface>>();
-		
+
 		//riempie la struttura contenitore di MyCellForDouble
 		for(int k = 0; k < 9; k++){
 			listGrid.put(k, new HashMap<CellType, MyCellInterface>());
 		}
-		
+
 		for(int k = 0; k < lP.length; k++){
 			listGrid.get(lP[k]).put(cellType, listOriginalCell.get(k));
 		}
-		
+
 		outAgents = new RegionDoubleNumericLB(0,0,0,0,0,0);
 
 		//Contenitore di UpdatePositionForDouble per gli aggiornamenti e le publish
@@ -244,9 +244,9 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 		this.preUnion = false;
 		this.unionDone = false;
 		this.isUnited = true;
-		
+
 		updates_cacheLB=new ArrayList<ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>>();	
-		
+
 		// codice profiling
 		startPreWork = 0;
 		endPreWork = 0;
@@ -256,17 +256,17 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 		endWait = 0;
 		startPostWork = 0;
 		endPostWork = 0;
-		
+
 		f = null;
 		ps = null;
 		numStep = 1001;
-		
+
 		//if(sm.schedule.getSteps()==1){
 		/**			
 			try {
-		
+
 				f=new FileOutputStream("Region"+cellType.pos_i+"-"+cellType.pos_j+".txt",true);
-				
+
 			} catch (FileNotFoundException e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
@@ -276,16 +276,10 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 		// fine codice profiling
 		numAgents=0;
 	}
-	
-	@Override
-	public boolean setDistributedObjectLocation(Int2D location,
-			RemotePositionedAgent<Int2D> rm, SimState sm) {
-		return false;
-	}
 
 	@Override
 	public Int2D getAvailableRandomLocation() {
-		
+
 		return null;
 	}
 
@@ -297,207 +291,216 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
 	 */
 	@Override
-	public boolean setDistributedObjectLocation(double d, Int2D location, SimState sm)
+	public boolean setDistributedObjectLocation(Int2D location, /*double d*/Object ob, SimState sm) throws DMasonException
 	{
+		double d=Double.MAX_VALUE; // se il controllo sotto non va a buon fine OH MY GOD
+
+		if(ob instanceof Double){
+			d=(Double) ob;
+		}else
+		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a double");}
+
+
+
 		numAgents++;
 		boolean fl = false;
-		
+
 		if(prepareForBalance)
 		{		
 			boolean b = false;
-			
-	    	for(Integer pos : listGrid.keySet())
-	    	{	
-	    		HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
-	    		
-	    		for(CellType ct : hm.keySet()){
-	    			if((hm.get(ct).getPosition() == MyCellInterface.CENTER))
-	    			{	
-	    				MyCellDoubleNumeric mc = (MyCellDoubleNumeric) hm.get(ct);
-	    				if(mc.getMyField().isMine(location.x,location.y))
-	    					return mc.getMyField().addEntryNum(new EntryNum<Double,Int2D>(d, location));
-	    					
-	    				Class o=mc.getMyRMap().getClass();
-	    				
-	    				Field[] fields = o.getDeclaredFields();
-	    				
-	    				for (int z = 0; z < fields.length; z++)
-	    				{
-	    					fields[z].setAccessible(true);
-	    					
-	    					try
-	    					{
-	    						String name=fields[z].getName();
-	    				    	Method method = o.getMethod("get"+name, null);
-	    				    	Object returnValue = method.invoke(mc.getMyRMap(), null);
-	    				    	
-	    				    	if(returnValue!=null)
-	    				    	{
-	    				    		RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
-	    				    		
-	    				    		if(region.isMine(location.x, location.y))
-	    				    		{
-	    				    			if(name.contains("mine"))
-	    				    			{
-	    				    				region.add(new EntryNum<Double,Int2D>(d, location));
-	    				    				mc.getMyField().add(new EntryNum<Double,Int2D>(d, location));
-	    				    			}
-	    				    			else
-	    				    				if(name.contains("out"))
-	    				    				{
-	    				    					region.add(new EntryNum<Double,Int2D>(d, location));
-	    				    					outAgents.add(new EntryNum<Double,Int2D>(d, location));
-	    				    				}
-	    				    		}
-	    				    	}
-	    					}
-	    					catch (Exception e) {
+
+			for(Integer pos : listGrid.keySet())
+			{	
+				HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
+
+				for(CellType ct : hm.keySet()){
+					if((hm.get(ct).getPosition() == MyCellInterface.CENTER))
+					{	
+						MyCellDoubleNumeric mc = (MyCellDoubleNumeric) hm.get(ct);
+						if(mc.getMyField().isMine(location.x,location.y))
+							return mc.getMyField().addEntryNum(new EntryNum<Double,Int2D>(d, location));
+
+						Class o=mc.getMyRMap().getClass();
+
+						Field[] fields = o.getDeclaredFields();
+
+						for (int z = 0; z < fields.length; z++)
+						{
+							fields[z].setAccessible(true);
+
+							try
+							{
+								String name=fields[z].getName();
+								Method method = o.getMethod("get"+name, null);
+								Object returnValue = method.invoke(mc.getMyRMap(), null);
+
+								if(returnValue!=null)
+								{
+									RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
+
+									if(region.isMine(location.x, location.y))
+									{
+										if(name.contains("mine"))
+										{
+											region.add(new EntryNum<Double,Int2D>(d, location));
+											mc.getMyField().add(new EntryNum<Double,Int2D>(d, location));
+										}
+										else
+											if(name.contains("out"))
+											{
+												region.add(new EntryNum<Double,Int2D>(d, location));
+												outAgents.add(new EntryNum<Double,Int2D>(d, location));
+											}
+									}
+								}
+							}
+							catch (Exception e) {
 								e.printStackTrace();
 							}
-	    				}
-	    			}
-	    			if(ct.toString().equals(cellType.toString()))
-	    			{
-			    		MyCellDoubleNumeric mc = (MyCellDoubleNumeric) hm.get(ct);
-			    		b = balance.addForBalance(location, d, mc);
-		    			fl = fl || b;
-	    			}
-	    			else
-	    			{
-	    				MyCellDoubleNumeric md = (MyCellDoubleNumeric) hm.get(ct);
-	    				
-				    	if(md.getMyField().isMine(location.x,location.y))  
-				    		return md.getMyField().addEntryNum(new EntryNum<Double,Int2D>(d, location));
-				        
-				    	if(setValue(d, location, md))
-				    		fl = fl || true;
-	    			}
-	    		}
-	    	}
+						}
+					}
+					if(ct.toString().equals(cellType.toString()))
+					{
+						MyCellDoubleNumeric mc = (MyCellDoubleNumeric) hm.get(ct);
+						b = balance.addForBalance(location, d, mc);
+						fl = fl || b;
+					}
+					else
+					{
+						MyCellDoubleNumeric md = (MyCellDoubleNumeric) hm.get(ct);
+
+						if(md.getMyField().isMine(location.x,location.y))  
+							return md.getMyField().addEntryNum(new EntryNum<Double,Int2D>(d, location));
+
+						if(setValue(d, location, md))
+							fl = fl || true;
+					}
+				}
+			}
 		} 
 		else
-	    	if(prepareForUnion && !isSplitted)
-	    	{
-	    	
-	    		boolean u = false;
-		    	for(Integer pos : listGrid.keySet())
-		    	{	
-		    		HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
-		    		
-		    		for(CellType ct : hm.keySet()){
-		    			
-		    			/*MyCellDoubleNumeric mc =  (MyCellDoubleNumeric) hm.get(ct);
+			if(prepareForUnion && !isSplitted)
+			{
+
+				boolean u = false;
+				for(Integer pos : listGrid.keySet())
+				{	
+					HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
+
+					for(CellType ct : hm.keySet()){
+
+						/*MyCellDoubleNumeric mc =  (MyCellDoubleNumeric) hm.get(ct);
 		    			u = balance.addForBalance(location, d, mc);
 		    			fl = fl || u;*/
-		    			MyCellDoubleNumeric mc =  (MyCellDoubleNumeric) hm.get(ct);
-		    			
-		    			if(mc.getMyField().isMine(location.x,location.y))
-	    					return mc.getMyField().addEntryNum(new EntryNum<Double,Int2D>(d, location));
-		    			
-		    			Class o=mc.getMyRMap().getClass();
-	    				
-	    				Field[] fields = o.getDeclaredFields();
-	    				
-	    				for (int z = 0; z < fields.length; z++)
-	    				{
-	    					fields[z].setAccessible(true);
-	    					
-	    					try
-	    					{
-	    						String name=fields[z].getName();
-	    				    	Method method = o.getMethod("get"+name, null);
-	    				    	Object returnValue = method.invoke(mc.getMyRMap(), null);
-	    				    	
-	    				    	if(returnValue!=null)
-	    				    	{
-	    				    		RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
-	    				    		
-	    				    		if(region.isMine(location.x, location.y))
-	    				    		{
-	    				    			if(name.contains("mine"))
-	    				    			{
-	    				    				fl = u || region.add(new EntryNum<Double,Int2D>(d, location));
-	    				    				mc.getMyField().add(new EntryNum<Double,Int2D>(d, location));
-	    				    			}
-	    				    			else
-	    				    				if(name.contains("out"))
-	    				    				{
-	    				    					fl = u || region.add(new EntryNum<Double,Int2D>(d, location));
-	    				    					outAgents.add(new EntryNum<Double,Int2D>(d, location));
-	    				    				}
-	    				    		}
-	    				    	}
-	    					}
-	    					catch (Exception e) {
+						MyCellDoubleNumeric mc =  (MyCellDoubleNumeric) hm.get(ct);
+
+						if(mc.getMyField().isMine(location.x,location.y))
+							return mc.getMyField().addEntryNum(new EntryNum<Double,Int2D>(d, location));
+
+						Class o=mc.getMyRMap().getClass();
+
+						Field[] fields = o.getDeclaredFields();
+
+						for (int z = 0; z < fields.length; z++)
+						{
+							fields[z].setAccessible(true);
+
+							try
+							{
+								String name=fields[z].getName();
+								Method method = o.getMethod("get"+name, null);
+								Object returnValue = method.invoke(mc.getMyRMap(), null);
+
+								if(returnValue!=null)
+								{
+									RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
+
+									if(region.isMine(location.x, location.y))
+									{
+										if(name.contains("mine"))
+										{
+											fl = u || region.add(new EntryNum<Double,Int2D>(d, location));
+											mc.getMyField().add(new EntryNum<Double,Int2D>(d, location));
+										}
+										else
+											if(name.contains("out"))
+											{
+												fl = u || region.add(new EntryNum<Double,Int2D>(d, location));
+												outAgents.add(new EntryNum<Double,Int2D>(d, location));
+											}
+									}
+								}
+							}
+							catch (Exception e) {
 								// TODO: handle exception
 							}
-	    				}
-		    		}
-		    	}
-	    	}	
-	    	else
-	    		if(preUnion)
-	    		{
-	        		
-	        		boolean f = false;
-			    	
-	        		for(Integer pos : listGrid.keySet())
-		        	{	
-		        		HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
-		
-		        		for(CellType ct : hm.keySet()){
-		        			
-		        			MyCellDoubleNumeric md =(MyCellDoubleNumeric) hm.get(ct);
-		        			
-		        			if(md.isUnion())
-		        			{
-		        				f = balance.addForBalance(location, d, md);
-		    			    	fl = fl || f;
-		        			}
-		        			else
-		        			{
-			        			if(md.getMyField().isMine(location.x,location.y))  
-			        				return md.getMyField().addEntryNum(new EntryNum<Double,Int2D>(d, location));
-			        			if(setValue(d, location, md))
-			        				fl = fl || true;
-		        			}
-		        		}
-		        	}
-	    		}
-		    	else
-		    	{		    		
-			    	for(Integer pos : listGrid.keySet())
-			    	{	
-			    		HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
-			    		
-			    		for(CellType ct : hm.keySet())
-			    		{	
-			    			MyCellDoubleNumeric md = (MyCellDoubleNumeric)hm.get(ct);
-			
-			    			if(md.isMine(location.x, location.y) && getState().schedule.getSteps()>1){
-						    	if(md.getMyField().isMine(location.x,location.y))  
-						    		return md.getMyField().addEntryNum(new EntryNum<Double,Int2D>(d, location));
-						        
-						    	if(setValue(d, location, md))
-						    		fl = fl || true;
-			    			}
-			    			else{
-			    				if(md.getMyField().isMine(location.x,location.y))  
-			    					return md.getMyField().addEntryNum(new EntryNum<Double,Int2D>(d, location));
-						        
-			    				if(setValue(d, location, md))
-						    		fl = fl || true;
-			    			}
-			    		}
-			    	}
-		    	}
-		
+						}
+					}
+				}
+			}	
+			else
+				if(preUnion)
+				{
+
+					boolean f = false;
+
+					for(Integer pos : listGrid.keySet())
+					{	
+						HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
+
+						for(CellType ct : hm.keySet()){
+
+							MyCellDoubleNumeric md =(MyCellDoubleNumeric) hm.get(ct);
+
+							if(md.isUnion())
+							{
+								f = balance.addForBalance(location, d, md);
+								fl = fl || f;
+							}
+							else
+							{
+								if(md.getMyField().isMine(location.x,location.y))  
+									return md.getMyField().addEntryNum(new EntryNum<Double,Int2D>(d, location));
+								if(setValue(d, location, md))
+									fl = fl || true;
+							}
+						}
+					}
+				}
+				else
+				{		    		
+					for(Integer pos : listGrid.keySet())
+					{	
+						HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
+
+						for(CellType ct : hm.keySet())
+						{	
+							MyCellDoubleNumeric md = (MyCellDoubleNumeric)hm.get(ct);
+
+							if(md.isMine(location.x, location.y) && getState().schedule.getSteps()>1){
+								if(md.getMyField().isMine(location.x,location.y))  
+									return md.getMyField().addEntryNum(new EntryNum<Double,Int2D>(d, location));
+
+								if(setValue(d, location, md))
+									fl = fl || true;
+							}
+							else{
+								if(md.getMyField().isMine(location.x,location.y))  
+									return md.getMyField().addEntryNum(new EntryNum<Double,Int2D>(d, location));
+
+								if(setValue(d, location, md))
+									fl = fl || true;
+							}
+						}
+					}
+				}
+
 		if(fl) 
 			return true;
 		else
 		{
-	    	System.out.println(cellType+")OH MY GOD!"+"  location: "+location+" value= "+d); // it should never happen (don't tell it to anyone shhhhhhhh! ;P) 
-	    	return false;
+			System.out.println(cellType+")OH MY GOD!"+"  location: "+location+" value= "+d); // it should never happen (don't tell it to anyone shhhhhhhh! ;P) 
+			return false;
 		}
 	}
 
@@ -508,7 +511,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	@Override
 	public synchronized boolean synchro() 
 	{	
-		
+
 		if(prepareForUnion && !isSplitted)
 		{
 			for (int j2 = 0; j2 <= 16; j2++) {
@@ -516,46 +519,46 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				listGrid.get(MyCellInterface.CENTER).get(cellType).getPositionPublish().put((j2%8), false);
 			}
 		}
-		
+
 		if(preUnion){
 			CellType c = null;
 			int p=-1;
-	    	for(Integer pos : listGrid.keySet())
-	    	{	
-	    		HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
-	    		for(CellType ct : hm.keySet())
-	    		{	
-	    			if(!hm.get(ct).getParentCellType().toString().equals(cellType.toString()) && 
-	    					hm.get(ct).isUnion()){
-	    				c = ct;
-	    				p = pos;
-	    				positionForUnion = pos;
-	    				if(!isSplitted)	
-	    					clearReturnedOut((MyCellDoubleNumeric)hm.get(ct));
-	    			}
-	    		}
-	    	}
-	    	if(p!=-1){
-	    		MyCellInterface mc = listGrid.get(p).remove(c);
-	    		for (int j = (Integer)mc.getOwn_x(); j < ((Integer)mc.getOwn_x()+(Integer)mc.getMy_width()); j++)
+			for(Integer pos : listGrid.keySet())
+			{	
+				HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
+				for(CellType ct : hm.keySet())
+				{	
+					if(!hm.get(ct).getParentCellType().toString().equals(cellType.toString()) && 
+							hm.get(ct).isUnion()){
+						c = ct;
+						p = pos;
+						positionForUnion = pos;
+						if(!isSplitted)	
+							clearReturnedOut((MyCellDoubleNumeric)hm.get(ct));
+					}
+				}
+			}
+			if(p!=-1){
+				MyCellInterface mc = listGrid.get(p).remove(c);
+				for (int j = (Integer)mc.getOwn_x(); j < ((Integer)mc.getOwn_x()+(Integer)mc.getMy_width()); j++)
 					for (int i =(Integer)mc.getOwn_y(); i <((Integer)mc.getOwn_y()+(Integer)mc.getMy_height()); i++)
 						if(setValue(field[j][i],new Int2D(j, i), mc)) continue;
 						else
 							((RegionDoubleNumericLB)mc.getMyField()).addEntryNum(new EntryNum<Double,Int2D>(field[j][i], new Int2D(j, i)));
-	    		toSendForUnion.put(p, mc);
-	    		removeValue(mc);
-	    	}
+				toSendForUnion.put(p, mc);
+				removeValue(mc);
+			}
 		}
-		
+
 		resetPublishList(sm.schedule.getSteps()-1);
-		
+
 		if(preUnion)
 		{
 			if(!isSplitted)
 				for(Integer position : toSendForUnion.keySet())
 				{
 					if(toSendForUnion.get(position)!= null){
-						
+
 						if(position%2!=0) 	// topic sui lati
 						{
 							listGrid.get((position-1+8)%8).get(cellType).getPositionPublish().put(position, true);
@@ -563,23 +566,23 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 						}
 					}
 				}
-			
+
 		}
-		
+
 		//--> publishing the regions to correspondent topics for the neighbors
 		preparePublishUnion();
 		preparePublishCenter();
 		preparePublishMicroCell();
 		positionForUnion = -1;
 		unionDone = false;
-		
+
 		if(preUnion)
 		{
 			if(!isSplitted)
 				for(Integer position : toSendForUnion.keySet())
 				{
 					if(toSendForUnion.get(position)!= null){
-						
+
 						if(position%2==0) 	// topic sugli angoli
 						{
 							listGrid.get(position).get(cellType).getPositionPublish().put(position, true);
@@ -592,14 +595,14 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 						}
 					}
 				}
-			
+
 			preUnion = false;
 		}
-		
+
 		if(prepareForBalance)
 		{
 			for (int k = 0; k < 8; k++) {
-				
+
 				MyCellInterface mc = listGrid.get(k).remove(cellType);
 				for (int j = (Integer)mc.getOwn_x(); j < ((Integer)mc.getOwn_x()+(Integer)mc.getMy_width()); j++)
 					for (int i =(Integer)mc.getOwn_y(); i <((Integer)mc.getOwn_y()+(Integer)mc.getMy_height()); i++)
@@ -610,17 +613,17 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				removeValue(mc);
 			}
 		}
-	
+
 		//every agent in the myfield region is scheduled
 		for(Integer pos : listGrid.keySet())
 		{	
 			HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
-	    		
+
 			for(CellType ct : hm.keySet())
 			{	
 				if(ct.equals(cellType)){
 					MyCellDoubleNumeric md = (MyCellDoubleNumeric) hm.get(ct);
-	
+
 					for(EntryNum<Double, Int2D> e: md.getMyField())
 					{
 						Int2D loc=e.l;
@@ -630,16 +633,16 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				}
 			}
 		}
-	
+
 		for(Integer pos : listGrid.keySet())
 		{	
 			HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
-	
+
 			for(CellType ct : hm.keySet())
 			{	
 				if(!ct.equals(cellType)){
 					MyCellDoubleNumeric md =(MyCellDoubleNumeric) hm.get(ct);
-	
+
 					for(EntryNum<Double, Int2D> e: md.getMyField())
 					{
 						Int2D loc=e.l;
@@ -649,16 +652,16 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				}
 			}
 		}
-	
+
 		updates_cacheLB=new ArrayList<ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>>();
-	
+
 		((DistributedMultiSchedule)(sm.schedule)).manageMerge(hashUpdatesPosition,this,cellType);
 		((DistributedMultiSchedule)(sm.schedule)).manageBalance(hashUpdatesPosition,this,cellType,balance);
-		
+
 		//PUBLISH SUI TOPIC
 		try {
 			Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
-			
+
 			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.LEFT),topicPrefix+cellType.toString()+"L", NAME);
 			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.RIGHT),topicPrefix+cellType.toString()+"R", NAME);
 			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.UP),topicPrefix+cellType.toString()+"U", NAME);
@@ -667,47 +670,47 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT),topicPrefix+cellType.toString()+"CUDR", NAME);
 			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT),topicPrefix+cellType.toString()+"CDDL", NAME);
 			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT),topicPrefix+cellType.toString()+"CDDR", NAME);	
-			
+
 		} catch (Exception e1) { e1.printStackTrace();}
 		//<--
-	
+
 		//take from UpdateMap the updates for current last terminated step and use 
 		//verifyUpdates() to elaborate informations
 		PriorityQueue<Object> q;
 		try 
 		{
 			q = updates.getUpdates(sm.schedule.getSteps()-1, 8);			
-	
+
 			while(!q.isEmpty())
 			{
 				UpdatePositionDoubleNumeric<DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>> region=(UpdatePositionDoubleNumeric<DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>>)q.poll();
-				
+
 				if(region.isPreBalance())
 				{
 					if(region.getMyCell()!=null)
 					{
 						MyCellDoubleNumeric mc = region.getMyCell();
-	
+
 						resetArrivedCellPositions(mc);
-						
+
 						listGrid.get(mc.getPosition()).put(mc.getParentCellType(), mc);
-						
+
 						for(EntryNum<Double, Int2D> e: mc.getMyField())
 						{							
 							Int2D loc=e.l;
 							double i = e.r;
 							field[loc.getX()][loc.getY()]=i;
 						}
-						
+
 						if(!isSplitted){
 							clearArrivedOut(mc);
 							updateExternalOutFromAdiacentCell(mc);
 						}
-	
+
 						updateFields(mc);
 						updateInternalMine(mc);
 						memorizeRegionOut(mc);
-						
+
 						if(!isSplitted)
 						{
 							if(mc.getPosition()%2==0) 	// position sugli angoli
@@ -717,10 +720,10 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							else // position sui lati
 							{
 								int h=10;
-							
+
 								{	//centrale
 									listGrid.get(mc.getPosition()).get(cellType).getPositionGood().put(mc.getPosition(), false);
-									
+
 									for (int k = 0; k < 7; k+=2) 
 									{	
 										if(!listGrid.get(mc.getPosition()).get(cellType).getPositionPublish().get((k+1+8)%8))
@@ -735,7 +738,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 								}
 								{	//laterali
 									listGrid.get((mc.getPosition()-1+8)%8).get(cellType).getPositionGood().
-										put(((mc.getPosition()+1+8)%8),false);
+									put(((mc.getPosition()+1+8)%8),false);
 									listGrid.get((mc.getPosition()+1+8)%8).get(cellType).getPositionGood().
 									put(((mc.getPosition()-1+8)%8),false);
 								}
@@ -747,16 +750,16 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 						resetLocalPositionPublish(region.getPosition());
 					}
 				}
-				
+
 				//the owner send the cell requested by a splitted neighbours
 				if(region.isPreUnion())
 				{
 					preUnion = true;
 					int k = balance.calculatePositionForBalance(region.getPosition());
 					HashMap<CellType, MyCellInterface> hm = listGrid.get(k);
-					
+
 					for(CellType ct : hm.keySet()){
-						
+
 						if(hm.get(ct).getParentCellType().toString().equals(region.getCellType().toString()))
 						{
 							hm.get(ct).setUnion(true);
@@ -764,7 +767,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 						}
 					}
 				}
-				
+
 				//cell received for union
 				if(region.isUnion())
 				{
@@ -777,61 +780,61 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					listGrid.get(mc.getPosition()).put(cellType, mc);
 					region.setUnion(false);
 				}
-				
+
 				verifyUpdates(region);	
 			}			
-			
+
 			if(prepareForBalance && !isSplitted)
 			{
 				for (int j2 = 0; j2 <= 16; j2++) {
 					listGrid.get(MyCellInterface.CENTER).get(cellType).getPositionGood().put(j2, true);
 				}
-	
+
 				for(Integer pos : listGrid.keySet())
 				{
 					HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
-	
+
 					for(CellType ct : hm.keySet()){
-	
+
 						if(!ct.equals(cellType))
 						{
-	
+
 							for (int j2 = 0; j2 <= 16; j2++) {
-	
+
 								hm.get(ct).getPositionGood().put(j2, true);
 							}
 						}
 					}
 				}
 			}
-			
+
 			makeUnion();
-					
+
 		}catch (InterruptedException e1) {e1.printStackTrace(); } catch (DMasonException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+
 		if(isSplitted && splitDone){
 			for (int j2 = 0; j2 <= 8; j2++) {
 				listGrid.get(MyCellInterface.CENTER).get(cellType).getPositionPublish().put(j2, true);
 			}
-			
+
 			for(Integer pos : listGrid.keySet())
 			{
 				if(pos != MyCellInterface.CENTER)
 					listGrid.get(pos).remove(cellType);
 			}
-			
+
 			for(Integer pos : toSendForBalance.keySet())
 			{
-					MyCellInterface mc = toSendForBalance.get(pos);
-					removeValue(mc);
+				MyCellInterface mc = toSendForBalance.get(pos);
+				removeValue(mc);
 			}
-			
+
 			splitDone = false;
 		}
-		
+
 		ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>> tmp = new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
 		tmp.add(outAgents.clone());
 		updates_cacheLB.add(tmp);
@@ -843,15 +846,15 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					field[i.getX()][i.getY()]=e_m.r;	
 				}
 		outAgents = new RegionDoubleNumericLB(0,0,0,0,0,0);
-		
+
 		this.reset();
-	
+
 		return true;
 	}
 
 	//Resetta le strutture contenitore delle publish
 	private void resetPublishList(long step){
-		
+
 		hashUpdatesPosition.put(UpdatePositionInterface.CORNER_DIAG_UP_LEFT, 
 				new UpdatePositionDoubleNumeric<DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>>(step,UpdatePositionInterface.CORNER_DIAG_UP_LEFT,cellType,null));
 		hashUpdatesPosition.put(UpdatePositionInterface.UP, 
@@ -871,7 +874,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	}
 
 	private void makeUnion() {
-		
+
 		if(prepareForUnion && !isSplitted)
 		{
 			for(Integer pos : listGrid.keySet())
@@ -879,9 +882,9 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				if(pos != MyCellInterface.CENTER)
 				{
 					HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
-	
+
 					for(CellType c : hm.keySet()){
-	
+
 						if(c.equals(cellType))
 						{
 							MyCellDoubleNumeric mc = (MyCellDoubleNumeric)hm.get(c);
@@ -889,7 +892,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							if(mc.getPosition()%2==0)//angoli
 							{
 								for (int j2 = 0; j2 < 8; j2++) {
-									
+
 									if(j2 == ((antiPosition-1+8)%8))	
 										mc.getPositionPublish().put(j2, false);
 									else
@@ -922,20 +925,20 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					}
 				}
 			}
-			
+
 			for(Integer pos : listGrid.keySet())
 			{
 				if(pos != MyCellInterface.CENTER)
 				{
 					HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
-	
+
 					for(CellType ct : hm.keySet())
 					{
 						if(!ct.equals(cellType) && hm.get(ct)!=null)
 						{
 							MyCellDoubleNumeric mc = (MyCellDoubleNumeric)hm.get(ct);
 							int topicPosition = mc.getPosition();
-							
+
 							if(topicPosition%2==0) 	// topic sugli angoli
 							{
 								listGrid.get(topicPosition).get(cellType).getPositionPublish().put(topicPosition, false);
@@ -952,28 +955,28 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					}
 				}
 			}
-			
+
 			for(Integer pos : listGrid.keySet())
 			{
 				if(pos != MyCellInterface.CENTER)
 				{
 					HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
-	
+
 					for(CellType c : hm.keySet()){
-	
+
 						if(c.equals(cellType))
 						{
 							MyCellDoubleNumeric mc = (MyCellDoubleNumeric)hm.get(c);
 							int antiPosition = balance.calculatePositionForBalance(mc.getPosition());
 							int position = mc.getPosition();
-							
+
 							if(position%2==0) //angoli
 							{
 								for (int l = 0; l <= 16; l++) {
-									
+
 									mc.getPositionGood().put(l, true);
 								}
-								
+
 								mc.getPositionGood().put(((antiPosition+2+8)%8)+9, false);
 								mc.getPositionGood().put(((antiPosition+1+8)%8), false);
 								mc.getPositionGood().put((antiPosition+10), false);
@@ -981,8 +984,8 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 								mc.getPositionGood().put((antiPosition+9), false);
 								mc.getPositionGood().put(((antiPosition-1+8)%8), false);
 								mc.getPositionGood().put(((antiPosition-2+8)%8)+10, false);
-								
-								
+
+
 								if(!mc.getPositionPublish().get(((position-2+8)%8)))
 								{
 									mc.getPositionGood().put(((position-2+8)%8), false);
@@ -999,10 +1002,10 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							else //lati
 							{
 								for (int l = 0; l <= 16; l++) {
-									
+
 									mc.getPositionGood().put(l, false);
 								}
-								
+
 								if(mc.getPositionPublish().get(position))
 								{
 									mc.getPositionGood().put(((position+1+8)%8), true);
@@ -1018,76 +1021,76 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 									mc.getPositionGood().put(position, false);
 									mc.getPositionGood().put(((position-1+8)%8), true);
 									mc.getPositionGood().put(((position-1+8)%8)+10, false);
-									
+
 								}
 							}
 						}
 					}
 				}
 			}
-			
-	    	for(Integer pos : listGrid.keySet())
-	    	{	
-	    		if(pos != MyCellInterface.CENTER)
-	    		{
-		    		HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
-		    		
-		    		for(CellType ct : hm.keySet())
-		    		{
-		    			if(ct.equals(cellType)){
-			    			MyCellDoubleNumeric md = (MyCellDoubleNumeric)hm.get(ct);
-			    			
+
+			for(Integer pos : listGrid.keySet())
+			{	
+				if(pos != MyCellInterface.CENTER)
+				{
+					HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
+
+					for(CellType ct : hm.keySet())
+					{
+						if(ct.equals(cellType)){
+							MyCellDoubleNumeric md = (MyCellDoubleNumeric)hm.get(ct);
+
 							for(EntryNum<Double, Int2D> e: md.getMyField())
 							{
 								Int2D loc=e.l;
 								double i = e.r;
 								field[loc.getX()][loc.getY()]=i;
 							}
-							
+
 							updateFields(md);
 							updateInternalMine(md);
 							updateInternalOut(md);
 							memorizeRegionOut(md);
-		    			}
-		    		}
-	    		}
-	    	}
-	    	
-	    	updateInternalOut(listGrid.get(MyCellInterface.CENTER).get(cellType));
-	    
-	    	for(Integer pos : listGrid.keySet())
-	    	{	
-	    		HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
-	    		for(CellType ct : hm.keySet())
-	    		{
-	    			if(!ct.equals(cellType))
-	    			{
-	    				updateInternalOut(hm.get(ct));
-	    			}
-	    		}
-	    	}
-	
-	    	prepareForUnion = false;
-	    	isUnited = true;
+						}
+					}
+				}
+			}
+
+			updateInternalOut(listGrid.get(MyCellInterface.CENTER).get(cellType));
+
+			for(Integer pos : listGrid.keySet())
+			{	
+				HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
+				for(CellType ct : hm.keySet())
+				{
+					if(!ct.equals(cellType))
+					{
+						updateInternalOut(hm.get(ct));
+					}
+				}
+			}
+
+			prepareForUnion = false;
+			isUnited = true;
 		}
-		
+
 		if(prepareForUnion && isSplitted)
 		{ 
 			for(Integer pos : listGrid.keySet())
 			{
 				HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
-	
+
 				for(CellType c : hm.keySet()){
-	
+
 					if(!c.equals(cellType))
 					{
 						MyCellDoubleNumeric mc = (MyCellDoubleNumeric)hm.get(c);
-						
+
 						int position = mc.getPosition();
 						int antiPosition = balance.calculatePositionForBalance(position);
-						
+
 						int h = 10; 
-					
+
 						if(position%2==0) //angoli
 						{
 							//INIZIALIZZIAMO LE POSITION GOOD
@@ -1098,7 +1101,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 								else
 									mc.getPositionGood().put(k, true);
 							}
-	
+
 							for (int k = 0; k < 8; k++) 
 							{
 								if(k==(antiPosition))
@@ -1106,10 +1109,10 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 								else
 									mc.getPositionPublish().put(k, true);
 							}
-	
+
 							HashMap<CellType, MyCellInterface> hm1 = listGrid.get(((mc.getPosition()-1+8)%8));
 							HashMap<CellType, MyCellInterface> hm2 = listGrid.get(((mc.getPosition()+1+8)%8));
-	
+
 							for(CellType ct : hm1.keySet())
 							{
 								if(!ct.equals(cellType) && hm1.get(ct)!=null)
@@ -1134,7 +1137,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							{
 								mc.getPositionGood().put(k, true);
 							}
-	
+
 							mc.getPositionGood().put(((antiPosition+1+8)%8), false);
 							mc.getPositionGood().put(((antiPosition+1+8)%8)+9, false);
 							mc.getPositionGood().put(antiPosition, false);
@@ -1142,17 +1145,17 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							mc.getPositionGood().put(((antiPosition-1+8)%8)+10, false);
 						}
 					}
-					
+
 				}
 			}
-			
+
 			isSplitted = false;
 			unionDone = true;
 		}
 	}
 
 	private void resetUnionLocalPositionForShipping(int position) {
-		
+
 		if(!isSplitted)
 		{	
 			if(position%2==0) 	// topic sugli angoli
@@ -1166,7 +1169,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				listGrid.get((position+1+8)%8).get(cellType).getPositionPublish().put(position, false);
 			}
 		}
-		
+
 		if(position%2!=0)
 		{
 			HashMap<CellType, MyCellInterface> hm1 = listGrid.get((position-1+8)%8);
@@ -1179,7 +1182,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					mc1.getPositionPublish().put(((mc1.getPosition()+3+8)%8), true);
 				}
 			}
-			
+
 			HashMap<CellType, MyCellInterface> hm2 = listGrid.get((position+1+8)%8);
 			for(CellType ct : hm2.keySet())
 			{
@@ -1191,7 +1194,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				}
 			}
 		}
-		
+
 		if(!isSplitted)
 		{
 			if(position%2==0) 	// position sugli angoli
@@ -1201,12 +1204,12 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			else // position sui lati
 			{			
 				{	//centrale
-					
+
 					for (int l = 0; l <= 16; l++) {
-						
+
 						listGrid.get(position).get(cellType).getPositionGood().put(l, false);
 					}
-					
+
 					listGrid.get(position).get(cellType).getPositionGood().put(((position+1+8)%8), true);
 					listGrid.get(position).get(cellType).getPositionGood().put(((position+1+8)%8)+9, true);
 					listGrid.get(position).get(cellType).getPositionGood().put(position, true);
@@ -1215,18 +1218,18 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				}
 				{	//laterali
 					listGrid.get((position-1+8)%8).get(cellType).getPositionGood().
-						put(((position+1+8)%8),true);
+					put(((position+1+8)%8),true);
 					listGrid.get((position+1+8)%8).get(cellType).getPositionGood().
-						put(((position-1+8)%8),true);
+					put(((position-1+8)%8),true);
 				}
 			}
 		}
 	}
 
 	private void clearReturnedOut(MyCellDoubleNumeric mc) {
-		
+
 		int position =mc.getPosition();
-		
+
 		if(position == MyCellInterface.UP)
 		{
 			mc.getMyRMap().corner_out_down_left_diag_center.clear();
@@ -1261,9 +1264,9 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	}
 
 	private void resetLocalPositionPublish(int position) {
-		
+
 		int topicPosition = balance.calculatePositionForBalance(position);
-		
+
 		if(!isSplitted)
 		{	
 			if(topicPosition%2==0) 	// topic sugli angoli
@@ -1277,7 +1280,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				listGrid.get((topicPosition+1+8)%8).get(cellType).getPositionPublish().put(topicPosition, false);
 			}
 		}
-		
+
 		if(topicPosition%2!=0)
 		{
 			HashMap<CellType, MyCellInterface> hm1 = listGrid.get((topicPosition-1+8)%8);
@@ -1290,7 +1293,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					mc.getPositionPublish().put(((topicPosition+2+8)%8), false);
 				}
 			}
-			
+
 			HashMap<CellType, MyCellInterface> hm2 = listGrid.get((topicPosition+1+8)%8);
 			for(CellType ct : hm2.keySet())
 			{
@@ -1305,12 +1308,12 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	}
 
 	private void resetArrivedCellPositions(MyCellDoubleNumeric mc) {
-	
+
 		int position = mc.getPosition();
 		int antiPosition = balance.calculatePositionForBalance(position);
-		
+
 		int h = 10; 
-	
+
 		if(!isSplitted){
 			if(position%2==0) //angoli
 			{
@@ -1322,7 +1325,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					else
 						mc.getPositionGood().put(k, true);
 				}
-				
+
 				for (int k = 0; k < 8; k++) 
 				{
 					if(k==(antiPosition))
@@ -1330,10 +1333,10 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					else
 						mc.getPositionPublish().put(k, true);
 				}
-				
+
 				HashMap<CellType, MyCellInterface> hm1 = listGrid.get(((mc.getPosition()-1+8)%8));
 				HashMap<CellType, MyCellInterface> hm2 = listGrid.get(((mc.getPosition()+1+8)%8));
-				
+
 				for(CellType ct : hm1.keySet())
 				{
 					if(!ct.equals(cellType) && hm1.get(ct)!=null)
@@ -1358,7 +1361,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				{
 					mc.getPositionGood().put(k, true);
 				}
-				
+
 				for (int k = 0; k < 8; k++) 
 				{	
 					if(k==((position-2+8)%8))
@@ -1378,18 +1381,18 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 									else
 										mc.getPositionPublish().put(k, false);
 				}
-				
-				
+
+
 				mc.getPositionGood().put(((antiPosition+1+8)%8), false);
 				mc.getPositionGood().put(((antiPosition+1+8)%8)+9, false);
 				mc.getPositionGood().put(antiPosition, false);
 				mc.getPositionGood().put(((antiPosition-1+8)%8), false);
 				mc.getPositionGood().put(((antiPosition-1+8)%8)+10, false);
-				
-				
+
+
 				HashMap<CellType, MyCellInterface> hm1 = listGrid.get(((mc.getPosition()-1+8)%8));
 				HashMap<CellType, MyCellInterface> hm2 = listGrid.get(((mc.getPosition()+1+8)%8));
-				
+
 				for(CellType ct : hm1.keySet())
 				{
 					if(!ct.equals(cellType) && hm1.get(ct)!=null)
@@ -1412,22 +1415,22 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 		}
 		else
 		{
-		
+
 			if(mc.getPosition()%2==0)
 			{
 				for (int k = 0; k <= 16; k++) 
 				{
 					mc.getPositionGood().put(k, true);
 				}
-				
+
 				for (int k = 0; k < 8; k++) 
 				{
 					mc.getPositionPublish().put(k, true);
 				}
-				
+
 				HashMap<CellType, MyCellInterface> hm1 = listGrid.get(((mc.getPosition()-1+8)%8));
 				HashMap<CellType, MyCellInterface> hm2 = listGrid.get(((mc.getPosition()+1+8)%8));
-				
+
 				for(CellType ct : hm1.keySet())
 				{
 					if(!ct.equals(cellType) && hm1.get(ct)!=null)
@@ -1451,14 +1454,14 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				{
 					mc.getPositionGood().put(k, true);
 				}
-				
+
 				for (int k = 0; k < 8; k++) 
 				{
 					mc.getPositionPublish().put(k, true);
 				}
 				HashMap<CellType, MyCellInterface> hm1 = listGrid.get(((mc.getPosition()-1+8)%8));
 				HashMap<CellType, MyCellInterface> hm2 = listGrid.get(((mc.getPosition()+1+8)%8));
-				
+
 				for(CellType ct : hm1.keySet())
 				{
 					if(!ct.equals(cellType) && hm1.get(ct)!=null)
@@ -1479,13 +1482,13 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				}
 			}
 		}
-		
+
 	}
 
 	private void updateExternalOutFromAdiacentCell(MyCellInterface mc) {
-	
+
 		int position = mc.getPosition();
-		
+
 		if(position == MyCellInterface.CORNER_DIAG_UP_LEFT)
 		{
 			for(EntryNum<Double, Int2D> e: (RegionDoubleNumericLB) ((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
@@ -1616,7 +1619,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	}
 
 	private void clearArrivedOut(MyCellDoubleNumeric mc) {
-	
+
 		int position = mc.getPosition();
 		if(position == MyCellInterface.CORNER_DIAG_UP_LEFT)
 		{
@@ -1676,16 +1679,16 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	}
 
 	private void preparePublishUnion() {
-	
+
 		for(Integer pos : toSendForUnion.keySet())
 		{	
 			if(toSendForUnion.get(pos)!=null)
 			{
-	    		MyCellDoubleNumeric md = (MyCellDoubleNumeric)toSendForUnion.get(pos);
-	    		
-	    		if(md.getPosition() == MyCellInterface.CORNER_DIAG_UP_LEFT)
-	    		{
-	    			/*
+				MyCellDoubleNumeric md = (MyCellDoubleNumeric)toSendForUnion.get(pos);
+
+				if(md.getPosition() == MyCellInterface.CORNER_DIAG_UP_LEFT)
+				{
+					/*
 	    			if(isSplitted)
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_diag_center = 
@@ -1693,159 +1696,159 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_right_diag_center);    					
 	    			}*/
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_center);
-	    			}
-	    			else
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_right_center);
-	    			}
-	    			if(md.getPositionPublish().get(MyCellInterface.RIGHT))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_right);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
-	    								md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right);
-	    				if(isSplitted)
-	    				{
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    									md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_right);
-	    				}
-	    				else
-	    				{
-	    					RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
-	    					empty.clear();
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    									empty, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_right);
-	    				}
-	    			}
-	    			else
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_right);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
-	    								md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_right);    	 
-	    				
-	    				if(isSplitted)
-	    				{
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    									md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_right);
-	    				}
-	    				else
-	    				{
-	    					RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
-	    					empty.clear();
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    									empty, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_right);
-	    				}
-	    			}
-	    			if(md.getPositionPublish().get(MyCellInterface.DOWN))
-	    			{
-	    				
-	    				if(isSplitted)
-	    				{
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    									md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_down);
-	    				}
-	    				else
-	    				{
-	    					RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
-	    					empty.clear();
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    									empty, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_down);
-	    				}
-	
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
-	    								md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_down);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_down);
-	    			}
-	    			else
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
-	    								md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_down);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_down);
-	    				
-	    				if(isSplitted)
-	    				{
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    									md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_down);
-	    				}
-	    				else
-	    				{
-	    					RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
-	    					empty.clear();
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    									empty, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_down);
-	    				}
-	    			}
-	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_center);
-	    			}
-	    			else{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_left_center);
-	    			}
-	    		}
-	
-	    		if(md.getPosition() == MyCellInterface.UP)
-	    		{
-	    			
-	    			if(isSplitted)
+
+					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
 					{
-	    				/*
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_center);
+					}
+					else
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_right_center);
+					}
+					if(md.getPositionPublish().get(MyCellInterface.RIGHT))
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_right);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
+										md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right);
+						if(isSplitted)
+						{
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+											md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_right);
+						}
+						else
+						{
+							RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
+							empty.clear();
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+											empty, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_right);
+						}
+					}
+					else
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_right);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
+										md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_right);    	 
+
+						if(isSplitted)
+						{
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+											md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_right);
+						}
+						else
+						{
+							RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
+							empty.clear();
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+											empty, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_right);
+						}
+					}
+					if(md.getPositionPublish().get(MyCellInterface.DOWN))
+					{
+
+						if(isSplitted)
+						{
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+											md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_down);
+						}
+						else
+						{
+							RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
+							empty.clear();
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+											empty, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_down);
+						}
+
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
+										md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_down);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_down);
+					}
+					else
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
+										md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_down);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_down);
+
+						if(isSplitted)
+						{
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+											md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_down);
+						}
+						else
+						{
+							RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
+							empty.clear();
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+											empty, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_down);
+						}
+					}
+					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_center);
+					}
+					else{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_down_left_center);
+					}
+				}
+
+				if(md.getPosition() == MyCellInterface.UP)
+				{
+
+					if(isSplitted)
+					{
+						/*
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_diag_left = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
 										md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_diag_left);
-						*/
+						 */
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_diag_center = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
 										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
@@ -1855,17 +1858,17 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
 										md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_diag_down);
-	
+
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
 										md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_down);
-	
+
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_diag_down = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
 										md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_diag_down);
-						*/
+						 */
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_diag_center = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
 										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
@@ -1875,13 +1878,13 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
 										md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_diag_right);
-						*/
+						 */
 					}
-	    		}
-	
-	    		if(md.getPosition() == MyCellInterface.CORNER_DIAG_UP_RIGHT)
-	    		{
-	    			/*
+				}
+
+				if(md.getPosition() == MyCellInterface.CORNER_DIAG_UP_RIGHT)
+				{
+					/*
 	    			if(isSplitted)
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_diag_center = 
@@ -1889,153 +1892,153 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_left_diag_center);
 	    			}*/
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_left_center);
-	    			}
-	    			else
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_left_center);
-	    			}
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_center);
-	    			}
-	    			else
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_right_center);
-	    			}
-	    			if(md.getPositionPublish().get(MyCellInterface.DOWN))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_down);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
-	    								md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_down);
-	    				if(isSplitted)
-	    				{
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    									md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_down);
-	    				}
-	    				else
-	    				{
-	    					RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
-	    					empty.clear();
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    									empty, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_down);
-	    				}
-	    			}	
-	    			else
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_down);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
-	    								md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_down);
-	    				if(isSplitted)
-	    				{
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    									md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_down);
-	    				}
-	    				else
-	    				{
-	    					RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
-	    					empty.clear();
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    									empty, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_down);
-	    				}
-	    			}
-	    			if(md.getPositionPublish().get(MyCellInterface.LEFT))
-	    			{
-	    				if(isSplitted)
-	    				{
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    									md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_left);
-	    				}
-	    				else
-	    				{
-	    					RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
-	    					empty.clear();
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    									empty, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_left);
-	    				}
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
-	    								md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_left);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_left_left);
-	    			}
-	    			else
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_left);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
-	    								md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_left);
-	    				
-	    				if(isSplitted)
-	    				{
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    									md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_left);
-	    				}
-	    				else
-	    				{
-	    					RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
-	    					empty.clear();
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    									empty, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_left);
-	    				}
-	    			}
-	    		}
-	
-	    		if(md.getPosition() == MyCellInterface.RIGHT)
-	    		{
-	    			
-	    			if(isSplitted)
+
+					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 					{
-	
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_left_center);
+					}
+					else
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_left_center);
+					}
+
+					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_center);
+					}
+					else
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_right_center);
+					}
+					if(md.getPositionPublish().get(MyCellInterface.DOWN))
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_down);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
+										md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_down);
+						if(isSplitted)
+						{
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+											md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_down);
+						}
+						else
+						{
+							RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
+							empty.clear();
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+											empty, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_down);
+						}
+					}	
+					else
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_down);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
+										md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_down);
+						if(isSplitted)
+						{
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+											md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_down);
+						}
+						else
+						{
+							RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
+							empty.clear();
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+											empty, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_down);
+						}
+					}
+					if(md.getPositionPublish().get(MyCellInterface.LEFT))
+					{
+						if(isSplitted)
+						{
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+											md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_left);
+						}
+						else
+						{
+							RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
+							empty.clear();
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+											empty, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_left);
+						}
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
+										md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_left);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_left_left);
+					}
+					else
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_left);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
+										md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_left);
+
+						if(isSplitted)
+						{
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+											md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_left);
+						}
+						else
+						{
+							RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
+							empty.clear();
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+											empty, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_left);
+						}
+					}
+				}
+
+				if(md.getPosition() == MyCellInterface.RIGHT)
+				{
+
+					if(isSplitted)
+					{
+
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_diag_center = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
 										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
@@ -2045,22 +2048,22 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
 										md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_diag_up);
-						
+
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_diag_left = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
 										md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_diag_left);
-	
+
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
 										md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_left);
-	
+
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_diag_left = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
 										md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_diag_left);
-						*/
+						 */
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_diag_center = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
 										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
@@ -2070,13 +2073,13 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
 										md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_diag_down);
-						*/
+						 */
 					}
-	    		}
-	
-	    		if(md.getPosition() == MyCellInterface.CORNER_DIAG_DOWN_RIGHT)
-	    		{
-	    			/*
+				}
+
+				if(md.getPosition() == MyCellInterface.CORNER_DIAG_DOWN_RIGHT)
+				{
+					/*
 	    			if(isSplitted)
 	    			{		
 	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_diag_center = 
@@ -2084,162 +2087,162 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_left_diag_center);
 	    			}*/
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.UP))
-	    			{
-	    				
-	    				if(isSplitted)
-	    				{	
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    									md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_up);
-	    				}
-	    				else
-	    				{
-	    					RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
-	    					empty.clear();
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    									empty, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_up);
-	    				}
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
-	    								md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_up);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_right_up);
-	    			}
-	    			else
-	    			{
-	    				
-	    				if(isSplitted)
-	    				{	
-	
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    									md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_up);
-	    				}
-	    				else
-	    				{
-	    					RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
-	    					empty.clear();
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    									empty, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_up);
-	    				}
-	
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
-	    								md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_up);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_up);
-	    			}
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_right_center);
-	    			}
-	    			else
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_right_center);
-	    			}
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_center);
-	    			}
-	    			else
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_left_center);
-	    			}
-	    			if(md.getPositionPublish().get(MyCellInterface.LEFT))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_left);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
-	    								md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_left);
-	    				
-	    				if(isSplitted)
-	    				{
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    									md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_left);
-	    				}
-	    				else
-	    				{
-	    					RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
-	    					empty.clear();
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    									empty, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_left);
-	    				}
-	    			}
-	    			else
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_left);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
-	    								md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_left);
-	    				if(isSplitted)
-	    				{
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    									md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_left);
-	    				}
-	    				else
-	    				{
-	    					RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
-	    					empty.clear();
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    									empty, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_left);
-	    				}
-	    			}
-	    		}
-	
-	    		if(md.getPosition() == MyCellInterface.DOWN)
-	    		{
-	    			if(isSplitted)
+
+					if(md.getPositionPublish().get(MyCellInterface.UP))
 					{
-	    				/*
+
+						if(isSplitted)
+						{	
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+											md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_up);
+						}
+						else
+						{
+							RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
+							empty.clear();
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+											empty, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_up);
+						}
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
+										md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_up);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_right_up);
+					}
+					else
+					{
+
+						if(isSplitted)
+						{	
+
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+											md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_up);
+						}
+						else
+						{
+							RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
+							empty.clear();
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+											empty, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_up);
+						}
+
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
+										md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_up);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_up);
+					}
+
+					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_right_center);
+					}
+					else
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_right_center);
+					}
+
+					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_center);
+					}
+					else
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_left_center);
+					}
+					if(md.getPositionPublish().get(MyCellInterface.LEFT))
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_left);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
+										md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_left);
+
+						if(isSplitted)
+						{
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+											md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_left);
+						}
+						else
+						{
+							RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
+							empty.clear();
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+											empty, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_left);
+						}
+					}
+					else
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_left);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
+										md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_left);
+						if(isSplitted)
+						{
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+											md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_left);
+						}
+						else
+						{
+							RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
+							empty.clear();
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+											empty, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_left);
+						}
+					}
+				}
+
+				if(md.getPosition() == MyCellInterface.DOWN)
+				{
+					if(isSplitted)
+					{
+						/*
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_diag_left = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
 										md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_diag_left);
-						*/
+						 */
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_diag_center = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
 										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
@@ -2249,17 +2252,17 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
 										md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_diag_up);
-	
+
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
 										md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_up);
-	
+
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_diag_up = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
 										md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_diag_up);
-						*/
+						 */
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_diag_center = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
 										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
@@ -2269,13 +2272,13 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
 										md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_diag_right);
-						*/
+						 */
 					}
-	    		}
-	
-	    		if(md.getPosition() == MyCellInterface.CORNER_DIAG_DOWN_LEFT)
-	    		{
-	    			/*
+				}
+
+				if(md.getPosition() == MyCellInterface.CORNER_DIAG_DOWN_LEFT)
+				{
+					/*
 	    			if(isSplitted)
 	    			{
 	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_diag_center = 
@@ -2283,155 +2286,155 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_right_diag_center);
 	    			}*/
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_center);
-	    			}
-	    			else
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_left_center);
-	    			}
-	    			if(md.getPositionPublish().get(MyCellInterface.UP))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_up);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
-	    								md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_up);
-	    				if(isSplitted)
-	    				{
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    									md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_up);
-	    				}
-	    				else
-	    				{
-	    					RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
-	    					empty.clear();
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    									empty, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_up);
-	    				}
-	    			}
-	    			else{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_up);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
-	    								md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_up);
-	    				if(isSplitted)
-	    				{
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    									md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_up);
-	    				}
-	    				else
-	    				{
-	    					RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
-	    					empty.clear();
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    									empty, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_up);
-	    				}
-	    			}
-	    			if(md.getPositionPublish().get(MyCellInterface.RIGHT))
-	    			{
-	    				
-	    				if(isSplitted)
-	    				{
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    									md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_right);
-	    				}
-	    				else
-	    				{
-	    					RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
-	    					empty.clear();
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    									empty, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_right);
-	    				}
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
-	    								md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_right);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_right_right);
-	    			}
-	    			else
-	    			{
-	    				if(isSplitted)
-	    				{
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    									md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_right);
-	    				}
-	    				else
-	    				{
-	    					RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
-	    					empty.clear();
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    									empty, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_right);
-	    				}
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
-	    								md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_right);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_right);
-	    			}
-	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_right_center);
-	    			}
-	    			else
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_right_center);
-	    			}
-	    		}
-	
-	    		if(md.getPosition() == MyCellInterface.LEFT)
-	    		{
-	    			if(isSplitted)
+
+					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 					{
-	    				/*
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_center);
+					}
+					else
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_left_center);
+					}
+					if(md.getPositionPublish().get(MyCellInterface.UP))
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_up);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
+										md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_up);
+						if(isSplitted)
+						{
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+											md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_up);
+						}
+						else
+						{
+							RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
+							empty.clear();
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+											empty, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_up);
+						}
+					}
+					else{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_up);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
+										md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_up);
+						if(isSplitted)
+						{
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+											md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_up);
+						}
+						else
+						{
+							RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
+							empty.clear();
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+											empty, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_up);
+						}
+					}
+					if(md.getPositionPublish().get(MyCellInterface.RIGHT))
+					{
+
+						if(isSplitted)
+						{
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+											md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_right);
+						}
+						else
+						{
+							RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
+							empty.clear();
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+											empty, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_right);
+						}
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
+										md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_right);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_right_right);
+					}
+					else
+					{
+						if(isSplitted)
+						{
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+											md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_right);
+						}
+						else
+						{
+							RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
+							empty.clear();
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+											empty, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_right);
+						}
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
+										md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_right);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_right);
+					}
+					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_right_center);
+					}
+					else
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_right_center);
+					}
+				}
+
+				if(md.getPosition() == MyCellInterface.LEFT)
+				{
+					if(isSplitted)
+					{
+						/*
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_diag_up = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
 										md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_diag_up);
-						*/
+						 */
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_diag_center = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
 										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
@@ -2441,17 +2444,17 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
 										md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_diag_right);
-						
+
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
 										md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_right);
-						
+
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_diag_right = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
 										md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_diag_right);
-						*/
+						 */
 						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_diag_center = 
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
 										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
@@ -2461,25 +2464,25 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
 										md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_diag_down);
-						*/
+						 */
 					}
-	    		}
+				}
 			}
 		}
 	}
 
 	private void preparePublishMicroCell() {
-	
+
 		for(Integer pos : listGrid.keySet())
 		{	
 			HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
-	
+
 			for(CellType ct : hm.keySet())
 			{	
 				if(!ct.equals(cellType))
 				{
 					MyCellDoubleNumeric md = (MyCellDoubleNumeric) hm.get(ct);
-	
+
 					if(md.getPosition() == MyCellInterface.CORNER_DIAG_UP_LEFT)
 					{
 						if(isSplitted)
@@ -2537,19 +2540,19 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right);
 							if(isSplitted || unionDone)
 							{
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    										md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_right);
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+												md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_right);
 							}
 							else
 							{
-	    	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
-	    	    				empty.clear();
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_right);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_right);
 							}
 						}
 						else
@@ -2564,19 +2567,19 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_right);    	    				
 							if(isSplitted || unionDone)
 							{
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    										md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_right);
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+												md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_right);
 							}
 							else
 							{
-	    	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
-	    	    				empty.clear();
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_right);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_right);
 							}
 						}
 						if(md.getPositionPublish().get(MyCellInterface.DOWN))
@@ -2590,15 +2593,15 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							}
 							else
 							{
-	    	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
-	    	    				empty.clear();
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_down);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_down);
 							}
-							
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
+
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
 											md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_down);
@@ -2626,12 +2629,12 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							}
 							else
 							{
-	    	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
-	    	    				empty.clear();
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_down);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_right_down);
 							}
 						}
 						if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
@@ -2664,7 +2667,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_left);
 						}
 					}
-					
+
 					if(md.getPosition() == MyCellInterface.UP)
 					{
 						if(isSplitted)
@@ -2682,12 +2685,12 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
 											md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_diag_down);
-	
+
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
 											md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_down);
-	
+
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_diag_down = 
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
 											md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
@@ -2744,18 +2747,18 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							if(isSplitted || unionDone)
 							{
 								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_diag_right = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    										md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_diag_right);
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+												md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_diag_right);
 							}
 							else
 							{
-	    						RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
-	    	    				empty.clear();
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_right);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_right);
 							}
 						}
 						if(md.getPositionPublish().get(MyCellInterface.LEFT))
@@ -2763,18 +2766,18 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							if(isSplitted || unionDone)
 							{
 								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_diag_left = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    										md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_diag_left);
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+												md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_diag_left);
 							}
 							else
 							{
-	    						RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
-	    	    				empty.clear();
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_left);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_left);
 							}
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
@@ -2786,7 +2789,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_left);
 						}
 					}
-					
+
 					if(md.getPosition() == MyCellInterface.CORNER_DIAG_UP_RIGHT)
 					{
 						if(isSplitted)
@@ -2796,7 +2799,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_down_left_diag_center);
 						}
-						
+
 						if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_center = 
@@ -2874,19 +2877,19 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_down);
 							if(isSplitted || unionDone)
 							{
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    										md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_down);
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+												md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_down);
 							}
 							else
 							{
-	    						RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
-	    	    				empty.clear();
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_down);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_down);
 							}
 						}	
 						else
@@ -2901,19 +2904,19 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_down);
 							if(isSplitted || unionDone)
 							{
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    										md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_down);
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+												md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_down);
 							}
 							else
 							{
-	    						RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
-	    	    				empty.clear();
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_down);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_down);
 							}
 						}
 						if(md.getPositionPublish().get(MyCellInterface.LEFT))
@@ -2927,12 +2930,12 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							}
 							else
 							{
-	    	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
-	    	    				empty.clear();
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_left);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_left);
 							}
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
@@ -2953,7 +2956,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
 											md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_left);
-							
+
 							if(isSplitted || unionDone)
 							{
 								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
@@ -2963,21 +2966,21 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							}
 							else
 							{
-	    	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
-	    	    				empty.clear();
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_left);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_left_left);
 							}
 						}
 					}
-					
+
 					if(md.getPosition() == MyCellInterface.RIGHT)
 					{
 						if(isSplitted)
 						{
-	
+
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_diag_center = 
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
 											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
@@ -2990,12 +2993,12 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
 											md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_diag_left);
-	
+
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
 											md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_left);
-	
+
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_diag_left = 
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
 											md.getMyRMap().corner_out_down_left_diag_left, (sm.schedule.getSteps()-1),cellType);
@@ -3008,26 +3011,26 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
 											md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_diag_down);*/
-	
+
 						}
-						
+
 						if(md.getPositionPublish().get(MyCellInterface.UP))
 						{
 							if(isSplitted || unionDone)
 							{
 								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_diag_up = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    										md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_left_diag_up);
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+												md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_left_diag_up);
 							}
 							else
 							{
-	    						RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
-	    	    				empty.clear();
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_left_up);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_left_up);
 							}
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
@@ -3079,22 +3082,22 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_down);
 							if(isSplitted || unionDone)
 							{
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_diag_down = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    										md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_diag_down);
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_diag_down = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+												md.getMyRMap().corner_out_down_left_diag_down, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_diag_down);
 							}
 							else{
-	    						RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
-	    	    				empty.clear();
-	    	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_down);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_down);
 							}
 						}
 					}
-					
+
 					if(md.getPosition() == MyCellInterface.CORNER_DIAG_DOWN_RIGHT)
 					{
 						if(isSplitted)
@@ -3104,17 +3107,17 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_up_left_diag_center);
 						}
-	
+
 						if(md.getPositionPublish().get(MyCellInterface.UP))
 						{
 							if(isSplitted || unionDone)
-	    					{	
-				
+							{	
+
 								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
 										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
 												md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
 								hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_up);
-	    					}
+							}
 							else
 							{
 								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
@@ -3136,13 +3139,13 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 						else
 						{
 							if(isSplitted || unionDone)
-	    					{	
-				
+							{	
+
 								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
 										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
 												md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
 								hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_up);
-	    					}
+							}
 							else
 							{
 								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
@@ -3152,7 +3155,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 												empty, (sm.schedule.getSteps()-1),cellType);
 								hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_up);
 							}
-							
+
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
 											md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
@@ -3162,7 +3165,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 											md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_up);
 						}
-						
+
 						if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_center = 
@@ -3238,22 +3241,22 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
 											md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_left);
-							
+
 							if(isSplitted || unionDone)
 							{
 								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    										md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_left);
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+												md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_left);
 							}
 							else
 							{
 								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
-	    	    				empty.clear();
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_left);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_left);
 							}
 						}
 						else
@@ -3269,22 +3272,22 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							if(isSplitted || unionDone)
 							{
 								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    										md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_left);
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+												md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_left);
 							}
 							else
 							{
 								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
-	    	    				empty.clear();
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_left);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_left_left);
 							}
 						}
 					}
-					
+
 					if(md.getPosition() == MyCellInterface.DOWN)
 					{
 						if(isSplitted)
@@ -3301,12 +3304,12 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
 											md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_left_diag_up);
-	
+
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
 											md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_up);
-	
+
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_diag_up = 
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
 											md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
@@ -3321,14 +3324,14 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 											md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_right_diag_right);*/
 						}
-	
+
 						if(md.getPositionPublish().get(MyCellInterface.RIGHT))
 						{
 							if(isSplitted || unionDone){
 								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_diag_right = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    										md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_right_diag_right);
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+												md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_right_diag_right);
 							}
 							else
 							{
@@ -3390,22 +3393,22 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							if(isSplitted || unionDone)
 							{
 								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_diag_left = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    										md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_diag_left);
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+												md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_diag_left);
 							}
 							else
 							{
-	    						RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
-	    	    				empty.clear();
-	    	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_left);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_left);
 							}
 						}
 					}
-					
+
 					if(md.getPosition() == MyCellInterface.CORNER_DIAG_DOWN_LEFT)
 					{
 						if(isSplitted)
@@ -3414,8 +3417,8 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
 											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_up_right_diag_center);
-	    				}
-						
+						}
+
 						if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_center = 
@@ -3443,18 +3446,18 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							if(isSplitted || unionDone)
 							{
 								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    										md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_up);
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+												md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_up);
 							}
 							else
 							{
-	    	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
-	    	    				empty.clear();
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_up);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_up);
 							}
 						}
 						else{
@@ -3469,18 +3472,18 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							if(isSplitted || unionDone)
 							{
 								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    										md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_up);
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+												md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_up);
 							}
 							else
 							{
-	    	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
-	    	    				empty.clear();
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_up);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_up);
 							}
 						}
 						if(md.getPositionPublish().get(MyCellInterface.RIGHT))
@@ -3488,18 +3491,18 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							if(isSplitted || unionDone)
 							{
 								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    										md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_right);
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+												md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_right);
 							}
 							else
 							{
-	    	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
-	    	    				empty.clear();
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_right);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_up_right_right);
 							}
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
@@ -3515,18 +3518,18 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							if(isSplitted || unionDone)
 							{
 								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    										md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_right);
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+												md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_right);
 							}
 							else
 							{
-	    	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
-	    	    				empty.clear();
-	    						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_right);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_right);
 							}
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
@@ -3589,7 +3592,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_left);
 						}
 					}
-	
+
 					if(md.getPosition() == MyCellInterface.LEFT)
 					{
 						if(isSplitted)
@@ -3600,33 +3603,33 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	    									md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
 	    					hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_diag_up);*/
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_diag_center = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    									md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_right_diag_center);
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_diag_right = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    									md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_diag_right);
-	    					
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
-	    									md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_right);
-	    					
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_diag_right = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    									md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_diag_right);
-	    					DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_diag_center = 
-	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    									md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_right_diag_center);
-	    					/*DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_diag_down = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_right_diag_center);
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_diag_right = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+											md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_diag_right);
+
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
+											md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_right);
+
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_diag_right = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+											md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_right_diag_right);
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_diag_center = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_right_diag_center);
+							/*DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_diag_down = 
 	    							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
 	    									md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
 	    					hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_right_diag_down);*/
 						}
-	
+
 						if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_center = 
@@ -3634,7 +3637,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_up_left_center);
 						}
-	
+
 						if(md.getPositionPublish().get(MyCellInterface.UP))
 						{
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
@@ -3648,18 +3651,18 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							if(isSplitted || unionDone)
 							{
 								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_diag_up = 
-	        							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	        									md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
-	        					hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_diag_up);
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+												md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_diag_up);
 							}
 							else
 							{
-	    						RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
-	    	    				empty.clear();
-	    	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_up);
+								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_up);
 							}
 						}
 						if(md.getPositionPublish().get(MyCellInterface.DOWN))
@@ -3667,18 +3670,18 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							if(isSplitted || unionDone)
 							{
 								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_diag_down = 
-	        							new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	        									md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
-	        					hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_right_diag_down);
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+												md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_right_diag_down);
 							}
 							else
 							{
 								RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
-	    	    				empty.clear();
-	    	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
-	    								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    										empty, (sm.schedule.getSteps()-1),cellType);
-	    						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_right_down);	
+								empty.clear();
+								DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
+										new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+												empty, (sm.schedule.getSteps()-1),cellType);
+								hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_right_down);	
 							}
 							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
@@ -3695,7 +3698,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
 											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
 							hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_left_center);
-	
+
 						}
 						if(md.getPositionPublish().get(MyCellInterface.LEFT))
 						{
@@ -3719,566 +3722,566 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	}
 
 	private void preparePublishCenter(){
-		
+
 		for(Integer pos : listGrid.keySet())
 		{	
 			HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
-	
+
 			MyCellDoubleNumeric md = (MyCellDoubleNumeric)listGrid.get(pos).get(cellType);
-			
+
 			if(md != null)
 			{
-	    		//PUBLISH POSITION CORNER UP LEFT
-	    		if(md.getPosition()==MyCellInterface.CORNER_DIAG_UP_LEFT){
-	
-	    			//LEFT MINE UP
-	    			if(md.getPositionPublish().get(MyCellInterface.LEFT))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_down_diag = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left_corner_down_diag);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
-	    								md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_left);
-	    			}
-	    			else
-	    			{
-	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
-	    				empty.clear();
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								empty, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_left);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
-	    								md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_left);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_left_left);
-	    			}
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
-	    			{						
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_left_up);
-	    			}
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.UP))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_up,	(sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_left_up);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
-	    								md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_up);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_up_diag = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_right_up_diag);
-	    			}
-	    			else
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_up,	(sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_up);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
-	    								md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_up);
-	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
-	    				empty.clear();
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								empty,	(sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_up);
-	    			}
-	    		}
-	
-	    		//PUBLISH POSITION UP
-	    		if(md.getPosition()==MyCellInterface.UP){
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.UP))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_up_diag = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_left_up_diag);
-	
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
-	    								md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_up);
-	
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_up_diag = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_right_up_diag);
-	    			}
-	    			else
-	    			{
-	    				if(positionForUnion != MyCellInterface.UP){
-		    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_up_diag = 
-		    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-		    								md.getMyRMap().corner_out_up_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
-		    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_left_up_diag);
-		
-		    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_up_diag = 
-		    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-		    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-		    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_right_up_diag);
-	    				}
-	    			}
-	    		}
-	
-	    		//PUBLISH POSITION CORNER UP RIGHT
-	    		if(md.getPosition()==MyCellInterface.CORNER_DIAG_UP_RIGHT){
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.UP))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_left_corner_up_diag);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
-	    								md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_up);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_up);
-	    			}
-	    			else
-	    			{
-	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
-	    				empty.clear();
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								empty, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_left_corner_up_diag_up);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
-	    								md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_up);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_right_up);
-	    			}
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
-	    			{	
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_right);
-	    			}
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.RIGHT)){
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_right_right);
-	    				
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
-	    								md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right);
-	    				
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_down_diag = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_right_down_diag);
-	    				
-	    			}
-	    			else
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_right);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
-	    								md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right);
-	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
-	    				empty.clear();
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_down_diag_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								empty, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right_corner_down_diag_right);
-	    			}
-	    		}
-	
-	    		//PUBLISH POSITION RIGHT
-	    		if(md.getPosition()==MyCellInterface.RIGHT){
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.RIGHT)){
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_up_diag = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right_corner_up_diag);
-	    				
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
-	    								md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right);
-	    				
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_down_diag = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_right_down_diag);
-	    				
-	    			}
-	    			else
-	    			{
-	    				if(positionForUnion != MyCellInterface.RIGHT){
-		    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_up_diag = 
-		    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-		    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-		    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right_corner_up_diag);
-		
-		    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_down_diag = 
-		    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-		    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-		    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_right_down_diag);
-	    				}
-	    			}
-	    		}
-	
-	    		//PUBLISH POSITION CORNER DOWN RIGHT
-	    		if(md.getPosition()==MyCellInterface.CORNER_DIAG_DOWN_RIGHT){
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.RIGHT)){
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_up_diag = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right_corner_up_diag);
-	    				
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
-	    								md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right);
-	    				
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_right);
+				//PUBLISH POSITION CORNER UP LEFT
+				if(md.getPosition()==MyCellInterface.CORNER_DIAG_UP_LEFT){
 
-	    			}
-	    			else
-	    			{
-	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
-	    				empty.clear();
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_up_diag_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								empty, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_right_corner_up_diag_right);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
-	    								md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_right);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_right_right);
-	    			}
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
-	    			{	
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_right);
-	    			}
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.DOWN))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_right_down);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
-	    								md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_down);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_down_diag = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_left_down_diag);
-	    			}
-	    			else
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_down);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
-	    								md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_down);
-	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
-	    				empty.clear();
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_down_diag_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								empty, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_left_corner_down_diag_down);
-	    			}
-	    		}
-	
-	    		//PUBLISH POSITION DOWN
-	    		if(md.getPosition()==MyCellInterface.DOWN){
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.DOWN))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_down_diag = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_right_down_diag);
-	
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
-	    								md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_down);
-	
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_down_diag = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_left_down_diag);
-	    			}
-	    			else
-	    			{
-	    				if(positionForUnion != MyCellInterface.DOWN){
-		    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_down_diag = 
-		    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-		    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-		    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_right_down_diag);		    			
-		    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_down_diag = 
-		    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-		    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-		    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_left_down_diag);
-	    				}
-	    			}
-	    		}
-	
-	    		//PUBLISH POSITION CORNER DOWN LEFT
-	    		if(md.getPosition()==MyCellInterface.CORNER_DIAG_DOWN_LEFT){
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.DOWN))
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_down_diag = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_right_down_diag);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
-	    								md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_down);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_down,	(sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_down);
-	    			}
-	    			else
-	    			{
-	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
-	    				empty.clear();
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_down_diag_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								empty, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_right_corner_down_diag_down);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
-	    								md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_down);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_down,	(sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_down);
-	    			}
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
-	    			{	
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_left);
-	    			}
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.LEFT)){
-	
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_left,	(sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_left);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
-	    								md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left_corner_up_diag);
-	    			}
-	    			else
-	    			{
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_left,	(sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_left);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
-	    								md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_left);
-	    				RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
-	    				empty.clear();
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								empty, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_left_corner_up_diag_left);
-	    			}
-	    		}
-	
-	    		//PUBLISH POSITION LEFT
-	    		if(md.getPosition()==MyCellInterface.LEFT){
-	
-	    			if(md.getPositionPublish().get(MyCellInterface.LEFT)){
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_down_diag = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_left_down_diag);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
-	    								md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left_corner_up_diag);
-	    			}
-	    			else
-	    			{
-	    				if(positionForUnion != MyCellInterface.LEFT){
-		    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_down_diag = 
-		    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-		    								md.getMyRMap().corner_out_down_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
-		    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_left_down_diag);
-		    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag = 
-		    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-		    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-		    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_left_corner_up_diag);
-	    				}
-	    			}
-	    		}
-	    		
-	    		if(md.getPosition() == MyCellInterface.CENTER){
-	    			
-	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT)){
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_left_corner_up_diag_center);
-	    			}
-	    			if(md.getPositionPublish().get(MyCellInterface.UP)){
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_left_corner_up_diag_up);
-	    				
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
-	    								md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_up);
-	    				
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_up_diag_up = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right_corner_up_diag_up);
-	    				    				
-	    			}
-	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_RIGHT)){
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_up_diag_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_right_corner_up_diag_center);
-	    			}
-	    			
-	    			if(md.getPositionPublish().get(MyCellInterface.RIGHT)){
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_up_diag_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
-	    								md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right_corner_up_diag_right);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
-	    								md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_right);
-	    			}
-	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT)){
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_down_diag = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_right_corner_down_diag);
-	    			}
-	    			if(md.getPositionPublish().get(MyCellInterface.DOWN)){
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_down_diag_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
-	    								md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_right_down_diag_down);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
-	    								md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_down);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_down,	(sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_down);
-	    			}
-	    			if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT)){
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_down_diag_center = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_left_corner_down_diag_center);
-	    			}
-	    			if(md.getPositionPublish().get(MyCellInterface.LEFT)){
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_down_diag_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
-	    								md.getMyRMap().corner_out_down_left_diag_left,	(sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_left_down_diag_left);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
-	    								md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left);
-	    				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag_left = 
-	    						new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
-	    								md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
-	    				hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left_corner_up_diag_left);
-	    			}
-	    		}
+					//LEFT MINE UP
+					if(md.getPositionPublish().get(MyCellInterface.LEFT))
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_down_diag = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left_corner_down_diag);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
+										md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_left);
+					}
+					else
+					{
+						RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
+						empty.clear();
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										empty, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_down_left_left);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
+										md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_left);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_left_left);
+					}
+
+					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
+					{						
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_corner_left_up);
+					}
+
+					if(md.getPositionPublish().get(MyCellInterface.UP))
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_up,	(sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_left_up);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
+										md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_up);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_up_diag = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_right_up_diag);
+					}
+					else
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_left_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_up,	(sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_left_up);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
+										md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_up);
+						RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
+						empty.clear();
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										empty,	(sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_up_right_up);
+					}
+				}
+
+				//PUBLISH POSITION UP
+				if(md.getPosition()==MyCellInterface.UP){
+
+					if(md.getPositionPublish().get(MyCellInterface.UP))
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_up_diag = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_left_up_diag);
+
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
+										md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_up);
+
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_up_diag = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_right_up_diag);
+					}
+					else
+					{
+						if(positionForUnion != MyCellInterface.UP){
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_up_diag = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+											md.getMyRMap().corner_out_up_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_left_up_diag);
+
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_up_diag = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_right_up_diag);
+						}
+					}
+				}
+
+				//PUBLISH POSITION CORNER UP RIGHT
+				if(md.getPosition()==MyCellInterface.CORNER_DIAG_UP_RIGHT){
+
+					if(md.getPositionPublish().get(MyCellInterface.UP))
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_left_corner_up_diag);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
+										md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_up);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_up);
+					}
+					else
+					{
+						RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
+						empty.clear();
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										empty, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_left_corner_up_diag_up);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
+										md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_up);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_right_up);
+					}
+
+					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
+					{	
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_corner_up_right);
+					}
+
+					if(md.getPositionPublish().get(MyCellInterface.RIGHT)){
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_up_right_right);
+
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
+										md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right);
+
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_down_diag = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_right_down_diag);
+
+					}
+					else
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_up_right_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_corner_up_right_right);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
+										md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right);
+						RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
+						empty.clear();
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_down_diag_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										empty, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right_corner_down_diag_right);
+					}
+				}
+
+				//PUBLISH POSITION RIGHT
+				if(md.getPosition()==MyCellInterface.RIGHT){
+
+					if(md.getPositionPublish().get(MyCellInterface.RIGHT)){
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_up_diag = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right_corner_up_diag);
+
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
+										md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right);
+
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_down_diag = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_right_down_diag);
+
+					}
+					else
+					{
+						if(positionForUnion != MyCellInterface.RIGHT){
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_up_diag = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+											md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right_corner_up_diag);
+
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_down_diag = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_right_down_diag);
+						}
+					}
+				}
+
+				//PUBLISH POSITION CORNER DOWN RIGHT
+				if(md.getPosition()==MyCellInterface.CORNER_DIAG_DOWN_RIGHT){
+
+					if(md.getPositionPublish().get(MyCellInterface.RIGHT)){
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_up_diag = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right_corner_up_diag);
+
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
+										md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right);
+
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_right);
+
+					}
+					else
+					{
+						RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
+						empty.clear();
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_up_diag_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										empty, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_right_corner_up_diag_right);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
+										md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_right);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_right_right);
+					}
+
+					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
+					{	
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_corner_down_right);
+					}
+
+					if(md.getPositionPublish().get(MyCellInterface.DOWN))
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_right_down);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
+										md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_down);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_down_diag = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_left_down_diag);
+					}
+					else
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_down);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
+										md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_down);
+						RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
+						empty.clear();
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_down_diag_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										empty, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_left_corner_down_diag_down);
+					}
+				}
+
+				//PUBLISH POSITION DOWN
+				if(md.getPosition()==MyCellInterface.DOWN){
+
+					if(md.getPositionPublish().get(MyCellInterface.DOWN))
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_down_diag = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_right_down_diag);
+
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
+										md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_down);
+
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_down_diag = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_left_down_diag);
+					}
+					else
+					{
+						if(positionForUnion != MyCellInterface.DOWN){
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_down_diag = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+											md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_right_down_diag);		    			
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_down_diag = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+											md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_left_down_diag);
+						}
+					}
+				}
+
+				//PUBLISH POSITION CORNER DOWN LEFT
+				if(md.getPosition()==MyCellInterface.CORNER_DIAG_DOWN_LEFT){
+
+					if(md.getPositionPublish().get(MyCellInterface.DOWN))
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_down_diag = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_right_down_diag);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
+										md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_down);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_down,	(sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_down);
+					}
+					else
+					{
+						RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
+						empty.clear();
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_down_diag_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										empty, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_right_corner_down_diag_down);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
+										md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_down);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_down,	(sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_down);
+					}
+
+					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
+					{	
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_corner_down_left);
+					}
+
+					if(md.getPositionPublish().get(MyCellInterface.LEFT)){
+
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_left,	(sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_down_left_left);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
+										md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left_corner_up_diag);
+					}
+					else
+					{
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_left,	(sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_left);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
+										md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_left);
+						RegionDoubleNumericLB empty = ((RegionDoubleNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
+						empty.clear();
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										empty, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_left_corner_up_diag_left);
+					}
+				}
+
+				//PUBLISH POSITION LEFT
+				if(md.getPosition()==MyCellInterface.LEFT){
+
+					if(md.getPositionPublish().get(MyCellInterface.LEFT)){
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_down_diag = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_left_down_diag);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
+										md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left_corner_up_diag);
+					}
+					else
+					{
+						if(positionForUnion != MyCellInterface.LEFT){
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_down_diag = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+											md.getMyRMap().corner_out_down_left_diag_center,	(sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_left_down_diag);
+							DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag = 
+									new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+											md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+							hashUpdatesPosition.get(MyCellInterface.UP).add(dr_left_corner_up_diag);
+						}
+					}
+				}
+
+				if(md.getPosition() == MyCellInterface.CENTER){
+
+					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_LEFT)){
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).add(dr_left_corner_up_diag_center);
+					}
+					if(md.getPositionPublish().get(MyCellInterface.UP)){
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_up, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_left_corner_up_diag_up);
+
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().up_mine,
+										md.getMyRMap().up_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_up);
+
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_up_diag_up = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_up, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right_corner_up_diag_up);
+
+					}
+					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_UP_RIGHT)){
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_up_diag_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).add(dr_right_corner_up_diag_center);
+					}
+
+					if(md.getPositionPublish().get(MyCellInterface.RIGHT)){
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_up_diag_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_right,
+										md.getMyRMap().corner_out_up_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right_corner_up_diag_right);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().right_mine,
+										md.getMyRMap().right_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_right);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_right_right = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_right, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_corner_down_right_right);
+					}
+					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT)){
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_right_corner_down_diag = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).add(dr_right_corner_down_diag);
+					}
+					if(md.getPositionPublish().get(MyCellInterface.DOWN)){
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_right_down_diag_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_right,
+										md.getMyRMap().corner_out_down_right_diag_down, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_right_down_diag_down);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().down_mine,
+										md.getMyRMap().down_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_down);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_down_left_down = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_down,	(sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_down);
+					}
+					if(md.getPositionPublish().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT)){
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_down_diag_center = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_center, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).add(dr_left_corner_down_diag_center);
+					}
+					if(md.getPositionPublish().get(MyCellInterface.LEFT)){
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_corner_left_down_diag_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_down_left,
+										md.getMyRMap().corner_out_down_left_diag_left,	(sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_corner_left_down_diag_left);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().left_mine,
+										md.getMyRMap().left_out, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left);
+						DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr_left_corner_up_diag_left = 
+								new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(md.getMyRMap().corner_mine_up_left,
+										md.getMyRMap().corner_out_up_left_diag_left, (sm.schedule.getSteps()-1),cellType);
+						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_left_corner_up_diag_left);
+					}
+				}
 			}
 		}
 	}
 
 	private void updateInternalMine(MyCellInterface md) {
-		
+
 		Class o=md.getMyRMap().getClass();
-	
+
 		Field[] fields = o.getDeclaredFields();
 		for (int z = 0; z < fields.length; z++)
 		{
@@ -4291,15 +4294,15 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				if(returnValue!=null)
 				{
 					RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
-	
+
 					if(name.contains("mine"))
 					{
 						for(EntryNum<Double, Int2D> e: region)
 						{
-	
+
 							if(name.contains("left_mine") && !md.getPositionGood().get(MyCellInterface.LEFT))
 							{	
-	
+
 								Int2D loc=e.l;
 								double i = e.r;
 								field[loc.getX()][loc.getY()]=i;
@@ -4366,9 +4369,9 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	}
 
 	private void updateInternalOut(MyCellInterface md) {
-		
+
 		Class o=md.getMyRMap().getClass();
-	
+
 		Field[] fields = o.getDeclaredFields();
 		for (int z = 0; z < fields.length; z++)
 		{
@@ -4381,12 +4384,12 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				if(returnValue!=null)
 				{
 					RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
-	
+
 					if(name.contains("out"))
 					{
 						for(EntryNum<Double, Int2D> e: region)
 						{
-	
+
 							if(name.contains("left_out") && !md.getPositionGood().get(MyCellInterface.LEFT))
 							{	
 								Int2D loc=e.l;
@@ -4520,134 +4523,134 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	private void verifyUpdates(UpdatePositionDoubleNumeric<DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>> super_box)
 	{
 		ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>> updates_out = new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
-		
+
 		for(DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> sb : super_box){
-	
+
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> r_mine=sb.out;
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> r_out=sb.mine;
-			
+
 			for(EntryNum<Double, Int2D> e_m: r_mine)
 			{
 				Int2D i=new Int2D(e_m.l.getX(),e_m.l.getY());
 				field[i.getX()][i.getY()]=e_m.r;	
 			}
-			
+
 			updates_out.add(r_out);
 		}
-	
+
 		updates_cacheLB.add(updates_out);
 	}
 
 	private void memorizeRegionOut(MyCellDoubleNumeric md)
 	{
 		ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>> updates_out = new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
-		    	
+
 		Class o=md.getMyRMap().getClass();
-				
+
 		Field[] fields = o.getDeclaredFields();
-	    for (int z = 0; z < fields.length; z++)
-	    {
-	    	fields[z].setAccessible(true);
-	    	try
-	    	{
-	    		String name=fields[z].getName();
-	    		Method method = o.getMethod("get"+name, null);
-	    		Object returnValue = method.invoke(md.getMyRMap(), null);
-	    		if(returnValue!=null)
-	    		{
-	    			RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
-	
-	    			if(name.contains("out"))
-	    			{		
-		    			if(name.contains("left_out") && md.getPositionGood().get(MyCellInterface.LEFT))
-		    			{
-		    				updates_out.add(region.clone());
-		    			}
-		    			else
-		    				if(name.contains("right_out") && md.getPositionGood().get(MyCellInterface.RIGHT))
-		    				{
-		    					updates_out.add(region.clone());
+		for (int z = 0; z < fields.length; z++)
+		{
+			fields[z].setAccessible(true);
+			try
+			{
+				String name=fields[z].getName();
+				Method method = o.getMethod("get"+name, null);
+				Object returnValue = method.invoke(md.getMyRMap(), null);
+				if(returnValue!=null)
+				{
+					RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
+
+					if(name.contains("out"))
+					{		
+						if(name.contains("left_out") && md.getPositionGood().get(MyCellInterface.LEFT))
+						{
+							updates_out.add(region.clone());
+						}
+						else
+							if(name.contains("right_out") && md.getPositionGood().get(MyCellInterface.RIGHT))
+							{
+								updates_out.add(region.clone());
 							}
-		    				else
-		    					if(name.contains("up_out") && md.getPositionGood().get(MyCellInterface.UP))
-		    					{
-		    						updates_out.add(region.clone());
-		    					}
-		    					else
-		    						if(name.contains("down_out") && md.getPositionGood().get(MyCellInterface.DOWN))
-		    						{
-		    							updates_out.add(region.clone());
-		    						}
-		    						else
-		    							if(name.contains("corner_out_down_left_diag_left") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT_LEFT))
-		    							{							
-		    								updates_out.add(region.clone());
-		    							}
-		    							else
-		    								if(name.contains("corner_out_down_left_diag_down") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT_DOWN))
-		    								{
-		    									updates_out.add(region.clone());
-		    								}
-		    								else
-		    									if(name.contains("corner_out_down_left_diag_center") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
-		    									{
-		    										updates_out.add(region.clone());
-		    									}
-		    									else
-		    										if(name.contains("corner_out_down_right_diag_right") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT_RIGHT))
-		    										{
-		    											updates_out.add(region.clone());
-		    										}
-		    										else
-		    											if(name.contains("corner_out_down_right_diag_down") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT_DOWN))
-		    											{
-		    												updates_out.add(region.clone());
-		    											}
-		    											else
-		    												if(name.contains("corner_out_down_right_diag_center") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
-		    												{
-		    													updates_out.add(region.clone());
-		    												}
-		    												else
-		    													if(name.contains("corner_out_up_left_diag_left") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT_LEFT))
-		    													{
-		    														updates_out.add(region.clone());
-		    													}
-		    													else
-		    														if(name.contains("corner_out_up_left_diag_up") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT_UP))
-		    														{
-		    															updates_out.add(region.clone());
-		    														}
-		    														else
-		    															if(name.contains("corner_out_up_left_diag_center") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
-		    															{
-		    																updates_out.add(region.clone());
-		    															}
-		    															else
-		    																if(name.contains("corner_out_up_right_diag_right") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT_RIGHT))
-		    																{
-		    																	updates_out.add(region.clone());
-		    																}
-		    																else
-		    																	if(name.contains("corner_out_up_right_diag_up") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT_UP))
-		    																	{
-		    																		updates_out.add(region.clone());
-		    																	}
-		    																	else
-		    																		if(name.contains("corner_out_up_right_diag_center") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
-		    																		{
-		    																			updates_out.add(region.clone());
-		    																		}
-					  		}
-				     	}
-			    	}
-			    	catch (IllegalArgumentException e){e.printStackTrace();} 
-			    	catch (IllegalAccessException e) {e.printStackTrace();} 
-			    	catch (SecurityException e) {e.printStackTrace();} 
-			    	catch (NoSuchMethodException e) {e.printStackTrace();} 
-			    	catch (InvocationTargetException e) {e.printStackTrace();}
-			    }
-			    updates_cacheLB.add(updates_out);
+							else
+								if(name.contains("up_out") && md.getPositionGood().get(MyCellInterface.UP))
+								{
+									updates_out.add(region.clone());
+								}
+								else
+									if(name.contains("down_out") && md.getPositionGood().get(MyCellInterface.DOWN))
+									{
+										updates_out.add(region.clone());
+									}
+									else
+										if(name.contains("corner_out_down_left_diag_left") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT_LEFT))
+										{							
+											updates_out.add(region.clone());
+										}
+										else
+											if(name.contains("corner_out_down_left_diag_down") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT_DOWN))
+											{
+												updates_out.add(region.clone());
+											}
+											else
+												if(name.contains("corner_out_down_left_diag_center") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
+												{
+													updates_out.add(region.clone());
+												}
+												else
+													if(name.contains("corner_out_down_right_diag_right") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT_RIGHT))
+													{
+														updates_out.add(region.clone());
+													}
+													else
+														if(name.contains("corner_out_down_right_diag_down") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT_DOWN))
+														{
+															updates_out.add(region.clone());
+														}
+														else
+															if(name.contains("corner_out_down_right_diag_center") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
+															{
+																updates_out.add(region.clone());
+															}
+															else
+																if(name.contains("corner_out_up_left_diag_left") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT_LEFT))
+																{
+																	updates_out.add(region.clone());
+																}
+																else
+																	if(name.contains("corner_out_up_left_diag_up") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT_UP))
+																	{
+																		updates_out.add(region.clone());
+																	}
+																	else
+																		if(name.contains("corner_out_up_left_diag_center") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
+																		{
+																			updates_out.add(region.clone());
+																		}
+																		else
+																			if(name.contains("corner_out_up_right_diag_right") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT_RIGHT))
+																			{
+																				updates_out.add(region.clone());
+																			}
+																			else
+																				if(name.contains("corner_out_up_right_diag_up") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT_UP))
+																				{
+																					updates_out.add(region.clone());
+																				}
+																				else
+																					if(name.contains("corner_out_up_right_diag_center") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
+																					{
+																						updates_out.add(region.clone());
+																					}
+					}
+				}
+			}
+			catch (IllegalArgumentException e){e.printStackTrace();} 
+			catch (IllegalAccessException e) {e.printStackTrace();} 
+			catch (SecurityException e) {e.printStackTrace();} 
+			catch (NoSuchMethodException e) {e.printStackTrace();} 
+			catch (InvocationTargetException e) {e.printStackTrace();}
+		}
+		updates_cacheLB.add(updates_out);
 	}
 
 	/**
@@ -4660,99 +4663,99 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	private void updateFields(MyCellInterface md)
 	{
 		Class o=md.getMyRMap().getClass();
-				
+
 		Field[] fields = o.getDeclaredFields();
-	    for (int z = 0; z < fields.length; z++)
-	    {
-	    	fields[z].setAccessible(true);
-	    	try
-	    	{
-	    		String name=fields[z].getName();
-	    		Method method = o.getMethod("get"+name, null);
-	    		Object returnValue = method.invoke(md.getMyRMap(), null);
-	    		if(returnValue!=null)
-	    		{
-	    			RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
-		   			if(name.contains("out"))
-		   			{
-		   				for(EntryNum<Double, Int2D> e: region)
-		   			 	{
-		   					Int2D loc=e.l;
+		for (int z = 0; z < fields.length; z++)
+		{
+			fields[z].setAccessible(true);
+			try
+			{
+				String name=fields[z].getName();
+				Method method = o.getMethod("get"+name, null);
+				Object returnValue = method.invoke(md.getMyRMap(), null);
+				if(returnValue!=null)
+				{
+					RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
+					if(name.contains("out"))
+					{
+						for(EntryNum<Double, Int2D> e: region)
+						{
+							Int2D loc=e.l;
 							double i = e.r;
 							field[loc.getX()][loc.getY()]=i;
-		   			 	} 
-		   			}
-		   			else
-		   				if(name.contains("mine"))
-		   				{
-		   					for(EntryNum<Double, Int2D> e: region)
-		   					{			    	
-			    				if(name.contains("left_mine") && md.getPositionGood().get(MyCellInterface.LEFT))
-			    				{	
-			    					Int2D loc=e.l;
+						} 
+					}
+					else
+						if(name.contains("mine"))
+						{
+							for(EntryNum<Double, Int2D> e: region)
+							{			    	
+								if(name.contains("left_mine") && md.getPositionGood().get(MyCellInterface.LEFT))
+								{	
+									Int2D loc=e.l;
 									double i = e.r;
 									field[loc.getX()][loc.getY()]=i;
-			    				}
-			    				else
-			    					if(name.contains("right_mine") && md.getPositionGood().get(MyCellInterface.RIGHT))
-			    					{
-			    						Int2D loc=e.l;
+								}
+								else
+									if(name.contains("right_mine") && md.getPositionGood().get(MyCellInterface.RIGHT))
+									{
+										Int2D loc=e.l;
 										double i = e.r;
 										field[loc.getX()][loc.getY()]=i;
-			    					}
-			    					else
-			    						if(name.contains("up_mine") && md.getPositionGood().get(MyCellInterface.UP))
-			    						{
-			    							Int2D loc=e.l;
-			    							double i = e.r;
-			    							field[loc.getX()][loc.getY()]=i;
-			    						}
-			    						else
-			    							if(name.contains("down_mine") && md.getPositionGood().get(MyCellInterface.DOWN))
-			    							{
-			    								Int2D loc=e.l;
-			    								double i = e.r;
-			    								field[loc.getX()][loc.getY()]=i;
-			    							}
-			    							else
-			    								if(name.contains("corner_mine_down_left") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
-			    								{
-			    									Int2D loc=e.l;
-			    									double i = e.r;
-			    									field[loc.getX()][loc.getY()]=i;
-			    								}
-			    								else
-			    									if(name.contains("corner_mine_down_right") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
-			    									{
-			    										Int2D loc=e.l;
-			    										double i = e.r;
-			    										field[loc.getX()][loc.getY()]=i;
-			    									}
-			    									else
-			    										if(name.contains("corner_mine_up_left") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
-			    										{
-			    											Int2D loc=e.l;
-			    											double i = e.r;
-			    											field[loc.getX()][loc.getY()]=i;
-			    										}
-			    										else
-			    											if(name.contains("corner_mine_up_right") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
-			    											{
-			    												Int2D loc=e.l;
-			    												double i = e.r;
-			    												field[loc.getX()][loc.getY()]=i;
-			    											}
-			    					}
-			    				}
-			    		}
-			    	}
-			    	catch (IllegalArgumentException e){e.printStackTrace();} 
-			    	catch (IllegalAccessException e) {e.printStackTrace();} 
-			    	catch (SecurityException e) {e.printStackTrace();} 
-			    	catch (NoSuchMethodException e) {e.printStackTrace();} 
-			    	catch (InvocationTargetException e) {e.printStackTrace();}
-			    }
-		
+									}
+									else
+										if(name.contains("up_mine") && md.getPositionGood().get(MyCellInterface.UP))
+										{
+											Int2D loc=e.l;
+											double i = e.r;
+											field[loc.getX()][loc.getY()]=i;
+										}
+										else
+											if(name.contains("down_mine") && md.getPositionGood().get(MyCellInterface.DOWN))
+											{
+												Int2D loc=e.l;
+												double i = e.r;
+												field[loc.getX()][loc.getY()]=i;
+											}
+											else
+												if(name.contains("corner_mine_down_left") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_LEFT))
+												{
+													Int2D loc=e.l;
+													double i = e.r;
+													field[loc.getX()][loc.getY()]=i;
+												}
+												else
+													if(name.contains("corner_mine_down_right") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT))
+													{
+														Int2D loc=e.l;
+														double i = e.r;
+														field[loc.getX()][loc.getY()]=i;
+													}
+													else
+														if(name.contains("corner_mine_up_left") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_LEFT))
+														{
+															Int2D loc=e.l;
+															double i = e.r;
+															field[loc.getX()][loc.getY()]=i;
+														}
+														else
+															if(name.contains("corner_mine_up_right") && md.getPositionGood().get(MyCellInterface.CORNER_DIAG_UP_RIGHT))
+															{
+																Int2D loc=e.l;
+																double i = e.r;
+																field[loc.getX()][loc.getY()]=i;
+															}
+							}
+						}
+				}
+			}
+			catch (IllegalArgumentException e){e.printStackTrace();} 
+			catch (IllegalAccessException e) {e.printStackTrace();} 
+			catch (SecurityException e) {e.printStackTrace();} 
+			catch (NoSuchMethodException e) {e.printStackTrace();} 
+			catch (InvocationTargetException e) {e.printStackTrace();}
+		}
+
 	}
 
 	/**
@@ -4764,10 +4767,10 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	 */
 	private boolean setValue(double value, Int2D location,MyCellInterface md)
 	{
-	
+
 		RegionMapNumeric<Integer, EntryNum<Double,Int2D>> rmap =(RegionMapNumeric<Integer, EntryNum<Double,Int2D>>) md.getMyRMap();
 		MyCellDoubleNumeric ms = (MyCellDoubleNumeric) md;
-		
+
 		if(md.getPositionGood().get(MyCellInterface.LEFT))
 		{
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = rmap.left_out;
@@ -4979,7 +4982,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 
 		return false;
 	}
-	
+
 	private void removeValue(MyCellInterface md)
 	{
 		MyCellDoubleNumeric mc = (MyCellDoubleNumeric)md;
@@ -5022,7 +5025,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					}
 				}
 			}
-			
+
 			if((mc.getPosition() == MyCellInterface.CORNER_DIAG_UP_LEFT) ||
 					(mc.getPosition() == MyCellInterface.UP) ||
 					(mc.getPosition() == MyCellInterface.CORNER_DIAG_UP_RIGHT) ||
@@ -5044,7 +5047,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					}
 				}
 			}
-			
+
 			if((mc.getPosition() == MyCellInterface.CORNER_DIAG_UP_LEFT) ||
 					(mc.getPosition() == MyCellInterface.UP) ||
 					(mc.getPosition() == MyCellInterface.CORNER_DIAG_UP_RIGHT) ||
@@ -5076,7 +5079,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					}
 				}
 			}
-			
+
 			if((mc.getPosition() == MyCellInterface.CORNER_DIAG_UP_LEFT) ||
 					(mc.getPosition() == MyCellInterface.UP) ||
 					(mc.getPosition() == MyCellInterface.CORNER_DIAG_UP_RIGHT) ||
@@ -5098,7 +5101,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					}
 				}
 			}
-			
+
 			if((mc.getPosition() == MyCellInterface.CORNER_DIAG_UP_RIGHT) ||
 					(mc.getPosition() == MyCellInterface.RIGHT) ||
 					(mc.getPosition() == MyCellInterface.CORNER_DIAG_DOWN_RIGHT) ||
@@ -5130,7 +5133,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					}
 				}
 			}
-			
+
 			if((mc.getPosition() == MyCellInterface.CORNER_DIAG_UP_LEFT) ||
 					(mc.getPosition() == MyCellInterface.CORNER_DIAG_UP_RIGHT) ||
 					(mc.getPosition() == MyCellInterface.RIGHT) ||
@@ -5152,7 +5155,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					}
 				}
 			}
-			
+
 			if((mc.getPosition() == MyCellInterface.CORNER_DIAG_UP_LEFT) ||
 					(mc.getPosition() == MyCellInterface.CORNER_DIAG_DOWN_RIGHT) ||
 					(mc.getPosition() == MyCellInterface.DOWN) ||
@@ -5184,7 +5187,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					}
 				}
 			}
-			
+
 			if((mc.getPosition() == MyCellInterface.CORNER_DIAG_UP_LEFT) ||
 					(mc.getPosition() == MyCellInterface.UP) ||
 					(mc.getPosition() == MyCellInterface.CORNER_DIAG_UP_RIGHT) ||
@@ -5381,36 +5384,36 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 		for(Integer pos : listGrid.keySet())
 		{	
 			HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
-			
+
 			for(CellType ct : hm.keySet())
 			{	
 				MyCellDoubleNumeric md = (MyCellDoubleNumeric) hm.get(ct);
-				
-	    		
+
+
 				md.getMyField().clear();	
-				
+
 				Class o=md.getMyRMap().getClass();
-				
+
 				Field[] fields = o.getDeclaredFields();
 				for (int z = 0; z < fields.length; z++)
 				{
-				    fields[z].setAccessible(true);
-				    try
-				    {
-				    	String name=fields[z].getName();
-				    	Method method = o.getMethod("get"+name, null);
-				    	Object returnValue = method.invoke(md.getMyRMap(), null);
-				    	if(returnValue!=null)
-				    	{
-				    		RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
-				    		region.clear();    
-				    	}
-				    }
-				    catch (IllegalArgumentException e){e.printStackTrace(); return false;} 
-				    catch (IllegalAccessException e) {e.printStackTrace();return false;} 
-				    catch (SecurityException e) {e.printStackTrace();return false;} 
-				    catch (NoSuchMethodException e) {e.printStackTrace();return false;} 
-				    catch (InvocationTargetException e) {e.printStackTrace();return false;}
+					fields[z].setAccessible(true);
+					try
+					{
+						String name=fields[z].getName();
+						Method method = o.getMethod("get"+name, null);
+						Object returnValue = method.invoke(md.getMyRMap(), null);
+						if(returnValue!=null)
+						{
+							RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
+							region.clear();    
+						}
+					}
+					catch (IllegalArgumentException e){e.printStackTrace(); return false;} 
+					catch (IllegalAccessException e) {e.printStackTrace();return false;} 
+					catch (SecurityException e) {e.printStackTrace();return false;} 
+					catch (NoSuchMethodException e) {e.printStackTrace();return false;} 
+					catch (InvocationTargetException e) {e.printStackTrace();return false;}
 				}
 			}
 		}
@@ -5419,7 +5422,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 
 	@Override
 	public DistributedState getState() {
-	
+
 		return (DistributedState)sm;
 	}
 
@@ -5432,7 +5435,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	@Override
 	public void setTable(HashMap table) {
 		// TODO Auto-generated method stub
-	
+
 	}
 
 	@Override
@@ -5463,7 +5466,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 
 	@Override
 	public HashMap<Integer, MyCellInterface> getToSendForBalance() {
-	
+
 		return toSendForBalance;
 	}
 
@@ -5517,11 +5520,11 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 		return 0;
 	}
 	public void setElement(int i,int j, Double val){
-			field[i][j]=val;
+		field[i][j]=val;
 	}
 	public Double getElement(int i, int j){
-			return field[i][j];
-		
+		return field[i][j];
+
 	}
 
 	@Override
@@ -5531,7 +5534,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	}
 	@Override
 	public boolean verifyPosition(Int2D pos) {
-		
+
 		//we have to implement this
 		return false;
 

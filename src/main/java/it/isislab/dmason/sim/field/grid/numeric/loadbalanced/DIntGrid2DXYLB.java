@@ -325,8 +325,18 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	 * @param sm SimState of simulation
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
 	 */
-	public boolean setDistributedObjectLocation(int d, Int2D location, SimState sm)
-	{
+	//public boolean setDistributedObjectLocation(int d, Int2D location, SimState sm)
+	//{
+	public boolean setDistributedObjectLocation( Int2D location, Object ob ,SimState sm) throws DMasonException{
+
+		int d=Integer.MAX_VALUE; // se il controllo sotto non va a buon fine OH MY GOD
+		
+		if(ob instanceof Integer){
+			d=(Integer) ob;
+		}else
+		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");}
+	
+		
 		numAgents++;
 		boolean fl = false;
 		
@@ -5251,12 +5261,6 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 		return true;
 	}
 
-	@Override
-	public boolean setDistributedObjectLocation(Int2D location,
-			RemotePositionedAgent<Int2D> rm, SimState sm) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 
 	@Override
 	public boolean isSplitted() {
