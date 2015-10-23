@@ -518,8 +518,17 @@ public class DIntGrid2DYThin extends DIntGrid2DThin {
 	 * @param sm
 	 * @return
 	 */
-	public boolean setDistributedObjectLocation(int i, Int2D l, SimState sm){
+	//public boolean setDistributedObjectLocation(int i, Int2D l, SimState sm){
+	public boolean setDistributedObjectLocation( Int2D l, Object ob ,SimState sm) throws DMasonException{
+
+		int i=Integer.MAX_VALUE; // se il controllo sotto non va a buon fine OH MY GOD
 		
+		if(ob instanceof Integer){
+			i=(Integer) ob;
+		}else
+		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");}
+	
+	
 		//This 'if' is for debug 
 		if(checkReproducibility)
 			ps.println(i+" "+l.x+" "+l.y);
@@ -702,12 +711,7 @@ public class DIntGrid2DYThin extends DIntGrid2DThin {
 		return globals;
 	}
 
-	@Override
-	public boolean setDistributedObjectLocation(Int2D location,
-			RemotePositionedAgent<Int2D> rm, SimState sm) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	
 
 	@Override
 	public Int2D getAvailableRandomLocation() {

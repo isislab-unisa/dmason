@@ -103,13 +103,13 @@ import sim.util.Int2D;
 public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
-	
+
 	private ZoomArrayList<EntryNum<Double, Int2D>> tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
 	/**
 	 * It's the name of the specific field
 	 */
 	private String NAME;
-	
+
 	/**
 	 * It represents the initial value in every position of the field
 	 */
@@ -117,7 +117,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	private int numAgents;
 	private int width,height,field_width,field_height;
 	private String topicPrefix = "";
-	
+
 	// -----------------------------------------------------------------------
 	// GLOBAL PROPERTIES -----------------------------------------------------
 	// -----------------------------------------------------------------------
@@ -140,7 +140,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
 	public DDoubleGrid2DYThin(int width, int height,int field_width,int field_height,SimState sm,int max_distance,int i,int j,int rows,int columns, double initialGridValue, String name, String prefix) {
-		
+
 		super(field_width, field_height,width,height, initialGridValue);
 		this.width=width;
 		this.height=height;
@@ -161,30 +161,30 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 		createRegion();		
 
 	}
-	
-	
+
+
 	/**
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
 	 * @return true if all is ok
 	 */
 	private boolean createRegion()
 	{
-			//upper left corner's coordinates
-			if(cellType.pos_j<(width%columns))
-				own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
-			else
-				own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
+		//upper left corner's coordinates
+		if(cellType.pos_j<(width%columns))
+			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
+		else
+			own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
 
-			own_y=0; // in this mode the y coordinate is ever 0
-			
-			// own width and height
-			if(cellType.pos_j<(width%columns))
-				my_width=(int) Math.floor(width/columns+1);
-			else
-				my_width=(int) Math.floor(width/columns);
-			my_height=height;
-		
-		
+		own_y=0; // in this mode the y coordinate is ever 0
+
+		// own width and height
+		if(cellType.pos_j<(width%columns))
+			my_width=(int) Math.floor(width/columns+1);
+		else
+			my_width=(int) Math.floor(width/columns);
+		my_height=height;
+
+
 		//calculating the neighbors
 		int v1 = cellType.pos_j - 1;
 		int v2 = cellType.pos_j + 1;
@@ -192,54 +192,54 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 		{
 			if( v1 >= 0 )
 			{
-			
+
 				neighborhood.add(cellType.getNeighbourLeft());
-						
-				
+
+
 			}
 			if( v2 <= columns - 1 )
 			{
-				
+
 				neighborhood.add(cellType.getNeighbourRight());
 			}	
 		}else{
-			
+
 			if( v1 >= 0 )
 			{
-				
+
 				neighborhood.add(cellType.getNeighbourLeft());
-				
+
 			}
 			if( v2 < columns  )
 			{
-				
+
 				neighborhood.add(cellType.getNeighbourRight());
 			}	
 		}
-		
+
 		// Building the regions
 		rmap.left_out=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height),my_width, my_height, width, height);
 		if(rmap.left_out!=null) //this condition if is false, means that this peer have not a neighbour left.
 			rmap.left_mine=RegionDoubleNumeric.createRegionNumeric(own_x,own_y,own_x + MAX_DISTANCE -1, (own_y+my_height)-1,my_width, my_height, width, height);
-		
+
 		rmap.right_out=RegionDoubleNumeric.createRegionNumeric(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, (own_y+my_height)-1,my_width, my_height, width, height);
 		if(rmap.right_out!=null)
 			rmap.right_mine=RegionDoubleNumeric.createRegionNumeric(own_x + my_width -MAX_DISTANCE,own_y,own_x +my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
-				
+
 		if(rmap.left_out == null)
 		{
 			//peer 0
 			myfield=new RegionDoubleNumeric(own_x,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
-			
+
 			/**
 			try 
 			{
 				//connection.createTopic(cellType+"R");
 				connection.subscribeToTopic(cellType.getNeighbourRight()+"L");
 			} catch (Exception e) {e.printStackTrace();}
-			*/
+			 */
 		}
-		
+
 		if(rmap.right_out == null)
 		{
 			//peer NUMPEERS-1
@@ -250,9 +250,9 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 				//connection.createTopic(cellType+"L");
 				connection.subscribeToTopic(cellType.getNeighbourLeft()+"R");
 			} catch (Exception e) {e.printStackTrace();}
-			*/
+			 */
 		}
-		
+
 		if(rmap.left_out!=null && rmap.right_out!=null)
 		{
 			myfield=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
@@ -264,7 +264,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 				connection.subscribeToTopic(cellType.getNeighbourLeft()+"R");
 				connection.subscribeToTopic(cellType.getNeighbourRight()+"L");
 			} catch (Exception e) {e.printStackTrace();}
-			*/
+			 */
 		}
 		/**
 		if(rmap.right_out!=null )
@@ -272,17 +272,17 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 			ut_right=new UpdaterThreadForListener(connection, cellType,this.NUMPEERS,this,neighborhood,cellType.getNeighbourRight()+"L", NAME,updates,listeners);
 			ut_right.start();
 		}
-		
+
 		if(rmap.left_out!=null)
 		{
 			ut_left=new UpdaterThreadForListener(connection, cellType,this.NUMPEERS,this,neighborhood,cellType.getNeighbourLeft()+"R", NAME,updates,listeners);
 			ut_left.start();
 		}
-		*/
+		 */
 		return true;
 	}
-	
-    /**
+
+	/**
 	 * 	This method provides the synchronization in the distributed environment.
 	 * 	It's called after every step of schedule.
 	 */
@@ -290,40 +290,40 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	public synchronized boolean  synchro() 
 	{		
 		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
-	Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
-	
+		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
+
 		//every value in the myfield region is setted
-				for(EntryNum<Double, Int2D> e: myfield)
-				{			
-					Int2D loc=e.l;
-					double d = e.r;
-					setThin(loc.getX(), loc.getY(), d);
-					//this.field[loc.getX()][loc.getY()]=d;	
-					
-					if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
-						tmp_zoom.add(new EntryNum<Double, Int2D>(d, loc));
-				}     
-				if(conn!=null &&
-						((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
-				{
-					try {
-						tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
-						conn.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
-						tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
-					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
-				
-			
+		for(EntryNum<Double, Int2D> e: myfield)
+		{			
+			Int2D loc=e.l;
+			double d = e.r;
+			setThin(loc.getX(), loc.getY(), d);
+			//this.field[loc.getX()][loc.getY()]=d;	
+
+			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+				tmp_zoom.add(new EntryNum<Double, Int2D>(d, loc));
+		}     
+		if(conn!=null &&
+				((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+		{
+			try {
+				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
+				conn.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
+				tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+
+
 		updateFields(); //update fields with java reflect
-		
+
 		updates_cache=new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
-			
+
 		memorizeRegionOut();
 
-			
+
 		//--> publishing the regions to correspondent topics for the neighbors
 		if( rmap.left_out!=null )
 		{
@@ -331,7 +331,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 			try 
 			{	
 				connWorker.publishToTopic(dr1,topicPrefix+cellType+"L", NAME);
-				
+
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
 		if( rmap.right_out!=null )
@@ -340,19 +340,19 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 			try 
 			{			
 				connWorker.publishToTopic(dr2,topicPrefix+cellType+"R", NAME);
-				
+
 			} catch (Exception e1) {e1.printStackTrace();}
 		}		
 		//<--
-			
+
 		//take from UpdateMap the updates for current last terminated step and use 
 		//verifyUpdates() to elaborate informations
-	
+
 		PriorityQueue<Object> q;
 		try 
 		{
 			q = updates.getUpdates(sm.schedule.getSteps()-1, neighborhood.size());
-				
+
 			while(!q.isEmpty())
 			{
 				DistributedRegionNumeric<Integer, EntryNum<Double,Int2D>> region=(DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>)q.poll();
@@ -362,9 +362,9 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-				
+
 		for(RegionNumeric<Integer,EntryNum<Double,Int2D>> region : updates_cache){
-			
+
 			for(EntryNum<Double,Int2D> e_m: region)
 			{
 				Int2D i=new Int2D(e_m.l.getX(), e_m.l.getY());
@@ -372,9 +372,9 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 				//field[i.getX()][i.getY()]=e_m.r;
 			}
 		}	
-		
+
 		this.reset();
-		
+
 		return true;
 	}
 
@@ -389,13 +389,13 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	{
 		RegionNumeric<Integer,EntryNum<Double,Int2D>> r_mine=box.out;
 		RegionNumeric<Integer,EntryNum<Double,Int2D>> r_out=box.mine;
-		
+
 		for(EntryNum<Double,Int2D> e_m: r_mine)
 		{
-				Int2D i=new Int2D(e_m.l.getX(),e_m.l.getY());
-				
-				setThin(i.getX(), i.getY(), e_m.r);
-				//field[i.getX()][i.getY()]=e_m.r;		  		
+			Int2D i=new Int2D(e_m.l.getX(),e_m.l.getY());
+
+			setThin(i.getX(), i.getY(), e_m.r);
+			//field[i.getX()][i.getY()]=e_m.r;		  		
 		}		
 		updates_cache.add(r_out);
 	}
@@ -405,32 +405,32 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	public void memorizeRegionOut()
 	{
 		Class o=rmap.getClass();
-		
-		Field[] fields = o.getDeclaredFields();
-	    for (int z = 0; z < fields.length; z++)
-	    {
-	      fields[z].setAccessible(true);
-	      try
-	      {
-	    	 String name=fields[z].getName();
-		     Method method = o.getMethod("get"+name, null);
-		     Object returnValue = method.invoke(rmap, null);
-		     if(returnValue!=null)
-		     {
-		    	 RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
-		    	 if(name.contains("out"))
-			  	 {
 
-		    		 updates_cache.add(region.clone());
-			  	  }
-		     }
-	       }
-	       catch (IllegalArgumentException e){e.printStackTrace();} 
-	       catch (IllegalAccessException e) {e.printStackTrace();} 
-	       catch (SecurityException e) {e.printStackTrace();} 
-	       catch (NoSuchMethodException e) {e.printStackTrace();} 
-	       catch (InvocationTargetException e) {e.printStackTrace();}
-	    }	     
+		Field[] fields = o.getDeclaredFields();
+		for (int z = 0; z < fields.length; z++)
+		{
+			fields[z].setAccessible(true);
+			try
+			{
+				String name=fields[z].getName();
+				Method method = o.getMethod("get"+name, null);
+				Object returnValue = method.invoke(rmap, null);
+				if(returnValue!=null)
+				{
+					RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
+					if(name.contains("out"))
+					{
+
+						updates_cache.add(region.clone());
+					}
+				}
+			}
+			catch (IllegalArgumentException e){e.printStackTrace();} 
+			catch (IllegalAccessException e) {e.printStackTrace();} 
+			catch (SecurityException e) {e.printStackTrace();} 
+			catch (NoSuchMethodException e) {e.printStackTrace();} 
+			catch (InvocationTargetException e) {e.printStackTrace();}
+		}	     
 	}
 
 
@@ -444,53 +444,53 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	public void updateFields()
 	{
 		Class o=rmap.getClass();
-		
+
 		Field[] fields = o.getDeclaredFields();
-	    for (int z = 0; z < fields.length; z++)
-	    {
-	      fields[z].setAccessible(true);
-	      try
-	      {
-	    	 String name=fields[z].getName();
-		     Method method = o.getMethod("get"+name, null);
-		     Object returnValue = method.invoke(rmap, null);
-		     if(returnValue!=null)
-		     {
-		    	 RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
-		    	 
-		    	 if(name.contains("out"))
-			  	 {
-		    		 for(EntryNum<Double,Int2D> e : region){
-		    			 
-		    			 Int2D pos = new Int2D(e.l.getX(), e.l.getY());
-		    			 double d = e.r;
-		    			 setThin(pos.getX(), pos.getY(), d);
-		    			 //this.field[pos.getX()][pos.getY()]=d;
-		    		 }
-			  	  }
-		    	  else
-		    		  if(name.contains("mine"))
-		    		  {
-		    			  for(EntryNum<Double,Int2D> e : region){
-				    			 
-				    			 Int2D pos = new Int2D(e.l.getX(), e.l.getY());
-				    			 double d = e.r;
-				    			 setThin(pos.getX(), pos.getY(), d);
-				    			 //this.field[pos.getX()][pos.getY()]=d;
-		    			  }
-		    			  
-		    		  }
-		     	}
-	       }
-	       catch (IllegalArgumentException e){e.printStackTrace();} 
-	       catch (IllegalAccessException e) {e.printStackTrace();} 
-	       catch (SecurityException e) {e.printStackTrace();} 
-	       catch (NoSuchMethodException e) {e.printStackTrace();} 
-	       catch (InvocationTargetException e) {e.printStackTrace();}
-	    }	 
+		for (int z = 0; z < fields.length; z++)
+		{
+			fields[z].setAccessible(true);
+			try
+			{
+				String name=fields[z].getName();
+				Method method = o.getMethod("get"+name, null);
+				Object returnValue = method.invoke(rmap, null);
+				if(returnValue!=null)
+				{
+					RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
+
+					if(name.contains("out"))
+					{
+						for(EntryNum<Double,Int2D> e : region){
+
+							Int2D pos = new Int2D(e.l.getX(), e.l.getY());
+							double d = e.r;
+							setThin(pos.getX(), pos.getY(), d);
+							//this.field[pos.getX()][pos.getY()]=d;
+						}
+					}
+					else
+						if(name.contains("mine"))
+						{
+							for(EntryNum<Double,Int2D> e : region){
+
+								Int2D pos = new Int2D(e.l.getX(), e.l.getY());
+								double d = e.r;
+								setThin(pos.getX(), pos.getY(), d);
+								//this.field[pos.getX()][pos.getY()]=d;
+							}
+
+						}
+				}
+			}
+			catch (IllegalArgumentException e){e.printStackTrace();} 
+			catch (IllegalAccessException e) {e.printStackTrace();} 
+			catch (SecurityException e) {e.printStackTrace();} 
+			catch (NoSuchMethodException e) {e.printStackTrace();} 
+			catch (InvocationTargetException e) {e.printStackTrace();}
+		}	 
 	}
-	
-	
+
+
 	/**
 	 * Clear all Regions.
 	 * @return true if the clearing is successful, false if exception is generated
@@ -498,40 +498,34 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	public  boolean reset()
 	{
 		myfield.clear();
-	
+
 		Class o=rmap.getClass();
-		
+
 		Field[] fields = o.getDeclaredFields();
 		for (int z = 0; z < fields.length; z++)
 		{
-		     fields[z].setAccessible(true);
-		     try
-		     {
-		    	String name=fields[z].getName();
-		    	Method method = o.getMethod("get"+name, null);
-		    	Object returnValue = method.invoke(rmap, null);
-		    	
-		    	if(returnValue!=null)
-		    	{
-		    		RegionNumeric<Integer,EntryNum<Double, Int2D>> region=((RegionNumeric<Integer,EntryNum<Double, Int2D>>)returnValue);
-		    		region.clear();    
-		    	}
-		      }
-		      catch (IllegalArgumentException e){e.printStackTrace(); return false;} 
-		      catch (IllegalAccessException e) {e.printStackTrace();return false;} 
-		      catch (SecurityException e) {e.printStackTrace();return false;} 
-		      catch (NoSuchMethodException e) {e.printStackTrace();return false;} 
-		      catch (InvocationTargetException e) {e.printStackTrace();return false;}
-		    }
+			fields[z].setAccessible(true);
+			try
+			{
+				String name=fields[z].getName();
+				Method method = o.getMethod("get"+name, null);
+				Object returnValue = method.invoke(rmap, null);
+
+				if(returnValue!=null)
+				{
+					RegionNumeric<Integer,EntryNum<Double, Int2D>> region=((RegionNumeric<Integer,EntryNum<Double, Int2D>>)returnValue);
+					region.clear();    
+				}
+			}
+			catch (IllegalArgumentException e){e.printStackTrace(); return false;} 
+			catch (IllegalAccessException e) {e.printStackTrace();return false;} 
+			catch (SecurityException e) {e.printStackTrace();return false;} 
+			catch (NoSuchMethodException e) {e.printStackTrace();return false;} 
+			catch (InvocationTargetException e) {e.printStackTrace();return false;}
+		}
 		return true;
 	}
-	
-	@Override
-	public boolean setDistributedObjectLocation(Int2D location,
-			RemotePositionedAgent<Int2D> rm, SimState sm) {
-    	return false;
-	}
-	
+
 	/**
 	 * Provide the double value shift logic among the peers
 	 * @param d
@@ -540,21 +534,32 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	 * @return
 	 */
 	@Override
-	public boolean setDistributedObjectLocation(double d, Int2D l, SimState sm){
+	//public boolean setDistributedObjectLocation(double d, Int2D l, SimState sm){
+
+	public boolean setDistributedObjectLocation(Int2D l,/*double d*/Object o, SimState sm) throws DMasonException{
+
+		double d=Double.MAX_VALUE; // se il controllo sotto non va a buon fine OH MY GOD
+
+		if(o instanceof Double){
+			d=(Double) o;
+		}else
+		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a double");}
+
+
 		numAgents++;
 		if(myfield.isMine(l.getX(), l.getY()))
-    	{    		
-    		return myfield.addEntryNum(new EntryNum<Double,Int2D>(d, l));
-    	}
-    	else
-    		if(setValue(d, l))
-    			return true;
-    		else{
-    				System.out.println(cellType+")OH MY GOD! DOUBLE "+l.x+" "+l.y+" "); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
-    		}
-    				return false;
+		{    		
+			return myfield.addEntryNum(new EntryNum<Double,Int2D>(d, l));
+		}
+		else
+			if(setValue(d, l))
+				return true;
+			else{
+				System.out.println(cellType+")OH MY GOD! DOUBLE "+l.x+" "+l.y+" "); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
+			}
+		return false;
 	}
-	
+
 	/**
 	 * This method, written with Java Reflect, provides to add the value
 	 * in the right Region.
@@ -563,48 +568,48 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	 * @return true if the value is added in right way
 	 */
 	public boolean setValue(double value, Int2D l){
-		
+
 		Class o=rmap.getClass();
-		
+
 		Field[] fields = o.getDeclaredFields();
-	    for (int z = 0; z < fields.length; z++)
-	    {
-	      fields[z].setAccessible(true);
-	      try
-	      {
-	       		String name=fields[z].getName();
-	       		Method method = o.getMethod("get"+name, null);
-	       		Object returnValue = method.invoke(rmap, null);
-	    	
-	       		if(returnValue!=null)
-	       		{ 
-	       			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = ((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
-	       			if(region.isMine(l.getX(),l.getY()))
-	       			{   	  
+		for (int z = 0; z < fields.length; z++)
+		{
+			fields[z].setAccessible(true);
+			try
+			{
+				String name=fields[z].getName();
+				Method method = o.getMethod("get"+name, null);
+				Object returnValue = method.invoke(rmap, null);
+
+				if(returnValue!=null)
+				{ 
+					RegionNumeric<Integer,EntryNum<Double,Int2D>> region = ((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
+					if(region.isMine(l.getX(),l.getY()))
+					{   	  
 						if(name.contains("mine")){
 							if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 								tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
-		    	    		return region.addEntryNum(new EntryNum<Double,Int2D>(value, l));
+							return region.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 
-	       				}
+						}
 						if(name.contains("out"))
-		    	    		return region.addEntryNum(new EntryNum<Double,Int2D>(value, l));
-	    	    			
-	    	    	}
-	       		
+							return region.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 
-	       		}
-	      }
-	      catch (IllegalArgumentException e){e.printStackTrace();} 
-	      catch (IllegalAccessException e) {e.printStackTrace();} 
-	      catch (SecurityException e) {e.printStackTrace();} 
-	      catch (NoSuchMethodException e) {e.printStackTrace();} 
-	      catch (InvocationTargetException e) {e.printStackTrace();}
-	    }
-	    
-	    return false;	       			       			
+					}
+
+
+				}
+			}
+			catch (IllegalArgumentException e){e.printStackTrace();} 
+			catch (IllegalAccessException e) {e.printStackTrace();} 
+			catch (SecurityException e) {e.printStackTrace();} 
+			catch (NoSuchMethodException e) {e.printStackTrace();} 
+			catch (InvocationTargetException e) {e.printStackTrace();}
+		}
+
+		return false;	       			       			
 	}
-	
+
 	@Override
 	public DistributedState getState() {
 
@@ -627,7 +632,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	@Override
 	public void setTable(HashMap table) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -652,7 +657,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	@Override
 	public void setIsSplitted(boolean isSplitted) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
@@ -680,7 +685,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	@Override
 	public void prepareForBalance(boolean prepareForBalance) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
@@ -694,7 +699,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	@Override
 	public void prepareForUnion(boolean prepareForUnion) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
@@ -732,7 +737,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 		if(i-own_x+2*MAX_DISTANCE>=0 && i-own_x+2*MAX_DISTANCE<field_width)
 			return field[i-own_x+2*MAX_DISTANCE][j];
 		return Double.MIN_VALUE;
-		
+
 	}
 
 
@@ -743,7 +748,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	}
 	@Override
 	public boolean verifyPosition(Int2D pos) {
-		
+
 		//we have to implement this
 		return false;
 
