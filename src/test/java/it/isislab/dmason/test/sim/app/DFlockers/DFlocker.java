@@ -17,6 +17,7 @@
 package it.isislab.dmason.test.sim.app.DFlockers;
 import it.isislab.dmason.test.sim.app.DFlockers.DFlockers;
 import it.isislab.dmason.test.sim.app.DFlockers.RemoteFlock;
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.continuous.DContinuous2D;
 
@@ -192,7 +193,12 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
 		lastd = new Double2D(dx,dy);
 		pos = new Double2D(flock.flockers.stx(pos.x + dx), flock.flockers.sty(pos.y + dy));
     	        
-		flock.flockers.setDistributedObjectLocation(pos, this, state);	
+		try {
+			flock.flockers.setDistributedObjectLocation(pos, this, state);
+		} catch (DMasonException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 	}
 	
 	public Color getColor() 
