@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import sim.engine.SimState;
 import sim.util.Double2D;
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.DistributedStateConnectionJMS;
@@ -29,6 +30,9 @@ import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 /**
  * This is the DistributedStateConnectionJMS's tester.
  *
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
  * @author Mario Capuozzo
  */
 
@@ -436,7 +440,7 @@ public class DistributedStateConnectionJMSTester {
 		 */
 		@Override
 		public boolean setDistributedObjectLocation(Double2D location,
-				RemotePositionedAgent<Double2D> rm, SimState sm) {
+				/*RemotePositionedAgent<Double2D> rm*/Object o, SimState sm) throws DMasonException{
 			// TODO Auto-generated method stub
 			return false;
 		}

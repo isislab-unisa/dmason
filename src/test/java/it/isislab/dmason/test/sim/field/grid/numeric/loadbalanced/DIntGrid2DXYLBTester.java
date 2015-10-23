@@ -26,6 +26,9 @@ import sim.util.Int2D;
  * The Class DIntGrid2DXYLBTester. Tests the DIntGrid2DXYLB for a toroidal
  * distribution.
  * 
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
  * @author Mario Capuozzo
  */
 public class DIntGrid2DXYLBTester {
@@ -40,7 +43,7 @@ public class DIntGrid2DXYLBTester {
 
 	/** The num of loop of the tests. */
 	int numLoop = 8; // the max value for numLoop is 8 because for numLoop>8
-						// the java's approssimation is wrong
+	// the java's approssimation is wrong
 	/** The width. */
 	int width;
 
@@ -148,7 +151,7 @@ public class DIntGrid2DXYLBTester {
 	 * The Class StubRemotePositionedAgent.
 	 */
 	public class StubRemotePositionedAgent implements
-			RemotePositionedAgent<Int2D> {
+	RemotePositionedAgent<Int2D> {
 
 		/** The id. */
 		String id;
@@ -259,9 +262,10 @@ public class DIntGrid2DXYLBTester {
 
 	/**
 	 * Test set distributed object location.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testSetDistributedObjectLocation() {
+	public void testSetDistributedObjectLocation() throws DMasonException {
 
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
@@ -272,9 +276,10 @@ public class DIntGrid2DXYLBTester {
 
 	/**
 	 * Test get state.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetState() {
+	public void testGetState() throws DMasonException {
 
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
@@ -288,9 +293,10 @@ public class DIntGrid2DXYLBTester {
 
 	/**
 	 * Test get num agent for same agent.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetNumAgentForSameAgent() {
+	public void testGetNumAgentForSameAgent() throws DMasonException {
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
@@ -302,9 +308,10 @@ public class DIntGrid2DXYLBTester {
 
 	/**
 	 * Test get num agent different agent.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetNumAgentDifferentAgent() {
+	public void testGetNumAgentDifferentAgent() throws DMasonException {
 		// i'm positioning more agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();

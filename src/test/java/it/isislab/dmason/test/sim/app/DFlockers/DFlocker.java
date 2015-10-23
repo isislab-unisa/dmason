@@ -40,6 +40,7 @@ import ec.util.MersenneTwisterFast;
  * @author Carmine Spagnuolo
  *
  */
+
 public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
 {
     public Double2D lastd = new Double2D(0,0);

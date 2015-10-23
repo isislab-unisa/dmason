@@ -23,6 +23,9 @@ import sim.util.Double2D;
 /**
  * The Class DContinuous2DXYLBLBTester. Tests the DContinuous2DXYLB.
  * 
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
  * @author Mario Capuozzo
  */
 public class DContinuous2DXYLBTester {
@@ -257,9 +260,10 @@ public class DContinuous2DXYLBTester {
 
 	/**
 	 * Test get state.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetState() {
+	public void testGetState() throws DMasonException {
 
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
@@ -273,9 +277,10 @@ public class DContinuous2DXYLBTester {
 
 	/**
 	 * Test get num agent for same agent.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetNumAgentForSameAgent() {
+	public void testGetNumAgentForSameAgent() throws DMasonException {
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Double2D location = toTest.getAvailableRandomLocation();
@@ -287,9 +292,10 @@ public class DContinuous2DXYLBTester {
 
 	/**
 	 * Test get num agent different agent.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetNumAgentDifferentAgent() {
+	public void testGetNumAgentDifferentAgent() throws DMasonException {
 		// i'm positioning more agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Double2D location = toTest.getAvailableRandomLocation();

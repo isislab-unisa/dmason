@@ -28,6 +28,9 @@ import sim.util.Int2D;
  * The Class DDoubleGrid2DXYLBTester. Tests the DDoubleGrid2DXYLB for a toroidal
  * distribution.
  * 
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
  * @author Mario Capuozzo
  */
 public class DDoubleGrid2DXYLBTester {
@@ -260,9 +263,10 @@ public class DDoubleGrid2DXYLBTester {
 
 	/**
 	 * Test set distributed object location.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testSetDistributedObjectLocation() {
+	public void testSetDistributedObjectLocation() throws DMasonException {
 
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
@@ -273,9 +277,10 @@ public class DDoubleGrid2DXYLBTester {
 
 	/**
 	 * Test get state.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetState() {
+	public void testGetState() throws DMasonException {
 
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
@@ -289,9 +294,10 @@ public class DDoubleGrid2DXYLBTester {
 
 	/**
 	 * Test get num agent for same agent.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetNumAgentForSameAgent() {
+	public void testGetNumAgentForSameAgent() throws DMasonException {
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
@@ -303,9 +309,10 @@ public class DDoubleGrid2DXYLBTester {
 
 	/**
 	 * Test get num agent different agent.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetNumAgentDifferentAgent() {
+	public void testGetNumAgentDifferentAgent() throws DMasonException {
 		// i'm positioning more agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();

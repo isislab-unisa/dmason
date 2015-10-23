@@ -27,44 +27,49 @@ import org.junit.Test;
 import sim.engine.SimState;
 import sim.util.Double2D;
 /**
-* The Class DContinuous2DXYThinTester. Tests the DContinuous2DXYThin for the roroidal distribution.
-* 
-* @author Mario Capuozzo
-*/
+ * The Class DContinuous2DXYThinTester. Tests the DContinuous2DXYThin for the roroidal distribution.
+ * 
+ * * 
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
+ *@author Mario Capuozzo
+ * @author Mario Capuozzo
+ */
 public class DContinuous2DXYThinTester {
 	/** The to test. */
 	DContinuous2DXYThin toTest;
-	
+
 	/** The distributed state. */
 	StubDistributedState ss;
-	
+
 	/** The remote agent. */
 	StubRemotePositionedAgent sa;
-	
+
 	/** The num of loop of the tests. */
 	int numLoop = 8; // the max value for numLoop is 8 because for numLoop>8
-						// the java's approssimation is wrong
+	// the java's approssimation is wrong
 	/** The width. */
-						int width;
-	
+	int width;
+
 	/** The height. */
 	int height;
-	
+
 	/** The max distance. */
 	int maxDistance;
-	
+
 	/** The rows. */
 	int rows;
-	
+
 	/** The columns. */
 	int columns;
-	
+
 	/** The num agents. */
 	int numAgents;
-	
+
 	/** The mode. */
 	int mode;
-	
+
 	/** The connection type. */
 	int connectionType;
 
@@ -138,11 +143,11 @@ public class DContinuous2DXYThinTester {
 	 * The Class StubRemotePositionedAgent.
 	 */
 	public class StubRemotePositionedAgent implements
-			RemotePositionedAgent<Double2D> {
+	RemotePositionedAgent<Double2D> {
 
 		/** The id. */
 		String id;
-		
+
 		/** The Constant serialVersionUID. */
 		private static final long serialVersionUID = 1L;
 
@@ -224,9 +229,9 @@ public class DContinuous2DXYThinTester {
 
 		sa = new StubRemotePositionedAgent();
 		ss = new StubDistributedState(genParam);
-//		toTest = new DContinuous2DXY(/* discretization */0.5, width, height, /* simState */
-//		ss, maxDistance, /* i */0, /* j */0, rows, columns, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, width, height, /* simState */
+		//		ss, maxDistance, /* i */0, /* j */0, rows, columns, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, width, height, ss, maxDistance, 0, 0, rows, columns, mode,
 				"test", "", true);
@@ -235,9 +240,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test set distributed object location.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testSetDistributedObjectLocation() {
+	public void testSetDistributedObjectLocation() throws DMasonException {
 
 		for (int i = 0; i < numLoop; i++) {
 			Double2D location = toTest.getAvailableRandomLocation();
@@ -248,9 +254,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test get state.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetState() {
+	public void testGetState() throws DMasonException {
 
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
@@ -264,9 +271,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test get num agent for same agent.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetNumAgentForSameAgent() {
+	public void testGetNumAgentForSameAgent() throws DMasonException {
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Double2D location = toTest.getAvailableRandomLocation();
@@ -278,9 +286,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test get num agent different agent.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testGetNumAgentDifferentAgent() {
+	public void testGetNumAgentDifferentAgent() throws DMasonException {
 		// i'm positioning more agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Double2D location = toTest.getAvailableRandomLocation();
@@ -290,15 +299,16 @@ public class DContinuous2DXYThinTester {
 		assertEquals(numLoop, toTest.getNumAgents());
 	}
 
-	
+
 
 	// AGENTS IS MEMORIZED IN THE rmap
 
 	/**
 	 * Test corner mine up left.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testCornerMineUpLeft() {
+	public void testCornerMineUpLeft() throws DMasonException {
 
 		double i = toTest.rmap.corner_mine_up_left.upl_xx;
 		double j = toTest.rmap.corner_mine_up_left.upl_yy;
@@ -331,9 +341,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test boundary value corner mine up left.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testBoundaryValueCornerMineUpLeft() {
+	public void testBoundaryValueCornerMineUpLeft() throws DMasonException {
 
 		double i = toTest.rmap.corner_mine_up_left.upl_xx;
 		double j = toTest.rmap.corner_mine_up_left.upl_yy;
@@ -351,9 +362,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test corner mine up right.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testCornerMineUpRight() {
+	public void testCornerMineUpRight() throws DMasonException {
 
 		double i = toTest.rmap.corner_mine_up_right.upl_xx;
 		double j = toTest.rmap.corner_mine_up_right.upl_yy;
@@ -386,9 +398,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test boundary value corner mine up right.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testBoundaryValueCornerMineUpRight() {
+	public void testBoundaryValueCornerMineUpRight() throws DMasonException {
 
 		double i = toTest.rmap.corner_mine_up_right.upl_xx;
 		double j = toTest.rmap.corner_mine_up_right.upl_yy;
@@ -406,9 +419,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test corner mine down left.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testCornerMineDownLeft() {
+	public void testCornerMineDownLeft() throws DMasonException {
 
 		double i = toTest.rmap.corner_mine_down_left.upl_xx;
 		double j = toTest.rmap.corner_mine_down_left.upl_yy;
@@ -441,9 +455,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test boundary value corner mine down left.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testBoundaryValueCornerMineDownLeft() {
+	public void testBoundaryValueCornerMineDownLeft() throws DMasonException {
 
 		double i = toTest.rmap.corner_mine_down_left.upl_xx;
 		double j = toTest.rmap.corner_mine_down_left.upl_yy;
@@ -461,9 +476,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test corner mine down right.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testCornerMineDownRight() {
+	public void testCornerMineDownRight() throws DMasonException {
 
 		double i = toTest.rmap.corner_mine_down_right.upl_xx;
 		double j = toTest.rmap.corner_mine_down_right.upl_yy;
@@ -496,9 +512,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test boundary value corner mine down right.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testBoundaryValueCornerMineDownRight() {
+	public void testBoundaryValueCornerMineDownRight() throws DMasonException {
 
 		double i = toTest.rmap.corner_mine_down_right.upl_xx;
 		double j = toTest.rmap.corner_mine_down_right.upl_yy;
@@ -516,9 +533,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test down mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testDownMine() {
+	public void testDownMine() throws DMasonException {
 
 		double i = toTest.rmap.down_mine.upl_xx;
 		double j = toTest.rmap.down_mine.upl_yy;
@@ -550,9 +568,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test boundary value down mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testBoundaryValueDownMine() {
+	public void testBoundaryValueDownMine() throws DMasonException {
 
 		double i = toTest.rmap.down_mine.upl_xx;
 		double j = toTest.rmap.down_mine.upl_yy;
@@ -569,9 +588,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test left mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testLeftMine() {
+	public void testLeftMine() throws DMasonException {
 
 		double i = toTest.rmap.left_mine.upl_xx;
 		double j = toTest.rmap.left_mine.upl_yy;
@@ -604,9 +624,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test boundary value left mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testBoundaryValueLeftMine() {
+	public void testBoundaryValueLeftMine() throws DMasonException {
 
 		double i = toTest.rmap.left_mine.upl_xx;
 		double j = toTest.rmap.left_mine.upl_yy;
@@ -623,9 +644,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test right mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testRightMine() {
+	public void testRightMine() throws DMasonException {
 
 		double i = toTest.rmap.right_mine.upl_xx;
 		double j = toTest.rmap.right_mine.upl_yy;
@@ -658,9 +680,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test boundary value right mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testBoundaryValueRightMine() {
+	public void testBoundaryValueRightMine() throws DMasonException {
 
 		double i = toTest.rmap.right_mine.upl_xx;
 		double j = toTest.rmap.right_mine.upl_yy;
@@ -677,9 +700,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test up mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testUpMine() {
+	public void testUpMine() throws DMasonException {
 
 		double i = toTest.rmap.up_mine.upl_xx;
 		double j = toTest.rmap.up_mine.upl_yy;
@@ -712,9 +736,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test boundary value up mine.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testBoundaryValueUpMine() {
+	public void testBoundaryValueUpMine() throws DMasonException {
 
 		double i = toTest.rmap.up_mine.upl_xx;
 		double j = toTest.rmap.up_mine.upl_yy;
@@ -731,9 +756,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test set distributed object location congruence size.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testSetDistributedObjectLocationCongruenceSize() {
+	public void testSetDistributedObjectLocationCongruenceSize() throws DMasonException {
 		double i = toTest.rmap.up_mine.upl_xx;
 		double j = toTest.rmap.up_mine.upl_yy;
 
@@ -759,9 +785,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test double set distributed object location god agent.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testDoubleSetDistributedObjectLocationGodAgent() {
+	public void testDoubleSetDistributedObjectLocationGodAgent() throws DMasonException {
 		double i = toTest.rmap.up_mine.upl_xx;
 		double j = toTest.rmap.up_mine.upl_yy;
 
@@ -796,9 +823,10 @@ public class DContinuous2DXYThinTester {
 
 	/**
 	 * Test set distributed object location change position.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testSetDistributedObjectLocationChangePosition() {
+	public void testSetDistributedObjectLocationChangePosition() throws DMasonException {
 		double i = toTest.rmap.up_mine.upl_xx;
 		double j = toTest.rmap.up_mine.upl_yy;
 
@@ -835,9 +863,9 @@ public class DContinuous2DXYThinTester {
 		double h = 10.0;
 		int maxD = 0;
 
-//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
@@ -869,13 +897,13 @@ public class DContinuous2DXYThinTester {
 		double h = 10.0;
 		int maxD = 1;
 
-//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
-		
+
 
 		Double x2 = toTest.myfield.down_xx;
 		Double x1 = toTest.myfield.upl_xx;
@@ -909,9 +937,9 @@ public class DContinuous2DXYThinTester {
 					double h = k;
 					int maxD = j;
 
-//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//					"test", /* prefix */"");
+					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+					//					"test", /* prefix */"");
 					toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 							0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 							"test", "", true);
@@ -947,9 +975,9 @@ public class DContinuous2DXYThinTester {
 		double h = w;
 		int maxD = 0;
 
-//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
@@ -974,9 +1002,9 @@ public class DContinuous2DXYThinTester {
 		double h = w;
 		int maxD = 1;
 
-//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
@@ -1004,9 +1032,9 @@ public class DContinuous2DXYThinTester {
 					double h = k;
 					int maxD = j;
 
-//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//					"test", /* prefix */"");
+					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+					//					"test", /* prefix */"");
 					toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 							0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 							"test", "", true);
@@ -1034,9 +1062,9 @@ public class DContinuous2DXYThinTester {
 		double h = w;
 		int maxD = 0;
 
-//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
@@ -1061,9 +1089,9 @@ public class DContinuous2DXYThinTester {
 		double h = w;
 		int maxD = 1;
 
-//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
@@ -1091,9 +1119,9 @@ public class DContinuous2DXYThinTester {
 					double h = k;
 					int maxD = j;
 
-//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//					"test", /* prefix */"");
+					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+					//					"test", /* prefix */"");
 					toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 							0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 							"test", "", true);
@@ -1121,9 +1149,9 @@ public class DContinuous2DXYThinTester {
 		double h = w;
 		int maxD = 0;
 
-//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
@@ -1148,9 +1176,9 @@ public class DContinuous2DXYThinTester {
 		double h = w;
 		int maxD = 1;
 
-//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
@@ -1178,9 +1206,9 @@ public class DContinuous2DXYThinTester {
 					double h = k;
 					int maxD = j;
 
-//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//					"test", /* prefix */"");
+					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+					//					"test", /* prefix */"");
 					toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 							0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 							"test", "", true);
@@ -1208,9 +1236,9 @@ public class DContinuous2DXYThinTester {
 		double h = w;
 		int maxD = 0;
 
-//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
@@ -1235,9 +1263,9 @@ public class DContinuous2DXYThinTester {
 		double h = w;
 		int maxD = 1;
 
-//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
@@ -1265,9 +1293,9 @@ public class DContinuous2DXYThinTester {
 					double h = k;
 					int maxD = j;
 
-//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//					"test", /* prefix */"");
+					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+					//					"test", /* prefix */"");
 					toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 							0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 							"test", "", true);
@@ -1319,9 +1347,9 @@ public class DContinuous2DXYThinTester {
 		double h = w;
 		int maxD = 1;
 
-//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
@@ -1349,9 +1377,9 @@ public class DContinuous2DXYThinTester {
 					double h = k;
 					int maxD = j;
 
-//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//					"test", /* prefix */"");
+					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+					//					"test", /* prefix */"");
 					toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 							0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 							"test", "", true);
@@ -1379,9 +1407,9 @@ public class DContinuous2DXYThinTester {
 		double h = w;
 		int maxD = 0;
 
-//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
@@ -1406,9 +1434,9 @@ public class DContinuous2DXYThinTester {
 		double h = w;
 		int maxD = 1;
 
-//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
@@ -1436,9 +1464,9 @@ public class DContinuous2DXYThinTester {
 					double h = k;
 					int maxD = j;
 
-//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//					"test", /* prefix */"");
+					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+					//					"test", /* prefix */"");
 					toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 							0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 							"test", "", true);
@@ -1466,9 +1494,9 @@ public class DContinuous2DXYThinTester {
 		double h = w;
 		int maxD = 0;
 
-//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
@@ -1493,9 +1521,9 @@ public class DContinuous2DXYThinTester {
 		double h = w;
 		int maxD = 1;
 
-//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
@@ -1523,9 +1551,9 @@ public class DContinuous2DXYThinTester {
 					double h = k;
 					int maxD = j;
 
-//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//					"test", /* prefix */"");
+					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+					//					"test", /* prefix */"");
 					toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 							0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 							"test", "", true);
@@ -1553,9 +1581,9 @@ public class DContinuous2DXYThinTester {
 		double h = w;
 		int maxD = 0;
 
-//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
@@ -1607,9 +1635,9 @@ public class DContinuous2DXYThinTester {
 					double h = k;
 					int maxD = j;
 
-//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
-//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
-//					"test", /* prefix */"");
+					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
+					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
+					//					"test", /* prefix */"");
 					toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 							0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 							"test", "", true);
@@ -1633,9 +1661,9 @@ public class DContinuous2DXYThinTester {
 	@Test
 	public void testCornerMineDownLeftPartitioning() throws DMasonException {
 		for (int i = 1; i < numLoop; i++) {
-//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
-//			"test", /* prefix */"");
+			//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+			//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
+			//			"test", /* prefix */"");
 			toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
@@ -1665,9 +1693,9 @@ public class DContinuous2DXYThinTester {
 	@Test
 	public void testCornerMineDownRightPartitioning() throws DMasonException {
 		for (int i = 1; i < numLoop; i++) {
-//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
-//			"test", /* prefix */"");
+			//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+			//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
+			//			"test", /* prefix */"");
 			toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
@@ -1697,9 +1725,9 @@ public class DContinuous2DXYThinTester {
 	@Test
 	public void testCornerMineUpLeftPartitioning() throws DMasonException {
 		for (int i = 1; i < numLoop; i++) {
-//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
-//			"test", /* prefix */"");
+			//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+			//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
+			//			"test", /* prefix */"");
 			toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
@@ -1729,9 +1757,9 @@ public class DContinuous2DXYThinTester {
 	@Test
 	public void testCornerMineUpRightPartitioning() throws DMasonException {
 		for (int i = 1; i < numLoop; i++) {
-//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
-//			"test", /* prefix */"");
+			//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+			//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
+			//			"test", /* prefix */"");
 			toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
@@ -1761,9 +1789,9 @@ public class DContinuous2DXYThinTester {
 	@Test
 	public void testCornerOutDownLeftDiagCenterPartitioning() throws DMasonException {
 		for (int i = 1; i < numLoop; i++) {
-//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
-//			"test", /* prefix */"");
+			//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+			//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
+			//			"test", /* prefix */"");
 			toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
@@ -1793,12 +1821,12 @@ public class DContinuous2DXYThinTester {
 	@Ignore
 	public void testCornerOutDownLeftDiagDownPartitioning() throws DMasonException {
 		for (int i = 1; i < numLoop; i++) {
-//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
-//			"test", /* prefix */"");
-		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
-				0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
-				"test", "", true);
+			//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+			//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
+			//			"test", /* prefix */"");
+			toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
+					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
+					"test", "", true);
 
 			Double x1 = null, x2 = null, y1 = null, y2 = null;
 			try {
@@ -1829,9 +1857,9 @@ public class DContinuous2DXYThinTester {
 	@Ignore
 	public void testCornerOutDownLeftDiagLeftPartitioning() throws DMasonException {
 		for (int i = 1; i < numLoop; i++) {
-//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
-//			"test", /* prefix */"");
+			//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+			//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
+			//			"test", /* prefix */"");
 			toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
@@ -1865,9 +1893,9 @@ public class DContinuous2DXYThinTester {
 	@Test
 	public void testCornerOutDownRigthDiagCenterPartitioning() throws DMasonException {
 		for (int i = 1; i < numLoop; i++) {
-//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
-//			"test", /* prefix */"");
+			//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+			//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
+			//			"test", /* prefix */"");
 			toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
@@ -1901,9 +1929,9 @@ public class DContinuous2DXYThinTester {
 	@Ignore
 	public void testCornerOutDownRigthDiagDownPartitioning() throws DMasonException {
 		for (int i = 1; i < numLoop; i++) {
-//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
-//			"test", /* prefix */"");
+			//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+			//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
+			//			"test", /* prefix */"");
 			toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
@@ -1937,9 +1965,9 @@ public class DContinuous2DXYThinTester {
 	@Ignore
 	public void testCornerOutDownRigthDiagRightPartitioning() throws DMasonException {
 		for (int i = 1; i < numLoop; i++) {
-//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
-//			"test", /* prefix */"");
+			//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+			//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
+			//			"test", /* prefix */"");
 			toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
@@ -1973,9 +2001,9 @@ public class DContinuous2DXYThinTester {
 	@Test
 	public void testCornerOutUpLeftDiagCenterPartitioning() throws DMasonException {
 		for (int i = 1; i < numLoop; i++) {
-//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
-//			"test", /* prefix */"");
+			//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+			//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
+			//			"test", /* prefix */"");
 			toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
@@ -2008,10 +2036,10 @@ public class DContinuous2DXYThinTester {
 	@Ignore
 	public void testCornerOutUpLeftDiagLeftPartitioning() throws DMasonException {
 		for (int i = 1; i < numLoop; i++) {
-//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
-//			"test", /* prefix */"");
-//			toTest.setToroidal(true);
+			//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+			//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
+			//			"test", /* prefix */"");
+			//			toTest.setToroidal(true);
 			toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
@@ -2045,9 +2073,9 @@ public class DContinuous2DXYThinTester {
 	@Ignore
 	public void testCornerOutUpLeftDiagUpPartitioning() throws DMasonException {
 		for (int i = 1; i < numLoop; i++) {
-//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
-//			"test", /* prefix */"");
+			//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+			//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
+			//			"test", /* prefix */"");
 			toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
@@ -2081,9 +2109,9 @@ public class DContinuous2DXYThinTester {
 	@Test
 	public void testCornerOutUpRightDiagCenterPartitioning() throws DMasonException {
 		for (int i = 1; i < numLoop; i++) {
-//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
-//			"test", /* prefix */"");
+			//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+			//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
+			//			"test", /* prefix */"");
 			toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
@@ -2117,9 +2145,9 @@ public class DContinuous2DXYThinTester {
 	@Ignore
 	public void testCornerOutUpRightDiagRightPartitioning() throws DMasonException {
 		for (int i = 1; i < numLoop; i++) {
-//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
-//			"test", /* prefix */"");
+			//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+			//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
+			//			"test", /* prefix */"");
 			toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
@@ -2153,9 +2181,9 @@ public class DContinuous2DXYThinTester {
 	@Ignore
 	public void testCornerOutUpRightDiagUpPartitioning() throws DMasonException {
 		for (int i = 1; i < numLoop; i++) {
-//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
-//			"test", /* prefix */"");
+			//			toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+			//			ss, i, /* i */0, /* j */0, 1, 1, /* name */
+			//			"test", /* prefix */"");
 			toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
@@ -2188,9 +2216,9 @@ public class DContinuous2DXYThinTester {
 	 */
 	@Test
 	public void testCornerCongruenceUpRight() throws DMasonException {
-//		toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//		ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+		//		ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, 10, 10, ss, 1, 1, 1, 3, 3, mode,
 				"test", "", true);
@@ -2207,9 +2235,9 @@ public class DContinuous2DXYThinTester {
 	 */
 	@Test
 	public void testCornerCongruenceUpLeft() throws DMasonException {
-//		toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//		ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+		//		ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, 10, 10, ss, 1, 1, 1, 3, 3, mode,
 				"test", "", true);
@@ -2226,9 +2254,9 @@ public class DContinuous2DXYThinTester {
 	 */
 	@Test
 	public void testCornerCongruenceDownLeft() throws DMasonException {
-//		toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//		ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+		//		ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, 10, 10, ss, 1, 1, 1, 3, 3, mode,
 				"test", "", true);
@@ -2245,9 +2273,9 @@ public class DContinuous2DXYThinTester {
 	 */
 	@Test
 	public void testCornerCongruenceDownRight() throws DMasonException {
-//		toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//		ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+		//		ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, 10, 10, ss, 1, 1, 1, 3, 3, mode,
 				"test", "", true);
@@ -2264,9 +2292,9 @@ public class DContinuous2DXYThinTester {
 	 */
 	@Test
 	public void testMyFieldCongruence() throws DMasonException {
-//		toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
-//		ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, /* name */
-//		"test", /* prefix */"");
+		//		toTest = new DContinuous2DXY(/* discretization */0.5, 10, 10, /* simState */
+		//		ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, /* name */
+		//		"test", /* prefix */"");
 		toTest = (DContinuous2DXYThin) DContinuous2DFactory.createDContinuous2DThin(
 				0.5, 10, 10, ss, 1, 1, 1, 3, 3, mode,
 				"test", "", true);
@@ -2310,13 +2338,13 @@ public class DContinuous2DXYThinTester {
 						// cornerUpRight
 						assertEquals(
 								"cornerUpRight x i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_mine_up_right.upl_xx,
 								toTest.rmap.corner_out_up_right_diag_center.down_xx - 2,
 								0);
 						assertEquals(
 								"cornerUpRight y i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_mine_up_right.upl_yy,
 								toTest.rmap.corner_out_up_right_diag_center.down_yy,
 								0);
@@ -2324,13 +2352,13 @@ public class DContinuous2DXYThinTester {
 						// cornerUpLeft
 						assertEquals(
 								"cornerUpLeft x i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_mine_up_left.upl_xx,
 								toTest.rmap.corner_out_up_left_diag_center.down_xx,
 								0);
 						assertEquals(
 								"cornerUpLeft y i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_mine_up_left.upl_yy,
 								toTest.rmap.corner_out_up_left_diag_center.down_yy,
 								0);
@@ -2338,13 +2366,13 @@ public class DContinuous2DXYThinTester {
 						// cornerDownLeft
 						assertEquals(
 								"cornerDownLeft x i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_mine_down_left.upl_xx,
 								toTest.rmap.corner_out_down_left_diag_center.down_xx,
 								0);
 						assertEquals(
 								"cornerDownLeft y i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_mine_down_left.upl_yy,
 								toTest.rmap.corner_out_down_left_diag_center.down_yy - 2,
 								0);
@@ -2352,13 +2380,13 @@ public class DContinuous2DXYThinTester {
 						// cornerDownRight
 						assertEquals(
 								"cornerDownRight x i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_mine_down_right.down_xx,
 								toTest.rmap.corner_out_down_right_diag_center.upl_xx,
 								0);
 						assertEquals(
 								"cornerDownRight y i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_mine_down_right.down_yy,
 								toTest.rmap.corner_out_down_right_diag_center.upl_yy,
 								0);
@@ -2426,11 +2454,11 @@ public class DContinuous2DXYThinTester {
 						if (ii == 0 && ij > 0 && ij < ic - 1) {
 
 							nord = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ir - 1, /* j */ij, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ir - 1, /* j */ij, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sud = new DContinuous2DXY(/* discretization */0.5,
 									width, height, /* simState */
 									ss, 1, /* i */ii + 1, /* j */ij, /* rows */
@@ -2444,44 +2472,44 @@ public class DContinuous2DXYThinTester {
 									ic, /* name */
 									"test", /* prefix */"");
 							ovest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ir - 1, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ir - 1, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ir - 1, /* j */ij + 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ir - 1, /* j */ij + 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii + 1, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii + 1, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii + 1, /* j */ij + 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii + 1, /* j */ij + 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 
 						} else if (ii == ir - 1 && ij > 0 && ij < ic - 1) {// down
 
 							nord = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */ij, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */ij, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sud = new DContinuous2DXY(/* discretization */0.5,
 									width, height, /* simState */
 									ss, 1, /* i */0, /* j */ij, /* rows */
@@ -2495,44 +2523,44 @@ public class DContinuous2DXYThinTester {
 									ic, /* name */
 									"test", /* prefix */"");
 							ovest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */ij + 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */ij + 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */0, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */0, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */0, /* j */ij + 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */0, /* j */ij + 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 
 						} else if (ij == 0 && ii > 0 && ii < ir - 1) { // left
 
 							nord = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */ij, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */ij, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sud = new DContinuous2DXY(/* discretization */0.5,
 									width, height, /* simState */
 									ss, 1, /* i */ii + 1, /* j */ij, /* rows */
@@ -2546,44 +2574,44 @@ public class DContinuous2DXYThinTester {
 									ic, /* name */
 									"test", /* prefix */"");
 							ovest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii, /* j */ic - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii, /* j */ic - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */ic - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */ic - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */ij + 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */ij + 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii + 1, /* j */ic - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii + 1, /* j */ic - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii + 1, /* j */ij + 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii + 1, /* j */ij + 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 
 						} else if (ij == ic - 1 && ii > 0 && ii < ir - 1) { // right
 
 							nord = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */ij, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */ij, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sud = new DContinuous2DXY(/* discretization */0.5,
 									width, height, /* simState */
 									ss, 1, /* i */ii + 1, /* j */ij, /* rows */
@@ -2597,45 +2625,45 @@ public class DContinuous2DXYThinTester {
 									ic, /* name */
 									"test", /* prefix */"");
 							ovest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */0, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */0, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii + 1, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii + 1, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii + 1, /* j */0, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii + 1, /* j */0, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 
 						} else if (ii > 0 && ij > 0 && ii < ir - 1
 								&& ij < ic - 1) { // center
 
 							nord = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */ij, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */ij, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sud = new DContinuous2DXY(/* discretization */0.5,
 									width, height, /* simState */
 									ss, 1, /* i */ii + 1, /* j */ij, /* rows */
@@ -2649,44 +2677,44 @@ public class DContinuous2DXYThinTester {
 									ic, /* name */
 									"test", /* prefix */"");
 							ovest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */ij + 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */ij + 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii + 1, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii + 1, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii + 1, /* j */ij + 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii + 1, /* j */ij + 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 
 						} else if (ii == 0 && ij == 0) { // up-left
 
 							nord = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ir - 1, /* j */ij, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ir - 1, /* j */ij, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sud = new DContinuous2DXY(/* discretization */0.5,
 									width, height, /* simState */
 									ss, 1, /* i */ii + 1, /* j */ij, /* rows */
@@ -2700,44 +2728,44 @@ public class DContinuous2DXYThinTester {
 									ic, /* name */
 									"test", /* prefix */"");
 							ovest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii, /* j */ic - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii, /* j */ic - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ir - 1, /* j */ic - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ir - 1, /* j */ic - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ir - 1, /* j */ij + 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ir - 1, /* j */ij + 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii + 1, /* j */ic - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii + 1, /* j */ic - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii + 1, /* j */ij + 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii + 1, /* j */ij + 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 
 						} else if (ii == ir - 1 && ij == 0) { // down-left
 
 							nord = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */ij, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */ij, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sud = new DContinuous2DXY(/* discretization */0.5,
 									width, height, /* simState */
 									ss, 1, /* i */0, /* j */0, /* rows */
@@ -2751,44 +2779,44 @@ public class DContinuous2DXYThinTester {
 									ic, /* name */
 									"test", /* prefix */"");
 							ovest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii, /* j */ic - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii, /* j */ic - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */ic - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */ic - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */ij + 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */ij + 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */0, /* j */ic - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */0, /* j */ic - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */0, /* j */ij + 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */0, /* j */ij + 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 
 						} else if (ii == ir - 1 && ij == ic - 1) { // down-right
 
 							nord = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */ij, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */ij, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sud = new DContinuous2DXY(/* discretization */0.5,
 									width, height, /* simState */
 									ss, 1, /* i */0, /* j */ic - 1, /* rows */
@@ -2802,43 +2830,43 @@ public class DContinuous2DXYThinTester {
 									ic, /* name */
 									"test", /* prefix */"");
 							ovest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii - 1, /* j */0, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii - 1, /* j */0, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */0, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */0, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */0, /* j */0, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */0, /* j */0, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 						} else if (ii == 0 && ij == ic - 1) { // upRight
 
 							nord = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ir - 1, /* j */ij, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ir - 1, /* j */ij, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sud = new DContinuous2DXY(/* discretization */0.5,
 									width, height, /* simState */
 									ss, 1, /* i */ii + 1, /* j */ic - 1, /* rows */
@@ -2852,35 +2880,35 @@ public class DContinuous2DXYThinTester {
 									ic, /* name */
 									"test", /* prefix */"");
 							ovest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ir - 1, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ir - 1, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							nordEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ir - 1, /* j */0, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ir - 1, /* j */0, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudOvest = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii + 1, /* j */ij - 1, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii + 1, /* j */ij - 1, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 							sudEst = new DContinuous2DXY(
-							/* discretization */0.5, width, height, /* simState */
-							ss, 1, /* i */ii + 1, /* j */0, /* rows */
-							ir, /* Colums */
-							ic, /* name */
-							"test", /* prefix */"");
+									/* discretization */0.5, width, height, /* simState */
+									ss, 1, /* i */ii + 1, /* j */0, /* rows */
+									ir, /* Colums */
+									ic, /* name */
+									"test", /* prefix */"");
 						}
 
 						/* verify congruence */
@@ -2889,29 +2917,29 @@ public class DContinuous2DXYThinTester {
 						assertEquals("incongruence height with ovest i=" + ii
 								+ " j=" + ij + " rows=" + ir + " colums=" + ic,
 								toTest.rmap.down_mine.down_yy
-										- toTest.rmap.up_mine.upl_yy,
+								- toTest.rmap.up_mine.upl_yy,
 								ovest.rmap.down_mine.down_yy
-										- ovest.rmap.up_mine.upl_yy, 0);
+								- ovest.rmap.up_mine.upl_yy, 0);
 						assertEquals("incongruence height with est i=" + ii
 								+ " j=" + ij + " rows=" + ir + " colums=" + ic,
 								toTest.rmap.down_mine.down_yy
-										- toTest.rmap.up_mine.upl_yy,
+								- toTest.rmap.up_mine.upl_yy,
 								est.rmap.down_mine.down_yy
-										- est.rmap.up_mine.upl_yy, 0);
+								- est.rmap.up_mine.upl_yy, 0);
 
 						// width
 						assertEquals("incongruence width with nord i=" + ii
 								+ " j=" + ij + " rows=" + ir + " colums=" + ic,
 								toTest.rmap.down_mine.down_xx
-										- toTest.rmap.down_mine.upl_xx,
+								- toTest.rmap.down_mine.upl_xx,
 								nord.rmap.down_mine.down_xx
-										- nord.rmap.down_mine.upl_xx, 0);
+								- nord.rmap.down_mine.upl_xx, 0);
 						assertEquals("incongruence width with sud i=" + ii
 								+ " j=" + ij + " rows=" + ir + " colums=" + ic,
 								toTest.rmap.down_mine.down_xx
-										- toTest.rmap.down_mine.upl_xx,
+								- toTest.rmap.down_mine.upl_xx,
 								sud.rmap.down_mine.down_xx
-										- sud.rmap.down_mine.upl_xx, 0);
+								- sud.rmap.down_mine.upl_xx, 0);
 
 						// upOut
 						assertEquals("upOut downXX i=" + ii + " j=" + ij
@@ -2995,24 +3023,24 @@ public class DContinuous2DXYThinTester {
 
 						assertEquals(
 								"cornerOutUpLeft downXX i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_out_up_left_diag_center.down_xx,
 								nordOvest.rmap.corner_mine_down_right.down_xx,
 								0);
 						assertEquals(
 								"cornerOutUpLeft downYY i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_out_up_left_diag_center.down_yy,
 								nordOvest.rmap.corner_mine_down_right.down_yy,
 								0);
 						assertEquals(
 								"cornerOutUpLeft uplXX i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_out_up_left_diag_center.upl_xx,
 								nordOvest.rmap.corner_mine_down_right.upl_xx, 0);
 						assertEquals(
 								"cornerOutUpLeft uplYY i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_out_up_left_diag_center.upl_yy,
 								nordOvest.rmap.corner_mine_down_right.upl_yy, 0);
 
@@ -3020,22 +3048,22 @@ public class DContinuous2DXYThinTester {
 
 						assertEquals(
 								"cornerOutUpRight downXX i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_out_up_right_diag_center.down_xx,
 								nordEst.rmap.corner_mine_down_left.down_xx, 0);
 						assertEquals(
 								"cornerOutUpRight downYY i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_out_up_right_diag_center.down_yy,
 								nordEst.rmap.corner_mine_down_left.down_yy, 0);
 						assertEquals(
 								"cornerOutUpRight uplXX i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_out_up_right_diag_center.upl_xx,
 								nordEst.rmap.corner_mine_down_left.upl_xx, 0);
 						assertEquals(
 								"cornerOutUpRight uplYY i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_out_up_right_diag_center.upl_yy,
 								nordEst.rmap.corner_mine_down_left.upl_yy, 0);
 
@@ -3043,43 +3071,43 @@ public class DContinuous2DXYThinTester {
 						assertEquals(
 								"cornerOutDownRight downXX i=" + ii + " j="
 										+ ij + " rows=" + ir + " colums=" + ic,
-								toTest.rmap.corner_out_down_right_diag_center.down_xx,
-								sudEst.rmap.corner_mine_up_left.down_xx, 0);
+										toTest.rmap.corner_out_down_right_diag_center.down_xx,
+										sudEst.rmap.corner_mine_up_left.down_xx, 0);
 						assertEquals(
 								"cornerOutDownRight downYY i=" + ii + " j="
 										+ ij + " rows=" + ir + " colums=" + ic,
-								toTest.rmap.corner_out_down_right_diag_center.down_yy,
-								sudEst.rmap.corner_mine_up_left.down_yy, 0);
+										toTest.rmap.corner_out_down_right_diag_center.down_yy,
+										sudEst.rmap.corner_mine_up_left.down_yy, 0);
 						assertEquals(
 								"cornerOutDownRight uplXX i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_out_down_right_diag_center.upl_xx,
 								sudEst.rmap.corner_mine_up_left.upl_xx, 0);
 						assertEquals(
 								"cornerOutDownRight uplYY i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_out_down_right_diag_center.upl_yy,
 								sudEst.rmap.corner_mine_up_left.upl_yy, 0);
 
 						// cornerOutDownLeft
 						assertEquals(
 								"cornerOutDownLeft downXX i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_out_down_left_diag_center.down_xx,
 								sudOvest.rmap.corner_mine_up_right.down_xx, 0);
 						assertEquals(
 								"cornerOutDownLeft downYY i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_out_down_left_diag_center.down_yy,
 								sudOvest.rmap.corner_mine_up_right.down_yy, 0);
 						assertEquals(
 								"cornerOutDownLeft uplXX i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_out_down_left_diag_center.upl_xx,
 								sudOvest.rmap.corner_mine_up_right.upl_xx, 0);
 						assertEquals(
 								"cornerOutDownLeft uplYY i=" + ii + " j=" + ij
-										+ " rows=" + ir + " colums=" + ic,
+								+ " rows=" + ir + " colums=" + ic,
 								toTest.rmap.corner_out_down_left_diag_center.upl_yy,
 								sudOvest.rmap.corner_mine_up_right.upl_yy, 0);
 
@@ -3088,29 +3116,29 @@ public class DContinuous2DXYThinTester {
 								"cornerMineUpLeft/nordOvest congruence xx i="
 										+ ii + " j=" + ij + " rows=" + ir
 										+ " colums=" + ic,
-								toTest.rmap.corner_mine_up_left.upl_xx,
-								nordOvest.rmap.corner_mine_down_right.down_xx
+										toTest.rmap.corner_mine_up_left.upl_xx,
+										nordOvest.rmap.corner_mine_down_right.down_xx
 										% width, 0);
 
 						assertEquals("cornerMineUp/nordOvest congruence yy i="
 								+ ii + " j=" + ij + " rows=" + ir + " colums="
 								+ ic, toTest.rmap.corner_mine_up_left.upl_yy,
 								nordOvest.rmap.corner_mine_down_right.down_yy
-										% height, 0);
+								% height, 0);
 
 						// cornerMineUpLeft/ovest congruence
 						assertEquals(
 								"cornerMineUpLeft/ovest congruence xx i=" + ii
-										+ " j=" + ij + " rows=" + ir
-										+ " colums=" + ic,
+								+ " j=" + ij + " rows=" + ir
+								+ " colums=" + ic,
 								toTest.rmap.corner_mine_up_left.upl_xx,
 								ovest.rmap.corner_mine_up_right.down_xx % width,
 								0);
 
 						assertEquals(
 								"cornerMineUpLeft/ovest congruence yy i=" + ii
-										+ " j=" + ij + " rows=" + ir
-										+ " colums=" + ic,
+								+ " j=" + ij + " rows=" + ir
+								+ " colums=" + ic,
 								toTest.rmap.corner_mine_up_left.upl_yy,
 								ovest.rmap.corner_mine_up_right.upl_yy % height,
 								0);
@@ -3126,7 +3154,7 @@ public class DContinuous2DXYThinTester {
 								+ ii + " j=" + ij + " rows=" + ir + " colums="
 								+ ic, toTest.rmap.corner_mine_up_left.upl_yy,
 								nord.rmap.corner_mine_down_left.down_yy
-										% height, 0);
+								% height, 0);
 
 						// diagonal congruence
 						Double x1 = toTest.rmap.corner_mine_up_left.upl_xx;
