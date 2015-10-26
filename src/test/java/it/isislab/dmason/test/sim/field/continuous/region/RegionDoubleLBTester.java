@@ -16,6 +16,9 @@ import junit.framework.TestCase;
 /**
  * Test the Class RegionDoubleLB.
  * 
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
  * @author Mario Capuozzo
  */
 public class RegionDoubleLBTester {
