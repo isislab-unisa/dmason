@@ -28,8 +28,11 @@ import it.isislab.dmason.util.connection.ConnectionType;
 // TODO: Auto-generated Javadoc
 /**
  * Test the Class DContinuous2DXY for a toroidal distribution mode.
- * 
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
  * @author Mario Capuozzo
+ * 
  */
 public class DContinuous2DXYTester {
 
