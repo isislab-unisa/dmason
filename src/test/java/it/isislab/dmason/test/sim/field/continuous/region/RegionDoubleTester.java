@@ -17,6 +17,9 @@ import it.isislab.dmason.test.sim.app.DFlockers.DFlocker;
 /**
  * Test the Class RegionDouble.
  * 
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
  * @author Mario Capuozzo
  */
 public class RegionDoubleTester {
