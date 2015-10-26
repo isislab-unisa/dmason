@@ -12,6 +12,9 @@ import it.isislab.dmason.sim.field.CellType;
 /**
  * Test the Class CellType.
  * 
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
  * @author Mario Capuozzo
  */
 public class CellTypeTester{
