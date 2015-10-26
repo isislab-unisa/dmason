@@ -16,9 +16,11 @@ import org.junit.Test;
 import sim.util.Int2D;
 /**
 * The Class RegionIntegerTester. Tests the RegionInteger.
-* 
-* @author Mario Capuozzo
-*/
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
+ * @author Mario Capuozzo
+ */
 public class RegionIntegerTester {
 
 	/** The rd. */

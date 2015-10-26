@@ -19,7 +19,9 @@ import it.isislab.dmason.sim.field.support.field2D.region.RegionMap;
 // TODO: Auto-generated Javadoc
 /**
  * Test the Class UpdateMap.
- * 
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
  * @author Mario Capuozzo
  */
 public class UpdateMapTester {

@@ -26,7 +26,9 @@ import sim.util.Int2D;
 /**
  * The Class DSparseGrid2DXYTester. Tests the DSparseGrid2DXY for toroidal
  * distribution.
- * 
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
  * @author Mario Capuozzo
  */
 public class DSparseGrid2DXYTester {
