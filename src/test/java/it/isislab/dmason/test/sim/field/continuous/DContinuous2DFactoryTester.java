@@ -21,6 +21,9 @@ import it.isislab.dmason.util.connection.ConnectionType;
 /**
  * Test the Class DContinuous2DFactory.
  * 
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
  * @author Mario Capuozzo
  */
 public class DContinuous2DFactoryTester {
