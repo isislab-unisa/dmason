@@ -24,7 +24,9 @@ import sim.util.Double2D;
 // TODO: Auto-generated Javadoc
 /**
  * Test the Class DDoubleGrid2DFactory.
- * 
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
  * @author Mario Capuozzo
  */
 public class DDoubleGrid2DFactoryTester {
