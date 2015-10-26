@@ -22,7 +22,9 @@ import it.isislab.dmason.util.connection.ConnectionType;
 // TODO: Auto-generated Javadoc
 /**
  * Test the Class DIntGrid2DFactory.
- * 
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
  * @author Mario Capuozzo
  */
 public class DIntGrid2DFactoryTester {
