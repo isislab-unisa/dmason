@@ -10,10 +10,12 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 /**
-* The Class RegionIntegerNumericTester. Tests the RegionIntegerNumeric.
-* 
-* @author Mario Capuozzo
-*/
+* The Class RegionIntegerNumericTester. Tests the RegionIntegerNumeric. 
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
+ * @author Mario Capuozzo
+ */
 public class RegionIntegerNumericTester {
 	/** The rd. */
 	RegionIntegerNumeric rd;

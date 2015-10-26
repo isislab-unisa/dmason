@@ -15,9 +15,11 @@ import org.junit.Test;
 
 /**
 * The Class RegionDoubleNumericTester. Tests the RegionDoubleNumeric.
-* 
-* @author Mario Capuozzo
-*/
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
+ * @author Mario Capuozzo
+ */
 public class RegionDoubleNumericTester {
 	/** The rd. */
 	RegionDoubleNumeric rd;
