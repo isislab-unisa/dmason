@@ -1,6 +1,8 @@
 package it.isislab.dmason.test.testsuite;
 
+import it.isislab.dmason.test.sim.app.DAntsForage.TestDAntsForage;
 import it.isislab.dmason.test.sim.app.DFlockers.TestDFlockers;
+import it.isislab.dmason.test.sim.app.DParticles.TestDParticles;
 import it.isislab.dmason.test.sim.engine.DistributedStateConnectionJMSTester;
 import it.isislab.dmason.test.sim.field.CellTypeTester;
 import it.isislab.dmason.test.sim.field.UpdateCellTester;
@@ -42,6 +44,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	@RunWith(Suite.class)
 	@SuiteClasses({
 		TestDFlockers.class,
+		TestDParticles.class,
+		TestDAntsForage.class,
 		CellTypeTester.class,
 		UpdateCellTester.class,
 		RegionDoubleTester.class,
