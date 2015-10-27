@@ -38,9 +38,6 @@ public class DIntGrid2DXYThinTester {
 	/** The distributed state. */
 	StubDistributedState ss;
 
-	/** The remote agent. */
-	//StubRemotePositionedAgent sa; values and not agents int sa;
-
 	/** The num of loop of the tests. */
 	int numLoop = 8; // the max value for numLoop is 8 because for numLoop>8
 						// the java's approssimation is wrong
@@ -147,88 +144,7 @@ public class DIntGrid2DXYThinTester {
 
 	}
 
-	/**
-	 * The Class StubRemotePositionedAgent.
-	 * ERROR set values and not agents
-	 */
-//	public class StubRemotePositionedAgent implements
-//			RemotePositionedAgent<Int2D> {
-//
-//		/** The id. */
-//		String id;
-//
-//		/** The Constant serialVersionUID. */
-//		private static final long serialVersionUID = 1L;
-//
-//		/**
-//		 * Instantiates a new stub remote positioned agent.
-//		 */
-//		public StubRemotePositionedAgent() {
-//			super();
-//			id = "stub";
-//		}
-//
-//		/*
-//		 * (non-Javadoc)
-//		 * 
-//		 * @see sim.engine.Steppable#step(sim.engine.SimState)
-//		 */
-//		@Override
-//		public void step(SimState arg0) {
-//			// TODO Auto-generated method stub
-//
-//		}
-//
-//		/*
-//		 * (non-Javadoc)
-//		 * 
-//		 * @see it.isislab.dmason.sim.engine.RemotePositionedAgent#getPos()
-//		 */
-//		@Override
-//		public Int2D getPos() {
-//			// TODO Auto-generated method stub
-//			return new Int2D(0, 0);
-//		}
-//
-//		/*
-//		 * (non-Javadoc)
-//		 * 
-//		 * @see
-//		 * it.isislab.dmason.sim.engine.RemotePositionedAgent#setPos(java.lang
-//		 * .Object)
-//		 */
-//		@Override
-//		public void setPos(Int2D pos) {
-//			// TODO Auto-generated method stub
-//
-//		}
-//
-//		/*
-//		 * (non-Javadoc)
-//		 * 
-//		 * @see it.isislab.dmason.sim.engine.RemotePositionedAgent#getId()
-//		 */
-//		@Override
-//		public String getId() {
-//			// TODO Auto-generated method stub
-//			return id;
-//		}
-//
-//		/*
-//		 * (non-Javadoc)
-//		 * 
-//		 * @see
-//		 * it.isislab.dmason.sim.engine.RemotePositionedAgent#setId(java.lang
-//		 * .String)
-//		 */
-//		@Override
-//		public void setId(String id) {
-//			// TODO Auto-generated method stub
-//			this.id = id;
-//		}
-//
-//	}
-
+	
 	/**
 	 * Sets the enviroment.
 	 *
@@ -240,7 +156,7 @@ public class DIntGrid2DXYThinTester {
 
 		width = 100;
 		height = 100;
-		maxDistance = 0;
+		maxDistance = 1;
 		rows = 10;
 		columns = 10;
 		numAgents = numLoop;
@@ -250,7 +166,6 @@ public class DIntGrid2DXYThinTester {
 		GeneralParam genParam = new GeneralParam(width, height, maxDistance,
 				rows, columns, numAgents, mode, connectionType);
 
-		sa = new StubRemotePositionedAgent();
 		ss = new StubDistributedState(genParam);
 
 		toTest = (DIntGrid2DXYThin) DIntGrid2DFactory.createDIntGrid2DThin(
@@ -270,8 +185,8 @@ public class DIntGrid2DXYThinTester {
 
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
-			assertTrue(toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					new StubRemotePositionedAgent(), /* SimState */ss));
+			assertTrue(toTest.setDistributedObjectLocation(location, /* grid value */
+					i, /* SimState */ss));
 		}
 	}
 
@@ -285,8 +200,8 @@ public class DIntGrid2DXYThinTester {
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
-			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					sa, /* SimState */ss);
+			toTest.setDistributedObjectLocation(location, /* grid value */
+					i, /* SimState */ss);
 		}
 
 		assertSame(ss, toTest.getState());
@@ -301,8 +216,8 @@ public class DIntGrid2DXYThinTester {
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
-			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					sa, /* SimState */ss);
+			toTest.setDistributedObjectLocation(location, /* grid value */
+					i, /* SimState */ss);
 		}
 		assertEquals(1, toTest.getNumAgents());
 	}
@@ -316,8 +231,8 @@ public class DIntGrid2DXYThinTester {
 		// i'm positioning more agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
-			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					new StubRemotePositionedAgent(), /* SimState */ss);
+			toTest.setDistributedObjectLocation(location, /* grid value */
+					i, /* SimState */ss);
 		}
 		assertEquals(numLoop, toTest.getNumAgents());
 	}
@@ -349,8 +264,8 @@ public class DIntGrid2DXYThinTester {
 			j = toTest.rmap.corner_mine_up_left.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location, /* grid value */
+						i, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -385,8 +300,8 @@ public class DIntGrid2DXYThinTester {
 			j = toTest.rmap.corner_mine_up_right.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location, /* grid value */
+						i, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -421,8 +336,8 @@ public class DIntGrid2DXYThinTester {
 			j = toTest.rmap.corner_mine_down_left.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location, /* grid value */
+						i, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -457,8 +372,8 @@ public class DIntGrid2DXYThinTester {
 			j = toTest.rmap.corner_mine_down_right.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location, /* grid value */
+						i, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -491,8 +406,8 @@ public class DIntGrid2DXYThinTester {
 			j = toTest.rmap.down_mine.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location, /* grid value */
+						i, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 
@@ -528,8 +443,8 @@ public class DIntGrid2DXYThinTester {
 			j = toTest.rmap.left_mine.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location, /* grid value */
+						i, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -568,8 +483,8 @@ public class DIntGrid2DXYThinTester {
 			j = toTest.rmap.right_mine.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location, /* grid value */
+						i, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -604,8 +519,8 @@ public class DIntGrid2DXYThinTester {
 			j = stepJ + toTest.rmap.up_mine.upl_yy;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location, /* grid value */
+						i, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -629,24 +544,24 @@ public class DIntGrid2DXYThinTester {
 
 		Int2D location = new Int2D(i, j);
 
-		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				sa, /* SimState */ss);
+		toTest.setDistributedObjectLocation(location, /* grid value */
+				Integer.parseInt("1"), /* SimState */ss);
 
 		i += stepI;
 		j += stepJ;
 
 		location = new Int2D(i, j);
 
-		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				sa, /* SimState */ss);
+		toTest.setDistributedObjectLocation(location, /* grid value */
+				Integer.parseInt("2"), /* SimState */ss);
 
 		i += stepI;
 		j += stepJ;
 
 		location = new Int2D(i, j);
 
-		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				new StubRemotePositionedAgent(), /* SimState */ss);
+		toTest.setDistributedObjectLocation(location, /* grid value */
+				Integer.parseInt("2"), /* SimState */ss);
 
 		assertNotSame("the agent is in two places at once",
 				toTest.rmap.up_mine.get(0).r, toTest.rmap.up_mine.get(1).r);
@@ -667,16 +582,16 @@ public class DIntGrid2DXYThinTester {
 
 		Int2D location = new Int2D(i, j);
 
-		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				sa, /* SimState */ss);
+		toTest.setDistributedObjectLocation(location, /* grid value */
+				Integer.parseInt("2"), /* SimState */ss);
 
 		i += stepI;
 		j += stepJ;
 
 		location = new Int2D(i, j);
 
-		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				new StubRemotePositionedAgent(), /* SimState */ss);
+		toTest.setDistributedObjectLocation(location, /* grid value */
+				Integer.parseInt("2"), /* SimState */ss);
 
 		assertNotSame("the method has not changed the position",
 				toTest.rmap.up_mine.get(0).l, toTest.rmap.up_mine.get(1).l);
