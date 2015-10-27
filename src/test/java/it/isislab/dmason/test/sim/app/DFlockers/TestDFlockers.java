@@ -61,7 +61,7 @@ public class TestDFlockers {
 	private static int numSteps = 1000; //only graphicsOn=false
 	private static int rows = 3; //number of rows
 	private static int columns = 3; //number of columns
-	private static int MAX_DISTANCE=10; //max distance
+	private static int MAX_DISTANCE=1; //max distance
 	private static int NUM_AGENTS=600; //number of agents
 	private static int WIDTH=900; //field width
 	private static int HEIGHT=900; //field height
