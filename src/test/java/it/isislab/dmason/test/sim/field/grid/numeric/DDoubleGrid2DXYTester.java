@@ -211,7 +211,7 @@ public class DDoubleGrid2DXYTester {
 
 		width = 100;
 		height = 100;
-		maxDistance = 0;
+		maxDistance = 1;
 		rows = 10;
 		columns = 10;
 		numAgents = numLoop;
@@ -221,7 +221,6 @@ public class DDoubleGrid2DXYTester {
 		GeneralParam genParam = new GeneralParam(width, height, maxDistance,
 				rows, columns, numAgents, mode, connectionType);
 
-		sa = new StubRemotePositionedAgent();
 		ss = new StubDistributedState(genParam);
 		
 		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(width, height,/* simState */
@@ -245,11 +244,12 @@ public class DDoubleGrid2DXYTester {
 	 */
 	@Test
 	public void testSetDistributedObjectLocation() throws DMasonException {
-        double c=0; 
+		double j=1.5;
 		for (int i = 0; i < numLoop; i++) {
+			j+=(j*j)/2;
 			Int2D location = toTest.getAvailableRandomLocation();
 			assertTrue(toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					c/*new StubRemotePositionedAgent()*/, /* SimState */ss));
+					j/*new StubRemotePositionedAgent()*/, /* SimState */ss));
 		}
 	}
 
@@ -260,50 +260,19 @@ public class DDoubleGrid2DXYTester {
 	@Test
 	public void testGetState() throws DMasonException {
 
-		// i'm moving an agent in the DistributedState
+		double j=1.5;
 		for (int i = 0; i < numLoop; i++) {
+			j+=(j*j)/2;
 			Int2D location = toTest.getAvailableRandomLocation();
 			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					sa, /* SimState */ss);
+					j, /* SimState */ss);
 		}
 
 		assertSame(ss, toTest.getState());
 	}
 
-	/**
-	 * Test get num agent for same agent.
-	 * @throws DMasonException 
-	 */
-	@Test
-	public void testGetNumAgentForSameAgent() throws DMasonException {
-		// i'm moving an agent in the DistributedState
-		for (int i = 0; i < numLoop; i++) {
-			Int2D location = toTest.getAvailableRandomLocation();
-			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					sa, /* SimState */ss);
-		}
-		assertEquals(1, toTest.getNumAgents());
-	}
-
-	/**
-	 * Test get num agent different agent.
-	 * @throws DMasonException 
-	 */
-	@Test
-	public void testGetNumAgentDifferentAgent() throws DMasonException {
-		// i'm positioning more agent in the DistributedState
-		for (int i = 0; i < numLoop; i++) {
-			Int2D location = toTest.getAvailableRandomLocation();
-			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					new StubRemotePositionedAgent(), /* SimState */ss);
-		}
-		assertEquals(numLoop, toTest.getNumAgents());
-	}
-
-	
+		
 	// AGENTS IS MEMORIZED IN THE rmap
-
-
 
 	/**
 	 * Test corner mine up left.
@@ -324,14 +293,16 @@ public class DDoubleGrid2DXYTester {
 				/ numLoop;
 
 		i += stepI;
-
+         
+		double v=1.4;
 		int count = 0;
 		while (i < iEnd) {
 			j = toTest.rmap.corner_mine_up_left.upl_yy + stepJ;
 			while (j < jEnd) {
+				v+=(v*v)/2;
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+						v, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -361,14 +332,15 @@ public class DDoubleGrid2DXYTester {
 				/ numLoop;
 
 		i += stepI;
-
+        double v=1.4; 
 		int count = 0;
 		while (i < iEnd) {
 			j = toTest.rmap.corner_mine_up_right.upl_yy + stepJ;
 			while (j < jEnd) {
+				v+=(v*v)/2;
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+						v, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -397,14 +369,15 @@ public class DDoubleGrid2DXYTester {
 				/ numLoop;
 
 		i += stepI;
-
+        double v=1.6;
 		int count = 0;
 		while (i < iEnd) {
 			j = toTest.rmap.corner_mine_down_left.upl_yy + stepJ;
 			while (j < jEnd) {
+				v+=(v+v)/2;
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+						v, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -434,13 +407,15 @@ public class DDoubleGrid2DXYTester {
 
 		i += stepI;
 
+		double v=1.6;
 		int count = 0;
 		while (i < iEnd) {
 			j = toTest.rmap.corner_mine_down_right.upl_yy + stepJ;
 			while (j < jEnd) {
+				v+=(v*v)/2;
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+						v, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -468,13 +443,15 @@ public class DDoubleGrid2DXYTester {
 
 		i += stepI;
 
+		double v=1.5;
 		int count = 0;
 		while (i < iEnd) {
 			j = toTest.rmap.down_mine.upl_yy + stepJ;
 			while (j < jEnd) {
+				v+=(v*v)/2;
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+						v, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 
@@ -505,13 +482,15 @@ public class DDoubleGrid2DXYTester {
 
 		i += stepI;
 
+		double v=1.9;
 		int count = 0;
 		while (i < iEnd) {
 			j = toTest.rmap.left_mine.upl_yy + stepJ;
 			while (j < jEnd) {
+				v+=(v*v)/2;
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+						i, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -542,14 +521,15 @@ public class DDoubleGrid2DXYTester {
 				/ numLoop;
 
 		i += stepI;
-
+        double v=1.9;
 		int count = 0;
 		while (i < iEnd) {
 			j = toTest.rmap.right_mine.upl_yy + stepJ;
 			while (j < jEnd) {
+				v+=(v*v)/2;
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+						v, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -578,14 +558,15 @@ public class DDoubleGrid2DXYTester {
 				/ numLoop;
 
 		i += stepI;
-
+         double v=1.6;
 		int count = 0;
 		while (i < iEnd) {
 			j = stepJ + toTest.rmap.up_mine.upl_yy;
 			while (j < jEnd) {
+				v+=(v*v)/2;
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+						v, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -611,7 +592,7 @@ public class DDoubleGrid2DXYTester {
 		Int2D location = new Int2D(i, j);
 
 		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				sa, /* SimState */ss);
+			i, /* SimState */ss);
 
 		i += stepI;
 		j += stepJ;
@@ -619,7 +600,7 @@ public class DDoubleGrid2DXYTester {
 		location = new Int2D(i, j);
 
 		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				sa, /* SimState */ss);
+				i, /* SimState */ss);
 
 		assertEquals("duplication of agents", 1, toTest.rmap.up_mine.size());
 
@@ -640,7 +621,7 @@ public class DDoubleGrid2DXYTester {
 		Int2D location = new Int2D(i, j);
 
 		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				sa, /* SimState */ss);
+				i, /* SimState */ss);
 
 		i += stepI;
 		j += stepJ;
@@ -648,7 +629,7 @@ public class DDoubleGrid2DXYTester {
 		location = new Int2D(i, j);
 
 		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				sa, /* SimState */ss);
+				i, /* SimState */ss);
 
 		i += stepI;
 		j += stepJ;
@@ -656,7 +637,7 @@ public class DDoubleGrid2DXYTester {
 		location = new Int2D(i, j);
 
 		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				new StubRemotePositionedAgent(), /* SimState */ss);
+				i, /* SimState */ss);
 
 		assertNotSame("the agent is in two places at once",
 				toTest.rmap.up_mine.get(0).r, toTest.rmap.up_mine.get(1).r);
