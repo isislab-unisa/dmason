@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.PriorityQueue;
 
 import sim.engine.SimState;
+import sim.util.Double2D;
 import sim.util.Int2D;
 
 
@@ -588,13 +589,12 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	 */
 	public boolean setDistributedObjectLocation( Int2D l, Object o ,SimState sm) throws DMasonException{
 
-		int d=Integer.MAX_VALUE; // se il controllo sotto non va a buon fine OH MY GOD
 		
-		if(o instanceof Integer){
-			d=(Integer) o;
-		}else
-		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");}
-
+		if(!(o instanceof Integer))
+			throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");
+		
+		Integer d = (Integer) o;
+		
 		//This 'if' is for debug 
 		if(checkReproducibility)
 			ps.println(d+" "+l.x+" "+l.y);
@@ -686,6 +686,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 								{
 									if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 										tmp_zoom.add(new EntryNum<Integer, Int2D>(value, l));
+									System.out.println("aaaaaaaaaaaaa");
 									myfield.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 									return rmap.up_mine.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 								}
@@ -867,8 +868,20 @@ public class DIntGrid2DXY extends DIntGrid2D {
 
 	@Override
 	public Int2D getAvailableRandomLocation() {
-		// TODO Auto-generated method stub
-		return null;
+		double shiftx=((DistributedState)sm).random.nextDouble();
+		double shifty=((DistributedState)sm).random.nextDouble();
+	//	double x=(own_x+jumpDistance)+((/*(*/my_width/*+own_x-jumpDistance)-(own_x+jumpDistance)*/)*shiftx)-jumpDistance;
+	//	double y=(own_y+jumpDistance)+((/*(*/my_height/*+own_y-jumpDistance)-(own_y+jumpDistance)*/)*shifty)-jumpDistance;
+
+		int x= (int) ((own_x+MAX_DISTANCE)+((my_width-2*MAX_DISTANCE))*shiftx);
+//		if(x >= 0 && x <= 10 || x >= 290 && x<=300)
+//		System.out.println(own_x + " "+ my_width+" "+jumpDistance + " "+shiftx + " prima somma "+ (own_x+jumpDistance)+ " seconda somma "+((my_width-2*jumpDistance))*shiftx + " "+x);
+//		
+		int y= (int) ((own_y+MAX_DISTANCE)+((my_height-2*MAX_DISTANCE))*shifty);
+
+		//rm.setPos(new Double2D(x,y));
+
+		return (new Int2D(x, y));
 	}
 
 

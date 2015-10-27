@@ -38,9 +38,6 @@ public class DIntGrid2DXYLBTester {
 	/** The distributed state. */
 	StubDistributedState ss;
 
-	/** The remote agent. */
-	//StubRemotePositionedAgent sa; values and not agents int sa;
-
 	/** The num of loop of the tests. */
 	int numLoop = 8; // the max value for numLoop is 8 because for numLoop>8
 	// the java's approssimation is wrong
@@ -147,87 +144,6 @@ public class DIntGrid2DXYLBTester {
 
 	}
 
-	/**
-	 * The Class StubRemotePositionedAgent.
-	 * ERROR INTEGER VALUE AND NOT AGENT
-	 */
-//	public class StubRemotePositionedAgent implements
-//	RemotePositionedAgent<Int2D> {
-//
-//		/** The id. */
-//		String id;
-//
-//		/** The Constant serialVersionUID. */
-//		private static final long serialVersionUID = 1L;
-//
-//		/**
-//		 * Instantiates a new stub remote positioned agent.
-//		 */
-//		public StubRemotePositionedAgent() {
-//			super();
-//			id = "stub";
-//		}
-//
-//		/*
-//		 * (non-Javadoc)
-//		 * 
-//		 * @see sim.engine.Steppable#step(sim.engine.SimState)
-//		 */
-//		@Override
-//		public void step(SimState arg0) {
-//			// TODO Auto-generated method stub
-//
-//		}
-//
-//		/*
-//		 * (non-Javadoc)
-//		 * 
-//		 * @see it.isislab.dmason.sim.engine.RemotePositionedAgent#getPos()
-//		 */
-//		@Override
-//		public Int2D getPos() {
-//			// TODO Auto-generated method stub
-//			return new Int2D(0, 0);
-//		}
-//
-//		/*
-//		 * (non-Javadoc)
-//		 * 
-//		 * @see
-//		 * it.isislab.dmason.sim.engine.RemotePositionedAgent#setPos(java.lang
-//		 * .Object)
-//		 */
-//		@Override
-//		public void setPos(Int2D pos) {
-//			// TODO Auto-generated method stub
-//
-//		}
-//
-//		/*
-//		 * (non-Javadoc)
-//		 * 
-//		 * @see it.isislab.dmason.sim.engine.RemotePositionedAgent#getId()
-//		 */
-//		@Override
-//		public String getId() {
-//			// TODO Auto-generated method stub
-//			return id;
-//		}
-//
-//		/*
-//		 * (non-Javadoc)
-//		 * 
-//		 * @see
-//		 * it.isislab.dmason.sim.engine.RemotePositionedAgent#setId(java.lang
-//		 * .String)
-//		 */
-//		@Override
-//		public void setId(String id) {
-//			// TODO Auto-generated method stub
-//			this.id = id;
-//		}
-//
-//	}
 
 	/**
 	 * Sets the enviroment.
@@ -250,7 +166,6 @@ public class DIntGrid2DXYLBTester {
 		GeneralParam genParam = new GeneralParam(width, height, maxDistance,
 				rows, columns, numAgents, mode, connectionType);
 
-		sa = new StubRemotePositionedAgent();
 		ss = new StubDistributedState(genParam);
 
 		toTest = (DIntGrid2DXYLB) DIntGrid2DFactory.createDIntGrid2D(width,
@@ -270,8 +185,8 @@ public class DIntGrid2DXYLBTester {
 
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
-			assertTrue(toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					new StubRemotePositionedAgent(), /* SimState */ss));
+			assertTrue(toTest.setDistributedObjectLocation(location, /* grid value */
+					i, /* SimState */ss));
 		}
 	}
 
@@ -285,8 +200,8 @@ public class DIntGrid2DXYLBTester {
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
-			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					sa, /* SimState */ss);
+			toTest.setDistributedObjectLocation(location, /* grid value */
+					i, /* SimState */ss);
 		}
 
 		assertSame(ss, toTest.getState());
@@ -301,8 +216,8 @@ public class DIntGrid2DXYLBTester {
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
-			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					sa, /* SimState */ss);
+			toTest.setDistributedObjectLocation(location, /* grid value */
+					i, /* SimState */ss);
 		}
 		assertEquals(1, toTest.getNumAgents());
 	}
@@ -316,8 +231,8 @@ public class DIntGrid2DXYLBTester {
 		// i'm positioning more agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
-			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					new StubRemotePositionedAgent(), /* SimState */ss);
+			toTest.setDistributedObjectLocation(location, /* grid value */
+					i, /* SimState */ss);
 		}
 		assertEquals(numLoop, toTest.getNumAgents());
 	}
