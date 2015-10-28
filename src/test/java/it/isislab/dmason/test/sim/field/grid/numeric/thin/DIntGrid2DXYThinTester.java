@@ -175,13 +175,27 @@ public class DIntGrid2DXYThinTester {
 				"test", /* prefix */"", true);
 
 	}
-
+	
 	/**
-	 * Test set distributed object location.
+	 * Test for getAvailableRandomLocation. If getAvailableRandomLocation returns an good position, for toTest region, setDistributedObjectLocation returns true otherwise it return false.
 	 * @throws DMasonException 
 	 */
 	@Test
 	public void testSetDistributedObjectLocation() throws DMasonException {
+
+		
+			Int2D location = new Int2D(toTest.myfield.down_xx, toTest.myfield.down_yy);
+			assertTrue("The Int2D location should belong at myfield",toTest.setDistributedObjectLocation(location, /* grid value */
+					5, /* SimState */ss));
+	}
+	
+
+	/**
+	 * Test for getAvailableRandomLocation. If getAvailableRandomLocation returns an good position, for toTest region, setDistributedObjectLocation returns true otherwise it return false.
+	 * @throws DMasonException 
+	 */
+	@Test
+	public void testGetAvailableRandomLocation() throws DMasonException {
 
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
@@ -190,13 +204,35 @@ public class DIntGrid2DXYThinTester {
 		}
 	}
 
+	
+	/**
+	 * Test for setDistributedObjectLocation using double value.
+	 * 
+	 * @throws DMasonException if a double value 
+	 */
+	@Test
+	public void testSetDistributedObjectLocationWithMistake() throws DMasonException {
+
+		for (int i = 0; i < numLoop; i++) {
+			Int2D location = toTest.getAvailableRandomLocation();
+			try{
+			toTest.setDistributedObjectLocation(location, /* grid value */
+					Double.parseDouble("4.3"), /* SimState */ss);
+				fail("it should throw a DMasonException");
+			}catch(DMasonException e) {/* good */}
+		}
+	}
+	
+	
+	
+	
 	/**
 	 * Test get state.
 	 * @throws DMasonException 
 	 */
 	@Test
 	public void testGetState() throws DMasonException {
-
+		toTest.get(0, 0);
 		// i'm moving an agent in the DistributedState
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();

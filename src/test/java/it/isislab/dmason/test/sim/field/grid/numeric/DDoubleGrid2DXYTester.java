@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
@@ -134,72 +133,6 @@ public class DDoubleGrid2DXYTester {
 
 	}
 
-	/**
-	 * The Class StubRemotePositionedAgent. ERROR IN QUESTO CAMPO NON SI INSERISCONO AGENTI MA VALORI double
-	 */
-//	public class StubRemotePositionedAgent implements
-//			RemotePositionedAgent<Int2D> {
-//
-//		/** The id. */
-//		String id;
-//		
-//		/** The Constant serialVersionUID. */
-//		private static final long serialVersionUID = 1L;
-//
-//		/**
-//		 * Instantiates a new stub remote positioned agent.
-//		 */
-//		public StubRemotePositionedAgent() {
-//			super();
-//			id = "stub";
-//		}
-//
-//		/* (non-Javadoc)
-//		 * @see sim.engine.Steppable#step(sim.engine.SimState)
-//		 */
-//		@Override
-//		public void step(SimState arg0) {
-//			// TODO Auto-generated method stub
-//
-//		}
-//
-//		/* (non-Javadoc)
-//		 * @see it.isislab.dmason.sim.engine.RemotePositionedAgent#getPos()
-//		 */
-//		@Override
-//		public Int2D getPos() {
-//			// TODO Auto-generated method stub
-//			return new Int2D(0, 0);
-//		}
-//
-//		/* (non-Javadoc)
-//		 * @see it.isislab.dmason.sim.engine.RemotePositionedAgent#setPos(java.lang.Object)
-//		 */
-//		@Override
-//		public void setPos(Int2D pos) {
-//			// TODO Auto-generated method stub
-//
-//		}
-//
-//		/* (non-Javadoc)
-//		 * @see it.isislab.dmason.sim.engine.RemotePositionedAgent#getId()
-//		 */
-//		@Override
-//		public String getId() {
-//			// TODO Auto-generated method stub
-//			return id;
-//		}
-//
-//		/* (non-Javadoc)
-//		 * @see it.isislab.dmason.sim.engine.RemotePositionedAgent#setId(java.lang.String)
-//		 */
-//		@Override
-//		public void setId(String id) {
-//			// TODO Auto-generated method stub
-//			this.id = id;
-//		}
-//
-//	}
 
 	/**
 	 * Sets the enviroment.
@@ -235,11 +168,12 @@ public class DDoubleGrid2DXYTester {
 				0,
 				false, "toFoodGrid", "totest",true);
 
-
 	}
-
+	
+	
 	/**
-	 * Test set distributed object location.
+	 * Test set distributed object location. 
+	 * 	If the location is not available for region or a int value was inserted the method return false   
 	 * @throws DMasonException 
 	 */
 	@Test
@@ -252,6 +186,21 @@ public class DDoubleGrid2DXYTester {
 					j/*new StubRemotePositionedAgent()*/, /* SimState */ss));
 		}
 	}
+
+	/**
+	 * Test getAvailableRandomLocation. It should return a Int2D location in according to field creation. 
+	 * @throws DMasonException 
+	 */
+	@Test
+	public void testGetAvailableRandomLocation() throws DMasonException {
+	
+			Int2D location = toTest.getAvailableRandomLocation();
+			assertTrue(toTest.setDistributedObjectLocation(location, 
+					/* grid value */Double.parseDouble("4.6"), /* SimState */ss));
+	}
+	
+	
+	
 
 	/**
 	 * Test get state.
