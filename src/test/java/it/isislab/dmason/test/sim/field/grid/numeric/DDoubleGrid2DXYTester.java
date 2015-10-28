@@ -92,7 +92,6 @@ public class DDoubleGrid2DXYTester {
 			
 			super(params, new DistributedMultiSchedule<Int2D>(), "stub",
 					params.getConnectionType());
-			System.out.println("TESTARE VALORI E NON AGENTI setdistributedObjectLocation");
 			this.MODE = params.getMode();
 
 		}
@@ -185,6 +184,12 @@ public class DDoubleGrid2DXYTester {
 			Int2D location = new Int2D(toTest.myfield.upl_xx, toTest.myfield.upl_yy);
 			assertTrue(toTest.setDistributedObjectLocation(location, 
 					/* grid value */j, /* SimState */ss));
+			/*
+			 * Note: for test the method effect you should test also the real value in the location...
+			 * 		but it is not possible, because the result will be available after method synchro invocation.   
+			 * 
+			 * assertEquals("The value in location "+location+" should be the same",j,toTest.field[location.x][location.y],0);
+			*/
 	}
 
 	/**
@@ -219,6 +224,7 @@ public class DDoubleGrid2DXYTester {
 		
 		assertEquals(10,toTest.myfield.size());
 	}
+	
 	
 	/**
 	 * Test getAvailableRandomLocation. It should return a Int2D location in according to field creation. 

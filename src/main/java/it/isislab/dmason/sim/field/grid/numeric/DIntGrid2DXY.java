@@ -868,18 +868,12 @@ public class DIntGrid2DXY extends DIntGrid2D {
 
 	@Override
 	public Int2D getAvailableRandomLocation() {
-		double shiftx=((DistributedState)sm).random.nextDouble();
-		double shifty=((DistributedState)sm).random.nextDouble();
-	//	double x=(own_x+jumpDistance)+((/*(*/my_width/*+own_x-jumpDistance)-(own_x+jumpDistance)*/)*shiftx)-jumpDistance;
-	//	double y=(own_y+jumpDistance)+((/*(*/my_height/*+own_y-jumpDistance)-(own_y+jumpDistance)*/)*shifty)-jumpDistance;
+		int x=(((DistributedState)sm).random.nextInt(width)%(my_width-1))+own_x;
+		if(x>(width-1)) x--;
+		int y=(((DistributedState)sm).random.nextInt(height)%(my_height-1))+own_y;
+		if(y>(height-1)) y--;
 
-		int x= (int) ((own_x+MAX_DISTANCE)+((my_width-2*MAX_DISTANCE))*shiftx);
-//		if(x >= 0 && x <= 10 || x >= 290 && x<=300)
-//		System.out.println(own_x + " "+ my_width+" "+jumpDistance + " "+shiftx + " prima somma "+ (own_x+jumpDistance)+ " seconda somma "+((my_width-2*jumpDistance))*shiftx + " "+x);
-//		
-		int y= (int) ((own_y+MAX_DISTANCE)+((my_height-2*MAX_DISTANCE))*shifty);
-
-		//rm.setPos(new Double2D(x,y));
+		//rm.setPos(new Int2D(x, y));
 
 		return (new Int2D(x, y));
 	}

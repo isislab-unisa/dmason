@@ -972,8 +972,13 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 
 	@Override
 	public Int2D getAvailableRandomLocation() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		int x=(((DistributedState)sm).random.nextInt(width)%(my_width-1))+own_x;
+		if(x>(width-1)) x--;
+		int y=(((DistributedState)sm).random.nextInt(height)%(my_height-1))+own_y;
+		if(y>(height-1)) y--;
+
+		return (new Int2D(x, y));
 	}
 	@Override
 	public boolean verifyPosition(Int2D pos) {
