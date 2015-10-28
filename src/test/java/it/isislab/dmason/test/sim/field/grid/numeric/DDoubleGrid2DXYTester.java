@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Random;
+
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
@@ -27,7 +30,6 @@ import sim.util.Int2D;
 * * @author Michele Carillo
  * @author Flavio Serrapica
  * @author Carmine Spagnuolo
-* @author Mario Capuozzo
 */
 public class DDoubleGrid2DXYTester {
 	/** The to test. */
@@ -179,14 +181,45 @@ public class DDoubleGrid2DXYTester {
 	@Test
 	public void testSetDistributedObjectLocation() throws DMasonException {
 		double j=1.5;
-		for (int i = 0; i < numLoop; i++) {
-			j+=(j*j)/2;
-			Int2D location = toTest.getAvailableRandomLocation();
-			assertTrue(toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					j/*new StubRemotePositionedAgent()*/, /* SimState */ss));
-		}
+		
+			Int2D location = new Int2D(toTest.myfield.upl_xx, toTest.myfield.upl_yy);
+			assertTrue(toTest.setDistributedObjectLocation(location, 
+					/* grid value */j, /* SimState */ss));
 	}
 
+	/**
+	 * Test set distributed object location. 
+	 * 	If the location is not available for region or a int value was inserted the method return false   
+	 * @throws DMasonException 
+	 */
+	@Test
+	public void testMultipleSetDistributedObjectLocationOnSameLocation() throws DMasonException {
+		double j=1.5;
+		Int2D location = new Int2D(toTest.myfield.upl_xx, toTest.myfield.upl_yy);
+		for(int i=0; i<10; i++)
+			toTest.setDistributedObjectLocation(location,/* grid value */j, /* SimState */ss);
+		
+		assertEquals("Multiple value setting in the same position shouldn't increase the region size",1,toTest.myfield.size());
+	}
+	
+	@Test
+	public void testMultipleSetDistributedObjectLocation() throws DMasonException {
+		double j=1.5; 
+		int x = toTest.myfield.upl_xx;
+		int y = toTest.myfield.upl_yy;
+		int shiftx,shifty;
+		Random r = new Random();
+		Int2D location = null;
+		for(int i=0; i<10; i++){
+			shiftx= Math.abs(x-toTest.myfield.down_xx);
+			shifty = Math.abs(y-toTest.myfield.down_yy);
+			location = new Int2D(x+r.nextInt(shiftx) , y+r.nextInt(shifty));
+			assertTrue("The location should be rigth",toTest.setDistributedObjectLocation(location,/* grid value */j, /* SimState */ss));
+		}
+		
+		assertEquals(10,toTest.myfield.size());
+	}
+	
 	/**
 	 * Test getAvailableRandomLocation. It should return a Int2D location in according to field creation. 
 	 * @throws DMasonException 
@@ -208,15 +241,7 @@ public class DDoubleGrid2DXYTester {
 	 */
 	@Test
 	public void testGetState() throws DMasonException {
-
-		double j=1.5;
-		for (int i = 0; i < numLoop; i++) {
-			j+=(j*j)/2;
-			Int2D location = toTest.getAvailableRandomLocation();
-			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					j, /* SimState */ss);
-		}
-
+	
 		assertSame(ss, toTest.getState());
 	}
 
@@ -226,7 +251,7 @@ public class DDoubleGrid2DXYTester {
 	/**
 	 * Test corner mine up left.
 	 * @throws DMasonException 
-	 */
+	 *//*
 	@Test
 	public void testCornerMineUpLeft() throws DMasonException {
 
@@ -250,8 +275,8 @@ public class DDoubleGrid2DXYTester {
 			while (j < jEnd) {
 				v+=(v*v)/2;
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						v, /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location,  RemotePositionedAgent 
+						v,  SimState ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -262,10 +287,13 @@ public class DDoubleGrid2DXYTester {
 	}
 
 	
-	/**
+	*//**
 	 * Test corner mine up right.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testCornerMineUpRight() throws DMasonException {
 
@@ -288,8 +316,8 @@ public class DDoubleGrid2DXYTester {
 			while (j < jEnd) {
 				v+=(v*v)/2;
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						v, /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location,  RemotePositionedAgent 
+						v,  SimState ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -299,10 +327,13 @@ public class DDoubleGrid2DXYTester {
 		assertEquals(count, toTest.rmap.corner_mine_up_right.size());
 	}
 
-	/**
+	*//**
 	 * Test corner mine down left.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testCornerMineDownLeft() throws DMasonException {
 
@@ -325,8 +356,8 @@ public class DDoubleGrid2DXYTester {
 			while (j < jEnd) {
 				v+=(v+v)/2;
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						v, /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location,  RemotePositionedAgent 
+						v,  SimState ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -336,10 +367,13 @@ public class DDoubleGrid2DXYTester {
 		assertEquals(count, toTest.rmap.corner_mine_down_left.size());
 	}
 
-	/**
+	*//**
 	 * Test corner mine down right.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testCornerMineDownRight() throws DMasonException {
 
@@ -363,8 +397,8 @@ public class DDoubleGrid2DXYTester {
 			while (j < jEnd) {
 				v+=(v*v)/2;
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						v, /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location,  RemotePositionedAgent 
+						v,  SimState ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -374,10 +408,13 @@ public class DDoubleGrid2DXYTester {
 		assertEquals(count, toTest.rmap.corner_mine_down_right.size());
 	}
 
-	/**
+	*//**
 	 * Test down mine.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testDownMine() throws DMasonException {
 
@@ -399,8 +436,8 @@ public class DDoubleGrid2DXYTester {
 			while (j < jEnd) {
 				v+=(v*v)/2;
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						v, /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location,  RemotePositionedAgent 
+						v,  SimState ss))
 					count += 1;
 				j += stepJ;
 
@@ -411,10 +448,13 @@ public class DDoubleGrid2DXYTester {
 		assertEquals(count, toTest.rmap.down_mine.size());
 	}
 
-	/**
+	*//**
 	 * Test left mine.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testLeftMine() throws DMasonException {
 
@@ -438,8 +478,8 @@ public class DDoubleGrid2DXYTester {
 			while (j < jEnd) {
 				v+=(v*v)/2;
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						i, /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location,  RemotePositionedAgent 
+						i,  SimState ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -451,10 +491,13 @@ public class DDoubleGrid2DXYTester {
 
 
 
-	/**
+	*//**
 	 * Test right mine.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testRightMine() throws DMasonException {
 
@@ -477,8 +520,8 @@ public class DDoubleGrid2DXYTester {
 			while (j < jEnd) {
 				v+=(v*v)/2;
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						v, /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location,  RemotePositionedAgent 
+						v,  SimState ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -488,10 +531,13 @@ public class DDoubleGrid2DXYTester {
 		assertEquals(count, toTest.rmap.right_mine.size());
 	}
 
-	/**
+	*//**
 	 * Test up mine.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testUpMine() throws DMasonException {
 
@@ -514,8 +560,8 @@ public class DDoubleGrid2DXYTester {
 			while (j < jEnd) {
 				v+=(v*v)/2;
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						v, /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location,  RemotePositionedAgent 
+						v,  SimState ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -526,10 +572,13 @@ public class DDoubleGrid2DXYTester {
 	}
 
 
-	/**
+	*//**
 	 * Test set distributed object location congruence size.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testSetDistributedObjectLocationCongruenceSize() throws DMasonException {
 		int i = toTest.rmap.up_mine.upl_xx;
@@ -540,25 +589,28 @@ public class DDoubleGrid2DXYTester {
 
 		Int2D location = new Int2D(i, j);
 
-		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-			i, /* SimState */ss);
+		toTest.setDistributedObjectLocation(location,  RemotePositionedAgent 
+			i,  SimState ss);
 
 		i += stepI;
 		j += stepJ;
 
 		location = new Int2D(i, j);
 
-		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				i, /* SimState */ss);
+		toTest.setDistributedObjectLocation(location,  RemotePositionedAgent 
+				i,  SimState ss);
 
 		assertEquals("duplication of agents", 1, toTest.rmap.up_mine.size());
 
 	}
 
-	/**
+	*//**
 	 * Test double set distributed object location god agent.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testDoubleSetDistributedObjectLocationGodAgent() throws DMasonException {
 		int i = toTest.rmap.up_mine.upl_xx;
@@ -569,24 +621,24 @@ public class DDoubleGrid2DXYTester {
 
 		Int2D location = new Int2D(i, j);
 
-		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				i, /* SimState */ss);
+		toTest.setDistributedObjectLocation(location,  RemotePositionedAgent 
+				i,  SimState ss);
 
 		i += stepI;
 		j += stepJ;
 
 		location = new Int2D(i, j);
 
-		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				i, /* SimState */ss);
+		toTest.setDistributedObjectLocation(location,  RemotePositionedAgent 
+				i,  SimState ss);
 
 		i += stepI;
 		j += stepJ;
 
 		location = new Int2D(i, j);
 
-		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				i, /* SimState */ss);
+		toTest.setDistributedObjectLocation(location,  RemotePositionedAgent 
+				i,  SimState ss);
 
 		assertNotSame("the agent is in two places at once",
 				toTest.rmap.up_mine.get(0).r, toTest.rmap.up_mine.get(1).r);
@@ -594,11 +646,14 @@ public class DDoubleGrid2DXYTester {
 	}
 
 
-	/**
+	*//**
 	 * test for the field partitioning.
 	 * @throws DMasonException 
-	 */
+	 *//*
 
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testMyFieldPartitioning() throws DMasonException {
 
@@ -609,9 +664,9 @@ public class DDoubleGrid2DXYTester {
 		
 		
 		
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */0, /* j */0, 10, 10, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 0,  j 0, 10, 10, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.myfield.down_xx;
 		Integer x1 = toTest.myfield.upl_xx;
@@ -628,10 +683,13 @@ public class DDoubleGrid2DXYTester {
 		assertEquals(diag, diagwh/10,1);
 	}
 
-	/**
+	*//**
 	 * Test my field partitioning max distance1.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testMyFieldPartitioningMaxDistance1() throws DMasonException {
 
@@ -640,9 +698,9 @@ public class DDoubleGrid2DXYTester {
 		int h = 10;
 		int maxD = 1;
 
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */0, /* j */0, 1, 1, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 0,  j 0, 1, 1, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.myfield.down_xx;
 		Integer x1 = toTest.myfield.upl_xx;
@@ -661,10 +719,13 @@ public class DDoubleGrid2DXYTester {
 	}
 
 	
-	/**
+	*//**
 	 * Test up mine partitioning.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testUpMinePartitioning() throws DMasonException {
 
@@ -672,9 +733,9 @@ public class DDoubleGrid2DXYTester {
 		int h = w;
 		int maxD = 0;
 
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */0, /* j */0, 1, 1, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 0,  j 0, 1, 1, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.rmap.up_mine.down_xx;
 		Integer x1 = toTest.rmap.up_mine.upl_xx;
@@ -685,10 +746,13 @@ public class DDoubleGrid2DXYTester {
 		assertEquals(w, side.intValue()+1);
 	}
 
-	/**
+	*//**
 	 * Test down mine partitioning max distance1.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testDownMinePartitioningMaxDistance1() throws DMasonException {
 
@@ -696,9 +760,9 @@ public class DDoubleGrid2DXYTester {
 		int h = w;
 		int maxD = 1;
 
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */0, /* j */0, 10, 10, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 0,  j 0, 10, 10, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.rmap.up_mine.down_xx;
 		Integer x1 = toTest.rmap.up_mine.upl_xx;
@@ -711,10 +775,13 @@ public class DDoubleGrid2DXYTester {
 
 	
 
-	/**
+	*//**
 	 * Test down mine partitioning.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testDownMinePartitioning() throws DMasonException {
 
@@ -722,9 +789,9 @@ public class DDoubleGrid2DXYTester {
 		int h = w;
 		int maxD = 0;
 
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */0, /* j */0, 10, 10, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 0,  j 0, 10, 10, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.rmap.down_mine.down_xx;
 		Integer x1 = toTest.rmap.down_mine.upl_xx;
@@ -735,10 +802,13 @@ public class DDoubleGrid2DXYTester {
 		assertEquals(w/10, side.intValue()+1);
 	}
 
-	/**
+	*//**
 	 * Test up mine partitioning max distance1.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testUpMinePartitioningMaxDistance1() throws DMasonException {
 
@@ -746,9 +816,9 @@ public class DDoubleGrid2DXYTester {
 		int h = w;
 		int maxD = 1;
 
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */0, /* j */0, 10, 10, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 0,  j 0, 10, 10, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.rmap.down_mine.down_xx;
 		Integer x1 = toTest.rmap.down_mine.upl_xx;
@@ -761,10 +831,13 @@ public class DDoubleGrid2DXYTester {
 
 	
 
-	/**
+	*//**
 	 * Test left mine partitioning.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testLeftMinePartitioning() throws DMasonException {
 
@@ -772,9 +845,9 @@ public class DDoubleGrid2DXYTester {
 		int h = w;
 		int maxD = 0;
 
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */0, /* j */0, 1, 1, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 0,  j 0, 1, 1, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.rmap.left_mine.down_yy;
 		Integer x1 = toTest.rmap.left_mine.upl_yy;
@@ -785,10 +858,13 @@ public class DDoubleGrid2DXYTester {
 		assertEquals(h, side.intValue()+1);
 	}
 
-	/**
+	*//**
 	 * Test left mine partitioning max distance1.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testLeftMinePartitioningMaxDistance1() throws DMasonException {
 
@@ -796,9 +872,9 @@ public class DDoubleGrid2DXYTester {
 		int h = w;
 		int maxD = 1;
 
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */1, /* j */1, 10, 10, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 1,  j 1, 10, 10, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.rmap.left_mine.down_yy;
 		Integer x1 = toTest.rmap.left_mine.upl_yy;
@@ -811,10 +887,13 @@ public class DDoubleGrid2DXYTester {
 
 	
 
-	/**
+	*//**
 	 * Test right mine partitioning.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testRightMinePartitioning() throws DMasonException {
 
@@ -822,9 +901,9 @@ public class DDoubleGrid2DXYTester {
 		int h = w;
 		int maxD = 0;
 
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */0, /* j */0, 10, 10, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 0,  j 0, 10, 10, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.rmap.right_mine.down_yy;
 		Integer x1 = toTest.rmap.right_mine.upl_yy;
@@ -835,10 +914,13 @@ public class DDoubleGrid2DXYTester {
 		assertEquals(h/10, side.intValue()+1);
 	}
 
-	/**
+	*//**
 	 * Test right mine partitioning max distance1.
 	 * @throws DMasonException 
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testRightMinePartitioningMaxDistance1() throws DMasonException {
 
@@ -846,9 +928,9 @@ public class DDoubleGrid2DXYTester {
 		int h = w;
 		int maxD = 1;
 
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */0, /* j */0, 10, 10, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 0,  j 0, 10, 10, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.rmap.right_mine.down_yy;
 		Integer x1 = toTest.rmap.right_mine.upl_yy;
@@ -861,9 +943,12 @@ public class DDoubleGrid2DXYTester {
 
 	
 
-	/**
+	*//**
 	 * Test up out partitioning.
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testUpOutPartitioning() throws DMasonException {
 
@@ -871,9 +956,9 @@ public class DDoubleGrid2DXYTester {
 		int h = w;
 		int maxD = 0;
 
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */0, /* j */0, 1, 1, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 0,  j 0, 1, 1, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.rmap.up_out.down_xx;
 		Integer x1 = toTest.rmap.up_out.upl_xx;
@@ -884,9 +969,12 @@ public class DDoubleGrid2DXYTester {
 		assertEquals(w, side.intValue()+1);
 	}
 
-	/**
+	*//**
 	 * Test down out partitioning max distance1.
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testDownOutPartitioningMaxDistance1() throws DMasonException {
 
@@ -894,9 +982,9 @@ public class DDoubleGrid2DXYTester {
 		int h = w;
 		int maxD = 1;
 
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */1, /* j */1, 10, 10, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 1,  j 1, 10, 10, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.rmap.up_out.down_xx;
 		Integer x1 = toTest.rmap.up_out.upl_xx;
@@ -909,9 +997,12 @@ public class DDoubleGrid2DXYTester {
 
 	
 
-	/**
+	*//**
 	 * Test down out partitioning.
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testDownOutPartitioning() throws DMasonException {
 
@@ -919,9 +1010,9 @@ public class DDoubleGrid2DXYTester {
 		int h = w;
 		int maxD = 0;
 
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */0, /* j */0, 10, 10, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 0,  j 0, 10, 10, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.rmap.down_out.down_xx;
 		Integer x1 = toTest.rmap.down_out.upl_xx;
@@ -932,9 +1023,12 @@ public class DDoubleGrid2DXYTester {
 		assertEquals(w/10, side.intValue()+1);
 	}
 
-	/**
+	*//**
 	 * Test up out partitioning max distance1.
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testUpOutPartitioningMaxDistance1() throws DMasonException {
 
@@ -942,9 +1036,9 @@ public class DDoubleGrid2DXYTester {
 		int h = w;
 		int maxD = 1;
 
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */9, /* j */9, 10, 10, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 9,  j 9, 10, 10, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.rmap.down_out.down_xx;
 		Integer x1 = toTest.rmap.down_out.upl_xx;
@@ -957,9 +1051,12 @@ public class DDoubleGrid2DXYTester {
 
 	
 
-	/**
+	*//**
 	 * Test left out partitioning.
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testLeftOutPartitioning() throws DMasonException {
 
@@ -967,9 +1064,9 @@ public class DDoubleGrid2DXYTester {
 		int h = w;
 		int maxD = 0;
 
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */0, /* j */0, 1, 1, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 0,  j 0, 1, 1, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.rmap.left_out.down_yy;
 		Integer x1 = toTest.rmap.left_out.upl_yy;
@@ -980,9 +1077,12 @@ public class DDoubleGrid2DXYTester {
 		assertEquals(h, side.intValue()+1);
 	}
 
-	/**
+	*//**
 	 * Test left out partitioning max distance1.
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testLeftOutPartitioningMaxDistance1() throws DMasonException {
 
@@ -990,9 +1090,9 @@ public class DDoubleGrid2DXYTester {
 		int h = w;
 		int maxD = 1;
 
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */1, /* j */1, 10, 10, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 1,  j 1, 10, 10, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.rmap.left_out.down_yy;
 		Integer x1 = toTest.rmap.left_out.upl_yy;
@@ -1004,9 +1104,12 @@ public class DDoubleGrid2DXYTester {
 	}
 
 	
-	/**
+	*//**
 	 * Test right out partitioning.
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testRightOutPartitioning() throws DMasonException {
 
@@ -1014,9 +1117,9 @@ public class DDoubleGrid2DXYTester {
 		int h = w;
 		int maxD = 0;
 
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */0, /* j */0, 10, 10, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 0,  j 0, 10, 10, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.rmap.right_out.down_yy;
 		Integer x1 = toTest.rmap.right_out.upl_yy;
@@ -1027,9 +1130,12 @@ public class DDoubleGrid2DXYTester {
 		assertEquals(h/10, side.intValue()+1);
 	}
 
-	/**
+	*//**
 	 * Test right out partitioning max distance1.
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testRightOutPartitioningMaxDistance1() throws DMasonException {
 
@@ -1037,9 +1143,9 @@ public class DDoubleGrid2DXYTester {
 		int h = w;
 		int maxD = 1;
 
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h,/* simState */
-		ss, maxD, /* i */0, /* j */0, 10, 10, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(w, h, simState 
+		ss, maxD,  i 0,  j 0, 10, 10, mode,0,false, name 
+		"test",  prefix "",true);
 
 		Integer x2 = toTest.rmap.right_out.down_yy;
 		Integer x1 = toTest.rmap.right_out.upl_yy;
@@ -1052,14 +1158,17 @@ public class DDoubleGrid2DXYTester {
 
 	
 
-	/**
+	*//**
 	 * Test corner congruence up right.
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testCornerCongruenceUpRight() throws DMasonException {
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(10,10,/* simState */
-		ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(10,10, simState 
+		ss, 1,  i 1,  j 1,  rows 3,  Colums 3, mode,0,false, name 
+		"test",  prefix "",true);
 
 		assertEquals("x", toTest.rmap.corner_mine_up_right.upl_xx,
 				toTest.rmap.corner_out_up_right_diag_center.down_xx - 1, 0);
@@ -1067,14 +1176,17 @@ public class DDoubleGrid2DXYTester {
 				toTest.rmap.corner_out_up_right_diag_center.down_yy+1, 0);
 	}
 
-	/**
+	*//**
 	 * Test corner congruence up left.
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testCornerCongruenceUpLeft() throws DMasonException {
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(10,10,/* simState */
-		ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(10,10, simState 
+		ss, 1,  i 1,  j 1,  rows 3,  Colums 3, mode,0,false, name 
+		"test",  prefix "",true);
 
 		assertEquals("x", toTest.rmap.corner_mine_up_left.upl_xx,
 				toTest.rmap.corner_out_up_left_diag_center.down_xx+1, 0);
@@ -1082,14 +1194,17 @@ public class DDoubleGrid2DXYTester {
 				toTest.rmap.corner_out_up_left_diag_center.down_yy+1, 0);
 	}
 
-	/**
+	*//**
 	 * Test corner congruence down left.
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testCornerCongruenceDownLeft() throws DMasonException {
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(10,10,/* simState */
-		ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(10,10, simState 
+		ss, 1,  i 1,  j 1,  rows 3,  Colums 3, mode,0,false, name 
+		"test",  prefix "",true);
 
 		assertEquals("x", toTest.rmap.corner_mine_down_left.upl_xx,
 				toTest.rmap.corner_out_down_left_diag_center.down_xx+1, 0);
@@ -1097,14 +1212,17 @@ public class DDoubleGrid2DXYTester {
 				toTest.rmap.corner_out_down_left_diag_center.down_yy - 1, 0);
 	}
 
-	/**
+	*//**
 	 * Test corner congruence down right.
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testCornerCongruenceDownRight() throws DMasonException {
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(10, 10,/* simState */
-		ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(10, 10, simState 
+		ss, 1,  i 1,  j 1,  rows 3,  Colums 3, mode,0,false, name 
+		"test",  prefix "",true);
 
 		assertEquals("x", toTest.rmap.corner_mine_down_right.down_xx,
 				toTest.rmap.corner_out_down_right_diag_center.upl_xx-1, 0);
@@ -1112,14 +1230,17 @@ public class DDoubleGrid2DXYTester {
 				toTest.rmap.corner_out_down_right_diag_center.upl_yy-1, 0);
 	}
 
-	/**
+	*//**
 	 * Test my field congruence.
-	 */
+	 *//*
+	*//**
+	 * @throws DMasonException
+	 *//*
 	@Test
 	public void testMyFieldCongruence() throws DMasonException {
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(10, 10,/* simState */
-		ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, mode,0,false,/* name */
-		"test", /* prefix */"",true);
+		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(10, 10, simState 
+		ss, 1,  i 1,  j 1,  rows 3,  Colums 3, mode,0,false, name 
+		"test",  prefix "",true);
 
 		// upLeft
 		assertEquals("X Up Left", toTest.myfield.upl_xx,
@@ -1134,5 +1255,5 @@ public class DDoubleGrid2DXYTester {
 
 	}
 
-	
+*/	
 }
