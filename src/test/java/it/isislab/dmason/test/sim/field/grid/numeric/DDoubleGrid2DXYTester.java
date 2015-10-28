@@ -5,12 +5,14 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Field;
 import java.util.Random;
 
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
+import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.numeric.DDoubleGrid2DFactory;
@@ -25,7 +27,7 @@ import org.junit.Test;
 import sim.engine.SimState;
 import sim.util.Int2D;
 /**
-* The Class DDoubleGrid2DXYTester. Tests the DDoubleGrid2DXY for the roroidal distribution.
+* The Class DDoubleGrid2DXYTester. Tests the DDoubleGrid2DXY for the non toroidal distribution.
 *
 * * @author Michele Carillo
  * @author Flavio Serrapica
@@ -37,9 +39,6 @@ public class DDoubleGrid2DXYTester {
 	
 	/** The distributed state. */
 	StubDistributedState ss;
-	
-	/** The remote agent. */
-	//StubRemotePositionedAgent sa; valori e non agenti --> double sa
 	
 	/** The num of loop of the tests. */
 	int numLoop = 8; // the max value for numLoop is 8 because for numLoop>8
@@ -67,6 +66,10 @@ public class DDoubleGrid2DXYTester {
 	
 	/** The connection type. */
 	int connectionType;
+	
+	CellType celltype;
+	
+	GeneralParam genParam;
 
 	/**
 	 * The Class StubDistributedState.
@@ -151,23 +154,15 @@ public class DDoubleGrid2DXYTester {
 		numAgents = numLoop;
 		mode = DistributedField2D.SQUARE_DISTRIBUTION_MODE;
 		connectionType = ConnectionType.pureActiveMQ;
-
-		GeneralParam genParam = new GeneralParam(width, height, maxDistance,
+		celltype = new CellType(0, 0);
+		genParam = new GeneralParam(width, height, maxDistance,
 				rows, columns, numAgents, mode, connectionType);
 
 		ss = new StubDistributedState(genParam);
 		
 		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(width, height,/* simState */
-		ss, maxDistance, /* i */0, /* j */0, rows, columns,mode,0,false,/* name */		"test", /* prefix */"",true);
-	
-		toTest = (DDoubleGrid2DXY) DDoubleGrid2DFactory.createDDoubleGrid2D(
-				width, height,
-				ss, maxDistance,
-				0,0, 
-				rows,columns,
-				mode,
-				0,
-				false, "toFoodGrid", "totest",true);
+		ss, maxDistance, /* i */celltype.pos_i, /* j */celltype.pos_j, rows, columns,mode,0,false,/* name */"test", /* prefix */"",false);
+
 
 	}
 	
@@ -184,8 +179,10 @@ public class DDoubleGrid2DXYTester {
 			Int2D location = new Int2D(toTest.myfield.upl_xx, toTest.myfield.upl_yy);
 			assertTrue(toTest.setDistributedObjectLocation(location, 
 					/* grid value */j, /* SimState */ss));
+			
+			
 			/*
-			 * Note: for test the method effect you should test also the real value in the location...
+			 * Note: To test the method effects you should test also the real value in the location...
 			 * 		but it is not possible, because the result will be available after method synchro invocation.   
 			 * 
 			 * assertEquals("The value in location "+location+" should be the same",j,toTest.field[location.x][location.y],0);
@@ -239,7 +236,6 @@ public class DDoubleGrid2DXYTester {
 	}
 	
 	
-	
 
 	/**
 	 * Test get state.
@@ -251,6 +247,25 @@ public class DDoubleGrid2DXYTester {
 		assertSame(ss, toTest.getState());
 	}
 
+	
+	@Test
+	public void testPublicVariables() throws DMasonException {
+		
+		assertEquals("The celltype should be "+celltype.pos_i,celltype.pos_i,toTest.cellType.pos_i);
+		assertEquals("The celltype should be "+celltype.pos_j,celltype.pos_j,toTest.cellType.pos_j);
+		assertEquals("The columns should be "+columns,columns,toTest.columns);
+		assertEquals("The rows should be "+rows,rows,toTest.rows);
+		assertEquals("The maxDistance should be "+maxDistance,maxDistance,toTest.MAX_DISTANCE);
+		assertEquals("The width should be "+width,width,toTest.getWidth());
+		assertEquals("The height should be "+height,height,toTest.getHeight());
+		int my_width,my_height;
+		my_width = width / rows;
+		my_height = height / columns;
+		assertEquals("The my_height should be "+my_height,my_height,toTest.my_height);
+		assertEquals("The my_width should be "+my_width,my_width,toTest.my_width);
+		
+	}
+	
 		
 	// AGENTS IS MEMORIZED IN THE rmap
 
