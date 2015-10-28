@@ -20,7 +20,6 @@ package it.isislab.dmason.sim.field.grid.numeric;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
-import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.grid.numeric.region.RegionDoubleNumeric;
@@ -33,7 +32,6 @@ import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.util.visualization.zoomviewerapp.ZoomArrayList;
-
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -43,9 +41,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
-
 import sim.engine.SimState;
-import sim.util.Double2D;
 import sim.util.Int2D;
 
 
