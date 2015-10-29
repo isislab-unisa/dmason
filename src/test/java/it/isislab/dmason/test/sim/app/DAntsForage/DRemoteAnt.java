@@ -63,7 +63,8 @@ public class DRemoteAnt extends RemoteAnt<Int2D>
 	@Override
 	public void step(SimState state)
     {
-		
+		/*if(((DistributedState)state).TYPE.pos_i==0 && ((DistributedState)state).TYPE.pos_j==0 )
+		System.out.println(((DistributedState)state).TYPE+" "+this.id);*/
 		depositPheromone(state);
 		act(state);
     }
