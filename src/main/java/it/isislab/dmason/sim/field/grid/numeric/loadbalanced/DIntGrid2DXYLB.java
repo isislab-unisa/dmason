@@ -252,8 +252,14 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 
 	@Override
 	public Int2D getAvailableRandomLocation() {
-		// TODO Auto-generated method stub
-		return null;
+		int x=(((DistributedState)sm).random.nextInt(width)%(my_width-1))+own_x;
+		if(x>(width-1)) x--;
+		int y=(((DistributedState)sm).random.nextInt(height)%(my_height-1))+own_y;
+		if(y>(height-1)) y--;
+
+		//rm.setPos(new Int2D(x, y));
+
+		return (new Int2D(x, y));
 	}
 
 
@@ -481,8 +487,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 			    		
 			    		for(CellType ct : hm.keySet())
 			    		{	
+			    			
 			    			MyCellIntegerNumeric md = (MyCellIntegerNumeric)hm.get(ct);
-			
+			    			
+			    			
 			    			if(md.isMine(location.x, location.y) && getState().schedule.getSteps()>1){
 						    	if(md.getMyField().isMine(location.x,location.y))  
 						    		return md.getMyField().addEntryNum(new EntryNum<Integer,Int2D>(d, location));
