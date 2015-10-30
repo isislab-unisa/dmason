@@ -62,7 +62,7 @@ public class LoadBalancingIntegerNumeric <E> implements LoadBalancingInterface{
 		{
 			for (int j = 0; j < 3; j++) 
 			{	
-				MyCellIntegerField mD;
+				MyCellIntegerNumeric mD;
 
 				if((lP[k]%2==0) && (lP[k]!=8))
 				{
@@ -87,7 +87,7 @@ public class LoadBalancingIntegerNumeric <E> implements LoadBalancingInterface{
 
 					initializePositionGood(topics, positionGood);
 
-					SplittedIntField split = new SplittedIntField((Integer)superOwnX, (Integer)superOwnY, (Integer)superWidth, 
+					SplittedIntegerNumeric split = new SplittedIntegerNumeric((Integer)superOwnX, (Integer)superOwnY, (Integer)superWidth, 
 							(Integer)superHeight, x.getState(), MAX_DISTANCE, i, j, numPeer, x.getID(), 
 							lP[k], x.getState().TYPE,topics,positionGood);
 
@@ -117,7 +117,7 @@ public class LoadBalancingIntegerNumeric <E> implements LoadBalancingInterface{
 
 						initializePositionGood(topics, positionGood);
 						
-						SplittedIntField split = new SplittedIntField((Integer)superOwnX, (Integer)superOwnY, (Integer)superWidth, 
+						SplittedIntegerNumeric split = new SplittedIntegerNumeric((Integer)superOwnX, (Integer)superOwnY, (Integer)superWidth, 
 								(Integer)superHeight, x.getState(), MAX_DISTANCE, i, j, numPeer, x.getID(), 
 								lP[k], x.getState().TYPE,topics,positionGood);
 
@@ -130,7 +130,7 @@ public class LoadBalancingIntegerNumeric <E> implements LoadBalancingInterface{
 						topics = null;
 						positionGood = null;
 
-						SplittedIntField split = new SplittedIntField((Integer)superOwnX, (Integer)superOwnY, (Integer)superWidth, 
+						SplittedIntegerNumeric split = new SplittedIntegerNumeric((Integer)superOwnX, (Integer)superOwnY, (Integer)superWidth, 
 								(Integer)superHeight, x.getState(), MAX_DISTANCE, i, j, numPeer, x.getID(), 
 								lP[k], x.getState().TYPE,topics,positionGood);
 
