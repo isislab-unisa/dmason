@@ -212,7 +212,7 @@ public class DIntGrid2DXYTester {
 	/**
 	 * Test corner mine up left.
 	 * @throws DMasonException 
-	 */
+	 *//*
 	@Test
 	public void testCornerMineUpLeft() throws DMasonException {
 
@@ -234,8 +234,8 @@ public class DIntGrid2DXYTester {
 			j = toTest.rmap.corner_mine_up_left.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location,  grid value 
+						i,  SimState ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -243,12 +243,12 @@ public class DIntGrid2DXYTester {
 		}
 
 		assertEquals(count, toTest.rmap.corner_mine_up_left.size());
-	}
+	}*/
 
 	/**
 	 * Test corner mine up right.
 	 * @throws DMasonException 
-	 */
+	 *//*
 	@Test
 	public void testCornerMineUpRight() throws DMasonException {
 
@@ -270,8 +270,8 @@ public class DIntGrid2DXYTester {
 			j = toTest.rmap.corner_mine_up_right.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location,  grid value 
+						i,  SimState ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -279,12 +279,12 @@ public class DIntGrid2DXYTester {
 		}
 
 		assertEquals(count, toTest.rmap.corner_mine_up_right.size());
-	}
-
-	/**
+	}*/
+/*
+	*//**
 	 * Test corner mine down left.
 	 * @throws DMasonException 
-	 */
+	 *//*
 	@Test
 	public void testCornerMineDownLeft() throws DMasonException {
 
@@ -306,8 +306,8 @@ public class DIntGrid2DXYTester {
 			j = toTest.rmap.corner_mine_down_left.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location,  grid value 
+						i,  SimState ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -316,7 +316,7 @@ public class DIntGrid2DXYTester {
 
 		assertEquals(count, toTest.rmap.corner_mine_down_left.size());
 	}
-
+*/
 	/**
 	 * Test corner mine down right.
 	 * @throws DMasonException 
@@ -388,10 +388,10 @@ public class DIntGrid2DXYTester {
 		assertEquals(count, toTest.rmap.down_mine.size());
 	}
 
-	/**
+/*	*//**
 	 * Test left mine.
 	 * @throws DMasonException 
-	 */
+	 *//*
 	@Test
 	public void testLeftMine() throws DMasonException {
 
@@ -413,8 +413,8 @@ public class DIntGrid2DXYTester {
 			j = toTest.rmap.left_mine.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location,  grid value 
+						i,  SimState ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -422,7 +422,7 @@ public class DIntGrid2DXYTester {
 		}
 
 		assertEquals(count, toTest.rmap.left_mine.size());
-	}
+	}*/
 
 	/**
 	 * Test right mine.
@@ -463,7 +463,7 @@ public class DIntGrid2DXYTester {
 	/**
 	 * Test up mine.
 	 * @throws DMasonException 
-	 */
+	 *//*
 	@Test
 	public void testUpMine() throws DMasonException {
 
@@ -485,8 +485,8 @@ public class DIntGrid2DXYTester {
 			j = stepJ + toTest.rmap.up_mine.upl_yy;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location,  grid value 
+						i,  SimState ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -495,11 +495,11 @@ public class DIntGrid2DXYTester {
 		assertEquals(count, toTest.rmap.up_mine.size());
 
 	}
-
+*/
 	/**
 	 * Test double set distributed object location god agent.
 	 * @throws DMasonException 
-	 */
+	 *//*
 	@Test
 	public void testDoubleSetDistributedObjectLocationGodAgent() throws DMasonException {
 		int i = toTest.rmap.up_mine.upl_xx;
@@ -507,19 +507,19 @@ public class DIntGrid2DXYTester {
 
 		Int2D location = new Int2D(i, j);
 		System.out.println(location);
-		assertTrue(toTest.setDistributedObjectLocation(location, /* grid value */
-				Integer.parseInt("6"), /* SimState */ss));
+		assertTrue(toTest.setDistributedObjectLocation(location,  grid value 
+				Integer.parseInt("6"),  SimState ss));
 		
 		assertEquals(6,toTest.field[i+1][j+1]);
 
 	}
 
-	/**
+	*//**
 	 * test for the field partitioning.
 	 * 
 	 * @throws DMasonException
-	 */
-
+	 *//*
+*/
 	@Test
 	public void testMyFieldPartitioning() throws DMasonException {
 
@@ -580,7 +580,7 @@ public class DIntGrid2DXYTester {
 
 	/**
 	 * Test up mine partitioning.
-	 */
+	 *//*
 	@Test
 	public void testUpMinePartitioning() throws DMasonException {
 
@@ -588,9 +588,9 @@ public class DIntGrid2DXYTester {
 		int h = w;
 		int maxD = 0;
 
-		toTest = (DIntGrid2DXY) DIntGrid2DFactory.createDIntGrid2D(w, h,/* simState */
-				ss, maxD, /* i */0, /* j */0, 1, 1, mode, 0, false,/* name */
-				"test", /* prefix */"", true);
+		toTest = (DIntGrid2DXY) DIntGrid2DFactory.createDIntGrid2D(w, h, simState 
+				ss, maxD,  i 0,  j 0, 1, 1, mode, 0, false, name 
+				"test",  prefix "", true);
 
 		Integer x2 = toTest.rmap.up_mine.down_xx;
 		Integer x1 = toTest.rmap.up_mine.upl_xx;
@@ -600,10 +600,10 @@ public class DIntGrid2DXYTester {
 
 		assertEquals(w, side.intValue() + 1);
 	}
-
+*/
 	/**
 	 * Test down mine partitioning max distance1.
-	 */
+	 *//*
 	@Test
 	public void testDownMinePartitioningMaxDistance1() throws DMasonException {
 
@@ -611,9 +611,9 @@ public class DIntGrid2DXYTester {
 		int h = w;
 		int maxD = 1;
 
-		toTest = (DIntGrid2DXY) DIntGrid2DFactory.createDIntGrid2D(w, h,/* simState */
-				ss, maxD, /* i */0, /* j */0, 10, 10, mode, 0, false,/* name */
-				"test", /* prefix */"", true);
+		toTest = (DIntGrid2DXY) DIntGrid2DFactory.createDIntGrid2D(w, h, simState 
+				ss, maxD,  i 0,  j 0, 10, 10, mode, 0, false, name 
+				"test",  prefix "", true);
 
 		Integer x2 = toTest.rmap.up_mine.down_xx;
 		Integer x1 = toTest.rmap.up_mine.upl_xx;
@@ -623,7 +623,7 @@ public class DIntGrid2DXYTester {
 
 		assertEquals(w / 10, side.intValue() + 1);
 	}
-
+*/
 	/**
 	 * Test down mine partitioning.
 	 */
