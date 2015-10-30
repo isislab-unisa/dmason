@@ -280,7 +280,12 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	@Override
 	public Int2D getAvailableRandomLocation() {
 
-		return null;
+		int x=(((DistributedState)sm).random.nextInt(width)%(my_width-1))+own_x;
+		if(x>(width-1)) x--;
+		int y=(((DistributedState)sm).random.nextInt(height)%(my_height-1))+own_y;
+		if(y>(height-1)) y--;
+
+		return (new Int2D(x, y));
 	}
 
 	/**  
@@ -470,7 +475,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				else
 				{		    		
 					for(Integer pos : listGrid.keySet())
-					{	
+					{
 						HashMap<CellType, MyCellInterface> hm = listGrid.get(pos);
 
 						for(CellType ct : hm.keySet())
