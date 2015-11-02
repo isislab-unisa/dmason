@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.grid.region.RegionIntegerLB;
 import it.isislab.dmason.sim.field.support.field2D.Entry;
+import it.isislab.dmason.test.sim.app.DParticles.DParticle;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -212,8 +213,9 @@ public class RegionIntegerLBTester {
 	 */
 	@Test
 	public void testCloneWithEntry() {
-		RemotePositionedAgent<Int2D> c = null;
-		Int2D f = null;
+		rd.clear();
+		RemotePositionedAgent<Int2D> c = new DParticle();
+		Int2D f = new Int2D();
 		Entry<Int2D> e = new Entry<Int2D>(c, f);
 		rd.addAgents(e);
 		RegionIntegerLB clone = null;
@@ -223,6 +225,6 @@ public class RegionIntegerLBTester {
 		} catch (NullPointerException err) {
 			fail("clone fail");
 		}
-		assertEquals("incorrect copy of entry", e, clone);
+		assertEquals("incorrect copy of entry", rd, clone);
 	}
 }

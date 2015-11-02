@@ -9,10 +9,9 @@ import static org.junit.Assert.fail;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.Entry;
-
+import it.isislab.dmason.test.sim.app.DParticles.DParticle;
 import org.junit.Before;
 import org.junit.Test;
-
 import sim.util.Int2D;
 /**
 * The Class RegionIntegerTester. Tests the RegionInteger.
@@ -213,17 +212,20 @@ public class RegionIntegerTester {
 	 */
 	@Test
 	public void testCloneWithEntry() {
-		RemotePositionedAgent<Int2D> c = null;
-		Int2D f = null;
+		rd.clear();
+		RemotePositionedAgent<Int2D> c =  new DParticle();
+		Int2D f = new Int2D();
 		Entry<Int2D> e = new Entry<Int2D>(c, f);
 		rd.addAgents(e);
 		RegionInteger clone = null;
 		try {
-			clone = (RegionInteger) rd.clone();
+			clone = (RegionInteger) rd.clone();// per poter funzionare bisogna implementare il metodo equals 
+			   // alla classe Region ed Entry -> implica che ogni RemotePositionedAgent deve implementare il metodo equals
 
 		} catch (NullPointerException err) {
 			fail("clone fail");
 		}
-		assertEquals("incorrect copy of entry", e, clone);
+		assertEquals("incorrect copy of entry", rd, clone);
+				
 	}
 }
