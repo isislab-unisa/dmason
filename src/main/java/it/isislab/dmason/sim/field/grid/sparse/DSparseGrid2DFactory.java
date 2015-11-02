@@ -29,16 +29,16 @@ import it.isislab.dmason.sim.field.grid.sparse.thin.DSparseGrid2DYThin;
 import sim.engine.SimState;
 
 /**
-*  A Factory class to create the right distribution field according to four parameters
-*  HORIZONTAL_DISTRIBUTION_MODE, SQUARE_DISTRIBUTION_MODE, SQUARE_BALANCED_DISTRIBUTION_MODE and HORIZONTAL_BALANCED_DISTRIBUTION_MODE.
-* @author Michele Carillo
-* @author Ada Mancuso
-* @author Dario Mazzeo
-* @author Francesco Milone
-* @author Francesco Raia
-* @author Flavio Serrapica
-* @author Carmine Spagnuolo
-*/
+ *  A Factory class to create the right distribution field according to four parameters
+ *  HORIZONTAL_DISTRIBUTION_MODE, SQUARE_DISTRIBUTION_MODE, SQUARE_BALANCED_DISTRIBUTION_MODE and HORIZONTAL_BALANCED_DISTRIBUTION_MODE.
+ * @author Michele Carillo
+ * @author Ada Mancuso
+ * @author Dario Mazzeo
+ * @author Francesco Milone
+ * @author Francesco Raia
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
+ */
 public final class DSparseGrid2DFactory 
 {	
 
@@ -60,28 +60,45 @@ public final class DSparseGrid2DFactory
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */
 	public static final DSparseGrid2D createDSparseGrid2D(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns,int MODE, String name, String topicPrefix, boolean isToroidal)
-		throws DMasonException
+			throws DMasonException
 	{
+
+
+		//general parameters check for value   
+
+		if(width>=Integer.MAX_VALUE) {throw new DMasonException("Illegal value : width value exceeds Integer max value");}
+		if(height<=0) {throw new DMasonException("Illegal value: Field height <= 0 is not defined");}
+		if(height>=Integer.MAX_VALUE) {throw new DMasonException("Illegal value : height value exceeds Integer max value");}
+		if(max_distance<0){throw new DMasonException("Illegal value, max_distance value must be greater than 0");}
+		if(max_distance>=Integer.MAX_VALUE ){throw new DMasonException("Illegal value : max_distance value exceded Integer max value");}
+		if(max_distance>=width ){throw new DMasonException(String.format("Illegal value : max_distance (%d) value exceded width(%d) value",max_distance,width));}
+		if(width<=0) {throw new DMasonException("Illegal value: Field width <= 0 is not defined");}
+		if(columns<=0 || rows <=0){throw new DMasonException("Illegal value : columns value and rows value must be greater than 0");}
+
+
+
 		if(MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE)
 		{
-			
-						DistributedField2D field=new DSparseGrid2DY(width, height,sm, max_distance, i, j, rows,columns, name,topicPrefix);
-						field.setToroidal(isToroidal);
-						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
-						
-						return (DSparseGrid2D)field;
-					
-		
+
+			//horizontal mode 1 row fixed and columns value 0<j<=n 
+			if(rows!=1){throw new DMasonException("Illegal rows dimension for horizontal mode, it must have one row");}
+			DistributedField2D field=new DSparseGrid2DY(width, height,sm, max_distance, i, j, rows,columns, name,topicPrefix);
+			field.setToroidal(isToroidal);
+			((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
+
+			return (DSparseGrid2D)field;
+
+
 		}
 		else
 			if(MODE==DistributedField2D.SQUARE_DISTRIBUTION_MODE)
 			{
-			        if(rows!=columns){throw new DMasonException("In square mode rows and columns must be equals!");}
-					DistributedField2D field = new DSparseGrid2DXY(width, height,sm, max_distance, i, j, rows,columns, name,topicPrefix);
-					field.setToroidal(isToroidal);
-					((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
-					return (DSparseGrid2D)field;
-				
+				if(rows!=columns){throw new DMasonException("In square mode rows and columns must be equals!");}
+				DistributedField2D field = new DSparseGrid2DXY(width, height,sm, max_distance, i, j, rows,columns, name,topicPrefix);
+				field.setToroidal(isToroidal);
+				((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
+				return (DSparseGrid2D)field;
+
 			}
 			else
 				if(MODE==DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE)
@@ -100,23 +117,23 @@ public final class DSparseGrid2DFactory
 				}
 				else
 					if(MODE==DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
-				{
-							
-								DistributedField2D field=new DSparseGrid2DYLB(width, height,sm, max_distance, i, j, rows,columns, name,topicPrefix);
-								field.setToroidal(isToroidal);
-								((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
-								
-								return (DSparseGrid2D)field;
-							
-				
-				}
-			else 
-			{
-				throw new DMasonException("Illegal Distribution Mode");
-			}
-		
+					{if(rows!=1){throw new DMasonException("Illegal rows dimension for horizontal balanced mode, it must have one row");}
+
+					DistributedField2D field=new DSparseGrid2DYLB(width, height,sm, max_distance, i, j, rows,columns, name,topicPrefix);
+					field.setToroidal(isToroidal);
+					((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
+
+					return (DSparseGrid2D)field;
+
+
+					}
+					else 
+					{
+						throw new DMasonException("Illegal Distribution Mode");
+					}
+
 	}
-	
+
 	/**
 	 * Method used only for Thin simulations
 	 * 
@@ -136,26 +153,26 @@ public final class DSparseGrid2DFactory
 	 */
 	public static final DSparseGrid2DThin createDSparseGrid2DThin(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns,int MODE, String name, String topicPrefix, boolean isToroidal)
 			throws DMasonException
-		{
+	{
 		if(MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE)
 		{
 			int field_width,field_height;
-			
+
 			//upper left corner's coordinates
-			
+
 			// own width and height
 			if(j<(width%columns))
 				field_width=(int) Math.floor(width/columns+1)+4*max_distance;
 			else
 				field_width=(int) Math.floor(width/columns)+4*max_distance;
 			field_height=height;
-						DistributedField2D field=new DSparseGrid2DYThin(width, height, field_width, field_height,sm, max_distance, i, j, rows,columns, name,topicPrefix);
-						field.setToroidal(isToroidal);
-						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
-						
-						return (DSparseGrid2DThin)field;
-					
-		
+			DistributedField2D field=new DSparseGrid2DYThin(width, height, field_width, field_height,sm, max_distance, i, j, rows,columns, name,topicPrefix);
+			field.setToroidal(isToroidal);
+			((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
+
+			return (DSparseGrid2DThin)field;
+
+
 		}
 		else
 			if(MODE==DistributedField2D.SQUARE_DISTRIBUTION_MODE)
@@ -167,21 +184,21 @@ public final class DSparseGrid2DFactory
 					field_width=(int) Math.floor(width/columns+1)+4*max_distance;
 				else
 					field_width=(int) Math.floor(width/columns)+4*max_distance;
-				
+
 				if(i<(height%rows))
 					field_height=(int) Math.floor(height/rows+1)+4*max_distance;
 				else
 					field_height=(int) Math.floor(height/rows)+4*max_distance;
-			
-					DistributedField2D field = new DSparseGrid2DXYThin(width, height,field_width,field_height,sm, max_distance, i, j, rows,columns, name,topicPrefix);
-					field.setToroidal(isToroidal);
-					((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
-					return (DSparseGrid2DThin)field;
-				
+
+				DistributedField2D field = new DSparseGrid2DXYThin(width, height,field_width,field_height,sm, max_distance, i, j, rows,columns, name,topicPrefix);
+				field.setToroidal(isToroidal);
+				((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
+				return (DSparseGrid2DThin)field;
+
 			}
 			else 
 			{
 				throw new DMasonException("Illegal Distribution Mode");
 			}
-		}
+	}
 }
