@@ -176,11 +176,8 @@ public class RegionIntegerTester {
 	public void testAddAgents() {
 		RemotePositionedAgent<Int2D> c = null;
 		Int2D f = null;
-		/*
-		 * BUG FIND mi fa inserire un entry con valori null
-		 */
 		Entry<Int2D> e = new Entry<Int2D>(c, f);
-		assertTrue(rd.addAgents(e));
+		assertFalse(rd.addAgents(e));
 	}
 
 	/**
@@ -188,8 +185,8 @@ public class RegionIntegerTester {
 	 */
 	@Test
 	public void testAddAgentsVerify() {
-		RemotePositionedAgent<Int2D> c = null;
-		Int2D f = null;
+		RemotePositionedAgent<Int2D> c = new DParticle();
+		Int2D f = new Int2D(2, 4);
 		Entry<Int2D> e = new Entry<Int2D>(c, f);
 		rd.addAgents(e);
 		assertEquals(e, rd.get(0));
