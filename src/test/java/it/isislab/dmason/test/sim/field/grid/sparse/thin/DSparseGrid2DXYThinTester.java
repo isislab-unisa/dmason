@@ -775,7 +775,7 @@ public class DSparseGrid2DXYThinTester {
 
 		toTest = (DSparseGrid2DXYThin) DSparseGrid2DFactory
 				.createDSparseGrid2DThin(w, h,/* simState */
-						ss, maxD, /* i */0, /* j */0, 1, 1, mode,/* name */
+						ss, maxD, /* i */1, /* j */1, 10, 10, mode,/* name */
 						"test", /* prefix */"", true);
 
 		Integer x2 = toTest.rmap.down_mine.down_xx;
@@ -799,11 +799,11 @@ public class DSparseGrid2DXYThinTester {
 
 		toTest = (DSparseGrid2DXYThin) DSparseGrid2DFactory
 				.createDSparseGrid2DThin(w, h,/* simState */
-						ss, maxD, /* i */9, /* j */9, 10, 10, mode,/* name */
+						ss, maxD, /* i */1, /* j */1, 10, 10, mode,/* name */
 						"test", /* prefix */"", true);
 
-		Integer x2 = toTest.rmap.down_mine.down_xx;
-		Integer x1 = toTest.rmap.down_mine.upl_xx;
+		Integer x2 = toTest.rmap.up_mine.down_xx;
+		Integer x1 = toTest.rmap.up_mine.upl_xx;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
@@ -847,7 +847,7 @@ public class DSparseGrid2DXYThinTester {
 
 		toTest = (DSparseGrid2DXYThin) DSparseGrid2DFactory
 				.createDSparseGrid2DThin(w, h,/* simState */
-						ss, maxD, /* i */0, /* j */0, 10, 10, mode,/* name */
+						ss, maxD, /* i */1, /* j */1, 10, 10, mode,/* name */
 						"test", /* prefix */"", true);
 
 		Integer x2 = toTest.rmap.left_mine.down_yy;
