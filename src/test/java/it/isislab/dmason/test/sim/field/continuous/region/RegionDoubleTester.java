@@ -116,9 +116,7 @@ public class RegionDoubleTester {
 	 */
 	@Test
 	public void testAddAgentsNull() {
-		/*
-		 * BUG FIND mi fa inserire un entry null
-		 */
+		
 		Entry<Double2D> e = null;
 		assertFalse(rd.addAgents(e));
 
@@ -131,9 +129,6 @@ public class RegionDoubleTester {
 	public void testAddAgents() {
 		RemotePositionedAgent<Double2D> c = null;
 		Double2D f = null;
-		/*
-		 * BUG FIND mi fa inserire un entry con valori null
-		 */
 		Entry<Double2D> e = new Entry<Double2D>(c, f);
 		assertFalse(rd.addAgents(e));
 	}
