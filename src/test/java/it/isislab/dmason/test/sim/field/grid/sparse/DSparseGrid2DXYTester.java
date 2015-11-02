@@ -836,7 +836,7 @@ public class DSparseGrid2DXYTester {
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(w,
 				h,/* simState */
-				ss, maxD, /* i */1, /* j */0, 10, 10, mode,/* name */
+				ss, maxD, /* i */1, /* j */1, 10, 10, mode,/* name */
 				"test", /* prefix */"", true);
 
 		Integer x2 = toTest.rmap.left_mine.down_yy;
@@ -934,13 +934,14 @@ public class DSparseGrid2DXYTester {
 				h,/* simState */
 				ss, maxD, /* i */0, /* j */0, 10, 10, mode,/* name */
 				"test", /* prefix */"", true);
-
-		Integer x2 = toTest.rmap.up_out.down_xx;
-		Integer x1 = toTest.rmap.up_out.upl_xx;
+		
+		
+		Integer x2 = toTest.rmap.down_out.down_xx;
+		Integer x1 = toTest.rmap.down_out.upl_xx;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
-
+        
 		assertEquals(w / 10, side.intValue() + 1);
 	}
 
@@ -980,7 +981,7 @@ public class DSparseGrid2DXYTester {
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(w,
 				h,/* simState */
-				ss, maxD, /* i */9, /* j */9, 10, 10, mode,/* name */
+				ss, maxD, /* i */1, /* j */1, 10, 10, mode,/* name */
 				"test", /* prefix */"", true);
 
 		Integer x2 = toTest.rmap.down_out.down_xx;
