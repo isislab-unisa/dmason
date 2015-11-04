@@ -17,8 +17,10 @@
 package it.isislab.dmason.test.sim.app.DFlockers;
 import it.isislab.dmason.test.sim.app.DFlockers.DFlockers;
 import it.isislab.dmason.test.sim.app.DFlockers.RemoteFlock;
+import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
+import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.continuous.DContinuous2D;
 
 import java.awt.Color;
@@ -28,6 +30,7 @@ import sim.field.continuous.Continuous2D;
 import sim.portrayal.Orientable2D;
 import sim.util.Bag;
 import sim.util.Double2D;
+import sim.util.Int2D;
 import ec.util.MersenneTwisterFast;
 /**
  * 
@@ -194,12 +197,15 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
 		lastd = new Double2D(dx,dy);
 		pos = new Double2D(flock.flockers.stx(pos.x + dx), flock.flockers.sty(pos.y + dy));
     	        
-		try {
-			flock.flockers.setDistributedObjectLocation(pos, this, state);
-		} catch (DMasonException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
+	
+			RemoteParam<DFlocker> thisAgent = new RemoteParam<DFlocker>(this);
+			try {
+				flock.flockers.setDistributedObjectLocation(pos, thisAgent, state);
+			} catch (DMasonException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
 	}
 	
 	public Color getColor() 

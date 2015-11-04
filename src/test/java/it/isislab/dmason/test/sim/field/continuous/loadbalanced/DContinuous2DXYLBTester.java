@@ -10,7 +10,9 @@ import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.continuous.DContinuous2DFactory;
 import it.isislab.dmason.sim.field.continuous.loadbalanced.DContinuous2DXYLB;
+import it.isislab.dmason.test.sim.field.continuous.DContinuous2DXYTester.StubRemotePositionedAgent;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
+import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.ConnectionType;
 
 import org.junit.Before;
@@ -36,7 +38,9 @@ public class DContinuous2DXYLBTester {
 	StubDistributedState ss;
 
 	/** The remote agent. */
-	StubRemotePositionedAgent sa;
+	StubRemotePositionedAgent stubAgent;
+	
+	RemoteParam<StubRemotePositionedAgent> sa;
 
 	/** The num of loop of the tests. */
 	int numLoop = 8; // the max value for numLoop is 8 because for numLoop>8
@@ -246,7 +250,8 @@ public class DContinuous2DXYLBTester {
 		GeneralParam genParam = new GeneralParam(width, height, maxDistance,
 				rows, columns, numAgents, mode, connectionType);
 
-		sa = new StubRemotePositionedAgent();
+		stubAgent = new StubRemotePositionedAgent();
+		sa= new RemoteParam<StubRemotePositionedAgent>(stubAgent);
 		ss = new StubDistributedState(genParam);
 		// toTest = new DContinuous2DXYLB(/* discretization */0.5, width,
 		// height, /* simState */
@@ -300,7 +305,7 @@ public class DContinuous2DXYLBTester {
 		for (int i = 0; i < numLoop; i++) {
 			Double2D location = toTest.getAvailableRandomLocation();
 			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					new StubRemotePositionedAgent(), /* SimState */ss);
+					new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss);
 		}
 		assertEquals(numLoop, toTest.getNumAgents());
 	}

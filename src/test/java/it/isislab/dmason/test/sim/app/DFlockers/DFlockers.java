@@ -121,7 +121,7 @@ public class DFlockers extends DistributedState<Double2D>
     public double gridHeight ;   
     public int MODE;
     
-    public static String topicPrefix = "";
+    public static String topicPrefix = "flockers";
     
     // -----------------------------------------------------------------------
  	// DEBUG -----------------------------------------------------------------

@@ -58,7 +58,7 @@ public class TestDParticles {
 		
 	}
 
-	private static int numSteps = 1000; //only graphicsOn=false
+	private static int numSteps = 100; //only graphicsOn=false
 	private static int rows = 3; //number of rows
 	private static int columns = 3; //number of columns
 	private static int MAX_DISTANCE=1; //max distance

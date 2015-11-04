@@ -14,6 +14,7 @@ import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2DFactory;
 import it.isislab.dmason.sim.field.grid.numeric.loadbalanced.DIntGrid2DXYLB;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
+import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.ConnectionType;
 
 import org.junit.Before;
@@ -187,7 +188,7 @@ public class DIntGrid2DXYLBTester {
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
 			assertTrue(toTest.setDistributedObjectLocation(location, /* grid value */
-					i, /* SimState */ss));
+					new RemoteParam<Integer>(i), /* SimState */ss));
 		}
 	}
 
@@ -202,7 +203,7 @@ public class DIntGrid2DXYLBTester {
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
 			toTest.setDistributedObjectLocation(location,  
-					i,  ss);
+					new RemoteParam<Integer>(i),  ss);
 		}
 
 		assertSame(ss, toTest.getState());

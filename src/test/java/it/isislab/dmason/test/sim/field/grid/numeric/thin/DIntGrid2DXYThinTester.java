@@ -13,6 +13,7 @@ import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2DFactory;
 import it.isislab.dmason.sim.field.grid.numeric.thin.DIntGrid2DXYThin;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
+import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.ConnectionType;
 
 import org.junit.Before;
@@ -154,8 +155,8 @@ public class DIntGrid2DXYThinTester {
 	@Before
 	public void setUp() throws Exception {
 
-		width = 100;
-		height = 100;
+		width = 1000;
+		height = 1000;
 		maxDistance = 1;
 		rows = 10;
 		columns = 10;
@@ -170,7 +171,7 @@ public class DIntGrid2DXYThinTester {
 
 		toTest = (DIntGrid2DXYThin) DIntGrid2DFactory.createDIntGrid2DThin(
 				width, height,/* simState */
-				ss, maxDistance, /* i */0, /* j */0, rows, columns, mode, 0,
+				ss, maxDistance, /* i */2, /* j */2, rows, columns, mode, 0,
 				false,/* name */
 				"test", /* prefix */"", true);
 
@@ -186,7 +187,7 @@ public class DIntGrid2DXYThinTester {
 		
 			Int2D location = new Int2D(toTest.myfield.down_xx, toTest.myfield.down_yy);
 			assertTrue("The Int2D location should belong at myfield",toTest.setDistributedObjectLocation(location, /* grid value */
-					5, /* SimState */ss));
+					new RemoteParam<Integer>(5), /* SimState */ss));
 	}
 	
 
@@ -200,7 +201,7 @@ public class DIntGrid2DXYThinTester {
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
 			assertTrue(toTest.setDistributedObjectLocation(location, /* grid value */
-					i, /* SimState */ss));
+					new RemoteParam<Integer>(i), /* SimState */ss));
 		}
 	}
 
@@ -217,7 +218,7 @@ public class DIntGrid2DXYThinTester {
 			Int2D location = toTest.getAvailableRandomLocation();
 			try{
 			toTest.setDistributedObjectLocation(location, /* grid value */
-					Double.parseDouble("4.3"), /* SimState */ss);
+					new RemoteParam<Double>(Double.parseDouble("4.3")), /* SimState */ss);
 				fail("it should throw a DMasonException");
 			}catch(DMasonException e) {/* good */}
 		}
@@ -237,7 +238,7 @@ public class DIntGrid2DXYThinTester {
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
 			toTest.setDistributedObjectLocation(location, /* grid value */
-					i, /* SimState */ss);
+					new RemoteParam<Integer>(i), /* SimState */ss);
 		}
 
 		assertSame(ss, toTest.getState());
@@ -253,7 +254,7 @@ public class DIntGrid2DXYThinTester {
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
 			toTest.setDistributedObjectLocation(location, /* grid value */
-					i, /* SimState */ss);
+					new RemoteParam<Integer>(i), /* SimState */ss);
 		}
 		assertEquals(1, toTest.getNumAgents());
 	}
@@ -268,7 +269,7 @@ public class DIntGrid2DXYThinTester {
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
 			toTest.setDistributedObjectLocation(location, /* grid value */
-					i, /* SimState */ss);
+					new RemoteParam<Integer>(i), /* SimState */ss);
 		}
 		assertEquals(numLoop, toTest.getNumAgents());
 	}
@@ -282,6 +283,8 @@ public class DIntGrid2DXYThinTester {
 	@Test
 	public void testCornerMineUpLeft() throws DMasonException {
 
+		
+			
 		int i = toTest.rmap.corner_mine_up_left.upl_xx;
 		int j = toTest.rmap.corner_mine_up_left.upl_yy;
 
@@ -301,7 +304,7 @@ public class DIntGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+						new RemoteParam<Integer>(i), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -337,7 +340,7 @@ public class DIntGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+						new RemoteParam<Integer>(i), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -373,7 +376,7 @@ public class DIntGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+						new RemoteParam<Integer>(i), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -409,7 +412,7 @@ public class DIntGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+						new RemoteParam<Integer>(i), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -443,7 +446,7 @@ public class DIntGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+						new RemoteParam<Integer>(i), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 
@@ -480,7 +483,7 @@ public class DIntGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+						new RemoteParam<Integer>(i), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -520,7 +523,7 @@ public class DIntGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+						new RemoteParam<Integer>(i), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -556,7 +559,7 @@ public class DIntGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+						new RemoteParam<Integer>(i), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -581,7 +584,7 @@ public class DIntGrid2DXYThinTester {
 		Int2D location = new Int2D(i, j);
 
 		toTest.setDistributedObjectLocation(location, /* grid value */
-				Integer.parseInt("1"), /* SimState */ss);
+				new RemoteParam<Integer>(1), /* SimState */ss);
 
 		i += stepI;
 		j += stepJ;
@@ -589,7 +592,7 @@ public class DIntGrid2DXYThinTester {
 		location = new Int2D(i, j);
 
 		toTest.setDistributedObjectLocation(location, /* grid value */
-				Integer.parseInt("2"), /* SimState */ss);
+				new RemoteParam<Integer>(2), /* SimState */ss);
 
 		i += stepI;
 		j += stepJ;
@@ -597,7 +600,7 @@ public class DIntGrid2DXYThinTester {
 		location = new Int2D(i, j);
 
 		toTest.setDistributedObjectLocation(location, /* grid value */
-				Integer.parseInt("2"), /* SimState */ss);
+				new RemoteParam<Integer>(2), /* SimState */ss);
 
 		assertNotSame("the agent is in two places at once",
 				toTest.rmap.up_mine.get(0).r, toTest.rmap.up_mine.get(1).r);
@@ -619,7 +622,7 @@ public class DIntGrid2DXYThinTester {
 		Int2D location = new Int2D(i, j);
 
 		toTest.setDistributedObjectLocation(location, /* grid value */
-				Integer.parseInt("2"), /* SimState */ss);
+				new RemoteParam<Integer>(2), /* SimState */ss);
 
 		i += stepI;
 		j += stepJ;
@@ -627,7 +630,7 @@ public class DIntGrid2DXYThinTester {
 		location = new Int2D(i, j);
 
 		toTest.setDistributedObjectLocation(location, /* grid value */
-				Integer.parseInt("2"), /* SimState */ss);
+				new RemoteParam<Integer>(2), /* SimState */ss);
 
 		assertNotSame("the method has not changed the position",
 				toTest.rmap.up_mine.get(0).l, toTest.rmap.up_mine.get(1).l);

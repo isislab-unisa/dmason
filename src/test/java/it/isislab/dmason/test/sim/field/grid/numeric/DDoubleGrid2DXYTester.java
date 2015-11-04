@@ -18,6 +18,7 @@ import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.numeric.DDoubleGrid2DFactory;
 import it.isislab.dmason.sim.field.grid.numeric.DDoubleGrid2DXY;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
+import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.ConnectionType;
 
 import org.junit.Before;
@@ -175,10 +176,10 @@ public class DDoubleGrid2DXYTester {
 	@Test
 	public void testSetDistributedObjectLocation() throws DMasonException {
 		double j=1.5;
-		
+		    RemoteParam<Double> param=new RemoteParam<Double>(j); 
 			Int2D location = new Int2D(toTest.myfield.upl_xx, toTest.myfield.upl_yy);
 			assertTrue(toTest.setDistributedObjectLocation(location, 
-					/* grid value */j, /* SimState */ss));
+					/* grid value */param, /* SimState */ss));
 			
 			
 			/*
@@ -197,9 +198,10 @@ public class DDoubleGrid2DXYTester {
 	@Test
 	public void testMultipleSetDistributedObjectLocationOnSameLocation() throws DMasonException {
 		double j=1.5;
+		RemoteParam<Double> param=new RemoteParam<Double>(j);
 		Int2D location = new Int2D(toTest.myfield.upl_xx, toTest.myfield.upl_yy);
 		for(int i=0; i<10; i++)
-			toTest.setDistributedObjectLocation(location,/* grid value */j, /* SimState */ss);
+			toTest.setDistributedObjectLocation(location,/* grid value */param, /* SimState */ss);
 		
 		assertEquals("Multiple value setting in the same position shouldn't increase the region size",1,toTest.myfield.size());
 	}
@@ -216,7 +218,8 @@ public class DDoubleGrid2DXYTester {
 			shiftx= Math.abs(x-toTest.myfield.down_xx);
 			shifty = Math.abs(y-toTest.myfield.down_yy);
 			location = new Int2D(x+r.nextInt(shiftx) , y+r.nextInt(shifty));
-			assertTrue("The location should be rigth",toTest.setDistributedObjectLocation(location,/* grid value */j, /* SimState */ss));
+			RemoteParam<Double> param=new RemoteParam<Double>(j);
+			assertTrue("The location should be rigth",toTest.setDistributedObjectLocation(location,/* grid value */param, /* SimState */ss));
 		}
 		
 		assertEquals(10,toTest.myfield.size());
@@ -231,8 +234,9 @@ public class DDoubleGrid2DXYTester {
 	public void testGetAvailableRandomLocation() throws DMasonException {
 	
 			Int2D location = toTest.getAvailableRandomLocation();
+			
 			assertTrue(toTest.setDistributedObjectLocation(location, 
-					/* grid value */Double.parseDouble("4.6"), /* SimState */ss));
+					/* grid value */new RemoteParam<Double>(4.6), /* SimState */ss));
 	}
 	
 	

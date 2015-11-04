@@ -21,6 +21,7 @@ import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
+import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
 import it.isislab.dmason.util.connection.testconnection.VirtualConnection;
@@ -440,7 +441,7 @@ public class DistributedStateConnectionJMSTester {
 		 */
 		@Override
 		public boolean setDistributedObjectLocation(Double2D location,
-				/*RemotePositionedAgent<Double2D> rm*/Object o, SimState sm) throws DMasonException{
+				/*RemotePositionedAgent<Double2D> rm*/RemoteParam<?> paramToSet, SimState sm) throws DMasonException{
 			// TODO Auto-generated method stub
 			return false;
 		}
