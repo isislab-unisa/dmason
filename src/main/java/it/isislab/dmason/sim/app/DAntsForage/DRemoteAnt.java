@@ -18,6 +18,7 @@ package it.isislab.dmason.sim.app.DAntsForage;
 
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
+import it.isislab.dmason.util.RemoteParam;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -106,7 +107,8 @@ public class DRemoteAnt extends RemoteAnt<Int2D>
 					//}
 				//af.toFoodGrid.field[x][y] = max;
 				try {
-					af.toFoodGrid.setDistributedObjectLocation(new Int2D(x, y),max, state);
+					RemoteParam<Double> toSet=new RemoteParam<Double>(max); 
+					af.toFoodGrid.setDistributedObjectLocation(new Int2D(x, y),toSet, state);
 				} catch (DMasonException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -134,7 +136,8 @@ public class DRemoteAnt extends RemoteAnt<Int2D>
 					//}
 				//af.toHomeGrid.field[x][y] = max;
 				try {
-					af.toHomeGrid.setDistributedObjectLocation(new Int2D(x, y),max, state);
+					RemoteParam<Double> toSet=new RemoteParam<Double>(max);
+					af.toHomeGrid.setDistributedObjectLocation(new Int2D(x, y),toSet, state);
 				} catch (DMasonException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -204,7 +207,8 @@ public class DRemoteAnt extends RemoteAnt<Int2D>
 				{ max_x = xm; max_y = ym; }
 			}
 			try {
-				af.buggrid.setDistributedObjectLocation(new Int2D(max_x, max_y), this, state);
+				RemoteParam<DRemoteAnt> thisAgent=new RemoteParam<DRemoteAnt>(this);
+				af.buggrid.setDistributedObjectLocation(new Int2D(max_x, max_y), thisAgent, state);
 			} catch (DMasonException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -275,7 +279,8 @@ public class DRemoteAnt extends RemoteAnt<Int2D>
 			}
 			//af.buggrid.setObjectLocation(this, new Int2D(max_x, max_y));
 			try {
-				af.buggrid.setDistributedObjectLocation(new Int2D(max_x, max_y), this, state);
+				RemoteParam<DRemoteAnt> thisAgent=new RemoteParam<DRemoteAnt>(this);
+				af.buggrid.setDistributedObjectLocation(new Int2D(max_x, max_y), thisAgent, state);
 			} catch (DMasonException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

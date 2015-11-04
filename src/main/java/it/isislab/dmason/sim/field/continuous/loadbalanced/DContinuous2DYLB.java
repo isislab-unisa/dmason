@@ -32,6 +32,7 @@ import it.isislab.dmason.sim.field.support.field2D.loadbalanced.DistributedRegio
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.sim.field.support.globals.GlobalInspectorHelper;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
+import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
@@ -391,12 +392,12 @@ public class DContinuous2DYLB extends DContinuous2D implements TraceableField
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
 	 */
 	@Override
-	public boolean setDistributedObjectLocation(final Double2D location,/*RemotePositionedAgent<Double2D> rm*/Object ob,SimState sm) throws DMasonException
+	public boolean setDistributedObjectLocation(final Double2D location, RemoteParam<?> ob,SimState sm) throws DMasonException
 	{
 
-		RemotePositionedAgent<Double2D> rm=null;
+		RemotePositionedAgent<Double2D> rm=(RemotePositionedAgent<Double2D>) ob.getDistributedParam();
 
-		if(ob instanceof RemotePositionedAgent ){
+/*		if(ob instanceof RemotePositionedAgent ){
 			if(((RemotePositionedAgent)ob).getPos() instanceof Double2D){
 
 				rm=(RemotePositionedAgent<Double2D>) ob;	
@@ -404,7 +405,7 @@ public class DContinuous2DYLB extends DContinuous2D implements TraceableField
 			else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter RemotePositionedAgent<E>, E must be a Double2D");}
 		}
 		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}
-
+*/
 		//This 'if' is for debug 
 		if(checkReproducibility)
 			ps.println(rm.getId()+" "+rm.getPos().x+" "+rm.getPos().y);

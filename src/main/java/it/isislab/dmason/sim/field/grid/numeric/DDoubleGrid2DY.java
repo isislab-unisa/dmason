@@ -29,6 +29,7 @@ import it.isislab.dmason.sim.field.support.field2D.EntryNum;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.RegionNumeric;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
+import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
@@ -561,15 +562,15 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 	 * @return
 	 */
 	@Override
-	public boolean setDistributedObjectLocation( Int2D l, Object o ,SimState sm) throws DMasonException{
+	public boolean setDistributedObjectLocation( Int2D l, RemoteParam<?> paramToSet ,SimState sm) throws DMasonException{
 
-		double d=Double.MAX_VALUE; // se il controllo sotto non va a buon fine OH MY GOD
+		double d= (Double) paramToSet.getDistributedParam();
 		
-		if(o instanceof Double){
-			d=(Double) o;
+/*		if(paramToSet instanceof Double){
+			d=(Double) paramToSet;
 		}else
 		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a double");}
-		//This 'if' is for debug 
+*/		//This 'if' is for debug 
 		if(checkReproducibility)
 			ps.println(d+" "+l.x+" "+l.y);
 

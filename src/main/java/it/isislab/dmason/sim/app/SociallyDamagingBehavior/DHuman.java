@@ -2,6 +2,7 @@ package it.isislab.dmason.sim.app.SociallyDamagingBehavior;
 
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
+import it.isislab.dmason.util.RemoteParam;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -316,7 +317,8 @@ public class DHuman extends RemoteHuman<Double2D> implements Steppable, Orientab
 		lastd = new Double2D(dx,dy);
 		pos = new Double2D(dsdbState.human_being.stx(pos.x + dx), dsdbState.human_being.sty(pos.y + dy));
 		try {
-			dsdbState.human_being.setDistributedObjectLocation(pos, this, dsdbState);
+			RemoteParam<DHuman> thisAgent=new RemoteParam<DHuman>(this);
+			dsdbState.human_being.setDistributedObjectLocation(pos, thisAgent, dsdbState);
 		} catch (DMasonException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

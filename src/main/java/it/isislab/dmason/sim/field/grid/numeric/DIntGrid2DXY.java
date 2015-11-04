@@ -29,6 +29,7 @@ import it.isislab.dmason.sim.field.support.field2D.EntryNum;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.RegionNumeric;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
+import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
@@ -587,13 +588,13 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	 * @param sm
 	 * @return
 	 */
-	public boolean setDistributedObjectLocation( Int2D l, Object o ,SimState sm) throws DMasonException{
+	public boolean setDistributedObjectLocation( Int2D l, RemoteParam<?> paramToSet ,SimState sm) throws DMasonException{
 
 		
-		if(!(o instanceof Integer))
+		/*if(!(paramToSet instanceof Integer))
 			throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");
-		
-		Integer d = (Integer) o;
+		*/
+		Integer d = (Integer) paramToSet.getDistributedParam();
 		
 		//This 'if' is for debug 
 		if(checkReproducibility)

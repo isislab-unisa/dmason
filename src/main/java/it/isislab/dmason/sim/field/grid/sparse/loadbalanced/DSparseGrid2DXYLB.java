@@ -34,6 +34,7 @@ import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.sim.field.support.loadbalancing.LoadBalancingIntegerField;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellIntegerField;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
+import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
@@ -304,13 +305,13 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
     @Override
 	//public boolean setDistributedObjectLocation(final Int2D location,RemotePositionedAgent<Int2D> rm,SimState sm)
     //{
-    public boolean setDistributedObjectLocation(final Int2D location, Object ob,SimState sm) throws DMasonException
+    public boolean setDistributedObjectLocation(final Int2D location, RemoteParam<?> ob,SimState sm) throws DMasonException
 	{
 		
 		
-		RemotePositionedAgent<Int2D> rm=null;
+		RemotePositionedAgent<Int2D> rm=(RemotePositionedAgent<Int2D>) ob.getDistributedParam();
 		
-		if(ob instanceof RemotePositionedAgent ){
+		/*if(ob instanceof RemotePositionedAgent ){
 			if(((RemotePositionedAgent)ob).getPos() instanceof Int2D){
 			
 			rm=(RemotePositionedAgent<Int2D>) ob;	
@@ -318,7 +319,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 			else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter RemotePositionedAgent<E>, E must be a Int2D");}
 		}
 		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}		//This 'if' is for debug 
-	
+*/	
 		//This 'if' is for debug 
 		if(checkReproducibility)
 			ps.println(rm.getId()+" "+rm.getPos().x+" "+rm.getPos().y);

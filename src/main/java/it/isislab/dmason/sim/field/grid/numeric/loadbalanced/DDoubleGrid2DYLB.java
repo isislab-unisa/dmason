@@ -30,6 +30,7 @@ import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.loadbalanced.DistributedRegionNumericLB;
 import it.isislab.dmason.sim.field.support.field2D.region.RegionNumeric;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
+import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
@@ -822,16 +823,16 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D {
 	 */
 	@Override
 	//public boolean setDistributedObjectLocation(double d, Int2D l, SimState sm){
-	public boolean setDistributedObjectLocation(Int2D l, /*double d*/Object ob, SimState sm) throws DMasonException
+	public boolean setDistributedObjectLocation(Int2D l, RemoteParam<?> ob, SimState sm) throws DMasonException
 	{
-		double d=Double.MAX_VALUE; // se il controllo sotto non va a buon fine OH MY GOD
+		double d=(Double) ob.getDistributedParam();
 
-		if(ob instanceof Double){
+		/*if(ob instanceof Double){
 			d=(Double) ob;
 		}else
 		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a double");}
 	
-	
+	*/
 	
 	numAgents++;
 		if(myfield.isMine(l.getX(), l.getY()))

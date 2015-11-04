@@ -18,6 +18,7 @@ package it.isislab.dmason.sim.app.DFlockersNonUniformPartitioning;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.continuous.DContinuous2D;
+import it.isislab.dmason.util.RemoteParam;
 
 import java.awt.Color;
 
@@ -193,7 +194,8 @@ public class DFlockerNonUniformPartitioning extends RemoteFlockNonUniformPartiti
 		pos = new Double2D(flock.flockers.stx(pos.x + dx), flock.flockers.sty(pos.y + dy));
     	        
 		try {
-			flock.flockers.setDistributedObjectLocation(pos, this, state);
+			RemoteParam<DFlockerNonUniformPartitioning> thisAgent=new RemoteParam<DFlockerNonUniformPartitioning>(this);
+			flock.flockers.setDistributedObjectLocation(pos, thisAgent, state);
 		} catch (DMasonException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

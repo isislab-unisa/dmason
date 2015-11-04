@@ -81,6 +81,9 @@ public class RegionIntegerNumeric extends RegionNumeric<Integer, EntryNum<Intege
 	@Override
 	public boolean addEntryNum(EntryNum<Integer, Int2D> e) 
 	{	
+		if(e == null || e.l == null || e.r == null) return false;
+		if(this.contains(e)) return true;
+		
 		return this.add(e);
 	}
 }

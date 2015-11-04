@@ -29,6 +29,7 @@ import it.isislab.dmason.sim.field.support.field2D.EntryNum;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.RegionNumeric;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
+import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
@@ -522,16 +523,17 @@ public class DIntGrid2DY extends DIntGrid2D {
 	 * @param sm
 	 * @return
 	 */
-	public boolean setDistributedObjectLocation( Int2D l, Object o ,SimState sm) throws DMasonException{
+	public boolean setDistributedObjectLocation( Int2D l, RemoteParam<?> paramToSet ,SimState sm) throws DMasonException{
 
-		int i=Integer.MAX_VALUE; // se il controllo sotto non va a buon fine OH MY GOD
-		
-		if(o instanceof Integer){
-			i=(Integer) o;
+		int i=(Integer)paramToSet.getDistributedParam();
+				
+	/*	
+		if(paramToSet instanceof Integer){
+			i=(Integer) paramToSet;
 		}else
 		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");}		//This 'if' is for debug 
 		if(checkReproducibility)
-			ps.println(i+" "+l.x+" "+l.y);
+			ps.println(i+" "+l.x+" "+l.y);*/
 
 		numAgents++;
 		if(myfield.isMine(l.getX(), l.getY()))

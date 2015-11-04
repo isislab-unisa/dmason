@@ -35,6 +35,7 @@ import it.isislab.dmason.sim.field.support.field2D.region.RegionNumeric;
 import it.isislab.dmason.sim.field.support.loadbalancing.LoadBalancingIntegerNumeric;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellIntegerNumeric;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
+import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 
@@ -333,16 +334,15 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	 */
 	//public boolean setDistributedObjectLocation(int d, Int2D location, SimState sm)
 	//{
-	public boolean setDistributedObjectLocation( Int2D location, Object ob ,SimState sm) throws DMasonException{
+	public boolean setDistributedObjectLocation( Int2D location, RemoteParam<?> ob ,SimState sm) throws DMasonException{
 
-		int d=Integer.MAX_VALUE; // se il controllo sotto non va a buon fine OH MY GOD
-		
-		if(ob instanceof Integer){
+		int d=(Integer) ob.getDistributedParam();
+	/*	if(ob instanceof Integer){
 			d=(Integer) ob;
 		}else
 		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");}
 	
-		
+	*/	
 		numAgents++;
 		boolean fl = false;
 		

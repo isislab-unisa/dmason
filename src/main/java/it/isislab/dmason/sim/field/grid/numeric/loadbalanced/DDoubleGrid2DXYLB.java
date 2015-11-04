@@ -36,6 +36,7 @@ import it.isislab.dmason.sim.field.support.field2D.region.RegionNumeric;
 import it.isislab.dmason.sim.field.support.loadbalancing.LoadBalancingDoubleNumeric;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellDoubleNumeric;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
+import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 
@@ -296,16 +297,16 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
 	 */
 	@Override
-	public boolean setDistributedObjectLocation(Int2D location, /*double d*/Object ob, SimState sm) throws DMasonException
+	public boolean setDistributedObjectLocation(Int2D location, RemoteParam<?> ob, SimState sm) throws DMasonException
 	{
-		double d=Double.MAX_VALUE; // se il controllo sotto non va a buon fine OH MY GOD
-
-		if(ob instanceof Double){
+		double d=(Double) ob.getDistributedParam();
+				
+		/*if(ob instanceof Double){
 			d=(Double) ob;
 		}else
 		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a double");}
 
-
+*/
 
 		numAgents++;
 		boolean fl = false;
