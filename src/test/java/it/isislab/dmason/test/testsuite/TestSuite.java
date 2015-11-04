@@ -46,51 +46,51 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
 	
 	/*******Simulations**************/
-	//TestDFlockers.class,
-	//TestDParticles.class,
-	//TestDAntsForage.class,
+	TestDFlockers.class,
+	TestDParticles.class,
+	TestDAntsForage.class,
 	
 	/********Grid Factory*************/
-	/*DSparse2DFactoryTester.class,		
+	DSparse2DFactoryTester.class,		
 	DContinuous2DFactoryTester.class,
 	DIntGrid2DFactoryTester.class,
 	DDoubleGrid2DFactoryTester.class,
-	*/
+	
 	/*********************/
-	/*CellTypeTester.class,
+	CellTypeTester.class,
 	UpdateCellTester.class, 		
 	UpdateMapTester.class,
-*/
+
 	/*********Connection************/
-	//DistributedStateConnectionJMSTester.class,
+	DistributedStateConnectionJMSTester.class,
 	
 	/*****Distributed Fields****************/
-	//DSparseGrid2DXYTester.class,
-	//DContinuous2DXYTester.class,
-	//DIntGrid2DXYTester.class,
-	//DDoubleGrid2DXYTester.class,
+	DSparseGrid2DXYTester.class,
+	DContinuous2DXYTester.class,
+	DIntGrid2DXYTester.class,
+	DDoubleGrid2DXYTester.class,
 
 	/*****Distrubuted Fields Load Balancing ****************/
-    //DSparseGrid2DXYLBTester.class,		
-	//DContinuous2DXYLBTester.class,		
-	//DIntGrid2DXYLBTester.class,
-	//DDoubleGrid2DXYLBTester.class,
+    DSparseGrid2DXYLBTester.class,		
+	DContinuous2DXYLBTester.class,		
+	DIntGrid2DXYLBTester.class,
+	DDoubleGrid2DXYLBTester.class,
 	
 	/*******Regions**************/
-	//RegionIntegerTester.class,		
-	//RegionDoubleTester.class,
-    //RegionDoubleNumericTester.class,
-	//RegionIntegerNumericTester.class,
+	RegionIntegerTester.class,		
+	RegionDoubleTester.class,
+    RegionDoubleNumericTester.class,
+	RegionIntegerNumericTester.class,
 	
 	/*******Load Balancing Regions**************/
-	//RegionIntegerLBTester.class,
-	//RegionDoubleLBTester.class,		
+	RegionIntegerLBTester.class,
+	RegionDoubleLBTester.class,		
 	
 	/*******Thin Distributed Fields**************/
-	//DSparseGrid2DXYThinTester.class,
-	//DContinuous2DXYThinTester.class,
-	//DIntGrid2DXYThinTester.class,
-	//DDoubleGrid2DXYThinTester.class		
+	DSparseGrid2DXYThinTester.class,
+	DContinuous2DXYThinTester.class,
+	DIntGrid2DXYThinTester.class,
+	DDoubleGrid2DXYThinTester.class		
 })
 public class TestSuite{
 
