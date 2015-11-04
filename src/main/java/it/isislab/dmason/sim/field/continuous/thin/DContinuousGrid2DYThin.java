@@ -114,11 +114,11 @@ import sim.util.MutableInt2D;
  * </PRE>
  */
 
-public class DContinuous2DYThin extends DContinuousGrid2DThin implements TraceableField
+public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements TraceableField
 {	
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(DContinuous2DYThin.class.getCanonicalName());
+	private static Logger logger = Logger.getLogger(DContinuousGrid2DYThin.class.getCanonicalName());
 
 	public ArrayList<MessageListener> listeners;
 	private String name;
@@ -199,7 +199,7 @@ public class DContinuous2DYThin extends DContinuousGrid2DThin implements Traceab
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
-	public DContinuous2DYThin(double discretization, double width, double height,double field_width, double field_height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix)
+	public DContinuousGrid2DYThin(double discretization, double width, double height,double field_width, double field_height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix)
 	{
 		super(discretization, field_width, field_height,width,height);
 		this.width=width;

@@ -25,7 +25,7 @@ import it.isislab.dmason.sim.field.continuous.loadbalanced.DContinuousGrid2DXYLB
 import it.isislab.dmason.sim.field.continuous.loadbalanced.DContinuousGrid2DYLB;
 import it.isislab.dmason.sim.field.continuous.thin.DContinuousGrid2DThin;
 import it.isislab.dmason.sim.field.continuous.thin.DContinuousGrid2DXYThin;
-import it.isislab.dmason.sim.field.continuous.thin.DContinuous2DYThin;
+import it.isislab.dmason.sim.field.continuous.thin.DContinuousGrid2DYThin;
 import sim.engine.SimState;
 
 
@@ -176,11 +176,11 @@ public final class DContinuousGrid2DFactory
 					field_width=(int) Math.floor(width/columns)+4*max_distance;
 				field_height=height;
 			
-				DistributedField2D field = new DContinuous2DYThin(discretization,width, height,field_width,field_height,sm, max_distance, i, j, rows,columns,name,topicPrefix);	
+				DistributedField2D field = new DContinuousGrid2DYThin(discretization,width, height,field_width,field_height,sm, max_distance, i, j, rows,columns,name,topicPrefix);	
 				field.setToroidal(isToroidal);
 				((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 				
-				return (DContinuous2DYThin)field;
+				return (DContinuousGrid2DYThin)field;
 			
 		}
 		else

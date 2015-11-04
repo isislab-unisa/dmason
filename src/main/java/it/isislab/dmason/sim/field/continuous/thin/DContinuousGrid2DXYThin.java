@@ -135,7 +135,7 @@ import sim.util.MutableInt2D;
 
 public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements TraceableField
 {	
-	private static Logger logger = Logger.getLogger(DContinuous2DYThin.class.getCanonicalName());
+	private static Logger logger = Logger.getLogger(DContinuousGrid2DYThin.class.getCanonicalName());
 
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
 	private String name;
