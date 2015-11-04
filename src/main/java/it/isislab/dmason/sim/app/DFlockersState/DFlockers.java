@@ -7,8 +7,8 @@ import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.DistributedField;
-import it.isislab.dmason.sim.field.continuous.DContinuous2D;
-import it.isislab.dmason.sim.field.continuous.DContinuous2DFactory;
+import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
+import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 import it.isislab.dmason.tools.batch.data.EntryParam;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 
@@ -34,7 +34,7 @@ public class DFlockers extends DistributedState<Double2D>
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public DContinuous2D flockers;
+	public DContinuousGrid2D flockers;
     private static boolean isToroidal=true;
      
     @BatchAnnotation(
@@ -215,7 +215,7 @@ public class DFlockers extends DistributedState<Double2D>
     	try 
     	{
 
-    		flockers = DContinuous2DFactory.createDContinuous2D(neighborhood/1.5,gridWidth, gridHeight,this,
+    		flockers = DContinuousGrid2DFactory.createDContinuous2D(neighborhood/1.5,gridWidth, gridHeight,this,
     				super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,"flockers", topicPrefix,true);
     		init_connection();
     	} catch (DMasonException e) { e.printStackTrace(); }

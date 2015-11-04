@@ -7,9 +7,9 @@ import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemoteAgent;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.DistributedField;
-import it.isislab.dmason.sim.field.continuous.DContinuous2D;
-import it.isislab.dmason.sim.field.continuous.DContinuous2DFactory;
-import it.isislab.dmason.sim.field.continuous.DContinuous2DXY;
+import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
+import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
+import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DXY;
 import it.isislab.dmason.sim.field.support.field2D.Entry;
 import it.isislab.dmason.tools.batch.data.EntryParam;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
@@ -37,7 +37,7 @@ import sim.util.*;
 public class DSociallyDamagingBehavior extends DistributedState<Double2D>
 {
     private static final long serialVersionUID = 1;
-	public DContinuous2D human_being;
+	public DContinuousGrid2D human_being;
 	private static boolean isToroidal=true;
 	//logger
 	public boolean logging = false;
@@ -128,13 +128,13 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
     Bag localReinitializeTest = null; Bag globalReinitializeTest= null;
     ArrayList<Entry<Double2D>> lastSended;
     public ArrayList<Entry<Double2D>> getReinitializeTest(){
-    	return  (lastSended=((human_being!=null)?((DContinuous2DXY)human_being).getAllVisibleAgent():null));
+    	return  (lastSended=((human_being!=null)?((DContinuousGrid2DXY)human_being).getAllVisibleAgent():null));
     } //� obbligatorio ai fini del corretto funzionamento
   
     public void setReinitialize(Bag value){ localReinitializeTest = value;} //� obbligatorio ai fini del corretto funzionamento
     public boolean globalReinitializeTest() { return true;}
     public ArrayList<Entry<Double2D>> getGlobalReinitializeTest(){  
-    	return (((human_being!=null)?(lastSended=((DContinuous2DXY)human_being).getAllVisibleAgent()):null));
+    	return (((human_being!=null)?(lastSended=((DContinuousGrid2DXY)human_being).getAllVisibleAgent()):null));
     }
    
     public void setGlobalReinitializeTest(Object value){
@@ -168,7 +168,7 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
     		}
 		}
     	human_being.clear();
-		((DContinuous2DXY)human_being).resetAddAll(figli);
+		((DContinuousGrid2DXY)human_being).resetAddAll(figli);
     	
     }
     public long getReinitializeTestValueOf(){return EPOCH;}
@@ -353,7 +353,7 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
 
 		try 
     	{
-			human_being =DContinuous2DFactory.createDContinuous2D(neighborhood/1.5,gridWidth, gridHeight,this,
+			human_being =DContinuousGrid2DFactory.createDContinuous2D(neighborhood/1.5,gridWidth, gridHeight,this,
     				super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,"humang_be", topicPrefix,true);
     		init_connection();
     	} catch (DMasonException e) { e.printStackTrace(); }

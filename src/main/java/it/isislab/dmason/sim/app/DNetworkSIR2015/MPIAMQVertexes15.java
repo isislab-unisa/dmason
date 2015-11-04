@@ -2,7 +2,7 @@ package it.isislab.dmason.sim.app.DNetworkSIR2015;
 
 
 import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.sim.field.continuous.DContinuous2DFactory;
+import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 import it.isislab.dmason.sim.field.network.partitioning.Partitioner;
 import it.isislab.dmason.sim.field.network.partitioning.SuperGraphStats;
 import it.isislab.dmason.tools.batch.data.GeneralParam;

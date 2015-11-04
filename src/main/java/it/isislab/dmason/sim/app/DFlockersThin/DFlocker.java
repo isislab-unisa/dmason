@@ -18,7 +18,7 @@
 package it.isislab.dmason.sim.app.DFlockersThin;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
-import it.isislab.dmason.sim.field.continuous.thin.DContinuous2DThin;
+import it.isislab.dmason.sim.field.continuous.thin.DContinuousGrid2DThin;
 import it.isislab.dmason.util.RemoteParam;
 
 import java.awt.Color;
@@ -45,7 +45,7 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
     
     public Bag getNeighbors(DistributedState<Double2D> sm)
     {
-        return ((DContinuous2DThin)sm.getField()).getObjectsExactlyWithinDistanceThin(loc, ((DFlockers)sm).neighborhood, true);
+        return ((DContinuousGrid2DThin)sm.getField()).getObjectsExactlyWithinDistanceThin(loc, ((DFlockers)sm).neighborhood, true);
     }
     
     public double getOrientation() { return orientation2D(); }
@@ -70,7 +70,7 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
         return lastd;
     }
 
-    public Double2D consistency(Bag b, DContinuous2DThin flockers)
+    public Double2D consistency(Bag b, DContinuousGrid2DThin flockers)
     {
         if (b==null || b.numObjs == 0) return new Double2D(0,0);
         
@@ -95,7 +95,7 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
         return new Double2D(x,y);
     }
     
-    public Double2D cohesion(Bag b, DContinuous2DThin flockers)
+    public Double2D cohesion(Bag b, DContinuousGrid2DThin flockers)
     {
         if (b==null || b.numObjs == 0) return new Double2D(0,0);
         
@@ -120,7 +120,7 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
         return new Double2D(-x/10,-y/10);
     }
  
-    public Double2D avoidance(Bag b, DContinuous2DThin flockers)
+    public Double2D avoidance(Bag b, DContinuousGrid2DThin flockers)
     {
         if (b==null || b.numObjs == 0) return new Double2D(0,0);
         double x = 0;

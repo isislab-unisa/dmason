@@ -66,7 +66,7 @@ import sim.util.Double2D;
  *  
  *  
  */
-public abstract class DContinuous2D extends Continuous2D  implements DistributedField2D<Double2D>
+public abstract class DContinuousGrid2D extends Continuous2D  implements DistributedField2D<Double2D>
 {
 	/**
 	 * Stores the coordinates of this distributed field relative to the
@@ -129,7 +129,7 @@ public abstract class DContinuous2D extends Continuous2D  implements Distributed
 	
 	// <-- instance variables
 		
-	public DContinuous2D(double discretization, double width, double height) 
+	public DContinuousGrid2D(double discretization, double width, double height) 
 	{
 		super(discretization, width, height);
 	}

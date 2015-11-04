@@ -21,10 +21,10 @@ import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.sim.field.continuous.loadbalanced.DContinuous2DXYLB;
-import it.isislab.dmason.sim.field.continuous.loadbalanced.DContinuous2DYLB;
-import it.isislab.dmason.sim.field.continuous.thin.DContinuous2DThin;
-import it.isislab.dmason.sim.field.continuous.thin.DContinuous2DXYThin;
+import it.isislab.dmason.sim.field.continuous.loadbalanced.DContinuousGrid2DXYLB;
+import it.isislab.dmason.sim.field.continuous.loadbalanced.DContinuousGrid2DYLB;
+import it.isislab.dmason.sim.field.continuous.thin.DContinuousGrid2DThin;
+import it.isislab.dmason.sim.field.continuous.thin.DContinuousGrid2DXYThin;
 import it.isislab.dmason.sim.field.continuous.thin.DContinuous2DYThin;
 import sim.engine.SimState;
 
@@ -42,7 +42,7 @@ import sim.engine.SimState;
 * @author Carmine Spagnuolo
 * 
 */
-public final class DContinuous2DFactory 
+public final class DContinuousGrid2DFactory 
 {	
 
 
@@ -63,7 +63,7 @@ public final class DContinuous2DFactory
 	 * @return The right DContinuous2D
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */
-	public static final DContinuous2D createDContinuous2D(double discretization,double width, double height,SimState sm,int max_distance,int i,int j,int rows,int columns, int MODE, String name, String topicPrefix, boolean isToroidal)
+	public static final DContinuousGrid2D createDContinuous2D(double discretization,double width, double height,SimState sm,int max_distance,int i,int j,int rows,int columns, int MODE, String name, String topicPrefix, boolean isToroidal)
 		throws DMasonException
 	{	
 		
@@ -88,11 +88,11 @@ public final class DContinuous2DFactory
 			    if(rows!=1){throw new DMasonException("Illegal rows dimension for horizontal mode, it must have one row");}
 			    //if(columns==0){throw new DMasonException("Illegal columns dimension for horizontal mode, horizontal mode can not have zero columns");}
 			    
-				DistributedField2D field = new DContinuous2DY(discretization,width, height,sm, max_distance, i, j, rows,columns,name,topicPrefix);	
+				DistributedField2D field = new DContinuousGrid2DY(discretization,width, height,sm, max_distance, i, j, rows,columns,name,topicPrefix);	
 				field.setToroidal(isToroidal);
 				((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 				
-				return (DContinuous2D)field;
+				return (DContinuousGrid2D)field;
 			
 		}
 		else
@@ -100,11 +100,11 @@ public final class DContinuous2DFactory
 			{
 				    if(rows!=columns){throw new DMasonException("Square mode numbers of rows and columns must be equals!");}
 					
-				    DistributedField2D field = new DContinuous2DXY(discretization,width, height,sm, max_distance, i, j, rows,columns,name,topicPrefix);
+				    DistributedField2D field = new DContinuousGrid2DXY(discretization,width, height,sm, max_distance, i, j, rows,columns,name,topicPrefix);
 					field.setToroidal(isToroidal);
 					((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 					
-					return (DContinuous2D)field;
+					return (DContinuousGrid2D)field;
 				
 			}
 			else
@@ -118,11 +118,11 @@ public final class DContinuous2DFactory
 					if(((width% columns == 0) && (height% rows == 0)) && 
 							(((width/ columns)%3 == 0) && ((height/ rows)%3 == 0)) && max_distance < safezone/2 ){
 
-						DistributedField2D field = new DContinuous2DXYLB(discretization,width, height,sm, max_distance, i, j, rows,columns,name,topicPrefix);
+						DistributedField2D field = new DContinuousGrid2DXYLB(discretization,width, height,sm, max_distance, i, j, rows,columns,name,topicPrefix);
 						field.setToroidal(isToroidal);
 						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 						
-						return (DContinuous2D)field;
+						return (DContinuousGrid2D)field;
 					}
 					else
 						throw new DMasonException("Illegal width or height dimension or MAXDISTANCE for NUM_PEERS:"+(rows*columns));
@@ -130,11 +130,11 @@ public final class DContinuous2DFactory
 				else if(MODE==DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
 				{
 					if(rows!=1){throw new DMasonException("Illegal rows dimension for horizontal balanced mode, it must have one row");}
-					DistributedField2D field = new DContinuous2DYLB(discretization,width, height,sm, max_distance, i, j, rows,columns,name,topicPrefix);	
+					DistributedField2D field = new DContinuousGrid2DYLB(discretization,width, height,sm, max_distance, i, j, rows,columns,name,topicPrefix);	
 					field.setToroidal(isToroidal);
 					((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 					
-					return (DContinuous2D)field;
+					return (DContinuousGrid2D)field;
 				}
 			else 
 			{
@@ -160,7 +160,7 @@ public final class DContinuous2DFactory
 	 * @return The right DContinuous2DThin
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */
-	public static final DContinuous2DThin createDContinuous2DThin(double discretization,double width, double height,SimState sm,int max_distance,int i,int j,int rows,int columns, int MODE, String name, String topicPrefix, boolean isToroidal)
+	public static final DContinuousGrid2DThin createDContinuous2DThin(double discretization,double width, double height,SimState sm,int max_distance,int i,int j,int rows,int columns, int MODE, String name, String topicPrefix, boolean isToroidal)
 			throws DMasonException
 		{
 		if(MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE)
@@ -201,11 +201,11 @@ public final class DContinuous2DFactory
 						field_height=(int) Math.floor(height/rows)+4*max_distance;
 				
 				
-					DistributedField2D field = new DContinuous2DXYThin(discretization,width, height,field_width,field_height,sm, max_distance, i, j, rows,columns,name,topicPrefix);
+					DistributedField2D field = new DContinuousGrid2DXYThin(discretization,width, height,field_width,field_height,sm, max_distance, i, j, rows,columns,name,topicPrefix);
 					field.setToroidal(isToroidal);
 					((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 					
-					return (DContinuous2DXYThin)field;
+					return (DContinuousGrid2DXYThin)field;
 		}else 
 		{
 			throw new DMasonException("Illegal Distribution Mode");

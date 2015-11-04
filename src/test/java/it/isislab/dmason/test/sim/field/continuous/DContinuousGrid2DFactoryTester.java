@@ -12,8 +12,8 @@ import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.sim.field.continuous.DContinuous2D;
-import it.isislab.dmason.sim.field.continuous.DContinuous2DFactory;
+import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
+import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.connection.ConnectionType;
 
@@ -26,10 +26,10 @@ import it.isislab.dmason.util.connection.ConnectionType;
  * @author Carmine Spagnuolo
  * @author Mario Capuozzo
  */
-public class DContinuous2DFactoryTester {
+public class DContinuousGrid2DFactoryTester {
 
 	/** The distributed continuous. */
-	DContinuous2D dcon;
+	DContinuousGrid2D dcon;
 	
 	/** The num of loop for the tests. */
 	int numLoop = 100;
@@ -115,7 +115,7 @@ public class DContinuous2DFactoryTester {
 							/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 							ConnectionType.pureActiveMQ);
 
-					dcon = DContinuous2DFactory.createDContinuous2D(
+					dcon = DContinuousGrid2DFactory.createDContinuous2D(
 					/* discretization */1.0 / 1.5,/* width */i,/* height */j,/*
 																		 * DistributedState
 																		 * but
@@ -157,7 +157,7 @@ public class DContinuous2DFactoryTester {
 			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
-			dcon = DContinuous2DFactory.createDContinuous2D(
+			dcon = DContinuousGrid2DFactory.createDContinuous2D(
 			/* discretization */1.0 / 1.5,/* width */0,/* height */10,/*
 																	 * DistributedState
 																	 * but is
@@ -194,7 +194,7 @@ public class DContinuous2DFactoryTester {
 			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
-			dcon = DContinuous2DFactory.createDContinuous2D(
+			dcon = DContinuousGrid2DFactory.createDContinuous2D(
 			/* discretization */1.0 / 1.5,/* width */10,/* height */0,/*
 																 * DistributedState
 																 * but is
@@ -231,7 +231,7 @@ public class DContinuous2DFactoryTester {
 			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
-			dcon = DContinuous2DFactory.createDContinuous2D(
+			dcon = DContinuousGrid2DFactory.createDContinuous2D(
 			/* discretization */1.0 / 1.5,/* width */-10,/* height */10,/*
 																		 * DistributedState
 																		 * but
@@ -269,7 +269,7 @@ public class DContinuous2DFactoryTester {
 			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
-			dcon = DContinuous2DFactory.createDContinuous2D(
+			dcon = DContinuousGrid2DFactory.createDContinuous2D(
 			/* discretization */1.0 / 1.5,/* width */10,/* height */-10,/*
 																	 * DistributedState
 																	 * but is
@@ -307,7 +307,7 @@ public class DContinuous2DFactoryTester {
 			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
-			dcon = DContinuous2DFactory.createDContinuous2D(
+			dcon = DContinuousGrid2DFactory.createDContinuous2D(
 			/* discretization */1.0 / 1.5,/* width */app,/* height */10,/*
 																		 * DistributedState
 																		 * but
@@ -345,7 +345,7 @@ public class DContinuous2DFactoryTester {
 			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
-			dcon = DContinuous2DFactory.createDContinuous2D(
+			dcon = DContinuousGrid2DFactory.createDContinuous2D(
 			/* discretization */1.0 / 1.5,/* width */10,/* height */app,/*
 																	 * DistributedState
 																	 * but is
@@ -382,7 +382,7 @@ public class DContinuous2DFactoryTester {
 			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
-			dcon = DContinuous2DFactory.createDContinuous2D(
+			dcon = DContinuousGrid2DFactory.createDContinuous2D(
 			/* discretization */1.0 / 1.5,/* width */10,/* height */10,/*
 																	 * DistributedState
 																	 * but is
@@ -418,7 +418,7 @@ public class DContinuous2DFactoryTester {
 			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
-			dcon = DContinuous2DFactory.createDContinuous2D(
+			dcon = DContinuousGrid2DFactory.createDContinuous2D(
 			/* discretization */1.0 / 1.5,/* width */10,/* height */10,/*
 																	 * DistributedState
 																	 * but is
@@ -456,7 +456,7 @@ public class DContinuous2DFactoryTester {
 				/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 						ConnectionType.pureActiveMQ);
 
-				dcon = DContinuous2DFactory.createDContinuous2D(
+				dcon = DContinuousGrid2DFactory.createDContinuous2D(
 				/* discretization */1.0 / 1.5,/* width */10,/* height */10,/*
 																		 * DistributedState
 																		 * but
@@ -498,7 +498,7 @@ public class DContinuous2DFactoryTester {
 			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
-			dcon = DContinuous2DFactory.createDContinuous2D(
+			dcon = DContinuousGrid2DFactory.createDContinuous2D(
 			/* discretization */1.0 / 1.5,/* width */10,/* height */10,/*
 																	 * DistributedState
 																	 * but is
@@ -535,7 +535,7 @@ public class DContinuous2DFactoryTester {
 			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
-			dcon = DContinuous2DFactory.createDContinuous2D(
+			dcon = DContinuousGrid2DFactory.createDContinuous2D(
 			/* discretization */1.0 / 1.5,/* width */10,/* height */10,/*
 																	 * DistributedState
 																	 * but is
@@ -572,7 +572,7 @@ public class DContinuous2DFactoryTester {
 			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
-			dcon = DContinuous2DFactory.createDContinuous2D(
+			dcon = DContinuousGrid2DFactory.createDContinuous2D(
 			/* discretization */1.0 / 1.5,/* width */10,/* height */10,/*
 																	 * DistributedState
 																	 * but is
@@ -609,7 +609,7 @@ public class DContinuous2DFactoryTester {
 			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
-			dcon = DContinuous2DFactory.createDContinuous2D(
+			dcon = DContinuousGrid2DFactory.createDContinuous2D(
 			/* discretization */1.0 / 1.5,/* width */10,/* height */10,/*
 																	 * DistributedState
 																	 * but is
@@ -646,7 +646,7 @@ public class DContinuous2DFactoryTester {
 			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
-			dcon = DContinuous2DFactory.createDContinuous2D(
+			dcon = DContinuousGrid2DFactory.createDContinuous2D(
 			/* discretization */1.0 / 1.5,/* width */10,/* height */10,/*
 																	 * DistributedState
 																	 * but is
@@ -684,7 +684,7 @@ public class DContinuous2DFactoryTester {
 			/* mode */DistributedField2D.SQUARE_DISTRIBUTION_MODE,
 					ConnectionType.pureActiveMQ);
 
-			dcon = DContinuous2DFactory.createDContinuous2D(
+			dcon = DContinuousGrid2DFactory.createDContinuous2D(
 			/* discretization */1.0 / 1.5,/* width */10,/* height */10,/*
 																	 * DistributedState
 																	 * but is
@@ -723,7 +723,7 @@ public class DContinuous2DFactoryTester {
 							/* mode */DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE,
 							ConnectionType.pureActiveMQ);
 
-					dcon = DContinuous2DFactory
+					dcon = DContinuousGrid2DFactory
 							.createDContinuous2D(
 									/* discretization */1.0 / 1.5,/* width */
 									6 * col,/* height */
@@ -769,7 +769,7 @@ public class DContinuous2DFactoryTester {
 							/* mode */DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE,
 							ConnectionType.pureActiveMQ);
 
-					dcon = DContinuous2DFactory
+					dcon = DContinuousGrid2DFactory
 							.createDContinuous2D(
 									/* discretization */1.0 / 1.5,/* width */
 									3 * col,/* height */
@@ -813,7 +813,7 @@ public class DContinuous2DFactoryTester {
 						/* mode */DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE,
 						ConnectionType.pureActiveMQ);
 				
-				dcon = DContinuous2DFactory
+				dcon = DContinuousGrid2DFactory
 						.createDContinuous2D(
 								/* discretization */1.0 / 1.5,/* width */
 								10,/* height */
@@ -860,7 +860,7 @@ public class DContinuous2DFactoryTester {
 				/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
 						ConnectionType.pureActiveMQ);
 
-				dcon = DContinuous2DFactory.createDContinuous2DThin(
+				dcon = DContinuousGrid2DFactory.createDContinuous2DThin(
 				/* discretization */1.0 / 1.5,/* width */10,/* height */10,/*
 																		 * DistributedState
 																		 * but
@@ -904,7 +904,7 @@ public class DContinuous2DFactoryTester {
 					/* mode */DistributedField2D.SQUARE_DISTRIBUTION_MODE,
 							ConnectionType.pureActiveMQ);
 
-					dcon = DContinuous2DFactory.createDContinuous2DThin(
+					dcon = DContinuousGrid2DFactory.createDContinuous2DThin(
 					/* discretization */1.0 / 1.5,/* width */10,/* height */10,/*
 																			 * DistributedState
 																			 * but

@@ -23,7 +23,7 @@ import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.MessageListener;
-import it.isislab.dmason.sim.field.continuous.DContinuous2D;
+import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import it.isislab.dmason.sim.field.continuous.region.RegionDoubleLB;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegion;
 import it.isislab.dmason.sim.field.support.field2D.Entry;
@@ -131,7 +131,7 @@ import sim.util.Double2D;
  * </PRE>
  */
 
-public class DContinuous2DXYLB extends DContinuous2D
+public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 {	
 
 	/**
@@ -139,7 +139,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(DContinuous2DXYLB.class.getCanonicalName());
+	private static Logger logger = Logger.getLogger(DContinuousGrid2DXYLB.class.getCanonicalName());
 
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
 	private String NAME;
@@ -204,7 +204,7 @@ public class DContinuous2DXYLB extends DContinuous2D
 	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
 
-	public DContinuous2DXYLB(double discretization, double width, double height
+	public DContinuousGrid2DXYLB(double discretization, double width, double height
 			,SimState sm,int max_distance,int i,int j,int rows,int columns, String name, String prefix) {
 
 

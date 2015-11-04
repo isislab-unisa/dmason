@@ -114,7 +114,7 @@ import sim.util.MutableInt2D;
  * </PRE>
  */
 
-public class DContinuous2DYThin extends DContinuous2DThin implements TraceableField
+public class DContinuous2DYThin extends DContinuousGrid2DThin implements TraceableField
 {	
 	private static final long serialVersionUID = 1L;
 

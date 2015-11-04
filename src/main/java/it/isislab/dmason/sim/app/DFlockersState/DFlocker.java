@@ -19,7 +19,7 @@ import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedAgentFactory;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
-import it.isislab.dmason.sim.field.continuous.DContinuous2D;
+import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import it.isislab.dmason.util.RemoteParam;
 
 import java.awt.Color;
@@ -68,7 +68,7 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
     
     public Bag getNeighbors(DistributedState<Double2D> sm)
     {
-        return ((DContinuous2D)sm.getField()).getObjectsExactlyWithinDistance(pos, ((DFlockers)sm).neighborhood, true);
+        return ((DContinuousGrid2D)sm.getField()).getObjectsExactlyWithinDistance(pos, ((DFlockers)sm).neighborhood, true);
     }
     
     public double getOrientation() { return orientation2D(); }

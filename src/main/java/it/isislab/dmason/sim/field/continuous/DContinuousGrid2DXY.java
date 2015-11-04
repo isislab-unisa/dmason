@@ -15,7 +15,7 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.sim.field.continuous.thin;
+package it.isislab.dmason.sim.field.continuous;
 
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
@@ -30,17 +30,15 @@ import it.isislab.dmason.sim.field.support.field2D.Entry;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.sim.field.support.globals.GlobalInspectorHelper;
+import it.isislab.dmason.sim.field.support.globals.GlobalParametersHelper;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
-import it.isislab.dmason.util.visualization.globalviewer.RemoteSnap;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.util.visualization.zoomviewerapp.ZoomArrayList;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -52,13 +50,8 @@ import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
-
 import sim.engine.SimState;
-import sim.util.Bag;
 import sim.util.Double2D;
-import sim.util.Int2D;
-import sim.util.MutableInt2D;
 
 /**
  *  <h3>This Field extends Continuous2D, to be used in a distributed environment. All the necessary informations 
@@ -131,47 +124,62 @@ import sim.util.MutableInt2D;
  * |                        |  |  |                      |  |  |                         |
  * ---------------------------------------------------------------------------------------
  * </PRE>
+ * @author Michele Carillo
+ * @author Ada Mancuso
+ * @author Dario Mazzeo
+ * @author Francesco Milone
+ * @author Francesco Raia
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
  */
 
-public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableField
+public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableField
 {	
-	private static Logger logger = Logger.getLogger(DContinuous2DYThin.class.getCanonicalName());
+	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(DContinuousGrid2DXY.class.getCanonicalName());
 
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
+
+	/** Name of the field. Used to identify fields in simulation using several fields. */
 	private String name;
 
-	private WritableRaster writer;
-	private int white[]={255,255,255};
-
-	/*
-	private FileOutputStream file;
-	private PrintStream ps;
-	 */
-
-	/** List of parameters to trace */
-	private ArrayList<String> tracing = new ArrayList<String>();
-	/** The image to send */
-	private BufferedImage currentBitmap;
-
-	/** Simulation's time when the image was generated */
-	private double actualTime;
-
-	/** Statistics to send */
-	HashMap<String, Object> actualStats;
-
-	/** True if the global viewer requested graphics **/
-	boolean isSendingGraphics;
-
-	private ZoomArrayList<RemotePositionedAgent> tmp_zoom=new ZoomArrayList<RemotePositionedAgent>();
 	private int numAgents;
-	private double width,height,field_width,field_height;
+
 	private String topicPrefix = "";
 
+	/** Number of neighbors of this cell, that is also the number of regions to create and of topics to publish/subscribe */ 
+	protected int numNeighbors;
+
 	// -----------------------------------------------------------------------
-	// GLOBAL PROPERTIES -----------------------------------------------------
+	// GLOBAL INSPECTOR ------------------------------------------------------
 	// -----------------------------------------------------------------------
+	/** List of parameters to trace */
+	private ArrayList<String> tracingFields;
+	/** The image to send */
+	private BufferedImage currentBitmap;
+	/** Simulation's time when currentBitmap was generated */
+	private double currentTime;
+	/** Statistics to send */
+	HashMap<String, Object> currentStats;
+	/** True if the global inspector requested graphics **/
+	boolean isTracingGraphics;
+
+	// -----------------------------------------------------------------------
+	// GLOBAL PARAMETERS -----------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** Java class of current simulation */
+	protected Class<? extends SimState> simClass;
+	/** List of global parameters. These must be synchronized among fields at each step */
+	protected ArrayList<String> globalsNames;
+	/** List of methods called for global parameters. Used for increased speed */
+	protected ArrayList<Method> globalsMethods;
 	/** Will contain globals properties */
-	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
+
+	// -----------------------------------------------------------------------
+	// ZOOM VIEWER -----------------------------------------------------------
+	// -----------------------------------------------------------------------
+	private ZoomArrayList<RemotePositionedAgent> tmp_zoom = new ZoomArrayList<RemotePositionedAgent>();
 
 	// -----------------------------------------------------------------------
 	// DEBUG -----------------------------------------------------------------
@@ -179,7 +187,38 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 	private boolean checkReproducibility = false;
 	private FileOutputStream file = null;
 	private PrintStream ps = null;
-
+	private FileOutputStream fileDup = null;
+	private PrintStream psDup = null;
+	private boolean checkAgentDuplication = false;
+	
+	/**
+	 * Short-hand for complete constructor. Assumes number or region to be 8 (that is: square division mode)
+	 */
+	public DContinuousGrid2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix)
+	{
+		this(discretization, width, height, sm, max_distance, i, j, rows, columns, name, prefix, 8);
+		if(checkReproducibility)
+		{
+			try {
+				file = new FileOutputStream(name+"-"+cellType+".txt");
+				ps = new PrintStream(file);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		if(checkAgentDuplication)
+		{
+			try {
+				fileDup = new FileOutputStream("99) "+cellType+".txt");
+				psDup = new PrintStream(fileDup);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 
 	/**
 	 * Constructor of class with paramaters:
@@ -196,21 +235,19 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
-	public DContinuous2DXYThin(double discretization, double width, double height, double field_width, double field_height, SimState sm, int max_distance, int i, int j,int rows,int columns, String name, String prefix) {
-		super(discretization, field_width, field_height,width,height);
+	public DContinuousGrid2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix, int numNeighbours) {
+		super(discretization, width, height);
 		this.width=width;
 		this.height=height;
-		this.field_width=field_width;
-		this.field_height=field_height;
 		this.sm = sm;	
 		this.jumpDistance = max_distance;
-		//this.numPeers = num_peers;	
 		this.rows = rows;
 		this.columns = columns;
 		this.cellType = new CellType(i, j);
 		this.updates_cache = new ArrayList<Region<Double,Double2D>>();
 		this.name = name;
 		this.topicPrefix = prefix;
+		this.numNeighbors = numNeighbours;
 
 		if(checkReproducibility)
 		{
@@ -222,8 +259,41 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 				e.printStackTrace();
 			}
 		}
+		
+		if(checkAgentDuplication)
+		{
+			try {
+				fileDup = new FileOutputStream("99) "+cellType+".txt");
+				psDup = new PrintStream(fileDup);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		//setConnection(((DistributedState)sm).getConnection());
 		numAgents=0;
-		createRegion();		
+		createRegion();
+
+		// Initialize variables for GlobalInspector
+		tracingFields = new ArrayList<String>();
+		try
+		{
+			currentBitmap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
+		}
+		catch(Exception e)
+		{
+			System.out.println("Do not use the GlobalViewer, the requirements of the simulation exceed the limits of the BufferedImage.\n");
+		}
+		currentTime = sm.schedule.getTime();
+		currentStats = new HashMap<String, Object>();
+		isTracingGraphics = false;
+
+		// Initialize variables for GlobalParameters
+		globals = new VisualizationUpdateMap<String, Object>();
+		globalsNames = new ArrayList<String>();
+		globalsMethods = new ArrayList<Method>();
+		GlobalParametersHelper.buildGlobalsList((DistributedState)sm, ((ConnectionJMS)((DistributedState)sm).getCommunicationVisualizationConnection()), topicPrefix, globalsNames, globalsMethods);
 	}
 
 	/**
@@ -232,7 +302,6 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 	 */
 	private boolean createRegion()
 	{		
-
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
@@ -272,17 +341,6 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 					}	
 			}
 		}
-		try{
-			currentBitmap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
-		}
-		catch(Exception e)
-		{
-			System.out.println("Do not use the GlobalViewer, the requirements of the simulation exceed the limits of the BufferedImage.\n");
-		}
-		actualTime = sm.schedule.getTime();
-		actualStats = new HashMap<String, Object>();
-		isSendingGraphics = false;
-		writer=currentBitmap.getRaster();
 
 		// Building the regions
 
@@ -345,8 +403,14 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 	{
 		double shiftx=((DistributedState)sm).random.nextDouble();
 		double shifty=((DistributedState)sm).random.nextDouble();
-		double x=(own_x+jumpDistance)+((my_width+own_x-jumpDistance)-(own_x+jumpDistance))*shiftx;
-		double y=(own_y+jumpDistance)+((my_height+own_y-jumpDistance)-(own_y+jumpDistance))*shifty;
+	//	double x=(own_x+jumpDistance)+((/*(*/my_width/*+own_x-jumpDistance)-(own_x+jumpDistance)*/)*shiftx)-jumpDistance;
+	//	double y=(own_y+jumpDistance)+((/*(*/my_height/*+own_y-jumpDistance)-(own_y+jumpDistance)*/)*shifty)-jumpDistance;
+
+		double x= ((own_x+jumpDistance)+((my_width-2*jumpDistance))*shiftx);
+//		if(x >= 0 && x <= 10 || x >= 290 && x<=300)
+//		System.out.println(own_x + " "+ my_width+" "+jumpDistance + " "+shiftx + " prima somma "+ (own_x+jumpDistance)+ " seconda somma "+((my_width-2*jumpDistance))*shiftx + " "+x);
+//		
+		double y= ((own_y+jumpDistance)+((my_height-2*jumpDistance))*shifty);
 
 		//rm.setPos(new Double2D(x,y));
 
@@ -361,36 +425,37 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
 	 */
 	@Override
-	//public boolean setDistributedObjectLocation(final Double2D location,RemotePositionedAgent<Double2D> rm,SimState sm){
 	public boolean setDistributedObjectLocation(final Double2D location,RemoteParam<?> paramToSet,SimState sm) throws DMasonException
 	{
 		
 		
-		RemotePositionedAgent<Double2D> rm=(RemotePositionedAgent<Double2D>) paramToSet.getDistributedParam();
+		RemotePositionedAgent<Double2D> rm=null;
 		
-	/*	if(paramToSet instanceof RemotePositionedAgent ){
+		/*if(paramToSet instanceof RemotePositionedAgent ){
 			if(((RemotePositionedAgent)paramToSet).getPos() instanceof Double2D){
 			
 			rm=(RemotePositionedAgent<Double2D>) paramToSet;	
 			}
 			else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter RemotePositionedAgent<E>, E must be a Double2D");}
 		}
-		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}
-*/
+		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}*/
+		
+		rm= ((RemotePositionedAgent<Double2D>) paramToSet.getDistributedParam());	
+		
 		
 		
 		//This 'if' is for debug 
 		if(checkReproducibility)
 			ps.println(rm.getId()+" "+rm.getPos().x+" "+rm.getPos().y);
-
-		numAgents++;
-		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
-			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
-		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
-			tmp_zoom.add(rm);
+		
+		if(checkAgentDuplication && sm.schedule.getSteps()==99)
+			psDup.println(rm.getId());
+		
+		
 
 		if(setAgents(rm, location))
 		{
+			//numAgents++;
 			return true;
 		}
 		else
@@ -408,69 +473,58 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 	 * 	It's called after every step of schedule.
 	 */
 	@Override
+	@SuppressWarnings("rawtypes")
 	public synchronized boolean synchro() 
 	{
+		
 		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
-		Connection connWorker = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationWorkerConnection();
-
+		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
 		// If there is any viewer, send a snap
 		if(conn!=null &&
 				((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
-			RemoteSnap snap = new RemoteSnap(cellType, sm.schedule.getSteps() - 1, actualTime);
-			actualTime = sm.schedule.getTime();
+			GlobalInspectorHelper.synchronizeInspector(
+					(DistributedState<?>)sm,
+					conn,
+					topicPrefix,
+					cellType,
+					(int)own_x,
+					(int)own_y,
+					currentTime,
+					currentBitmap,
+					currentStats,
+					tracingFields,
+					isTracingGraphics);
+			currentTime = sm.schedule.getTime();
+		}
 
-			if (isSendingGraphics)
-			{
-				try
-				{
-					ByteArrayOutputStream by = new ByteArrayOutputStream();
-					ImageIO.write(currentBitmap, "png", by);
-					by.flush();
-					snap.image = by.toByteArray();
-					by.close();
-					currentBitmap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
-					writer=currentBitmap.getRaster();
-				}
-				catch(Exception e)
-				{
-					System.out.println("Do not use the GlobalViewer, the requirements of the simulation exceed the limits of the BufferedImage.\n");
-				}
-			}
+		// -------------------------------------------------------------------
+		// -------------------------------------------------------------------
+		// -------------------------------------------------------------------
 
-			//if (isSendingGraphics || tracing.size() > 0)
-			/* The above line is commented because if we don't send the
-			 * RemoteSnap at every simulation step, the global viewer
-			 * will block waiting on the queue.
-			 */
-			{
-				try
-				{
-					snap.stats = actualStats;
-					conn.publishToTopic(snap, "GRAPHICS", "GRAPHICS");
-				} catch (Exception e) {
-					logger.severe("Error while publishing the snap message");
-					e.printStackTrace();
-				}
-			}
+		// If there are global parameters, synchronize
+		/*if (globalsNames.size() > 0)
+		{
+			// Update and send global parameters
+			GlobalParametersHelper.sendGlobalParameters(
+					sm,
+					connection,
+					topicPrefix,
+					cellType,
+					currentTime,
+					globalsNames);
+			// Receive global parameters from previous step and update the model
+			GlobalParametersHelper.receiveAndUpdate(
+					this,
+					globalsNames,
+					globalsMethods);
+		}*/
 
-			// Update statistics
-			Class<?> simClass = sm.getClass();
-			for (int i = 0; i < tracing.size(); i++)
-			{
-				try
-				{
-					Method m = simClass.getMethod("get" + tracing.get(i), (Class<?>[])null);
-					Object res = m.invoke(sm, new Object [0]);
-					snap.stats.put(tracing.get(i), res);
-				} catch (Exception e) {
-					logger.severe("Reflection error while calling get" + tracing.get(i));
-					e.printStackTrace();
-				}
-			}
+		// -------------------------------------------------------------------
+		// -------------------------------------------------------------------
+		// -------------------------------------------------------------------
 
-		} //numViewers > 0
-
+		// Remove agents in "out" sections
 		for(Region<Double, Double2D> region : updates_cache)
 		{
 			for(Entry<Double2D> remote_agent : region)
@@ -479,7 +533,7 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 			}
 		}
 
-		//every agent in the myfield region is scheduled
+		// Schedule agents in "myField" region
 		for(Entry<Double2D> e: myfield)
 		{
 			RemotePositionedAgent<Double2D> rm=e.r;
@@ -488,15 +542,94 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 			this.remove(rm);
 			sm.schedule.scheduleOnce(rm);
 			setObjectLocation(rm,loc);
-
 		}   
 
-		updateFields(); //update fields with java reflect
+		// Update fields using reflection
+		updateFields();
 		updates_cache=new ArrayList<Region<Double,Double2D>>();
 
+		//
 		memorizeRegionOut();
 
-		//--> publishing the regions to correspondent topics for the neighbors
+		ArrayList<String> actualVar=null;
+		if(conn!=null)
+			actualVar=((DistributedState<?>)sm).upVar.getAllGlobalVarForStep(sm.schedule.getSteps());
+		//upVar.getAllGlobalVarForStep(sm.schedule.getSteps()-1);
+		if (conn!=null
+				&& actualVar != null)
+		{
+
+			// Update and send global parameters
+			GlobalParametersHelper.sendGlobalParameters(
+					sm,
+					conn,
+					topicPrefix,
+					cellType,
+					currentTime,
+					actualVar
+					);
+
+			// Receive global parameters from previous step and update the model
+			GlobalParametersHelper.receiveAndUpdate(
+					this,
+					actualVar,
+					globalsMethods);
+
+		}
+
+		// Publish the regions to correspondent topics for the neighbors
+		publishRegions(connWorker);
+
+		// Process information received from neighbor 
+		processUpdates();
+
+		// -------------------------------------------------------------------
+		// -------------------------------------------------------------------
+		// -------------------------------------------------------------------
+
+		// Update ZoomViewer (if any)
+		if(conn!=null &&
+				((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+		{
+			try {
+				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
+				conn.publishToTopic(tmp_zoom,topicPrefix+"GRAPHICS"+cellType,name);
+				tmp_zoom=new ZoomArrayList<RemotePositionedAgent>();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		return true;
+	}
+
+	protected void processUpdates()
+	{
+		// Take from UpdateMap the updates for current last terminated step and use 
+		// verifyUpdates() to elaborate informations
+		PriorityQueue<Object> q;
+		try 
+		{
+			q = updates.getUpdates(sm.schedule.getSteps()-1, numNeighbors);
+			while(!q.isEmpty())
+			{
+				DistributedRegion<Double, Double2D> region=(DistributedRegion<Double,Double2D>)q.poll();
+				verifyUpdates(region);
+			}
+		} catch (InterruptedException e1) {e1.printStackTrace(); } catch (DMasonException e1) {e1.printStackTrace(); }
+
+		for(Region<Double, Double2D> region : updates_cache)
+			for(Entry<Double2D> e_m: region)
+			{
+				RemotePositionedAgent<Double2D> rm=e_m.r;
+				((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
+			}
+
+		this.reset();
+	}
+
+	protected void publishRegions(Connection connWorker)
+	{
 		if(rmap.left_out!=null)
 		{
 			try 
@@ -526,7 +659,7 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.up_mine,rmap.up_out,
 						(sm.schedule.getSteps()-1),cellType,DistributedRegion.UP);
 
-				connWorker.publishToTopic(dr,cellType.toString()+"U",name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"U",name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -538,7 +671,7 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.down_mine,rmap.down_out,
 						(sm.schedule.getSteps()-1),cellType,DistributedRegion.DOWN);
 
-				connWorker.publishToTopic(dr,cellType.toString()+"D",name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"D",name);
 
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
@@ -550,7 +683,7 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 					(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_UP_LEFT);
 			try 
 			{
-				connWorker.publishToTopic(dr,cellType.toString()+"CUDL",name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDL",name);
 
 			} catch (Exception e1) { e1.printStackTrace();}
 
@@ -563,7 +696,7 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 			try 
 			{
 
-				connWorker.publishToTopic(dr,cellType.toString()+"CUDR",name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDR",name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -573,7 +706,7 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 					rmap.corner_out_down_left_diag_center,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_LEFT);
 			try 
 			{
-				connWorker.publishToTopic(dr,cellType.toString()+"CDDL",name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDL",name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -585,54 +718,11 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 			try 
 			{				
 
-				connWorker.publishToTopic(dr,cellType.toString()+"CDDR",name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDR",name);
 
 			} catch (Exception e1) { e1.printStackTrace(); }
-		}//<--
-
-		//take from UpdateMap the updates for current last terminated step and use 
-		//verifyUpdates() to elaborate informations
-
-		PriorityQueue<Object> q;
-		try 
-		{
-			q = updates.getUpdates(sm.schedule.getSteps()-1, 8);
-			while(!q.isEmpty())
-			{
-				DistributedRegion<Double, Double2D> region=(DistributedRegion<Double,Double2D>)q.poll();
-				verifyUpdates(region);
-			}
-		} catch (InterruptedException e1) {e1.printStackTrace(); } catch (DMasonException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
 
-		for(Region<Double, Double2D> region : updates_cache)
-			for(Entry<Double2D> e_m: region)
-			{
-				RemotePositionedAgent<Double2D> rm=e_m.r;
-				((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
-			}
-
-		this.reset();
-		/*
-		/ps.println(sm.schedule.getSteps()+";"+System.currentTimeMillis());
-		 */
-
-		if(conn!=null && 
-				((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
-		{
-			try {
-				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
-				conn.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,name);
-				tmp_zoom=new ZoomArrayList<RemotePositionedAgent>();
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
-
-		return true;
 	}
 
 	/**
@@ -657,6 +747,7 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 					if(name.contains("out"))
 					{
 						updates_cache.add(region.clone());
+
 					}
 				}
 			}
@@ -678,7 +769,7 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 	private void verifyUpdates(DistributedRegion<Double,Double2D> box)
 	{
 		Region<Double,Double2D> r_mine=box.out;
-		Region<Double,Double2D> r_out=box.mine;
+		Region<Double,Double2D> r_out=box.mine;		
 
 		for(Entry<Double2D> e_m: r_mine)
 		{
@@ -717,8 +808,9 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 					Region<Double,Double2D> region=((Region<Double,Double2D>)returnValue);
 					if(name.contains("out"))
 					{
+
 						for(Entry<Double2D> e: region)
-						{
+						{ 
 							RemotePositionedAgent<Double2D> rm=e.r;
 							rm.setPos(e.l);
 							this.remove(rm);
@@ -743,7 +835,6 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 	 */
 	private boolean setAgents(RemotePositionedAgent<Double2D> rm,Double2D location)
 	{
-
 		if(rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(location.x,location.y))
 		{
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
@@ -751,10 +842,10 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 			if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 				GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 
-			rmap.corner_mine_up_left.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-			rmap.left_mine.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-			myfield.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));	
-			return rmap.up_mine.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+			rmap.corner_mine_up_left.addAgents(new Entry<Double2D>(rm, location));
+			rmap.left_mine.addAgents(new Entry<Double2D>(rm, location));
+			myfield.addAgents(new Entry<Double2D>(rm, location));	
+			return rmap.up_mine.addAgents(new Entry<Double2D>(rm, location));
 		}
 		else
 			if(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(location.x,location.y))
@@ -763,10 +854,10 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 					tmp_zoom.add(rm);
 				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 					GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-				rmap.corner_mine_up_right.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-				rmap.right_mine.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-				myfield.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-				return rmap.up_mine.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+				rmap.corner_mine_up_right.addAgents(new Entry<Double2D>(rm, location));
+				rmap.right_mine.addAgents(new Entry<Double2D>(rm, location));
+				myfield.addAgents(new Entry<Double2D>(rm, location));
+				return rmap.up_mine.addAgents(new Entry<Double2D>(rm, location));
 			}
 			else
 				if(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(location.x,location.y))
@@ -775,10 +866,10 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 						tmp_zoom.add(rm);
 					if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 						GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-					rmap.corner_mine_down_left.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-					rmap.left_mine.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-					myfield.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-					return rmap.down_mine.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+					rmap.corner_mine_down_left.addAgents(new Entry<Double2D>(rm, location));
+					rmap.left_mine.addAgents(new Entry<Double2D>(rm, location));
+					myfield.addAgents(new Entry<Double2D>(rm, location));
+					return rmap.down_mine.addAgents(new Entry<Double2D>(rm, location));
 				}
 				else
 					if(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(location.x,location.y))
@@ -787,10 +878,10 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 							tmp_zoom.add(rm);
 						if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 							GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-						rmap.corner_mine_down_right.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-						rmap.right_mine.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-						myfield.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-						return rmap.down_mine.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+						rmap.corner_mine_down_right.addAgents(new Entry<Double2D>(rm, location));
+						rmap.right_mine.addAgents(new Entry<Double2D>(rm, location));
+						myfield.addAgents(new Entry<Double2D>(rm, location));
+						return rmap.down_mine.addAgents(new Entry<Double2D>(rm, location));
 					}
 					else
 						if(rmap.left_mine != null && rmap.left_mine.isMine(location.x,location.y))
@@ -799,8 +890,8 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 								tmp_zoom.add(rm);
 							if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 								GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-							myfield.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-							return rmap.left_mine.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+							myfield.addAgents(new Entry<Double2D>(rm, location));
+							return rmap.left_mine.addAgents(new Entry<Double2D>(rm, location));
 						}
 						else
 							if(rmap.right_mine != null && rmap.right_mine.isMine(location.x,location.y))
@@ -809,8 +900,8 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 									tmp_zoom.add(rm);
 								if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 									GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-								myfield.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-								return rmap.right_mine.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+								myfield.addAgents(new Entry<Double2D>(rm, location));
+								return rmap.right_mine.addAgents(new Entry<Double2D>(rm, location));
 							}
 							else
 								if(rmap.up_mine != null && rmap.up_mine.isMine(location.x,location.y))
@@ -819,8 +910,8 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 										tmp_zoom.add(rm);
 									if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 										GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-									myfield.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-									return rmap.up_mine.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+									myfield.addAgents(new Entry<Double2D>(rm, location));
+									return rmap.up_mine.addAgents(new Entry<Double2D>(rm, location));
 								}
 								else
 									if(rmap.down_mine != null && rmap.down_mine.isMine(location.x,location.y))
@@ -829,8 +920,8 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 											tmp_zoom.add(rm);
 										if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 											GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-										myfield.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-										return rmap.down_mine.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+										myfield.addAgents(new Entry<Double2D>(rm, location));
+										return rmap.down_mine.addAgents(new Entry<Double2D>(rm, location));
 									}
 									else
 										if(myfield.isMine(location.x,location.y))
@@ -839,7 +930,7 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 												tmp_zoom.add(rm);
 											if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 												GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-											return myfield.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+											return myfield.addAgents(new Entry<Double2D>(rm, location));
 										}
 										else
 											if(rmap.left_out!=null && rmap.left_out.isMine(location.x,location.y)) 
@@ -1005,6 +1096,34 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 
 	@Override
 	public int getNumAgents() {
+		numAgents += myfield.size();
+		
+		Class o=rmap.getClass();
+
+		Field[] fields = o.getDeclaredFields();
+		for (int z = 0; z < fields.length; z++)
+		{
+			fields[z].setAccessible(true);
+			try
+			{
+				String name=fields[z].getName();
+				if(!name.contains("mine"))
+					continue;
+				Method method = o.getMethod("get"+name, null);
+				Object returnValue = method.invoke(rmap, null);
+
+				if(returnValue!=null)
+				{
+					Region<Double,Double2D> region=((Region<Double,Double2D>)returnValue);
+					numAgents+=region.size();
+				}
+			}
+			catch (IllegalArgumentException e){e.printStackTrace();} 
+			catch (IllegalAccessException e) {e.printStackTrace();} 
+			catch (SecurityException e) {e.printStackTrace();} 
+			catch (NoSuchMethodException e) {e.printStackTrace();} 
+			catch (InvocationTargetException e) {e.printStackTrace();}
+		}
 		return numAgents;
 	}
 
@@ -1017,21 +1136,27 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 	public void trace(String param)
 	{
 		if (param.equals("-GRAPHICS"))
-			isSendingGraphics = true;
+			isTracingGraphics = true;
 		else
-			tracing.add(param);
+			tracingFields.add(param);
 	}
 
 	@Override
 	public void untrace(String param)
 	{
 		if (param.equals("-GRAPHICS"))
-			isSendingGraphics = false;
+			isTracingGraphics = false;
 		else
 		{
-			tracing.remove(param);
-			actualStats.remove(param);
+			tracingFields.remove(param);
+			currentStats.remove(param);
 		}
+	}
+
+	@Override
+	public VisualizationUpdateMap<String, Object> getGlobals()
+	{
+		return globals;
 	}
 
 	@Override
@@ -1046,48 +1171,175 @@ public class DContinuous2DXYThin extends DContinuous2DThin implements TraceableF
 		return 0;
 	}
 
-	@Override
-	public Double2D getObjectLocationThin(Object obj) {
-		Double2D loc=super.getObjectLocation(obj);
-		return new Double2D(loc.x+own_x-2*jumpDistance,loc.y+own_y-2*jumpDistance);
-	}
+   /**
+    * Used by SociallyDamaginBehaviour because ...
+    */
+	public ArrayList<Entry<Double2D>> getAllVisibleAgent() {
 
-	@Override
-	public Double2D getObjectLocationAsDouble2DThin(Object obj) {
-		Double2D loc=super.getObjectLocationAsDouble2D(obj);
-		return new Double2D(loc.x+own_x-2*jumpDistance,loc.y+own_y-2*jumpDistance);
-	}
+		ArrayList<Entry<Double2D>> thor=myfield.clone();
+		Class o=rmap.getClass();
 
-	@Override
-	public boolean setObjectLocationThin(Object obj, Double2D location) {
-		Double2D loc=new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance);
-		return super.setObjectLocation(obj, loc);
-	}
+		Field[] fields = o.getDeclaredFields();
+		for (int z = 0; z < fields.length; z++)
+		{
+			fields[z].setAccessible(true);
+			try
+			{
+				String name=fields[z].getName();
 
-	@Override
-	public Bag getRawObjectsAtLocationThin(MutableInt2D loc) {
-		int ownxD= (int)((own_x+2*jumpDistance) / discretization);
-		int ownyD= (int)((own_y+2*jumpDistance) / discretization);
-		return super.getRawObjectsAtLocation(new Double2D((loc.x-ownxD), (loc.y-ownyD)));
-	}
+				Method method = o.getMethod("get"+name, null);
+				Object returnValue = method.invoke(rmap, null);
 
-	@Override
-	public Bag getRawObjectsAtLocationThin(Int2D loc) {
-		int ownxD= (int)((own_x+2*jumpDistance) / discretization);
-		int ownyD= (int)((own_y+2*jumpDistance) / discretization);
-		return super.getRawObjectsAtLocation(new Double2D((loc.x-ownxD), (loc.y-ownyD)));
-	}
+				if(returnValue!=null)
+				{
+					Region<Double,Double2D> region=((Region<Double,Double2D>)returnValue);
+					for(Entry<Double2D> e: region)
+						thor.add(e);		    		
 
-	@Override
-	public VisualizationUpdateMap<String, Object> getGlobals()
+				}
+			}
+			catch (IllegalArgumentException e){e.printStackTrace();} 
+			catch (IllegalAccessException e) {e.printStackTrace();} 
+			catch (SecurityException e) {e.printStackTrace();} 
+			catch (NoSuchMethodException e) {e.printStackTrace();} 
+			catch (InvocationTargetException e) {e.printStackTrace();}
+		}
+		
+		return thor;
+	}
+	/*
+	public ArrayList<Entry<Double2D>> getMineAgent() {
+		ArrayList<Entry<Double2D>> thor=myfield.clone();
+		Class o=rmap.getClass();
+
+		Field[] fields = o.getDeclaredFields();
+		for (int z = 0; z < fields.length; z++)
+		{
+			fields[z].setAccessible(true);
+			try
+			{
+				String name=fields[z].getName();
+
+				Method method = o.getMethod("get"+name, null);
+				Object returnValue = method.invoke(rmap, null);
+
+				if(returnValue!=null)
+				{
+					Region<Double,Double2D> region=((Region<Double,Double2D>)returnValue);
+					if(name.contains("mine"))
+						for(Entry<Double2D> e: region)
+							thor.add(e);		    		
+					//					thor.addAll(region);
+
+				}
+			}
+			catch (IllegalArgumentException e){e.printStackTrace();} 
+			catch (IllegalAccessException e) {e.printStackTrace();} 
+			catch (SecurityException e) {e.printStackTrace();} 
+			catch (NoSuchMethodException e) {e.printStackTrace();} 
+			catch (InvocationTargetException e) {e.printStackTrace();}
+		}
+		
+		return thor;
+	}*/
+	/**
+	 * Used by SociallyDamaginBehaviour
+	 * 
+	 * This method insert all agents in the field and in the corresponding region,
+	 * for this method you must use position of the actual cell
+	 * @param agents
+	 * @return
+	 */
+	public boolean resetAddAll(ArrayList<RemotePositionedAgent<Double2D>> agents)
 	{
-		return globals;
+		reset();
+		int x=0;
+		for (RemotePositionedAgent<Double2D> remoteAgent : agents) {
+
+			Double2D pos=remoteAgent.getPos();
+			boolean inserito=false;
+			ArrayList<RemotePositionedAgent<Double2D>> tmp=new ArrayList<RemotePositionedAgent<Double2D>>();
+			if(myfield.isMine(pos.x, pos.y))
+			{
+				this.remove(remoteAgent);
+				sm.schedule.scheduleOnce(remoteAgent);
+				((DistributedState<Double2D>)sm).addToField(remoteAgent,pos);
+				inserito=true;
+				x++;
+			}
+			else{
+				Class o=rmap.getClass();
+
+				Field[] fields = o.getDeclaredFields();
+				for (int z = 0; z < fields.length; z++)
+				{
+					fields[z].setAccessible(true);
+					try
+					{
+						String name=fields[z].getName();
+						Method method = o.getMethod("get"+name, null);
+						Object returnValue = method.invoke(rmap, null);
+
+						if(returnValue!=null)
+						{
+							Region<Double,Double2D> region=((Region<Double,Double2D>)returnValue);
+							if(region.isMine(pos.x,pos.y))
+							{   
+
+								if(!tmp.contains(remoteAgent)) 
+								{
+									tmp.add(remoteAgent);
+									if(name.contains("mine")){
+
+										this.remove(remoteAgent);
+										sm.schedule.scheduleOnce(remoteAgent);
+										((DistributedState<Double2D>)sm).addToField(remoteAgent,pos);
+										inserito=true;
+										x++;
+									}
+									else if(name.contains("out"))
+									{
+										region.addAgents(new Entry<Double2D>(remoteAgent,pos));
+										((DistributedState<Double2D>)sm).addToField(remoteAgent,pos);
+										inserito=true;
+										x++;
+									}
+								}	
+							}    
+						}
+					}
+					catch (IllegalArgumentException e){e.printStackTrace();} 
+					catch (IllegalAccessException e) {e.printStackTrace();} 
+					catch (SecurityException e) {e.printStackTrace();} 
+					catch (NoSuchMethodException e) {e.printStackTrace();} 
+					catch (InvocationTargetException e) {e.printStackTrace();}
+				}
+
+			} 
+			if(!inserito) return false;
+		}
+		
+		return true;
 	}
+
 	@Override
 	public boolean verifyPosition(Double2D pos) {
 		
-		//we have to implement this
-		return false;
+		return (rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(pos.x,pos.y))||
+		
+			(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(pos.x,pos.y))
+			||
+				(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(pos.x,pos.y))
+				||(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(pos.x,pos.y))
+					||(rmap.left_mine != null && rmap.left_mine.isMine(pos.x,pos.y))
+						||(rmap.right_mine != null && rmap.right_mine.isMine(pos.x,pos.y))
+							||(rmap.up_mine != null && rmap.up_mine.isMine(pos.x,pos.y))
+								||(rmap.down_mine != null && rmap.down_mine.isMine(pos.x,pos.y))
+									||(myfield.isMine(pos.x,pos.y));
+										
 
 	}
+
+	
+
 }

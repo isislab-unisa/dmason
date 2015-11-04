@@ -15,7 +15,7 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.sim.field.continuous;
+package it.isislab.dmason.sim.field.continuous.loadbalanced;
 
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
@@ -24,10 +24,11 @@ import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.TraceableField;
+import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import it.isislab.dmason.sim.field.continuous.region.RegionDouble;
-import it.isislab.dmason.sim.field.support.field2D.DistributedRegion;
 import it.isislab.dmason.sim.field.support.field2D.Entry;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
+import it.isislab.dmason.sim.field.support.field2D.loadbalanced.DistributedRegionLB;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.sim.field.support.globals.GlobalInspectorHelper;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
@@ -37,11 +38,12 @@ import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.util.visualization.zoomviewerapp.ZoomArrayList;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -52,7 +54,6 @@ import java.util.logging.Logger;
 
 import sim.engine.SimState;
 import sim.util.Double2D;
-import sim.util.Int2D;
 
 /**
  *  <h3>This Field extends Continuous2D, to be used in a distributed
@@ -108,33 +109,36 @@ import sim.util.Int2D;
  * |             |  |  |            |  |  |           |  M  O                       |  |  |                  |
  * |             |  |  |            |  |  |           |  |  |                       |  |  |                  |
  * ----------------------------------------------------------------------------------------------------------
- * @author Michele Carillo
- * @author Ada Mancuso
- * @author Dario Mazzeo
- * @author Francesco Milone
- * @author Francesco Raia
- * @author Flavio Serrapica
- * @author Carmine Spagnuolo
  * </PRE>
  */
 
-public class DContinuous2DY extends DContinuous2D implements TraceableField
+public class DContinuousGrid2DYLB extends DContinuousGrid2D implements TraceableField
 {	
 	private static final long serialVersionUID = 1L;
 
-	private double start,finish;
-	private static Logger logger = Logger.getLogger(DContinuous2DY.class.getCanonicalName());
+	private static Logger logger = Logger.getLogger(DContinuousGrid2DYLB.class.getCanonicalName());
 
 	public ArrayList<MessageListener> listeners;
 	private String name;
+
 	private ZoomArrayList<RemotePositionedAgent> tmp_zoom=new ZoomArrayList<RemotePositionedAgent>();
+
+	private DistributedRegionLB<Double, Double2D> region;
+
+	private double balanceL;
+	private double balanceR;
+	private boolean isLeft;
 	private int numAgents;
-	private double width,height;
-	// --> only for testing
-	public PrintWriter printer;
-	public ArrayList<RemotePositionedAgent<Int2D>> buffer_print=new ArrayList<RemotePositionedAgent<Int2D>>();
-	// <--
+	private double width,height,field_width,field_height;
 	private String topicPrefix = "";
+
+	// --> only for testing
+	//public PrintWriter printer;
+
+
+	private int leftMineSize;
+
+	private int rightMineSize;
 
 	// -----------------------------------------------------------------------
 	// GLOBAL INSPECTOR ------------------------------------------------------
@@ -159,9 +163,12 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 	// -----------------------------------------------------------------------
 	// DEBUG -----------------------------------------------------------------
 	// -----------------------------------------------------------------------
-	private boolean checkReproducibility=false;
+	private boolean checkReproducibility = false;
 	private FileOutputStream file = null;
 	private PrintStream ps = null;
+	private FileOutputStream fileDup = null;
+	private PrintStream psDup = null;
+	private boolean checkAgentDuplication = false;
 
 	/**
 	 * Starts tracing a variable (or the graphic). To start tracing the graphic,
@@ -206,14 +213,14 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
-	public DContinuous2DY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix)
+	public DContinuousGrid2DYLB(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix)
 	{
 		super(discretization, width, height);
 		this.width=width;
 		this.height=height;
 		this.sm = sm;		
 		this.jumpDistance = max_distance;
-		//this.numPeers = num_peers;
+		//this.numPeers = num_peers;	
 		this.rows = rows;
 		this.columns = columns;
 		this.cellType = new CellType(i, j);
@@ -221,11 +228,12 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 		this.updates_cache = new ArrayList<Region<Double,Double2D>>();
 		this.name = name;
 		this.topicPrefix = prefix;
-		//		setConnection(((DistributedState)sm).getConnection());
 		numAgents=0;
+		balanceR=0.0;
+		balanceL=0.0;
 		createRegion();
 
-		// Initialize variables for GloablInspector
+		// Initialize variables for GlobalInspector
 		try{
 			currentBitmap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
 		}
@@ -237,6 +245,7 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 		currentStats = new HashMap<String, Object>();
 		isTracingGraphics = false;
 
+
 		if(checkReproducibility)
 		{
 			try {
@@ -247,7 +256,22 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 				e.printStackTrace();
 			}
 		}
+
+		if(checkAgentDuplication)
+		{
+			try {
+				fileDup = new FileOutputStream("99) "+cellType+".txt");
+				psDup = new PrintStream(fileDup);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 	}
+
+
+
 	/**
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
 	 * @return true if all is ok
@@ -338,6 +362,7 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 				height,                                            // Right-mine y1
 				width, height);
 
+
 		return true;
 	}
 
@@ -366,20 +391,29 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 	 * @param sm SimState of simulation
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
 	 */
-	public boolean setDistributedObjectLocation(final Double2D location,RemoteParam<?> paramToSet,SimState sm) throws DMasonException
-	{	
-		RemotePositionedAgent<Double2D> rm=null;
-		
-		/*if(paramToSet instanceof RemotePositionedAgent || ((RemotePositionedAgent)paramToSet).getPos() instanceof Double2D){
-			rm=(RemotePositionedAgent<Double2D>) paramToSet;	
+	@Override
+	public boolean setDistributedObjectLocation(final Double2D location, RemoteParam<?> ob,SimState sm) throws DMasonException
+	{
+
+		RemotePositionedAgent<Double2D> rm=(RemotePositionedAgent<Double2D>) ob.getDistributedParam();
+
+/*		if(ob instanceof RemotePositionedAgent ){
+			if(((RemotePositionedAgent)ob).getPos() instanceof Double2D){
+
+				rm=(RemotePositionedAgent<Double2D>) ob;	
+			}
+			else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter RemotePositionedAgent<E>, E must be a Double2D");}
 		}
-		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<Double2D>");}*/
-		
-		rm=(RemotePositionedAgent<Double2D>) paramToSet.getDistributedParam();
-		
+		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}
+*/
 		//This 'if' is for debug 
 		if(checkReproducibility)
 			ps.println(rm.getId()+" "+rm.getPos().x+" "+rm.getPos().y);
+
+		if(sm.schedule.getSteps()==99 && checkAgentDuplication)
+		{
+			psDup.println(rm.getId());
+		}
 
 		numAgents++;
 		if(myfield.isMine(location.x,location.y))
@@ -396,7 +430,7 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 		}
 		else
 		{
-			String errorMessage = String.format("Agent %s tried to set position (%f, %f): out of boundaries on cell %s.",
+			String errorMessage = String.format("Agent %d tried to set position (%f, %f): out of boundaries on cell %s.",
 					rm.getId(), location.x, location.y, cellType);
 			logger.severe( errorMessage );
 			return false;
@@ -412,26 +446,51 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 	{
 		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
-
-
-		// Send to Global Inspector
+		// If there is any viewer, send a snap
 		if(conn!=null &&
 				((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
 			GlobalInspectorHelper.synchronizeInspector(
 					(DistributedState<?>)sm,
 					conn,
-					topicPrefix,
+					topicPrefix, 
 					cellType,
 					(int)own_x,
 					(int)own_y,
-					currentTime,
-					currentBitmap,
-					currentStats,
-					tracingFields,
+					currentTime, 
+					currentBitmap, 
+					currentStats, 
+					tracingFields, 
 					isTracingGraphics);
-			currentTime = sm.schedule.getTime();
 		}
+		// Since the dimension of the field will vary at each step, we re-create the buffer
+		try{
+			currentBitmap = new BufferedImage(
+					(int)my_width,
+					(int)my_height,
+					BufferedImage.TYPE_3BYTE_BGR);
+		}
+		catch(Exception e)
+		{
+			System.out.println("Do not use the GlobalViewer, the requirements of the simulation exceed the limits of the BufferedImage.\n");
+		}
+
+		{
+			// TODO FOR DEBUG PURPOSES ONLY
+			Graphics g = currentBitmap.getGraphics();
+			Color oldCol = g.getColor();
+			Color newCol = new Color(0,
+					80 * ( (0+cellType.pos_j) % 2),
+					80 * ( (1+cellType.pos_j) % 2));
+			g.setColor(newCol);
+			g.fillRect(0, 0,(int)my_width, (int)my_height);
+			g.setColor(oldCol);
+		}
+
+
+
+
+
 
 		// Remove agents migrated to neighbor regions
 		for(Region<Double, Double2D> region : updates_cache)
@@ -464,47 +523,179 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 		// Publish left mine&out regions to correspondent topic
 		if ( rmap.left_out != null )
 		{
-			DistributedRegion<Double,Double2D> dr1 = new DistributedRegion<Double,Double2D>(
-					rmap.left_mine,
-					rmap.left_out,
+			DistributedRegionLB<Double,Double2D> dr1 = new DistributedRegionLB<Double,Double2D>(
+					rmap.left_mine.clone(),
+					rmap.left_out.clone(),
 					sm.schedule.getSteps() - 1,
 					cellType,
-					DistributedRegion.LEFT);
+					DistributedRegionLB.LEFT,((DistributedState)sm).getField().getNumAgents(),((DistributedState)sm).getField().getLeftMineSize(),my_width);
 			try 
 			{				
 				connWorker.publishToTopic(dr1, topicPrefix+cellType + "L", name);
 			} catch (Exception e1) {
-				logger.severe("Unable to publish region to topic: " + topicPrefix+cellType + "L");
+				logger.severe("Unable to publish region to topic: " + cellType + "L");
 			}
 		}
 
 		// Publish right mine&out regions to correspondent topic
 		if ( rmap.right_out != null )
 		{
-			DistributedRegion<Double,Double2D> dr2 = new DistributedRegion<Double,Double2D>(
-					rmap.right_mine,
-					rmap.right_out,
+			DistributedRegionLB<Double,Double2D> dr2 = new DistributedRegionLB<Double,Double2D>(
+					rmap.right_mine.clone(),
+					rmap.right_out.clone(),
 					sm.schedule.getSteps() - 1,
 					cellType,
-					DistributedRegion.RIGHT);
+					DistributedRegionLB.RIGHT,((DistributedState)sm).getField().getNumAgents(),((DistributedState)sm).getField().getRightMineSize(),my_width);
 			try 
 			{		
 				connWorker.publishToTopic(dr2, topicPrefix+cellType + "R", name);
 			} catch (Exception e1) {
-				logger.severe("Unable to publish region to topic: " + topicPrefix+cellType + "R");
+				logger.severe("Unable to publish region to topic: " + cellType + "R");
 			}
 		}
 
+
+		//This block restores the mine and the out modified for the exchange of agents during the load balancing phase 
+		if(isLeft){
+			//The region was the left in the previous step
+			if(balanceR>0){
+				//The width of the region was increased in the previous step
+				//So the right_mine must be restored on the start's dimensions but maintaining the new positions
+				rmap.right_mine.setUpl_xx((own_x + my_width - jumpDistance + width) % width);
+
+			}
+			else if(balanceR<0){
+				//The width of the region was decreased in the previous step
+				//So the right_out must be restored on the start's dimensions but maintaining the new positions
+				rmap.right_out.setDown_xx((own_x + my_width + jumpDistance + width) % width);
+			}
+			balanceR=0;
+		}
+		else{
+			//The region was the right in the previous step
+			if(balanceL>0){
+				//The width of the region was increased in the previous step
+				//So the left_mine must be restored on the start's dimensions but maintaining the new positions
+				rmap.left_mine.setDown_xx((own_x + jumpDistance + width) % width);
+
+			}
+			else if(balanceL<0){
+				//The width of the region was increased in the previous step
+				//So the left_out must be restored on the start's dimensions but maintaining the new positions
+				rmap.left_out.setUpl_xx((own_x - jumpDistance + width) % width);
+
+			}
+			balanceL=0;
+		}
+
+
 		//take from UpdateMap the updates for current last terminated step and use 
 		//verifyUpdates() to elaborate informations
-
 		PriorityQueue<Object> q;
 		try 
 		{
 			q = updates.getUpdates(sm.schedule.getSteps() - 1, 2);
 			while(!q.isEmpty())
 			{
-				DistributedRegion<Double, Double2D> region=(DistributedRegion<Double,Double2D>)q.poll();
+				region=(DistributedRegionLB<Double, Double2D>)q.poll();
+				if((sm.schedule.getSteps() % 2 == 0 && cellType.pos_j % 2 == 0)||(sm.schedule.getSteps() % 2 != 0 && cellType.pos_j % 2 != 0)){
+					//this region is the left
+					if(region.type.pos_j == cellType.pos_j+1 && cellType.pos_j!=columns-1 && region.position==DistributedRegionLB.LEFT){
+						isLeft=true;
+
+
+						balanceR=dynamic3(my_width, ((DistributedState)sm).getField().getNumAgents(), region.numAgents, region.mineNumAgents, ((DistributedState)sm).getField().getRightMineSize())-my_width;
+
+
+						//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null
+						if(balanceR>region.width-jumpDistance-1){
+							balanceR=region.width-jumpDistance-1;
+						}
+						//The balance can't be smaller than its width+AOI+1 otherwise this region becames null
+						if(balanceR<-my_width+jumpDistance+1){
+							balanceR=-my_width+jumpDistance+1;
+						}
+
+
+						if(balanceR<0){
+							//the region becames smaller
+							//the right_out becames bigger so the agents can be passed to the right neighbor
+							rmap.right_out.setUpl_xx((own_x + my_width + width+balanceR) % width);
+							rmap.right_out.setDown_xx((own_x + my_width + jumpDistance + width) % width);
+							my_width=my_width+balanceR;
+							rmap.right_mine.setUpl_xx((own_x + my_width - jumpDistance + width) % width);
+							rmap.right_mine.setDown_xx((own_x + my_width + width) % width);
+
+							myfield.setUpl_xx(own_x + jumpDistance);
+							myfield.setDown_xx(own_x + my_width - jumpDistance);
+							region.mine.clear();
+
+						}else 
+							if(balanceR>0){
+								//the region becames bigger
+								//the right_mine becames bigger so the agents can be received from the right neighbor
+								rmap.right_mine.setUpl_xx((own_x + my_width - jumpDistance + width) % width);
+								rmap.right_mine.setDown_xx((own_x + my_width + width+balanceR) % width);
+								my_width=my_width+balanceR;
+								rmap.right_out.setUpl_xx((own_x + my_width + width) % width);
+								rmap.right_out.setDown_xx((own_x + my_width + jumpDistance + width) % width);
+								myfield.setUpl_xx(own_x + jumpDistance);
+								myfield.setDown_xx(own_x + my_width - jumpDistance);
+
+							}
+
+					}
+				}
+				else{
+					//this region is the right
+					if(region.type.pos_j == cellType.pos_j-1 && cellType.pos_j!=0 && region.position==DistributedRegionLB.RIGHT){
+						isLeft=false;
+
+
+						balanceL=region.width-dynamic3(region.width,region.numAgents, ((DistributedState)sm).getField().getNumAgents(),((DistributedState)sm).getField().getLeftMineSize(), region.mineNumAgents);
+
+
+						//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null
+						if(balanceL>region.width-jumpDistance-1)
+							balanceL=region.width-jumpDistance-1;
+						//The balance can't be smaller than its width+AOI+1 otherwise this region becames null
+						if(balanceL<-my_width+jumpDistance+1)
+							balanceL=-my_width+jumpDistance+1;
+
+
+						if(balanceL<0){
+							//the region becames smaller
+							//the left_out becames bigger so the agents can be passed to the left neighbor
+
+							rmap.left_out.setUpl_xx((own_x - jumpDistance + width) % width);
+							rmap.left_out.setDown_xx((own_x + width-balanceL) % (width));
+							own_x=own_x-balanceL;
+							my_width=my_width+balanceL;
+							rmap.left_mine.setUpl_xx((own_x + width) % width);
+							rmap.left_mine.setDown_xx((own_x + jumpDistance + width) % width);
+							myfield.setUpl_xx(own_x + jumpDistance);
+							myfield.setDown_xx(own_x + my_width - jumpDistance);
+
+						}else 
+							if(balanceL>0){
+								//the region becames bigger
+								//the left_mine becames bigger so the agents can be received from the left neighbor
+								rmap.left_mine.setUpl_xx((own_x + width-balanceL) % width);
+								rmap.left_mine.setDown_xx((own_x + jumpDistance + width) % width);
+								own_x=own_x-balanceL;
+
+								my_width=my_width+balanceL;
+								rmap.left_out.setUpl_xx((own_x - jumpDistance + width) % width);
+								rmap.left_out.setDown_xx((own_x + width) % (width));
+								myfield.setUpl_xx(own_x + jumpDistance);
+								myfield.setDown_xx(own_x + my_width - jumpDistance);
+
+								region.mine.clear();
+							}
+
+
+					}
+				}
 				verifyUpdates(region);
 			}
 		} catch (InterruptedException e1) {
@@ -513,6 +704,7 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+
 		for(Region<Double, Double2D> region : updates_cache)
 			for(Entry<Double2D> e_m : region)
 			{
@@ -520,16 +712,20 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 				((DistributedState<Double2D>)sm).addToField(rm, e_m.l);
 			}
 
+
+
+
+
 		this.reset();
 
 		// If there is a zoom viewer active...
-		if(conn!=null && 
+		if(conn!=null &&
 				((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 		{
 			try
 			{
 				tmp_zoom.STEP = ((DistributedMultiSchedule)sm.schedule).getSteps() - 1;
-				conn.publishToTopic(tmp_zoom, topicPrefix+"GRAPHICS" + cellType, name);
+				conn.publishToTopic(tmp_zoom, "GRAPHICS" + cellType, name);
 				tmp_zoom = new ZoomArrayList<RemotePositionedAgent>();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -546,7 +742,7 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 	 * 
 	 * @param box A Distributed Region that contains the updates
 	 */
-	public void verifyUpdates(DistributedRegion<Double,Double2D> box)
+	public void verifyUpdates(DistributedRegionLB<Double,Double2D> box)
 	{
 		Region<Double,Double2D> r_mine=box.out;
 		Region<Double,Double2D> r_out=box.mine;
@@ -684,10 +880,14 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 
 					if(region.isMine(location.x,location.y))
 					{   	
+						if(name.contains("left_mine"))
+							leftMineSize++;
+						if(name.contains("right_mine"))
+							rightMineSize++;
 						if(name.contains("mine")){
 							if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
-
 								tmp_zoom.add(rm);
+
 							if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 								GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 						}
@@ -743,25 +943,13 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 	 * Implemented method from the abstract class.
 	 */
 	@Override
-	public DistributedState<Double2D> getState() {
-		return (DistributedState<Double2D>)sm; 
-	}
+	public DistributedState<Double2D> getState() { return (DistributedState<Double2D>)sm; }
 
 	//getters and setters
-	public double getOwn_x() {
-		return own_x; 
-	}
-
-	public void setOwn_x(double own_x) {
-		this.own_x = own_x; 
-	}
-
-	public double getOwn_y() {
-		return own_y; 
-	}
-	public void setOwn_y(double own_y) {
-		this.own_y = own_y; 
-	}
+	public double getOwn_x() { return own_x; }
+	public void setOwn_x(double own_x) { this.own_x = own_x; }
+	public double getOwn_y() {	return own_y; }
+	public void setOwn_y(double own_y) { this.own_y = own_y; }
 
 	@Override
 	public ArrayList<MessageListener> getLocalListener() {
@@ -825,13 +1013,45 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 		// TODO Auto-generated method stub
 
 	}
+
+	private double dynamic3(double my_width, int sl, int sr, int el, int er){
+		if(sr>sl){
+			if(el==0)
+				return Math.round(my_width + jumpDistance);
+			else
+				return Math.round(my_width + Math.min(jumpDistance, ((sr-sl)/2)*(jumpDistance/el)));
+		}
+		else{
+			if(er==0)
+				return Math.round(my_width - jumpDistance);
+			else
+				return Math.round(my_width + Math.max(-jumpDistance, ((sr-sl)/2)*(jumpDistance/er)));
+		}
+	}
+
 	@Override
 	public int getNumAgents() {
 		return numAgents;
 	}
+
+
 	@Override
 	public void resetParameters() {
 		numAgents=0;
+		leftMineSize=0;
+		rightMineSize=0;
+	}
+
+	@Override
+	public int getLeftMineSize() {
+		// TODO Auto-generated method stub
+		return leftMineSize;
+	}
+
+	@Override
+	public int getRightMineSize() {
+		// TODO Auto-generated method stub
+		return rightMineSize;
 	}
 
 	@Override
@@ -839,68 +1059,13 @@ public class DContinuous2DY extends DContinuous2D implements TraceableField
 	{
 		return globals;
 	}
-
-	@Override
-	public int getLeftMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getRightMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 	@Override
 	public boolean verifyPosition(Double2D pos) {
 		
-		if(rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(pos.x,pos.y))
-		{
-			return true;
-		}
-		else
-			if(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(pos.x,pos.y))
-			{
-				return true;
-			}
-			else
-				if(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(pos.x,pos.y))
-				{
-					return true;
-				}
-				else
-					if(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(pos.x,pos.y))
-					{
-						return true;
-					}
-					else
-						if(rmap.left_mine != null && rmap.left_mine.isMine(pos.x,pos.y))
-						{
-							return true;
-						}
-						else
-							if(rmap.right_mine != null && rmap.right_mine.isMine(pos.x,pos.y))
-							{
-								return true;
-							}
-							else
-								if(rmap.up_mine != null && rmap.up_mine.isMine(pos.x,pos.y))
-								{
-									return true;
-								}
-								else
-									if(rmap.down_mine != null && rmap.down_mine.isMine(pos.x,pos.y))
-									{
-										return true;
-									}
-									else
-										if(myfield.isMine(pos.x,pos.y))
-										{
-											return true;
-										}
-										else
-											return false;
+		//we have to implement this
+		return false;
 
 	}
+
 
 }

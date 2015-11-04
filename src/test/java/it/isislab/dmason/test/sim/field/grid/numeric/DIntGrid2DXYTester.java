@@ -13,7 +13,7 @@ import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2DFactory;
 import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2DXY;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
-import it.isislab.dmason.test.sim.field.continuous.DContinuous2DXYTester.StubRemotePositionedAgent;
+import it.isislab.dmason.test.sim.field.continuous.DContinuousGrid2DXYTester.StubRemotePositionedAgent;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.ConnectionType;

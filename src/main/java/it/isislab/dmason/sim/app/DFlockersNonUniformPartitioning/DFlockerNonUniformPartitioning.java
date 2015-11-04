@@ -17,7 +17,7 @@
 package it.isislab.dmason.sim.app.DFlockersNonUniformPartitioning;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
-import it.isislab.dmason.sim.field.continuous.DContinuous2D;
+import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import it.isislab.dmason.util.RemoteParam;
 
 import java.awt.Color;
@@ -54,7 +54,7 @@ public class DFlockerNonUniformPartitioning extends RemoteFlockNonUniformPartiti
     
     public Bag getNeighbors(DistributedState<Double2D> sm)
     {
-        return ((DContinuous2D)sm.getField()).getObjectsExactlyWithinDistance(pos, ((DFlockersNonUniformPartitioning)sm).neighborhood, true);
+        return ((DContinuousGrid2D)sm.getField()).getObjectsExactlyWithinDistance(pos, ((DFlockersNonUniformPartitioning)sm).neighborhood, true);
     }
     
     public double getOrientation() { return orientation2D(); }

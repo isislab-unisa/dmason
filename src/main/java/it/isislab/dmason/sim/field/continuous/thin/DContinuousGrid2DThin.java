@@ -17,7 +17,7 @@
 
 package it.isislab.dmason.sim.field.continuous.thin;
 
-import it.isislab.dmason.sim.field.continuous.DContinuous2D;
+import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 
 import java.util.HashMap;
 
@@ -27,7 +27,7 @@ import sim.util.Int2D;
 import sim.util.MutableInt2D;
 
 
-public abstract class DContinuous2DThin extends DContinuous2D {
+public abstract class DContinuousGrid2DThin extends DContinuousGrid2D {
 	private double width,height,localWidth, localHeight;
 	/**
 	 * 
@@ -37,7 +37,7 @@ public abstract class DContinuous2DThin extends DContinuous2D {
 	 * @param width Global width
 	 * @param height Global height
 	 */
-	public DContinuous2DThin(double discretization, double localWidth, double localHeight, double width, double height) {
+	public DContinuousGrid2DThin(double discretization, double localWidth, double localHeight, double width, double height) {
 		super(discretization, localWidth, localHeight);
 		this.width=width;
 		this.height=height;

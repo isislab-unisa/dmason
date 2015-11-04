@@ -17,7 +17,7 @@
  package it.isislab.dmason.util.visualization.globalviewer;
 
 import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.sim.field.continuous.DContinuous2DFactory;
+import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 import it.isislab.dmason.util.DistributedProperties;
 import it.isislab.dmason.util.SystemManagement.inspection.DistributedInspector;
 import it.isislab.dmason.util.SystemManagement.inspection.InspectableSchedule;

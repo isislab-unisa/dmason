@@ -1,6 +1,6 @@
 package it.isislab.dmason.sim.app.SociallyDamagingBehavior;
 
-import it.isislab.dmason.sim.field.continuous.DContinuous2D;
+import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import sim.util.Bag;
 import sim.util.Double2D;
 
@@ -221,7 +221,7 @@ public class Dishonest extends DBehaviour {
 	}
 	
 	@Override
-	public Double2D consistency(DHuman agent,Bag b, DContinuous2D humans)
+	public Double2D consistency(DHuman agent,Bag b, DContinuousGrid2D humans)
 	{
 		if (b==null || b.numObjs == 0) return new Double2D(0,0);
 
@@ -257,7 +257,7 @@ public class Dishonest extends DBehaviour {
 	}
 
 	@Override
-	public Double2D cohesion(DHuman agent,Bag b, DContinuous2D humans)
+	public Double2D cohesion(DHuman agent,Bag b, DContinuousGrid2D humans)
 	{
 		if (b==null || b.numObjs == 0) return new Double2D(0,0);
 
@@ -290,7 +290,7 @@ public class Dishonest extends DBehaviour {
 	}
 
 	@Override
-	public Double2D avoidance(DHuman agent,Bag b, DContinuous2D humans)
+	public Double2D avoidance(DHuman agent,Bag b, DContinuousGrid2D humans)
 	{
 		if (b==null || b.numObjs == 0) return new Double2D(0,0);
 		double x = 0;

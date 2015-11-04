@@ -8,9 +8,9 @@ import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.sim.field.continuous.DContinuous2DFactory;
-import it.isislab.dmason.sim.field.continuous.loadbalanced.DContinuous2DXYLB;
-import it.isislab.dmason.test.sim.field.continuous.DContinuous2DXYTester.StubRemotePositionedAgent;
+import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
+import it.isislab.dmason.sim.field.continuous.loadbalanced.DContinuousGrid2DXYLB;
+import it.isislab.dmason.test.sim.field.continuous.DContinuousGrid2DXYTester.StubRemotePositionedAgent;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.ConnectionType;
@@ -30,9 +30,9 @@ import sim.util.Double2D;
  * @author Carmine Spagnuolo
  * @author Mario Capuozzo
  */
-public class DContinuous2DXYLBTester {
+public class DContinuousGrid2DXYLBTester {
 	/** The to test. */
-	DContinuous2DXYLB toTest;
+	DContinuousGrid2DXYLB toTest;
 
 	/** The distributed state. */
 	StubDistributedState ss;
@@ -257,7 +257,7 @@ public class DContinuous2DXYLBTester {
 		// height, /* simState */
 		// ss, maxDistance, /* i */0, /* j */0, rows, columns, /* name */
 		// "test", /* prefix */"");
-		toTest = (DContinuous2DXYLB) DContinuous2DFactory.createDContinuous2D(
+		toTest = (DContinuousGrid2DXYLB) DContinuousGrid2DFactory.createDContinuous2D(
 				0.5, width, height, ss, maxDistance, 0, 0, rows, columns, mode,
 				"test", "", true);
 
