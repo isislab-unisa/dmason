@@ -158,7 +158,7 @@ public class DDoubleGrid2DXYThinTester {
 
 		width = 100;
 		height = 100;
-		maxDistance = 1;
+		maxDistance = 0;
 		rows = 10;
 		columns = 10;
 		numAgents = numLoop;

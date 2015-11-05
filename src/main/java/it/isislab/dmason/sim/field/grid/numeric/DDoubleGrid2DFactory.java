@@ -69,7 +69,7 @@ public class DDoubleGrid2DFactory {
 		if(height <=0 ) throw new DMasonException("Height cannot be less than zero");
 		if(width >=Integer.MAX_VALUE ) throw new DMasonException("Width cannot exceed the maximum integer value");
 		if(height >=Integer.MAX_VALUE ) throw new DMasonException("Height cannot exceed the maximum integer value");
-		if(max_distance <0 ) throw new DMasonException("AOI (max_discante) cannot be negative");
+		if(max_distance <=0 ) throw new DMasonException("Illegal value, max_distance value must be greater than 0");
 		if(rows <=0 ) throw new DMasonException("Rows cannot be less than zero");
 		if(columns <=0 ) throw new DMasonException("Columns cannot be less than zero");
 

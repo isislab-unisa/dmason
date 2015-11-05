@@ -275,6 +275,30 @@ public class DIntGrid2DFactoryTester {
 	}
 
 	/**
+	 * Test for the horizontal distribution mode with 0 max distance.
+	 */
+	@Test
+	public void testHorizontalDistributionModeZeroMaxDistance() {
+
+		try {
+
+			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
+					10, /* SimState */new StubDistributedState(),/* max_distance */
+					0, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
+					DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					1, /* fixed */true, /* name */"test",/* topicPrefix */
+					"",/* isToroidal */false);
+
+			fail("really you can have maxdistance=0???");
+
+		} catch (DMasonException e) {
+			// ok
+		}
+
+	}
+	
+	
+	/**
 	 * Test for the horizontal distribution mode with negative max distance.
 	 */
 	@Test

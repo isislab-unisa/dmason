@@ -436,6 +436,44 @@ public class DContinuousGrid2DFactoryTester {
 		}
 
 	}
+	
+	/**
+	 * Test horizontal distribution mode with maxdistance=0.
+	 */
+	@Test
+	public void testHorizontalDistributionModeZeroDistance() {
+
+		try {
+
+			GeneralParam genParam = new GeneralParam(
+			/* width */10,
+			/* height */10,
+			/* maxDistance */0,
+			/* rows */1,
+			/* columns */2,
+			/* numAgents */1,
+			/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+					ConnectionType.pureActiveMQ);
+
+			dcon = DContinuousGrid2DFactory.createDContinuous2D(
+			/* discretization */1.0 / 1.5,/* width */10,/* height */10,/*
+																	 * DistributedState
+																	 * but is
+																	 * SimState
+																	 */
+					new StubDistributedState(genParam),/* maxDistance */0, /* i */
+					0, /* j */
+					0,/* rows */1,/* colums */2,/* mode */
+					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					"test", /* topicPrefix */"",/* isToroidal */true);
+
+			fail("maxdistance =0 is an error! ");
+		} catch (DMasonException e) {
+			// ok
+		}
+
+	}
+	
 
 	/**
 	 * Test horizontal distribution mode with different rows and colums.
@@ -716,7 +754,7 @@ public class DContinuousGrid2DFactoryTester {
 					GeneralParam genParam = new GeneralParam(
 							/* width */6 * col,
 							/* height */6 * row,
-							/* maxDistance */0,
+							/* maxDistance */1,
 							/* rows */row,
 							/* columns */col,
 							/* numAgents */1,
@@ -731,7 +769,7 @@ public class DContinuousGrid2DFactoryTester {
 											 * DistributedState but is SimState
 											 */
 									new StubDistributedState(genParam),/* maxDistance */
-									0, /* i */
+									1, /* i */
 									0, /* j */
 									0,/* rows */
 									row,/* colums */
@@ -762,7 +800,7 @@ public class DContinuousGrid2DFactoryTester {
 					GeneralParam genParam = new GeneralParam(
 							/* width */3 * col,
 							/* height */3 * row,
-							/* maxDistance */0,
+							/* maxDistance */1,
 							/* rows */row,
 							/* columns */col,
 							/* numAgents */1,
@@ -777,7 +815,7 @@ public class DContinuousGrid2DFactoryTester {
 											 * DistributedState but is SimState
 											 */
 									new StubDistributedState(genParam),/* maxDistance */
-									0, /* i */
+									1, /* i */
 									0, /* j */
 									0,/* rows */
 									row,/* colums */

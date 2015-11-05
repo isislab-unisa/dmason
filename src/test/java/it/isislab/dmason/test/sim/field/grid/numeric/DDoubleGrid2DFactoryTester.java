@@ -285,6 +285,31 @@ public class DDoubleGrid2DFactoryTester {
 		}
 	}
 
+	
+	/**
+	 * Test horizontal distribution mode max distance=0.
+	 */
+	@Test
+	public void testHorizontalDistributionZeroMaxDistance() {
+
+		try {
+
+			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
+					10, /* simState */new StubDistributedState(),/* max_distance */
+					0, /* i */0,/* j */1, /* rows */1, /* columns */10,
+					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
+					"", /* isToroidal */false);
+
+			fail("really you can have a maxdistance=0???");
+		} catch (DMasonException e) {
+			// ok
+		}
+	}
+	
+	
+	
+	
 	/**
 	 * Test horizontal distribution mode negative max distance.
 	 */
@@ -660,8 +685,9 @@ public class DDoubleGrid2DFactoryTester {
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 
+			fail("maxdistance=0 is an error");
 		} catch (DMasonException e) {
-			fail(e.getMessage());
+			
 		}
 	}
 
@@ -998,8 +1024,9 @@ public class DDoubleGrid2DFactoryTester {
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 
+		fail("maxdistance=0 is an error");
 		} catch (DMasonException e) {
-			fail(e.getMessage());
+		
 		}
 	}
 
