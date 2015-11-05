@@ -137,12 +137,7 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 
 	public int MODE;
 
-	// -----------------------------------------------------------------------
-	// DEBUG -----------------------------------------------------------------
-	// -----------------------------------------------------------------------
-	private boolean  checkAgentDuplication = false;
-	private FileOutputStream file = null;
-	private PrintStream ps = null;
+
 
 	/* public DAntsForage(Object[] params)
         { 
@@ -172,20 +167,8 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
         }*/
 
 
-	public DAntsForage()
-	{
+	public DAntsForage(){
 		super();
-		if(checkAgentDuplication)
-		{
-			try {
-				file = new FileOutputStream("0) "+super.TYPE+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
 	}
 
 	public DAntsForage(GeneralParam params)
@@ -208,16 +191,7 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 		HXMAX = (HOME_XMAX * GRID_WIDTH)/100;
 		HYMAX = (HOME_YMAX * GRID_HEIGHT)/100;
 
-		if(checkAgentDuplication)
-		{
-			try {
-				file = new FileOutputStream("0) "+super.TYPE+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+
 
 	}  
 	@Override
@@ -330,9 +304,6 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 			DRemoteAnt ant = new DRemoteAnt(this, reward);
 
 			while(buggrid.size() != super.NUMAGENTS){
-				//This 'if' is for debug 
-				if(checkAgentDuplication)
-					ps.println(ant.getId());
 
 				ant.setPos(h);
 

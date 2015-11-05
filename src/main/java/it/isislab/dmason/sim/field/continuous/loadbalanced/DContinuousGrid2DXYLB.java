@@ -177,17 +177,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 	/** Will contain globals properties */
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
-	// -----------------------------------------------------------------------
-	// DEBUG -----------------------------------------------------------------
-	// -----------------------------------------------------------------------
-	private boolean checkReproducibility = false;
-	private FileOutputStream file = null;
-	private PrintStream ps = null;
-	private FileOutputStream fileDup = null;
-	private PrintStream psDup = null;
-	private boolean checkAgentDuplication = false;
-
-
+	
 	/**
 	 * Constructor of class with paramaters:
 	 * 
@@ -267,27 +257,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 		updates_cacheLB=new ArrayList<ArrayList<Region<Double,Double2D>>>();
 		numAgents=0;
 
-		if(checkReproducibility)
-		{
-			try {
-				file = new FileOutputStream(name+"-"+cellType+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		if(checkAgentDuplication)
-		{
-			try {
-				fileDup = new FileOutputStream("99) "+cellType+".txt");
-				psDup = new PrintStream(fileDup);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+	
 	}
 
 	/**
@@ -333,12 +303,6 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}
 */
 
-		//This 'if' is for debug 
-		if(checkReproducibility)
-			ps.println(rm.getId()+" "+rm.getPos().x+" "+rm.getPos().y);
-
-		if(checkAgentDuplication && sm.schedule.getSteps()==99)
-			psDup.println(rm.getId());
 
 		numAgents++;
 		boolean fl = false;

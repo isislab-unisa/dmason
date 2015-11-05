@@ -124,13 +124,6 @@ public class DIntGrid2DYThin extends DIntGrid2DThin {
 	/** Will contain globals properties */
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
-	// -----------------------------------------------------------------------
-	// DEBUG -----------------------------------------------------------------
-	// -----------------------------------------------------------------------
-	private boolean checkReproducibility=false;
-	private FileOutputStream file = null;
-	private PrintStream ps = null;
-
 	/**
 	 * Constructor of class with paramaters:
 	 * 
@@ -164,16 +157,6 @@ public class DIntGrid2DYThin extends DIntGrid2DThin {
 		this.topicPrefix = prefix;
 		updates_cache= new ArrayList<RegionNumeric<Integer,EntryNum<Integer,Int2D>>>();
 		numAgents=0;
-		if(checkReproducibility)
-		{
-			try {
-				file = new FileOutputStream(name+"-"+cellType+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 
 		createRegion();		
 
@@ -208,27 +191,27 @@ public class DIntGrid2DYThin extends DIntGrid2DThin {
 		{
 			if( v1 >= 0 )
 			{
-			
+
 				neighborhood.add(cellType.getNeighbourLeft());
-						
-				
+
+
 			}
 			if( v2 <= columns - 1 )
 			{
-				
+
 				neighborhood.add(cellType.getNeighbourRight());
 			}	
 		}else{
-			
+
 			if( v1 >= 0 )
 			{
-				
+
 				neighborhood.add(cellType.getNeighbourLeft());
-				
+
 			}
 			if( v2 < columns  )
 			{
-				
+
 				neighborhood.add(cellType.getNeighbourRight());
 			}	
 		}
@@ -523,17 +506,14 @@ public class DIntGrid2DYThin extends DIntGrid2DThin {
 	public boolean setDistributedObjectLocation( Int2D l, RemoteParam<?> ob ,SimState sm) throws DMasonException{
 
 		int i=(Integer) ob.getDistributedParam();
-		
-	/*	if(ob instanceof Integer){
+
+		/*	if(ob instanceof Integer){
 			i=(Integer) ob;
 		}else
 		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");}
-	
-	*/
-		//This 'if' is for debug 
-		if(checkReproducibility)
-			ps.println(i+" "+l.x+" "+l.y);
-		
+
+		 */
+
 		numAgents++;
 		if(myfield.isMine(l.getX(), l.getY()))
 		{    		
@@ -712,7 +692,7 @@ public class DIntGrid2DYThin extends DIntGrid2DThin {
 		return globals;
 	}
 
-	
+
 
 	@Override
 	public Int2D getAvailableRandomLocation() {
@@ -721,7 +701,7 @@ public class DIntGrid2DYThin extends DIntGrid2DThin {
 	}
 	@Override
 	public boolean verifyPosition(Int2D pos) {
-		
+
 		//we have to implement this
 		return false;
 

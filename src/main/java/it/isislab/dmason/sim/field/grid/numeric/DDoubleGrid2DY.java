@@ -138,12 +138,6 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 	/** Will contain globals properties */
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
-	// -----------------------------------------------------------------------
-	// DEBUG -----------------------------------------------------------------
-	// -----------------------------------------------------------------------
-	private boolean checkReproducibility=false;
-	private FileOutputStream file = null;
-	private PrintStream ps = null;
 
 	/**
 	 * Constructor of class with paramaters:
@@ -176,19 +170,7 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 		this.initialValue = initialGridValue;
 		this.topicPrefix = prefix;
 		updates_cache= new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
-
 		numAgents=0;
-
-		if(checkReproducibility)
-		{
-			try {
-				file = new FileOutputStream(NAME+"-"+cellType+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 
 		createRegion();		
 
@@ -571,8 +553,6 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 		}else
 		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a double");}
 */		//This 'if' is for debug 
-		if(checkReproducibility)
-			ps.println(d+" "+l.x+" "+l.y);
 
 		numAgents++;
 		if(myfield.isMine(l.getX(), l.getY()))

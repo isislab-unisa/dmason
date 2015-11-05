@@ -139,54 +139,10 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 
 	public int MODE;
 
-	// -----------------------------------------------------------------------
-	// DEBUG -----------------------------------------------------------------
-	// -----------------------------------------------------------------------
-	private boolean  checkAgentDuplication = false;
-	private FileOutputStream file = null;
-	private PrintStream ps = null;
-
-	/* public DAntsForage(Object[] params)
-        { 
-    	super((Integer)params[2],(Integer)params[3],(Integer)params[4],(Integer)params[7],
-    			(Integer)params[8],(String)params[0],(String)params[1],(Integer)params[9], 
-    			isToroidal,new DistributedMultiSchedule<Int2D>());
-    	numAnts = (Integer)params[4];
-    	ip = params[0]+"";
-    	port = params[1]+"";
-
-    	//trigger = new Trigger(ip, port);
-
-    	this.MODE=(Integer)params[9];
-    	GRID_WIDTH = (Integer)params[5];
-    	GRID_HEIGHT = (Integer)params[6];
-
-    	FXMIN = (FOOD_XMIN * GRID_WIDTH)/100;
-    	FYMIN = (FOOD_YMIN * GRID_HEIGHT)/100;
-    	FXMAX = (FOOD_XMAX * GRID_WIDTH)/100;
-    	FYMAX = (FOOD_YMAX * GRID_HEIGHT)/100;
-
-    	HXMIN = (HOME_XMIN * GRID_WIDTH)/100;
-    	HYMIN = (HOME_YMIN * GRID_HEIGHT)/100;
-    	HXMAX = (HOME_XMAX * GRID_WIDTH)/100;
-    	HYMAX = (HOME_YMAX * GRID_HEIGHT)/100;
-
-        }*/
-
 
 	public DAntsForage()
 	{
 		super();
-		if(checkAgentDuplication)
-		{
-			try {
-				file = new FileOutputStream("0) "+super.TYPE+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 
 	}
 
@@ -210,16 +166,7 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 		HXMAX = (HOME_XMAX * GRID_WIDTH)/100;
 		HYMAX = (HOME_YMAX * GRID_HEIGHT)/100;
 
-		if(checkAgentDuplication)
-		{
-			try {
-				file = new FileOutputStream("0) "+super.TYPE+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+
 
 	}  
 	@Override
@@ -333,9 +280,6 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 			DRemoteAnt ant = new DRemoteAnt(this, reward);
 
 			while(buggrid.size() != super.NUMAGENTS){
-				//This 'if' is for debug 
-				if(checkAgentDuplication)
-					ps.println(ant.getId());
 
 				ant.setPos(h);
 

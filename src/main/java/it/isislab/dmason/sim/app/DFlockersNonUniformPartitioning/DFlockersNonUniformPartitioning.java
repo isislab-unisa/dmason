@@ -57,8 +57,6 @@ public class DFlockersNonUniformPartitioning extends DistributedState<Double2D>
 		super();
 	}
 	
-	public long debug_lastStep = -10;
-	public int debug_numAgent = 0;
 	
     /**
 	 * 
@@ -120,12 +118,6 @@ public class DFlockersNonUniformPartitioning extends DistributedState<Double2D>
     
     public static String topicPrefix = "";
     
-    // -----------------------------------------------------------------------
- 	// DEBUG -----------------------------------------------------------------
- 	// -----------------------------------------------------------------------
- 	private boolean  checkAgentDuplication = false;
- 	private FileOutputStream file = null;
- 	private PrintStream ps = null;
     
     
 //    int localTest = 1; int globalTest = -1;
@@ -147,16 +139,7 @@ public class DFlockersNonUniformPartitioning extends DistributedState<Double2D>
     	this.MODE=params.getMode();
     	gridWidth=params.getWidth();
     	gridHeight=params.getHeight();
-    	if(checkAgentDuplication)
-		{
-			try {
-				file = new FileOutputStream("0) "+super.TYPE+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+    	
     }
     
     public DFlockersNonUniformPartitioning(GeneralParam params,List<EntryParam<String, Object>> simParams, String prefix)
@@ -206,16 +189,6 @@ public class DFlockersNonUniformPartitioning extends DistributedState<Double2D>
 			
 		}
 			
-    	if(checkAgentDuplication)
-		{
-			try {
-				file = new FileOutputStream("0) "+super.TYPE+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
     	
     }
 
@@ -257,11 +230,7 @@ public class DFlockersNonUniformPartitioning extends DistributedState<Double2D>
 //    			if (random.nextBoolean(deadFlockerProbability))
 //    				f.dead = true;
 
-    			//This 'if' is for debug 
-    			if(checkAgentDuplication && !f.dead)
-    			{
-    				ps.println(f.getId());
-    			}
+    	
     			
     			if(flockers.setObjectLocation(f, f.pos))
     			{

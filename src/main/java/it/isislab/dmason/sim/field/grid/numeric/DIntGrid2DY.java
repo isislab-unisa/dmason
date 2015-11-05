@@ -133,13 +133,6 @@ public class DIntGrid2DY extends DIntGrid2D {
 	/** Will contain globals properties */
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
-	// -----------------------------------------------------------------------
-	// DEBUG -----------------------------------------------------------------
-	// -----------------------------------------------------------------------
-	private boolean checkReproducibility=false;
-	private FileOutputStream file = null;
-	private PrintStream ps = null;
-
 	/**
 	 * Constructor of class with paramaters:
 	 * 
@@ -172,17 +165,6 @@ public class DIntGrid2DY extends DIntGrid2D {
 		updates_cache= new ArrayList<RegionNumeric<Integer,EntryNum<Integer,Int2D>>>();
 
 		numAgents=0;
-
-		if(checkReproducibility)
-		{
-			try {
-				file = new FileOutputStream(NAME+"-"+cellType+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 
 		createRegion();		
 
@@ -526,14 +508,6 @@ public class DIntGrid2DY extends DIntGrid2D {
 	public boolean setDistributedObjectLocation( Int2D l, RemoteParam<?> paramToSet ,SimState sm) throws DMasonException{
 
 		int i=(Integer)paramToSet.getDistributedParam();
-				
-	/*	
-		if(paramToSet instanceof Integer){
-			i=(Integer) paramToSet;
-		}else
-		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");}		//This 'if' is for debug 
-		if(checkReproducibility)
-			ps.println(i+" "+l.x+" "+l.y);*/
 
 		numAgents++;
 		if(myfield.isMine(l.getX(), l.getY()))

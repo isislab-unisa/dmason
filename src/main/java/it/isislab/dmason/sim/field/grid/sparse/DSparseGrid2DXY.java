@@ -70,7 +70,6 @@ import sim.util.Int2D;
  *	
  *	<li>LEFT_OUT, RIGHT_OUT, UP_OUT, DOWN_OUT, CORNER_OUT_LEFT_UP_DIAG, CORNER_OUT_LEFT_DOWN_DIAG,
  *		CORNER_OUT_RIGHT_UP_DIAG, CORNER_OUT_RIGHT_DOWN_DIAG : Boundaries Regions those must not be simulated and sent to neighbors to be simulated.</li>
- *   <li>
  *	All peers subscribes to the topic of boundary region which want the information and run a asynchronous thread
  *	to receive the updates, then publish a topic for every their border (or neighbor), that can be :
  *	<ul>
@@ -170,17 +169,6 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	/** Will contain globals properties */
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
-	// -----------------------------------------------------------------------
-	// DEBUG -----------------------------------------------------------------
-	// -----------------------------------------------------------------------
-	private boolean checkReproducibility = false;
-	private FileOutputStream file = null;
-	private PrintStream ps = null;
-
-	private boolean checkAgentDuplication = false;
-	private FileOutputStream fileDup = null;
-	private PrintStream psDup = null;
-
 
 	/**
 	 * Constructor of class with paramaters:
@@ -228,27 +216,8 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		currentStats = new HashMap<String, Object>();
 		isTracingGraphics = false;
 
-		if(checkReproducibility)
-		{
-			try {
-				file = new FileOutputStream(NAME+"-"+cellType+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		
 
-		if(checkAgentDuplication)
-		{
-			try {
-				fileDup = new FileOutputStream("999) "+cellType+".txt");
-				psDup = new PrintStream(fileDup);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 	}
 
 
@@ -485,14 +454,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		}
 		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}		//This 'if' is for debug 
 */		
-		//This 'if' is for debug 
-		if(checkReproducibility)
-			ps.println(rm.getId()+" "+rm.getPos().x+" "+rm.getPos().y);
-
-		if(sm.schedule.getSteps()==999 && checkAgentDuplication)
-		{
-			psDup.println(rm.getId());
-		}
+		
 
 		numAgents++;
 		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)

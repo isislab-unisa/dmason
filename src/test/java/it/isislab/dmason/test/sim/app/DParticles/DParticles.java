@@ -50,61 +50,36 @@ import sim.util.Int2D;
  *
  */
 public class DParticles extends DistributedState<Int2D> {
-    
+
 	private static boolean isToroidal=true;
-    public DSparseGrid2D particles;
-    public DDoubleGrid2D trails;
-    //public DoubleGrid2D trails;
+	public DSparseGrid2D particles;
+	public DDoubleGrid2D trails;
+	//public DoubleGrid2D trails;
 
-    public int gridWidth ;
-    public int gridHeight ;   
-    public int MODE;
-   
-    public static String topicPrefix = "";
-    
-    // -----------------------------------------------------------------------
- 	// DEBUG -----------------------------------------------------------------
- 	// -----------------------------------------------------------------------
- 	private boolean  checkAgentDuplication = false;
- 	private FileOutputStream file = null;
- 	private PrintStream ps = null;
+	public int gridWidth ;
+	public int gridHeight ;   
+	public int MODE;
 
-    public DParticles() {
+	public static String topicPrefix = "";
+
+
+	public DParticles() {
 		super();
-		if(checkAgentDuplication)
-		{
-			try {
-				file = new FileOutputStream("0) "+super.TYPE+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		
 	}
-    
-    public DParticles(GeneralParam params)
-    {    	
-    	super(params,new DistributedMultiSchedule<Int2D>(),topicPrefix,new DistributedStateConnectionFake());
-    	this.MODE=params.getMode();
-    	gridWidth=params.getWidth();
-    	gridHeight=params.getHeight();
-    	//((DistributedMultiSchedule)schedule).setThresholdMerge(1);
-        //((DistributedMultiSchedule)schedule).setThresholdSplit(5);
-    	if(checkAgentDuplication)
-		{
-			try {
-				file = new FileOutputStream("0) "+super.TYPE+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 
-    } 
-    
-    /*public DParticles(Object[] params)
+	public DParticles(GeneralParam params)
+	{    	
+		super(params,new DistributedMultiSchedule<Int2D>(),topicPrefix,new DistributedStateConnectionFake());
+		this.MODE=params.getMode();
+		gridWidth=params.getWidth();
+		gridHeight=params.getHeight();
+		//((DistributedMultiSchedule)schedule).setThresholdMerge(1);
+		//((DistributedMultiSchedule)schedule).setThresholdSplit(5);
+
+	} 
+
+	/*public DParticles(Object[] params)
     {    	
     	super((Integer)params[2],(Integer)params[3],(Integer)params[4],(Integer)params[7],
     			(Integer)params[8],(String)params[0],(String)params[1],(Integer)params[9],
@@ -119,83 +94,78 @@ public class DParticles extends DistributedState<Int2D> {
 
     } */   
 
-    @Override
+	@Override
 	public void start()
-    {
-    	//necessario per effettuare la simulazione senza costruttore
-    	((DistributedStateConnectionFake)super.getDistributedStateConnectionJMS()).setupfakeconnection(this);
-    	super.start();
+	{
+		//necessario per effettuare la simulazione senza costruttore
+		((DistributedStateConnectionFake)super.getDistributedStateConnectionJMS()).setupfakeconnection(this);
+		super.start();
 
-        try 
-        {
+		try 
+		{
 			//trails = new DoubleGrid2D(gridWidth, gridHeight);
-        	trails = DDoubleGrid2DFactory.createDDoubleGrid2D(gridWidth, gridHeight,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,0,false,"trails",topicPrefix,false);
+			trails = DDoubleGrid2DFactory.createDDoubleGrid2D(gridWidth, gridHeight,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,0,false,"trails",topicPrefix,false);
 			particles = DSparseGrid2DFactory.createDSparseGrid2D(gridWidth, gridHeight,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE, "particles", topicPrefix,false);
-		    init_connection();
-		   // String curDir = System.getProperty("user.dir");
+			init_connection();
+			// String curDir = System.getProperty("user.dir");
 			//printer=new PrintWriter(new FileOutputStream(curDir+"/testTOTAgents.txt",true));
-        }catch (DMasonException e) { e.printStackTrace();}
-        //catch (FileNotFoundException e) {e.printStackTrace();}
+		}catch (DMasonException e) { e.printStackTrace();}
+		//catch (FileNotFoundException e) {e.printStackTrace();}
 
-        DParticle p=new DParticle(this);
-        
-        while(particles.size() != super.NUMAGENTS)
-        {		
-        	p.setPos(particles.getAvailableRandomLocation());
-           
-            p.xdir = random.nextInt(3)-1;
-            p.ydir = random.nextInt(3)-1;
-            
-        	//This 'if' is for debug 
-			if(checkAgentDuplication)
-			{
-				ps.println(p.getId());
+		DParticle p=new DParticle(this);
+
+		while(particles.size() != super.NUMAGENTS)
+		{		
+			p.setPos(particles.getAvailableRandomLocation());
+
+			p.xdir = random.nextInt(3)-1;
+			p.ydir = random.nextInt(3)-1;
+
+
+			if(particles.setObjectLocation(p, new Int2D(p.pos.getX(),p.pos.getY())))
+			{		
+				schedule.scheduleOnce(schedule.getTime()+1.0,p);
+				//buffer_print.add(p);
+				if(particles.size() != super.NUMAGENTS)
+					p=new DParticle(this);
 			}
-            
-           	if(particles.setObjectLocation(p, new Int2D(p.pos.getX(),p.pos.getY())))
-           	{		
-           		schedule.scheduleOnce(schedule.getTime()+1.0,p);
-           		//buffer_print.add(p);
-           		if(particles.size() != super.NUMAGENTS)
-           			p=new DParticle(this);
-           	}
-        }
-        
-      /*  for(RemoteAgent<Int2D> r : buffer_print)
+		}
+
+		/*  for(RemoteAgent<Int2D> r : buffer_print)
 		{
 			printer.println(r.getId());
 			printer.flush();
 		}*/
-        // Schedule the decreaser
-        Steppable decreaser = new Steppable()
-        {
-            @Override
+		// Schedule the decreaser
+		Steppable decreaser = new Steppable()
+		{
+			@Override
 			public void step(SimState state)
-            {
-            	trails.multiply(0.9);
-            }
-            static final long serialVersionUID = 6330208160095250478L;
-        };
-            
-        schedule.scheduleRepeating(Schedule.EPOCH,2,decreaser,1);
- 
-//    	try {
-//    		if(getTrigger()!=null)
-//    			getTrigger().publishToTriggerTopic("Simulation cell "+particles.cellType+" ready...");
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-    }
+			{
+				trails.multiply(0.9);
+			}
+			static final long serialVersionUID = 6330208160095250478L;
+		};
 
-    public static void main(String[] args)
-    {
-        doLoop(DParticles.class, args);
-        System.exit(0);
-    }    
+		schedule.scheduleRepeating(Schedule.EPOCH,2,decreaser,1);
 
-    static final long serialVersionUID = 9115981605874680023L;
-	
+		//    	try {
+		//    		if(getTrigger()!=null)
+		//    			getTrigger().publishToTriggerTopic("Simulation cell "+particles.cellType+" ready...");
+		//		} catch (Exception e) {
+		//			// TODO Auto-generated catch block
+		//			e.printStackTrace();
+		//		}
+	}
+
+	public static void main(String[] args)
+	{
+		doLoop(DParticles.class, args);
+		System.exit(0);
+	}    
+
+	static final long serialVersionUID = 9115981605874680023L;
+
 	@Override
 	public DistributedField2D getField() 
 	{
@@ -218,11 +188,11 @@ public class DParticles extends DistributedState<Int2D> {
 	public boolean setPortrayalForObject(Object o) 
 	{
 		if(particles.p!=null)
-		  {
-			  particles.p.setPortrayalForObject(o, new sim.portrayal.simple.OvalPortrayal2D(Color.YELLOW) );
-		    return true;
-		  }
+		{
+			particles.p.setPortrayalForObject(o, new sim.portrayal.simple.OvalPortrayal2D(Color.YELLOW) );
+			return true;
+		}
 		return false;
 	}    
-	   
+
 }

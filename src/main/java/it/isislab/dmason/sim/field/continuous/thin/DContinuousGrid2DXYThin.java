@@ -173,13 +173,6 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 	/** Will contain globals properties */
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
-	// -----------------------------------------------------------------------
-	// DEBUG -----------------------------------------------------------------
-	// -----------------------------------------------------------------------
-	private boolean checkReproducibility = false;
-	private FileOutputStream file = null;
-	private PrintStream ps = null;
-
 
 	/**
 	 * Constructor of class with paramaters:
@@ -212,16 +205,7 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 		this.name = name;
 		this.topicPrefix = prefix;
 
-		if(checkReproducibility)
-		{
-			try {
-				file = new FileOutputStream(name+"-"+cellType+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		
 		numAgents=0;
 		createRegion();		
 	}
@@ -364,24 +348,19 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 	//public boolean setDistributedObjectLocation(final Double2D location,RemotePositionedAgent<Double2D> rm,SimState sm){
 	public boolean setDistributedObjectLocation(final Double2D location,RemoteParam<?> paramToSet,SimState sm) throws DMasonException
 	{
-		
-		
+
+
 		RemotePositionedAgent<Double2D> rm=(RemotePositionedAgent<Double2D>) paramToSet.getDistributedParam();
-		
-	/*	if(paramToSet instanceof RemotePositionedAgent ){
+
+		/*	if(paramToSet instanceof RemotePositionedAgent ){
 			if(((RemotePositionedAgent)paramToSet).getPos() instanceof Double2D){
-			
+
 			rm=(RemotePositionedAgent<Double2D>) paramToSet;	
 			}
 			else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter RemotePositionedAgent<E>, E must be a Double2D");}
 		}
 		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}
-*/
-		
-		
-		//This 'if' is for debug 
-		if(checkReproducibility)
-			ps.println(rm.getId()+" "+rm.getPos().x+" "+rm.getPos().y);
+		 */
 
 		numAgents++;
 		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
@@ -1085,7 +1064,7 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 	}
 	@Override
 	public boolean verifyPosition(Double2D pos) {
-		
+
 		//we have to implement this
 		return false;
 

@@ -151,13 +151,6 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	/** Will contain globals properties */
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
-	// -----------------------------------------------------------------------
-	// DEBUG -----------------------------------------------------------------
-	// -----------------------------------------------------------------------
-	private boolean checkReproducibility=false;
-	private FileOutputStream file = null;
-	private PrintStream ps = null;
-
 	/**
 	 * Constructor of class with paramaters:
 	 * 
@@ -188,16 +181,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 		this.columns = columns;
 		updates_cache = new ArrayList<RegionNumeric<Integer,EntryNum<Integer,Int2D>>>();
 
-		if(checkReproducibility)
-		{
-			try {
-				file = new FileOutputStream(NAME+"-"+cellType+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		
 		createRegion();	
 
 	}
@@ -596,10 +580,6 @@ public class DIntGrid2DXY extends DIntGrid2D {
 		*/
 		Integer d = (Integer) paramToSet.getDistributedParam();
 		
-		//This 'if' is for debug 
-		if(checkReproducibility)
-			ps.println(d+" "+l.x+" "+l.y);
-
 		numAgents++;
 
 		if(setValue(d, l)) return true;

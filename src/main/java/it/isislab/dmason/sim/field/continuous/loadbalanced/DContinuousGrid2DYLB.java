@@ -160,16 +160,6 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 	/** Will contain globals properties */
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
-	// -----------------------------------------------------------------------
-	// DEBUG -----------------------------------------------------------------
-	// -----------------------------------------------------------------------
-	private boolean checkReproducibility = false;
-	private FileOutputStream file = null;
-	private PrintStream ps = null;
-	private FileOutputStream fileDup = null;
-	private PrintStream psDup = null;
-	private boolean checkAgentDuplication = false;
-
 	/**
 	 * Starts tracing a variable (or the graphic). To start tracing the graphic,
 	 * the global viewer must set param = "-GRAPHICS". We choose this particular
@@ -244,29 +234,6 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 		currentTime = sm.schedule.getTime();
 		currentStats = new HashMap<String, Object>();
 		isTracingGraphics = false;
-
-
-		if(checkReproducibility)
-		{
-			try {
-				file = new FileOutputStream(name+"-"+cellType+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		if(checkAgentDuplication)
-		{
-			try {
-				fileDup = new FileOutputStream("99) "+cellType+".txt");
-				psDup = new PrintStream(fileDup);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 
 	}
 
@@ -406,14 +373,6 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 		}
 		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}
 */
-		//This 'if' is for debug 
-		if(checkReproducibility)
-			ps.println(rm.getId()+" "+rm.getPos().x+" "+rm.getPos().y);
-
-		if(sm.schedule.getSteps()==99 && checkAgentDuplication)
-		{
-			psDup.println(rm.getId());
-		}
 
 		numAgents++;
 		if(myfield.isMine(location.x,location.y))

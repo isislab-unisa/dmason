@@ -45,74 +45,67 @@ import sim.util.Double2D;
 @ThinAnnotation
 public class DFlockers extends DistributedState<Double2D>
 {
-    /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	public DContinuousGrid2DThin flockers;
-    private static boolean isToroidal=true;
-     
-    @BatchAnnotation(
-    	domain = "100-300",
-    	suggestedValue = "250"
-    )
-    public double width = 150;
-    @BatchAnnotation
-    public double height = 150;
-    @BatchAnnotation
-    public int numFlockers = 20;
-    @BatchAnnotation
-    public double cohesion = 1.0;
-    @BatchAnnotation
-    public double avoidance = 1.0;
-    @BatchAnnotation
-    public double randomness = 1.0;
-    @BatchAnnotation
-    public double consistency = 1.0;
-    @BatchAnnotation
-    public double momentum = 1.0;
-    @BatchAnnotation
-    public double deadFlockerProbability = 0.1;
-    @BatchAnnotation
-    public double neighborhood = 10;
-    
-    public double jump = 0.7;  // how far do we move in a timestep?
-    
-    public double getCohesion() { return cohesion; }
-    public void setCohesion(double val) { if (val >= 0.0) cohesion = val; }
-    public double getAvoidance() { return avoidance; }
-    public void setAvoidance(double val) { if (val >= 0.0) avoidance = val; }
-    public double getRandomness() { return randomness; }
-    public void setRandomness(double val) { if (val >= 0.0) randomness = val; }
-    public double getConsistency() { return consistency; }
-    public void setConsistency(double val) { if (val >= 0.0) consistency = val; }
-    public double getMomentum() { return momentum; }
-    public void setMomentum(double val) { if (val >= 0.0) momentum = val; }
-    public int getNumFlockers() { return numFlockers; }
-    public void setNumFlockers(int val) { if (val >= 1) numFlockers = val; }
-    public double getWidth() { return width; }
-    public void setWidth(double val) { if (val > 0) width = val; }
-    public double getHeight() { return height; }
-    public void setHeight(double val) { if (val > 0) height = val; }
-    public double getNeighborhood() { return neighborhood; }
-    public void setNeighborhood(double val) { if (val > 0) neighborhood = val; }
-    public double getDeadFlockerProbability() { return deadFlockerProbability; }
-    public void setDeadFlockerProbability(double val) { if (val >= 0.0 && val <= 1.0) deadFlockerProbability = val; }
-    
-    public double gridWidth ;
-    public double gridHeight ;   
-    public int MODE;
-    
-    public static String topicPrefix = "";
-    
-    // -----------------------------------------------------------------------
- 	// DEBUG -----------------------------------------------------------------
- 	// -----------------------------------------------------------------------
- 	private boolean  checkAgentDuplication = false;
- 	private FileOutputStream file = null;
- 	private PrintStream ps = null;
-    
-   /* public DFlockers(Object[] params)
+	private static boolean isToroidal=true;
+
+	@BatchAnnotation(
+			domain = "100-300",
+			suggestedValue = "250"
+			)
+	public double width = 150;
+	@BatchAnnotation
+	public double height = 150;
+	@BatchAnnotation
+	public int numFlockers = 20;
+	@BatchAnnotation
+	public double cohesion = 1.0;
+	@BatchAnnotation
+	public double avoidance = 1.0;
+	@BatchAnnotation
+	public double randomness = 1.0;
+	@BatchAnnotation
+	public double consistency = 1.0;
+	@BatchAnnotation
+	public double momentum = 1.0;
+	@BatchAnnotation
+	public double deadFlockerProbability = 0.1;
+	@BatchAnnotation
+	public double neighborhood = 10;
+
+	public double jump = 0.7;  // how far do we move in a timestep?
+
+	public double getCohesion() { return cohesion; }
+	public void setCohesion(double val) { if (val >= 0.0) cohesion = val; }
+	public double getAvoidance() { return avoidance; }
+	public void setAvoidance(double val) { if (val >= 0.0) avoidance = val; }
+	public double getRandomness() { return randomness; }
+	public void setRandomness(double val) { if (val >= 0.0) randomness = val; }
+	public double getConsistency() { return consistency; }
+	public void setConsistency(double val) { if (val >= 0.0) consistency = val; }
+	public double getMomentum() { return momentum; }
+	public void setMomentum(double val) { if (val >= 0.0) momentum = val; }
+	public int getNumFlockers() { return numFlockers; }
+	public void setNumFlockers(int val) { if (val >= 1) numFlockers = val; }
+	public double getWidth() { return width; }
+	public void setWidth(double val) { if (val > 0) width = val; }
+	public double getHeight() { return height; }
+	public void setHeight(double val) { if (val > 0) height = val; }
+	public double getNeighborhood() { return neighborhood; }
+	public void setNeighborhood(double val) { if (val > 0) neighborhood = val; }
+	public double getDeadFlockerProbability() { return deadFlockerProbability; }
+	public void setDeadFlockerProbability(double val) { if (val >= 0.0 && val <= 1.0) deadFlockerProbability = val; }
+
+	public double gridWidth ;
+	public double gridHeight ;   
+	public int MODE;
+
+	public static String topicPrefix = "";
+
+	/* public DFlockers(Object[] params)
     {    	
     	super((Integer)params[2],(Integer)params[3],(Integer)params[4],(Integer)params[7],
     			(Integer)params[8],(String)params[0],(String)params[1],(Integer)params[9],
@@ -123,51 +116,33 @@ public class DFlockers extends DistributedState<Double2D>
     	gridWidth=(Integer)params[5];
     	gridHeight=(Integer)params[6];
     }*/
-    
-    public DFlockers()
-    {
-    	super();
-    	if(checkAgentDuplication)
-		{
+
+	public DFlockers()
+	{
+		super();
+	
+	}
+
+	public DFlockers(GeneralParam params)
+	{    	
+		super(params,new DistributedMultiSchedule<Double2D>(),topicPrefix,params.getConnectionType());
+		this.MODE=params.getMode();
+		gridWidth=params.getWidth();
+		gridHeight=params.getHeight();
+	
+	}
+
+	public DFlockers(GeneralParam params,List<EntryParam<String, Object>> simParams, String prefix)
+	{    	
+		super(params,new DistributedMultiSchedule<Double2D>(), prefix,params.getConnectionType());
+		this.MODE=params.getMode();
+		gridWidth=params.getWidth();
+		gridHeight=params.getHeight();
+		topicPrefix = prefix; 
+
+		for (EntryParam<String, Object> entryParam : simParams) {
+
 			try {
-				file = new FileOutputStream("0) "+super.TYPE+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-    }
-    
-    public DFlockers(GeneralParam params)
-    {    	
-    	super(params,new DistributedMultiSchedule<Double2D>(),topicPrefix,params.getConnectionType());
-    	this.MODE=params.getMode();
-    	gridWidth=params.getWidth();
-    	gridHeight=params.getHeight();
-    	if(checkAgentDuplication)
-		{
-			try {
-				file = new FileOutputStream("0) "+super.TYPE+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-    }
-    
-    public DFlockers(GeneralParam params,List<EntryParam<String, Object>> simParams, String prefix)
-    {    	
-    	super(params,new DistributedMultiSchedule<Double2D>(), prefix,params.getConnectionType());
-    	this.MODE=params.getMode();
-    	gridWidth=params.getWidth();
-    	gridHeight=params.getHeight();
-    	topicPrefix = prefix; 
-    	
-    	for (EntryParam<String, Object> entryParam : simParams) {
-    		
-    		try {
 				this.getClass().getDeclaredField(entryParam.getParamName()).set(this, entryParam.getParamValue());
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
@@ -182,12 +157,12 @@ public class DFlockers extends DistributedState<Double2D>
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
-    	
-    	for (EntryParam<String, Object> entryParam : simParams) {
-    		
-    		try {
+
+		for (EntryParam<String, Object> entryParam : simParams) {
+
+			try {
 				System.out.println(this.getClass().getDeclaredField(entryParam.getParamName()).get(this));
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
@@ -202,115 +177,102 @@ public class DFlockers extends DistributedState<Double2D>
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-		}
-			
-    	if(checkAgentDuplication)
-		{
-			try {
-				file = new FileOutputStream("0) "+super.TYPE+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-    	
-    }
 
-    
-    @Override
+		}
+
+	
+
+	}
+
+
+	@Override
 	public void start()
-    {
-    	super.start();
+	{
+		super.start();
 
-    	// set up the flockers field.  It looks like a discretization
-    	// of about neighborhood / 1.5 is close to optimal for us.  Hmph,
-    	// that's 16 hash lookups! I would have guessed that 
-    	// neighborhood * 2 (which is about 4 lookups on average)
-    	// would be optimal.  Go figure.
-    	try 
-    	{
-    		flockers = DContinuousGrid2DFactory.createDContinuous2DThin(neighborhood/1.5,gridWidth, gridHeight,this,
-    				super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,"flockers", topicPrefix,true);
-    		init_connection();
-    	} catch (DMasonException e) { e.printStackTrace(); }
+		// set up the flockers field.  It looks like a discretization
+		// of about neighborhood / 1.5 is close to optimal for us.  Hmph,
+		// that's 16 hash lookups! I would have guessed that 
+		// neighborhood * 2 (which is about 4 lookups on average)
+		// would be optimal.  Go figure.
+		try 
+		{
+			flockers = DContinuousGrid2DFactory.createDContinuous2DThin(neighborhood/1.5,gridWidth, gridHeight,this,
+					super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,"flockers", topicPrefix,true);
+			init_connection();
+		} catch (DMasonException e) { e.printStackTrace(); }
 
-    	DFlocker f=new DFlocker(this,new Double2D(0,0));
-    	int j=0;
-    	while(flockers.size() != super.NUMAGENTS)
-    	{
-    		f.setPos(flockers.getAvailableRandomLocation());
-    		if (random.nextBoolean(deadFlockerProbability)) f.dead = true;
+		DFlocker f=new DFlocker(this,new Double2D(0,0));
+		int j=0;
+		while(flockers.size() != super.NUMAGENTS)
+		{
+			f.setPos(flockers.getAvailableRandomLocation());
+			if (random.nextBoolean(deadFlockerProbability)) f.dead = true;
 
-    		if(flockers.setObjectLocationThin(f, f.loc))
-    		{
-    			//This 'if' is for debug 
-    			if(checkAgentDuplication && !f.dead)
-    			{
-    				ps.println(f.getId());
-    			}
-    			
-    			Color c=new Color(
-    					128 + this.random.nextInt(128),
-    					128 + this.random.nextInt(128),
-    					128 + this.random.nextInt(128));
-    			f.setColor(c);
-    			schedule.scheduleOnce(f);
-    			f=new DFlocker(this,f.getPos());
-    		}
+			if(flockers.setObjectLocationThin(f, f.loc))
+			{
 
-    		j++;
 
-    	}
+				Color c=new Color(
+						128 + this.random.nextInt(128),
+						128 + this.random.nextInt(128),
+						128 + this.random.nextInt(128));
+				f.setColor(c);
+				schedule.scheduleOnce(f);
+				f=new DFlocker(this,f.getPos());
+			}
 
-    	try {
-    		if(getTrigger()!=null)
-    			getTrigger().publishToTriggerTopic("Simulation cell "+flockers.cellType+" ready...");
+			j++;
+
+		}
+
+		try {
+			if(getTrigger()!=null)
+				getTrigger().publishToTriggerTopic("Simulation cell "+flockers.cellType+" ready...");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    }
+	}
 
-    public static void main(String[] args)
-    {
-    	doLoop(DFlockers.class, args);
-    	System.exit(0);
-    }
+	public static void main(String[] args)
+	{
+		doLoop(DFlockers.class, args);
+		System.exit(0);
+	}
 
-    @Override
+	@Override
 	public DistributedField2D getField() 
-    {
-    	return flockers;
-    }
-	
-    @Override
+	{
+		return flockers;
+	}
+
+	@Override
 	public void addToField(RemotePositionedAgent rm, Double2D loc) 
-    {
-    	flockers.setObjectLocationThin(rm,loc);
-        setPortrayalForObject(rm);
+	{
+		flockers.setObjectLocationThin(rm,loc);
+		setPortrayalForObject(rm);
 
-    }
+	}
 
-    @Override
+	@Override
 	public SimState getState() 
-    {
-    	return this;
-    }
+	{
+		return this;
+	}
 
-    @Override
+	@Override
 	public boolean setPortrayalForObject(Object o) 
-    {
-    	if(flockers.p!=null)
-    	{
-    		DFlocker f=(DFlocker)o;
-    		SimplePortrayal2D pp = new AdjustablePortrayal2D(new MovablePortrayal2D(new OrientedPortrayal2D(new SimplePortrayal2D(),0,4.0,
-    				f.getColor(),
-    				OrientedPortrayal2D.SHAPE_COMPASS)));
-    		flockers.p.setPortrayalForObject(o, pp);
-    		return true;
-    	}
-    	return false;
-    }    
+	{
+		if(flockers.p!=null)
+		{
+			DFlocker f=(DFlocker)o;
+			SimplePortrayal2D pp = new AdjustablePortrayal2D(new MovablePortrayal2D(new OrientedPortrayal2D(new SimplePortrayal2D(),0,4.0,
+					f.getColor(),
+					OrientedPortrayal2D.SHAPE_COMPASS)));
+			flockers.p.setPortrayalForObject(o, pp);
+			return true;
+		}
+		return false;
+	}    
 }

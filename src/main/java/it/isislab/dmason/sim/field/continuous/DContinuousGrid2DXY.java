@@ -181,15 +181,6 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	// -----------------------------------------------------------------------
 	private ZoomArrayList<RemotePositionedAgent> tmp_zoom = new ZoomArrayList<RemotePositionedAgent>();
 
-	// -----------------------------------------------------------------------
-	// DEBUG -----------------------------------------------------------------
-	// -----------------------------------------------------------------------
-	private boolean checkReproducibility = false;
-	private FileOutputStream file = null;
-	private PrintStream ps = null;
-	private FileOutputStream fileDup = null;
-	private PrintStream psDup = null;
-	private boolean checkAgentDuplication = false;
 	
 	/**
 	 * Short-hand for complete constructor. Assumes number or region to be 8 (that is: square division mode)
@@ -197,27 +188,6 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	public DContinuousGrid2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix)
 	{
 		this(discretization, width, height, sm, max_distance, i, j, rows, columns, name, prefix, 8);
-		if(checkReproducibility)
-		{
-			try {
-				file = new FileOutputStream(name+"-"+cellType+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		if(checkAgentDuplication)
-		{
-			try {
-				fileDup = new FileOutputStream("99) "+cellType+".txt");
-				psDup = new PrintStream(fileDup);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 	}
 
 	/**
@@ -249,27 +219,6 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		this.topicPrefix = prefix;
 		this.numNeighbors = numNeighbours;
 
-		if(checkReproducibility)
-		{
-			try {
-				file = new FileOutputStream(name+"-"+cellType+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		if(checkAgentDuplication)
-		{
-			try {
-				fileDup = new FileOutputStream("99) "+cellType+".txt");
-				psDup = new PrintStream(fileDup);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 
 		//setConnection(((DistributedState)sm).getConnection());
 		numAgents=0;
@@ -443,16 +392,6 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		rm= ((RemotePositionedAgent<Double2D>) paramToSet.getDistributedParam());	
 		
 		
-		
-		//This 'if' is for debug 
-		if(checkReproducibility)
-			ps.println(rm.getId()+" "+rm.getPos().x+" "+rm.getPos().y);
-		
-		if(checkAgentDuplication && sm.schedule.getSteps()==99)
-			psDup.println(rm.getId());
-		
-		
-
 		if(setAgents(rm, location))
 		{
 			//numAgents++;

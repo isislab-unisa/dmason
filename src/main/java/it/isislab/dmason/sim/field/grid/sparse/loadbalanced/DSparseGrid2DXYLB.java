@@ -159,16 +159,6 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 
 	// <--
 	
-	// -----------------------------------------------------------------------
-	// DEBUG -----------------------------------------------------------------
-	// -----------------------------------------------------------------------
-	private boolean checkReproducibility = false;
-	private FileOutputStream file = null;
-	private PrintStream ps = null;
-	private FileOutputStream fileDup = null;
-	private PrintStream psDup = null;
-	private boolean checkAgentDuplication = false;
-	
 	
 	// -----------------------------------------------------------------------
 	// GLOBAL PROPERTIES -----------------------------------------------------
@@ -251,28 +241,6 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 		this.unionDone = false;
 		this.isUnited = true;
 		
-		if(checkReproducibility)
-		{
-			try {
-				file = new FileOutputStream(NAME+"-"+cellType+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		if(checkAgentDuplication)
-		{
-			try {
-				fileDup = new FileOutputStream("99) "+cellType+".txt");
-				psDup = new PrintStream(fileDup);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
 		updates_cacheLB=new ArrayList<ArrayList<Region<Integer, Int2D>>>();
 		numAgents=0;
 	}
@@ -320,14 +288,6 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 		}
 		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}		//This 'if' is for debug 
 */	
-		//This 'if' is for debug 
-		if(checkReproducibility)
-			ps.println(rm.getId()+" "+rm.getPos().x+" "+rm.getPos().y);
-		
-		if(sm.schedule.getSteps()==2999 && checkAgentDuplication)
-		{
-			psDup.println(rm.getId());
-		}
 		
     	numAgents++;
     	

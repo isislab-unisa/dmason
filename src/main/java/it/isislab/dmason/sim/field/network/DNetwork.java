@@ -68,13 +68,6 @@ public class DNetwork extends Network implements DistributedFieldNetwork{
 	private HashMap<Integer, RegionNetwork> messageOnNetwork;
 	private HashMap<String, RemoteUnpositionedAgent> toMigrate;
 	private UpdateNetworkMap updates;
-
-	// -----------------------------------------------------------------------
-	// DEBUG -----------------------------------------------------------------
-	// -----------------------------------------------------------------------
-	private boolean checkReproducibility = false;
-	private FileOutputStream file = null;
-	private PrintStream ps = null;
 	
 
 	public DNetwork(SimState sm, int rows, int columns, int i, int j, GraphSubscribersEdgeList gprsub,String graph_id, String prefix) {
@@ -92,24 +85,11 @@ public class DNetwork extends Network implements DistributedFieldNetwork{
 		for (Integer neight : gprsub.getPublisher(my_community)) {
 			messageOnNetwork.put(neight,new RegionNetwork(neight));
 		}
-		if(checkReproducibility)
-		{
-			try {
-				file = new FileOutputStream(graph_id+"-"+cellType+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+	
 	}
 
 	@Override
 	public boolean updateNode(RemoteUnpositionedAgent rm, SimState sm) {
-
-		//This 'if' is for debug 
-		if(checkReproducibility)
-			ps.println(rm.getId()+" "+rm.getCommunityId()+" "+rm.getLabel());
 
 		RemoteUnpositionedAgent rmn=rm;
 		myCommunityNetwork.add(rmn);

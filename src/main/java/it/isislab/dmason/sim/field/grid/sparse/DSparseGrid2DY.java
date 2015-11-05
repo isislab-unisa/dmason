@@ -152,14 +152,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 	/** Will contain globals properties */
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
-	// -----------------------------------------------------------------------
-	// DEBUG -----------------------------------------------------------------
-	// -----------------------------------------------------------------------
-	private boolean checkReproducibility = false;
-	private FileOutputStream file = null;
-	private PrintStream ps = null;
-
-
+	
 	/**
 	 * Constructor of class with paramaters:
 	 * 
@@ -191,16 +184,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		numAgents=0;
 		createRegion();	
 
-		if(checkReproducibility)
-		{
-			try {
-				file = new FileOutputStream(NAME+"-"+cellType+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		
 
 		// Initialize variables for GlobalInspector
 		try{
@@ -344,9 +328,6 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		}
 		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}		//This 'if' is for debug 
 */
-		//This 'if' is for debug 
-		if(checkReproducibility)
-			ps.println(rm.getId()+" "+rm.getPos().x+" "+rm.getPos().y);
 
 		numAgents++;
 

@@ -116,12 +116,7 @@ public class DParticles extends DistributedState<Int2D> {
            			p=new DParticle(this);
            	}
         }
-        
-      /*  for(RemoteAgent<Int2D> r : buffer_print)
-		{
-			printer.println(r.getId());
-			printer.flush();
-		}*/
+      
         // Schedule the decreaser
         Steppable decreaser = new Steppable()
         {

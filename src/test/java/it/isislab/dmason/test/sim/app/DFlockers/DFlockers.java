@@ -59,10 +59,7 @@ public class DFlockers extends DistributedState<Double2D>
 	{
 		super();
 	}
-	
-	public long debug_lastStep = -10;
-	public int debug_numAgent = 0;
-	
+		
     /**
 	 * 
 	 */
@@ -123,15 +120,7 @@ public class DFlockers extends DistributedState<Double2D>
     
     public static String topicPrefix = "";
     
-    // -----------------------------------------------------------------------
- 	// DEBUG -----------------------------------------------------------------
- 	// -----------------------------------------------------------------------
- 	private boolean  checkAgentDuplication = false;
- 	private FileOutputStream file = null;
- 	private PrintStream ps = null;
     
-    
-
    
     /**
      * Il costruttore utilizzato per effettuare una simulazione tramite la connessione fake.
@@ -144,16 +133,7 @@ public class DFlockers extends DistributedState<Double2D>
     	this.MODE=params.getMode();
     	gridWidth=params.getWidth();
     	gridHeight=params.getHeight();
-    	if(checkAgentDuplication)
-		{
-			try {
-				file = new FileOutputStream("0) "+super.TYPE+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+ 
     	
     }
     
@@ -191,14 +171,6 @@ public class DFlockers extends DistributedState<Double2D>
     				
     			
     			f.setPos(flockers.getAvailableRandomLocation());
-    			
-
-
-    			//This 'if' is for debug 
-    			if(checkAgentDuplication && !f.dead)
-    			{
-    				ps.println(f.getId());
-    			}
     			
     			if(flockers.setObjectLocation(f, f.pos))
     			{

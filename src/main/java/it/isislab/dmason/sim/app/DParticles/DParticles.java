@@ -61,25 +61,10 @@ public class DParticles extends DistributedState<Int2D> {
    
     public static String topicPrefix = "";
     
-    // -----------------------------------------------------------------------
- 	// DEBUG -----------------------------------------------------------------
- 	// -----------------------------------------------------------------------
- 	private boolean  checkAgentDuplication = false;
- 	private FileOutputStream file = null;
- 	private PrintStream ps = null;
 
     public DParticles() {
 		super();
-		if(checkAgentDuplication)
-		{
-			try {
-				file = new FileOutputStream("0) "+super.TYPE+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+	
 	}
     
     public DParticles(GeneralParam params)
@@ -90,17 +75,7 @@ public class DParticles extends DistributedState<Int2D> {
     	gridHeight=params.getHeight();
     	//((DistributedMultiSchedule)schedule).setThresholdMerge(1);
         //((DistributedMultiSchedule)schedule).setThresholdSplit(5);
-    	if(checkAgentDuplication)
-		{
-			try {
-				file = new FileOutputStream("0) "+super.TYPE+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
+    
     } 
     
     /*public DParticles(Object[] params)
@@ -143,11 +118,7 @@ public class DParticles extends DistributedState<Int2D> {
             p.xdir = random.nextInt(3)-1;
             p.ydir = random.nextInt(3)-1;
             
-        	//This 'if' is for debug 
-			if(checkAgentDuplication)
-			{
-				ps.println(p.getId());
-			}
+        
             
            	if(particles.setObjectLocation(p, new Int2D(p.pos.getX(),p.pos.getY())))
            	{		

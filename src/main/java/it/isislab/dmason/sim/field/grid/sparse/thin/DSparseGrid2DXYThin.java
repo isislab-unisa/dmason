@@ -174,15 +174,6 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 	/** Will contain globals properties */
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
-	// -----------------------------------------------------------------------
-	// DEBUG -----------------------------------------------------------------
-	// -----------------------------------------------------------------------
-	private boolean checkReproducibility = false;
-	private FileOutputStream file = null;
-	private PrintStream ps = null;
-	private FileOutputStream fileDup = null;
-	private PrintStream psDup = null;
-	private boolean checkAgentDuplication = false;
 
 	/**
 	 * Constructor of class with paramaters:
@@ -213,29 +204,6 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 		this.rows = rows;
 		this.columns = columns;
 		this.topicPrefix = prefix;
-
-		if(checkReproducibility)
-		{
-			try {
-				file = new FileOutputStream(name+"-"+cellType+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		if(checkAgentDuplication)
-		{
-			try {
-				fileDup = new FileOutputStream("99) "+cellType+".txt");
-				psDup = new PrintStream(fileDup);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
 		updates_cache=new ArrayList<Region<Integer,Int2D>>();
 		numAgents=0;
 		createRegion();	
@@ -493,15 +461,7 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 		
 	
 	*/
-	//This 'if' is for debug 
-		if(checkReproducibility)
-			ps.println(rm.getId()+" "+rm.getPos().x+" "+rm.getPos().y);
-
-		if(sm.schedule.getSteps()==2999 && checkAgentDuplication)
-		{
-			psDup.println(rm.getId());
-		}
-
+	
 		numAgents++;
 		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 			GlobalInspectorHelper.updateBitmap(actualSnap, rm, location, own_x, own_y);
