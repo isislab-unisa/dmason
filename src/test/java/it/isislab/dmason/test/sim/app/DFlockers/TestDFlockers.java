@@ -58,23 +58,24 @@ public class TestDFlockers {
 	}
 
 	private static int numSteps = 1000; //only graphicsOn=false
-	private static int rows = 3; //number of rows
-	private static int columns = 3; //number of columns
+	private static int rows = 2; //number of rows
+	private static int columns = 2; //number of columns
 	private static int MAX_DISTANCE=1; //max distance
-	private static int NUM_AGENTS=600; //number of agents
-	private static int WIDTH=900; //field width
-	private static int HEIGHT=900; //field height
+	private static int NUM_AGENTS=6000; //number of agents
+	private static int WIDTH=300; //field width
+	private static int HEIGHT=300; //field height
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
 
 	//don't modify this...
-	//private static int MODE = (rows==1 || columns==1)? DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE : DContinuous2DFactory.SQUARE_DISTRIBUTION_MODE; 
-	//private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE : DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE; 
-	
-	private static int MODE =DistributedField2D.SQUARE_DISTRIBUTION_MODE;	
-	
+	//private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE : DistributedField2D.SQUARE_DISTRIBUTION_MODE; 
+	//rivate static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE : DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE;
+	private static int MODE = DistributedField2D.SQUARE_DISTRIBUTION_MODE;
+
+
 	ArrayList<DFlocker> initial_agents = new ArrayList<DFlocker>();
 	ArrayList<DFlocker> end_agents = new ArrayList<DFlocker>();
+	
 	@Test
 	public void testFlockersWithDContinuonus2D() throws DMasonException, InterruptedException {
 
@@ -86,24 +87,7 @@ public class TestDFlockers {
 			public worker(DFlockers ds) {
 				this.ds=ds;
 				ds.start();
-				synchronized (initial_agents) {
-					for(Object d:ds.flockers.allObjects)
-					{
-						DFlocker df=(DFlocker) d;
-						boolean check=false;
-						for(DFlocker dfi:initial_agents)
-						{
-							if(df.id.equalsIgnoreCase(dfi.id))
-							{
-								check=true;
-								break;
-							}
-						}
-						if(!check)initial_agents.add(df);
-						
-					}
-					
-				}
+				
 				
 			}
 			@Override
@@ -113,25 +97,35 @@ public class TestDFlockers {
 				{
 					//	System.out.println(i);
 					ds.schedule.step(ds);
+					
 					i++;
-				}
-				synchronized (end_agents) {
-					for(Object d:ds.flockers.allObjects)
-					{
-						DFlocker df=(DFlocker) d;
-						boolean check=false;
-						for(DFlocker dfi:end_agents)
-						{
-							if(df.id.equalsIgnoreCase(dfi.id))
+					if(i==1){
+						synchronized (initial_agents) {
+							for(Object d:ds.flockers.allObjects)
 							{
-								check=true;
-								break;
+								DFlocker df=(DFlocker) d;
+
+								if(ds.flockers.verifyPosition(df.getPos())){								
+									initial_agents.add(df);
+								}
+							}
+
+						}
+					}
+					else if(i==numSteps-1){
+						synchronized (end_agents) {
+							for(Object d:ds.flockers.allObjects)
+							{
+								DFlocker df=(DFlocker) d;
+								if(ds.flockers.verifyPosition(df.getPos())){								
+									end_agents.add(df);
+								}
+
 							}
 						}
-						if(!check)end_agents.add(df);
-						
 					}
 				}
+				
 			}
 		}
 
