@@ -145,10 +145,7 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 
 	/** List of parameters to trace */
 	private ArrayList<String> tracing = new ArrayList<String>();
-	// --> only for testing
-	public PrintWriter printer;
-	public ArrayList<RemotePositionedAgent<Int2D>> buffer_print=new ArrayList<RemotePositionedAgent<Int2D>>();
-	// <--
+	
 
 	// -----------------------------------------------------------------------
 	// GLOBAL PROPERTIES -----------------------------------------------------
@@ -219,14 +216,7 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 
 		numAgents=0;
 		createRegion();
-		//RIPRODUCIBILITA'
-		// --> only for testing
-		/*String curDir = System.getProperty("user.dir");
-	    try 
-	    {
-			printer=new PrintWriter(new FileOutputStream(curDir+"/test_"+cellType+"_"+columns+"_two.txt"));
-		} catch (FileNotFoundException e) { e.printStackTrace();}
-		 */
+		
 	}
 
 	/**
@@ -359,11 +349,7 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}
 */
 	
-	
-	/*if(sm.schedule.getSteps()==8000){
-			printer.write(sm.schedule.getSteps()+" "+rm.getId()+" "+location.x+" "+location.y+"\r\n");
-			printer.flush();
-		}*/
+
 		   
 			if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 				writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);

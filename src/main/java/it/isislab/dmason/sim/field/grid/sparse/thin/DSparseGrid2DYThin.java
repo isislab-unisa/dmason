@@ -132,12 +132,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 
 	private double actualTime;
 	private HashMap<String, Object> actualStats;
-	// --> only for testing
-	public PrintWriter printer;
-	public ArrayList<RemotePositionedAgent<Int2D>> buffer_print=new ArrayList<RemotePositionedAgent<Int2D>>();
-
-	// <--
-
+	
 	// -----------------------------------------------------------------------
 	// GLOBAL PROPERTIES -----------------------------------------------------
 	// -----------------------------------------------------------------------
@@ -177,15 +172,6 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 		numAgents=0;
 		createRegion();	
 
-		//RIPRODUCIBILITA'
-		// --> only for testing
-		/*String curDir = System.getProperty("user.dir");
-	    try 
-	    {
-			printer=new PrintWriter(new FileOutputStream(curDir+"/test_"+cellType+"_"+columns+"_one.txt"));
-		} catch (FileNotFoundException e) { e.printStackTrace();}
-		// <--
-		 */
 	}
 
 
@@ -310,10 +296,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}		//This 'if' is for debug 
 	*/
 		
-		/*if(sm.schedule.getSteps()==8000){
-			printer.write(sm.schedule.getSteps()+" "+rm.getId()+" "+rm.getPos().x+" "+rm.getPos().y+"\r\n");
-			printer.flush();
-		}*/
+		
 		numAgents++;
 
 		if(myfield.isMine(location.x,location.y))

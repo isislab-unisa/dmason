@@ -128,10 +128,7 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 	private String name;
 	private ZoomArrayList<RemotePositionedAgent> tmp_zoom=new ZoomArrayList<RemotePositionedAgent>();
 	private double width,height;
-	// --> only for testing
-	public PrintWriter printer;
-	public ArrayList<RemotePositionedAgent<Int2D>> buffer_print=new ArrayList<RemotePositionedAgent<Int2D>>();
-	// <--
+
 	private String topicPrefix = "";
 
 	// -----------------------------------------------------------------------
@@ -153,13 +150,6 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 	// -----------------------------------------------------------------------
 	/** Will contain globals properties */
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
-
-	// -----------------------------------------------------------------------
-	// DEBUG -----------------------------------------------------------------
-	// -----------------------------------------------------------------------
-	private boolean checkReproducibility=false;
-	private FileOutputStream file = null;
-	private PrintStream ps = null;
 
 	/**
 	 * Starts tracing a variable (or the graphic). To start tracing the graphic,
@@ -234,16 +224,6 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		currentStats = new HashMap<String, Object>();
 		isTracingGraphics = false;
 
-		if(checkReproducibility)
-		{
-			try {
-				file = new FileOutputStream(name+"-"+cellType+".txt");
-				ps = new PrintStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 	}
 	/**
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided

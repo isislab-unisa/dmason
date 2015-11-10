@@ -132,10 +132,6 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 	private double width,height,field_width,field_height;
 	private String topicPrefix = "";
 
-	// --> only for testing
-	//public PrintWriter printer;
-
-
 	private int leftMineSize;
 
 	private int rightMineSize;

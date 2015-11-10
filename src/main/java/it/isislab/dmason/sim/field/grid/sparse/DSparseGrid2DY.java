@@ -124,11 +124,6 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 	private int width,height;
 
 
-	// --> only for testing
-	public PrintWriter printer;
-	public ArrayList<RemotePositionedAgent<Int2D>> buffer_print=new ArrayList<RemotePositionedAgent<Int2D>>();
-	// <--
-
 	private String topicPrefix = "";
 
 	// -----------------------------------------------------------------------

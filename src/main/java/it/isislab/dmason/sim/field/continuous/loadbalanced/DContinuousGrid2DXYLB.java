@@ -163,8 +163,6 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 	private RegionDoubleLB outAgents;
 
 	// --> only for testing
-	public PrintWriter printer;
-	public ArrayList<RemotePositionedAgent<Double2D>> buffer_print=new ArrayList<RemotePositionedAgent<Double2D>>();
 	private int numAgents;
 	private double width,height;
 	private String topicPrefix = "";
@@ -523,30 +521,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 	public synchronized boolean synchro() 
 	{
 
-		/**
-		if(sm.schedule.getSteps()==80){
-			String curDir = System.getProperty("user.dir");
-			PrintWriter p = null;
-			try 
-			{
-				p=new PrintWriter(new FileOutputStream(curDir+"/testAllAgentsAtStep80.txt",true));
-			} catch (FileNotFoundException e) { e.printStackTrace();}
-
-			for(RemoteAgent<Double2D> r : buffer_print)
-			{
-				p.println(r.id);
-				p.flush();
-			}//D
-		}
-		//--> only for testing RIPRODUCIBILIT���
-		if((sm.schedule.getSteps()-1)<=1200)
-			for(RemoteAgent<Double2D> r : buffer_print)
-			{
-				printer.println(cellType+","+(sm.schedule.getSteps()-1)+","+r.id+","+r.pos.getX()+","+r.pos.getY());
-				printer.flush();
-			}//<--
-		buffer_print=new ArrayList<RemoteAgent<Double2D>>();
-		 */
+	
 
 		for(ArrayList<Region<Double, Double2D>> arr : updates_cacheLB)
 		{

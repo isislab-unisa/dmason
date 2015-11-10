@@ -150,9 +150,6 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D
 
 	private String topicPrefix = "";
 	
-	// --> only for testing
-	public PrintWriter printer;
-	public ArrayList<RemotePositionedAgent<Int2D>> buffer_print=new ArrayList<RemotePositionedAgent<Int2D>>();
 	private int numAgents;
 	private int width,height;
 	private int NUMPEERS;

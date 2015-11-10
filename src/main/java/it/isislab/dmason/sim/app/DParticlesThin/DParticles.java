@@ -48,9 +48,7 @@ public class DParticles extends DistributedState<Int2D> {
     public int MODE;
    
     public static String topicPrefix = "";
-    
-   // public ArrayList<RemoteAgent<Int2D>> buffer_print=new ArrayList<RemoteAgent<Int2D>>();
-    //public PrintWriter printer;
+ 
 
     public DParticles()
     {
@@ -90,14 +88,13 @@ public class DParticles extends DistributedState<Int2D> {
 
         try 
         {
-			//trails = new DoubleGrid2D(gridWidth, gridHeight);
+			
         	trails = DDoubleGrid2DFactory.createDDoubleGrid2DThin(gridWidth, gridHeight,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,0,false,"trails",topicPrefix,false);
 			particles = DSparseGrid2DFactory.createDSparseGrid2DThin(gridWidth, gridHeight,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE, "particles", topicPrefix,false);
 		    init_connection();
-		   // String curDir = System.getProperty("user.dir");
-			//printer=new PrintWriter(new FileOutputStream(curDir+"/testTOTAgents.txt",true));
+		 
         }catch (DMasonException e) { e.printStackTrace();}
-        //catch (FileNotFoundException e) {e.printStackTrace();}
+       
 
         DParticle p=new DParticle(this);
         
@@ -111,7 +108,7 @@ public class DParticles extends DistributedState<Int2D> {
            	if(particles.setObjectLocationThin(p, new Int2D(p.pos.getX(),p.pos.getY())))
            	{		
            		schedule.scheduleOnce(schedule.getTime()+1.0,p);
-           		//buffer_print.add(p);
+           		
            		if(particles.size() != super.NUMAGENTS)
            			p=new DParticle(this);
            	}
