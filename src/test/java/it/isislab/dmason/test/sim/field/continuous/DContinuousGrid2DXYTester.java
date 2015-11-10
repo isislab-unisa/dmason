@@ -944,15 +944,15 @@ public class DContinuousGrid2DXYTester {
 	public void testMyFieldPartitioning() throws DMasonException {
 
 		// i need that w and h is equal for using the Pitagora's theorem
-		double w = 10.0;
-		double h = 10.0;
-		int maxD = 0;
+		double w = 100;
+		double h = 100;
+		int maxD = 1;
 
 		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
 		//		"test", /* prefix */"");
 		toTest = (DContinuousGrid2DXY) DContinuousGrid2DFactory.createDContinuous2D(
-				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
+				0.5, w, h, ss, maxD, 0, 0, 10, 10, mode,
 				"test", "", true);
 
 		Double x2 = toTest.myfield.down_xx;
