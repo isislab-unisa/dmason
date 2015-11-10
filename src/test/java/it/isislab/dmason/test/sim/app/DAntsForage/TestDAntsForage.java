@@ -40,7 +40,7 @@ import org.junit.Test;
  *
  */
 public class TestDAntsForage {
-	
+
 	class ComparatoreAnts implements Comparator<DRemoteAnt>{
 
 		public ComparatoreAnts() {
@@ -49,26 +49,26 @@ public class TestDAntsForage {
 		@Override
 		public int compare(DRemoteAnt o1, DRemoteAnt o2) {
 			// TODO Auto-generated method stub
-			
+
 			return o1.id.compareTo(o2.id);
 		}
-		
+
 	}
 
-	private static int numSteps = 100; //only graphicsOn=false
-	private static int rows = 4; //number of ro
-	private static int columns = 4; //number of columns
+	private static int numSteps = 1000; //only graphicsOn=false
+	private static int rows = 2; //number of ro
+	private static int columns = 2; //number of columns
 	private static int MAX_DISTANCE=1; //max distance
-	private static int NUM_AGENTS=600; //number of agents
-	private static int WIDTH=900; //field width
-	private static int HEIGHT=900; //field height
+	private static int NUM_AGENTS=3000; //number of agents
+	private static int WIDTH=400; //field width
+	private static int HEIGHT=400; //field height
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
 
 	//don't modify this...
-	private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE : DistributedField2D.SQUARE_DISTRIBUTION_MODE; 
+	//private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE : DistributedField2D.SQUARE_DISTRIBUTION_MODE; 
 	//private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE : DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE; 
-
+	private static int MODE =DistributedField2D.SQUARE_DISTRIBUTION_MODE;
 	ArrayList<DRemoteAnt> initial_agents = new ArrayList<DRemoteAnt>();
 	ArrayList<DRemoteAnt> end_agents = new ArrayList<DRemoteAnt>();
 	@Test
@@ -82,53 +82,45 @@ public class TestDAntsForage {
 			public worker(DAntsForage ds) {
 				this.ds=ds;
 				ds.start();
-				synchronized (initial_agents) {
-					for(Object d:ds.buggrid.allObjects)
-					{
-						DRemoteAnt df=(DRemoteAnt) d;
-						boolean check=false;
-						for(DRemoteAnt dfi:initial_agents)
-						{
-							if(df.id.equalsIgnoreCase(dfi.id))
-							{
-								check=true;
-								break;
-							}
-						}
-						if(!check)initial_agents.add(df);
-						
-					}
-					
-				}
-				
+
 			}
 			@Override
 			public void run() {
 				int i=0;
 				while(i!=numSteps)
 				{
-//						System.out.println(i);
+					//						System.out.println(i);
 					ds.schedule.step(ds);
 					i++;
-				}
-				synchronized (end_agents) {
-					for(Object d:ds.buggrid.allObjects)
-					{
-						DRemoteAnt df=(DRemoteAnt) d;
-						boolean check=false;
-						for(DRemoteAnt dfi:end_agents)
-						{
-							if(df.id.equalsIgnoreCase(dfi.id))
+					if(i==1){
+						synchronized (initial_agents) {
+							for(Object d:ds.buggrid.allObjects)
 							{
-								check=true;
-								break;
+								DRemoteAnt df=(DRemoteAnt) d;
+
+								if(ds.buggrid.verifyPosition(df.getPos())){
+									initial_agents.add(df);
+								} 
 							}
+
 						}
-						if(!check)end_agents.add(df);
-						
 					}
 					
+					else if(i==numSteps-1){
+						synchronized (end_agents) {
+							for(Object d:ds.buggrid.allObjects)
+							{
+								DRemoteAnt df=(DRemoteAnt) d;
+								
+								if(ds.buggrid.verifyPosition(df.getPos()))
+									end_agents.add(df);
+
+							}
+
+						}	
+					}
 				}
+				
 			}
 		}
 
@@ -141,11 +133,11 @@ public class TestDAntsForage {
 				genParam.setJ(j);
 				genParam.setIp(ip);
 				genParam.setPort(port);
-			
+
 				DAntsForage sim = new DAntsForage(genParam); 
-					worker a = new worker(sim);
-					myWorker.add(a);
-				
+				worker a = new worker(sim);
+				myWorker.add(a);
+
 			}
 		}
 
@@ -155,21 +147,21 @@ public class TestDAntsForage {
 		for (worker w : myWorker) {
 			w.join();
 		}
-		
+
 		//verifico la stessa dimensione
 		assertEquals(initial_agents.size(), end_agents.size());
-		
+
 		//verifico se gli array siano uguali
 		//System.out.println(initial_agents); 
-		
+
 		ComparatoreAnts c=new ComparatoreAnts();
-		
+
 		Collections.sort(initial_agents,c);
 		Collections.sort(end_agents,c);
-		
+
 		for(int i=0;i<initial_agents.size();i++){
 			assertEquals(initial_agents.get(i).id, end_agents.get(i).id);
 		}
-		
+
 	}
 }

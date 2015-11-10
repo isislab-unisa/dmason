@@ -43,7 +43,7 @@ import org.junit.Test;
  *
  */
 public class TestDParticles {
-	
+
 	class ComparatoreParticle implements Comparator<DParticle>{
 
 		public ComparatoreParticle() {
@@ -52,25 +52,27 @@ public class TestDParticles {
 		@Override
 		public int compare(DParticle o1, DParticle o2) {
 			// TODO Auto-generated method stub
-			
+
 			return o1.id.compareTo(o2.id);
 		}
-		
+
 	}
 
-	private static int numSteps = 100; //only graphicsOn=false
-	private static int rows = 3; //number of rows
-	private static int columns = 3; //number of columns
+	private static int numSteps = 1000; //only graphicsOn=false
+	private static int rows = 2; //number of rows
+	private static int columns = 2; //number of columns
 	private static int MAX_DISTANCE=1; //max distance
-	private static int NUM_AGENTS=600; //number of agents
-	private static int WIDTH=900; //field width
-	private static int HEIGHT=900; //field height
+	private static int NUM_AGENTS=4000; //number of agents
+	private static int WIDTH=300; //field width
+	private static int HEIGHT=300; //field height
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
 
 	//don't modify this...
-	private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE : DistributedField2D.SQUARE_DISTRIBUTION_MODE;  
+	//private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE : DistributedField2D.SQUARE_DISTRIBUTION_MODE;  
 	//private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE : DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE; 
+	private static int MODE = DistributedField2D.SQUARE_DISTRIBUTION_MODE;
+
 
 	ArrayList<DParticle> initial_agents = new ArrayList<DParticle>();
 	ArrayList<DParticle> end_agents = new ArrayList<DParticle>();
@@ -85,25 +87,8 @@ public class TestDParticles {
 			public worker(DParticles ds) {
 				this.ds=ds;
 				ds.start();
-				synchronized (initial_agents) {
-					for(Object d:ds.particles.allObjects)
-					{
-						DParticle df=(DParticle) d;
-						boolean check=false;
-						for(DParticle dfi:initial_agents)
-						{
-							if(df.id.equalsIgnoreCase(dfi.id))
-							{
-								check=true;
-								break;
-							}
-						}
-						if(!check)initial_agents.add(df);
-						
-					}
-					
-				}
-				
+
+
 			}
 			@Override
 			public void run() {
@@ -113,24 +98,32 @@ public class TestDParticles {
 					//	System.out.println(i);
 					ds.schedule.step(ds);
 					i++;
-				}
-				synchronized (end_agents) {
-					for(Object d:ds.particles.allObjects)
-					{
-						DParticle df=(DParticle) d;
-						boolean check=false;
-						for(DParticle dfi:end_agents)
+                 if(i==1) 
+					synchronized (initial_agents) {
+						for(Object d:ds.particles.allObjects)
 						{
-							if(df.id.equalsIgnoreCase(dfi.id))
-							{
-								check=true;
-								break;
-							}
+							DParticle df=(DParticle) d;
+							
+							
+							if(ds.particles.verifyPosition(df.getPos()))
+								initial_agents.add(df);
+
 						}
-						if(!check)end_agents.add(df);
-						
+
 					}
+                 else if(i==numSteps-1)
+                	 synchronized (end_agents) {
+     					for(Object d:ds.particles.allObjects)
+     					{
+     						DParticle df=(DParticle) d;
+     	
+     						if(ds.particles.verifyPosition(df.getPos()))
+     							end_agents.add(df);
+
+     					}
+     				} 
 				}
+				
 			}
 		}
 
@@ -143,11 +136,11 @@ public class TestDParticles {
 				genParam.setJ(j);
 				genParam.setIp(ip);
 				genParam.setPort(port);
-			
+
 				DParticles sim = new DParticles(genParam); 
-					worker a = new worker(sim);
-					myWorker.add(a);
-				
+				worker a = new worker(sim);
+				myWorker.add(a);
+
 			}
 		}
 
@@ -157,21 +150,21 @@ public class TestDParticles {
 		for (worker w : myWorker) {
 			w.join();
 		}
-		
+
 		//verifico la stessa dimensione
 		assertEquals(initial_agents.size(), end_agents.size());
-		
+
 		//verifico se gli array siano uguali
 		//System.out.println(initial_agents); 
-		
+
 		ComparatoreParticle c=new ComparatoreParticle();
-		
+
 		Collections.sort(initial_agents,c);
 		Collections.sort(end_agents,c);
-		
+
 		for(int i=0;i<initial_agents.size();i++){
 			assertEquals(initial_agents.get(i).id, end_agents.get(i).id);
 		}
-		
+
 	}
 }
