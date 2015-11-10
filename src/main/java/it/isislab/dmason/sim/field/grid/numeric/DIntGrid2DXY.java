@@ -140,7 +140,6 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	private double initialValue;
 	private ZoomArrayList<EntryNum<Integer, Int2D>> tmp_zoom=new ZoomArrayList<EntryNum<Integer,Int2D>>();
 
-	private int numAgents;
 	private int width,height;
 
 	private String topicPrefix = "";
@@ -579,8 +578,6 @@ public class DIntGrid2DXY extends DIntGrid2D {
 			throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");
 		*/
 		Integer d = (Integer) paramToSet.getDistributedParam();
-		
-		numAgents++;
 
 		if(setValue(d, l)) return true;
 		else
@@ -945,13 +942,14 @@ public class DIntGrid2DXY extends DIntGrid2D {
 
 	@Override
 	public int getNumAgents() {
-		return numAgents;
+		System.err.println("You are using a not implemented method (getNumAgents) from "+this.getClass().getName());
+		return 0;
 	}
 
 
 	@Override
 	public void resetParameters() {
-		numAgents=0;
+		System.err.println("You are using a not implemented method (resetParameters) from "+this.getClass().getName());
 	}
 
 
@@ -977,8 +975,17 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	@Override
 	public boolean verifyPosition(Int2D pos) {
 		
-		//we have to implement this
-		return false;
+		return (rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(pos.x,pos.y))||
+				
+				(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(pos.x,pos.y))
+				||
+					(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(pos.x,pos.y))
+					||(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(pos.x,pos.y))
+						||(rmap.left_mine != null && rmap.left_mine.isMine(pos.x,pos.y))
+							||(rmap.right_mine != null && rmap.right_mine.isMine(pos.x,pos.y))
+								||(rmap.up_mine != null && rmap.up_mine.isMine(pos.x,pos.y))
+									||(rmap.down_mine != null && rmap.down_mine.isMine(pos.x,pos.y))
+										||(myfield.isMine(pos.x,pos.y));
 
 	}
 }

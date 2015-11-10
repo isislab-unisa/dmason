@@ -126,10 +126,7 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 	 * It represents the initial value in every position of the field
 	 */
 	private double initialValue;
-	private int numAgents;
 	private int width,height;
-
-
 	private String topicPrefix = "";
 
 	// -----------------------------------------------------------------------
@@ -170,7 +167,6 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 		this.initialValue = initialGridValue;
 		this.topicPrefix = prefix;
 		updates_cache= new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
-		numAgents=0;
 
 		createRegion();		
 
@@ -554,13 +550,7 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a double");}
 */		//This 'if' is for debug 
 
-		numAgents++;
-		if(myfield.isMine(l.getX(), l.getY()))
-		{    		
-			return myfield.addEntryNum(new EntryNum<Double,Int2D>(d, l));
-		}
-		else
-			if(setValue(d, l))
+		if(setValue(d, l))
 				return true;
 			else
 				System.out.println(cellType+")OH MY GOD!"); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
@@ -575,7 +565,7 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 	 * @param l The new location of the value
 	 * @return true if the value is added in right way
 	 */
-	public boolean setValue(double value, Int2D l){
+	private boolean setValue(double value, Int2D l){
 
 		Class o=rmap.getClass();
 
@@ -598,6 +588,7 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 							if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 								tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
 						}
+						myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 						return region.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 					}
 				}
@@ -707,13 +698,14 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 
 	@Override
 	public int getNumAgents() {
-		return numAgents;
+		System.err.println("You are using a not implemented method (getNumAgents) from "+this.getClass().getName());
+		return 0;
 	}
 
 
 	@Override
 	public void resetParameters() {
-		numAgents=0;
+		System.err.println("You are using a not implemented method (resetParameters) from "+this.getClass().getName());
 	}
 
 
@@ -739,8 +731,17 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 	@Override
 	public boolean verifyPosition(Int2D pos) {
 		
-		//we have to implement this
-		return false;
+		return (rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(pos.x,pos.y))||
+				
+				(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(pos.x,pos.y))
+				||
+					(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(pos.x,pos.y))
+					||(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(pos.x,pos.y))
+						||(rmap.left_mine != null && rmap.left_mine.isMine(pos.x,pos.y))
+							||(rmap.right_mine != null && rmap.right_mine.isMine(pos.x,pos.y))
+								||(rmap.up_mine != null && rmap.up_mine.isMine(pos.x,pos.y))
+									||(rmap.down_mine != null && rmap.down_mine.isMine(pos.x,pos.y))
+										||(myfield.isMine(pos.x,pos.y));
 
 	}
 }

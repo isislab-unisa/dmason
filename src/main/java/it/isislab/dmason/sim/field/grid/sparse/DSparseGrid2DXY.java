@@ -144,7 +144,6 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	private PrintStream ps;
 	 */
 	private ZoomArrayList<RemotePositionedAgent> tmp_zoom=new ZoomArrayList<RemotePositionedAgent>();
-	private int numAgents;
 	private int width,height;
 
 	private String topicPrefix = "";
@@ -201,7 +200,6 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 
 
 		updates_cache=new ArrayList<Region<Integer,Int2D>>();
-		numAgents=0;
 		createRegion();
 
 		// Initialize variables for GlobalInspector
@@ -455,8 +453,6 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}		//This 'if' is for debug 
 */		
 		
-
-		numAgents++;
 		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 			GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
@@ -1024,13 +1020,14 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 
 	@Override
 	public int getNumAgents() {
-		return numAgents;
+		System.err.println("You are using an not implemented method (getNumAgents) from "+this.getClass().getName());
+		return 0;
 	}
 
 
 	@Override
 	public void resetParameters() {
-		numAgents=0;
+		System.err.println("You are using an not implemented method (resetParameters) from "+this.getClass().getName());
 	}
 
 	@Override
@@ -1076,8 +1073,17 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	@Override
 	public boolean verifyPosition(Int2D pos) {
 		
-		//we have to implement this
-		return false;
+		return (rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(pos.x,pos.y))||
+				
+				(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(pos.x,pos.y))
+				||
+					(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(pos.x,pos.y))
+					||(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(pos.x,pos.y))
+						||(rmap.left_mine != null && rmap.left_mine.isMine(pos.x,pos.y))
+							||(rmap.right_mine != null && rmap.right_mine.isMine(pos.x,pos.y))
+								||(rmap.up_mine != null && rmap.up_mine.isMine(pos.x,pos.y))
+									||(rmap.down_mine != null && rmap.down_mine.isMine(pos.x,pos.y))
+										||(myfield.isMine(pos.x,pos.y));
 
 	}
 

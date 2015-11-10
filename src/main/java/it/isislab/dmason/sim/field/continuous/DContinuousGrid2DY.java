@@ -123,12 +123,10 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 	private static final long serialVersionUID = 1L;
 
 	private double start,finish;
-	private static Logger logger = Logger.getLogger(DContinuousGrid2DY.class.getCanonicalName());
 
 	public ArrayList<MessageListener> listeners;
 	private String name;
 	private ZoomArrayList<RemotePositionedAgent> tmp_zoom=new ZoomArrayList<RemotePositionedAgent>();
-	private int numAgents;
 	private double width,height;
 	// --> only for testing
 	public PrintWriter printer;
@@ -222,7 +220,6 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		this.name = name;
 		this.topicPrefix = prefix;
 		//		setConnection(((DistributedState)sm).getConnection());
-		numAgents=0;
 		createRegion();
 
 		// Initialize variables for GloablInspector
@@ -377,20 +374,12 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		
 		rm=(RemotePositionedAgent<Double2D>) paramToSet.getDistributedParam();
 		
-		//This 'if' is for debug 
-		if(checkReproducibility)
-			ps.println(rm.getId()+" "+rm.getPos().x+" "+rm.getPos().y);
-
-		numAgents++;
-		if(myfield.isMine(location.x,location.y))
-		{    
+		
 			if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 				GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
-			return myfield.addAgents(new Entry<Double2D>(rm, location));
-		}
-		else if(setAgents(rm, location))
+		if(setAgents(rm, location))
 		{
 			return true;
 		}
@@ -398,7 +387,7 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		{
 			String errorMessage = String.format("Agent %s tried to set position (%f, %f): out of boundaries on cell %s.",
 					rm.getId(), location.x, location.y, cellType);
-			logger.severe( errorMessage );
+			System.err.println( errorMessage );
 			return false;
 		}
 	}
@@ -474,7 +463,7 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 			{				
 				connWorker.publishToTopic(dr1, topicPrefix+cellType + "L", name);
 			} catch (Exception e1) {
-				logger.severe("Unable to publish region to topic: " + topicPrefix+cellType + "L");
+				e1.printStackTrace();
 			}
 		}
 
@@ -491,7 +480,7 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 			{		
 				connWorker.publishToTopic(dr2, topicPrefix+cellType + "R", name);
 			} catch (Exception e1) {
-				logger.severe("Unable to publish region to topic: " + topicPrefix+cellType + "R");
+				e1.printStackTrace();
 			}
 		}
 
@@ -664,7 +653,7 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 	 * @param location The new location of the Remote Agent
 	 * @return true if the agent is added in right way
 	 */
-	public boolean setAgents(RemotePositionedAgent<Double2D> rm,Double2D location)
+	private boolean setAgents(RemotePositionedAgent<Double2D> rm,Double2D location)
 	{
 		Class o=rmap.getClass();
 
@@ -691,6 +680,7 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 							if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 								GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 						}
+						myfield.addAgents(new Entry<Double2D>(rm, location));
 						return region.addAgents(new Entry<Double2D>(rm, location));
 					}
 				}
@@ -827,12 +817,12 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 	}
 	@Override
 	public int getNumAgents() {
-		//Agents are in myField
-		return myfield.size();
+		System.err.println("You are using a not implemented method (getNumAgents) from "+this.getClass().getName());
+		return 0;
 	}
 	@Override
 	public void resetParameters() {
-		numAgents=0;
+		System.err.println("You are using a not implemented method (resetParameters) from "+this.getClass().getName());
 	}
 
 	@Override
@@ -855,52 +845,17 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 	@Override
 	public boolean verifyPosition(Double2D pos) {
 		
-		if(rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(pos.x,pos.y))
-		{
-			return true;
-		}
-		else
-			if(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(pos.x,pos.y))
-			{
-				return true;
-			}
-			else
-				if(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(pos.x,pos.y))
-				{
-					return true;
-				}
-				else
-					if(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(pos.x,pos.y))
-					{
-						return true;
-					}
-					else
-						if(rmap.left_mine != null && rmap.left_mine.isMine(pos.x,pos.y))
-						{
-							return true;
-						}
-						else
-							if(rmap.right_mine != null && rmap.right_mine.isMine(pos.x,pos.y))
-							{
-								return true;
-							}
-							else
-								if(rmap.up_mine != null && rmap.up_mine.isMine(pos.x,pos.y))
-								{
-									return true;
-								}
-								else
-									if(rmap.down_mine != null && rmap.down_mine.isMine(pos.x,pos.y))
-									{
-										return true;
-									}
-									else
-										if(myfield.isMine(pos.x,pos.y))
-										{
-											return true;
-										}
-										else
-											return false;
+		return (rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(pos.x,pos.y))||
+				
+				(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(pos.x,pos.y))
+				||
+					(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(pos.x,pos.y))
+					||(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(pos.x,pos.y))
+						||(rmap.left_mine != null && rmap.left_mine.isMine(pos.x,pos.y))
+							||(rmap.right_mine != null && rmap.right_mine.isMine(pos.x,pos.y))
+								||(rmap.up_mine != null && rmap.up_mine.isMine(pos.x,pos.y))
+									||(rmap.down_mine != null && rmap.down_mine.isMine(pos.x,pos.y))
+										||(myfield.isMine(pos.x,pos.y));
 
 	}
 

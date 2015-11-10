@@ -135,7 +135,6 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	 */	
 	private double initialValue;
 	private ZoomArrayList<EntryNum<Double, Int2D>> tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
-	private int numAgents;
 	private int width,height;
 
 
@@ -178,8 +177,6 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		this.columns = columns;
 
 		updates_cache = new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
-
-		numAgents=0;
 
 		createRegion();	
 	}
@@ -409,9 +406,6 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 			d=(Double) paramToSet;
 		}else
 		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a double");}*/
-		
-		
-		numAgents++;
 	
 		if(setValue(d, l)) return true;
 		else
@@ -921,12 +915,13 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 
 	@Override
 	public int getNumAgents() {
-		return numAgents;
+		System.err.println("You are using a not implemented method (getNumAgents) from "+this.getClass().getName());
+		return 0;
 	}
 
 	@Override
 	public void resetParameters() {
-		numAgents=0;
+		System.err.println("You are using a not implemented method (resetParameters) from "+this.getClass().getName());
 	}
 
 	@Override
@@ -961,8 +956,17 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	@Override
 	public boolean verifyPosition(Int2D pos) {
 		
-		//we have to implement this
-		return false;
+		return (rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(pos.x,pos.y))||
+				
+				(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(pos.x,pos.y))
+				||
+					(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(pos.x,pos.y))
+					||(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(pos.x,pos.y))
+						||(rmap.left_mine != null && rmap.left_mine.isMine(pos.x,pos.y))
+							||(rmap.right_mine != null && rmap.right_mine.isMine(pos.x,pos.y))
+								||(rmap.up_mine != null && rmap.up_mine.isMine(pos.x,pos.y))
+									||(rmap.down_mine != null && rmap.down_mine.isMine(pos.x,pos.y))
+										||(myfield.isMine(pos.x,pos.y));
 
 	}
 

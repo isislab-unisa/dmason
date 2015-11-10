@@ -364,16 +364,12 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 			printer.write(sm.schedule.getSteps()+" "+rm.getId()+" "+location.x+" "+location.y+"\r\n");
 			printer.flush();
 		}*/
-		numAgents++;
-		if(myfield.isMine(location.x,location.y))
-		{    
+		   
 			if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 				writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
-			return myfield.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance, location.y)));
-		}
-		else if(setAgents(rm, location))
+		if(setAgents(rm, location))
 		{
 			return true;
 		}
@@ -686,7 +682,7 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 	 * @param location The new location of the Remote Agent
 	 * @return true if the agent is added in right way
 	 */
-	public boolean setAgents(RemotePositionedAgent<Double2D> rm,Double2D location)
+	private boolean setAgents(RemotePositionedAgent<Double2D> rm,Double2D location)
 	{
 		Class o=rmap.getClass();
 
@@ -715,6 +711,7 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 							{
 								writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
 							}
+							myfield.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance, location.y)));
 							return region.addAgents(new Entry<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y)));
 
 						}
@@ -902,7 +899,6 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 	@Override
 	public boolean verifyPosition(Double2D pos) {
 		
-		//we have to implement this
 		return false;
 
 	}

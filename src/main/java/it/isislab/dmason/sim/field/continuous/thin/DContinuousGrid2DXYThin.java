@@ -362,7 +362,6 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}
 		 */
 
-		numAgents++;
 		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
 		if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)

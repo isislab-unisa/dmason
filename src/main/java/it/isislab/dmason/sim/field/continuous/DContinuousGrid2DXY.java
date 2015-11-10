@@ -144,8 +144,6 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	/** Name of the field. Used to identify fields in simulation using several fields. */
 	private String name;
 
-	private int numAgents;
-
 	private String topicPrefix = "";
 
 	/** Number of neighbors of this cell, that is also the number of regions to create and of topics to publish/subscribe */ 
@@ -221,7 +219,6 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 
 
 		//setConnection(((DistributedState)sm).getConnection());
-		numAgents=0;
 		createRegion();
 
 		// Initialize variables for GlobalInspector
@@ -1035,15 +1032,15 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 
 	@Override
 	public int getNumAgents() {
-		// Agents are in myField
-		return myfield.size();
+		System.err.println("You are using a not implemented method (getNumAgents) from "+this.getClass().getName());
+		return 0;
 		
 	
 	}
 
 	@Override
 	public void resetParameters() {
-		numAgents=0;
+		System.err.println("You are using a not implemented method (resetParameters) from "+this.getClass().getName());
 	}
 
 	@Override
