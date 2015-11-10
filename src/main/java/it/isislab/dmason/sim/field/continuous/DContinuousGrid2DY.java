@@ -827,7 +827,8 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 	}
 	@Override
 	public int getNumAgents() {
-		return numAgents;
+		//Agents are in myField
+		return myfield.size();
 	}
 	@Override
 	public void resetParameters() {
