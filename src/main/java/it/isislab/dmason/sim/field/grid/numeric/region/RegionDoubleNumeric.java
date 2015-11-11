@@ -83,6 +83,8 @@ public class RegionDoubleNumeric extends RegionNumeric<Integer, EntryNum<Double,
 	@Override
 	public boolean addEntryNum(EntryNum<Double, Int2D> e) 
 	{	
+		if(e == null || e.l == null || e.r == null) return false;
+		if(this.containsKey(e.l.toString()) && this.get(e.l.toString()).equals(e)) return true;
 		
 		return this.put(e.l.toString(),e)!= null? true:false;
 	}

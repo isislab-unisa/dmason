@@ -96,4 +96,42 @@ public abstract class RegionNumeric<E, F> extends HashMap<String,F> implements S
 	public void setDown_xx(E down_xx) { this.down_xx = down_xx; }
 	public E getDown_yy() { return down_yy; }
 	public void setDown_yy(E down_yy) { this.down_yy = down_yy; }
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (getClass() != obj.getClass())
+			return false;
+		RegionNumeric other = (RegionNumeric) obj;
+		if (down_xx == null) {
+			if (other.down_xx != null)
+				return false;
+		} else if (!down_xx.equals(other.down_xx))
+			return false;
+		if (down_yy == null) {
+			if (other.down_yy != null)
+				return false;
+		} else if (!down_yy.equals(other.down_yy))
+			return false;
+		if (upl_xx == null) {
+			if (other.upl_xx != null)
+				return false;
+		} else if (!upl_xx.equals(other.upl_xx))
+			return false;
+		if (upl_yy == null) {
+			if (other.upl_yy != null)
+				return false;
+		} else if (!upl_yy.equals(other.upl_yy))
+			return false;
+		
+		for(String location: this.keySet())
+			if(!other.containsKey(location) || !other.get(location).equals(this.get(location)))
+				return false;
+		
+		return true;
+	}
+	
+	
 }
