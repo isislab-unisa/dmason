@@ -26,7 +26,7 @@ import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.TraceableField;
 import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegion;
-import it.isislab.dmason.sim.field.support.field2D.Entry;
+import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.sim.field.support.globals.GlobalInspectorHelper;
@@ -370,14 +370,14 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 
 		for(Region<Integer,Int2D> region : updates_cache)
 		{
-			for(Entry<Int2D> remote_agent : region.values())
+			for(EntryAgent<Int2D> remote_agent : region.values())
 			{
 				this.remove(remote_agent.r);
 			}
 		}
 
 		//every agent in the myfield region is scheduled
-		for(Entry<Int2D> e: myfield.values())
+		for(EntryAgent<Int2D> e: myfield.values())
 		{
 			RemotePositionedAgent<Int2D> rm=e.r;
 			Int2D loc=e.l;
@@ -436,7 +436,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		}
 
 		for(Region<Integer,Int2D> region : updates_cache)
-			for(Entry<Int2D> e_m: region.values())
+			for(EntryAgent<Int2D> e_m: region.values())
 			{
 				RemotePositionedAgent<Int2D> rm=e_m.r;
 				((DistributedState<Int2D>)sm).addToField(rm,e_m.l);	
@@ -502,7 +502,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		Region<Integer,Int2D> r_mine=box.out;
 		Region<Integer,Int2D> r_out=box.mine;
 
-		for(Entry<Int2D> e_m: r_mine.values())
+		for(EntryAgent<Int2D> e_m: r_mine.values())
 		{
 			RemotePositionedAgent<Int2D> rm=e_m.r;
 			((DistributedState<Int2D>)sm).addToField(rm,e_m.l);
@@ -538,7 +538,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 					Region<Integer,Int2D> region=((Region<Integer,Int2D>)returnValue);
 					if(name.contains("out"))
 					{
-						for(Entry<Int2D> e: region.values())
+						for(EntryAgent<Int2D> e: region.values())
 						{
 							RemotePositionedAgent<Int2D> rm=e.r;
 							rm.setPos(e.l);
@@ -548,7 +548,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 					else
 						if(name.contains("mine"))
 						{
-							for(Entry<Int2D> e: region.values())
+							for(EntryAgent<Int2D> e: region.values())
 							{
 								RemotePositionedAgent<Int2D> rm=e.r;
 								Int2D loc=e.l;
@@ -604,9 +604,9 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 							{
 								GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);		    	    			
 							}
-							myfield.addAgents(new Entry<Int2D>(rm, location));
+							myfield.addAgents(new EntryAgent<Int2D>(rm, location));
 						}
-						return region.addAgents(new Entry<Int2D>(rm, location));
+						return region.addAgents(new EntryAgent<Int2D>(rm, location));
 					}
 				}
 			}

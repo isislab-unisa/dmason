@@ -10,7 +10,7 @@ import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DXY;
-import it.isislab.dmason.sim.field.support.field2D.Entry;
+import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.tools.batch.data.EntryParam;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 
@@ -127,14 +127,14 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
     //-----------------------------------------------
     //-----------------------------------------------
     Bag localReinitializeTest = null; Bag globalReinitializeTest= null;
-    HashMap<String, Entry<Double2D>> lastSended;
-    public HashMap<String, Entry<Double2D>> getReinitializeTest(){
+    HashMap<String, EntryAgent<Double2D>> lastSended;
+    public HashMap<String, EntryAgent<Double2D>> getReinitializeTest(){
     	return  (lastSended=((human_being!=null)?((DContinuousGrid2DXY)human_being).getAllVisibleAgent():null));
     } //� obbligatorio ai fini del corretto funzionamento
   
     public void setReinitialize(Bag value){ localReinitializeTest = value;} //� obbligatorio ai fini del corretto funzionamento
     public boolean globalReinitializeTest() { return true;}
-    public HashMap<String, Entry<Double2D>> getGlobalReinitializeTest(){  
+    public HashMap<String, EntryAgent<Double2D>> getGlobalReinitializeTest(){  
     	return (((human_being!=null)?(lastSended=((DContinuousGrid2DXY)human_being).getAllVisibleAgent()):null));
     }
    
@@ -146,7 +146,7 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
     	ArrayList<RemotePositionedAgent<Double2D>> figli=new ArrayList<RemotePositionedAgent<Double2D>>();
     	
     	for (String  human_id : lastSended.keySet()) {
-    		Entry<Double2D> human = lastSended.get(human_id);
+    		EntryAgent<Double2D> human = lastSended.get(human_id);
     		DHuman f = (DHuman)human.r;
     		if(f.getFitness() > a.fitness || 
     				(f.getFitness() == a.fitness && f.getId().compareTo(a.getId())<=0))
@@ -178,7 +178,7 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
     public DHuman reduceReinitializeTest(Object[] shard) {
     	
     	ArrayList<DHuman> reinit = new ArrayList<DHuman>();
-    	ArrayList<Entry<Double2D>> obj = null;
+    	ArrayList<EntryAgent<Double2D>> obj = null;
     	int HONEST=0;
     	int DISHONEST=0;
     	
@@ -187,9 +187,9 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
     	
     	for (int i = 0; i < shard.length; i++) 
     	{
-    		obj = (ArrayList<Entry<Double2D>>)shard[i];
+    		obj = (ArrayList<EntryAgent<Double2D>>)shard[i];
     		//System.out.println("TAGLIA OBJ="+obj.size());
-     		for(Entry<Double2D> f: obj){
+     		for(EntryAgent<Double2D> f: obj){
      			
      			DHuman ff = (DHuman) f.r;
      			if( ff.behavior instanceof Honest) HONEST++;
@@ -412,9 +412,9 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
 		}
 		
 		//////Model 2-3
-		allHumans.sort(new Comparator<EntryAgent<Double, DHuman>>() {
+		allHumans.sort(new Comparator<EntrySocialAgent<Double, DHuman>>() {
 			@Override
-			public int compare(EntryAgent<Double, DHuman> o1, EntryAgent<Double, DHuman> o2) {
+			public int compare(EntrySocialAgent<Double, DHuman> o1, EntrySocialAgent<Double, DHuman> o2) {
 				if(o1.getFitSum()>o2.getFitSum()) return 1;
 				else if(o1.getFitSum()<o2.getFitSum()) return -1;
 				return 0;
@@ -423,7 +423,7 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
 
 		for(Object o : allHumans)
 		{
-			EntryAgent<Double, DHuman> ea = (EntryAgent)o;
+			EntrySocialAgent<Double, DHuman> ea = (EntrySocialAgent<Double, DHuman>)o;
 			totalFitness+=ea.getH().fitness;
 			ea.setFitSum(totalFitness);
 		}

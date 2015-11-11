@@ -8,7 +8,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.grid.region.RegionInteger;
-import it.isislab.dmason.sim.field.support.field2D.Entry;
+import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.test.sim.app.DParticles.DParticle;
 import org.junit.Before;
 import org.junit.Test;
@@ -165,7 +165,7 @@ public class RegionIntegerTester {
 		/*
 		 * BUG FIND mi fa inserire un entry null
 		 */
-		Entry<Int2D> e = null;
+		EntryAgent<Int2D> e = null;
 		assertFalse(rd.addAgents(e));
 	}
 
@@ -176,7 +176,7 @@ public class RegionIntegerTester {
 	public void testAddAgents() {
 		RemotePositionedAgent<Int2D> c = null;
 		Int2D f = null;
-		Entry<Int2D> e = new Entry<Int2D>(c, f);
+		EntryAgent<Int2D> e = new EntryAgent<Int2D>(c, f);
 		assertFalse(rd.addAgents(e));
 	}
 
@@ -187,7 +187,7 @@ public class RegionIntegerTester {
 	public void testAddAgentsVerify() {
 		RemotePositionedAgent<Int2D> c = new DParticle();
 		Int2D f = new Int2D(2, 4);
-		Entry<Int2D> e = new Entry<Int2D>(c, f);
+		EntryAgent<Int2D> e = new EntryAgent<Int2D>(c, f);
 		rd.addAgents(e);
 		assertEquals(e, rd.get(0));
 	}
@@ -212,7 +212,7 @@ public class RegionIntegerTester {
 		rd.clear();
 		RemotePositionedAgent<Int2D> c =  new DParticle();
 		Int2D f = new Int2D();
-		Entry<Int2D> e = new Entry<Int2D>(c, f);
+		EntryAgent<Int2D> e = new EntryAgent<Int2D>(c, f);
 		rd.addAgents(e);
 		RegionInteger clone = null;
 		try {

@@ -26,7 +26,7 @@ import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.TraceableField;
 import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegion;
-import it.isislab.dmason.sim.field.support.field2D.Entry;
+import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.sim.field.support.globals.GlobalInspectorHelper;
@@ -503,14 +503,14 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 
 		for(Region<Integer,Int2D> region : updates_cache)
 		{
-			for(Entry<Int2D> remote_agent : region.values())
+			for(EntryAgent<Int2D> remote_agent : region.values())
 			{
 				this.remove(remote_agent.r);
 			}
 		}
 
 		//every agent in the myfield region is scheduled
-		for(Entry<Int2D> e: myfield.values())
+		for(EntryAgent<Int2D> e: myfield.values())
 		{
 			RemotePositionedAgent<Int2D> rm=e.r;
 			Int2D loc=e.l;
@@ -636,7 +636,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		}
 
 		for(Region<Integer,Int2D> region : updates_cache)
-			for(Entry<Int2D> e_m: region.values())
+			for(EntryAgent<Int2D> e_m: region.values())
 			{
 				RemotePositionedAgent<Int2D> rm=e_m.r;
 				((DistributedState<Int2D>)sm).addToField(rm,e_m.l);	
@@ -704,7 +704,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		Region<Integer,Int2D> r_mine=box.out;
 		Region<Integer,Int2D> r_out=box.mine;
 
-		for(Entry<Int2D> e_m: r_mine.values())
+		for(EntryAgent<Int2D> e_m: r_mine.values())
 		{
 			RemotePositionedAgent<Int2D> rm=e_m.r;
 			((DistributedState<Int2D>)sm).addToField(rm,e_m.l);
@@ -741,7 +741,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 					Region<Integer,Int2D> region=((Region<Integer,Int2D>)returnValue);
 					if(name.contains("out"))
 					{
-						for(Entry<Int2D> e: region.values())
+						for(EntryAgent<Int2D> e: region.values())
 						{
 							RemotePositionedAgent<Int2D> rm=e.r;
 							rm.setPos(e.l);
@@ -775,10 +775,10 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 			if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 				GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 
-			rmap.corner_mine_up_left.addAgents(new Entry<Int2D>(rm, location));
-			rmap.left_mine.addAgents(new Entry<Int2D>(rm, location));
-			myfield.addAgents(new Entry<Int2D>(rm, location));	
-			return rmap.up_mine.addAgents(new Entry<Int2D>(rm, location));
+			rmap.corner_mine_up_left.addAgents(new EntryAgent<Int2D>(rm, location));
+			rmap.left_mine.addAgents(new EntryAgent<Int2D>(rm, location));
+			myfield.addAgents(new EntryAgent<Int2D>(rm, location));	
+			return rmap.up_mine.addAgents(new EntryAgent<Int2D>(rm, location));
 		}
 		else
 			if(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(location.x,location.y))
@@ -787,10 +787,10 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 					tmp_zoom.add(rm);
 				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 					GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-				rmap.corner_mine_up_right.addAgents(new Entry<Int2D>(rm, location));
-				rmap.right_mine.addAgents(new Entry<Int2D>(rm, location));
-				myfield.addAgents(new Entry<Int2D>(rm, location));
-				return rmap.up_mine.addAgents(new Entry<Int2D>(rm, location));
+				rmap.corner_mine_up_right.addAgents(new EntryAgent<Int2D>(rm, location));
+				rmap.right_mine.addAgents(new EntryAgent<Int2D>(rm, location));
+				myfield.addAgents(new EntryAgent<Int2D>(rm, location));
+				return rmap.up_mine.addAgents(new EntryAgent<Int2D>(rm, location));
 			}
 			else
 				if(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(location.x,location.y))
@@ -799,10 +799,10 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 						tmp_zoom.add(rm);
 					if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 						GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-					rmap.corner_mine_down_left.addAgents(new Entry<Int2D>(rm, location));
-					rmap.left_mine.addAgents(new Entry<Int2D>(rm, location));
-					myfield.addAgents(new Entry<Int2D>(rm, location));
-					return rmap.down_mine.addAgents(new Entry<Int2D>(rm, location));
+					rmap.corner_mine_down_left.addAgents(new EntryAgent<Int2D>(rm, location));
+					rmap.left_mine.addAgents(new EntryAgent<Int2D>(rm, location));
+					myfield.addAgents(new EntryAgent<Int2D>(rm, location));
+					return rmap.down_mine.addAgents(new EntryAgent<Int2D>(rm, location));
 				}
 				else
 					if(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(location.x,location.y))
@@ -811,10 +811,10 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 							tmp_zoom.add(rm);
 						if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 							GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-						rmap.corner_mine_down_right.addAgents(new Entry<Int2D>(rm, location));
-						rmap.right_mine.addAgents(new Entry<Int2D>(rm, location));
-						myfield.addAgents(new Entry<Int2D>(rm, location));
-						return rmap.down_mine.addAgents(new Entry<Int2D>(rm, location));
+						rmap.corner_mine_down_right.addAgents(new EntryAgent<Int2D>(rm, location));
+						rmap.right_mine.addAgents(new EntryAgent<Int2D>(rm, location));
+						myfield.addAgents(new EntryAgent<Int2D>(rm, location));
+						return rmap.down_mine.addAgents(new EntryAgent<Int2D>(rm, location));
 					}
 					else
 						if(rmap.left_mine != null && rmap.left_mine.isMine(location.x,location.y))
@@ -823,8 +823,8 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 								tmp_zoom.add(rm);
 							if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 								GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-							myfield.addAgents(new Entry<Int2D>(rm, location));
-							return rmap.left_mine.addAgents(new Entry<Int2D>(rm, location));
+							myfield.addAgents(new EntryAgent<Int2D>(rm, location));
+							return rmap.left_mine.addAgents(new EntryAgent<Int2D>(rm, location));
 						}
 						else
 							if(rmap.right_mine != null && rmap.right_mine.isMine(location.x,location.y))
@@ -833,8 +833,8 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 									tmp_zoom.add(rm);
 								if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 									GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-								myfield.addAgents(new Entry<Int2D>(rm, location));
-								return rmap.right_mine.addAgents(new Entry<Int2D>(rm, location));
+								myfield.addAgents(new EntryAgent<Int2D>(rm, location));
+								return rmap.right_mine.addAgents(new EntryAgent<Int2D>(rm, location));
 							}
 							else
 								if(rmap.up_mine != null && rmap.up_mine.isMine(location.x,location.y))
@@ -843,8 +843,8 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 										tmp_zoom.add(rm);
 									if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 										GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-									myfield.addAgents(new Entry<Int2D>(rm, location));
-									return rmap.up_mine.addAgents(new Entry<Int2D>(rm, location));
+									myfield.addAgents(new EntryAgent<Int2D>(rm, location));
+									return rmap.up_mine.addAgents(new EntryAgent<Int2D>(rm, location));
 								}
 								else
 									if(rmap.down_mine != null && rmap.down_mine.isMine(location.x,location.y))
@@ -853,8 +853,8 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 											tmp_zoom.add(rm);
 										if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 											GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-										myfield.addAgents(new Entry<Int2D>(rm, location));
-										return rmap.down_mine.addAgents(new Entry<Int2D>(rm, location));
+										myfield.addAgents(new EntryAgent<Int2D>(rm, location));
+										return rmap.down_mine.addAgents(new EntryAgent<Int2D>(rm, location));
 									}
 									else
 										if(myfield.isMine(location.x,location.y))
@@ -863,32 +863,32 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 												tmp_zoom.add(rm);
 											if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 												GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-											return myfield.addAgents(new Entry<Int2D>(rm, location));
+											return myfield.addAgents(new EntryAgent<Int2D>(rm, location));
 										}
 										else
 											if(rmap.left_out!=null && rmap.left_out.isMine(location.x,location.y)) 
-												return rmap.left_out.addAgents(new Entry<Int2D>(rm, location));
+												return rmap.left_out.addAgents(new EntryAgent<Int2D>(rm, location));
 											else
 												if(rmap.right_out!=null && rmap.right_out.isMine(location.x,location.y)) 
-													return rmap.right_out.addAgents(new Entry<Int2D>(rm, location));
+													return rmap.right_out.addAgents(new EntryAgent<Int2D>(rm, location));
 												else
 													if(rmap.up_out!=null && rmap.up_out.isMine(location.x,location.y))
-														return rmap.up_out.addAgents(new Entry<Int2D>(rm, location));
+														return rmap.up_out.addAgents(new EntryAgent<Int2D>(rm, location));
 													else
 														if(rmap.down_out!=null && rmap.down_out.isMine(location.x,location.y))
-															return rmap.down_out.addAgents(new Entry<Int2D>(rm, location));
+															return rmap.down_out.addAgents(new EntryAgent<Int2D>(rm, location));
 														else
 															if(rmap.corner_out_up_left_diag_center!=null && rmap.corner_out_up_left_diag_center.isMine(location.x,location.y)) 
-																return rmap.corner_out_up_left_diag_center.addAgents(new Entry<Int2D>(rm, location));
+																return rmap.corner_out_up_left_diag_center.addAgents(new EntryAgent<Int2D>(rm, location));
 															else 
 																if(rmap.corner_out_down_left_diag_center!=null && rmap.corner_out_down_left_diag_center.isMine(location.x,location.y)) 
-																	return rmap.corner_out_down_left_diag_center.addAgents(new Entry<Int2D>(rm, location));
+																	return rmap.corner_out_down_left_diag_center.addAgents(new EntryAgent<Int2D>(rm, location));
 																else
 																	if(rmap.corner_out_up_right_diag_center!=null && rmap.corner_out_up_right_diag_center.isMine(location.x,location.y)) 
-																		return rmap.corner_out_up_right_diag_center.addAgents(new Entry<Int2D>(rm, location));
+																		return rmap.corner_out_up_right_diag_center.addAgents(new EntryAgent<Int2D>(rm, location));
 																	else
 																		if(rmap.corner_out_down_right_diag_center!=null && rmap.corner_out_down_right_diag_center.isMine(location.x,location.y))
-																			return rmap.corner_out_down_right_diag_center.addAgents(new Entry<Int2D>(rm, location));
+																			return rmap.corner_out_down_right_diag_center.addAgents(new EntryAgent<Int2D>(rm, location));
 
 		return false;
 	}

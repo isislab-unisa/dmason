@@ -2,7 +2,7 @@ package it.isislab.dmason.sim.app.SociallyDamagingBehavior;
 
 import java.io.Serializable;
 
-public class EntryAgent <D, H> implements Serializable{
+public class EntrySocialAgent <D, H> implements Serializable{
 
 	private D fitSum;
 	private H h;
@@ -23,7 +23,7 @@ public class EntryAgent <D, H> implements Serializable{
 		this.h = h;
 	}
 
-	public EntryAgent(D fitsum, H h) {
+	public EntrySocialAgent(D fitsum, H h) {
 
 		this.fitSum = fitsum;
 		this.h = h;

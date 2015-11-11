@@ -33,7 +33,7 @@ import java.io.Serializable;
  * @author Flavio Serrapica
  * @author Carmine Spagnuolo
  */
-public class Entry<E> implements Serializable
+public class EntryAgent<E> implements Serializable
 {	
 
 	/**
@@ -43,7 +43,7 @@ public class Entry<E> implements Serializable
 	public  RemotePositionedAgent<E> r;
 	public  E l;
 	
-	public Entry(final RemotePositionedAgent<E> r,final E l)
+	public EntryAgent(final RemotePositionedAgent<E> r,final E l)
 	{
 		this.r=r;
 		this.l=l;
@@ -58,7 +58,7 @@ public class Entry<E> implements Serializable
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Entry other = (Entry) obj;
+		EntryAgent other = (EntryAgent) obj;
 		if (l == null) {
 			if (other.l != null)
 				return false;

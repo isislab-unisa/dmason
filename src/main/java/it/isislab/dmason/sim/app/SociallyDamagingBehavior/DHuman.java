@@ -102,16 +102,16 @@ public class DHuman extends RemoteHuman<Double2D> implements Steppable, Orientab
 				{
 					if(dsdbState.allHumans.size()<dsdbState.numHumanBeing){
 						double tot = dsdbState.totalFitness+this.fitness;
-						dsdbState.allHumans.add(new EntryAgent<Double, DHuman>(tot, this));
+						dsdbState.allHumans.add(new EntrySocialAgent<Double, DHuman>(tot, this));
 						dsdbState.totalFitness = tot;
 					}
 					else
 					{
 						double tot = dsdbState.totalFitness+this.fitness;
-						dsdbState.allHumans.add(new EntryAgent<Double, DHuman>(tot, this));
-						dsdbState.allHumans.sort(new Comparator<EntryAgent<Double, DHuman>>() {
+						dsdbState.allHumans.add(new EntrySocialAgent<Double, DHuman>(tot, this));
+						dsdbState.allHumans.sort(new Comparator<EntrySocialAgent<Double, DHuman>>() {
 							@Override
-							public int compare(EntryAgent<Double, DHuman> o1, EntryAgent<Double, DHuman> o2) {
+							public int compare(EntrySocialAgent<Double, DHuman> o1, EntrySocialAgent<Double, DHuman> o2) {
 								if(o1.getFitSum()>o2.getFitSum()) return 1;
 								else if(o1.getFitSum()<o2.getFitSum()) return -1;
 								return 0;
@@ -157,7 +157,7 @@ public class DHuman extends RemoteHuman<Double2D> implements Steppable, Orientab
 					for (Object o : b) {
 						DHuman h = (DHuman)o;
 						neighFitness += h.fitness;
-						entryNeigh.add(new EntryAgent<Double, DHuman>(neighFitness, h));
+						entryNeigh.add(new EntrySocialAgent<Double, DHuman>(neighFitness, h));
 					}
 				}
 				else
@@ -202,7 +202,7 @@ public class DHuman extends RemoteHuman<Double2D> implements Steppable, Orientab
 						for (Object o : b) {
 							DHuman h = (DHuman)o;
 							neighFitness += h.fitness;
-							entryNeigh.add(new EntryAgent<Double, DHuman>(neighFitness, h));
+							entryNeigh.add(new EntrySocialAgent<Double, DHuman>(neighFitness, h));
 						}
 						
 						Double2D avoid = behavior.avoidance(this,b,dsdbState.human_being);
@@ -286,7 +286,7 @@ public class DHuman extends RemoteHuman<Double2D> implements Steppable, Orientab
 						for (Object o : b) {
 							DHuman h = (DHuman)o;
 							neighFitness += h.fitness;
-							entryNeigh.add(new EntryAgent<Double, DHuman>(neighFitness, h));
+							entryNeigh.add(new EntrySocialAgent<Double, DHuman>(neighFitness, h));
 						}
 						
 						Double2D avoid = behavior.avoidance(this,b,dsdbState.human_being);

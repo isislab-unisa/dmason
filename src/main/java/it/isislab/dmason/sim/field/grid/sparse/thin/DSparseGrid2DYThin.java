@@ -26,7 +26,7 @@ import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.TraceableField;
 import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegion;
-import it.isislab.dmason.sim.field.support.field2D.Entry;
+import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
@@ -305,7 +305,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 				writer.setPixel(location.x%my_width, location.y%my_height, white);
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
-			return myfield.addAgents(new Entry<Int2D>(rm,new Int2D(location.x-own_x+2*MAX_DISTANCE, location.y)));
+			return myfield.addAgents(new EntryAgent<Int2D>(rm,new Int2D(location.x-own_x+2*MAX_DISTANCE, location.y)));
 		}
 		else
 			if(setAgents(rm, location))
@@ -384,14 +384,14 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 
 		for(Region<Integer,Int2D> region : updates_cache)
 		{
-			for(Entry<Int2D> remote_agent : region.values())
+			for(EntryAgent<Int2D> remote_agent : region.values())
 			{
 				this.remove(remote_agent.r);
 			}
 		}
 
 		//every agent in the myfield region is scheduled
-		for(Entry<Int2D> e: myfield.values())
+		for(EntryAgent<Int2D> e: myfield.values())
 		{
 			RemotePositionedAgent<Int2D> rm=e.r;
 			Int2D loc=e.l;
@@ -450,7 +450,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 		}
 
 		for(Region<Integer,Int2D> region : updates_cache)
-			for(Entry<Int2D> e_m: region.values())
+			for(EntryAgent<Int2D> e_m: region.values())
 			{
 				RemotePositionedAgent<Int2D> rm=e_m.r;
 				rm.setPos(e_m.l);
@@ -518,7 +518,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 		Region<Integer,Int2D> r_mine=box.out;
 		Region<Integer,Int2D> r_out=box.mine;
 
-		for(Entry<Int2D> e_m: r_mine.values())
+		for(EntryAgent<Int2D> e_m: r_mine.values())
 		{
 			RemotePositionedAgent<Int2D> rm=e_m.r;
 			((DistributedState<Int2D>)sm).addToField(rm,e_m.l);
@@ -554,7 +554,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 					Region<Integer,Int2D> region=((Region<Integer,Int2D>)returnValue);
 					if(name.contains("out"))
 					{
-						for(Entry<Int2D> e: region.values())
+						for(EntryAgent<Int2D> e: region.values())
 						{
 							RemotePositionedAgent<Int2D> rm=e.r;
 							rm.setPos(e.l);
@@ -564,7 +564,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 					else
 						if(name.contains("mine"))
 						{
-							for(Entry<Int2D> e: region.values())
+							for(EntryAgent<Int2D> e: region.values())
 							{
 								RemotePositionedAgent<Int2D> rm=e.r;
 								Int2D loc=e.l;
@@ -621,11 +621,11 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 								writer.setPixel(location.x%my_width, location.y%my_height, white);
 
 							}
-							return region.addAgents(new Entry<Int2D>(rm,new Int2D(location.x-own_x+2*MAX_DISTANCE,location.y)));
+							return region.addAgents(new EntryAgent<Int2D>(rm,new Int2D(location.x-own_x+2*MAX_DISTANCE,location.y)));
 
 						}
 						if(name.contains("out"))
-							return region.addAgents(new Entry<Int2D>(rm,location));
+							return region.addAgents(new EntryAgent<Int2D>(rm,location));
 					}
 				}
 			}

@@ -65,9 +65,9 @@ public class RegionInteger extends Region<Integer,Int2D>
 	public Region<Integer,Int2D> clone() 
 	{
 		RegionInteger r=new RegionInteger(upl_xx, upl_yy, down_xx, down_yy);
-		for(it.isislab.dmason.sim.field.support.field2D.Entry<Int2D> e: this.values())
+		for(it.isislab.dmason.sim.field.support.field2D.EntryAgent<Int2D> e: this.values())
 		{
-			r.put(e.r.getId(),new it.isislab.dmason.sim.field.support.field2D.Entry(((RemotePositionedAgent<Int2D>)(Util.clone(e.r))),e.l));
+			r.put(e.r.getId(),new it.isislab.dmason.sim.field.support.field2D.EntryAgent(((RemotePositionedAgent<Int2D>)(Util.clone(e.r))),e.l));
 		}
 		return r;
 	}
@@ -79,7 +79,7 @@ public class RegionInteger extends Region<Integer,Int2D>
 	}
 
 	@Override
-	public boolean addAgents(it.isislab.dmason.sim.field.support.field2D.Entry<Int2D> e) 
+	public boolean addAgents(it.isislab.dmason.sim.field.support.field2D.EntryAgent<Int2D> e) 
 	{	
 		if(e == null || e.l == null || e.r == null) return false;
 		if(this.containsKey(e.r.getId()) && this.get(e.r.getId()).equals(e)) return true;

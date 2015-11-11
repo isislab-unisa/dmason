@@ -92,9 +92,9 @@ public class Dishonest extends DBehaviour {
 
 				DHuman damaged;
 				for (int i = 1; i < sdb.lastAllHumans.size(); i++) {
-					if(((EntryAgent<Double,DHuman>)(sdb.lastAllHumans.get(i))).getFitSum()>var)
+					if(((EntrySocialAgent<Double,DHuman>)(sdb.lastAllHumans.get(i))).getFitSum()>var)
 					{
-						EntryAgent<Double, DHuman> ea = (EntryAgent<Double, DHuman>)sdb.lastAllHumans.get(i-1);
+						EntrySocialAgent<Double, DHuman> ea = (EntrySocialAgent<Double, DHuman>)sdb.lastAllHumans.get(i-1);
 						damaged = ea.getH();
 
 						agent.fitness=+percF;
@@ -139,9 +139,9 @@ public class Dishonest extends DBehaviour {
 
 					DHuman damaged;
 					for (int i = 1; i < entryNeigh.size(); i++) {
-						if(((EntryAgent<Double,DHuman>)(entryNeigh.get(i))).getFitSum()>var)
+						if(((EntrySocialAgent<Double,DHuman>)(entryNeigh.get(i))).getFitSum()>var)
 						{
-							EntryAgent<Double, DHuman> ea = (EntryAgent<Double, DHuman>)entryNeigh.get(i-1);
+							EntrySocialAgent<Double, DHuman> ea = (EntrySocialAgent<Double, DHuman>)entryNeigh.get(i-1);
 							damaged = ea.getH();
 							agent.fitness=+percF;
 
@@ -197,9 +197,9 @@ public class Dishonest extends DBehaviour {
 					DHuman damaged;
 
 					for (int i = 1; i < entryNeigh.size(); i++) {
-						if(((EntryAgent<Double,DHuman>)(entryNeigh.get(i))).getFitSum()>var)
+						if(((EntrySocialAgent<Double,DHuman>)(entryNeigh.get(i))).getFitSum()>var)
 						{
-							EntryAgent<Double, DHuman> ea = (EntryAgent<Double, DHuman>)entryNeigh.get(i-1);
+							EntrySocialAgent<Double, DHuman> ea = (EntrySocialAgent<Double, DHuman>)entryNeigh.get(i-1);
 							damaged = ea.getH();
 
 							agent.fitness=+percF;

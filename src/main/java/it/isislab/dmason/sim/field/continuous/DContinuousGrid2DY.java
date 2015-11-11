@@ -26,7 +26,7 @@ import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.TraceableField;
 import it.isislab.dmason.sim.field.continuous.region.RegionDouble;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegion;
-import it.isislab.dmason.sim.field.support.field2D.Entry;
+import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.sim.field.support.globals.GlobalInspectorHelper;
@@ -407,7 +407,7 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		{
 			for( String agent_id : region.keySet())
 			{
-				Entry<Double2D> remote_agent = region.get(agent_id);
+				EntryAgent<Double2D> remote_agent = region.get(agent_id);
 				this.remove(remote_agent.r);
 			}
 		}
@@ -415,7 +415,7 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		// Schedule agents in MyField region
 		for( String agent_id : myfield.keySet())
 		{
-			Entry<Double2D> e = myfield.get(agent_id);
+			EntryAgent<Double2D> e = myfield.get(agent_id);
 			RemotePositionedAgent<Double2D> rm = e.r;
 			Double2D loc = e.l;
 			rm.setPos(loc);
@@ -487,7 +487,7 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		for(Region<Double, Double2D> region : updates_cache)
 			for(String agent_id : region.keySet())
 			{
-				Entry<Double2D> e_m = region.get(agent_id);
+				EntryAgent<Double2D> e_m = region.get(agent_id);
 				RemotePositionedAgent<Double2D> rm = e_m.r;
 				((DistributedState<Double2D>)sm).addToField(rm, e_m.l);
 			}
@@ -525,7 +525,7 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 
 		for(String agent_id: r_mine.keySet())
 		{
-			Entry<Double2D> e_m = r_mine.get(agent_id);
+			EntryAgent<Double2D> e_m = r_mine.get(agent_id);
 			RemotePositionedAgent<Double2D> rm=e_m.r;
 			((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
 			rm.setPos(e_m.l);
@@ -602,7 +602,7 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 					{
 						for(String anget_id: region.keySet())
 						{
-							Entry<Double2D> e = region.get(anget_id);
+							EntryAgent<Double2D> e = region.get(anget_id);
 							RemotePositionedAgent<Double2D> rm=e.r;
 							rm.setPos(e.l);		    			
 							this.remove(rm);
@@ -613,7 +613,7 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 						{
 							for(String agent_id: region.keySet())
 							{
-								Entry<Double2D> e = region.get(agent_id);
+								EntryAgent<Double2D> e = region.get(agent_id);
 								RemotePositionedAgent<Double2D> rm=e.r;
 								Double2D loc=e.l;
 								rm.setPos(loc);
@@ -666,8 +666,8 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 							if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 								GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 						}
-						myfield.addAgents(new Entry<Double2D>(rm, location));
-						return region.addAgents(new Entry<Double2D>(rm, location));
+						myfield.addAgents(new EntryAgent<Double2D>(rm, location));
+						return region.addAgents(new EntryAgent<Double2D>(rm, location));
 					}
 				}
 			}

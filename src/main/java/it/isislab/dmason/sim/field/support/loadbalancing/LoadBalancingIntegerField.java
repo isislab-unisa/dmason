@@ -20,7 +20,7 @@ package it.isislab.dmason.sim.field.support.loadbalancing;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.sim.field.support.field2D.Entry;
+import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 
 import java.lang.reflect.Field;
@@ -232,7 +232,7 @@ public class LoadBalancingIntegerField implements LoadBalancingInterface{
 		
 		if(m.getMyField().isMine(location.x, location.y))
 		{
-			return m.getMyField().put(rm.getId(),new Entry<Int2D>(rm, location))!=null?true:false;
+			return m.getMyField().put(rm.getId(),new EntryAgent<Int2D>(rm, location))!=null?true:false;
 		}
 		else
 		{
@@ -257,7 +257,7 @@ public class LoadBalancingIntegerField implements LoadBalancingInterface{
 						if(region.isMine(location.x,location.y))
 						{   
 							rm.setPos(location);
-							return region.addAgents(new Entry<Int2D>(rm, location));
+							return region.addAgents(new EntryAgent<Int2D>(rm, location));
 						}    
 					}
 
@@ -283,7 +283,7 @@ public class LoadBalancingIntegerField implements LoadBalancingInterface{
 
 		if(m.getMyField().isMine(location.x, location.y))
 		{
-			return m.getMyField().put(rm.getId(),new Entry<Int2D>(rm, location))!=null?true:false;
+			return m.getMyField().put(rm.getId(),new EntryAgent<Int2D>(rm, location))!=null?true:false;
 		}
 		else
 		{
@@ -310,7 +310,7 @@ public class LoadBalancingIntegerField implements LoadBalancingInterface{
 						if(region.isMine(location.x,location.y))
 						{   
 							rm.setPos(location);
-							return region.addAgents(new Entry<Int2D>(rm, location));
+							return region.addAgents(new EntryAgent<Int2D>(rm, location));
 						}    
 					}
 

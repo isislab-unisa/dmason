@@ -10,7 +10,7 @@ import sim.util.Double2D;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.continuous.region.RegionDouble;
-import it.isislab.dmason.sim.field.support.field2D.Entry;
+import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.test.sim.app.DFlockers.DFlocker;
 
 // TODO: Auto-generated Javadoc
@@ -117,7 +117,7 @@ public class RegionDoubleTester {
 	@Test
 	public void testAddAgentsNull() {
 		
-		Entry<Double2D> e = null;
+		EntryAgent<Double2D> e = null;
 		assertFalse(rd.addAgents(e));
 
 	}
@@ -129,7 +129,7 @@ public class RegionDoubleTester {
 	public void testAddAgents() {
 		RemotePositionedAgent<Double2D> c = null;
 		Double2D f = null;
-		Entry<Double2D> e = new Entry<Double2D>(c, f);
+		EntryAgent<Double2D> e = new EntryAgent<Double2D>(c, f);
 		assertFalse(rd.addAgents(e));
 	}
 
@@ -140,7 +140,7 @@ public class RegionDoubleTester {
 	public void testAddAgentsVerify(){
 		RemotePositionedAgent<Double2D> c = new DFlocker();
 		Double2D f = new Double2D(0, 0);
-		Entry<Double2D> e = new Entry<Double2D>(c, f);
+		EntryAgent<Double2D> e = new EntryAgent<Double2D>(c, f);
 		rd.addAgents(e);
 		assertEquals(e, rd.get(0));
 	}
@@ -165,7 +165,7 @@ public class RegionDoubleTester {
 		rd.clear();
 		RemotePositionedAgent<Double2D> c = new DFlocker();
 		Double2D f = new Double2D();
-		Entry<Double2D> e = new Entry<Double2D>(c, f);
+		EntryAgent<Double2D> e = new EntryAgent<Double2D>(c, f);
 		rd.addAgents(e);
 		RegionDouble clone = null;
 		try {
@@ -188,10 +188,10 @@ public class RegionDoubleTester {
 		Double2D f = new Double2D(10.0,22.0);
 		RemotePositionedAgent<Double2D> c = new DFlocker();
 		c.setId("fake");
-		Entry<Double2D> e = new Entry<Double2D>(c, f);
+		EntryAgent<Double2D> e = new EntryAgent<Double2D>(c, f);
 		rd.addAgents(e);
 		f= new Double2D(10.0,11.0);
-		e = new Entry<Double2D>(c, f);
+		e = new EntryAgent<Double2D>(c, f);
 		rd.addAgents(e);
 		RegionDouble clone = null;
 		try {
