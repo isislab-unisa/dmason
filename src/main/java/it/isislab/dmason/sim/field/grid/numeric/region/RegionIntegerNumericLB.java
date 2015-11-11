@@ -83,10 +83,10 @@ public class RegionIntegerNumericLB extends RegionNumeric<Integer, EntryNum<Inte
 	public RegionNumeric<Integer, EntryNum<Integer, Int2D>> clone() 
 	{
 		RegionIntegerNumericLB r=new RegionIntegerNumericLB(upl_xx, upl_yy, down_xx, down_yy,width,height);
-		for(EntryNum<Integer, Int2D> e: this)
+		for(EntryNum<Integer, Int2D> e: this.values())
 		{
 			int d = e.r;
-			r.add(new EntryNum(d, new Int2D(e.l.getX(),e.l.getY())));
+			r.put(e.l.toString(),new EntryNum(d, new Int2D(e.l.getX(),e.l.getY())));
 		}
 		return r;
 	}
@@ -100,6 +100,10 @@ public class RegionIntegerNumericLB extends RegionNumeric<Integer, EntryNum<Inte
 	@Override
 	public boolean addEntryNum(EntryNum<Integer, Int2D> e) 
 	{	
-		return this.add(e);
+		if(e == null || e.l == null || e.r == null) return false;
+		if(this.containsKey(e.l.toString()) && this.get(e.l.toString()).equals(e) )
+		   return true;
+		
+		return this.put(e.l.toString(),e)!=null?true:false;
 	}
 }

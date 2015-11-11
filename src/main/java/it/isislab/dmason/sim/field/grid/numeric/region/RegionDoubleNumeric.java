@@ -63,11 +63,14 @@ public class RegionDoubleNumeric extends RegionNumeric<Integer, EntryNum<Double,
 	public RegionNumeric<Integer, EntryNum<Double, Int2D>> clone() 
 	{
 		RegionDoubleNumeric r=new RegionDoubleNumeric(upl_xx, upl_yy, down_xx, down_yy);
-		for(EntryNum<Double, Int2D> e: this)
+		
+		
+		for(EntryNum<Double, Int2D> e: this.values())
 		{
 			Double d = e.r;
-			r.add(new EntryNum(d, new Int2D(e.l.getX(),e.l.getY())));
+			r.put(e.l.toString(),new EntryNum(d, new Int2D(e.l.getX(),e.l.getY())));
 		}
+		
 		return r;
 	}
 
@@ -80,6 +83,8 @@ public class RegionDoubleNumeric extends RegionNumeric<Integer, EntryNum<Double,
 	@Override
 	public boolean addEntryNum(EntryNum<Double, Int2D> e) 
 	{	
-		return this.add(e);
+		
+		return this.put(e.l.toString(),e)!= null? true:false;
 	}
+	
 }

@@ -314,7 +314,7 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D {
 		
 		
 		//every value in the myfield region is setted
-				for(EntryNum<Double, Int2D> e: myfield)
+				for(EntryNum<Double, Int2D> e: myfield.values())
 				{			
 					Int2D loc=e.l;
 					double d = e.r;
@@ -652,7 +652,7 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D {
 		
 		for(RegionNumeric<Integer,EntryNum<Double,Int2D>> region : updates_cache){
 			
-			for(EntryNum<Double,Int2D> e_m: region)
+			for(EntryNum<Double,Int2D> e_m: region.values())
 			{
 				Int2D i=new Int2D(e_m.l.getX(), e_m.l.getY());
 				field[i.getX()][i.getY()]=e_m.r;
@@ -678,7 +678,7 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D {
 		RegionNumeric<Integer,EntryNum<Double,Int2D>> r_mine=box.out;
 		RegionNumeric<Integer,EntryNum<Double,Int2D>> r_out=box.mine;
 		
-		for(EntryNum<Double,Int2D> e_m: r_mine)
+		for(EntryNum<Double,Int2D> e_m: r_mine.values())
 		{
 				Int2D i=new Int2D(e_m.l.getX(),e_m.l.getY());
 				
@@ -750,7 +750,7 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D {
 		    	 
 		    	 if(name.contains("out"))
 			  	 {
-		    		 for(EntryNum<Double,Int2D> e : region){
+		    		 for(EntryNum<Double,Int2D> e : region.values()){
 		    			 
 		    			 Int2D pos = new Int2D(e.l.getX(), e.l.getY());
 		    			 double d = e.r;
@@ -760,7 +760,7 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D {
 		    	  else
 		    		  if(name.contains("mine"))
 		    		  {
-		    			  for(EntryNum<Double,Int2D> e : region){
+		    			  for(EntryNum<Double,Int2D> e : region.values()){
 				    			 
 				    			 Int2D pos = new Int2D(e.l.getX(), e.l.getY());
 				    			 double d = e.r;

@@ -270,7 +270,7 @@ public class DIntGrid2DY extends DIntGrid2D {
 		}
 
 		//every value in the myfield region is setted
-		for(EntryNum<Integer, Int2D> e: myfield)
+		for(EntryNum<Integer, Int2D> e: myfield.values())
 		{			
 			Int2D loc=e.l;
 			int i = e.r;
@@ -336,7 +336,7 @@ public class DIntGrid2DY extends DIntGrid2D {
 
 		for(RegionNumeric<Integer,EntryNum<Integer,Int2D>> region : updates_cache)
 		{
-			for(EntryNum<Integer,Int2D> e_m: region)
+			for(EntryNum<Integer,Int2D> e_m: region.values())
 			{
 				Int2D i=new Int2D(e_m.l.getX(), e_m.l.getY());
 				field[i.getX()][i.getY()]=e_m.r;
@@ -360,7 +360,7 @@ public class DIntGrid2DY extends DIntGrid2D {
 		RegionNumeric<Integer,EntryNum<Integer,Int2D>> r_mine=box.out;
 		RegionNumeric<Integer,EntryNum<Integer,Int2D>> r_out=box.mine;
 
-		for(EntryNum<Integer,Int2D> e_m: r_mine)
+		for(EntryNum<Integer,Int2D> e_m: r_mine.values())
 		{
 			Int2D i=new Int2D(e_m.l.getX(),e_m.l.getY());
 
@@ -430,7 +430,7 @@ public class DIntGrid2DY extends DIntGrid2D {
 
 					if(name.contains("out"))
 					{
-						for(EntryNum<Integer,Int2D> e : region){
+						for(EntryNum<Integer,Int2D> e : region.values()){
 
 							Int2D pos = new Int2D(e.l.getX(), e.l.getY());
 							int i = e.r;
@@ -440,7 +440,7 @@ public class DIntGrid2DY extends DIntGrid2D {
 					else
 						if(name.contains("mine"))
 						{
-							for(EntryNum<Integer,Int2D> e : region){
+							for(EntryNum<Integer,Int2D> e : region.values()){
 
 								Int2D pos = new Int2D(e.l.getX(), e.l.getY());
 								int i = e.r;

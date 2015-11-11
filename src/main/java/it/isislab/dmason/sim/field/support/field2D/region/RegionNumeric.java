@@ -19,6 +19,7 @@ package it.isislab.dmason.sim.field.support.field2D.region;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Abstract superclass of every class that identify a boundary space in a simulated portion of 
@@ -36,7 +37,7 @@ import java.util.ArrayList;
  * @author Flavio Serrapica
  * @author Carmine Spagnuolo
  */
-public abstract class RegionNumeric<E, F> extends ArrayList<F> implements Serializable, Cloneable{
+public abstract class RegionNumeric<E, F> extends HashMap<String,F> implements Serializable, Cloneable{
 
 	private static final long serialVersionUID = 1L;
 	//upper left corner

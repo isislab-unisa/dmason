@@ -348,14 +348,14 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 									{
 										if(name.contains("mine"))
 										{
-											region.add(new EntryNum<Double,Int2D>(d, location));
-											mc.getMyField().add(new EntryNum<Double,Int2D>(d, location));
+											region.put(location.toString(), new EntryNum<Double,Int2D>(d, location));
+											mc.getMyField().put(location.toString(),new EntryNum<Double,Int2D>(d, location));
 										}
 										else
 											if(name.contains("out"))
 											{
-												region.add(new EntryNum<Double,Int2D>(d, location));
-												outAgents.add(new EntryNum<Double,Int2D>(d, location));
+												region.put(location.toString(),new EntryNum<Double,Int2D>(d, location));
+												outAgents.put(location.toString(),new EntryNum<Double,Int2D>(d, location));
 											}
 									}
 								}
@@ -425,14 +425,15 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 									{
 										if(name.contains("mine"))
 										{
-											fl = u || region.add(new EntryNum<Double,Int2D>(d, location));
-											mc.getMyField().add(new EntryNum<Double,Int2D>(d, location));
+											
+											fl= u ||  region.put(location.toString(), new EntryNum<Double,Int2D>(d, location))!=null;
+											mc.getMyField().put(location.toString(),new EntryNum<Double,Int2D>(d, location));
 										}
 										else
 											if(name.contains("out"))
 											{
-												fl = u || region.add(new EntryNum<Double,Int2D>(d, location));
-												outAgents.add(new EntryNum<Double,Int2D>(d, location));
+												fl = u || region.put(location.toString(),new EntryNum<Double,Int2D>(d, location))!=null;
+												outAgents.put(location.toString(),new EntryNum<Double,Int2D>(d, location));
 											}
 									}
 								}
@@ -630,7 +631,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				if(ct.equals(cellType)){
 					MyCellDoubleNumeric md = (MyCellDoubleNumeric) hm.get(ct);
 
-					for(EntryNum<Double, Int2D> e: md.getMyField())
+					for(EntryNum<Double, Int2D> e: md.getMyField().values())
 					{
 						Int2D loc=e.l;
 						double i = e.r;
@@ -649,7 +650,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				if(!ct.equals(cellType)){
 					MyCellDoubleNumeric md =(MyCellDoubleNumeric) hm.get(ct);
 
-					for(EntryNum<Double, Int2D> e: md.getMyField())
+					for(EntryNum<Double, Int2D> e: md.getMyField().values())
 					{
 						Int2D loc=e.l;
 						double i = e.r;
@@ -701,7 +702,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 
 						listGrid.get(mc.getPosition()).put(mc.getParentCellType(), mc);
 
-						for(EntryNum<Double, Int2D> e: mc.getMyField())
+						for(EntryNum<Double, Int2D> e: mc.getMyField().values())
 						{							
 							Int2D loc=e.l;
 							double i = e.r;
@@ -846,7 +847,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 		updates_cacheLB.add(tmp);
 		for(ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>> regions : updates_cacheLB)
 			for(RegionNumeric<Integer,EntryNum<Double,Int2D>> r : regions)
-				for(EntryNum<Double, Int2D> e_m: r)
+				for(EntryNum<Double, Int2D> e_m: r.values())
 				{
 					Int2D i=new Int2D(e_m.l.getX(), e_m.l.getY());
 					field[i.getX()][i.getY()]=e_m.r;	
@@ -1046,7 +1047,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 						if(ct.equals(cellType)){
 							MyCellDoubleNumeric md = (MyCellDoubleNumeric)hm.get(ct);
 
-							for(EntryNum<Double, Int2D> e: md.getMyField())
+							for(EntryNum<Double, Int2D> e: md.getMyField().values())
 							{
 								Int2D loc=e.l;
 								double i = e.r;
@@ -1497,7 +1498,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 
 		if(position == MyCellInterface.CORNER_DIAG_UP_LEFT)
 		{
-			for(EntryNum<Double, Int2D> e: (RegionDoubleNumericLB) ((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
+			for(EntryNum<Double, Int2D> e: ((RegionDoubleNumericLB) ((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center()).values() )
 			{			    	
 				Int2D loc=e.l;
 				double i = e.r;
@@ -1507,19 +1508,19 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 		else
 			if(position == MyCellInterface.UP)
 			{
-				for(EntryNum<Double, Int2D> e: (RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
+				for(EntryNum<Double, Int2D> e: ((RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center()).values())
 				{			    	
 					Int2D loc=e.l;
 					double i = e.r;
 					field[loc.getX()][loc.getY()]=i;
 				}
-				for(EntryNum<Double, Int2D> e: (RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.UP).get(cellType)).getMyRMap().getup_out())
+				for(EntryNum<Double, Int2D> e: ((RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.UP).get(cellType)).getMyRMap().getup_out()).values())
 				{			    	
 					Int2D loc=e.l;
 					double i = e.r;
 					field[loc.getX()][loc.getY()]=i;
 				}
-				for(EntryNum<Double, Int2D> e: (RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
+				for(EntryNum<Double, Int2D> e: ((RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center()).values())
 				{			    	
 					Int2D loc=e.l;
 					double i = e.r;
@@ -1529,7 +1530,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			else
 				if(position == MyCellInterface.CORNER_DIAG_UP_RIGHT)
 				{
-					for(EntryNum<Double, Int2D> e: (RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
+					for(EntryNum<Double, Int2D> e: ((RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center()).values())
 					{			    	
 						Int2D loc=e.l;
 						double i = e.r;
@@ -1539,19 +1540,19 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 				else
 					if(position == MyCellInterface.RIGHT)
 					{
-						for(EntryNum<Double, Int2D> e: (RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
+						for(EntryNum<Double, Int2D> e: ((RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center()).values())
 						{			    	
 							Int2D loc=e.l;
 							double i = e.r;
 							field[loc.getX()][loc.getY()]=i;
 						}
-						for(EntryNum<Double, Int2D> e: (RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.RIGHT).get(cellType)).getMyRMap().getright_out())
+						for(EntryNum<Double, Int2D> e: ((RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.RIGHT).get(cellType)).getMyRMap().getright_out()).values())
 						{			    	
 							Int2D loc=e.l;
 							double i = e.r;
 							field[loc.getX()][loc.getY()]=i;
 						}
-						for(EntryNum<Double, Int2D> e: (RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
+						for(EntryNum<Double, Int2D> e: ((RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center()).values())
 						{			    	
 							Int2D loc=e.l;
 							double i = e.r;
@@ -1561,7 +1562,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					else
 						if(position == MyCellInterface.CORNER_DIAG_DOWN_RIGHT)
 						{
-							for(EntryNum<Double, Int2D> e: (RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
+							for(EntryNum<Double, Int2D> e: ((RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center()).values())
 							{			    	
 								Int2D loc=e.l;
 								double i = e.r;
@@ -1571,19 +1572,19 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 						else
 							if(position == MyCellInterface.DOWN)
 							{
-								for(EntryNum<Double, Int2D> e: (RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
+								for(EntryNum<Double, Int2D> e: ((RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center()).values())
 								{			    	
 									Int2D loc=e.l;
 									double i = e.r;
 									field[loc.getX()][loc.getY()]=i;
 								}
-								for(EntryNum<Double, Int2D> e: (RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.DOWN).get(cellType)).getMyRMap().getdown_out())
+								for(EntryNum<Double, Int2D> e: ((RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.DOWN).get(cellType)).getMyRMap().getdown_out()).values())
 								{			    	
 									Int2D loc=e.l;
 									double i = e.r;
 									field[loc.getX()][loc.getY()]=i;
 								}
-								for(EntryNum<Double, Int2D> e: (RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
+								for(EntryNum<Double, Int2D> e: ((RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center()).values())
 								{			    	
 									Int2D loc=e.l;
 									double i = e.r;
@@ -1593,7 +1594,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 							else
 								if(position == MyCellInterface.CORNER_DIAG_DOWN_LEFT)
 								{
-									for(EntryNum<Double, Int2D> e: (RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
+									for(EntryNum<Double, Int2D> e: ((RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center()).values())
 									{			    	
 										Int2D loc=e.l;
 										double i = e.r;
@@ -1603,19 +1604,19 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 								else
 									if(position == MyCellInterface.LEFT)
 									{
-										for(EntryNum<Double, Int2D> e: (RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
+										for(EntryNum<Double, Int2D> e: ((RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center()).values())
 										{			    	
 											Int2D loc=e.l;
 											double i = e.r;
 											field[loc.getX()][loc.getY()]=i;
 										}
-										for(EntryNum<Double, Int2D> e: (RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.LEFT).get(cellType)).getMyRMap().getleft_out())
+										for(EntryNum<Double, Int2D> e: ((RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.LEFT).get(cellType)).getMyRMap().getleft_out()).values())
 										{			    	
 											Int2D loc=e.l;
 											double i = e.r;
 											field[loc.getX()][loc.getY()]=i;
 										}
-										for(EntryNum<Double, Int2D> e: (RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
+										for(EntryNum<Double, Int2D> e: ((RegionDoubleNumericLB)((MyCellDoubleNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center()).values())
 										{			    	
 											Int2D loc=e.l;
 											double i = e.r;
@@ -4303,7 +4304,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 
 					if(name.contains("mine"))
 					{
-						for(EntryNum<Double, Int2D> e: region)
+						for(EntryNum<Double, Int2D> e: region.values())
 						{
 
 							if(name.contains("left_mine") && !md.getPositionGood().get(MyCellInterface.LEFT))
@@ -4393,7 +4394,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 
 					if(name.contains("out"))
 					{
-						for(EntryNum<Double, Int2D> e: region)
+						for(EntryNum<Double, Int2D> e: region.values())
 						{
 
 							if(name.contains("left_out") && !md.getPositionGood().get(MyCellInterface.LEFT))
@@ -4535,7 +4536,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> r_mine=sb.out;
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> r_out=sb.mine;
 
-			for(EntryNum<Double, Int2D> e_m: r_mine)
+			for(EntryNum<Double, Int2D> e_m: r_mine.values())
 			{
 				Int2D i=new Int2D(e_m.l.getX(),e_m.l.getY());
 				field[i.getX()][i.getY()]=e_m.r;	
@@ -4684,7 +4685,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
 					if(name.contains("out"))
 					{
-						for(EntryNum<Double, Int2D> e: region)
+						for(EntryNum<Double, Int2D> e: region.values())
 						{
 							Int2D loc=e.l;
 							double i = e.r;
@@ -4694,7 +4695,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 					else
 						if(name.contains("mine"))
 						{
-							for(EntryNum<Double, Int2D> e: region)
+							for(EntryNum<Double, Int2D> e: region.values())
 							{			    	
 								if(name.contains("left_mine") && md.getPositionGood().get(MyCellInterface.LEFT))
 								{	
@@ -4782,7 +4783,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = rmap.left_out;
 			if(region.isMine(location.x,location.y))
 			{   	 
-				outAgents.add(new EntryNum<Double,Int2D>(value, location));
+				outAgents.put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 				return  region.addEntryNum(new EntryNum<Double,Int2D>(value, location));
 			}
 		}
@@ -4792,7 +4793,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = rmap.right_out;
 			if(region.isMine(location.x,location.y))
 			{   	 
-				outAgents.add(new EntryNum<Double,Int2D>(value, location));
+				outAgents.put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 				return  region.addEntryNum(new EntryNum<Double,Int2D>(value, location));	
 			}
 		}
@@ -4802,7 +4803,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = rmap.up_out;
 			if(region.isMine(location.x,location.y))
 			{   	 
-				outAgents.add(new EntryNum<Double,Int2D>(value, location));
+				outAgents.put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 				return  region.addEntryNum(new EntryNum<Double,Int2D>(value, location));	
 			}
 		}
@@ -4812,7 +4813,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = rmap.down_out;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new EntryNum<Double,Int2D>(value, location));
+				outAgents.put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 				return  region.addEntryNum(new EntryNum<Double,Int2D>(value, location));	
 			}
 		}
@@ -4822,7 +4823,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = rmap.corner_out_down_left_diag_left;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new EntryNum<Double,Int2D>(value, location));
+				outAgents.put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 				return  region.addEntryNum(new EntryNum<Double,Int2D>(value, location));	
 			}
 		}
@@ -4832,7 +4833,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = rmap.corner_out_down_left_diag_down;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new EntryNum<Double,Int2D>(value, location));
+				outAgents.put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 				return  region.addEntryNum(new EntryNum<Double,Int2D>(value, location));	
 			}
 		}
@@ -4842,7 +4843,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = rmap.corner_out_down_left_diag_center;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new EntryNum<Double,Int2D>(value, location));
+				outAgents.put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 				return  region.addEntryNum(new EntryNum<Double,Int2D>(value, location));	
 			}
 		}
@@ -4852,7 +4853,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = rmap.corner_out_down_right_diag_right;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new EntryNum<Double,Int2D>(value, location));
+				outAgents.put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 				return  region.addEntryNum(new EntryNum<Double,Int2D>(value, location));	
 			}
 		}
@@ -4862,7 +4863,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = rmap.corner_out_down_right_diag_down;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new EntryNum<Double,Int2D>(value, location));
+				outAgents.put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 				return  region.addEntryNum(new EntryNum<Double,Int2D>(value, location));	
 			}
 		}
@@ -4872,7 +4873,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = rmap.corner_out_down_right_diag_center;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new EntryNum<Double,Int2D>(value, location));
+				outAgents.put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 				return  region.addEntryNum(new EntryNum<Double,Int2D>(value, location));	
 			}
 		}
@@ -4882,7 +4883,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = rmap.corner_out_up_left_diag_left;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new EntryNum<Double,Int2D>(value, location));
+				outAgents.put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 				return  region.addEntryNum(new EntryNum<Double,Int2D>(value, location));	
 			}
 		}
@@ -4892,7 +4893,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = rmap.corner_out_up_left_diag_up;
 			if(region.isMine(location.x,location.y))
 			{   	
-				outAgents.add(new EntryNum<Double,Int2D>(value, location));
+				outAgents.put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 				return  region.addEntryNum(new EntryNum<Double,Int2D>(value, location));	
 			}
 		}
@@ -4902,7 +4903,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = rmap.corner_out_up_left_diag_center;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new EntryNum<Double,Int2D>(value, location));
+				outAgents.put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 				return  region.addEntryNum(new EntryNum<Double,Int2D>(value, location));	
 			}
 		}
@@ -4912,7 +4913,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = rmap.corner_out_up_right_diag_right;
 			if(region.isMine(location.x,location.y))
 			{   	
-				outAgents.add(new EntryNum<Double,Int2D>(value, location));
+				outAgents.put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 				return  region.addEntryNum(new EntryNum<Double,Int2D>(value, location));	
 			}
 		}
@@ -4922,7 +4923,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = rmap.corner_out_up_right_diag_up;
 			if(region.isMine(location.x,location.y))
 			{   	
-				outAgents.add(new EntryNum<Double,Int2D>(value, location));
+				outAgents.put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 				return  region.addEntryNum(new EntryNum<Double,Int2D>(value, location));	
 			}
 		}
@@ -4932,7 +4933,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 			RegionNumeric<Integer,EntryNum<Double,Int2D>> region = rmap.corner_out_up_right_diag_center;
 			if(region.isMine(location.x,location.y))
 			{   	
-				outAgents.add(new EntryNum<Double,Int2D>(value, location));
+				outAgents.put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 				return  region.addEntryNum(new EntryNum<Double,Int2D>(value, location));	
 			}
 		}
@@ -4976,13 +4977,13 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 
 		if(rmap.corner_mine_down_left.isMine(location.x,location.y))
 		{   	
-			ms.getMyField().add(new EntryNum<Double,Int2D>(value, location));
+			ms.getMyField().put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 			return  rmap.corner_mine_down_left.addEntryNum(new EntryNum<Double,Int2D>(value, location));	
 		}
 
 		if(rmap.left_mine.isMine(location.x,location.y))
 		{   	
-			ms.getMyField().add(new EntryNum<Double,Int2D>(value, location));
+			ms.getMyField().put(location.toString(),new EntryNum<Double,Int2D>(value, location));
 			return  rmap.left_mine.addEntryNum(new EntryNum<Double,Int2D>(value, location));	
 		}
 
@@ -4994,7 +4995,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D {
 		MyCellDoubleNumeric mc = (MyCellDoubleNumeric)md;
 		RegionMapNumeric<Integer, EntryNum<Double,Int2D>> rmap =(RegionMapNumeric<Integer, EntryNum<Double,Int2D>>) md.getMyRMap();
 
-		for(EntryNum<Double, Int2D> e: ((MyCellDoubleNumeric)md).getMyField())
+		for(EntryNum<Double, Int2D> e: ((MyCellDoubleNumeric)md).getMyField().values())
 		{
 			Int2D loc=e.l;
 			field[loc.getX()][loc.getY()]=0.0;
