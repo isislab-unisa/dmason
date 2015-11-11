@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -126,14 +127,14 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
     //-----------------------------------------------
     //-----------------------------------------------
     Bag localReinitializeTest = null; Bag globalReinitializeTest= null;
-    ArrayList<Entry<Double2D>> lastSended;
-    public ArrayList<Entry<Double2D>> getReinitializeTest(){
+    HashMap<String, Entry<Double2D>> lastSended;
+    public HashMap<String, Entry<Double2D>> getReinitializeTest(){
     	return  (lastSended=((human_being!=null)?((DContinuousGrid2DXY)human_being).getAllVisibleAgent():null));
     } //� obbligatorio ai fini del corretto funzionamento
   
     public void setReinitialize(Bag value){ localReinitializeTest = value;} //� obbligatorio ai fini del corretto funzionamento
     public boolean globalReinitializeTest() { return true;}
-    public ArrayList<Entry<Double2D>> getGlobalReinitializeTest(){  
+    public HashMap<String, Entry<Double2D>> getGlobalReinitializeTest(){  
     	return (((human_being!=null)?(lastSended=((DContinuousGrid2DXY)human_being).getAllVisibleAgent()):null));
     }
    
@@ -144,7 +145,8 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
     	int var = 0;
     	ArrayList<RemotePositionedAgent<Double2D>> figli=new ArrayList<RemotePositionedAgent<Double2D>>();
     	
-    	for (Entry<Double2D> human : lastSended) {
+    	for (String  human_id : lastSended.keySet()) {
+    		Entry<Double2D> human = lastSended.get(human_id);
     		DHuman f = (DHuman)human.r;
     		if(f.getFitness() > a.fitness || 
     				(f.getFitness() == a.fitness && f.getId().compareTo(a.getId())<=0))

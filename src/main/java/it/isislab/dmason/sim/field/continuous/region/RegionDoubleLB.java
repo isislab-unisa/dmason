@@ -18,7 +18,6 @@
  package it.isislab.dmason.sim.field.continuous.region;
 
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
-import it.isislab.dmason.sim.field.support.field2D.Entry;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.util.Util;
 import sim.util.Double2D;
@@ -61,9 +60,9 @@ public class RegionDoubleLB extends Region<Double,Double2D>
 	public Region<Double, Double2D> clone() 
 	{
 		RegionDoubleLB r=new RegionDoubleLB(upl_xx, upl_yy, down_xx, down_yy,width,height);
-		for(Entry<Double2D> e: this)
+		for(it.isislab.dmason.sim.field.support.field2D.Entry<Double2D> e: this.values())
 		{
-			r.add(new Entry(((RemotePositionedAgent<Double2D>)(Util.clone(e.r))),e.l));
+			r.put(e.r.getId(),new it.isislab.dmason.sim.field.support.field2D.Entry(((RemotePositionedAgent<Double2D>)(Util.clone(e.r))),e.l));
 		}
 		return r;
 	}
@@ -75,14 +74,11 @@ public class RegionDoubleLB extends Region<Double,Double2D>
 	}
 
      @Override
-	public boolean addAgents(Entry<Double2D> e) 
+	public boolean addAgents(it.isislab.dmason.sim.field.support.field2D.Entry<Double2D> e) 
 	{
-    	if(e == null)
-    		return false;
-    	else if (e.l == null || e.r == null)
-    		return false;
-    				
-    	return this.add(e);
+    	if(e == null || e.l == null || e.r == null) return false;
+    	if(this.containsKey(e.r.getId()) && this.get(e.r.getId()).equals(e)) return true;
+    	return this.put(e.r.getId(),e)!=null?true:false;
 	}	
      
      

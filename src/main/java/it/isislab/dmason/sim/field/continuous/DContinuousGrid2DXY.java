@@ -463,15 +463,17 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		// Remove agents in "out" sections
 		for(Region<Double, Double2D> region : updates_cache)
 		{
-			for(Entry<Double2D> remote_agent : region)
+			for(String agent_id : region.keySet())
 			{
+				Entry<Double2D> remote_agent = region.get(agent_id);
 				this.remove(remote_agent.r);
 			}
 		}
 
 		// Schedule agents in "myField" region
-		for(Entry<Double2D> e: myfield)
+		for(String agent_id : myfield.keySet())
 		{
+			Entry<Double2D> e = myfield.get(agent_id);
 			RemotePositionedAgent<Double2D> rm=e.r;
 			Double2D loc=e.l;
 			rm.setPos(loc);
@@ -555,8 +557,10 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		} catch (InterruptedException e1) {e1.printStackTrace(); } catch (DMasonException e1) {e1.printStackTrace(); }
 
 		for(Region<Double, Double2D> region : updates_cache)
-			for(Entry<Double2D> e_m: region)
+			
+			for(String agent_id : region.keySet())
 			{
+				Entry<Double2D> e_m = region.get(agent_id);
 				RemotePositionedAgent<Double2D> rm=e_m.r;
 				((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
 			}
@@ -707,8 +711,9 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		Region<Double,Double2D> r_mine=box.out;
 		Region<Double,Double2D> r_out=box.mine;		
 
-		for(Entry<Double2D> e_m: r_mine)
+		for(String agent_id : r_mine.keySet())
 		{
+			Entry<Double2D> e_m = r_mine.get(agent_id);
 			RemotePositionedAgent<Double2D> rm=e_m.r;
 			((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
 			rm.setPos(e_m.l);
@@ -745,8 +750,9 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 					if(name.contains("out"))
 					{
 
-						for(Entry<Double2D> e: region)
+						for(String agent_id : region.keySet())
 						{ 
+							Entry<Double2D> e = region.get(agent_id);
 							RemotePositionedAgent<Double2D> rm=e.r;
 							rm.setPos(e.l);
 							this.remove(rm);
@@ -1085,9 +1091,9 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
    /**
     * Used by SociallyDamaginBehaviour because ...
     */
-	public ArrayList<Entry<Double2D>> getAllVisibleAgent() {
+	public HashMap<String,Entry<Double2D>> getAllVisibleAgent() {
 
-		ArrayList<Entry<Double2D>> thor=myfield.clone();
+		HashMap<String,Entry<Double2D>> thor=myfield.clone();
 		Class o=rmap.getClass();
 
 		Field[] fields = o.getDeclaredFields();
@@ -1104,9 +1110,10 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 				if(returnValue!=null)
 				{
 					Region<Double,Double2D> region=((Region<Double,Double2D>)returnValue);
-					for(Entry<Double2D> e: region)
-						thor.add(e);		    		
-
+					for(String agent_id: region.keySet()){
+						Entry<Double2D> e = region.get(agent_id);
+						thor.put(agent_id,e);		    		
+					}
 				}
 			}
 			catch (IllegalArgumentException e){e.printStackTrace();} 

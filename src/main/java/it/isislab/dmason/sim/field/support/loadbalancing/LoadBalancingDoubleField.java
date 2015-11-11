@@ -231,7 +231,7 @@ public class LoadBalancingDoubleField <E> implements LoadBalancingInterface{
 		
 		if(m.getMyField().isMine(location.x, location.y))
 		{
-			return m.getMyField().add(new Entry<Double2D>(rm, location));
+			return m.getMyField().put(rm.getId(),new Entry<Double2D>(rm, location))!=null?true:false;
 		}
 		else
 		{
@@ -284,7 +284,7 @@ public class LoadBalancingDoubleField <E> implements LoadBalancingInterface{
 		
 		if(m.getMyField().isMine(location.x, location.y))
 		{
-			return m.getMyField().add(new Entry<Double2D>(rm, location));
+			return m.getMyField().put(rm.getId(),new Entry<Double2D>(rm, location))!=null?true:false;
 		}
 		else
 		{

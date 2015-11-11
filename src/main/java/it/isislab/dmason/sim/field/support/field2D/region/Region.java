@@ -17,10 +17,10 @@
 
  package it.isislab.dmason.sim.field.support.field2D.region;
 
-import it.isislab.dmason.sim.field.support.field2D.Entry;
-
 import java.io.Serializable;
-import java.util.ArrayList;
+
+import java.util.HashMap;
+
 
 /**
  * Abstract superclass of every class that identify a boundary space in a simulated portion of 
@@ -38,8 +38,10 @@ import java.util.ArrayList;
  * @author Flavio Serrapica
  * @author Carmine Spagnuolo
  */
-public abstract class Region<E,F> extends ArrayList<Entry<F>> implements Serializable,Cloneable
+public abstract class Region<E,F> extends HashMap<String,it.isislab.dmason.sim.field.support.field2D.Entry<F>> implements Serializable,Cloneable
 {
+	
+	
 	private static final long serialVersionUID = 1L;
 	//upper left corner
 	public E upl_xx,upl_yy;
@@ -79,7 +81,7 @@ public abstract class Region<E,F> extends ArrayList<Entry<F>> implements Seriali
 	 * @param e the Entry with an agent
 	 * @return true o false
 	 */
-	public abstract boolean addAgents(Entry<F> e);
+	public abstract boolean addAgents(it.isislab.dmason.sim.field.support.field2D.Entry<F> e);
 	//<--
 	
 	@Override
@@ -99,45 +101,57 @@ public abstract class Region<E,F> extends ArrayList<Entry<F>> implements Seriali
 	public E getDown_yy() { return down_yy; }
 	public void setDown_yy(E down_yy) { this.down_yy = down_yy; }
 
-
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		
+		}
+		if (!(obj instanceof Region)) {
+			return false;
+		}
 		Region other = (Region) obj;
 		if (down_xx == null) {
-			if (other.down_xx != null)
+			if (other.down_xx != null) {
 				return false;
-		} else if (!down_xx.equals(other.down_xx))
+			}
+		} else if (!down_xx.equals(other.down_xx)) {
 			return false;
-		if (down_yy == null) {
-			if (other.down_yy != null)
-				return false;
-		} else if (!down_yy.equals(other.down_yy))
-			return false;
-		if (upl_xx == null) {
-			if (other.upl_xx != null)
-				return false;
-		} else if (!upl_xx.equals(other.upl_xx))
-			return false;
-		if (upl_yy == null) {
-			if (other.upl_yy != null)
-				return false;
-		} else if (!upl_yy.equals(other.upl_yy))
-			return false;
-		
-		if(other.size()!=this.size())
-			return false;
-		
-		for(int i=0; i<this.size(); i++){
-			
-			if(!other.contains(this.get(i)))
-				return false;
 		}
+		if (down_yy == null) {
+			if (other.down_yy != null) {
+				return false;
+			}
+		} else if (!down_yy.equals(other.down_yy)) {
+			return false;
+		}
+		if (upl_xx == null) {
+			if (other.upl_xx != null) {
+				return false;
+			}
+		} else if (!upl_xx.equals(other.upl_xx)) {
+			return false;
+		}
+		if (upl_yy == null) {
+			if (other.upl_yy != null) {
+				return false;
+			}
+		} else if (!upl_yy.equals(other.upl_yy)) {
+			return false;
+		}
+		for(Entry<String, it.isislab.dmason.sim.field.support.field2D.Entry<F>> e : this.entrySet())
+			if(!other.containsKey(e.getKey()))
+				return false;
+			else if(!other.get(e.getKey()).equals(e))
+				return false;
 		
 		return true;
 	}
+
+
 	
 	
 	

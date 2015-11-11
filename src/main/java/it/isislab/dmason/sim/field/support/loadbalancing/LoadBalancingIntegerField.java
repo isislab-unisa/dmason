@@ -232,7 +232,7 @@ public class LoadBalancingIntegerField implements LoadBalancingInterface{
 		
 		if(m.getMyField().isMine(location.x, location.y))
 		{
-			return m.getMyField().add(new Entry<Int2D>(rm, location));
+			return m.getMyField().put(rm.getId(),new Entry<Int2D>(rm, location))!=null?true:false;
 		}
 		else
 		{
@@ -283,7 +283,7 @@ public class LoadBalancingIntegerField implements LoadBalancingInterface{
 
 		if(m.getMyField().isMine(location.x, location.y))
 		{
-			return m.getMyField().add(new Entry<Int2D>(rm, location));
+			return m.getMyField().put(rm.getId(),new Entry<Int2D>(rm, location))!=null?true:false;
 		}
 		else
 		{

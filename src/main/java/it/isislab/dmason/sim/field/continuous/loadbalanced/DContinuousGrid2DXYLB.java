@@ -52,6 +52,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import sim.engine.SimState;
@@ -345,14 +346,14 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 									{
 										if(name.contains("mine"))
 										{
-											region.add(new Entry<Double2D>(rm, location));
-											mc.getMyField().add(new Entry<Double2D>(rm, location));
+											region.put(rm.getId(),new Entry<Double2D>(rm, location));
+											mc.getMyField().put(rm.getId(),new Entry<Double2D>(rm, location));
 										}
 										else
 											if(name.contains("out"))
 											{
-												region.add(new Entry<Double2D>(rm, location));
-												outAgents.add(new Entry<Double2D>(rm, location));
+												region.put(rm.getId(),new Entry<Double2D>(rm, location));
+												outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 											}
 									}
 								}
@@ -426,14 +427,14 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 									{
 										if(name.contains("mine"))
 										{
-											fl = u || region.add(new Entry<Double2D>(rm, location));
-											mc.getMyField().add(new Entry<Double2D>(rm, location));
+											fl = u || region.put(rm.getId(),new Entry<Double2D>(rm, location))!=null?true:false;
+											mc.getMyField().put(rm.getId(),new Entry<Double2D>(rm, location));
 										}
 										else
 											if(name.contains("out"))
 											{
-												fl = u || region.add(new Entry<Double2D>(rm, location));
-												outAgents.add(new Entry<Double2D>(rm, location));
+												fl = u || region.put(rm.getId(),new Entry<Double2D>(rm, location))!=null?true:false;
+												outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 											}
 									}
 								}
@@ -527,8 +528,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 		{
 			for(Region<Double,Double2D> region : arr)
 			{
-				for(Entry<Double2D> remote_agent : region)
+				for(String agent_id : region.keySet())
 				{
+					Entry<Double2D> remote_agent = region.get(agent_id);
 					this.remove(remote_agent.r);
 				}
 			}
@@ -640,8 +642,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 				if(ct.equals(cellType)){
 					MyCellDoubleField md = (MyCellDoubleField) hm.get(ct);
 
-					for(Entry<Double2D> e: md.getMyField())
+					for(String agent_id: md.getMyField().keySet())
 					{
+						Entry<Double2D> e = md.getMyField().get(agent_id);
 						RemotePositionedAgent<Double2D> rm=e.r;
 						Double2D loc=e.l;
 						rm.setPos(loc);
@@ -663,8 +666,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 				if(!ct.equals(cellType)){
 					MyCellDoubleField md = (MyCellDoubleField) hm.get(ct);
 
-					for(Entry<Double2D> e: md.getMyField())
+					for(String agent_id: md.getMyField().keySet())
 					{
+						Entry<Double2D> e = md.getMyField().get(agent_id);
 						RemotePositionedAgent<Double2D> rm=e.r;
 						Double2D loc=e.l;
 						rm.setPos(loc);
@@ -720,8 +724,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 
 						listGrid.get(mc.getPosition()).put(mc.getParentCellType(), mc);
 
-						for(Entry<Double2D> e: mc.getMyField())
-						{							
+						for(String agent_id : mc.getMyField().keySet())
+						{	
+							Entry<Double2D> e = mc.getMyField().get(agent_id);
 							RemotePositionedAgent<Double2D> rm=e.r;
 							Double2D loc=e.l;
 							rm.setPos(loc);
@@ -861,8 +866,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 		updates_cacheLB.add(tmp);
 		for(ArrayList<Region<Double,Double2D>> regions : updates_cacheLB)
 			for(Region<Double,Double2D> r : regions)
-				for(Entry<Double2D> e_m: r)
+				for(String agent_id: r.keySet())
 				{
+					Entry<Double2D> e_m = r.get(agent_id);
 					RemotePositionedAgent<Double2D> rm=e_m.r;
 					((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
 				}
@@ -898,8 +904,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 					Region<Integer,Double2D> region=((Region<Integer,Double2D>)returnValue);
 					if(name.contains("out"))
 					{
-						for(Entry<Double2D> e: region)
+						for(String agent_id: region.keySet())
 						{
+							Entry<Double2D> e = region.get(agent_id);
 							RemotePositionedAgent<Double2D> rm=e.r;
 							rm.setPos(e.l);
 							this.remove(rm);
@@ -1104,8 +1111,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 						if(ct.equals(cellType)){
 							MyCellDoubleField md = (MyCellDoubleField)hm.get(ct);
 
-							for(Entry<Double2D> e: md.getMyField())
+							for(String agent_id: md.getMyField().keySet())
 							{
+								Entry<Double2D> e = md.getMyField().get(agent_id);
 								RemotePositionedAgent<Double2D> rm=e.r;
 								Double2D loc=e.l;
 								rm.setPos(loc);
@@ -1559,8 +1567,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 
 		if(position == MyCellInterface.CORNER_DIAG_UP_LEFT)
 		{
-			for(Entry<Double2D> e: (RegionDoubleLB) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
+			for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center().keySet())
 			{			    	
+				Entry<Double2D> e = (Entry<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center().get(agent_id);
 				RemotePositionedAgent<Double2D> rm=e.r;
 				Double2D loc=e.l;
 				rm.setPos(loc);
@@ -1573,8 +1582,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 		else
 			if(position == MyCellInterface.UP)
 			{
-				for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
-				{			    	
+				for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center().keySet())
+				{	
+					Entry<Double2D> e = (Entry<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center().get(agent_id);
 					RemotePositionedAgent<Double2D> rm=e.r;
 					Double2D loc=e.l;
 					rm.setPos(loc);
@@ -1583,8 +1593,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 					setObjectLocation(rm,loc);
 					setPortrayalForObject(rm);
 				}
-				for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.UP).get(cellType)).getMyRMap().getup_out())
-				{			    	
+				for(String agent_id: (Set<String>) ((MyCellDoubleField)listGrid.get(MyCellInterface.UP).get(cellType)).getMyRMap().getup_out().keySet())
+				{	
+					Entry<Double2D> e = (Entry<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.UP).get(cellType)).getMyRMap().getup_out().get(agent_id);
 					RemotePositionedAgent<Double2D> rm=e.r;
 					Double2D loc=e.l;
 					rm.setPos(loc);
@@ -1593,8 +1604,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 					setObjectLocation(rm,loc);
 					setPortrayalForObject(rm);
 				}
-				for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
-				{			    	
+				for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center().keySet())
+				{	
+					Entry<Double2D> e = (Entry<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center().get(agent_id);
 					RemotePositionedAgent<Double2D> rm=e.r;
 					Double2D loc=e.l;
 					rm.setPos(loc);
@@ -1607,8 +1619,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			else
 				if(position == MyCellInterface.CORNER_DIAG_UP_RIGHT)
 				{
-					for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
-					{			    	
+					for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center().keySet())
+					{	
+						Entry<Double2D> e = (Entry<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center().get(agent_id);
 						RemotePositionedAgent<Double2D> rm=e.r;
 						Double2D loc=e.l;
 						rm.setPos(loc);
@@ -1621,8 +1634,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 				else
 					if(position == MyCellInterface.RIGHT)
 					{
-						for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
-						{			    	
+						for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center().keySet())
+						{	
+							Entry<Double2D> e = (Entry<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center().get(agent_id);
 							RemotePositionedAgent<Double2D> rm=e.r;
 							Double2D loc=e.l;
 							rm.setPos(loc);
@@ -1631,8 +1645,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 							setObjectLocation(rm,loc);
 							setPortrayalForObject(rm);
 						}
-						for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.RIGHT).get(cellType)).getMyRMap().getright_out())
+						for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.RIGHT).get(cellType)).getMyRMap().getright_out().keySet())
 						{			    	
+							Entry<Double2D> e = (Entry<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.RIGHT).get(cellType)).getMyRMap().getright_out().get(agent_id);
 							RemotePositionedAgent<Double2D> rm=e.r;
 							Double2D loc=e.l;
 							rm.setPos(loc);
@@ -1641,8 +1656,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 							setObjectLocation(rm,loc);
 							setPortrayalForObject(rm);
 						}
-						for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center())
+						for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center().keySet())
 						{			    	
+							Entry<Double2D> e = (Entry<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center().get(agent_id);
 							RemotePositionedAgent<Double2D> rm=e.r;
 							Double2D loc=e.l;
 							rm.setPos(loc);
@@ -1655,8 +1671,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 					else
 						if(position == MyCellInterface.CORNER_DIAG_DOWN_RIGHT)
 						{
-							for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
+							for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center().keySet())
 							{			    	
+								Entry<Double2D> e = (Entry<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center().get(agent_id);
 								RemotePositionedAgent<Double2D> rm=e.r;
 								Double2D loc=e.l;
 								rm.setPos(loc);
@@ -1669,8 +1686,8 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 						else
 							if(position == MyCellInterface.DOWN)
 							{
-								for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
-								{			    	
+								for(String agent_id: (Set<String>) (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center().keySet())
+								{	Entry<Double2D> e = (Entry<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center().get(agent_id);
 									RemotePositionedAgent<Double2D> rm=e.r;
 									Double2D loc=e.l;
 									rm.setPos(loc);
@@ -1679,8 +1696,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 									setObjectLocation(rm,loc);
 									setPortrayalForObject(rm);
 								}
-								for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.DOWN).get(cellType)).getMyRMap().getdown_out())
-								{			    	
+								for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.DOWN).get(cellType)).getMyRMap().getdown_out().keySet())
+								{		
+									Entry<Double2D> e = (Entry<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.DOWN).get(cellType)).getMyRMap().getdown_out().get(agent_id);
 									RemotePositionedAgent<Double2D> rm=e.r;
 									Double2D loc=e.l;
 									rm.setPos(loc);
@@ -1689,8 +1707,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 									setObjectLocation(rm,loc);
 									setPortrayalForObject(rm);
 								}
-								for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center())
-								{			    	
+								for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center().keySet())
+								{	
+									Entry<Double2D> e  = (Entry<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center().get(agent_id);
 									RemotePositionedAgent<Double2D> rm=e.r;
 									Double2D loc=e.l;
 									rm.setPos(loc);
@@ -1703,8 +1722,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 							else
 								if(position == MyCellInterface.CORNER_DIAG_DOWN_LEFT)
 								{
-									for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
-									{			    	
+									for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center().keySet())
+									{		
+										Entry<Double2D> e = (Entry<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center().get(agent_id);
 										RemotePositionedAgent<Double2D> rm=e.r;
 										Double2D loc=e.l;
 										rm.setPos(loc);
@@ -1717,8 +1737,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 								else
 									if(position == MyCellInterface.LEFT)
 									{
-										for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center())
-										{			    	
+										for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center().keySet())
+										{	
+											Entry<Double2D> e = (Entry<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center().get(agent_id);
 											RemotePositionedAgent<Double2D> rm=e.r;
 											Double2D loc=e.l;
 											rm.setPos(loc);
@@ -1727,8 +1748,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 											setObjectLocation(rm,loc);
 											setPortrayalForObject(rm);
 										}
-										for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.LEFT).get(cellType)).getMyRMap().getleft_out())
-										{			    	
+										for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.LEFT).get(cellType)).getMyRMap().getleft_out().keySet())
+										{	
+											Entry<Double2D> e = (Entry<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.LEFT).get(cellType)).getMyRMap().getleft_out().get(agent_id);
 											RemotePositionedAgent<Double2D> rm=e.r;
 											Double2D loc=e.l;
 											rm.setPos(loc);
@@ -1737,8 +1759,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 											setObjectLocation(rm,loc);
 											setPortrayalForObject(rm);
 										}
-										for(Entry<Double2D> e: (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center())
-										{			    	
+										for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center().keySet())
+										{	
+											Entry<Double2D> e = (Entry<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center().get(agent_id);
 											RemotePositionedAgent<Double2D> rm=e.r;
 											Double2D loc=e.l;
 											rm.setPos(loc);
@@ -4437,8 +4460,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 
 					if(name.contains("mine"))
 					{
-						for(Entry<Double2D> e: region)
+						for(String agent_id : region.keySet())
 						{
+							Entry<Double2D> e = region.get(agent_id);
 
 							if(name.contains("left_mine") && !md.getPositionGood().get(MyCellInterface.LEFT))
 							{	
@@ -4560,8 +4584,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 
 					if(name.contains("out"))
 					{
-						for(Entry<Double2D> e: region)
+						for(String agent_id : region.keySet())
 						{
+							Entry<Double2D> e = region.get(agent_id);
 
 							if(name.contains("left_out") && !md.getPositionGood().get(MyCellInterface.LEFT))
 							{	
@@ -4774,8 +4799,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			Region<Double, Double2D> r_mine=sb.out;
 			Region<Double, Double2D> r_out=sb.mine;
 
-			for(Entry<Double2D> e_m: r_mine)
+			for(String agent_id : r_mine.keySet())
 			{
+				Entry<Double2D> e_m = r_mine.get(agent_id);
 				RemotePositionedAgent<Double2D> rm=e_m.r;
 				sm.schedule.scheduleOnce(rm);
 
@@ -4925,8 +4951,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 					Region<Double, Double2D> region=((Region<Double, Double2D>)returnValue);
 					if(name.contains("out"))
 					{
-						for(Entry<Double2D> e: region)
+						for(String agent_id : region.keySet())
 						{
+							Entry<Double2D> e = region.get(agent_id);
 							RemotePositionedAgent<Double2D> rm=e.r;
 							rm.setPos(e.l);
 							this.remove(rm);
@@ -4935,8 +4962,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 					else
 						if(name.contains("mine"))
 						{
-							for(Entry<Double2D> e: region)
-							{			    	
+							for(String agent_id : region.keySet())
+							{
+								Entry<Double2D> e = region.get(agent_id);			    	
 								if(name.contains("left_mine") && md.getPositionGood().get(MyCellInterface.LEFT))
 								{	
 									RemotePositionedAgent<Double2D> rm=e.r;
@@ -5056,7 +5084,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			Region<Double,Double2D> region = rmap.left_out;
 			if(region.isMine(location.x,location.y))
 			{   	 
-				outAgents.add(new Entry<Double2D>(rm, location));
+				outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 				return  region.addAgents(new Entry<Double2D>(rm, location));
 			}
 		}
@@ -5066,7 +5094,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			Region<Double,Double2D> region = rmap.right_out;
 			if(region.isMine(location.x,location.y))
 			{   	 
-				outAgents.add(new Entry<Double2D>(rm, location));
+				outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 				return  region.addAgents(new Entry<Double2D>(rm, location));	
 			}
 		}
@@ -5076,7 +5104,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			Region<Double,Double2D> region = rmap.up_out;
 			if(region.isMine(location.x,location.y))
 			{   	 
-				outAgents.add(new Entry<Double2D>(rm, location));
+				outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 				return  region.addAgents(new Entry<Double2D>(rm, location));	
 			}
 		}
@@ -5086,7 +5114,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			Region<Double,Double2D> region = rmap.down_out;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new Entry<Double2D>(rm, location));
+				outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 				return  region.addAgents(new Entry<Double2D>(rm, location));	
 			}
 		}
@@ -5096,7 +5124,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			Region<Double,Double2D> region = rmap.corner_out_down_left_diag_left;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new Entry<Double2D>(rm, location));
+				outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 				return  region.addAgents(new Entry<Double2D>(rm, location));	
 			}
 		}
@@ -5106,7 +5134,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			Region<Double,Double2D> region = rmap.corner_out_down_left_diag_down;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new Entry<Double2D>(rm, location));
+				outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 				return  region.addAgents(new Entry<Double2D>(rm, location));	
 			}
 		}
@@ -5116,7 +5144,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			Region<Double,Double2D> region = rmap.corner_out_down_left_diag_center;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new Entry<Double2D>(rm, location));
+				outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 				return  region.addAgents(new Entry<Double2D>(rm, location));	
 			}
 		}
@@ -5126,7 +5154,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			Region<Double,Double2D> region = rmap.corner_out_down_right_diag_right;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new Entry<Double2D>(rm, location));
+				outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 				return  region.addAgents(new Entry<Double2D>(rm, location));	
 			}
 		}
@@ -5136,7 +5164,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			Region<Double,Double2D> region = rmap.corner_out_down_right_diag_down;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new Entry<Double2D>(rm, location));
+				outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 				return  region.addAgents(new Entry<Double2D>(rm, location));	
 			}
 		}
@@ -5146,7 +5174,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			Region<Double,Double2D> region = rmap.corner_out_down_right_diag_center;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new Entry<Double2D>(rm, location));
+				outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 				return  region.addAgents(new Entry<Double2D>(rm, location));	
 			}
 		}
@@ -5156,7 +5184,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			Region<Double,Double2D> region = rmap.corner_out_up_left_diag_left;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new Entry<Double2D>(rm, location));
+				outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 				return  region.addAgents(new Entry<Double2D>(rm, location));	
 			}
 		}
@@ -5166,7 +5194,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			Region<Double,Double2D> region = rmap.corner_out_up_left_diag_up;
 			if(region.isMine(location.x,location.y))
 			{   	
-				outAgents.add(new Entry<Double2D>(rm, location));
+				outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 				return  region.addAgents(new Entry<Double2D>(rm, location));	
 			}
 		}
@@ -5176,7 +5204,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			Region<Double,Double2D> region = rmap.corner_out_up_left_diag_center;
 			if(region.isMine(location.x,location.y))
 			{   
-				outAgents.add(new Entry<Double2D>(rm, location));
+				outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 				return  region.addAgents(new Entry<Double2D>(rm, location));	
 			}
 		}
@@ -5186,7 +5214,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			Region<Double,Double2D> region = rmap.corner_out_up_right_diag_right;
 			if(region.isMine(location.x,location.y))
 			{   	
-				outAgents.add(new Entry<Double2D>(rm, location));
+				outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 				return  region.addAgents(new Entry<Double2D>(rm, location));	
 			}
 		}
@@ -5196,7 +5224,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			Region<Double,Double2D> region = rmap.corner_out_up_right_diag_up;
 			if(region.isMine(location.x,location.y))
 			{   	
-				outAgents.add(new Entry<Double2D>(rm, location));
+				outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 				return  region.addAgents(new Entry<Double2D>(rm, location));	
 			}
 		}
@@ -5206,7 +5234,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D
 			Region<Double,Double2D> region = rmap.corner_out_up_right_diag_center;
 			if(region.isMine(location.x,location.y))
 			{   	
-				outAgents.add(new Entry<Double2D>(rm, location));
+				outAgents.put(rm.getId(),new Entry<Double2D>(rm, location));
 				return  region.addAgents(new Entry<Double2D>(rm, location));	
 			}
 		}

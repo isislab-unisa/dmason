@@ -451,14 +451,14 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 
 		for(Region<Double, Double2D> region : updates_cache)
 		{
-			for(Entry<Double2D> remote_agent : region)
+			for(Entry<Double2D> remote_agent : region.values())
 			{
 				this.remove(remote_agent.r);
 			}
 		}
 
 		//every agent in the myfield region is scheduled
-		for(Entry<Double2D> e: myfield)
+		for(Entry<Double2D> e: myfield.values())
 		{
 			RemotePositionedAgent<Double2D> rm=e.r;
 			Double2D loc=e.l;
@@ -586,7 +586,7 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 		}
 
 		for(Region<Double, Double2D> region : updates_cache)
-			for(Entry<Double2D> e_m: region)
+			for(Entry<Double2D> e_m: region.values())
 			{
 				RemotePositionedAgent<Double2D> rm=e_m.r;
 				((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
@@ -658,7 +658,7 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 		Region<Double,Double2D> r_mine=box.out;
 		Region<Double,Double2D> r_out=box.mine;
 
-		for(Entry<Double2D> e_m: r_mine)
+		for(Entry<Double2D> e_m: r_mine.values())
 		{
 			RemotePositionedAgent<Double2D> rm=e_m.r;
 			((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
@@ -695,7 +695,7 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 					Region<Double,Double2D> region=((Region<Double,Double2D>)returnValue);
 					if(name.contains("out"))
 					{
-						for(Entry<Double2D> e: region)
+						for(Entry<Double2D> e: region.values())
 						{
 							RemotePositionedAgent<Double2D> rm=e.r;
 							rm.setPos(e.l);

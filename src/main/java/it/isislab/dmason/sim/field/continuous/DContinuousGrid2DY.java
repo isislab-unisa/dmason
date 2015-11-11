@@ -405,15 +405,17 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		// Remove agents migrated to neighbor regions
 		for(Region<Double, Double2D> region : updates_cache)
 		{
-			for(Entry<Double2D> remote_agent : region)
+			for( String agent_id : region.keySet())
 			{
+				Entry<Double2D> remote_agent = region.get(agent_id);
 				this.remove(remote_agent.r);
 			}
 		}
 
 		// Schedule agents in MyField region
-		for(Entry<Double2D> e : myfield)
+		for( String agent_id : myfield.keySet())
 		{
+			Entry<Double2D> e = myfield.get(agent_id);
 			RemotePositionedAgent<Double2D> rm = e.r;
 			Double2D loc = e.l;
 			rm.setPos(loc);
@@ -483,8 +485,9 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 			e1.printStackTrace();
 		}
 		for(Region<Double, Double2D> region : updates_cache)
-			for(Entry<Double2D> e_m : region)
+			for(String agent_id : region.keySet())
 			{
+				Entry<Double2D> e_m = region.get(agent_id);
 				RemotePositionedAgent<Double2D> rm = e_m.r;
 				((DistributedState<Double2D>)sm).addToField(rm, e_m.l);
 			}
@@ -520,8 +523,9 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		Region<Double,Double2D> r_mine=box.out;
 		Region<Double,Double2D> r_out=box.mine;
 
-		for(Entry<Double2D> e_m: r_mine)
+		for(String agent_id: r_mine.keySet())
 		{
+			Entry<Double2D> e_m = r_mine.get(agent_id);
 			RemotePositionedAgent<Double2D> rm=e_m.r;
 			((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
 			rm.setPos(e_m.l);
@@ -596,8 +600,9 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 					Region<Double,Double2D> region=((Region<Double,Double2D>)returnValue);
 					if(name.contains("out"))
 					{
-						for(Entry<Double2D> e: region)
+						for(String anget_id: region.keySet())
 						{
+							Entry<Double2D> e = region.get(anget_id);
 							RemotePositionedAgent<Double2D> rm=e.r;
 							rm.setPos(e.l);		    			
 							this.remove(rm);
@@ -606,8 +611,9 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 					else
 						if(name.contains("mine"))
 						{
-							for(Entry<Double2D> e: region)
+							for(String agent_id: region.keySet())
 							{
+								Entry<Double2D> e = region.get(agent_id);
 								RemotePositionedAgent<Double2D> rm=e.r;
 								Double2D loc=e.l;
 								rm.setPos(loc);

@@ -413,7 +413,7 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField
 
 		for(Region<Integer,Int2D> region : updates_cache)
 		{
-			for(Entry<Int2D> remote_agent : region)
+			for(Entry<Int2D> remote_agent : region.values())
 			{
 				this.remove(remote_agent.r);
 			}
@@ -421,7 +421,7 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField
 
 
 		//every agent in the myfield region is scheduled
-		for(Entry<Int2D> e: myfield)
+		for(Entry<Int2D> e: myfield.values())
 		{
 			RemotePositionedAgent<Int2D> rm=e.r;
 			Int2D loc=e.l;
@@ -669,7 +669,7 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField
 
 
 		for(Region<Integer,Int2D> region : updates_cache)
-			for(Entry<Int2D> e_m: region)
+			for(Entry<Int2D> e_m: region.values())
 			{
 
 				RemotePositionedAgent<Int2D> rm=e_m.r;
@@ -744,7 +744,7 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField
 		Region<Integer,Int2D> r_out=box.mine;
 
 
-		for(Entry<Int2D> e_m: r_mine)
+		for(Entry<Int2D> e_m: r_mine.values())
 		{
 			RemotePositionedAgent<Int2D> rm=e_m.r;
 			((DistributedState<Int2D>)sm).addToField(rm,e_m.l);
@@ -780,7 +780,7 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField
 					Region<Integer,Int2D> region=((Region<Integer,Int2D>)returnValue);
 					if(name.contains("out"))
 					{
-						for(Entry<Int2D> e: region)
+						for(Entry<Int2D> e: region.values())
 						{
 							RemotePositionedAgent<Int2D> rm=e.r;
 							rm.setPos(e.l);
@@ -790,7 +790,7 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField
 					else
 						if(name.contains("mine"))
 						{
-							for(Entry<Int2D> e: region)
+							for(Entry<Int2D> e: region.values())
 							{
 								RemotePositionedAgent<Int2D> rm=e.r;
 								Int2D loc=e.l;

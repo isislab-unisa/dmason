@@ -17,8 +17,7 @@
 
  package it.isislab.dmason.sim.field.grid.region;
 
-import it.isislab.dmason.sim.engine.RemotePositionedAgent;
-import it.isislab.dmason.sim.field.support.field2D.Entry;
+import it.isislab.dmason.sim.engine.RemotePositionedAgent; 
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.util.Util;
 import sim.util.Double2D;
@@ -66,9 +65,9 @@ public class RegionInteger extends Region<Integer,Int2D>
 	public Region<Integer,Int2D> clone() 
 	{
 		RegionInteger r=new RegionInteger(upl_xx, upl_yy, down_xx, down_yy);
-		for(Entry<Int2D> e: this)
+		for(it.isislab.dmason.sim.field.support.field2D.Entry<Int2D> e: this.values())
 		{
-			r.add(new Entry(((RemotePositionedAgent<Int2D>)(Util.clone(e.r))),e.l));
+			r.put(e.r.getId(),new it.isislab.dmason.sim.field.support.field2D.Entry(((RemotePositionedAgent<Int2D>)(Util.clone(e.r))),e.l));
 		}
 		return r;
 	}
@@ -80,26 +79,13 @@ public class RegionInteger extends Region<Integer,Int2D>
 	}
 
 	@Override
-	public boolean addAgents(Entry<Int2D> e) 
+	public boolean addAgents(it.isislab.dmason.sim.field.support.field2D.Entry<Int2D> e) 
 	{	
 		if(e == null || e.l == null || e.r == null) return false;
-		if(this.contains(e)) return true;
+		if(this.containsKey(e.r.getId()) && this.get(e.r.getId()).equals(e)) return true;
 		
-		removeAgents(e.r);
-		return this.add(e);
+		return this.put(e.r.getId(),e)!=null?true:false;
 	}
 	
-private boolean removeAgents( RemotePositionedAgent<Int2D> r){
-		
-		Entry<Int2D> toRemove = null;
-		
-		for(Entry e: this)
-			if(e.r.getId().equals(r.getId())){
-				toRemove = e;
-				break;
-			}
-		
-		return toRemove!=null?this.remove(toRemove):false;
-	}
 
 }
