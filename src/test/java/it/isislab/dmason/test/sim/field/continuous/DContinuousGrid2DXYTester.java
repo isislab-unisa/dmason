@@ -244,8 +244,8 @@ public class DContinuousGrid2DXYTester {
 	@Before
 	public void setUp() throws Exception {
 
-		width = 11;
-		height = 11;
+		width = 110;
+		height = 110;
 		maxDistance = 1;
 		rows = 5;
 		columns = 5;
@@ -870,9 +870,10 @@ public class DContinuousGrid2DXYTester {
 
 	/**
 	 * Test double set distributed object location god agent.
+	 * We use an HashMap and not an ArrayList, so this test is useless
 	 * @throws DMasonException 
 	 */
-	@Test
+	@Deprecated
 	public void testDoubleSetDistributedObjectLocationGodAgent() throws DMasonException {
 		double i = toTest.rmap.up_mine.upl_xx;
 		double j = toTest.rmap.up_mine.upl_yy;
@@ -910,7 +911,7 @@ public class DContinuousGrid2DXYTester {
 	 * Test set distributed object location change position.
 	 * @throws DMasonException 
 	 */
-	@Test
+	@Deprecated
 	public void testSetDistributedObjectLocationChangePosition() throws DMasonException {
 		double i = toTest.rmap.up_mine.upl_xx;
 		double j = toTest.rmap.up_mine.upl_yy;
@@ -929,10 +930,10 @@ public class DContinuousGrid2DXYTester {
 		location = new Double2D(i, j);
 
 		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss);
+				sa, /* SimState */ss);
 
 		assertNotSame("the method has not changed the position",
-				toTest.rmap.up_mine.get(0).l, toTest.rmap.up_mine.get(1).l);
+				toTest.rmap.up_mine.get(sa.getDistributedParam().id).l, toTest.rmap.up_mine.get(sa.getDistributedParam().id).l);
 	}
 
 	/**
@@ -944,15 +945,15 @@ public class DContinuousGrid2DXYTester {
 	public void testMyFieldPartitioning() throws DMasonException {
 
 		// i need that w and h is equal for using the Pitagora's theorem
-		double w = 100;
-		double h = 100;
+		double w = 120;
+		double h = 120;
 		int maxD = 1;
 
 		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
 		//		"test", /* prefix */"");
 		toTest = (DContinuousGrid2DXY) DContinuousGrid2DFactory.createDContinuous2D(
-				0.5, w, h, ss, maxD, 0, 0, 10, 10, mode,
+				0.5, w, h, ss, maxD, 0, 0, 4, 4, mode,
 				"test", "", true);
 
 		Double x2 = toTest.myfield.down_xx;
@@ -1018,9 +1019,10 @@ public class DContinuousGrid2DXYTester {
 				for (int j = 0; (j < i) && (j < k); j++) {
 					// i need that w and h is equal for using the Pitagora's
 					// theorem
-					double w = i;
-					double h = k;
+					double w = i*100;
+					double h = k*100;
 					int maxD = j;
+					if(maxD<1) maxD=1;
 
 					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
@@ -1058,7 +1060,7 @@ public class DContinuousGrid2DXYTester {
 
 		double w = 10;
 		double h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
@@ -1113,9 +1115,10 @@ public class DContinuousGrid2DXYTester {
 			for (double k = 1; k < numLoop; k++) {
 				for (int j = 0; j < i; j++) {
 
-					double w = i;
-					double h = k;
+					double w = i*100;
+					double h = k*100;
 					int maxD = j;
+					if(maxD<1) maxD=1;
 
 					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
@@ -1145,7 +1148,7 @@ public class DContinuousGrid2DXYTester {
 
 		double w = 10;
 		double h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
@@ -1200,10 +1203,10 @@ public class DContinuousGrid2DXYTester {
 			for (double k = 1; k < numLoop; k++) {
 				for (int j = 0; j < i; j++) {
 
-					double w = i;
-					double h = k;
+					double w = i*100;
+					double h = k*100;
 					int maxD = j;
-
+					if(maxD<1) maxD=1;
 					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
 					//					"test", /* prefix */"");
@@ -1230,9 +1233,9 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testLeftMinePartitioning() throws DMasonException {
 
-		double w = 10;
+		double w = 100;
 		double h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
@@ -1257,7 +1260,7 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testLeftMinePartitioningMaxDistance1() throws DMasonException {
 
-		double w = 10;
+		double w = 100;
 		double h = w;
 		int maxD = 1;
 
@@ -1287,10 +1290,10 @@ public class DContinuousGrid2DXYTester {
 			for (double k = 1; k < numLoop; k++) {
 				for (int j = 0; j < i; j++) {
 
-					double w = i;
-					double h = k;
+					double w = i*100;
+					double h = k*100;
 					int maxD = j;
-
+					if(maxD<1) maxD=1;
 					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
 					//					"test", /* prefix */"");
@@ -1317,9 +1320,9 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testRightMinePartitioning() throws DMasonException {
 
-		double w = 10;
+		double w = 100;
 		double h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
@@ -1344,7 +1347,7 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testRightMinePartitioningMaxDistance1() throws DMasonException {
 
-		double w = 10;
+		double w = 100;
 		double h = w;
 		int maxD = 1;
 
@@ -1374,9 +1377,10 @@ public class DContinuousGrid2DXYTester {
 			for (double k = 1; k < numLoop; k++) {
 				for (int j = 0; j < i; j++) {
 
-					double w = i;
-					double h = k;
+					double w = i*100;
+					double h = k*100;
 					int maxD = j;
+					if(maxD<1) maxD=1;
 
 					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
@@ -1404,9 +1408,9 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testUpOutPartitioning() throws DMasonException {
 
-		double w = 10;
+		double w = 100;
 		double h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DContinuousGrid2DXY) DContinuousGrid2DFactory.createDContinuous2D(
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
@@ -1428,7 +1432,7 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testDownOutPartitioningMaxDistance1() throws DMasonException {
 
-		double w = 10;
+		double w = 100;
 		double h = w;
 		int maxD = 1;
 
@@ -1458,10 +1462,10 @@ public class DContinuousGrid2DXYTester {
 			for (double k = 1; k < numLoop; k++) {
 				for (int j = 0; j < i; j++) {
 
-					double w = i;
-					double h = k;
+					double w = i*100;
+					double h = k*100;
 					int maxD = j;
-
+                    if(maxD<1) maxD=1;
 					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
 					//					"test", /* prefix */"");
@@ -1488,9 +1492,9 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testDownOutPartitioning() throws DMasonException {
 
-		double w = 10;
+		double w = 100;
 		double h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
@@ -1515,7 +1519,7 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testUpOutPartitioningMaxDistance1() throws DMasonException {
 
-		double w = 10;
+		double w = 100;
 		double h = w;
 		int maxD = 1;
 
@@ -1545,9 +1549,10 @@ public class DContinuousGrid2DXYTester {
 			for (double k = 1; k < numLoop; k++) {
 				for (int j = 0; j < i; j++) {
 
-					double w = i;
-					double h = k;
+					double w = i*100;
+					double h = k*100;
 					int maxD = j;
+					if(maxD<1) maxD=1;
 
 					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
@@ -1575,9 +1580,9 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testLeftOutPartitioning() throws DMasonException {
 
-		double w = 10;
+		double w = 100;
 		double h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
@@ -1602,7 +1607,7 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testLeftOutPartitioningMaxDistance1() throws DMasonException {
 
-		double w = 10;
+		double w = 100;
 		double h = w;
 		int maxD = 1;
 
@@ -1632,9 +1637,10 @@ public class DContinuousGrid2DXYTester {
 			for (double k = 1; k < numLoop; k++) {
 				for (int j = 0; j < i; j++) {
 
-					double w = i;
-					double h = k;
+					double w = i*100;
+					double h = k*100;
 					int maxD = j;
+					if(maxD<1) maxD=1;
 
 					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
@@ -1662,9 +1668,9 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testRightOutPartitioning() throws DMasonException {
 
-		double w = 10;
+		double w = 100;
 		double h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
@@ -1689,7 +1695,7 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testRightOutPartitioningMaxDistance1() throws DMasonException {
 
-		double w = 10;
+		double w = 100;
 		double h = w;
 		int maxD = 1;
 
@@ -1716,10 +1722,10 @@ public class DContinuousGrid2DXYTester {
 			for (double k = 1; k < numLoop; k++) {
 				for (int j = 0; j < i; j++) {
 
-					double w = i;
-					double h = k;
+					double w = i*100;
+					double h = k*100;
 					int maxD = j;
-
+					if(maxD<1) maxD=1;
 					//					toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 					//					ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
 					//					"test", /* prefix */"");
