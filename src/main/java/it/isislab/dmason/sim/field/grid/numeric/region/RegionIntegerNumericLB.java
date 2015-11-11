@@ -30,7 +30,7 @@ public class RegionIntegerNumericLB extends RegionNumeric<Integer, EntryNum<Inte
 	private static final long serialVersionUID = 1L;
 	private static int height; 
 	private static int width;
-		
+
 	/**
 	 * Constructor of class,it use the costructor of superclass and adds a width and a height
 	 * 
@@ -102,8 +102,9 @@ public class RegionIntegerNumericLB extends RegionNumeric<Integer, EntryNum<Inte
 	{	
 		if(e == null || e.l == null || e.r == null) return false;
 		if(this.containsKey(e.l.toString()) && this.get(e.l.toString()).equals(e) )
-		   return true;
-		
-		return this.put(e.l.toString(),e)!=null?true:false;
+			return true;
+
+		this.put(e.l.toString(),e);
+		return true;
 	}
 }

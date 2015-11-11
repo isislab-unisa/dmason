@@ -83,8 +83,8 @@ public class RegionInteger extends Region<Integer,Int2D>
 	{	
 		if(e == null || e.l == null || e.r == null) return false;
 		if(this.containsKey(e.r.getId()) && this.get(e.r.getId()).equals(e)) return true;
-		
-		return this.put(e.r.getId(),e)!=null?true:false;
+		this.put(e.r.getId(),e);
+		return true;
 	}
 	
 

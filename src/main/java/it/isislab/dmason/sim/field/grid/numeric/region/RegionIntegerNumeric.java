@@ -84,7 +84,7 @@ public class RegionIntegerNumeric extends RegionNumeric<Integer, EntryNum<Intege
 		if(e == null || e.l == null || e.r == null) return false;
 		if(this.containsKey(e.l.toString()) && this.get(e.l.toString()).equals(e) )
 		   return true;
-		
-		return this.put(e.l.toString(),e)!=null?true:false;
+		this.put(e.l.toString(),e);
+		return true;
 	}
 }

@@ -28,7 +28,7 @@ public class RegionDoubleNumericLB extends RegionNumeric<Integer, EntryNum<Doubl
 
 	private static int height;
 	private static int width;
-	
+
 	/**
 	 * Constructor of class,it use the costructor of superclass and adds a width and a height
 	 * 
@@ -54,7 +54,7 @@ public class RegionDoubleNumericLB extends RegionNumeric<Integer, EntryNum<Doubl
 		if(down_yy == 0)
 			super.down_yy = height;	
 	}
-	
+
 	@Override
 	public RegionNumeric<Integer, EntryNum<Double, Int2D>> clone() 
 	{
@@ -78,7 +78,7 @@ public class RegionDoubleNumericLB extends RegionNumeric<Integer, EntryNum<Doubl
 	{
 		if(e == null || e.l == null || e.r == null) return false;
 		if(this.containsKey(e.l.toString()) && this.get(e.l.toString()).equals(e) )
-		   return true;
-		
-		return this.put(e.l.toString(),e)!=null?true:false;	}
+			return true;
+		this.put(e.l.toString(),e);
+		return true;	}
 }

@@ -72,9 +72,11 @@ public class RegionDouble extends Region<Double,Double2D>
 	public boolean addAgents(it.isislab.dmason.sim.field.support.field2D.EntryAgent<Double2D> e)  
 	{
 		if(e == null || e.l == null || e.r == null) return false;
+		
 		if(this.containsKey(e.r.getId()) && this.get(e.r.getId()).equals(e)) return true;
 			
-		return this.put(e.r.getId(),e)!=null?true:false;
+		this.put(e.r.getId(),e);
+		return true;
 	}	
 	
 }

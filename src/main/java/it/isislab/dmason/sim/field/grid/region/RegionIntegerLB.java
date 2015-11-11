@@ -110,6 +110,7 @@ public class RegionIntegerLB extends Region<Integer,Int2D>
 		if(e == null || e.r == null || e.l == null) return false;
 		if(this.containsKey(e.r.getId()) && this.get(e.r.getId()).equals(e)) return true;
 		
-		return this.put(e.r.getId(),e)!=null?true:false;
+		this.put(e.r.getId(),e);
+		return true;
 	}
 }
