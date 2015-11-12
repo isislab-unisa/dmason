@@ -18,12 +18,8 @@ package it.isislab.dmason.sim.app.DAntsForage;
 
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
-
 import java.awt.Color;
 import java.awt.Graphics2D;
-
-import com.google.gson.annotations.Until;
-
 import sim.engine.SimState;
 import sim.portrayal.DrawInfo2D;
 import sim.util.Int2D;
