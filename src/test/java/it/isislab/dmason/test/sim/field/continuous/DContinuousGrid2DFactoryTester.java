@@ -788,6 +788,7 @@ public class DContinuousGrid2DFactoryTester {
 
 	/**
 	 * Test square balanced distribution mode with max_distance = 0 and width and height multiple of 3 colums and rows.
+	 * non può più essere 
 	 */
 	@Test
 	public void testSquareBalancedDistributionModeX3() {
