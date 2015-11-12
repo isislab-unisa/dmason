@@ -653,19 +653,24 @@ public class DSparseGrid2DXYTester {
 	public void testMyFieldPartitioning() throws DMasonException {
 
 		// i need that w and h is equal for using the Pitagora's theorem
-		int w = 10;
-		int h = 10;
-		int maxD = 0;
+		int w = 120;
+		int h = 120;
+		int maxD = 1;
+		int rows=3;
+		int columns=rows;
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(w,
 				h,/* simState */
-				ss, maxD, /* i */0, /* j */0, 1, 1, mode,/* name */
+				ss, maxD, /* i */0, /* j */0, rows, columns, mode,/* name */
 				"test", /* prefix */"", true);
 
-		Integer x2 = toTest.myfield.down_xx;
-		Integer x1 = toTest.myfield.upl_xx;
-		Integer y2 = toTest.myfield.down_yy;
-		Integer y1 = toTest.myfield.upl_yy;
+		Integer x1 = toTest.rmap.corner_mine_up_left.getUpl_xx();
+		Integer y1 = toTest.rmap.corner_mine_up_left.getUpl_yy();
+		
+		Integer x2 = toTest.rmap.corner_mine_down_right.getDown_xx();
+		
+		Integer y2 = toTest.rmap.corner_mine_down_right.getDown_yy();
+		
 
 		// find diagonal with the theorem of distance between 2 points
 		Double diag = Math
@@ -674,6 +679,7 @@ public class DSparseGrid2DXYTester {
 		// find diagonal with the theorem of Pitagora
 		Double diagwh = Math.sqrt(Math.pow(w - 1, 2.0) + Math.pow(h - 1, 2.0));
 
+		diagwh=diagwh/rows;// for Pitagora's theorem calculate only a region of cell 
 		assertEquals(diag, diagwh);
 	}
 
@@ -715,9 +721,9 @@ public class DSparseGrid2DXYTester {
 	@Test
 	public void testUpMinePartitioning() throws DMasonException {
 
-		int w = 10;
+		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(w,
 				h,/* simState */
@@ -765,7 +771,7 @@ public class DSparseGrid2DXYTester {
 
 		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(w,
 				h,/* simState */
@@ -811,9 +817,9 @@ public class DSparseGrid2DXYTester {
 	@Test
 	public void testLeftMinePartitioning() throws DMasonException {
 
-		int w = 10;
+		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(w,
 				h,/* simState */
@@ -861,7 +867,7 @@ public class DSparseGrid2DXYTester {
 
 		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(w,
 				h,/* simState */
@@ -907,9 +913,9 @@ public class DSparseGrid2DXYTester {
 	@Test
 	public void testUpOutPartitioning() throws DMasonException {
 
-		int w = 10;
+		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(w,
 				h,/* simState */
@@ -958,7 +964,7 @@ public class DSparseGrid2DXYTester {
 
 		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(w,
 				h,/* simState */
@@ -1004,9 +1010,9 @@ public class DSparseGrid2DXYTester {
 	@Test
 	public void testLeftOutPartitioning() throws DMasonException {
 
-		int w = 10;
+		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(w,
 				h,/* simState */
@@ -1054,7 +1060,7 @@ public class DSparseGrid2DXYTester {
 
 		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(w,
 				h,/* simState */
