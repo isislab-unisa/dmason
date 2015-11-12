@@ -233,7 +233,7 @@ public class DSparseGrid2DXYLBTester {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		maxDistance = 0;
+		maxDistance = 1;
 		rows = 10;
 		columns = 10;
 		width = 6 * columns;

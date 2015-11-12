@@ -181,6 +181,7 @@ public class RegionIntegerLBTester {
 		 * BUG FIND mi fa inserire un entry con valori null
 		 */
 		EntryAgent<Int2D> e = new EntryAgent<Int2D>(c, f);
+		
 		assertTrue(rd.addAgents(e));
 	}
 
@@ -193,7 +194,7 @@ public class RegionIntegerLBTester {
 		Int2D f = null;
 		EntryAgent<Int2D> e = new EntryAgent<Int2D>(c, f);
 		rd.addAgents(e);
-		assertEquals(e, rd.get(0));
+		assertEquals(e, rd.get(e.r.getId()));
 	}
 
 	// clone

@@ -525,26 +525,29 @@ public class DIntGrid2DXYTester {
 	public void testMyFieldPartitioning() throws DMasonException {
 
 		// i need that w and h is equal for using the Pitagora's theorem
-		int w = 10;
-		int h = 10;
-		int maxD = 0;
-
+		int w = 100;
+		int h = 100;
+		int maxD = 1;
+        int rows=3;
+        int columns=rows; 
 		toTest = (DIntGrid2DXY) DIntGrid2DFactory.createDIntGrid2D(w, h,/* simState */
-				ss, maxD, /* i */0, /* j */0, 1, 1, mode, 0, false,/* name */
+				ss, maxD, /* i */0, /* j */0, rows, columns, mode, 0, false,/* name */
 				"test", /* prefix */"", true);
 
-		Integer x2 = toTest.myfield.down_xx;
-		Integer x1 = toTest.myfield.upl_xx;
-		Integer y2 = toTest.myfield.down_yy;
-		Integer y1 = toTest.myfield.upl_yy;
+		
+		Integer x1 = toTest.rmap.corner_mine_up_left.getUpl_xx();
+		Integer y1 = toTest.rmap.corner_mine_up_left.getUpl_yy();
+		Integer x2 = toTest.rmap.corner_out_down_right_diag_down.getDown_xx();
+		Integer y2 = toTest.rmap.corner_out_down_right_diag_down.getDown_yy();
+		
 
 		// find diagonal with the theorem of distance between 2 points
 		Double diag = Math
 				.sqrt(Math.pow(x2 - x1, 2.0) + Math.pow(y2 - y1, 2.0));
 
-		// find diagonal with the theorem of Pitagora
+		//find diagonal with the theorem of Pitagora
 		Double diagwh = Math.sqrt(Math.pow(w - 1, 2.0) + Math.pow(h - 1, 2.0));
-
+        diagwh=diagwh/rows;
 		assertEquals(diag, diagwh);
 	}
 
@@ -555,8 +558,8 @@ public class DIntGrid2DXYTester {
 	public void testMyFieldPartitioningMaxDistance1() throws DMasonException {
 
 		// i need that w and h is equal for using the Pitagora's theorem
-		int w = 10;
-		int h = 10;
+		int w = 100;
+		int h = 100;
 		int maxD = 1;
 
 		toTest = (DIntGrid2DXY) DIntGrid2DFactory.createDIntGrid2D(w, h,/* simState */
@@ -633,7 +636,7 @@ public class DIntGrid2DXYTester {
 
 		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DIntGrid2DXY) DIntGrid2DFactory.createDIntGrid2D(w, h,/* simState */
 				ss, maxD, /* i */0, /* j */0, 10, 10, mode, 0, false,/* name */
@@ -677,9 +680,9 @@ public class DIntGrid2DXYTester {
 	@Test
 	public void testLeftMinePartitioning() throws DMasonException {
 
-		int w = 10;
+		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DIntGrid2DXY) DIntGrid2DFactory.createDIntGrid2D(w, h,/* simState */
 				ss, maxD, /* i */0, /* j */0, 1, 1, mode, 0, false,/* name */
@@ -725,7 +728,7 @@ public class DIntGrid2DXYTester {
 
 		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DIntGrid2DXY) DIntGrid2DFactory.createDIntGrid2D(w, h,/* simState */
 				ss, maxD, /* i */0, /* j */0, 10, 10, mode, 0, false,/* name */
@@ -769,9 +772,9 @@ public class DIntGrid2DXYTester {
 	@Test
 	public void testUpOutPartitioning() throws DMasonException {
 
-		int w = 10;
+		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DIntGrid2DXY) DIntGrid2DFactory.createDIntGrid2D(w, h,/* simState */
 				ss, maxD, /* i */0, /* j */0, 1, 1, mode, 0, false,/* name */
@@ -817,7 +820,7 @@ public class DIntGrid2DXYTester {
 
 		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DIntGrid2DXY) DIntGrid2DFactory.createDIntGrid2D(w, h,/* simState */
 				ss, maxD, /* i */0, /* j */0, 10, 10, mode, 0, false,/* name */
@@ -861,9 +864,9 @@ public class DIntGrid2DXYTester {
 	@Test
 	public void testLeftOutPartitioning() throws DMasonException {
 
-		int w = 10;
+		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DIntGrid2DXY) DIntGrid2DFactory.createDIntGrid2D(w, h,/* simState */
 				ss, maxD, /* i */0, /* j */0, 1, 1, mode, 0, false,/* name */
@@ -909,7 +912,7 @@ public class DIntGrid2DXYTester {
 
 		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DIntGrid2DXY) DIntGrid2DFactory.createDIntGrid2D(w, h,/* simState */
 				ss, maxD, /* i */0, /* j */0, 10, 10, mode, 0, false,/* name */

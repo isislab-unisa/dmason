@@ -184,7 +184,7 @@ public class DDoubleGrid2DXYLBTester {
 	@Test
 	public void testSetDistributedObjectLocation() throws DMasonException {
 
-		for (int i = 0; i < numLoop; i++) {
+		for (double i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
 			assertTrue(toTest.setDistributedObjectLocation(location, /* grid value */
 					i, /* SimState */ss));
@@ -199,7 +199,7 @@ public class DDoubleGrid2DXYLBTester {
 	public void testGetState() throws DMasonException {
 
 		// i'm moving an agent in the DistributedState
-		for (int i = 0; i < numLoop; i++) {
+		for (double i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
 			toTest.setDistributedObjectLocation(location, /* grid value */
 					i, /* SimState */ss);

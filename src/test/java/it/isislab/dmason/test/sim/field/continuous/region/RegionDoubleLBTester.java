@@ -248,7 +248,7 @@ public class RegionDoubleLBTester {
 		Double2D f = new Double2D();
 		EntryAgent<Double2D> e = new EntryAgent<Double2D>(c, f);
 		rd.addAgents(e);
-		assertEquals(e,rd.get(0));
+		assertEquals(e,rd.get(e.r.getId()));
 	}
 	
 	//clone

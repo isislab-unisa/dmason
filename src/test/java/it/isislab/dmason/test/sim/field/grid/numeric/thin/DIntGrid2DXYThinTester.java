@@ -567,10 +567,10 @@ public class DIntGrid2DXYThinTester {
 	}
 
 	/**
-	 * Test double set distributed object location god agent.
+	 * Test double set distributed object location god agent. This is not a field for agents
 	 * @throws DMasonException 
 	 */
-	@Test
+	@Deprecated
 	public void testDoubleSetDistributedObjectLocationGodAgent() throws DMasonException {
 		int i = toTest.rmap.up_mine.upl_xx;
 		int j = toTest.rmap.up_mine.upl_yy;
@@ -606,9 +606,10 @@ public class DIntGrid2DXYThinTester {
 
 	/**
 	 * Test set distributed object location change position.
+	 * This is not a field for agents
 	 * @throws DMasonException 
 	 */
-	@Test
+	@Deprecated
 	public void testSetDistributedObjectLocationChangePosition() throws DMasonException {
 		int i = toTest.rmap.up_mine.upl_xx;
 		int j = toTest.rmap.up_mine.upl_yy;
