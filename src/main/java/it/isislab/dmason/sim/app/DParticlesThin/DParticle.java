@@ -19,7 +19,6 @@ package it.isislab.dmason.sim.app.DParticlesThin;
 
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
-import it.isislab.dmason.util.RemoteParam;
 import sim.engine.SimState;
 import sim.util.Bag;
 import sim.util.Int2D;
@@ -56,8 +55,8 @@ public class DParticle extends RemoteParticle<Int2D>
         try{
         	tut.trails.setThin(location.x, location.y, 1.0);
         	//tut.trails.field[location.x][location.y] = 1.0;
-        	RemoteParam<Double> toSet=new RemoteParam<Double>(1.0);
-        	tut.trails.setDistributedObjectLocation(location,toSet,state);
+        	
+        	tut.trails.setDistributedObjectLocation(location,1.0,state);
         }catch(NullPointerException e){
         	e.printStackTrace();
         	System.out.println("Error"+tut.TYPE+"--POSIZIONE: "+this.pos+" Direction="+xdir+"  "+ydir);
@@ -87,8 +86,8 @@ public class DParticle extends RemoteParticle<Int2D>
         // set my new location
         Int2D newloc = new Int2D(newx,newy);        
         try {
-        	RemoteParam<DParticle> thisAgent=new RemoteParam<DParticle>(this);
-			tut.particles.setDistributedObjectLocation(newloc, thisAgent, state);
+        	
+			tut.particles.setDistributedObjectLocation(newloc, this, state);
 		} catch (DMasonException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

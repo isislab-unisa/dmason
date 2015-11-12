@@ -36,16 +36,11 @@ import it.isislab.dmason.sim.field.support.loadbalancing.LoadBalancingDoubleFiel
 import it.isislab.dmason.sim.field.support.loadbalancing.LoadBalancingInterface;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellDoubleField;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
-import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

@@ -19,7 +19,6 @@ import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
-import it.isislab.dmason.util.RemoteParam;
 
 import java.awt.Color;
 
@@ -195,8 +194,7 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
 		pos = new Double2D(flock.flockers.stx(pos.x + dx), flock.flockers.sty(pos.y + dy));
     	        
 		try {
-			RemoteParam<DFlocker> thisAgent = new RemoteParam<DFlocker>(this);
-			flock.flockers.setDistributedObjectLocation(pos, thisAgent, state);
+			flock.flockers.setDistributedObjectLocation(pos, this, state);
 		} catch (DMasonException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
