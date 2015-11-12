@@ -25,7 +25,6 @@ import it.isislab.dmason.sim.engine.test.DistributedStateConnectionFake;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
-import it.isislab.dmason.tools.batch.data.EntryParam;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 import java.awt.Color;
 import sim.engine.SimState;
