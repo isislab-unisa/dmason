@@ -11,15 +11,11 @@ import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.sparse.thin.DSparseGrid2DXYThin;
-import it.isislab.dmason.test.sim.field.grid.sparse.DSparseGrid2DXYTester.StubRemotePositionedAgent;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
-import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.ConnectionType;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import sim.engine.SimState;
 import sim.util.Int2D;
 
@@ -43,8 +39,7 @@ public class DSparseGrid2DXYThinTester {
 	StubDistributedState ss;
 
 	/** The remote agent. */
-	StubRemotePositionedAgent stubAgent;
-	RemoteParam<StubRemotePositionedAgent> sa;
+	StubRemotePositionedAgent sa;
 
 	/** The num of loop of the tests. */
 	int numLoop = 8; // the max value for numLoop is 8 because for numLoop>8
@@ -254,8 +249,7 @@ public class DSparseGrid2DXYThinTester {
 		GeneralParam genParam = new GeneralParam(width, height, maxDistance,
 				rows, columns, numAgents, mode, connectionType);
 
-		stubAgent = new StubRemotePositionedAgent();
-		sa = new RemoteParam<DSparseGrid2DXYThinTester.StubRemotePositionedAgent>(stubAgent);
+		sa = new StubRemotePositionedAgent();
 		ss = new StubDistributedState(genParam);
 
 		toTest = (DSparseGrid2DXYThin) DSparseGrid2DFactory
@@ -275,7 +269,7 @@ public class DSparseGrid2DXYThinTester {
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
 			assertTrue(toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss));
+					new StubRemotePositionedAgent(), /* SimState */ss));
 		}
 	}
 
@@ -321,7 +315,7 @@ public class DSparseGrid2DXYThinTester {
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
 			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss);
+					new StubRemotePositionedAgent(), /* SimState */ss);
 		}
 		assertEquals(numLoop, toTest.getNumAgents());
 	}
@@ -354,7 +348,7 @@ public class DSparseGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -390,7 +384,7 @@ public class DSparseGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -426,7 +420,7 @@ public class DSparseGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -462,7 +456,7 @@ public class DSparseGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -496,7 +490,7 @@ public class DSparseGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 
@@ -533,7 +527,7 @@ public class DSparseGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -569,7 +563,7 @@ public class DSparseGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -605,7 +599,7 @@ public class DSparseGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -646,7 +640,7 @@ public class DSparseGrid2DXYThinTester {
 		location = new Int2D(i, j);
 
 		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss);
+				new StubRemotePositionedAgent(), /* SimState */ss);
 
 		assertNotSame("the agent is in two places at once",
 				toTest.rmap.up_mine.get(0).r, toTest.rmap.up_mine.get(1).r);

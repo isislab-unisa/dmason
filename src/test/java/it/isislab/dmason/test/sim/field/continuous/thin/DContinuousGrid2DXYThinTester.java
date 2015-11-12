@@ -5,9 +5,6 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-
-
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
@@ -19,13 +16,10 @@ import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DXY;
 import it.isislab.dmason.sim.field.continuous.thin.DContinuousGrid2DXYThin;
 import it.isislab.dmason.test.sim.field.continuous.DContinuousGrid2DXYTester.StubRemotePositionedAgent;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
-import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.ConnectionType;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import sim.engine.SimState;
 import sim.util.Double2D;
 /**
@@ -46,8 +40,7 @@ public class DContinuousGrid2DXYThinTester {
 	StubDistributedState ss;
 
 	/** The remote agent. */
-	StubRemotePositionedAgent stubAgent;
-	RemoteParam<StubRemotePositionedAgent> sa;
+	StubRemotePositionedAgent sa;
 
 	/** The num of loop of the tests. */
 	int numLoop = 8; // the max value for numLoop is 8 because for numLoop>8
@@ -230,8 +223,7 @@ public class DContinuousGrid2DXYThinTester {
 		GeneralParam genParam = new GeneralParam(width, height, maxDistance,
 				rows, columns, numAgents, mode, connectionType);
 
-		stubAgent = new StubRemotePositionedAgent();
-		sa= new RemoteParam<StubRemotePositionedAgent>(stubAgent);
+		sa = new StubRemotePositionedAgent();
 		ss = new StubDistributedState(genParam);
 		//		toTest = new DContinuous2DXY(/* discretization */0.5, width, height, /* simState */
 		//		ss, maxDistance, /* i */0, /* j */0, rows, columns, /* name */
@@ -252,7 +244,7 @@ public class DContinuousGrid2DXYThinTester {
 		for (int i = 0; i < numLoop; i++) {
 			Double2D location = toTest.getAvailableRandomLocation();
 			assertTrue(toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss));
+					new StubRemotePositionedAgent(), /* SimState */ss));
 		}
 	}
 
@@ -298,7 +290,7 @@ public class DContinuousGrid2DXYThinTester {
 		for (int i = 0; i < numLoop; i++) {
 			Double2D location = toTest.getAvailableRandomLocation();
 			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss);
+					new StubRemotePositionedAgent(), /* SimState */ss);
 		}
 		assertEquals(numLoop, toTest.getNumAgents());
 	}
@@ -333,7 +325,7 @@ public class DContinuousGrid2DXYThinTester {
 			while (j < jEnd) {
 				Double2D location = new Double2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -390,7 +382,7 @@ public class DContinuousGrid2DXYThinTester {
 			while (j < jEnd) {
 				Double2D location = new Double2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -414,7 +406,7 @@ public class DContinuousGrid2DXYThinTester {
 
 		assertTrue("i=upl_xx j=upl_yy",
 				toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss));
+						new StubRemotePositionedAgent(), /* SimState */ss));
 
 		assertEquals("agent is not created", 1,
 				toTest.rmap.corner_mine_up_right.size());
@@ -447,7 +439,7 @@ public class DContinuousGrid2DXYThinTester {
 			while (j < jEnd) {
 				Double2D location = new Double2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -471,7 +463,7 @@ public class DContinuousGrid2DXYThinTester {
 
 		assertTrue("i=upl_xx j=upl_yy",
 				toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss));
+						new StubRemotePositionedAgent(), /* SimState */ss));
 
 		assertEquals("agent is not created", 1,
 				toTest.rmap.corner_mine_down_left.size());
@@ -504,7 +496,7 @@ public class DContinuousGrid2DXYThinTester {
 			while (j < jEnd) {
 				Double2D location = new Double2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -528,7 +520,7 @@ public class DContinuousGrid2DXYThinTester {
 
 		assertTrue("i=upl_xx j=upl_yy",
 				toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss));
+						new StubRemotePositionedAgent(), /* SimState */ss));
 
 		assertEquals("agent is not created", 1,
 				toTest.rmap.corner_mine_down_right.size());
@@ -559,7 +551,7 @@ public class DContinuousGrid2DXYThinTester {
 			while (j < jEnd) {
 				Double2D location = new Double2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 
@@ -584,7 +576,7 @@ public class DContinuousGrid2DXYThinTester {
 
 		assertTrue("i=upl_xx j=upl_yy",
 				toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss));
+						sa, /* SimState */ss));
 
 		assertEquals("agent is not created", 1, toTest.rmap.down_mine.size());
 
@@ -616,7 +608,7 @@ public class DContinuousGrid2DXYThinTester {
 			while (j < jEnd) {
 				Double2D location = new Double2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						sa, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -640,7 +632,7 @@ public class DContinuousGrid2DXYThinTester {
 
 		assertTrue("i=upl_xx j=upl_yy",
 				toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss));
+						sa, /* SimState */ss));
 
 		assertEquals("agent is not created", 1, toTest.rmap.left_mine.size());
 
@@ -672,7 +664,7 @@ public class DContinuousGrid2DXYThinTester {
 			while (j < jEnd) {
 				Double2D location = new Double2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						sa, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -696,7 +688,7 @@ public class DContinuousGrid2DXYThinTester {
 
 		assertTrue("i=upl_xx j=upl_yy",
 				toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss));
+						sa, /* SimState */ss));
 
 		assertEquals("agent is not created", 1, toTest.rmap.right_mine.size());
 
@@ -728,7 +720,7 @@ public class DContinuousGrid2DXYThinTester {
 			while (j < jEnd) {
 				Double2D location = new Double2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						sa, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -752,7 +744,7 @@ public class DContinuousGrid2DXYThinTester {
 
 		assertTrue("i=upl_xx j=upl_yy",
 				toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss));
+						sa, /* SimState */ss));
 
 		assertEquals("agent is not created", 1, toTest.rmap.up_mine.size());
 

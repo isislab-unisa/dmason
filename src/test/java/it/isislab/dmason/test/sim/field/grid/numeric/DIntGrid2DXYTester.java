@@ -15,13 +15,10 @@ import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2DXY;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.test.sim.field.continuous.DContinuousGrid2DXYTester.StubRemotePositionedAgent;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
-import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.ConnectionType;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import sim.engine.SimState;
 import sim.util.Int2D;
 
@@ -184,12 +181,11 @@ public class DIntGrid2DXYTester {
 	 */
 	@Test
 	public void testSetDistributedObjectLocation() throws DMasonException {
-		RemoteParam<Integer> toSet = null;
+		
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
-			toSet = new RemoteParam<Integer>(i);
 			assertTrue(toTest.setDistributedObjectLocation(location, /* grid value */
-					toSet, /* SimState */ss));
+					i, /* SimState */ss));
 		}
 	}
 
@@ -201,12 +197,10 @@ public class DIntGrid2DXYTester {
 	public void testGetState() throws DMasonException {
 
 		// i'm moving an agent in the DistributedState
-		RemoteParam<Integer> toSet = null;
 		for (int i = 0; i < numLoop; i++) {
-			toSet = new RemoteParam<Integer>(i);
 			Int2D location = toTest.getAvailableRandomLocation();
 			toTest.setDistributedObjectLocation(location, /* grid value */
-					toSet, /* SimState */ss);
+					i, /* SimState */ss);
 		}
 
 		assertSame(ss, toTest.getState());
@@ -341,15 +335,14 @@ public class DIntGrid2DXYTester {
 				/ numLoop;
 
 		i += stepI;
-		RemoteParam<Integer> toSet = null;
+		
 		int count = 0;
 		while (i < iEnd) {
 			j = toTest.rmap.corner_mine_down_right.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				toSet = new RemoteParam<Integer>(i);
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						toSet, /* SimState */ss))
+						j, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -376,15 +369,15 @@ public class DIntGrid2DXYTester {
 		int stepJ = (jEnd - j) / numLoop;
 
 		i += stepI;
-		RemoteParam<Integer> toSet = null;
+
 		int count = 0;
 		while (i < iEnd) {
 			j = toTest.rmap.down_mine.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				toSet = new RemoteParam<Integer>(i);
+
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						toSet, /* SimState */ss))
+						j, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 
@@ -450,15 +443,15 @@ public class DIntGrid2DXYTester {
 				/ numLoop;
 
 		i += stepI;
-		RemoteParam<Integer> toSet = null;
+		
 		int count = 0;
 		while (i < iEnd) {
 			j = toTest.rmap.right_mine.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				toSet = new RemoteParam<Integer>(i);
+				
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						toSet, /* SimState */ss))
+						j, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}

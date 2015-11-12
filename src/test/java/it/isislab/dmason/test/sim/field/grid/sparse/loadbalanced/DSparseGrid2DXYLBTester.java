@@ -1,10 +1,8 @@
 package it.isislab.dmason.test.sim.field.grid.sparse.loadbalanced;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
@@ -13,15 +11,11 @@ import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.sim.field.grid.sparse.loadbalanced.DSparseGrid2DXYLB;
-import it.isislab.dmason.test.sim.field.grid.sparse.DSparseGrid2DXYTester.StubRemotePositionedAgent;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
-import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.ConnectionType;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import sim.engine.SimState;
 import sim.util.Int2D;
 
@@ -42,9 +36,7 @@ public class DSparseGrid2DXYLBTester {
 	StubDistributedState ss;
 
 	/** The remote agent. */
-	StubRemotePositionedAgent stubAgent;
-	
-	RemoteParam<StubRemotePositionedAgent> sa;
+	StubRemotePositionedAgent sa;
 
 	/** The num of loop of the tests. */
 	int numLoop = 8; // the max value for numLoop is 8 because for numLoop>8
@@ -253,8 +245,8 @@ public class DSparseGrid2DXYLBTester {
 		GeneralParam genParam = new GeneralParam(width, height, maxDistance,
 				rows, columns, numAgents, mode, connectionType);
 
-		stubAgent = new StubRemotePositionedAgent();
-		sa = new RemoteParam<DSparseGrid2DXYLBTester.StubRemotePositionedAgent>(stubAgent);
+		
+		sa = new StubRemotePositionedAgent();
 		ss = new StubDistributedState(genParam);
 
 		toTest = (DSparseGrid2DXYLB) DSparseGrid2DFactory.createDSparseGrid2D(
@@ -274,7 +266,7 @@ public class DSparseGrid2DXYLBTester {
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
 			assertTrue(toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss));
+					new StubRemotePositionedAgent(), /* SimState */ss));
 		}
 	}
 
@@ -320,7 +312,7 @@ public class DSparseGrid2DXYLBTester {
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
 			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss);
+					new StubRemotePositionedAgent(), /* SimState */ss);
 		}
 		assertEquals(numLoop, toTest.getNumAgents());
 	}

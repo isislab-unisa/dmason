@@ -14,7 +14,6 @@ import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DXY;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
-import it.isislab.dmason.util.RemoteParam;
 import it.isislab.dmason.util.connection.ConnectionType;
 
 import org.junit.Before;
@@ -40,9 +39,7 @@ public class DSparseGrid2DXYTester {
 	StubDistributedState ss;
 
 	/** The remote agent. */
-	StubRemotePositionedAgent stubAgent;
-	
-	RemoteParam<StubRemotePositionedAgent> sa;
+	StubRemotePositionedAgent sa;
 
 	/** The num of loop of the tests. */
 	int numLoop = 8; // the max value for numLoop is 8 because for numLoop>8
@@ -252,8 +249,8 @@ public class DSparseGrid2DXYTester {
 		GeneralParam genParam = new GeneralParam(width, height, maxDistance,
 				rows, columns, numAgents, mode, connectionType);
 
-		stubAgent = new StubRemotePositionedAgent();
-		sa = new RemoteParam<DSparseGrid2DXYTester.StubRemotePositionedAgent>(stubAgent);
+		
+		sa = new StubRemotePositionedAgent();
 		ss = new StubDistributedState(genParam);
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(
@@ -273,7 +270,7 @@ public class DSparseGrid2DXYTester {
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
 			assertTrue(toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss));
+					new StubRemotePositionedAgent(), /* SimState */ss));
 		}
 	}
 
@@ -319,7 +316,7 @@ public class DSparseGrid2DXYTester {
 		for (int i = 0; i < numLoop; i++) {
 			Int2D location = toTest.getAvailableRandomLocation();
 			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss);
+					new StubRemotePositionedAgent(), /* SimState */ss);
 		}
 		assertEquals(numLoop, toTest.getNumAgents());
 	}
@@ -352,7 +349,7 @@ public class DSparseGrid2DXYTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -388,7 +385,7 @@ public class DSparseGrid2DXYTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -424,7 +421,7 @@ public class DSparseGrid2DXYTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -460,7 +457,7 @@ public class DSparseGrid2DXYTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -494,7 +491,7 @@ public class DSparseGrid2DXYTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 
@@ -531,7 +528,7 @@ public class DSparseGrid2DXYTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -567,7 +564,7 @@ public class DSparseGrid2DXYTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -603,7 +600,7 @@ public class DSparseGrid2DXYTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss))
+						new StubRemotePositionedAgent(), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
