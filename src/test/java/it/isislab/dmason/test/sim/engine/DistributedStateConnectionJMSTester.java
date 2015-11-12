@@ -441,7 +441,7 @@ public class DistributedStateConnectionJMSTester {
 		 */
 		@Override
 		public boolean setDistributedObjectLocation(Double2D location,
-				/*RemotePositionedAgent<Double2D> rm*/RemoteParam<?> paramToSet, SimState sm) throws DMasonException{
+				/*RemotePositionedAgent<Double2D> rm*/Object RemoteObject, SimState sm) throws DMasonException{
 			// TODO Auto-generated method stub
 			return false;
 		}

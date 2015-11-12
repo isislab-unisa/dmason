@@ -537,16 +537,13 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	@Override
 	//public boolean setDistributedObjectLocation(double d, Int2D l, SimState sm){
 
-	public boolean setDistributedObjectLocation(Int2D l, RemoteParam<?> paramToSet, SimState sm) throws DMasonException{
+	public boolean setDistributedObjectLocation(Int2D l, Object remoteValue, SimState sm) throws DMasonException{
 
-		double d=(Double) paramToSet.getDistributedParam();
+		
 
-		/*if(paramToSet instanceof Double){
-			d=(Double) paramToSet;
-		}else
-		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a double");}
+		if(!(remoteValue instanceof Double)) throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a double");
 
-*/
+		double d=(Double) remoteValue;
 		numAgents++;
 		if(myfield.isMine(l.getX(), l.getY()))
 		{    		

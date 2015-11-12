@@ -568,16 +568,14 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 	 * @return
 	 */
 	//public boolean setDistributedObjectLocation(int i, Int2D l, SimState sm) {
-	public boolean setDistributedObjectLocation( Int2D l, RemoteParam<?> ob ,SimState sm) throws DMasonException{
+	public boolean setDistributedObjectLocation( Int2D l, Object remoteValue ,SimState sm) throws DMasonException{
 
-		int i=(Integer) ob.getDistributedParam();
-				/*if(ob instanceof Integer){
-			i=(Integer) ob;
-		}else
-		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");}
-
+		
+		if(!(remoteValue instanceof Integer)) throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");
+				
+		int i=(Integer) remoteValue;
 	
-*/	
+	
 		numAgents++;
 
 		if(setValue(i, l)) return true;

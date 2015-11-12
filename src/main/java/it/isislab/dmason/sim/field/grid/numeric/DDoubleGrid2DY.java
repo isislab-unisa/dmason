@@ -540,15 +540,15 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 	 * @return
 	 */
 	@Override
-	public boolean setDistributedObjectLocation( Int2D l, RemoteParam<?> paramToSet ,SimState sm) throws DMasonException{
+	public boolean setDistributedObjectLocation( Int2D l, Object remoteValue ,SimState sm) throws DMasonException{
 
-		double d= (Double) paramToSet.getDistributedParam();
+		double d= 0;
 		
-/*		if(paramToSet instanceof Double){
-			d=(Double) paramToSet;
+		if(remoteValue instanceof Double){
+			d=(Double) remoteValue;
 		}else
 		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a double");}
-*/		//This 'if' is for debug 
+		 
 
 		if(setValue(d, l))
 				return true;

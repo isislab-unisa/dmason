@@ -346,21 +346,21 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 	 */
 	@Override
 	//public boolean setDistributedObjectLocation(final Double2D location,RemotePositionedAgent<Double2D> rm,SimState sm){
-	public boolean setDistributedObjectLocation(final Double2D location,RemoteParam<?> paramToSet,SimState sm) throws DMasonException
+	public boolean setDistributedObjectLocation(final Double2D location,Object remoteObject,SimState sm) throws DMasonException
 	{
 
 
-		RemotePositionedAgent<Double2D> rm=(RemotePositionedAgent<Double2D>) paramToSet.getDistributedParam();
+		RemotePositionedAgent<Double2D> rm=null;
 
-		/*	if(paramToSet instanceof RemotePositionedAgent ){
-			if(((RemotePositionedAgent)paramToSet).getPos() instanceof Double2D){
+			if(remoteObject instanceof RemotePositionedAgent ){
+			if(((RemotePositionedAgent)remoteObject).getPos() instanceof Double2D){
 
-			rm=(RemotePositionedAgent<Double2D>) paramToSet;	
+			rm=(RemotePositionedAgent<Double2D>) remoteObject;	
 			}
 			else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter RemotePositionedAgent<E>, E must be a Double2D");}
 		}
 		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}
-		 */
+		 
 
 		if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 			writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);

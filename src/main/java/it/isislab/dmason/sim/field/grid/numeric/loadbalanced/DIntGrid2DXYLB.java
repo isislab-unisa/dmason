@@ -334,15 +334,13 @@ public class DIntGrid2DXYLB extends DIntGrid2D {
 	 */
 	//public boolean setDistributedObjectLocation(int d, Int2D location, SimState sm)
 	//{
-	public boolean setDistributedObjectLocation( Int2D location, RemoteParam<?> ob ,SimState sm) throws DMasonException{
+	public boolean setDistributedObjectLocation( Int2D location, Object ob ,SimState sm) throws DMasonException{
 
-		int d=(Integer) ob.getDistributedParam();
-	/*	if(ob instanceof Integer){
-			d=(Integer) ob;
-		}else
-		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");}
+		
+		if(!(ob instanceof Integer)) throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");
 	
-	*/	
+		
+		int d=(Integer) ob;
 		numAgents++;
 		boolean fl = false;
 		

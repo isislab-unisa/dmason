@@ -343,16 +343,18 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 	 * @param sm SimState of simulation
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
 	 */
-	public boolean setDistributedObjectLocation(final Double2D location,RemoteParam<?> paramToSet,SimState sm) throws DMasonException
+	public boolean setDistributedObjectLocation(final Double2D location,Object remoteObject,SimState sm) throws DMasonException
 	{	
-		RemotePositionedAgent<Double2D> rm=null;
+		RemotePositionedAgent<Double2D> rm= null;
 		
-		/*if(paramToSet instanceof RemotePositionedAgent || ((RemotePositionedAgent)paramToSet).getPos() instanceof Double2D){
-			rm=(RemotePositionedAgent<Double2D>) paramToSet;	
+		if(remoteObject instanceof RemotePositionedAgent ){
+			if(((RemotePositionedAgent)remoteObject).getPos() instanceof Double2D){
+			
+			rm=(RemotePositionedAgent<Double2D>) remoteObject;	
+			}
+			else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter RemotePositionedAgent<E>, E must be a Double2D");}
 		}
-		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<Double2D>");}*/
-		
-		rm=(RemotePositionedAgent<Double2D>) paramToSet.getDistributedParam();
+		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}
 		
 		
 			if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)

@@ -355,20 +355,19 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
 	 */
 	@Override
-	public boolean setDistributedObjectLocation(final Double2D location, RemoteParam<?> ob,SimState sm) throws DMasonException
+	public boolean setDistributedObjectLocation(final Double2D location, Object remoteObject,SimState sm) throws DMasonException
 	{
 
-		RemotePositionedAgent<Double2D> rm=(RemotePositionedAgent<Double2D>) ob.getDistributedParam();
+		RemotePositionedAgent<Double2D> rm=null;
 
-/*		if(ob instanceof RemotePositionedAgent ){
-			if(((RemotePositionedAgent)ob).getPos() instanceof Double2D){
+		if(remoteObject instanceof RemotePositionedAgent ){
+			if(((RemotePositionedAgent)remoteObject).getPos() instanceof Double2D){
 
-				rm=(RemotePositionedAgent<Double2D>) ob;	
+				rm=(RemotePositionedAgent<Double2D>) remoteObject;	
 			}
 			else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter RemotePositionedAgent<E>, E must be a Double2D");}
 		}
 		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}
-*/
 
 		numAgents++;
 		if(myfield.isMine(location.x,location.y))

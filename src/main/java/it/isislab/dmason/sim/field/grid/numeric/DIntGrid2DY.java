@@ -502,10 +502,15 @@ public class DIntGrid2DY extends DIntGrid2D {
 	 * @param sm
 	 * @return
 	 */
-	public boolean setDistributedObjectLocation( Int2D l, RemoteParam<?> paramToSet ,SimState sm) throws DMasonException{
+	public boolean setDistributedObjectLocation( Int2D l, Object remoteValue ,SimState sm) throws DMasonException{
 
-		int i=(Integer)paramToSet.getDistributedParam();
+		
 
+		if(!(remoteValue instanceof Integer))
+			throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a integer");
+		
+		int i = (Integer) remoteValue;
+		
 		if(setValue(i, l))
 				return true;
 			else

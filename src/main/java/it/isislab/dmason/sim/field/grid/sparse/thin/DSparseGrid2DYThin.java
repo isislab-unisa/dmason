@@ -280,22 +280,15 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 	 */
 	@Override
 	//public boolean setDistributedObjectLocation(final Int2D location,RemotePositionedAgent<Int2D> rm,SimState sm){
-	public boolean setDistributedObjectLocation(final Int2D location, RemoteParam<?> paramToSet,SimState sm) throws DMasonException
+	public boolean setDistributedObjectLocation(final Int2D location, Object remoteObject,SimState sm) throws DMasonException
 	{
 		
 		
-		RemotePositionedAgent<Int2D> rm=(RemotePositionedAgent<Int2D>) paramToSet.getDistributedParam();
-	/*	
-		if(paramToSet instanceof RemotePositionedAgent ){
-			if(((RemotePositionedAgent)paramToSet).getPos() instanceof Int2D){
-			
-			rm=(RemotePositionedAgent<Int2D>) paramToSet;	
-			}
-			else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter RemotePositionedAgent<E>, E must be a Int2D");}
-		}
-		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}		//This 'if' is for debug 
-	*/
+		if(!(remoteObject instanceof RemotePositionedAgent) && !(((RemotePositionedAgent)remoteObject).getPos() instanceof Int2D))
+			throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<Int2D>");
 		
+			RemotePositionedAgent<Int2D> rm=(RemotePositionedAgent<Int2D>) remoteObject;
+
 		
 		numAgents++;
 
