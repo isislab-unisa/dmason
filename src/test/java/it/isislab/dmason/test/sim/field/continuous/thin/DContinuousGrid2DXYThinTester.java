@@ -787,72 +787,7 @@ public class DContinuousGrid2DXYThinTester {
 
 	}
 
-	/**
-	 * Test double set distributed object location god agent.
-	 * @throws DMasonException 
-	 */
-	@Test
-	public void testDoubleSetDistributedObjectLocationGodAgent() throws DMasonException {
-		double i = toTest.rmap.up_mine.upl_xx;
-		double j = toTest.rmap.up_mine.upl_yy;
 
-		double stepI = (toTest.rmap.up_mine.down_xx - toTest.rmap.up_mine.upl_xx) / 4;
-		double stepJ = (toTest.rmap.up_mine.down_yy - toTest.rmap.up_mine.upl_yy) / 4;
-
-		Double2D location = new Double2D(i, j);
-
-		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				sa, /* SimState */ss);
-
-		i += stepI;
-		j += stepJ;
-
-		location = new Double2D(i, j);
-
-		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				sa, /* SimState */ss);
-
-		i += stepI;
-		j += stepJ;
-
-		location = new Double2D(i, j);
-
-		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss);
-
-		assertNotSame("the agent is in two places at once",
-				toTest.rmap.up_mine.get(0).r, toTest.rmap.up_mine.get(1).r);
-
-	}
-
-	/**
-	 * Test set distributed object location change position.
-	 * @throws DMasonException 
-	 */
-	@Test
-	public void testSetDistributedObjectLocationChangePosition() throws DMasonException {
-		double i = toTest.rmap.up_mine.upl_xx;
-		double j = toTest.rmap.up_mine.upl_yy;
-
-		double stepI = (toTest.rmap.up_mine.down_xx - toTest.rmap.up_mine.upl_xx) / 4;
-		double stepJ = (toTest.rmap.up_mine.down_yy - toTest.rmap.up_mine.upl_yy) / 4;
-
-		Double2D location = new Double2D(i, j);
-
-		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				sa, /* SimState */ss);
-
-		i += stepI;
-		j += stepJ;
-
-		location = new Double2D(i, j);
-
-		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-				new RemoteParam<StubRemotePositionedAgent>(new StubRemotePositionedAgent()), /* SimState */ss);
-
-		assertNotSame("the method has not changed the position",
-				toTest.rmap.up_mine.get(0).l, toTest.rmap.up_mine.get(1).l);
-	}
 
 	/**
 	 * test for the field partitioning.

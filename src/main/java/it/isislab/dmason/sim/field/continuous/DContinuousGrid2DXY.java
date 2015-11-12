@@ -1039,7 +1039,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	@Override
 	public int getNumAgents() {
 		System.err.println("You are using a not implemented method (getNumAgents) from "+this.getClass().getName());
-		return 0;
+		return myfield.size();
 		
 	
 	}
