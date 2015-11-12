@@ -30,11 +30,6 @@ import it.isislab.dmason.sim.field.grid.numeric.thin.DIntGrid2DThin;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.sim.field.grid.sparse.thin.DSparseGrid2DThin;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -45,7 +40,6 @@ import sim.util.Interval;
 public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 {
 
-	private static boolean isToroidal=false;
 	public int GRID_HEIGHT;
 	public int GRID_WIDTH;
 
