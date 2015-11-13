@@ -79,6 +79,7 @@ public abstract class DSparseGrid2D extends SparseGrid2D implements DistributedF
 	public int own_y;	//y coordinate of north-west corner
 	public int my_width;
 	public int my_height;
+	public int jumpDistance;
 	public RegionInteger myfield;
 	public RegionMap<Integer,Int2D> rmap=new RegionMap<Integer,Int2D>();
 	public ArrayList<Region<Integer, Int2D>> updates_cache;
