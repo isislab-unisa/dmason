@@ -2,18 +2,14 @@ package it.isislab.dmason.test.sim.field.grid.region;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.grid.region.RegionIntegerLB;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.test.sim.app.DParticles.DParticle;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import sim.util.Int2D;
 /**
 * The Class RegionIntegerLBTester. Tests the RegionIntegerLB.
@@ -72,11 +68,49 @@ public class RegionIntegerLBTester {
 	}
 
 	
-
-	// createRegion
 	/**
-	 * Test create region xx under0.
+	 * Test is mine range0_1_0_1.
 	 */
+	@Test
+	public void testIsMineRange0_1_0_1() {
+		// (x>=0) && (y >= 0) && (x <1 ) && (y<1 );
+		int step = 1 / loopTest;
+		int i = 0;
+		while (i < 1) {
+			int j = 0;
+			while (j < 1) {
+				assertTrue(rd.isMine(i, j));
+				j += step;
+			}
+			i += step;
+		}
+
+	}
+
+	/**
+	 * Test is mine negative range1_0_0_1.
+	 */
+	@Test
+	public void testIsMineNegativeRange1_0_0_1() {
+		// (x>=0) && (y >= 0) && (x <1 ) && (y<1 );
+		int step = 1 / loopTest;
+		int i = -1;
+		while (i < 0) {
+			int j = 0;
+			while (j < 1) {
+				assertFalse(rd.isMine(i, j));
+				j += step;
+			}
+			i += step;
+		}
+
+	}
+	
+/*
+	// createRegion
+	*//**
+	 * Test create region xx under0.
+	 *//*
 	@Test
 	public void testCreateRegionXXUnder0() {
 
@@ -84,9 +118,9 @@ public class RegionIntegerLBTester {
 
 	}
 
-	/**
+	*//**
 	 * Test create region yy under0.
-	 */
+	 *//*
 	@Test
 	public void testCreateRegionYYUnder0() {
 
@@ -94,9 +128,9 @@ public class RegionIntegerLBTester {
 
 	}
 
-	/**
+	*//**
 	 * Test create region xx over0.
-	 */
+	 *//*
 	@Test
 	public void testCreateRegionXXOver0() {
 
@@ -104,9 +138,9 @@ public class RegionIntegerLBTester {
 
 	}
 
-	/**
+	*//**
 	 * Test create region yy over0.
-	 */
+	 *//*
 	@Test
 	public void testCreateRegionYYOver0() {
 
@@ -114,9 +148,9 @@ public class RegionIntegerLBTester {
 
 	}
 
-	/**
+	*//**
 	 * Test create region xxw over w.
-	 */
+	 *//*
 	@Test
 	public void testCreateRegionXxwOverW() {
 
@@ -124,9 +158,9 @@ public class RegionIntegerLBTester {
 
 	}
 
-	/**
+	*//**
 	 * Test create region xxw equal w.
-	 */
+	 *//*
 	@Test
 	public void testCreateRegionXxwEqualW() {
 
@@ -134,9 +168,9 @@ public class RegionIntegerLBTester {
 
 	}
 
-	/**
+	*//**
 	 * Test create region yyh over h.
-	 */
+	 *//*
 	@Test
 	public void testCreateRegionYyhOverH() {
 
@@ -144,9 +178,9 @@ public class RegionIntegerLBTester {
 
 	}
 
-	/**
+	*//**
 	 * Test create region yyh equal h.
-	 */
+	 *//*
 	@Test
 	public void testCreateRegionYyhEqualH() {
 
@@ -154,7 +188,7 @@ public class RegionIntegerLBTester {
 
 	}
 
-	
+	*/
 
 	// addAgents
 

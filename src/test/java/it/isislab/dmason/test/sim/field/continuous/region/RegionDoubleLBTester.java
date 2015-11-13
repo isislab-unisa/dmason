@@ -1,16 +1,13 @@
 package it.isislab.dmason.test.sim.field.continuous.region;
 
 import static org.junit.Assert.*;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import sim.util.Double2D;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.continuous.region.RegionDoubleLB;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.test.sim.app.DFlockers.DFlocker;
-import junit.framework.TestCase;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -21,19 +21,13 @@ import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
-import it.isislab.dmason.sim.engine.test.DistributedStateConnectionFake;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 import it.isislab.dmason.tools.batch.data.EntryParam;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
-
 import java.awt.Color;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.util.List;
-
 import sim.engine.SimState;
 import sim.portrayal.SimplePortrayal2D;
 import sim.portrayal.simple.AdjustablePortrayal2D;
@@ -63,7 +57,7 @@ public class DFlockers extends DistributedState<Double2D>
 	 */
 	private static final long serialVersionUID = 1L;
 	public DContinuousGrid2D flockers;
-	private static boolean isToroidal=true;
+	//private static boolean isToroidal=true;
 
 	@BatchAnnotation(
 			domain = "100-300",

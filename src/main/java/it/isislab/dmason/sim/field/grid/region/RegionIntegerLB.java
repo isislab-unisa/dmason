@@ -70,7 +70,7 @@ public class RegionIntegerLB extends Region<Integer,Int2D>
 	 *  Static method to create a Region
 	 * 	
 	 *  */
-	@Deprecated
+	/*@Deprecated
 	public static Region<Integer,Int2D> createRegion(Integer upl_xx, Integer upl_yy, Integer down_xx,
 			Integer down_yy, Integer MY_WIDTH, Integer MY_HEIGHT, Integer WIDTH,
 			Integer HEIGHT) {
@@ -85,7 +85,7 @@ public class RegionIntegerLB extends Region<Integer,Int2D>
 		}
 	
 	  return new RegionIntegerLB(upl_xx,upl_yy,down_xx,down_yy, MY_HEIGHT, MY_WIDTH);
-	}
+	}*/
 
 	@Override
 	public Region<Integer,Int2D> clone() 
