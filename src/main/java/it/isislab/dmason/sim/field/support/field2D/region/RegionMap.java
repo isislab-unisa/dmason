@@ -176,5 +176,25 @@ public class RegionMap<E,F> implements Serializable
 	public void setcorner_out_down_right_diag_right(Region<E,F> corner_out_down_right_diag_right) {this.corner_out_down_right_diag_right = corner_out_down_right_diag_right;}
 	public Region<E,F> getcorner_out_down_right_diag_down() {return corner_out_down_right_diag_down;}
 	public void setcorner_out_down_right_diag_down(Region<E,F> corner_out_down_right_diag_down) {this.corner_out_down_right_diag_down = corner_out_down_right_diag_down;}
+
+
+	@Override
+	public String toString() {
+		return "RegionMap [left_out=" + left_out + ", left_mine=" + left_mine + ", right_mine=" + right_mine
+				+ ", right_out=" + right_out + ", down_mine=" + down_mine + ", down_out=" + down_out + ", up_mine="
+				+ up_mine + ", up_out=" + up_out + ", corner_mine_up_left=" + corner_mine_up_left
+				+ ", corner_out_up_left_diag_center=" + corner_out_up_left_diag_center + ", corner_out_up_left_diag_up="
+				+ corner_out_up_left_diag_up + ", corner_out_up_left_diag_left=" + corner_out_up_left_diag_left
+				+ ", corner_mine_up_right=" + corner_mine_up_right + ", corner_out_up_right_diag_center="
+				+ corner_out_up_right_diag_center + ", corner_out_up_right_diag_up=" + corner_out_up_right_diag_up
+				+ ", corner_out_up_right_diag_right=" + corner_out_up_right_diag_right + ", corner_mine_down_left="
+				+ corner_mine_down_left + ", corner_out_down_left_diag_center=" + corner_out_down_left_diag_center
+				+ ", corner_out_down_left_diag_left=" + corner_out_down_left_diag_left
+				+ ", corner_out_down_left_diag_down=" + corner_out_down_left_diag_down + ", corner_mine_down_right="
+				+ corner_mine_down_right + ", corner_out_down_right_diag_center=" + corner_out_down_right_diag_center
+				+ ", corner_out_down_right_diag_right=" + corner_out_down_right_diag_right
+				+ ", corner_out_down_right_diag_down=" + corner_out_down_right_diag_down + "]";
+	}
+	
 	
 }
