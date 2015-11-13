@@ -28,13 +28,8 @@ import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 import it.isislab.dmason.sim.field.continuous.thin.DContinuousGrid2DThin;
 import it.isislab.dmason.tools.batch.data.EntryParam;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
-
 import java.awt.Color;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.util.List;
-
 import sim.engine.SimState;
 import sim.portrayal.SimplePortrayal2D;
 import sim.portrayal.simple.AdjustablePortrayal2D;
