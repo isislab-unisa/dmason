@@ -3,19 +3,28 @@ package it.isislab.dmason.test.sim.field.grid.sparse.loadbalanced;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
+import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.sim.field.grid.sparse.loadbalanced.DSparseGrid2DXYLB;
+import it.isislab.dmason.sim.field.support.loadbalancing.MyCellIntegerField;
+import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.connection.ConnectionType;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
 import sim.engine.SimState;
 import sim.util.Int2D;
 
@@ -253,7 +262,14 @@ public class DSparseGrid2DXYLBTester {
 				width, height,/* simState */
 				ss, maxDistance, /* i */0, /* j */0, rows, columns, mode,/* name */
 				"test", /* prefix */"", true);
-
+		
+		for(Integer x: toTest.listGrid.keySet()){
+			Object [] c=toTest.listGrid.get(x).values().toArray();
+			int n=c.length;
+			for (int i = 0; i < c.length; i++) {
+				System.out.println(((MyCellIntegerField)c[i]).getMyRMap().toString());
+			}
+		}
 	}
 
 	/**
