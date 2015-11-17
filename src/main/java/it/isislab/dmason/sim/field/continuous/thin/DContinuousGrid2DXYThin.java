@@ -269,47 +269,47 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 		myfield=new RegionDouble(own_x+jumpDistance,own_y+jumpDistance, own_x+my_width-jumpDistance , own_y+my_height-jumpDistance,width,height);
 
 		//corner up left
-		rmap.corner_out_up_left_diag_center=new RegionDouble((own_x-jumpDistance + width)%width, (own_y-jumpDistance+height)%height, 
+		rmap.NORTH_WEST_OUT=new RegionDouble((own_x-jumpDistance + width)%width, (own_y-jumpDistance+height)%height, 
 				(own_x+width)%width, (own_y+height)%height,width,height);
-		rmap.corner_mine_up_left=new RegionDouble(own_x, own_y, 
+		rmap.NORTH_WEST_MINE=new RegionDouble(own_x, own_y, 
 				own_x+jumpDistance, own_y+jumpDistance,width,height);
 
 		//corner up right
-		rmap.corner_out_up_right_diag_center = new RegionDouble((own_x+my_width+width)%width, (own_y-jumpDistance+height)%height,
+		rmap.NORTH_EAST_OUT = new RegionDouble((own_x+my_width+width)%width, (own_y-jumpDistance+height)%height,
 				(own_x+my_width+jumpDistance+width)%width, (own_y+height)%height,width,height);
-		rmap.corner_mine_up_right=new RegionDouble(own_x+my_width-jumpDistance, own_y, 
+		rmap.NORTH_EAST_MINE=new RegionDouble(own_x+my_width-jumpDistance, own_y, 
 				own_x+my_width, own_y+jumpDistance,width,height);
 
 		//corner down left
-		rmap.corner_out_down_left_diag_center=new RegionDouble((own_x-jumpDistance+width)%width, (own_y+my_height+height)%height,
+		rmap.SOUTH_WEST_OUT=new RegionDouble((own_x-jumpDistance+width)%width, (own_y+my_height+height)%height,
 				(own_x+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
-		rmap.corner_mine_down_left=new RegionDouble(own_x, own_y+my_height-jumpDistance,
+		rmap.SOUTH_WEST_MINE=new RegionDouble(own_x, own_y+my_height-jumpDistance,
 				own_x+jumpDistance, own_y+my_height,width,height);
 
 		//corner down right
-		rmap.corner_out_down_right_diag_center=new RegionDouble((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
+		rmap.SOUTH_EAST_OUT=new RegionDouble((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
 				(own_x+my_width+jumpDistance+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
-		rmap.corner_mine_down_right=new RegionDouble(own_x+my_width-jumpDistance, own_y+my_height-jumpDistance,
+		rmap.SOUTH_EAST_MINE=new RegionDouble(own_x+my_width-jumpDistance, own_y+my_height-jumpDistance,
 				own_x+my_width,own_y+my_height,width,height);
 
-		rmap.left_out=new RegionDouble((own_x-jumpDistance+width)%width,(own_y+height)%height,
+		rmap.WEST_OUT=new RegionDouble((own_x-jumpDistance+width)%width,(own_y+height)%height,
 				(own_x+width)%width, ((own_y+my_height)+height)%height,width,height);
-		rmap.left_mine=new RegionDouble(own_x,own_y,
+		rmap.WEST_MINE=new RegionDouble(own_x,own_y,
 				own_x + jumpDistance , own_y+my_height,width,height);
 
-		rmap.right_out=new RegionDouble((own_x+my_width+width)%width,(own_y+height)%height,
+		rmap.EAST_OUT=new RegionDouble((own_x+my_width+width)%width,(own_y+height)%height,
 				(own_x+my_width+jumpDistance+width)%width, (own_y+my_height+height)%height,width,height);
-		rmap.right_mine=new RegionDouble(own_x + my_width - jumpDistance,own_y,
+		rmap.EAST_MINE=new RegionDouble(own_x + my_width - jumpDistance,own_y,
 				own_x +my_width , own_y+my_height,width,height);
 
-		rmap.up_out=new RegionDouble((own_x+width)%width, (own_y - jumpDistance+height)%height,
+		rmap.NORTH_OUT=new RegionDouble((own_x+width)%width, (own_y - jumpDistance+height)%height,
 				(own_x+ my_width +width)%width,(own_y+height)%height,width,height);
-		rmap.up_mine=new RegionDouble(own_x ,own_y,
+		rmap.NORTH_MINE=new RegionDouble(own_x ,own_y,
 				own_x+my_width, own_y + jumpDistance ,width,height);
 
-		rmap.down_out=new RegionDouble((own_x+width)%width,(own_y+my_height+height)%height,
+		rmap.SOUTH_OUT=new RegionDouble((own_x+width)%width,(own_y+my_height+height)%height,
 				(own_x+my_width+width)%width, (own_y+my_height+jumpDistance+height)%height,width,height);
-		rmap.down_mine=new RegionDouble(own_x,own_y+my_height-jumpDistance,
+		rmap.SOUTH_MINE=new RegionDouble(own_x,own_y+my_height-jumpDistance,
 				own_x+my_width, (own_y+my_height),width,height);
 
 		return true;
@@ -471,33 +471,33 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 		memorizeRegionOut();
 
 		//--> publishing the regions to correspondent topics for the neighbors
-		if(rmap.left_out!=null)
+		if(rmap.WEST_OUT!=null)
 		{
 			try 
 			{
-				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.left_mine,rmap.left_out,
+				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.WEST_MINE,rmap.WEST_OUT,
 						(sm.schedule.getSteps()-1),cellType,DistributedRegion.LEFT);
 
 				connWorker.publishToTopic(dr,topicPrefix+cellType+"L",name);
 
 			} catch (Exception e1) { e1.printStackTrace();}
 		}
-		if(rmap.right_out!=null)
+		if(rmap.EAST_OUT!=null)
 		{
 			try 
 			{
-				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.right_mine,rmap.right_out,
+				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.EAST_MINE,rmap.EAST_OUT,
 						(sm.schedule.getSteps()-1),cellType,DistributedRegion.RIGHT);				
 
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"R",name);
 
 			} catch (Exception e1) {e1.printStackTrace(); }
 		}
-		if(rmap.up_out!=null )
+		if(rmap.NORTH_OUT!=null )
 		{
 			try 
 			{
-				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.up_mine,rmap.up_out,
+				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.NORTH_MINE,rmap.NORTH_OUT,
 						(sm.schedule.getSteps()-1),cellType,DistributedRegion.UP);
 
 				connWorker.publishToTopic(dr,cellType.toString()+"U",name);
@@ -505,11 +505,11 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
 
-		if(rmap.down_out!=null )
+		if(rmap.SOUTH_OUT!=null )
 		{
 			try 
 			{
-				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.down_mine,rmap.down_out,
+				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.SOUTH_MINE,rmap.SOUTH_OUT,
 						(sm.schedule.getSteps()-1),cellType,DistributedRegion.DOWN);
 
 				connWorker.publishToTopic(dr,cellType.toString()+"D",name);
@@ -517,10 +517,10 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
 
-		if(rmap.corner_out_up_left_diag_center!=null)
+		if(rmap.NORTH_WEST_OUT!=null)
 		{
-			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.corner_mine_up_left,
-					rmap.corner_out_up_left_diag_center,
+			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.NORTH_WEST_MINE,
+					rmap.NORTH_WEST_OUT,
 					(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_UP_LEFT);
 			try 
 			{
@@ -529,10 +529,10 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 			} catch (Exception e1) { e1.printStackTrace();}
 
 		}
-		if(rmap.corner_out_up_right_diag_center!=null)
+		if(rmap.NORTH_EAST_OUT!=null)
 		{
-			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.corner_mine_up_right,
-					rmap.corner_out_up_right_diag_center,
+			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.NORTH_EAST_MINE,
+					rmap.NORTH_EAST_OUT,
 					(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_UP_RIGHT);
 			try 
 			{
@@ -541,20 +541,20 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
-		if( rmap.corner_out_down_left_diag_center!=null)
+		if( rmap.SOUTH_WEST_OUT!=null)
 		{
-			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.corner_mine_down_left,
-					rmap.corner_out_down_left_diag_center,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_LEFT);
+			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.SOUTH_WEST_MINE,
+					rmap.SOUTH_WEST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_LEFT);
 			try 
 			{
 				connWorker.publishToTopic(dr,cellType.toString()+"CDDL",name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
-		if(rmap.corner_out_down_right_diag_center!=null)
+		if(rmap.SOUTH_EAST_OUT!=null)
 		{
-			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.corner_mine_down_right,
-					rmap.corner_out_down_right_diag_center,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_RIGHT);
+			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.SOUTH_EAST_MINE,
+					rmap.SOUTH_EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_RIGHT);
 
 			try 
 			{				
@@ -718,93 +718,93 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 	private boolean setAgents(RemotePositionedAgent<Double2D> rm,Double2D location)
 	{
 
-		if(rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(location.x,location.y))
+		if(rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(location.x,location.y))
 		{
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
 			if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 				GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 
-			rmap.corner_mine_up_left.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-			rmap.left_mine.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+			rmap.NORTH_WEST_MINE.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+			rmap.WEST_MINE.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
 			myfield.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));	
-			return rmap.up_mine.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+			return rmap.NORTH_MINE.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
 		}
 		else
-			if(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(location.x,location.y))
+			if(rmap.NORTH_EAST_MINE!=null && rmap.NORTH_EAST_MINE.isMine(location.x,location.y))
 			{
 				if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 					tmp_zoom.add(rm);
 				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 					GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-				rmap.corner_mine_up_right.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-				rmap.right_mine.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+				rmap.NORTH_EAST_MINE.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+				rmap.EAST_MINE.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
 				myfield.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-				return rmap.up_mine.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+				return rmap.NORTH_MINE.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
 			}
 			else
-				if(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(location.x,location.y))
+				if(rmap.SOUTH_WEST_MINE!=null && rmap.SOUTH_WEST_MINE.isMine(location.x,location.y))
 				{
 					if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 						tmp_zoom.add(rm);
 					if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 						GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-					rmap.corner_mine_down_left.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-					rmap.left_mine.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+					rmap.SOUTH_WEST_MINE.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+					rmap.WEST_MINE.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
 					myfield.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-					return rmap.down_mine.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+					return rmap.SOUTH_MINE.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
 				}
 				else
-					if(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(location.x,location.y))
+					if(rmap.SOUTH_EAST_MINE!=null && rmap.SOUTH_EAST_MINE.isMine(location.x,location.y))
 					{
 						if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 							tmp_zoom.add(rm);
 						if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 							GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-						rmap.corner_mine_down_right.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-						rmap.right_mine.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+						rmap.SOUTH_EAST_MINE.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+						rmap.EAST_MINE.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
 						myfield.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-						return rmap.down_mine.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+						return rmap.SOUTH_MINE.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
 					}
 					else
-						if(rmap.left_mine != null && rmap.left_mine.isMine(location.x,location.y))
+						if(rmap.WEST_MINE != null && rmap.WEST_MINE.isMine(location.x,location.y))
 						{
 							if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 								tmp_zoom.add(rm);
 							if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 								GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 							myfield.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-							return rmap.left_mine.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+							return rmap.WEST_MINE.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
 						}
 						else
-							if(rmap.right_mine != null && rmap.right_mine.isMine(location.x,location.y))
+							if(rmap.EAST_MINE != null && rmap.EAST_MINE.isMine(location.x,location.y))
 							{
 								if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 									tmp_zoom.add(rm);
 								if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 									GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 								myfield.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-								return rmap.right_mine.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+								return rmap.EAST_MINE.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
 							}
 							else
-								if(rmap.up_mine != null && rmap.up_mine.isMine(location.x,location.y))
+								if(rmap.NORTH_MINE != null && rmap.NORTH_MINE.isMine(location.x,location.y))
 								{
 									if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 										tmp_zoom.add(rm);
 									if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 										GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 									myfield.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-									return rmap.up_mine.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+									return rmap.NORTH_MINE.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
 								}
 								else
-									if(rmap.down_mine != null && rmap.down_mine.isMine(location.x,location.y))
+									if(rmap.SOUTH_MINE != null && rmap.SOUTH_MINE.isMine(location.x,location.y))
 									{
 										if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 											tmp_zoom.add(rm);
 										if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 											GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 										myfield.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-										return rmap.down_mine.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+										return rmap.SOUTH_MINE.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
 									}
 									else
 										if(myfield.isMine(location.x,location.y))
@@ -816,29 +816,29 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 											return myfield.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
 										}
 										else
-											if(rmap.left_out!=null && rmap.left_out.isMine(location.x,location.y)) 
-												return rmap.left_out.addAgents(new EntryAgent<Double2D>(rm, location));
+											if(rmap.WEST_OUT!=null && rmap.WEST_OUT.isMine(location.x,location.y)) 
+												return rmap.WEST_OUT.addAgents(new EntryAgent<Double2D>(rm, location));
 											else
-												if(rmap.right_out!=null && rmap.right_out.isMine(location.x,location.y)) 
-													return rmap.right_out.addAgents(new EntryAgent<Double2D>(rm, location));
+												if(rmap.EAST_OUT!=null && rmap.EAST_OUT.isMine(location.x,location.y)) 
+													return rmap.EAST_OUT.addAgents(new EntryAgent<Double2D>(rm, location));
 												else
-													if(rmap.up_out!=null && rmap.up_out.isMine(location.x,location.y))
-														return rmap.up_out.addAgents(new EntryAgent<Double2D>(rm, location));
+													if(rmap.NORTH_OUT!=null && rmap.NORTH_OUT.isMine(location.x,location.y))
+														return rmap.NORTH_OUT.addAgents(new EntryAgent<Double2D>(rm, location));
 													else
-														if(rmap.down_out!=null && rmap.down_out.isMine(location.x,location.y))
-															return rmap.down_out.addAgents(new EntryAgent<Double2D>(rm, location));
+														if(rmap.SOUTH_OUT!=null && rmap.SOUTH_OUT.isMine(location.x,location.y))
+															return rmap.SOUTH_OUT.addAgents(new EntryAgent<Double2D>(rm, location));
 														else
-															if(rmap.corner_out_up_left_diag_center!=null && rmap.corner_out_up_left_diag_center.isMine(location.x,location.y)) 
-																return rmap.corner_out_up_left_diag_center.addAgents(new EntryAgent<Double2D>(rm, location));
+															if(rmap.NORTH_WEST_OUT!=null && rmap.NORTH_WEST_OUT.isMine(location.x,location.y)) 
+																return rmap.NORTH_WEST_OUT.addAgents(new EntryAgent<Double2D>(rm, location));
 															else 
-																if(rmap.corner_out_down_left_diag_center!=null && rmap.corner_out_down_left_diag_center.isMine(location.x,location.y)) 
-																	return rmap.corner_out_down_left_diag_center.addAgents(new EntryAgent<Double2D>(rm, location));
+																if(rmap.SOUTH_WEST_OUT!=null && rmap.SOUTH_WEST_OUT.isMine(location.x,location.y)) 
+																	return rmap.SOUTH_WEST_OUT.addAgents(new EntryAgent<Double2D>(rm, location));
 																else
-																	if(rmap.corner_out_up_right_diag_center!=null && rmap.corner_out_up_right_diag_center.isMine(location.x,location.y)) 
-																		return rmap.corner_out_up_right_diag_center.addAgents(new EntryAgent<Double2D>(rm, location));
+																	if(rmap.NORTH_EAST_OUT!=null && rmap.NORTH_EAST_OUT.isMine(location.x,location.y)) 
+																		return rmap.NORTH_EAST_OUT.addAgents(new EntryAgent<Double2D>(rm, location));
 																	else
-																		if(rmap.corner_out_down_right_diag_center!=null && rmap.corner_out_down_right_diag_center.isMine(location.x,location.y))
-																			return rmap.corner_out_down_right_diag_center.addAgents(new EntryAgent<Double2D>(rm, location));
+																		if(rmap.SOUTH_EAST_OUT!=null && rmap.SOUTH_EAST_OUT.isMine(location.x,location.y))
+																			return rmap.SOUTH_EAST_OUT.addAgents(new EntryAgent<Double2D>(rm, location));
 
 		return false;
 	}

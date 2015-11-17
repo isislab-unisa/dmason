@@ -383,22 +383,22 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testCornerMineUpLeft() throws DMasonException {
 
-		double i = toTest.rmap.corner_mine_up_left.upl_xx;
-		double j = toTest.rmap.corner_mine_up_left.upl_yy;
+		double i = toTest.rmap.NORTH_WEST_MINE.upl_xx;
+		double j = toTest.rmap.NORTH_WEST_MINE.upl_yy;
 
-		double iEnd = toTest.rmap.corner_mine_up_left.down_xx;
-		double jEnd = toTest.rmap.corner_mine_up_left.down_yy;
+		double iEnd = toTest.rmap.NORTH_WEST_MINE.down_xx;
+		double jEnd = toTest.rmap.NORTH_WEST_MINE.down_yy;
 
-		double stepI = (toTest.rmap.corner_mine_up_left.down_xx - toTest.rmap.corner_mine_up_left.upl_xx)
+		double stepI = (toTest.rmap.NORTH_WEST_MINE.down_xx - toTest.rmap.NORTH_WEST_MINE.upl_xx)
 				/ numLoop;
-		double stepJ = (toTest.rmap.corner_mine_up_left.down_yy - toTest.rmap.corner_mine_up_left.upl_yy)
+		double stepJ = (toTest.rmap.NORTH_WEST_MINE.down_yy - toTest.rmap.NORTH_WEST_MINE.upl_yy)
 				/ numLoop;
 
 		i += stepI;
 	
 		int count = 0;
 		while (i < iEnd) {
-			j = toTest.rmap.corner_mine_up_left.upl_yy + stepJ;
+			j = toTest.rmap.NORTH_WEST_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Double2D location = new Double2D(i, j);
 	
@@ -410,7 +410,7 @@ public class DContinuousGrid2DXYTester {
 			i += stepI;
 		}
 
-		assertEquals(count, toTest.rmap.corner_mine_up_left.size());
+		assertEquals(count, toTest.rmap.NORTH_WEST_MINE.size());
 	}
 
 	/**
@@ -420,8 +420,8 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testBoundaryValueCornerMineUpLeft() throws DMasonException {
 
-		double i = toTest.rmap.corner_mine_up_left.upl_xx;
-		double j = toTest.rmap.corner_mine_up_left.upl_yy;
+		double i = toTest.rmap.NORTH_WEST_MINE.upl_xx;
+		double j = toTest.rmap.NORTH_WEST_MINE.upl_yy;
 
 		Double2D location = new Double2D(i, j);
 
@@ -430,7 +430,7 @@ public class DContinuousGrid2DXYTester {
 						sa, /* SimState */ss));
 
 		assertEquals("agent is not created", 1,
-				toTest.rmap.corner_mine_up_left.size());
+				toTest.rmap.NORTH_WEST_MINE.size());
 
 	}
 
@@ -441,22 +441,22 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testCornerMineUpRight() throws DMasonException {
 
-		double i = toTest.rmap.corner_mine_up_right.upl_xx;
-		double j = toTest.rmap.corner_mine_up_right.upl_yy;
+		double i = toTest.rmap.NORTH_EAST_MINE.upl_xx;
+		double j = toTest.rmap.NORTH_EAST_MINE.upl_yy;
 
-		double iEnd = toTest.rmap.corner_mine_up_right.down_xx;
-		double jEnd = toTest.rmap.corner_mine_up_right.down_yy;
+		double iEnd = toTest.rmap.NORTH_EAST_MINE.down_xx;
+		double jEnd = toTest.rmap.NORTH_EAST_MINE.down_yy;
 
-		double stepI = (toTest.rmap.corner_mine_up_right.down_xx - toTest.rmap.corner_mine_up_right.upl_xx)
+		double stepI = (toTest.rmap.NORTH_EAST_MINE.down_xx - toTest.rmap.NORTH_EAST_MINE.upl_xx)
 				/ numLoop;
-		double stepJ = (toTest.rmap.corner_mine_up_right.down_yy - toTest.rmap.corner_mine_up_right.upl_yy)
+		double stepJ = (toTest.rmap.NORTH_EAST_MINE.down_yy - toTest.rmap.NORTH_EAST_MINE.upl_yy)
 				/ numLoop;
 
 		i += stepI;
 		
 		int count = 0;
 		while (i < iEnd) {
-			j = toTest.rmap.corner_mine_up_right.upl_yy + stepJ;
+			j = toTest.rmap.NORTH_EAST_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Double2D location = new Double2D(i, j);
 		
@@ -468,7 +468,7 @@ public class DContinuousGrid2DXYTester {
 			i += stepI;
 		}
 
-		assertEquals(count, toTest.rmap.corner_mine_up_right.size());
+		assertEquals(count, toTest.rmap.NORTH_EAST_MINE.size());
 	}
 
 	/**
@@ -478,8 +478,8 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testBoundaryValueCornerMineUpRight() throws DMasonException {
 
-		double i = toTest.rmap.corner_mine_up_right.upl_xx;
-		double j = toTest.rmap.corner_mine_up_right.upl_yy;
+		double i = toTest.rmap.NORTH_EAST_MINE.upl_xx;
+		double j = toTest.rmap.NORTH_EAST_MINE.upl_yy;
 
 		Double2D location = new Double2D(i, j);
 		
@@ -488,7 +488,7 @@ public class DContinuousGrid2DXYTester {
 						new StubRemotePositionedAgent(), /* SimState */ss));
 
 		assertEquals("agent is not created", 1,
-				toTest.rmap.corner_mine_up_right.size());
+				toTest.rmap.NORTH_EAST_MINE.size());
 
 	}
 
@@ -499,22 +499,22 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testCornerMineDownLeft() throws DMasonException {
 
-		double i = toTest.rmap.corner_mine_down_left.upl_xx;
-		double j = toTest.rmap.corner_mine_down_left.upl_yy;
+		double i = toTest.rmap.SOUTH_WEST_MINE.upl_xx;
+		double j = toTest.rmap.SOUTH_WEST_MINE.upl_yy;
 
-		double iEnd = toTest.rmap.corner_mine_down_left.down_xx;
-		double jEnd = toTest.rmap.corner_mine_down_left.down_yy;
+		double iEnd = toTest.rmap.SOUTH_WEST_MINE.down_xx;
+		double jEnd = toTest.rmap.SOUTH_WEST_MINE.down_yy;
 
-		double stepI = (toTest.rmap.corner_mine_down_left.down_xx - toTest.rmap.corner_mine_down_left.upl_xx)
+		double stepI = (toTest.rmap.SOUTH_WEST_MINE.down_xx - toTest.rmap.SOUTH_WEST_MINE.upl_xx)
 				/ numLoop;
-		double stepJ = (toTest.rmap.corner_mine_down_left.down_yy - toTest.rmap.corner_mine_down_left.upl_yy)
+		double stepJ = (toTest.rmap.SOUTH_WEST_MINE.down_yy - toTest.rmap.SOUTH_WEST_MINE.upl_yy)
 				/ numLoop;
 
 		i += stepI;
 		
 		int count = 0;
 		while (i < iEnd) {
-			j = toTest.rmap.corner_mine_down_left.upl_yy + stepJ;
+			j = toTest.rmap.SOUTH_WEST_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Double2D location = new Double2D(i, j);
 			
@@ -526,7 +526,7 @@ public class DContinuousGrid2DXYTester {
 			i += stepI;
 		}
 
-		assertEquals(count, toTest.rmap.corner_mine_down_left.size());
+		assertEquals(count, toTest.rmap.SOUTH_WEST_MINE.size());
 	}
 
 	/**
@@ -536,8 +536,8 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testBoundaryValueCornerMineDownLeft() throws DMasonException {
 
-		double i = toTest.rmap.corner_mine_down_left.upl_xx;
-		double j = toTest.rmap.corner_mine_down_left.upl_yy;
+		double i = toTest.rmap.SOUTH_WEST_MINE.upl_xx;
+		double j = toTest.rmap.SOUTH_WEST_MINE.upl_yy;
 
 		Double2D location = new Double2D(i, j);
 		
@@ -546,7 +546,7 @@ public class DContinuousGrid2DXYTester {
 						new StubRemotePositionedAgent(), /* SimState */ss));
 
 		assertEquals("agent is not created", 1,
-				toTest.rmap.corner_mine_down_left.size());
+				toTest.rmap.SOUTH_WEST_MINE.size());
 
 	}
 
@@ -557,22 +557,22 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testCornerMineDownRight() throws DMasonException {
 
-		double i = toTest.rmap.corner_mine_down_right.upl_xx;
-		double j = toTest.rmap.corner_mine_down_right.upl_yy;
+		double i = toTest.rmap.SOUTH_EAST_MINE.upl_xx;
+		double j = toTest.rmap.SOUTH_EAST_MINE.upl_yy;
 
-		double iEnd = toTest.rmap.corner_mine_down_right.down_xx;
-		double jEnd = toTest.rmap.corner_mine_down_right.down_yy;
+		double iEnd = toTest.rmap.SOUTH_EAST_MINE.down_xx;
+		double jEnd = toTest.rmap.SOUTH_EAST_MINE.down_yy;
 
-		double stepI = (toTest.rmap.corner_mine_down_right.down_xx - toTest.rmap.corner_mine_down_right.upl_xx)
+		double stepI = (toTest.rmap.SOUTH_EAST_MINE.down_xx - toTest.rmap.SOUTH_EAST_MINE.upl_xx)
 				/ numLoop;
-		double stepJ = (toTest.rmap.corner_mine_down_right.down_yy - toTest.rmap.corner_mine_down_right.upl_yy)
+		double stepJ = (toTest.rmap.SOUTH_EAST_MINE.down_yy - toTest.rmap.SOUTH_EAST_MINE.upl_yy)
 				/ numLoop;
 
 		i += stepI;
 		
 		int count = 0;
 		while (i < iEnd) {
-			j = toTest.rmap.corner_mine_down_right.upl_yy + stepJ;
+			j = toTest.rmap.SOUTH_EAST_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Double2D location = new Double2D(i, j);
 
@@ -584,7 +584,7 @@ public class DContinuousGrid2DXYTester {
 			i += stepI;
 		}
 
-		assertEquals(count, toTest.rmap.corner_mine_down_right.size());
+		assertEquals(count, toTest.rmap.SOUTH_EAST_MINE.size());
 	}
 
 	/**
@@ -594,8 +594,8 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testBoundaryValueCornerMineDownRight() throws DMasonException {
 
-		double i = toTest.rmap.corner_mine_down_right.upl_xx;
-		double j = toTest.rmap.corner_mine_down_right.upl_yy;
+		double i = toTest.rmap.SOUTH_EAST_MINE.upl_xx;
+		double j = toTest.rmap.SOUTH_EAST_MINE.upl_yy;
 
 		Double2D location = new Double2D(i, j);
 		
@@ -604,7 +604,7 @@ public class DContinuousGrid2DXYTester {
 						new StubRemotePositionedAgent(), /* SimState */ss));
 
 		assertEquals("agent is not created", 1,
-				toTest.rmap.corner_mine_down_right.size());
+				toTest.rmap.SOUTH_EAST_MINE.size());
 
 	}
 
@@ -615,11 +615,11 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testDownMine() throws DMasonException {
 
-		double i = toTest.rmap.down_mine.upl_xx;
-		double j = toTest.rmap.down_mine.upl_yy;
+		double i = toTest.rmap.SOUTH_MINE.upl_xx;
+		double j = toTest.rmap.SOUTH_MINE.upl_yy;
 
-		double iEnd = toTest.rmap.down_mine.down_xx;
-		double jEnd = toTest.rmap.down_mine.down_yy;
+		double iEnd = toTest.rmap.SOUTH_MINE.down_xx;
+		double jEnd = toTest.rmap.SOUTH_MINE.down_yy;
 
 		double stepI = (iEnd - i) / numLoop;
 		double stepJ = (jEnd - j) / numLoop;
@@ -628,7 +628,7 @@ public class DContinuousGrid2DXYTester {
 		
 		int count = 0;
 		while (i < iEnd) {
-			j = toTest.rmap.down_mine.upl_yy + stepJ;
+			j = toTest.rmap.SOUTH_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Double2D location = new Double2D(i, j);
 		
@@ -641,7 +641,7 @@ public class DContinuousGrid2DXYTester {
 			i += stepI;
 		}
 
-		assertEquals(count, toTest.rmap.down_mine.size());
+		assertEquals(count, toTest.rmap.SOUTH_MINE.size());
 	}
 
 	/**
@@ -651,8 +651,8 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testBoundaryValueDownMine() throws DMasonException {
 
-		double i = toTest.rmap.down_mine.upl_xx;
-		double j = toTest.rmap.down_mine.upl_yy;
+		double i = toTest.rmap.SOUTH_MINE.upl_xx;
+		double j = toTest.rmap.SOUTH_MINE.upl_yy;
 
 		Double2D location = new Double2D(i, j);
 
@@ -660,7 +660,7 @@ public class DContinuousGrid2DXYTester {
 				toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
 						new StubRemotePositionedAgent(), /* SimState */ss));
 
-		assertEquals("agent is not created", 1, toTest.rmap.down_mine.size());
+		assertEquals("agent is not created", 1, toTest.rmap.SOUTH_MINE.size());
 
 	}
 
@@ -671,22 +671,22 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testLeftMine() throws DMasonException {
 
-		double i = toTest.rmap.left_mine.upl_xx;
-		double j = toTest.rmap.left_mine.upl_yy;
+		double i = toTest.rmap.WEST_MINE.upl_xx;
+		double j = toTest.rmap.WEST_MINE.upl_yy;
 
-		double iEnd = toTest.rmap.left_mine.down_xx;
-		double jEnd = toTest.rmap.left_mine.down_yy;
+		double iEnd = toTest.rmap.WEST_MINE.down_xx;
+		double jEnd = toTest.rmap.WEST_MINE.down_yy;
 
-		double stepI = (toTest.rmap.left_mine.down_xx - toTest.rmap.left_mine.upl_xx)
+		double stepI = (toTest.rmap.WEST_MINE.down_xx - toTest.rmap.WEST_MINE.upl_xx)
 				/ numLoop;
-		double stepJ = (toTest.rmap.left_mine.down_yy - toTest.rmap.left_mine.upl_yy)
+		double stepJ = (toTest.rmap.WEST_MINE.down_yy - toTest.rmap.WEST_MINE.upl_yy)
 				/ numLoop;
 
 		i += stepI;
 
 		int count = 0;
 		while (i < iEnd) {
-			j = toTest.rmap.left_mine.upl_yy + stepJ;
+			j = toTest.rmap.WEST_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Double2D location = new Double2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
@@ -697,7 +697,7 @@ public class DContinuousGrid2DXYTester {
 			i += stepI;
 		}
 
-		assertEquals(count, toTest.rmap.left_mine.size());
+		assertEquals(count, toTest.rmap.WEST_MINE.size());
 	}
 
 	/**
@@ -707,8 +707,8 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testBoundaryValueLeftMine() throws DMasonException {
 
-		double i = toTest.rmap.left_mine.upl_xx;
-		double j = toTest.rmap.left_mine.upl_yy;
+		double i = toTest.rmap.WEST_MINE.upl_xx;
+		double j = toTest.rmap.WEST_MINE.upl_yy;
 
 		Double2D location = new Double2D(i, j);
 
@@ -716,7 +716,7 @@ public class DContinuousGrid2DXYTester {
 				toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
 						new StubRemotePositionedAgent(), /* SimState */ss));
 
-		assertEquals("agent is not created", 1, toTest.rmap.left_mine.size());
+		assertEquals("agent is not created", 1, toTest.rmap.WEST_MINE.size());
 
 	}
 
@@ -727,22 +727,22 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testRightMine() throws DMasonException {
 
-		double i = toTest.rmap.right_mine.upl_xx;
-		double j = toTest.rmap.right_mine.upl_yy;
+		double i = toTest.rmap.EAST_MINE.upl_xx;
+		double j = toTest.rmap.EAST_MINE.upl_yy;
 
-		double iEnd = toTest.rmap.right_mine.down_xx;
-		double jEnd = toTest.rmap.right_mine.down_yy;
+		double iEnd = toTest.rmap.EAST_MINE.down_xx;
+		double jEnd = toTest.rmap.EAST_MINE.down_yy;
 
-		double stepI = (toTest.rmap.right_mine.down_xx - toTest.rmap.right_mine.upl_xx)
+		double stepI = (toTest.rmap.EAST_MINE.down_xx - toTest.rmap.EAST_MINE.upl_xx)
 				/ numLoop;
-		double stepJ = (toTest.rmap.right_mine.down_yy - toTest.rmap.right_mine.upl_yy)
+		double stepJ = (toTest.rmap.EAST_MINE.down_yy - toTest.rmap.EAST_MINE.upl_yy)
 				/ numLoop;
 
 		i += stepI;
 
 		int count = 0;
 		while (i < iEnd) {
-			j = toTest.rmap.right_mine.upl_yy + stepJ;
+			j = toTest.rmap.EAST_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Double2D location = new Double2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
@@ -753,7 +753,7 @@ public class DContinuousGrid2DXYTester {
 			i += stepI;
 		}
 
-		assertEquals(count, toTest.rmap.right_mine.size());
+		assertEquals(count, toTest.rmap.EAST_MINE.size());
 	}
 
 	/**
@@ -763,8 +763,8 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testBoundaryValueRightMine() throws DMasonException {
 
-		double i = toTest.rmap.right_mine.upl_xx;
-		double j = toTest.rmap.right_mine.upl_yy;
+		double i = toTest.rmap.EAST_MINE.upl_xx;
+		double j = toTest.rmap.EAST_MINE.upl_yy;
 
 		Double2D location = new Double2D(i, j);
 
@@ -772,7 +772,7 @@ public class DContinuousGrid2DXYTester {
 				toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
 						new StubRemotePositionedAgent(), /* SimState */ss));
 
-		assertEquals("agent is not created", 1, toTest.rmap.right_mine.size());
+		assertEquals("agent is not created", 1, toTest.rmap.EAST_MINE.size());
 
 	}
 
@@ -783,22 +783,22 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testUpMine() throws DMasonException {
 
-		double i = toTest.rmap.up_mine.upl_xx;
-		double j = toTest.rmap.up_mine.upl_yy;
+		double i = toTest.rmap.NORTH_MINE.upl_xx;
+		double j = toTest.rmap.NORTH_MINE.upl_yy;
 
-		double iEnd = toTest.rmap.up_mine.down_xx;
-		double jEnd = toTest.rmap.up_mine.down_yy;
+		double iEnd = toTest.rmap.NORTH_MINE.down_xx;
+		double jEnd = toTest.rmap.NORTH_MINE.down_yy;
 
-		double stepI = (toTest.rmap.up_mine.down_xx - toTest.rmap.up_mine.upl_xx)
+		double stepI = (toTest.rmap.NORTH_MINE.down_xx - toTest.rmap.NORTH_MINE.upl_xx)
 				/ numLoop;
-		double stepJ = (toTest.rmap.up_mine.down_yy - toTest.rmap.up_mine.upl_yy)
+		double stepJ = (toTest.rmap.NORTH_MINE.down_yy - toTest.rmap.NORTH_MINE.upl_yy)
 				/ numLoop;
 
 		i += stepI;
 
 		int count = 0;
 		while (i < iEnd) {
-			j = stepJ + toTest.rmap.up_mine.upl_yy;
+			j = stepJ + toTest.rmap.NORTH_MINE.upl_yy;
 			while (j < jEnd) {
 				Double2D location = new Double2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
@@ -808,7 +808,7 @@ public class DContinuousGrid2DXYTester {
 			}
 			i += stepI;
 		}
-		assertEquals(count, toTest.rmap.up_mine.size());
+		assertEquals(count, toTest.rmap.NORTH_MINE.size());
 
 	}
 
@@ -819,8 +819,8 @@ public class DContinuousGrid2DXYTester {
 	@Test
 	public void testBoundaryValueUpMine() throws DMasonException {
 
-		double i = toTest.rmap.up_mine.upl_xx;
-		double j = toTest.rmap.up_mine.upl_yy;
+		double i = toTest.rmap.NORTH_MINE.upl_xx;
+		double j = toTest.rmap.NORTH_MINE.upl_yy;
 
 		Double2D location = new Double2D(i, j);
 
@@ -828,7 +828,7 @@ public class DContinuousGrid2DXYTester {
 				toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
 						new StubRemotePositionedAgent(), /* SimState */ss));
 
-		assertEquals("agent is not created", 1, toTest.rmap.up_mine.size());
+		assertEquals("agent is not created", 1, toTest.rmap.NORTH_MINE.size());
 
 	}
 
@@ -838,11 +838,11 @@ public class DContinuousGrid2DXYTester {
 	 */
 	@Test
 	public void testSetDistributedObjectLocationCongruenceSize() throws DMasonException {
-		double i = toTest.rmap.up_mine.upl_xx;
-		double j = toTest.rmap.up_mine.upl_yy;
+		double i = toTest.rmap.NORTH_MINE.upl_xx;
+		double j = toTest.rmap.NORTH_MINE.upl_yy;
 
-		double stepI = (toTest.rmap.up_mine.down_xx - toTest.rmap.up_mine.upl_xx) / 3;
-		double stepJ = (toTest.rmap.up_mine.down_yy - toTest.rmap.up_mine.upl_yy) / 3;
+		double stepI = (toTest.rmap.NORTH_MINE.down_xx - toTest.rmap.NORTH_MINE.upl_xx) / 3;
+		double stepJ = (toTest.rmap.NORTH_MINE.down_yy - toTest.rmap.NORTH_MINE.upl_yy) / 3;
 
 		Double2D location = new Double2D(i, j);
 
@@ -857,7 +857,7 @@ public class DContinuousGrid2DXYTester {
 		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
 				sa, /* SimState */ss);
 
-		assertEquals("duplication of agents", 1, toTest.rmap.up_mine.size());
+		assertEquals("duplication of agents", 1, toTest.rmap.NORTH_MINE.size());
 
 	}
 
@@ -868,11 +868,11 @@ public class DContinuousGrid2DXYTester {
 	 */
 	@Deprecated
 	public void testDoubleSetDistributedObjectLocationGodAgent() throws DMasonException {
-		double i = toTest.rmap.up_mine.upl_xx;
-		double j = toTest.rmap.up_mine.upl_yy;
+		double i = toTest.rmap.NORTH_MINE.upl_xx;
+		double j = toTest.rmap.NORTH_MINE.upl_yy;
 
-		double stepI = (toTest.rmap.up_mine.down_xx - toTest.rmap.up_mine.upl_xx) / 4;
-		double stepJ = (toTest.rmap.up_mine.down_yy - toTest.rmap.up_mine.upl_yy) / 4;
+		double stepI = (toTest.rmap.NORTH_MINE.down_xx - toTest.rmap.NORTH_MINE.upl_xx) / 4;
+		double stepJ = (toTest.rmap.NORTH_MINE.down_yy - toTest.rmap.NORTH_MINE.upl_yy) / 4;
 
 		Double2D location = new Double2D(i, j);
 
@@ -896,7 +896,7 @@ public class DContinuousGrid2DXYTester {
 				new StubRemotePositionedAgent(), /* SimState */ss);
 
 		assertNotSame("the agent is in two places at once",
-				toTest.rmap.up_mine.get(0), toTest.rmap.up_mine.get(1));
+				toTest.rmap.NORTH_MINE.get(0), toTest.rmap.NORTH_MINE.get(1));
 
 	}
 
@@ -906,11 +906,11 @@ public class DContinuousGrid2DXYTester {
 	 */
 	@Deprecated
 	public void testSetDistributedObjectLocationChangePosition() throws DMasonException {
-		double i = toTest.rmap.up_mine.upl_xx;
-		double j = toTest.rmap.up_mine.upl_yy;
+		double i = toTest.rmap.NORTH_MINE.upl_xx;
+		double j = toTest.rmap.NORTH_MINE.upl_yy;
 
-		double stepI = (toTest.rmap.up_mine.down_xx - toTest.rmap.up_mine.upl_xx) / 4;
-		double stepJ = (toTest.rmap.up_mine.down_yy - toTest.rmap.up_mine.upl_yy) / 4;
+		double stepI = (toTest.rmap.NORTH_MINE.down_xx - toTest.rmap.NORTH_MINE.upl_xx) / 4;
+		double stepJ = (toTest.rmap.NORTH_MINE.down_yy - toTest.rmap.NORTH_MINE.upl_yy) / 4;
 
 		Double2D location = new Double2D(i, j);
 
@@ -926,7 +926,7 @@ public class DContinuousGrid2DXYTester {
 				sa, /* SimState */ss);
 
 		assertNotSame("the method has not changed the position",
-				toTest.rmap.up_mine.get(sa.id).l, toTest.rmap.up_mine.get(sa.id).l);
+				toTest.rmap.NORTH_MINE.get(sa.id).l, toTest.rmap.NORTH_MINE.get(sa.id).l);
 	}
 
 	/**
@@ -953,11 +953,11 @@ public class DContinuousGrid2DXYTester {
 				"test", "", true);
 
 
-		Double x1 = toTest.rmap.corner_mine_up_left.getUpl_xx();//toTest.myfield.getUpl_xx();
-		Double y1 = toTest.rmap.corner_mine_up_left.getUpl_yy();
+		Double x1 = toTest.rmap.NORTH_WEST_MINE.getUpl_xx();//toTest.myfield.getUpl_xx();
+		Double y1 = toTest.rmap.NORTH_WEST_MINE.getUpl_yy();
 
-		Double x2 = toTest.rmap.corner_mine_down_right.getDown_xx();
-		Double y2 = toTest.rmap.corner_mine_down_right.getDown_yy();
+		Double x2 = toTest.rmap.SOUTH_EAST_MINE.getDown_xx();
+		Double y2 = toTest.rmap.SOUTH_EAST_MINE.getDown_yy();
 		
 		
 		
@@ -1069,8 +1069,8 @@ public class DContinuousGrid2DXYTester {
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
 
-		Double x2 = toTest.rmap.up_mine.down_xx;
-		Double x1 = toTest.rmap.up_mine.upl_xx;
+		Double x2 = toTest.rmap.NORTH_MINE.down_xx;
+		Double x1 = toTest.rmap.NORTH_MINE.upl_xx;
 
 		// find distance between 2 points
 		Double side = x2 - x1;
@@ -1096,8 +1096,8 @@ public class DContinuousGrid2DXYTester {
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
 
-		Double x2 = toTest.rmap.up_mine.down_xx;
-		Double x1 = toTest.rmap.up_mine.upl_xx;
+		Double x2 = toTest.rmap.NORTH_MINE.down_xx;
+		Double x1 = toTest.rmap.NORTH_MINE.upl_xx;
 
 		// find distance between 2 points
 		Double side = x2 - x1;
@@ -1127,8 +1127,8 @@ public class DContinuousGrid2DXYTester {
 							0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 							"test", "", true);
 
-					Double x2 = toTest.rmap.up_mine.down_xx;
-					Double x1 = toTest.rmap.up_mine.upl_xx;
+					Double x2 = toTest.rmap.NORTH_MINE.down_xx;
+					Double x1 = toTest.rmap.NORTH_MINE.upl_xx;
 
 					// find distance between 2 points
 					Double side = x2 - x1;
@@ -1157,8 +1157,8 @@ public class DContinuousGrid2DXYTester {
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
 
-		Double x2 = toTest.rmap.down_mine.down_xx;
-		Double x1 = toTest.rmap.down_mine.upl_xx;
+		Double x2 = toTest.rmap.SOUTH_MINE.down_xx;
+		Double x1 = toTest.rmap.SOUTH_MINE.upl_xx;
 
 		// find distance between 2 points
 		Double side = x2 - x1;
@@ -1184,8 +1184,8 @@ public class DContinuousGrid2DXYTester {
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
 
-		Double x2 = toTest.rmap.down_mine.down_xx;
-		Double x1 = toTest.rmap.down_mine.upl_xx;
+		Double x2 = toTest.rmap.SOUTH_MINE.down_xx;
+		Double x1 = toTest.rmap.SOUTH_MINE.upl_xx;
 
 		// find distance between 2 points
 		Double side = x2 - x1;
@@ -1214,8 +1214,8 @@ public class DContinuousGrid2DXYTester {
 							0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 							"test", "", true);
 
-					Double x2 = toTest.rmap.down_mine.down_xx;
-					Double x1 = toTest.rmap.down_mine.upl_xx;
+					Double x2 = toTest.rmap.SOUTH_MINE.down_xx;
+					Double x1 = toTest.rmap.SOUTH_MINE.upl_xx;
 
 					// find distance between 2 points
 					Double side = x2 - x1;
@@ -1244,8 +1244,8 @@ public class DContinuousGrid2DXYTester {
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
 
-		Double x2 = toTest.rmap.left_mine.down_yy;
-		Double x1 = toTest.rmap.left_mine.upl_yy;
+		Double x2 = toTest.rmap.WEST_MINE.down_yy;
+		Double x1 = toTest.rmap.WEST_MINE.upl_yy;
 
 		// find distance between 2 points
 		Double side = x2 - x1;
@@ -1271,8 +1271,8 @@ public class DContinuousGrid2DXYTester {
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
 
-		Double x2 = toTest.rmap.left_mine.down_yy;
-		Double x1 = toTest.rmap.left_mine.upl_yy;
+		Double x2 = toTest.rmap.WEST_MINE.down_yy;
+		Double x1 = toTest.rmap.WEST_MINE.upl_yy;
 
 		// find distance between 2 points
 		Double side = x2 - x1;
@@ -1301,8 +1301,8 @@ public class DContinuousGrid2DXYTester {
 							0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 							"test", "", true);
 
-					Double x2 = toTest.rmap.left_mine.down_yy;
-					Double x1 = toTest.rmap.left_mine.upl_yy;
+					Double x2 = toTest.rmap.WEST_MINE.down_yy;
+					Double x1 = toTest.rmap.WEST_MINE.upl_yy;
 
 					// find distance between 2 points
 					Double side = x2 - x1;
@@ -1331,8 +1331,8 @@ public class DContinuousGrid2DXYTester {
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
 
-		Double x2 = toTest.rmap.right_mine.down_yy;
-		Double x1 = toTest.rmap.right_mine.upl_yy;
+		Double x2 = toTest.rmap.EAST_MINE.down_yy;
+		Double x1 = toTest.rmap.EAST_MINE.upl_yy;
 
 		// find distance between 2 points
 		Double side = x2 - x1;
@@ -1358,8 +1358,8 @@ public class DContinuousGrid2DXYTester {
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
 
-		Double x2 = toTest.rmap.right_mine.down_yy;
-		Double x1 = toTest.rmap.right_mine.upl_yy;
+		Double x2 = toTest.rmap.EAST_MINE.down_yy;
+		Double x1 = toTest.rmap.EAST_MINE.upl_yy;
 
 		// find distance between 2 points
 		Double side = x2 - x1;
@@ -1389,8 +1389,8 @@ public class DContinuousGrid2DXYTester {
 							0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 							"test", "", true);
 
-					Double x2 = toTest.rmap.right_mine.down_yy;
-					Double x1 = toTest.rmap.right_mine.upl_yy;
+					Double x2 = toTest.rmap.EAST_MINE.down_yy;
+					Double x1 = toTest.rmap.EAST_MINE.upl_yy;
 
 					// find distance between 2 points
 					Double side = x2 - x1;
@@ -1416,8 +1416,8 @@ public class DContinuousGrid2DXYTester {
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
 
-		Double x2 = toTest.rmap.up_out.down_xx;
-		Double x1 = toTest.rmap.up_out.upl_xx;
+		Double x2 = toTest.rmap.NORTH_OUT.down_xx;
+		Double x1 = toTest.rmap.NORTH_OUT.upl_xx;
 
 		// find distance between 2 points
 		Double side = x2 - x1;
@@ -1443,8 +1443,8 @@ public class DContinuousGrid2DXYTester {
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
 
-		Double x2 = toTest.rmap.up_out.down_xx;
-		Double x1 = toTest.rmap.up_out.upl_xx;
+		Double x2 = toTest.rmap.NORTH_OUT.down_xx;
+		Double x1 = toTest.rmap.NORTH_OUT.upl_xx;
 
 		// find distance between 2 points
 		Double side = x2 - x1;
@@ -1473,8 +1473,8 @@ public class DContinuousGrid2DXYTester {
 							0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 							"test", "", true);
 
-					Double x2 = toTest.rmap.up_out.down_xx;
-					Double x1 = toTest.rmap.up_out.upl_xx;
+					Double x2 = toTest.rmap.NORTH_OUT.down_xx;
+					Double x1 = toTest.rmap.NORTH_OUT.upl_xx;
 
 					// find distance between 2 points
 					Double side = x2 - x1;
@@ -1503,8 +1503,8 @@ public class DContinuousGrid2DXYTester {
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
 
-		Double x2 = toTest.rmap.down_out.down_xx;
-		Double x1 = toTest.rmap.down_out.upl_xx;
+		Double x2 = toTest.rmap.SOUTH_OUT.down_xx;
+		Double x1 = toTest.rmap.SOUTH_OUT.upl_xx;
 
 		// find distance between 2 points
 		Double side = x2 - x1;
@@ -1530,8 +1530,8 @@ public class DContinuousGrid2DXYTester {
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
 
-		Double x2 = toTest.rmap.down_out.down_xx;
-		Double x1 = toTest.rmap.down_out.upl_xx;
+		Double x2 = toTest.rmap.SOUTH_OUT.down_xx;
+		Double x1 = toTest.rmap.SOUTH_OUT.upl_xx;
 
 		// find distance between 2 points
 		Double side = x2 - x1;
@@ -1561,8 +1561,8 @@ public class DContinuousGrid2DXYTester {
 							0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 							"test", "", true);
 
-					Double x2 = toTest.rmap.down_out.down_xx;
-					Double x1 = toTest.rmap.down_out.upl_xx;
+					Double x2 = toTest.rmap.SOUTH_OUT.down_xx;
+					Double x1 = toTest.rmap.SOUTH_OUT.upl_xx;
 
 					// find distance between 2 points
 					Double side = x2 - x1;
@@ -1591,8 +1591,8 @@ public class DContinuousGrid2DXYTester {
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
 
-		Double x2 = toTest.rmap.left_out.down_yy;
-		Double x1 = toTest.rmap.left_out.upl_yy;
+		Double x2 = toTest.rmap.WEST_OUT.down_yy;
+		Double x1 = toTest.rmap.WEST_OUT.upl_yy;
 
 		// find distance between 2 points
 		Double side = x2 - x1;
@@ -1618,8 +1618,8 @@ public class DContinuousGrid2DXYTester {
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
 
-		Double x2 = toTest.rmap.left_out.down_yy;
-		Double x1 = toTest.rmap.left_out.upl_yy;
+		Double x2 = toTest.rmap.WEST_OUT.down_yy;
+		Double x1 = toTest.rmap.WEST_OUT.upl_yy;
 
 		// find distance between 2 points
 		Double side = x2 - x1;
@@ -1649,8 +1649,8 @@ public class DContinuousGrid2DXYTester {
 							0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 							"test", "", true);
 
-					Double x2 = toTest.rmap.left_out.down_yy;
-					Double x1 = toTest.rmap.left_out.upl_yy;
+					Double x2 = toTest.rmap.WEST_OUT.down_yy;
+					Double x1 = toTest.rmap.WEST_OUT.upl_yy;
 
 					// find distance between 2 points
 					Double side = x2 - x1;
@@ -1679,8 +1679,8 @@ public class DContinuousGrid2DXYTester {
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
 
-		Double x2 = toTest.rmap.right_out.down_yy;
-		Double x1 = toTest.rmap.right_out.upl_yy;
+		Double x2 = toTest.rmap.EAST_OUT.down_yy;
+		Double x1 = toTest.rmap.EAST_OUT.upl_yy;
 
 		// find distance between 2 points
 		Double side = x2 - x1;
@@ -1703,8 +1703,8 @@ public class DContinuousGrid2DXYTester {
 				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 				"test", "", true);
 
-		Double x2 = toTest.rmap.right_out.down_yy;
-		Double x1 = toTest.rmap.right_out.upl_yy;
+		Double x2 = toTest.rmap.EAST_OUT.down_yy;
+		Double x1 = toTest.rmap.EAST_OUT.upl_yy;
 
 		// find distance between 2 points
 		Double side = x2 - x1;
@@ -1733,8 +1733,8 @@ public class DContinuousGrid2DXYTester {
 							0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
 							"test", "", true);
 
-					Double x2 = toTest.rmap.right_out.down_yy;
-					Double x1 = toTest.rmap.right_out.upl_yy;
+					Double x2 = toTest.rmap.EAST_OUT.down_yy;
+					Double x1 = toTest.rmap.EAST_OUT.upl_yy;
 
 					// find distance between 2 points
 					Double side = x2 - x1;
@@ -1759,10 +1759,10 @@ public class DContinuousGrid2DXYTester {
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
 
-			Double x1 = toTest.rmap.corner_mine_down_left.down_xx;
-			Double y1 = toTest.rmap.corner_mine_down_left.down_yy;
-			Double x2 = toTest.rmap.corner_mine_down_left.upl_xx;
-			Double y2 = toTest.rmap.corner_mine_down_left.upl_yy;
+			Double x1 = toTest.rmap.SOUTH_WEST_MINE.down_xx;
+			Double y1 = toTest.rmap.SOUTH_WEST_MINE.down_yy;
+			Double x2 = toTest.rmap.SOUTH_WEST_MINE.upl_xx;
+			Double y2 = toTest.rmap.SOUTH_WEST_MINE.upl_yy;
 
 			// find diagonal with the theorem of distance between 2
 			// points
@@ -1791,10 +1791,10 @@ public class DContinuousGrid2DXYTester {
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
 
-			Double x1 = toTest.rmap.corner_mine_down_right.down_xx;
-			Double y1 = toTest.rmap.corner_mine_down_right.down_yy;
-			Double x2 = toTest.rmap.corner_mine_down_right.upl_xx;
-			Double y2 = toTest.rmap.corner_mine_down_right.upl_yy;
+			Double x1 = toTest.rmap.SOUTH_EAST_MINE.down_xx;
+			Double y1 = toTest.rmap.SOUTH_EAST_MINE.down_yy;
+			Double x2 = toTest.rmap.SOUTH_EAST_MINE.upl_xx;
+			Double y2 = toTest.rmap.SOUTH_EAST_MINE.upl_yy;
 
 			// find diagonal with the theorem of distance between 2
 			// points
@@ -1823,10 +1823,10 @@ public class DContinuousGrid2DXYTester {
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
 
-			Double x1 = toTest.rmap.corner_mine_up_left.down_xx;
-			Double y1 = toTest.rmap.corner_mine_up_left.down_yy;
-			Double x2 = toTest.rmap.corner_mine_up_left.upl_xx;
-			Double y2 = toTest.rmap.corner_mine_up_left.upl_yy;
+			Double x1 = toTest.rmap.NORTH_WEST_MINE.down_xx;
+			Double y1 = toTest.rmap.NORTH_WEST_MINE.down_yy;
+			Double x2 = toTest.rmap.NORTH_WEST_MINE.upl_xx;
+			Double y2 = toTest.rmap.NORTH_WEST_MINE.upl_yy;
 
 			// find diagonal with the theorem of distance between 2
 			// points
@@ -1855,10 +1855,10 @@ public class DContinuousGrid2DXYTester {
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
 
-			Double x1 = toTest.rmap.corner_mine_up_right.down_xx;
-			Double y1 = toTest.rmap.corner_mine_up_right.down_yy;
-			Double x2 = toTest.rmap.corner_mine_up_right.upl_xx;
-			Double y2 = toTest.rmap.corner_mine_up_right.upl_yy;
+			Double x1 = toTest.rmap.NORTH_EAST_MINE.down_xx;
+			Double y1 = toTest.rmap.NORTH_EAST_MINE.down_yy;
+			Double x2 = toTest.rmap.NORTH_EAST_MINE.upl_xx;
+			Double y2 = toTest.rmap.NORTH_EAST_MINE.upl_yy;
 
 			// find diagonal with the theorem of distance between 2
 			// points
@@ -1887,10 +1887,10 @@ public class DContinuousGrid2DXYTester {
 					0.5, 10, 10, ss, i, 0, 0, 1, 1, mode,
 					"test", "", true);
 
-			Double x1 = toTest.rmap.corner_out_down_left_diag_center.down_xx;
-			Double y1 = toTest.rmap.corner_out_down_left_diag_center.down_yy;
-			Double x2 = toTest.rmap.corner_out_down_left_diag_center.upl_xx;
-			Double y2 = toTest.rmap.corner_out_down_left_diag_center.upl_yy;
+			Double x1 = toTest.rmap.SOUTH_WEST_OUT.down_xx;
+			Double y1 = toTest.rmap.SOUTH_WEST_OUT.down_yy;
+			Double x2 = toTest.rmap.SOUTH_WEST_OUT.upl_xx;
+			Double y2 = toTest.rmap.SOUTH_WEST_OUT.upl_yy;
 
 			// find diagonal with the theorem of distance between 2
 			// points
@@ -1993,10 +1993,10 @@ public class DContinuousGrid2DXYTester {
 
 			Double x1 = null, x2 = null, y1 = null, y2 = null;
 			try {
-				x2 = toTest.rmap.corner_out_down_right_diag_center.upl_xx;
-				y2 = toTest.rmap.corner_out_down_right_diag_center.upl_yy;
-				x1 = toTest.rmap.corner_out_down_right_diag_center.down_xx;
-				y1 = toTest.rmap.corner_out_down_right_diag_center.down_yy;
+				x2 = toTest.rmap.SOUTH_EAST_OUT.upl_xx;
+				y2 = toTest.rmap.SOUTH_EAST_OUT.upl_yy;
+				x1 = toTest.rmap.SOUTH_EAST_OUT.down_xx;
+				y1 = toTest.rmap.SOUTH_EAST_OUT.down_yy;
 			} catch (NullPointerException e) {
 				fail("corner has no size");
 			}
@@ -2101,10 +2101,10 @@ public class DContinuousGrid2DXYTester {
 
 			Double x1 = null, x2 = null, y1 = null, y2 = null;
 			try {
-				x2 = toTest.rmap.corner_out_up_left_diag_center.upl_xx;
-				y2 = toTest.rmap.corner_out_up_left_diag_center.upl_yy;
-				x1 = toTest.rmap.corner_out_up_left_diag_center.down_xx;
-				y1 = toTest.rmap.corner_out_up_left_diag_center.down_yy;
+				x2 = toTest.rmap.NORTH_WEST_OUT.upl_xx;
+				y2 = toTest.rmap.NORTH_WEST_OUT.upl_yy;
+				x1 = toTest.rmap.NORTH_WEST_OUT.down_xx;
+				y1 = toTest.rmap.NORTH_WEST_OUT.down_yy;
 			} catch (NullPointerException e) {
 				fail("corner has no size");
 			}
@@ -2209,10 +2209,10 @@ public class DContinuousGrid2DXYTester {
 
 			Double x1 = null, x2 = null, y1 = null, y2 = null;
 			try {
-				x2 = toTest.rmap.corner_out_up_right_diag_center.upl_xx;
-				y2 = toTest.rmap.corner_out_up_right_diag_center.upl_yy;
-				x1 = toTest.rmap.corner_out_up_right_diag_center.down_xx;
-				y1 = toTest.rmap.corner_out_up_right_diag_center.down_yy;
+				x2 = toTest.rmap.NORTH_EAST_OUT.upl_xx;
+				y2 = toTest.rmap.NORTH_EAST_OUT.upl_yy;
+				x1 = toTest.rmap.NORTH_EAST_OUT.down_xx;
+				y1 = toTest.rmap.NORTH_EAST_OUT.down_yy;
 			} catch (NullPointerException e) {
 				fail("corner has no size");
 			}
@@ -2314,10 +2314,10 @@ public class DContinuousGrid2DXYTester {
 				0.5, 10, 10, ss, 1, 1, 1, 3, 3, mode,
 				"test", "", true);
 
-		assertEquals("x", toTest.rmap.corner_mine_up_right.upl_xx,
-				toTest.rmap.corner_out_up_right_diag_center.down_xx - 2, 0);
-		assertEquals("y", toTest.rmap.corner_mine_up_right.upl_yy,
-				toTest.rmap.corner_out_up_right_diag_center.down_yy, 0);
+		assertEquals("x", toTest.rmap.NORTH_EAST_MINE.upl_xx,
+				toTest.rmap.NORTH_EAST_OUT.down_xx - 2, 0);
+		assertEquals("y", toTest.rmap.NORTH_EAST_MINE.upl_yy,
+				toTest.rmap.NORTH_EAST_OUT.down_yy, 0);
 	}
 
 	/**
@@ -2333,10 +2333,10 @@ public class DContinuousGrid2DXYTester {
 				0.5, 10, 10, ss, 1, 1, 1, 3, 3, mode,
 				"test", "", true);
 
-		assertEquals("x", toTest.rmap.corner_mine_up_left.upl_xx,
-				toTest.rmap.corner_out_up_left_diag_center.down_xx, 0);
-		assertEquals("y", toTest.rmap.corner_mine_up_left.upl_yy,
-				toTest.rmap.corner_out_up_left_diag_center.down_yy, 0);
+		assertEquals("x", toTest.rmap.NORTH_WEST_MINE.upl_xx,
+				toTest.rmap.NORTH_WEST_OUT.down_xx, 0);
+		assertEquals("y", toTest.rmap.NORTH_WEST_MINE.upl_yy,
+				toTest.rmap.NORTH_WEST_OUT.down_yy, 0);
 	}
 
 	/**
@@ -2352,10 +2352,10 @@ public class DContinuousGrid2DXYTester {
 				0.5, 10, 10, ss, 1, 1, 1, 3, 3, mode,
 				"test", "", true);
 
-		assertEquals("x", toTest.rmap.corner_mine_down_left.upl_xx,
-				toTest.rmap.corner_out_down_left_diag_center.down_xx, 0);
-		assertEquals("y", toTest.rmap.corner_mine_down_left.upl_yy,
-				toTest.rmap.corner_out_down_left_diag_center.down_yy - 2, 0);
+		assertEquals("x", toTest.rmap.SOUTH_WEST_MINE.upl_xx,
+				toTest.rmap.SOUTH_WEST_OUT.down_xx, 0);
+		assertEquals("y", toTest.rmap.SOUTH_WEST_MINE.upl_yy,
+				toTest.rmap.SOUTH_WEST_OUT.down_yy - 2, 0);
 	}
 
 	/**
@@ -2371,10 +2371,10 @@ public class DContinuousGrid2DXYTester {
 				0.5, 10, 10, ss, 1, 1, 1, 3, 3, mode,
 				"test", "", true);
 
-		assertEquals("x", toTest.rmap.corner_mine_down_right.down_xx,
-				toTest.rmap.corner_out_down_right_diag_center.upl_xx, 0);
-		assertEquals("y", toTest.rmap.corner_mine_down_right.down_yy,
-				toTest.rmap.corner_out_down_right_diag_center.upl_yy, 0);
+		assertEquals("x", toTest.rmap.SOUTH_EAST_MINE.down_xx,
+				toTest.rmap.SOUTH_EAST_OUT.upl_xx, 0);
+		assertEquals("y", toTest.rmap.SOUTH_EAST_MINE.down_yy,
+				toTest.rmap.SOUTH_EAST_OUT.upl_yy, 0);
 	}
 
 	/**
@@ -2392,14 +2392,14 @@ public class DContinuousGrid2DXYTester {
 
 		// upLeft
 		assertEquals("X Up Left", toTest.myfield.upl_xx,
-				toTest.rmap.up_mine.upl_xx + 1, 0);
+				toTest.rmap.NORTH_MINE.upl_xx + 1, 0);
 		assertEquals("Y Up Left", toTest.myfield.upl_yy,
-				toTest.rmap.up_mine.upl_yy + 1, 0);
+				toTest.rmap.NORTH_MINE.upl_yy + 1, 0);
 		// downRight
 		assertEquals("X Down Right", toTest.myfield.down_xx,
-				toTest.rmap.down_mine.down_xx - 1, 0);
+				toTest.rmap.SOUTH_MINE.down_xx - 1, 0);
 		assertEquals("Y Down Right", toTest.myfield.down_yy,
-				toTest.rmap.down_mine.down_yy - 1, 0);
+				toTest.rmap.SOUTH_MINE.down_yy - 1, 0);
 
 	}
 
@@ -2430,76 +2430,76 @@ public class DContinuousGrid2DXYTester {
 						assertEquals(
 								"cornerUpRight x i=" + ii + " j=" + ij
 								+ " rows=" + ir + " colums=" + ic,
-								toTest.rmap.corner_mine_up_right.upl_xx,
-								toTest.rmap.corner_out_up_right_diag_center.down_xx - 2,
+								toTest.rmap.NORTH_EAST_MINE.upl_xx,
+								toTest.rmap.NORTH_EAST_OUT.down_xx - 2,
 								0);
 						assertEquals(
 								"cornerUpRight y i=" + ii + " j=" + ij
 								+ " rows=" + ir + " colums=" + ic,
-								toTest.rmap.corner_mine_up_right.upl_yy,
-								toTest.rmap.corner_out_up_right_diag_center.down_yy,
+								toTest.rmap.NORTH_EAST_MINE.upl_yy,
+								toTest.rmap.NORTH_EAST_OUT.down_yy,
 								0);
 
 						// cornerUpLeft
 						assertEquals(
 								"cornerUpLeft x i=" + ii + " j=" + ij
 								+ " rows=" + ir + " colums=" + ic,
-								toTest.rmap.corner_mine_up_left.upl_xx,
-								toTest.rmap.corner_out_up_left_diag_center.down_xx,
+								toTest.rmap.NORTH_WEST_MINE.upl_xx,
+								toTest.rmap.NORTH_WEST_OUT.down_xx,
 								0);
 						assertEquals(
 								"cornerUpLeft y i=" + ii + " j=" + ij
 								+ " rows=" + ir + " colums=" + ic,
-								toTest.rmap.corner_mine_up_left.upl_yy,
-								toTest.rmap.corner_out_up_left_diag_center.down_yy,
+								toTest.rmap.NORTH_WEST_MINE.upl_yy,
+								toTest.rmap.NORTH_WEST_OUT.down_yy,
 								0);
 
 						// cornerDownLeft
 						assertEquals(
 								"cornerDownLeft x i=" + ii + " j=" + ij
 								+ " rows=" + ir + " colums=" + ic,
-								toTest.rmap.corner_mine_down_left.upl_xx,
-								toTest.rmap.corner_out_down_left_diag_center.down_xx,
+								toTest.rmap.SOUTH_WEST_MINE.upl_xx,
+								toTest.rmap.SOUTH_WEST_OUT.down_xx,
 								0);
 						assertEquals(
 								"cornerDownLeft y i=" + ii + " j=" + ij
 								+ " rows=" + ir + " colums=" + ic,
-								toTest.rmap.corner_mine_down_left.upl_yy,
-								toTest.rmap.corner_out_down_left_diag_center.down_yy - 2,
+								toTest.rmap.SOUTH_WEST_MINE.upl_yy,
+								toTest.rmap.SOUTH_WEST_OUT.down_yy - 2,
 								0);
 
 						// cornerDownRight
 						assertEquals(
 								"cornerDownRight x i=" + ii + " j=" + ij
 								+ " rows=" + ir + " colums=" + ic,
-								toTest.rmap.corner_mine_down_right.down_xx,
-								toTest.rmap.corner_out_down_right_diag_center.upl_xx,
+								toTest.rmap.SOUTH_EAST_MINE.down_xx,
+								toTest.rmap.SOUTH_EAST_OUT.upl_xx,
 								0);
 						assertEquals(
 								"cornerDownRight y i=" + ii + " j=" + ij
 								+ " rows=" + ir + " colums=" + ic,
-								toTest.rmap.corner_mine_down_right.down_yy,
-								toTest.rmap.corner_out_down_right_diag_center.upl_yy,
+								toTest.rmap.SOUTH_EAST_MINE.down_yy,
+								toTest.rmap.SOUTH_EAST_OUT.upl_yy,
 								0);
 
 						// myField upLeft
 						assertEquals("myField X Up Left i=" + ii + " j=" + ij
 								+ " rows=" + ir + " colums=" + ic,
 								toTest.myfield.upl_xx,
-								toTest.rmap.up_mine.upl_xx + 1, 0);
+								toTest.rmap.NORTH_MINE.upl_xx + 1, 0);
 						assertEquals("myField Y Up Left i=" + ii + " j=" + ij
 								+ " rows=" + ir + " colums=" + ic,
 								toTest.myfield.upl_yy,
-								toTest.rmap.up_mine.upl_yy + 1, 0);
+								toTest.rmap.NORTH_MINE.upl_yy + 1, 0);
 						// myField downRight
 						assertEquals("myField X Down Right i=" + ii + " j="
 								+ ij + " rows=" + ir + " colums=" + ic,
 								toTest.myfield.down_xx,
-								toTest.rmap.down_mine.down_xx - 1, 0);
+								toTest.rmap.SOUTH_MINE.down_xx - 1, 0);
 						assertEquals("myField Y Down Right i=" + ii + " j="
 								+ ij + " rows=" + ir + " colums=" + ic,
 								toTest.myfield.down_yy,
-								toTest.rmap.down_mine.down_yy - 1, 0);
+								toTest.rmap.SOUTH_MINE.down_yy - 1, 0);
 					}
 				}
 			}
@@ -2547,28 +2547,28 @@ public class DContinuousGrid2DXYTester {
 				assertEquals("Problems with myfield.upl_xx",effective.myfield.upl_xx,toTest.myfield.upl_xx);
 				assertEquals("Problems with myfield.upl_yy",effective.myfield.upl_yy,toTest.myfield.upl_yy);
 				
-				assertEquals("Problems with rmap.left_out",effective.rmap.left_out,toTest.rmap.left_out);
-				assertEquals("Problems with rmap.left_mine",effective.rmap.left_mine,toTest.rmap.left_mine);
-				assertEquals("Problems with rmap.right_mine",effective.rmap.right_mine,toTest.rmap.right_mine);
-				assertEquals("Problems with rmap.right_out",effective.rmap.right_out,toTest.rmap.right_out);
-				assertEquals("Problems with rmap.down_mine",effective.rmap.down_mine,toTest.rmap.down_mine);
-				assertEquals("Problems with rmap.down_out",effective.rmap.down_out,toTest.rmap.down_out);
-				assertEquals("Problems with rmap.up_mine",effective.rmap.up_mine,toTest.rmap.up_mine);
-				assertEquals("Problems with rmap.up_out",effective.rmap.up_out,toTest.rmap.up_out);
-				assertEquals("Problems with rmap.corner_mine_up_left",effective.rmap.corner_mine_up_left,toTest.rmap.corner_mine_up_left);
-				assertEquals("Problems with rmap.corner_out_up_left_diag_center",effective.rmap.corner_out_up_left_diag_center,toTest.rmap.corner_out_up_left_diag_center);      
+				assertEquals("Problems with rmap.left_out",effective.rmap.WEST_OUT,toTest.rmap.WEST_OUT);
+				assertEquals("Problems with rmap.left_mine",effective.rmap.WEST_MINE,toTest.rmap.WEST_MINE);
+				assertEquals("Problems with rmap.right_mine",effective.rmap.EAST_MINE,toTest.rmap.EAST_MINE);
+				assertEquals("Problems with rmap.right_out",effective.rmap.EAST_OUT,toTest.rmap.EAST_OUT);
+				assertEquals("Problems with rmap.down_mine",effective.rmap.SOUTH_MINE,toTest.rmap.SOUTH_MINE);
+				assertEquals("Problems with rmap.down_out",effective.rmap.SOUTH_OUT,toTest.rmap.SOUTH_OUT);
+				assertEquals("Problems with rmap.up_mine",effective.rmap.NORTH_MINE,toTest.rmap.NORTH_MINE);
+				assertEquals("Problems with rmap.up_out",effective.rmap.NORTH_OUT,toTest.rmap.NORTH_OUT);
+				assertEquals("Problems with rmap.corner_mine_up_left",effective.rmap.NORTH_WEST_MINE,toTest.rmap.NORTH_WEST_MINE);
+				assertEquals("Problems with rmap.corner_out_up_left_diag_center",effective.rmap.NORTH_WEST_OUT,toTest.rmap.NORTH_WEST_OUT);      
 				assertEquals("Problems with rmap.corner_out_up_left_diag_up",effective.rmap.corner_out_up_left_diag_up,toTest.rmap.corner_out_up_left_diag_up);                          
 				assertEquals("Problems with rmap.corner_out_up_left_diag_left",effective.rmap.corner_out_up_left_diag_left,toTest.rmap.corner_out_up_left_diag_left);
-				assertEquals("Problems with rmap.corner_mine_up_right",effective.rmap.corner_mine_up_right,toTest.rmap.corner_mine_up_right);
-				assertEquals("Problems with rmap.corner_out_up_right_diag_center",effective.rmap.corner_out_up_right_diag_center,toTest.rmap.corner_out_up_right_diag_center);
+				assertEquals("Problems with rmap.corner_mine_up_right",effective.rmap.NORTH_EAST_MINE,toTest.rmap.NORTH_EAST_MINE);
+				assertEquals("Problems with rmap.corner_out_up_right_diag_center",effective.rmap.NORTH_EAST_OUT,toTest.rmap.NORTH_EAST_OUT);
 				assertEquals("Problems with rmap.corner_out_up_right_diag_up",effective.rmap.corner_out_up_right_diag_up,toTest.rmap.corner_out_up_right_diag_up);                          
 				assertEquals("Problems with rmap.corner_out_up_right_diag_right",effective.rmap.corner_out_up_right_diag_right,toTest.rmap.corner_out_up_right_diag_right);
-				assertEquals("Problems with rmap.corner_mine_down_left",effective.rmap.corner_mine_down_left,toTest.rmap.corner_mine_down_left);
-				assertEquals("Problems with rmap.corner_out_down_left_diag_center",effective.rmap.corner_out_down_left_diag_center,toTest.rmap.corner_out_down_left_diag_center); 
+				assertEquals("Problems with rmap.corner_mine_down_left",effective.rmap.SOUTH_WEST_MINE,toTest.rmap.SOUTH_WEST_MINE);
+				assertEquals("Problems with rmap.corner_out_down_left_diag_center",effective.rmap.SOUTH_WEST_OUT,toTest.rmap.SOUTH_WEST_OUT); 
 				assertEquals("Problems with rmap.corner_out_down_left_diag_left",effective.rmap.corner_out_down_left_diag_left,toTest.rmap.corner_out_down_left_diag_left);                    
 				assertEquals("Problems with rmap.corner_out_down_left_diag_down",effective.rmap.corner_out_down_left_diag_down,toTest.rmap.corner_out_down_left_diag_down);
-				assertEquals("Problems with rmap.corner_mine_down_right",effective.rmap.corner_mine_down_right,toTest.rmap.corner_mine_down_right);
-				assertEquals("Problems with rmap.corner_out_down_right_diag_center",effective.rmap.corner_out_down_right_diag_center,toTest.rmap.corner_out_down_right_diag_center);
+				assertEquals("Problems with rmap.corner_mine_down_right",effective.rmap.SOUTH_EAST_MINE,toTest.rmap.SOUTH_EAST_MINE);
+				assertEquals("Problems with rmap.corner_out_down_right_diag_center",effective.rmap.SOUTH_EAST_OUT,toTest.rmap.SOUTH_EAST_OUT);
 				assertEquals("Problems with rmap.corner_out_down_right_diag_right",effective.rmap.corner_out_down_right_diag_right,toTest.rmap.corner_out_down_right_diag_right);                
 				assertEquals("Problems with rmap.corner_out_down_right_diag_down",effective.rmap.corner_out_down_right_diag_down,toTest.rmap.corner_out_down_right_diag_down);
 				

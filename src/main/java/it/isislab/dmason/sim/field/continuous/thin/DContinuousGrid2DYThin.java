@@ -271,28 +271,28 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 				height,                          // MyField y1 coordinate
 				width, height);                  // Global width and height 
 
-		rmap.left_out = new RegionDouble(
+		rmap.WEST_OUT = new RegionDouble(
 				(own_x - jumpDistance + width) % width, // Left-out x0
 				0.0,									// Left-out y0
 				(own_x + width) % (width),				// Left-out x1
 				height,									// Left-out y1
 				width, height);
 
-		rmap.left_mine = new RegionDouble(
+		rmap.WEST_MINE = new RegionDouble(
 				(own_x + width) % width,				// Left-mine x0
 				0.0,									// Left-mine y0
 				(own_x + jumpDistance + width) % width,	// Left-mine x1
 				height,									// Left-mine y1
 				width, height);
 
-		rmap.right_out = new RegionDouble(
+		rmap.EAST_OUT = new RegionDouble(
 				(own_x + my_width + width) % width,                // Right-out x0
 				0.0,                                               // Right-out y0
 				(own_x + my_width + jumpDistance + width) % width, // Right-out x1
 				height,                                            // Right-out y1
 				width, height);
 
-		rmap.right_mine = new RegionDouble(
+		rmap.EAST_MINE = new RegionDouble(
 				(own_x + my_width - jumpDistance + width) % width, // Right-mine x0
 				0.0,											   // Right-mine y0
 				(own_x + my_width + width) % width,                // Right-mine x1
@@ -463,11 +463,11 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 		memorizeRegionOut();
 
 		// Publish left mine&out regions to correspondent topic
-		if ( rmap.left_out != null )
+		if ( rmap.WEST_OUT != null )
 		{
 			DistributedRegion<Double,Double2D> dr1 = new DistributedRegion<Double,Double2D>(
-					rmap.left_mine,
-					rmap.left_out,
+					rmap.WEST_MINE,
+					rmap.WEST_OUT,
 					sm.schedule.getSteps() - 1,
 					cellType,
 					DistributedRegion.LEFT);
@@ -480,11 +480,11 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 		}
 
 		// Publish right mine&out regions to correspondent topic
-		if ( rmap.right_out != null )
+		if ( rmap.EAST_OUT != null )
 		{
 			DistributedRegion<Double,Double2D> dr2 = new DistributedRegion<Double,Double2D>(
-					rmap.right_mine,
-					rmap.right_out,
+					rmap.EAST_MINE,
+					rmap.EAST_OUT,
 					sm.schedule.getSteps() - 1,
 					cellType,
 					DistributedRegion.RIGHT);

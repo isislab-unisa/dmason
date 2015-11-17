@@ -329,22 +329,22 @@ public class DSparseGrid2DXYThinTester {
 	@Test
 	public void testCornerMineUpLeft() throws DMasonException {
 
-		int i = toTest.rmap.corner_mine_up_left.upl_xx;
-		int j = toTest.rmap.corner_mine_up_left.upl_yy;
+		int i = toTest.rmap.NORTH_WEST_MINE.upl_xx;
+		int j = toTest.rmap.NORTH_WEST_MINE.upl_yy;
 
-		int iEnd = toTest.rmap.corner_mine_up_left.down_xx;
-		int jEnd = toTest.rmap.corner_mine_up_left.down_yy;
+		int iEnd = toTest.rmap.NORTH_WEST_MINE.down_xx;
+		int jEnd = toTest.rmap.NORTH_WEST_MINE.down_yy;
 
-		int stepI = (toTest.rmap.corner_mine_up_left.down_xx - toTest.rmap.corner_mine_up_left.upl_xx)
+		int stepI = (toTest.rmap.NORTH_WEST_MINE.down_xx - toTest.rmap.NORTH_WEST_MINE.upl_xx)
 				/ numLoop;
-		int stepJ = (toTest.rmap.corner_mine_up_left.down_yy - toTest.rmap.corner_mine_up_left.upl_yy)
+		int stepJ = (toTest.rmap.NORTH_WEST_MINE.down_yy - toTest.rmap.NORTH_WEST_MINE.upl_yy)
 				/ numLoop;
 
 		i += stepI;
 
 		int count = 0;
 		while (i < iEnd) {
-			j = toTest.rmap.corner_mine_up_left.upl_yy + stepJ;
+			j = toTest.rmap.NORTH_WEST_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
@@ -355,7 +355,7 @@ public class DSparseGrid2DXYThinTester {
 			i += stepI;
 		}
 
-		assertEquals(count, toTest.rmap.corner_mine_up_left.size());
+		assertEquals(count, toTest.rmap.NORTH_WEST_MINE.size());
 	}
 
 	/**
@@ -365,22 +365,22 @@ public class DSparseGrid2DXYThinTester {
 	@Test
 	public void testCornerMineUpRight() throws DMasonException {
 
-		int i = toTest.rmap.corner_mine_up_right.upl_xx;
-		int j = toTest.rmap.corner_mine_up_right.upl_yy;
+		int i = toTest.rmap.NORTH_EAST_MINE.upl_xx;
+		int j = toTest.rmap.NORTH_EAST_MINE.upl_yy;
 
-		int iEnd = toTest.rmap.corner_mine_up_right.down_xx;
-		int jEnd = toTest.rmap.corner_mine_up_right.down_yy;
+		int iEnd = toTest.rmap.NORTH_EAST_MINE.down_xx;
+		int jEnd = toTest.rmap.NORTH_EAST_MINE.down_yy;
 
-		int stepI = (toTest.rmap.corner_mine_up_right.down_xx - toTest.rmap.corner_mine_up_right.upl_xx)
+		int stepI = (toTest.rmap.NORTH_EAST_MINE.down_xx - toTest.rmap.NORTH_EAST_MINE.upl_xx)
 				/ numLoop;
-		int stepJ = (toTest.rmap.corner_mine_up_right.down_yy - toTest.rmap.corner_mine_up_right.upl_yy)
+		int stepJ = (toTest.rmap.NORTH_EAST_MINE.down_yy - toTest.rmap.NORTH_EAST_MINE.upl_yy)
 				/ numLoop;
 
 		i += stepI;
 
 		int count = 0;
 		while (i < iEnd) {
-			j = toTest.rmap.corner_mine_up_right.upl_yy + stepJ;
+			j = toTest.rmap.NORTH_EAST_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
@@ -391,7 +391,7 @@ public class DSparseGrid2DXYThinTester {
 			i += stepI;
 		}
 
-		assertEquals(count, toTest.rmap.corner_mine_up_right.size());
+		assertEquals(count, toTest.rmap.NORTH_EAST_MINE.size());
 	}
 
 	/**
@@ -401,22 +401,22 @@ public class DSparseGrid2DXYThinTester {
 	@Test
 	public void testCornerMineDownLeft() throws DMasonException {
 
-		int i = toTest.rmap.corner_mine_down_left.upl_xx;
-		int j = toTest.rmap.corner_mine_down_left.upl_yy;
+		int i = toTest.rmap.SOUTH_WEST_MINE.upl_xx;
+		int j = toTest.rmap.SOUTH_WEST_MINE.upl_yy;
 
-		int iEnd = toTest.rmap.corner_mine_down_left.down_xx;
-		int jEnd = toTest.rmap.corner_mine_down_left.down_yy;
+		int iEnd = toTest.rmap.SOUTH_WEST_MINE.down_xx;
+		int jEnd = toTest.rmap.SOUTH_WEST_MINE.down_yy;
 
-		int stepI = (toTest.rmap.corner_mine_down_left.down_xx - toTest.rmap.corner_mine_down_left.upl_xx)
+		int stepI = (toTest.rmap.SOUTH_WEST_MINE.down_xx - toTest.rmap.SOUTH_WEST_MINE.upl_xx)
 				/ numLoop;
-		int stepJ = (toTest.rmap.corner_mine_down_left.down_yy - toTest.rmap.corner_mine_down_left.upl_yy)
+		int stepJ = (toTest.rmap.SOUTH_WEST_MINE.down_yy - toTest.rmap.SOUTH_WEST_MINE.upl_yy)
 				/ numLoop;
 
 		i += stepI;
 
 		int count = 0;
 		while (i < iEnd) {
-			j = toTest.rmap.corner_mine_down_left.upl_yy + stepJ;
+			j = toTest.rmap.SOUTH_WEST_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
@@ -427,7 +427,7 @@ public class DSparseGrid2DXYThinTester {
 			i += stepI;
 		}
 
-		assertEquals(count, toTest.rmap.corner_mine_down_left.size());
+		assertEquals(count, toTest.rmap.SOUTH_WEST_MINE.size());
 	}
 
 	/**
@@ -437,22 +437,22 @@ public class DSparseGrid2DXYThinTester {
 	@Test
 	public void testCornerMineDownRight() throws DMasonException {
 
-		int i = toTest.rmap.corner_mine_down_right.upl_xx;
-		int j = toTest.rmap.corner_mine_down_right.upl_yy;
+		int i = toTest.rmap.SOUTH_EAST_MINE.upl_xx;
+		int j = toTest.rmap.SOUTH_EAST_MINE.upl_yy;
 
-		int iEnd = toTest.rmap.corner_mine_down_right.down_xx;
-		int jEnd = toTest.rmap.corner_mine_down_right.down_yy;
+		int iEnd = toTest.rmap.SOUTH_EAST_MINE.down_xx;
+		int jEnd = toTest.rmap.SOUTH_EAST_MINE.down_yy;
 
-		int stepI = (toTest.rmap.corner_mine_down_right.down_xx - toTest.rmap.corner_mine_down_right.upl_xx)
+		int stepI = (toTest.rmap.SOUTH_EAST_MINE.down_xx - toTest.rmap.SOUTH_EAST_MINE.upl_xx)
 				/ numLoop;
-		int stepJ = (toTest.rmap.corner_mine_down_right.down_yy - toTest.rmap.corner_mine_down_right.upl_yy)
+		int stepJ = (toTest.rmap.SOUTH_EAST_MINE.down_yy - toTest.rmap.SOUTH_EAST_MINE.upl_yy)
 				/ numLoop;
 
 		i += stepI;
 
 		int count = 0;
 		while (i < iEnd) {
-			j = toTest.rmap.corner_mine_down_right.upl_yy + stepJ;
+			j = toTest.rmap.SOUTH_EAST_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
@@ -463,7 +463,7 @@ public class DSparseGrid2DXYThinTester {
 			i += stepI;
 		}
 
-		assertEquals(count, toTest.rmap.corner_mine_down_right.size());
+		assertEquals(count, toTest.rmap.SOUTH_EAST_MINE.size());
 	}
 
 	/**
@@ -473,11 +473,11 @@ public class DSparseGrid2DXYThinTester {
 	@Test
 	public void testDownMine() throws DMasonException {
 
-		int i = toTest.rmap.down_mine.upl_xx;
-		int j = toTest.rmap.down_mine.upl_yy;
+		int i = toTest.rmap.SOUTH_MINE.upl_xx;
+		int j = toTest.rmap.SOUTH_MINE.upl_yy;
 
-		int iEnd = toTest.rmap.down_mine.down_xx;
-		int jEnd = toTest.rmap.down_mine.down_yy;
+		int iEnd = toTest.rmap.SOUTH_MINE.down_xx;
+		int jEnd = toTest.rmap.SOUTH_MINE.down_yy;
 
 		int stepI = (iEnd - i) / numLoop;
 		int stepJ = (jEnd - j) / numLoop;
@@ -486,7 +486,7 @@ public class DSparseGrid2DXYThinTester {
 
 		int count = 0;
 		while (i < iEnd) {
-			j = toTest.rmap.down_mine.upl_yy + stepJ;
+			j = toTest.rmap.SOUTH_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
@@ -498,7 +498,7 @@ public class DSparseGrid2DXYThinTester {
 			i += stepI;
 		}
 
-		assertEquals(count, toTest.rmap.down_mine.size());
+		assertEquals(count, toTest.rmap.SOUTH_MINE.size());
 	}
 
 	/**
@@ -508,22 +508,22 @@ public class DSparseGrid2DXYThinTester {
 	@Test
 	public void testLeftMine() throws DMasonException {
 
-		int i = toTest.rmap.left_mine.upl_xx;
-		int j = toTest.rmap.left_mine.upl_yy;
+		int i = toTest.rmap.WEST_MINE.upl_xx;
+		int j = toTest.rmap.WEST_MINE.upl_yy;
 
-		int iEnd = toTest.rmap.left_mine.down_xx;
-		int jEnd = toTest.rmap.left_mine.down_yy;
+		int iEnd = toTest.rmap.WEST_MINE.down_xx;
+		int jEnd = toTest.rmap.WEST_MINE.down_yy;
 
-		int stepI = (toTest.rmap.left_mine.down_xx - toTest.rmap.left_mine.upl_xx)
+		int stepI = (toTest.rmap.WEST_MINE.down_xx - toTest.rmap.WEST_MINE.upl_xx)
 				/ numLoop;
-		int stepJ = (toTest.rmap.left_mine.down_yy - toTest.rmap.left_mine.upl_yy)
+		int stepJ = (toTest.rmap.WEST_MINE.down_yy - toTest.rmap.WEST_MINE.upl_yy)
 				/ numLoop;
 
 		i += stepI;
 
 		int count = 0;
 		while (i < iEnd) {
-			j = toTest.rmap.left_mine.upl_yy + stepJ;
+			j = toTest.rmap.WEST_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
@@ -534,7 +534,7 @@ public class DSparseGrid2DXYThinTester {
 			i += stepI;
 		}
 
-		assertEquals(count, toTest.rmap.left_mine.size());
+		assertEquals(count, toTest.rmap.WEST_MINE.size());
 	}
 
 	/**
@@ -544,22 +544,22 @@ public class DSparseGrid2DXYThinTester {
 	@Test
 	public void testRightMine() throws DMasonException {
 
-		int i = toTest.rmap.right_mine.upl_xx;
-		int j = toTest.rmap.right_mine.upl_yy;
+		int i = toTest.rmap.EAST_MINE.upl_xx;
+		int j = toTest.rmap.EAST_MINE.upl_yy;
 
-		int iEnd = toTest.rmap.right_mine.down_xx;
-		int jEnd = toTest.rmap.right_mine.down_yy;
+		int iEnd = toTest.rmap.EAST_MINE.down_xx;
+		int jEnd = toTest.rmap.EAST_MINE.down_yy;
 
-		int stepI = (toTest.rmap.right_mine.down_xx - toTest.rmap.right_mine.upl_xx)
+		int stepI = (toTest.rmap.EAST_MINE.down_xx - toTest.rmap.EAST_MINE.upl_xx)
 				/ numLoop;
-		int stepJ = (toTest.rmap.right_mine.down_yy - toTest.rmap.right_mine.upl_yy)
+		int stepJ = (toTest.rmap.EAST_MINE.down_yy - toTest.rmap.EAST_MINE.upl_yy)
 				/ numLoop;
 
 		i += stepI;
 
 		int count = 0;
 		while (i < iEnd) {
-			j = toTest.rmap.right_mine.upl_yy + stepJ;
+			j = toTest.rmap.EAST_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
@@ -570,7 +570,7 @@ public class DSparseGrid2DXYThinTester {
 			i += stepI;
 		}
 
-		assertEquals(count, toTest.rmap.right_mine.size());
+		assertEquals(count, toTest.rmap.EAST_MINE.size());
 	}
 
 	/**
@@ -580,22 +580,22 @@ public class DSparseGrid2DXYThinTester {
 	@Test
 	public void testUpMine() throws DMasonException {
 
-		int i = toTest.rmap.up_mine.upl_xx;
-		int j = toTest.rmap.up_mine.upl_yy;
+		int i = toTest.rmap.NORTH_MINE.upl_xx;
+		int j = toTest.rmap.NORTH_MINE.upl_yy;
 
-		int iEnd = toTest.rmap.up_mine.down_xx;
-		int jEnd = toTest.rmap.up_mine.down_yy;
+		int iEnd = toTest.rmap.NORTH_MINE.down_xx;
+		int jEnd = toTest.rmap.NORTH_MINE.down_yy;
 
-		int stepI = (toTest.rmap.up_mine.down_xx - toTest.rmap.up_mine.upl_xx)
+		int stepI = (toTest.rmap.NORTH_MINE.down_xx - toTest.rmap.NORTH_MINE.upl_xx)
 				/ numLoop;
-		int stepJ = (toTest.rmap.up_mine.down_yy - toTest.rmap.up_mine.upl_yy)
+		int stepJ = (toTest.rmap.NORTH_MINE.down_yy - toTest.rmap.NORTH_MINE.upl_yy)
 				/ numLoop;
 
 		i += stepI;
 
 		int count = 0;
 		while (i < iEnd) {
-			j = stepJ + toTest.rmap.up_mine.upl_yy;
+			j = stepJ + toTest.rmap.NORTH_MINE.upl_yy;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
@@ -605,7 +605,7 @@ public class DSparseGrid2DXYThinTester {
 			}
 			i += stepI;
 		}
-		assertEquals(count, toTest.rmap.up_mine.size());
+		assertEquals(count, toTest.rmap.NORTH_MINE.size());
 
 	}
 
@@ -615,11 +615,11 @@ public class DSparseGrid2DXYThinTester {
 	 */
 	@Test
 	public void testDoubleSetDistributedObjectLocationGodAgent() throws DMasonException {
-		int i = toTest.rmap.up_mine.upl_xx;
-		int j = toTest.rmap.up_mine.upl_yy;
+		int i = toTest.rmap.NORTH_MINE.upl_xx;
+		int j = toTest.rmap.NORTH_MINE.upl_yy;
 
-		int stepI = (toTest.rmap.up_mine.down_xx - toTest.rmap.up_mine.upl_xx) / 4;
-		int stepJ = (toTest.rmap.up_mine.down_yy - toTest.rmap.up_mine.upl_yy) / 4;
+		int stepI = (toTest.rmap.NORTH_MINE.down_xx - toTest.rmap.NORTH_MINE.upl_xx) / 4;
+		int stepJ = (toTest.rmap.NORTH_MINE.down_yy - toTest.rmap.NORTH_MINE.upl_yy) / 4;
 
 		Int2D location = new Int2D(i, j);
 
@@ -643,7 +643,7 @@ public class DSparseGrid2DXYThinTester {
 				new StubRemotePositionedAgent(), /* SimState */ss);
 
 		assertNotSame("the agent is in two places at once",
-				toTest.rmap.up_mine.get(0).r, toTest.rmap.up_mine.get(1).r);
+				toTest.rmap.NORTH_MINE.get(0).r, toTest.rmap.NORTH_MINE.get(1).r);
 
 	}
 
@@ -728,8 +728,8 @@ public class DSparseGrid2DXYThinTester {
 						ss, maxD, /* i */0, /* j */0, 1, 1, mode,/* name */
 						"test", /* prefix */"", true);
 
-		Integer x2 = toTest.rmap.up_mine.down_xx;
-		Integer x1 = toTest.rmap.up_mine.upl_xx;
+		Integer x2 = toTest.rmap.NORTH_MINE.down_xx;
+		Integer x1 = toTest.rmap.NORTH_MINE.upl_xx;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
@@ -752,8 +752,8 @@ public class DSparseGrid2DXYThinTester {
 						ss, maxD, /* i */1, /* j */1, 10, 10, mode,/* name */
 						"test", /* prefix */"", true);
 
-		Integer x2 = toTest.rmap.up_mine.down_xx;
-		Integer x1 = toTest.rmap.up_mine.upl_xx;
+		Integer x2 = toTest.rmap.NORTH_MINE.down_xx;
+		Integer x1 = toTest.rmap.NORTH_MINE.upl_xx;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
@@ -776,8 +776,8 @@ public class DSparseGrid2DXYThinTester {
 						ss, maxD, /* i */1, /* j */1, 10, 10, mode,/* name */
 						"test", /* prefix */"", true);
 
-		Integer x2 = toTest.rmap.down_mine.down_xx;
-		Integer x1 = toTest.rmap.down_mine.upl_xx;
+		Integer x2 = toTest.rmap.SOUTH_MINE.down_xx;
+		Integer x1 = toTest.rmap.SOUTH_MINE.upl_xx;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
@@ -800,8 +800,8 @@ public class DSparseGrid2DXYThinTester {
 						ss, maxD, /* i */1, /* j */1, 10, 10, mode,/* name */
 						"test", /* prefix */"", true);
 
-		Integer x2 = toTest.rmap.up_mine.down_xx;
-		Integer x1 = toTest.rmap.up_mine.upl_xx;
+		Integer x2 = toTest.rmap.NORTH_MINE.down_xx;
+		Integer x1 = toTest.rmap.NORTH_MINE.upl_xx;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
@@ -824,8 +824,8 @@ public class DSparseGrid2DXYThinTester {
 						ss, maxD, /* i */0, /* j */0, 1, 1, mode,/* name */
 						"test", /* prefix */"", true);
 
-		Integer x2 = toTest.rmap.left_mine.down_yy;
-		Integer x1 = toTest.rmap.left_mine.upl_yy;
+		Integer x2 = toTest.rmap.WEST_MINE.down_yy;
+		Integer x1 = toTest.rmap.WEST_MINE.upl_yy;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
@@ -848,8 +848,8 @@ public class DSparseGrid2DXYThinTester {
 						ss, maxD, /* i */1, /* j */1, 10, 10, mode,/* name */
 						"test", /* prefix */"", true);
 
-		Integer x2 = toTest.rmap.left_mine.down_yy;
-		Integer x1 = toTest.rmap.left_mine.upl_yy;
+		Integer x2 = toTest.rmap.WEST_MINE.down_yy;
+		Integer x1 = toTest.rmap.WEST_MINE.upl_yy;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
@@ -872,8 +872,8 @@ public class DSparseGrid2DXYThinTester {
 						ss, maxD, /* i */0, /* j */0, 10, 10, mode,/* name */
 						"test", /* prefix */"", true);
 
-		Integer x2 = toTest.rmap.right_mine.down_yy;
-		Integer x1 = toTest.rmap.right_mine.upl_yy;
+		Integer x2 = toTest.rmap.EAST_MINE.down_yy;
+		Integer x1 = toTest.rmap.EAST_MINE.upl_yy;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
@@ -896,8 +896,8 @@ public class DSparseGrid2DXYThinTester {
 						ss, maxD, /* i */0, /* j */0, 10, 10, mode,/* name */
 						"test", /* prefix */"", true);
 
-		Integer x2 = toTest.rmap.right_mine.down_yy;
-		Integer x1 = toTest.rmap.right_mine.upl_yy;
+		Integer x2 = toTest.rmap.EAST_MINE.down_yy;
+		Integer x1 = toTest.rmap.EAST_MINE.upl_yy;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
@@ -920,8 +920,8 @@ public class DSparseGrid2DXYThinTester {
 						ss, maxD, /* i */0, /* j */0, 1, 1, mode,/* name */
 						"test", /* prefix */"", true);
 
-		Integer x2 = toTest.rmap.up_out.down_xx;
-		Integer x1 = toTest.rmap.up_out.upl_xx;
+		Integer x2 = toTest.rmap.NORTH_OUT.down_xx;
+		Integer x1 = toTest.rmap.NORTH_OUT.upl_xx;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
@@ -944,8 +944,8 @@ public class DSparseGrid2DXYThinTester {
 						ss, maxD, /* i */1, /* j */1, 10, 10, mode,/* name */
 						"test", /* prefix */"", true);
 
-		Integer x2 = toTest.rmap.up_out.down_xx;
-		Integer x1 = toTest.rmap.up_out.upl_xx;
+		Integer x2 = toTest.rmap.NORTH_OUT.down_xx;
+		Integer x1 = toTest.rmap.NORTH_OUT.upl_xx;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
@@ -968,8 +968,8 @@ public class DSparseGrid2DXYThinTester {
 						ss, maxD, /* i */0, /* j */0, 10, 10, mode,/* name */
 						"test", /* prefix */"", true);
 
-		Integer x2 = toTest.rmap.down_out.down_xx;
-		Integer x1 = toTest.rmap.down_out.upl_xx;
+		Integer x2 = toTest.rmap.SOUTH_OUT.down_xx;
+		Integer x1 = toTest.rmap.SOUTH_OUT.upl_xx;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
@@ -992,8 +992,8 @@ public class DSparseGrid2DXYThinTester {
 						ss, maxD, /* i */0, /* j */0, 10, 10, mode,/* name */
 						"test", /* prefix */"", true);
 
-		Integer x2 = toTest.rmap.down_out.down_xx;
-		Integer x1 = toTest.rmap.down_out.upl_xx;
+		Integer x2 = toTest.rmap.SOUTH_OUT.down_xx;
+		Integer x1 = toTest.rmap.SOUTH_OUT.upl_xx;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
@@ -1016,8 +1016,8 @@ public class DSparseGrid2DXYThinTester {
 						ss, maxD, /* i */0, /* j */0, 1, 1, mode,/* name */
 						"test", /* prefix */"", true);
 
-		Integer x2 = toTest.rmap.left_out.down_yy;
-		Integer x1 = toTest.rmap.left_out.upl_yy;
+		Integer x2 = toTest.rmap.WEST_OUT.down_yy;
+		Integer x1 = toTest.rmap.WEST_OUT.upl_yy;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
@@ -1040,8 +1040,8 @@ public class DSparseGrid2DXYThinTester {
 						ss, maxD, /* i */1, /* j */1, 10, 10, mode,/* name */
 						"test", /* prefix */"", true);
 
-		Integer x2 = toTest.rmap.left_out.down_yy;
-		Integer x1 = toTest.rmap.left_out.upl_yy;
+		Integer x2 = toTest.rmap.WEST_OUT.down_yy;
+		Integer x1 = toTest.rmap.WEST_OUT.upl_yy;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
@@ -1064,8 +1064,8 @@ public class DSparseGrid2DXYThinTester {
 						ss, maxD, /* i */0, /* j */0, 10, 10, mode,/* name */
 						"test", /* prefix */"", true);
 
-		Integer x2 = toTest.rmap.right_out.down_yy;
-		Integer x1 = toTest.rmap.right_out.upl_yy;
+		Integer x2 = toTest.rmap.EAST_OUT.down_yy;
+		Integer x1 = toTest.rmap.EAST_OUT.upl_yy;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
@@ -1088,8 +1088,8 @@ public class DSparseGrid2DXYThinTester {
 						ss, maxD, /* i */0, /* j */0, 10, 10, mode,/* name */
 						"test", /* prefix */"", true);
 
-		Integer x2 = toTest.rmap.right_out.down_yy;
-		Integer x1 = toTest.rmap.right_out.upl_yy;
+		Integer x2 = toTest.rmap.EAST_OUT.down_yy;
+		Integer x1 = toTest.rmap.EAST_OUT.upl_yy;
 
 		// find distance between 2 points
 		Integer side = x2 - x1;
@@ -1108,10 +1108,10 @@ public class DSparseGrid2DXYThinTester {
 						mode,/* name */
 						"test", /* prefix */"", true);
 
-		assertEquals("x", toTest.rmap.corner_mine_up_right.upl_xx,
-				toTest.rmap.corner_out_up_right_diag_center.down_xx - 1, 0);
-		assertEquals("y", toTest.rmap.corner_mine_up_right.upl_yy,
-				toTest.rmap.corner_out_up_right_diag_center.down_yy + 1, 0);
+		assertEquals("x", toTest.rmap.NORTH_EAST_MINE.upl_xx,
+				toTest.rmap.NORTH_EAST_OUT.down_xx - 1, 0);
+		assertEquals("y", toTest.rmap.NORTH_EAST_MINE.upl_yy,
+				toTest.rmap.NORTH_EAST_OUT.down_yy + 1, 0);
 	}
 
 	/**
@@ -1125,10 +1125,10 @@ public class DSparseGrid2DXYThinTester {
 						mode,/* name */
 						"test", /* prefix */"", true);
 
-		assertEquals("x", toTest.rmap.corner_mine_up_left.upl_xx,
-				toTest.rmap.corner_out_up_left_diag_center.down_xx + 1, 0);
-		assertEquals("y", toTest.rmap.corner_mine_up_left.upl_yy,
-				toTest.rmap.corner_out_up_left_diag_center.down_yy + 1, 0);
+		assertEquals("x", toTest.rmap.NORTH_WEST_MINE.upl_xx,
+				toTest.rmap.NORTH_WEST_OUT.down_xx + 1, 0);
+		assertEquals("y", toTest.rmap.NORTH_WEST_MINE.upl_yy,
+				toTest.rmap.NORTH_WEST_OUT.down_yy + 1, 0);
 	}
 
 	/**
@@ -1142,10 +1142,10 @@ public class DSparseGrid2DXYThinTester {
 						mode,/* name */
 						"test", /* prefix */"", true);
 
-		assertEquals("x", toTest.rmap.corner_mine_down_left.upl_xx,
-				toTest.rmap.corner_out_down_left_diag_center.down_xx + 1, 0);
-		assertEquals("y", toTest.rmap.corner_mine_down_left.upl_yy,
-				toTest.rmap.corner_out_down_left_diag_center.down_yy - 1, 0);
+		assertEquals("x", toTest.rmap.SOUTH_WEST_MINE.upl_xx,
+				toTest.rmap.SOUTH_WEST_OUT.down_xx + 1, 0);
+		assertEquals("y", toTest.rmap.SOUTH_WEST_MINE.upl_yy,
+				toTest.rmap.SOUTH_WEST_OUT.down_yy - 1, 0);
 	}
 
 	/**
@@ -1159,10 +1159,10 @@ public class DSparseGrid2DXYThinTester {
 						mode,/* name */
 						"test", /* prefix */"", true);
 
-		assertEquals("x", toTest.rmap.corner_mine_down_right.down_xx,
-				toTest.rmap.corner_out_down_right_diag_center.upl_xx - 1, 0);
-		assertEquals("y", toTest.rmap.corner_mine_down_right.down_yy,
-				toTest.rmap.corner_out_down_right_diag_center.upl_yy - 1, 0);
+		assertEquals("x", toTest.rmap.SOUTH_EAST_MINE.down_xx,
+				toTest.rmap.SOUTH_EAST_OUT.upl_xx - 1, 0);
+		assertEquals("y", toTest.rmap.SOUTH_EAST_MINE.down_yy,
+				toTest.rmap.SOUTH_EAST_OUT.upl_yy - 1, 0);
 	}
 
 	/**
@@ -1178,14 +1178,14 @@ public class DSparseGrid2DXYThinTester {
 
 		// upLeft
 		assertEquals("X Up Left", toTest.myfield.upl_xx,
-				toTest.rmap.up_mine.upl_xx + 1, 0);
+				toTest.rmap.NORTH_MINE.upl_xx + 1, 0);
 		assertEquals("Y Up Left", toTest.myfield.upl_yy,
-				toTest.rmap.up_mine.upl_yy + 1, 0);
+				toTest.rmap.NORTH_MINE.upl_yy + 1, 0);
 		// downRight
 		assertEquals("X Down Right", toTest.myfield.down_xx,
-				toTest.rmap.down_mine.down_xx - 1, 0);
+				toTest.rmap.SOUTH_MINE.down_xx - 1, 0);
 		assertEquals("Y Down Right", toTest.myfield.down_yy,
-				toTest.rmap.down_mine.down_yy - 1, 0);
+				toTest.rmap.SOUTH_MINE.down_yy - 1, 0);
 
 	}
 

@@ -297,28 +297,28 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 				height,                          // MyField y1 coordinate
 				width, height);                  // Global width and height 
 
-		rmap.left_out = new RegionDouble(
+		rmap.WEST_OUT = new RegionDouble(
 				(own_x - jumpDistance + width) % width, // Left-out x0
 				0.0,									// Left-out y0
 				(own_x + width) % (width),				// Left-out x1
 				height,									// Left-out y1
 				width, height);
 
-		rmap.left_mine = new RegionDouble(
+		rmap.WEST_MINE = new RegionDouble(
 				(own_x + width) % width,				// Left-mine x0
 				0.0,									// Left-mine y0
 				(own_x + jumpDistance + width) % width,	// Left-mine x1
 				height,									// Left-mine y1
 				width, height);
 
-		rmap.right_out = new RegionDouble(
+		rmap.EAST_OUT = new RegionDouble(
 				(own_x + my_width + width) % width,                // Right-out x0
 				0.0,                                               // Right-out y0
 				(own_x + my_width + jumpDistance + width) % width, // Right-out x1
 				height,                                            // Right-out y1
 				width, height);
 
-		rmap.right_mine = new RegionDouble(
+		rmap.EAST_MINE = new RegionDouble(
 				(own_x + my_width - jumpDistance + width) % width, // Right-mine x0
 				0.0,											   // Right-mine y0
 				(own_x + my_width + width) % width,                // Right-mine x1
@@ -477,11 +477,11 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 		memorizeRegionOut();
 
 		// Publish left mine&out regions to correspondent topic
-		if ( rmap.left_out != null )
+		if ( rmap.WEST_OUT != null )
 		{
 			DistributedRegionLB<Double,Double2D> dr1 = new DistributedRegionLB<Double,Double2D>(
-					rmap.left_mine.clone(),
-					rmap.left_out.clone(),
+					rmap.WEST_MINE.clone(),
+					rmap.WEST_OUT.clone(),
 					sm.schedule.getSteps() - 1,
 					cellType,
 					DistributedRegionLB.LEFT,((DistributedState)sm).getField().getNumAgents(),((DistributedState)sm).getField().getLeftMineSize(),my_width);
@@ -494,11 +494,11 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 		}
 
 		// Publish right mine&out regions to correspondent topic
-		if ( rmap.right_out != null )
+		if ( rmap.EAST_OUT != null )
 		{
 			DistributedRegionLB<Double,Double2D> dr2 = new DistributedRegionLB<Double,Double2D>(
-					rmap.right_mine.clone(),
-					rmap.right_out.clone(),
+					rmap.EAST_MINE.clone(),
+					rmap.EAST_OUT.clone(),
 					sm.schedule.getSteps() - 1,
 					cellType,
 					DistributedRegionLB.RIGHT,((DistributedState)sm).getField().getNumAgents(),((DistributedState)sm).getField().getRightMineSize(),my_width);
@@ -517,13 +517,13 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 			if(balanceR>0){
 				//The width of the region was increased in the previous step
 				//So the right_mine must be restored on the start's dimensions but maintaining the new positions
-				rmap.right_mine.setUpl_xx((own_x + my_width - jumpDistance + width) % width);
+				rmap.EAST_MINE.setUpl_xx((own_x + my_width - jumpDistance + width) % width);
 
 			}
 			else if(balanceR<0){
 				//The width of the region was decreased in the previous step
 				//So the right_out must be restored on the start's dimensions but maintaining the new positions
-				rmap.right_out.setDown_xx((own_x + my_width + jumpDistance + width) % width);
+				rmap.EAST_OUT.setDown_xx((own_x + my_width + jumpDistance + width) % width);
 			}
 			balanceR=0;
 		}
@@ -532,13 +532,13 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 			if(balanceL>0){
 				//The width of the region was increased in the previous step
 				//So the left_mine must be restored on the start's dimensions but maintaining the new positions
-				rmap.left_mine.setDown_xx((own_x + jumpDistance + width) % width);
+				rmap.WEST_MINE.setDown_xx((own_x + jumpDistance + width) % width);
 
 			}
 			else if(balanceL<0){
 				//The width of the region was increased in the previous step
 				//So the left_out must be restored on the start's dimensions but maintaining the new positions
-				rmap.left_out.setUpl_xx((own_x - jumpDistance + width) % width);
+				rmap.WEST_OUT.setUpl_xx((own_x - jumpDistance + width) % width);
 
 			}
 			balanceL=0;
@@ -576,11 +576,11 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 						if(balanceR<0){
 							//the region becames smaller
 							//the right_out becames bigger so the agents can be passed to the right neighbor
-							rmap.right_out.setUpl_xx((own_x + my_width + width+balanceR) % width);
-							rmap.right_out.setDown_xx((own_x + my_width + jumpDistance + width) % width);
+							rmap.EAST_OUT.setUpl_xx((own_x + my_width + width+balanceR) % width);
+							rmap.EAST_OUT.setDown_xx((own_x + my_width + jumpDistance + width) % width);
 							my_width=my_width+balanceR;
-							rmap.right_mine.setUpl_xx((own_x + my_width - jumpDistance + width) % width);
-							rmap.right_mine.setDown_xx((own_x + my_width + width) % width);
+							rmap.EAST_MINE.setUpl_xx((own_x + my_width - jumpDistance + width) % width);
+							rmap.EAST_MINE.setDown_xx((own_x + my_width + width) % width);
 
 							myfield.setUpl_xx(own_x + jumpDistance);
 							myfield.setDown_xx(own_x + my_width - jumpDistance);
@@ -590,11 +590,11 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 							if(balanceR>0){
 								//the region becames bigger
 								//the right_mine becames bigger so the agents can be received from the right neighbor
-								rmap.right_mine.setUpl_xx((own_x + my_width - jumpDistance + width) % width);
-								rmap.right_mine.setDown_xx((own_x + my_width + width+balanceR) % width);
+								rmap.EAST_MINE.setUpl_xx((own_x + my_width - jumpDistance + width) % width);
+								rmap.EAST_MINE.setDown_xx((own_x + my_width + width+balanceR) % width);
 								my_width=my_width+balanceR;
-								rmap.right_out.setUpl_xx((own_x + my_width + width) % width);
-								rmap.right_out.setDown_xx((own_x + my_width + jumpDistance + width) % width);
+								rmap.EAST_OUT.setUpl_xx((own_x + my_width + width) % width);
+								rmap.EAST_OUT.setDown_xx((own_x + my_width + jumpDistance + width) % width);
 								myfield.setUpl_xx(own_x + jumpDistance);
 								myfield.setDown_xx(own_x + my_width - jumpDistance);
 
@@ -623,12 +623,12 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 							//the region becames smaller
 							//the left_out becames bigger so the agents can be passed to the left neighbor
 
-							rmap.left_out.setUpl_xx((own_x - jumpDistance + width) % width);
-							rmap.left_out.setDown_xx((own_x + width-balanceL) % (width));
+							rmap.WEST_OUT.setUpl_xx((own_x - jumpDistance + width) % width);
+							rmap.WEST_OUT.setDown_xx((own_x + width-balanceL) % (width));
 							own_x=own_x-balanceL;
 							my_width=my_width+balanceL;
-							rmap.left_mine.setUpl_xx((own_x + width) % width);
-							rmap.left_mine.setDown_xx((own_x + jumpDistance + width) % width);
+							rmap.WEST_MINE.setUpl_xx((own_x + width) % width);
+							rmap.WEST_MINE.setDown_xx((own_x + jumpDistance + width) % width);
 							myfield.setUpl_xx(own_x + jumpDistance);
 							myfield.setDown_xx(own_x + my_width - jumpDistance);
 
@@ -636,13 +636,13 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 							if(balanceL>0){
 								//the region becames bigger
 								//the left_mine becames bigger so the agents can be received from the left neighbor
-								rmap.left_mine.setUpl_xx((own_x + width-balanceL) % width);
-								rmap.left_mine.setDown_xx((own_x + jumpDistance + width) % width);
+								rmap.WEST_MINE.setUpl_xx((own_x + width-balanceL) % width);
+								rmap.WEST_MINE.setDown_xx((own_x + jumpDistance + width) % width);
 								own_x=own_x-balanceL;
 
 								my_width=my_width+balanceL;
-								rmap.left_out.setUpl_xx((own_x - jumpDistance + width) % width);
-								rmap.left_out.setDown_xx((own_x + width) % (width));
+								rmap.WEST_OUT.setUpl_xx((own_x - jumpDistance + width) % width);
+								rmap.WEST_OUT.setDown_xx((own_x + width) % (width));
 								myfield.setUpl_xx(own_x + jumpDistance);
 								myfield.setDown_xx(own_x + my_width - jumpDistance);
 

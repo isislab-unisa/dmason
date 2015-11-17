@@ -243,29 +243,29 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 
 
 		// Building the regions
-		rmap.left_out=RegionInteger.createRegion(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height),my_width, my_height, width, height);
-		if(rmap.left_out!=null)
-			rmap.left_mine=RegionInteger.createRegion(own_x,own_y,own_x + MAX_DISTANCE -1, (own_y+my_height)-1,my_width, my_height, width, height);
+		rmap.WEST_OUT=RegionInteger.createRegion(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height),my_width, my_height, width, height);
+		if(rmap.WEST_OUT!=null)
+			rmap.WEST_MINE=RegionInteger.createRegion(own_x,own_y,own_x + MAX_DISTANCE -1, (own_y+my_height)-1,my_width, my_height, width, height);
 
-		rmap.right_out=RegionInteger.createRegion(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, (own_y+my_height)-1,my_width, my_height, width, height);
-		if(rmap.right_out!=null)
-			rmap.right_mine=RegionInteger.createRegion(own_x + my_width -MAX_DISTANCE,own_y,own_x +my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
+		rmap.EAST_OUT=RegionInteger.createRegion(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, (own_y+my_height)-1,my_width, my_height, width, height);
+		if(rmap.EAST_OUT!=null)
+			rmap.EAST_MINE=RegionInteger.createRegion(own_x + my_width -MAX_DISTANCE,own_y,own_x +my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
 
-		if(rmap.left_out == null)
+		if(rmap.WEST_OUT == null)
 		{
 			//peer 0
 			myfield=new RegionInteger(own_x,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
 
 		}
 
-		if(rmap.right_out == null)
+		if(rmap.EAST_OUT == null)
 		{
 			//peer NUMPEERS-1
 			myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y, own_x+my_width-1, own_y+my_height-1);
 
 		}
 
-		if(rmap.left_out!=null && rmap.right_out!=null)
+		if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 		{
 			myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
 
@@ -382,22 +382,22 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		memorizeRegionOut();
 
 		//--> publishing the regions to correspondent topics for the neighbors
-		if( rmap.left_out!=null )
+		if( rmap.WEST_OUT!=null )
 		{
 
 			DistributedRegion<Integer,Int2D> dr1 = 
-					new DistributedRegion<Integer,Int2D>(rmap.left_mine,rmap.left_out,
+					new DistributedRegion<Integer,Int2D>(rmap.WEST_MINE,rmap.WEST_OUT,
 							(sm.schedule.getSteps()-1),cellType,DistributedRegion.LEFT);
 			try 
 			{	
 				connWorker.publishToTopic(dr1,topicPrefix+cellType+"L", NAME);
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
-		if( rmap.right_out!=null )
+		if( rmap.EAST_OUT!=null )
 		{
 
 			DistributedRegion<Integer,Int2D> dr2 = 
-					new DistributedRegion<Integer,Int2D>(rmap.right_mine,rmap.right_out,
+					new DistributedRegion<Integer,Int2D>(rmap.EAST_MINE,rmap.EAST_OUT,
 							(sm.schedule.getSteps()-1),cellType,DistributedRegion.RIGHT);
 			try 
 			{			
@@ -732,16 +732,16 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 	@Override
 	public boolean verifyPosition(Int2D pos) {
 		
-		return (rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(pos.x,pos.y))||
+		return (rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(pos.x,pos.y))||
 				
-				(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(pos.x,pos.y))
+				(rmap.NORTH_EAST_MINE!=null && rmap.NORTH_EAST_MINE.isMine(pos.x,pos.y))
 				||
-					(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(pos.x,pos.y))
-					||(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(pos.x,pos.y))
-						||(rmap.left_mine != null && rmap.left_mine.isMine(pos.x,pos.y))
-							||(rmap.right_mine != null && rmap.right_mine.isMine(pos.x,pos.y))
-								||(rmap.up_mine != null && rmap.up_mine.isMine(pos.x,pos.y))
-									||(rmap.down_mine != null && rmap.down_mine.isMine(pos.x,pos.y))
+					(rmap.SOUTH_WEST_MINE!=null && rmap.SOUTH_WEST_MINE.isMine(pos.x,pos.y))
+					||(rmap.SOUTH_EAST_MINE!=null && rmap.SOUTH_EAST_MINE.isMine(pos.x,pos.y))
+						||(rmap.WEST_MINE != null && rmap.WEST_MINE.isMine(pos.x,pos.y))
+							||(rmap.EAST_MINE != null && rmap.EAST_MINE.isMine(pos.x,pos.y))
+								||(rmap.NORTH_MINE != null && rmap.NORTH_MINE.isMine(pos.x,pos.y))
+									||(rmap.SOUTH_MINE != null && rmap.SOUTH_MINE.isMine(pos.x,pos.y))
 										||(myfield.isMine(pos.x,pos.y));
 
 	}

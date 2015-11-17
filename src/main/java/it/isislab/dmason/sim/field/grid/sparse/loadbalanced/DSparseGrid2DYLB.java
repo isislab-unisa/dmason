@@ -252,29 +252,29 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 
 
 		// Building the regions
-		rmap.left_out=RegionInteger.createRegion(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height),my_width, my_height, width, height);
-		if(rmap.left_out!=null)
-			rmap.left_mine=RegionInteger.createRegion(own_x,own_y,own_x + MAX_DISTANCE -1, (own_y+my_height)-1,my_width, my_height, width, height);
+		rmap.WEST_OUT=RegionInteger.createRegion(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height),my_width, my_height, width, height);
+		if(rmap.WEST_OUT!=null)
+			rmap.WEST_MINE=RegionInteger.createRegion(own_x,own_y,own_x + MAX_DISTANCE -1, (own_y+my_height)-1,my_width, my_height, width, height);
 
-		rmap.right_out=RegionInteger.createRegion(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, (own_y+my_height)-1,my_width, my_height, width, height);
-		if(rmap.right_out!=null)
-			rmap.right_mine=RegionInteger.createRegion(own_x + my_width -MAX_DISTANCE,own_y,own_x +my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
+		rmap.EAST_OUT=RegionInteger.createRegion(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, (own_y+my_height)-1,my_width, my_height, width, height);
+		if(rmap.EAST_OUT!=null)
+			rmap.EAST_MINE=RegionInteger.createRegion(own_x + my_width -MAX_DISTANCE,own_y,own_x +my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
 
-		if(rmap.left_out == null)
+		if(rmap.WEST_OUT == null)
 		{
 			//peer 0
 			myfield=new RegionInteger(own_x,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
 
 		}
 
-		if(rmap.right_out == null)
+		if(rmap.EAST_OUT == null)
 		{
 			//peer NUMPEERS-1
 			myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y, own_x+my_width-1, own_y+my_height-1);
 
 		}
 
-		if(rmap.left_out!=null && rmap.right_out!=null)
+		if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 		{
 			myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
 
@@ -352,11 +352,11 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
 
 
-		if( rmap.left_out!=null )
-			leftMineSize=rmap.left_mine.size();
+		if( rmap.WEST_OUT!=null )
+			leftMineSize=rmap.WEST_MINE.size();
 
-		if( rmap.right_out!=null )
-			rightMineSize=rmap.right_mine.size();
+		if( rmap.EAST_OUT!=null )
+			rightMineSize=rmap.EAST_MINE.size();
 
 
 		// Send to Global Inspector
@@ -434,20 +434,20 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 
 
 		//--> publishing the regions to correspondent topics for the neighbors
-		if( rmap.left_out!=null )
+		if( rmap.WEST_OUT!=null )
 		{
 			DistributedRegionLB<Integer,Int2D> dr1 = 
-					new DistributedRegionLB<Integer,Int2D>(rmap.left_mine.clone(),rmap.left_out.clone(),
+					new DistributedRegionLB<Integer,Int2D>(rmap.WEST_MINE.clone(),rmap.WEST_OUT.clone(),
 							(sm.schedule.getSteps()-1),cellType,DistributedRegionLB.LEFT,((DistributedState)sm).getField().getNumAgents(),(((DistributedState)sm).getField().getLeftMineSize()),my_width);
 			try 
 			{	
 				connWorker.publishToTopic(dr1,topicPrefix+cellType+"L", NAME);
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
-		if( rmap.right_out!=null )
+		if( rmap.EAST_OUT!=null )
 		{
 			DistributedRegionLB<Integer,Int2D> dr2 = 
-					new DistributedRegionLB<Integer,Int2D>(rmap.right_mine.clone(),rmap.right_out.clone(),
+					new DistributedRegionLB<Integer,Int2D>(rmap.EAST_MINE.clone(),rmap.EAST_OUT.clone(),
 							(sm.schedule.getSteps()-1),cellType,DistributedRegionLB.RIGHT,((DistributedState)sm).getField().getNumAgents(),(((DistributedState)sm).getField().getRightMineSize()),my_width);
 			try 
 			{			
@@ -464,13 +464,13 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 			if(balanceR>0){
 				//The width of the region was increased in the previous step
 				//So the right_mine must be restored on the start's dimensions but maintaining the new positions
-				rmap.right_mine.setUpl_xx(own_x + my_width -MAX_DISTANCE);
+				rmap.EAST_MINE.setUpl_xx(own_x + my_width -MAX_DISTANCE);
 			}
 			else if(balanceR<0){
 
 				//The width of the region was decreased in the previous step
 				//So the right_out must be restored on the start's dimensions but maintaining the new positions
-				rmap.right_out.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
+				rmap.EAST_OUT.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
 			}
 			balanceR=0;
 		}
@@ -479,13 +479,13 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 			if(balanceL>0){
 				//The width of the region was increased in the previous step
 				//So the left_mine must be restored on the start's dimensions but maintaining the new positions
-				rmap.left_mine.setDown_xx(own_x + MAX_DISTANCE -1);
+				rmap.WEST_MINE.setDown_xx(own_x + MAX_DISTANCE -1);
 			}
 			else if(balanceL<0){
 
 				//The width of the region was increased in the previous step
 				//So the left_out must be restored on the start's dimensions but maintaining the new positions
-				rmap.left_out.setUpl_xx(own_x-MAX_DISTANCE);
+				rmap.WEST_OUT.setUpl_xx(own_x-MAX_DISTANCE);
 			}
 			balanceL=0;
 		}
@@ -524,12 +524,12 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 							if(balanceR<0){
 								//the region becames smaller
 								//the right_out becames bigger so the agents can be passed to the right neighbor
-								rmap.right_out.setUpl_xx(own_x+my_width+balanceR);
-								rmap.right_out.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
+								rmap.EAST_OUT.setUpl_xx(own_x+my_width+balanceR);
+								rmap.EAST_OUT.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
 								my_width=my_width+balanceR;
-								rmap.right_mine.setUpl_xx(own_x + my_width-MAX_DISTANCE);
-								rmap.right_mine.setDown_xx(own_x +my_width-1);
-								if(rmap.left_out == null)
+								rmap.EAST_MINE.setUpl_xx(own_x + my_width-MAX_DISTANCE);
+								rmap.EAST_MINE.setDown_xx(own_x +my_width-1);
+								if(rmap.WEST_OUT == null)
 								{
 									//peer 0
 									myfield.setUpl_xx(own_x);
@@ -538,7 +538,7 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 								}
 
 
-								if(rmap.left_out!=null && rmap.right_out!=null)
+								if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 								{
 									myfield.setUpl_xx(own_x+MAX_DISTANCE);
 									myfield.setDown_xx(own_x+my_width-MAX_DISTANCE-1);
@@ -549,13 +549,13 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 								if(balanceR>0){
 									//the region becames bigger
 									//the right_mine becames bigger so the agents can be received from the right neighbor
-									rmap.right_mine.setUpl_xx(own_x + my_width-MAX_DISTANCE);
-									rmap.right_mine.setDown_xx(own_x +my_width-1+balanceR);
+									rmap.EAST_MINE.setUpl_xx(own_x + my_width-MAX_DISTANCE);
+									rmap.EAST_MINE.setDown_xx(own_x +my_width-1+balanceR);
 									my_width=my_width+balanceR;
-									rmap.right_out.setUpl_xx(own_x + my_width);
-									rmap.right_out.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
+									rmap.EAST_OUT.setUpl_xx(own_x + my_width);
+									rmap.EAST_OUT.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
 
-									if(rmap.left_out == null)
+									if(rmap.WEST_OUT == null)
 									{
 										//peer 0
 										myfield.setUpl_xx(own_x);
@@ -563,7 +563,7 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 
 									}
 
-									if(rmap.left_out!=null && rmap.right_out!=null)
+									if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 									{
 										myfield.setUpl_xx(own_x+MAX_DISTANCE);
 										myfield.setDown_xx(own_x+my_width-MAX_DISTANCE-1);
@@ -592,14 +592,14 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 							if(balanceL<0){
 								//the region becames smaller
 								//the left_out becames bigger so the agents can be passed to the left neighbor
-								rmap.left_out.setUpl_xx(own_x-MAX_DISTANCE);
-								rmap.left_out.setDown_xx(own_x-1-balanceL);
+								rmap.WEST_OUT.setUpl_xx(own_x-MAX_DISTANCE);
+								rmap.WEST_OUT.setDown_xx(own_x-1-balanceL);
 								own_x=own_x-balanceL;
 								my_width=my_width+balanceL;
-								rmap.left_mine.setUpl_xx(own_x);
-								rmap.left_mine.setDown_xx(own_x + MAX_DISTANCE -1);
+								rmap.WEST_MINE.setUpl_xx(own_x);
+								rmap.WEST_MINE.setDown_xx(own_x + MAX_DISTANCE -1);
 
-								if(rmap.right_out == null)
+								if(rmap.EAST_OUT == null)
 								{
 									//peer NUMPEERS-1
 									myfield.setUpl_xx(own_x+MAX_DISTANCE);
@@ -607,7 +607,7 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 
 								}
 
-								if(rmap.left_out!=null && rmap.right_out!=null)
+								if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 								{
 									myfield.setUpl_xx(own_x+MAX_DISTANCE);
 									myfield.setDown_xx( own_x+my_width-MAX_DISTANCE-1);
@@ -618,17 +618,17 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 								if(balanceL>0){
 									//the region becames bigger
 									//the left_mine becames bigger so the agents can be received from the left neighbor
-									rmap.left_mine.setUpl_xx(own_x-balanceL);
-									rmap.left_mine.setDown_xx(own_x + MAX_DISTANCE -1);
+									rmap.WEST_MINE.setUpl_xx(own_x-balanceL);
+									rmap.WEST_MINE.setDown_xx(own_x + MAX_DISTANCE -1);
 									own_x=own_x-balanceL;
 
 									my_width=my_width+balanceL;
-									rmap.left_out.setUpl_xx(own_x-MAX_DISTANCE);
-									rmap.left_out.setDown_xx(own_x-1);
+									rmap.WEST_OUT.setUpl_xx(own_x-MAX_DISTANCE);
+									rmap.WEST_OUT.setDown_xx(own_x-1);
 
 
 
-									if(rmap.right_out == null)
+									if(rmap.EAST_OUT == null)
 									{
 										//peer NUMPEERS-1
 										myfield.setUpl_xx(own_x+MAX_DISTANCE);
@@ -636,7 +636,7 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 
 									}
 
-									if(rmap.left_out!=null && rmap.right_out!=null)
+									if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 									{
 										myfield.setUpl_xx(own_x+MAX_DISTANCE);
 										myfield.setDown_xx( own_x+my_width-MAX_DISTANCE-1);

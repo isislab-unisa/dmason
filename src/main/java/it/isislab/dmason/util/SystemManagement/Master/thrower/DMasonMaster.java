@@ -20,11 +20,11 @@ package it.isislab.dmason.util.SystemManagement.Master.thrower;
 import it.isislab.dmason.annotation.ThinAnnotation;
 import it.isislab.dmason.exception.NoDigestFoundException;
 import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.tools.batch.BatchExecutor;
 import it.isislab.dmason.tools.batch.BatchWizard.DistributionType;
 import it.isislab.dmason.tools.batch.data.Batch;
 import it.isislab.dmason.tools.batch.data.EntryParam;
+import it.isislab.dmason.tools.batch.data.EntryParam.ParamType;
 import it.isislab.dmason.tools.batch.data.EntryWorkerScore;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.tools.batch.data.Param;
@@ -35,7 +35,6 @@ import it.isislab.dmason.tools.batch.data.ParamDistributionUniform;
 import it.isislab.dmason.tools.batch.data.ParamFixed;
 import it.isislab.dmason.tools.batch.data.ParamList;
 import it.isislab.dmason.tools.batch.data.ParamRange;
-import it.isislab.dmason.tools.batch.data.EntryParam.ParamType;
 import it.isislab.dmason.util.StdRandom;
 import it.isislab.dmason.util.Util;
 import it.isislab.dmason.util.SystemManagement.DigestAlgorithm;
@@ -170,10 +169,6 @@ import sim.display.Console;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-
-import sim.display.GUIState;
-import sim.portrayal.Inspector;
-import sim.util.gui.HTMLBrowser;
 /**
 
  * @author Michele Carillo

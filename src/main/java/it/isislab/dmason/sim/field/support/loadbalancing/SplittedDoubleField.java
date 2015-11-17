@@ -134,10 +134,10 @@ public class SplittedDoubleField implements Serializable {
 				own_y+my_height-MAX_DISTANCE,TOTALWIDTH,TOTALHEIGHT);
 		
 		//corner mine up left
-		rmap.corner_mine_up_left=new RegionDouble(own_x, own_y,own_x+MAX_DISTANCE, 
+		rmap.NORTH_WEST_MINE=new RegionDouble(own_x, own_y,own_x+MAX_DISTANCE, 
 				own_y+MAX_DISTANCE,TOTALWIDTH, TOTALHEIGHT);
 		//corner out up left		
-		rmap.corner_out_up_left_diag_center=new RegionDouble((own_x-MAX_DISTANCE + TOTALWIDTH)%TOTALWIDTH, 
+		rmap.NORTH_WEST_OUT=new RegionDouble((own_x-MAX_DISTANCE + TOTALWIDTH)%TOTALWIDTH, 
 				(own_y-MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,(own_x+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 		
@@ -150,11 +150,11 @@ public class SplittedDoubleField implements Serializable {
 				(own_y+TOTALHEIGHT+MAX_DISTANCE)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 		
 		//corner mine up right		
-		rmap.corner_mine_up_right=new RegionDouble(own_x+my_width-MAX_DISTANCE, own_y, 
+		rmap.NORTH_EAST_MINE=new RegionDouble(own_x+my_width-MAX_DISTANCE, own_y, 
 				own_x+my_width, own_y+MAX_DISTANCE,TOTALWIDTH, TOTALHEIGHT);
 		
 		//corner out up right
-		rmap.corner_out_up_right_diag_center = new RegionDouble((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
+		rmap.NORTH_EAST_OUT = new RegionDouble((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y-MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT, (own_x+my_width+MAX_DISTANCE+TOTALWIDTH)
 				%TOTALWIDTH, (own_y+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 		
@@ -167,10 +167,10 @@ public class SplittedDoubleField implements Serializable {
 				(own_y+TOTALHEIGHT+MAX_DISTANCE)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 		
 		// corner mine down left
-		rmap.corner_mine_down_left=new RegionDouble(own_x, own_y+my_height-MAX_DISTANCE,
+		rmap.SOUTH_WEST_MINE=new RegionDouble(own_x, own_y+my_height-MAX_DISTANCE,
 				own_x+MAX_DISTANCE, own_y+my_height,TOTALWIDTH, TOTALHEIGHT);
 		//corner out down left
-		rmap.corner_out_down_left_diag_center=new RegionDouble((own_x-MAX_DISTANCE+TOTALWIDTH)%TOTALWIDTH, 
+		rmap.SOUTH_WEST_OUT=new RegionDouble((own_x-MAX_DISTANCE+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+my_height+TOTALHEIGHT)%TOTALHEIGHT,(own_x+TOTALWIDTH)%TOTALWIDTH,
 				(own_y+my_height+MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 		
@@ -183,11 +183,11 @@ public class SplittedDoubleField implements Serializable {
 				(own_y+my_height+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 
 		//corner mine down right
-		rmap.corner_mine_down_right=new RegionDouble(own_x+my_width-MAX_DISTANCE, 
+		rmap.SOUTH_EAST_MINE=new RegionDouble(own_x+my_width-MAX_DISTANCE, 
 				own_y+my_height-MAX_DISTANCE,own_x+my_width,own_y+my_height,TOTALWIDTH,TOTALHEIGHT);		
 		//corner out down right
 		
-		rmap.corner_out_down_right_diag_center=new RegionDouble((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
+		rmap.SOUTH_EAST_OUT=new RegionDouble((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+my_height+TOTALHEIGHT)%TOTALHEIGHT,(own_x+my_width+MAX_DISTANCE+TOTALWIDTH)
 				%TOTALWIDTH,(own_y+my_height+MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 		
@@ -201,38 +201,38 @@ public class SplittedDoubleField implements Serializable {
 				TOTALHEIGHT);
 
 		//mine left		
-		rmap.left_mine=new RegionDouble(own_x,own_y+MAX_DISTANCE,own_x + MAX_DISTANCE, 
+		rmap.WEST_MINE=new RegionDouble(own_x,own_y+MAX_DISTANCE,own_x + MAX_DISTANCE, 
 				own_y+my_height-MAX_DISTANCE,TOTALWIDTH,TOTALHEIGHT);
 		//out left
-		rmap.left_out=new RegionDouble((own_x-MAX_DISTANCE+TOTALWIDTH)%TOTALWIDTH,
+		rmap.WEST_OUT=new RegionDouble((own_x-MAX_DISTANCE+TOTALWIDTH)%TOTALWIDTH,
 				((own_y+MAX_DISTANCE)+TOTALHEIGHT)%TOTALHEIGHT,(own_x+TOTALWIDTH)%TOTALWIDTH, 
 				(((own_y+my_height)+TOTALHEIGHT)-MAX_DISTANCE)%TOTALHEIGHT,TOTALWIDTH,
 				TOTALHEIGHT);
 		
 		//mine right
-		rmap.right_mine=new RegionDouble(own_x + my_width - MAX_DISTANCE,own_y+MAX_DISTANCE,
+		rmap.EAST_MINE=new RegionDouble(own_x + my_width - MAX_DISTANCE,own_y+MAX_DISTANCE,
 				own_x +my_width , own_y+my_height-MAX_DISTANCE,TOTALWIDTH,TOTALHEIGHT);
 		
 		//out right
-		rmap.right_out=new RegionDouble((own_x+my_width+TOTALWIDTH)%TOTALWIDTH,
+		rmap.EAST_OUT=new RegionDouble((own_x+my_width+TOTALWIDTH)%TOTALWIDTH,
 				((own_y+MAX_DISTANCE)+TOTALHEIGHT)%TOTALHEIGHT,(own_x+my_width+MAX_DISTANCE+TOTALWIDTH)
 				%TOTALWIDTH, ((own_y+my_height+TOTALHEIGHT)-MAX_DISTANCE)%TOTALHEIGHT,
 				TOTALWIDTH,TOTALHEIGHT);		
 
 		//mine up
-		rmap.up_mine=new RegionDouble(own_x+MAX_DISTANCE,own_y,own_x+my_width-MAX_DISTANCE, 
+		rmap.NORTH_MINE=new RegionDouble(own_x+MAX_DISTANCE,own_y,own_x+my_width-MAX_DISTANCE, 
 				own_y + MAX_DISTANCE ,TOTALWIDTH,TOTALHEIGHT);
 		//out up
-		rmap.up_out=new RegionDouble(((own_x+MAX_DISTANCE)+TOTALWIDTH)%TOTALWIDTH, 
+		rmap.NORTH_OUT=new RegionDouble(((own_x+MAX_DISTANCE)+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y - MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,((own_x+ my_width +TOTALWIDTH)-MAX_DISTANCE)
 				%TOTALWIDTH,(own_y+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH,
 				TOTALHEIGHT);		
 		
 		//mine down
-		rmap.down_mine=new RegionDouble(own_x+MAX_DISTANCE,own_y+my_height-MAX_DISTANCE,own_x+my_width-MAX_DISTANCE, 
+		rmap.SOUTH_MINE=new RegionDouble(own_x+MAX_DISTANCE,own_y+my_height-MAX_DISTANCE,own_x+my_width-MAX_DISTANCE, 
 				(own_y+my_height),TOTALWIDTH,TOTALHEIGHT);
 		//out down
-		rmap.down_out=new RegionDouble( ((own_x+MAX_DISTANCE)+TOTALWIDTH) %TOTALWIDTH,
+		rmap.SOUTH_OUT=new RegionDouble( ((own_x+MAX_DISTANCE)+TOTALWIDTH) %TOTALWIDTH,
 				(own_y+my_height+TOTALHEIGHT)%TOTALHEIGHT,
 				((own_x+my_width+TOTALWIDTH)-MAX_DISTANCE)%TOTALWIDTH, 
 				(own_y+my_height+MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,

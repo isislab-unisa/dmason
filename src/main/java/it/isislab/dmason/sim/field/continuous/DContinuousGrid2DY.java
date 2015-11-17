@@ -286,28 +286,28 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 				height,                          // MyField y1 coordinate
 				width, height);                  // Global width and height 
 
-		rmap.left_out = new RegionDouble(
+		rmap.WEST_OUT = new RegionDouble(
 				(own_x - jumpDistance + width) % width, // Left-out x0
 				0.0,									// Left-out y0
 				(own_x + width) % (width),				// Left-out x1
 				height,									// Left-out y1
 				width, height);
 
-		rmap.left_mine = new RegionDouble(
+		rmap.WEST_MINE = new RegionDouble(
 				(own_x + width) % width,				// Left-mine x0
 				0.0,									// Left-mine y0
 				(own_x + jumpDistance + width) % width,	// Left-mine x1
 				height,									// Left-mine y1
 				width, height);
 
-		rmap.right_out = new RegionDouble(
+		rmap.EAST_OUT = new RegionDouble(
 				(own_x + my_width + width) % width,                // Right-out x0
 				0.0,                                               // Right-out y0
 				(own_x + my_width + jumpDistance + width) % width, // Right-out x1
 				height,                                            // Right-out y1
 				width, height);
 
-		rmap.right_mine = new RegionDouble(
+		rmap.EAST_MINE = new RegionDouble(
 				(own_x + my_width - jumpDistance + width) % width, // Right-mine x0
 				0.0,											   // Right-mine y0
 				(own_x + my_width + width) % width,                // Right-mine x1
@@ -434,11 +434,11 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		memorizeRegionOut();
 
 		// Publish left mine&out regions to correspondent topic
-		if ( rmap.left_out != null )
+		if ( rmap.WEST_OUT != null )
 		{
 			DistributedRegion<Double,Double2D> dr1 = new DistributedRegion<Double,Double2D>(
-					rmap.left_mine,
-					rmap.left_out,
+					rmap.WEST_MINE,
+					rmap.WEST_OUT,
 					sm.schedule.getSteps() - 1,
 					cellType,
 					DistributedRegion.LEFT);
@@ -451,11 +451,11 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		}
 
 		// Publish right mine&out regions to correspondent topic
-		if ( rmap.right_out != null )
+		if ( rmap.EAST_OUT != null )
 		{
 			DistributedRegion<Double,Double2D> dr2 = new DistributedRegion<Double,Double2D>(
-					rmap.right_mine,
-					rmap.right_out,
+					rmap.EAST_MINE,
+					rmap.EAST_OUT,
 					sm.schedule.getSteps() - 1,
 					cellType,
 					DistributedRegion.RIGHT);
@@ -792,16 +792,16 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 	@Override
 	public boolean verifyPosition(Double2D pos) {
 		
-		return (rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(pos.x,pos.y))||
+		return (rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(pos.x,pos.y))||
 				
-				(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(pos.x,pos.y))
+				(rmap.NORTH_EAST_MINE!=null && rmap.NORTH_EAST_MINE.isMine(pos.x,pos.y))
 				||
-					(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(pos.x,pos.y))
-					||(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(pos.x,pos.y))
-						||(rmap.left_mine != null && rmap.left_mine.isMine(pos.x,pos.y))
-							||(rmap.right_mine != null && rmap.right_mine.isMine(pos.x,pos.y))
-								||(rmap.up_mine != null && rmap.up_mine.isMine(pos.x,pos.y))
-									||(rmap.down_mine != null && rmap.down_mine.isMine(pos.x,pos.y))
+					(rmap.SOUTH_WEST_MINE!=null && rmap.SOUTH_WEST_MINE.isMine(pos.x,pos.y))
+					||(rmap.SOUTH_EAST_MINE!=null && rmap.SOUTH_EAST_MINE.isMine(pos.x,pos.y))
+						||(rmap.WEST_MINE != null && rmap.WEST_MINE.isMine(pos.x,pos.y))
+							||(rmap.EAST_MINE != null && rmap.EAST_MINE.isMine(pos.x,pos.y))
+								||(rmap.NORTH_MINE != null && rmap.NORTH_MINE.isMine(pos.x,pos.y))
+									||(rmap.SOUTH_MINE != null && rmap.SOUTH_MINE.isMine(pos.x,pos.y))
 										||(myfield.isMine(pos.x,pos.y));
 
 	}

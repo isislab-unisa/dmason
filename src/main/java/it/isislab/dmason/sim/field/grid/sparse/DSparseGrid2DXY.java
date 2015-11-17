@@ -262,49 +262,49 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 
 
 		// Building the regions
-		rmap.left_out=RegionInteger.createRegion(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height-1),my_width, my_height, width, height);
-		if(rmap.left_out!=null)
+		rmap.WEST_OUT=RegionInteger.createRegion(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height-1),my_width, my_height, width, height);
+		if(rmap.WEST_OUT!=null)
 		{
-			rmap.left_mine=RegionInteger.createRegion(own_x,own_y,own_x + MAX_DISTANCE -1, own_y+my_height-1,my_width, my_height, width, height);
+			rmap.WEST_MINE=RegionInteger.createRegion(own_x,own_y,own_x + MAX_DISTANCE -1, own_y+my_height-1,my_width, my_height, width, height);
 		}
 
-		rmap.right_out=RegionInteger.createRegion(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
-		if(rmap.right_out!=null)
+		rmap.EAST_OUT=RegionInteger.createRegion(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
+		if(rmap.EAST_OUT!=null)
 		{
-			rmap.right_mine=RegionInteger.createRegion(own_x + my_width - MAX_DISTANCE,own_y,own_x +my_width - 1, own_y+my_height-1,my_width, my_height, width, height);
+			rmap.EAST_MINE=RegionInteger.createRegion(own_x + my_width - MAX_DISTANCE,own_y,own_x +my_width - 1, own_y+my_height-1,my_width, my_height, width, height);
 		}
 
-		rmap.up_out=RegionInteger.createRegion(own_x, own_y - MAX_DISTANCE,own_x+ my_width -1,own_y-1,my_width, my_height, width, height);
-		if(rmap.up_out!=null)
+		rmap.NORTH_OUT=RegionInteger.createRegion(own_x, own_y - MAX_DISTANCE,own_x+ my_width -1,own_y-1,my_width, my_height, width, height);
+		if(rmap.NORTH_OUT!=null)
 		{
-			rmap.up_mine=RegionInteger.createRegion(own_x ,own_y,own_x+my_width-1, own_y + MAX_DISTANCE -1,my_width, my_height, width, height);
+			rmap.NORTH_MINE=RegionInteger.createRegion(own_x ,own_y,own_x+my_width-1, own_y + MAX_DISTANCE -1,my_width, my_height, width, height);
 		}
 
-		rmap.down_out=RegionInteger.createRegion(own_x,own_y+my_height,own_x+my_width-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
-		if(rmap.down_out!=null)
+		rmap.SOUTH_OUT=RegionInteger.createRegion(own_x,own_y+my_height,own_x+my_width-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
+		if(rmap.SOUTH_OUT!=null)
 		{
-			rmap.down_mine=RegionInteger.createRegion(own_x,own_y+my_height-MAX_DISTANCE,own_x+my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
+			rmap.SOUTH_MINE=RegionInteger.createRegion(own_x,own_y+my_height-MAX_DISTANCE,own_x+my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
 		}
 
-		if(rmap.left_out == null)
+		if(rmap.WEST_OUT == null)
 		{
-			if(rmap.up_out == null)
+			if(rmap.NORTH_OUT == null)
 			{
 				//peer 0
 				myfield=new RegionInteger(own_x,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-MAX_DISTANCE-1);
 
 				//corner down right
-				rmap.corner_out_down_right_diag_center=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
-				rmap.corner_mine_down_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1,my_width, my_height, width,height);
+				rmap.SOUTH_EAST_OUT=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
+				rmap.SOUTH_EAST_MINE=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1,my_width, my_height, width,height);
 			}
-			else if(rmap.down_out==null)
+			else if(rmap.SOUTH_OUT==null)
 			{
 				//peer 6
 				myfield=new RegionInteger(own_x,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
 
 				//corner up right
-				rmap.corner_out_up_right_diag_center = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
-				rmap.corner_mine_up_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
+				rmap.NORTH_EAST_OUT = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
+				rmap.NORTH_EAST_MINE=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 			}
 			else
 			{
@@ -312,33 +312,33 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 				myfield=new RegionInteger(own_x,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-MAX_DISTANCE-1);
 
 				//corner up right
-				rmap.corner_out_up_right_diag_center = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1,my_width, my_height, width, height);
-				rmap.corner_mine_up_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1,my_width, my_height, width, height);
+				rmap.NORTH_EAST_OUT = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1,my_width, my_height, width, height);
+				rmap.NORTH_EAST_MINE=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1,my_width, my_height, width, height);
 
 				//corner down right
-				rmap.corner_out_down_right_diag_center=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
-				rmap.corner_mine_down_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1, my_width, my_height, width,height);
+				rmap.SOUTH_EAST_OUT=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
+				rmap.SOUTH_EAST_MINE=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1, my_width, my_height, width,height);
 			}			
 		}
-		else if(rmap.right_out==null)
+		else if(rmap.EAST_OUT==null)
 		{
-			if(rmap.up_out==null)
+			if(rmap.NORTH_OUT==null)
 			{
 				//peer 2
 				myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y, own_x+my_width-1, own_y+my_height-MAX_DISTANCE-1);
 
 				//corner down left
-				rmap.corner_out_down_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
-				rmap.corner_mine_down_left=RegionInteger.createRegion(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
+				rmap.SOUTH_WEST_OUT=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
+				rmap.SOUTH_WEST_MINE=RegionInteger.createRegion(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
 			}
-			else if(rmap.down_out==null)
+			else if(rmap.SOUTH_OUT==null)
 			{
 				//peer 8
 				myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-1, own_y+my_height-1);
 
 				//corner up left	
-				rmap.corner_out_up_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
-				rmap.corner_mine_up_left=RegionInteger.createRegion(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
+				rmap.NORTH_WEST_OUT=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
+				rmap.NORTH_WEST_MINE=RegionInteger.createRegion(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 
 			}
 			else
@@ -347,59 +347,59 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 				myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-1, own_y+my_height-MAX_DISTANCE-1);
 
 				//corner up left					
-				rmap.corner_out_up_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
-				rmap.corner_mine_up_left=RegionInteger.createRegion(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
+				rmap.NORTH_WEST_OUT=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
+				rmap.NORTH_WEST_MINE=RegionInteger.createRegion(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 
 				//corner down left
-				rmap.corner_out_down_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
-				rmap.corner_mine_down_left=RegionInteger.createRegion(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1, my_width, my_height, width, height);
+				rmap.SOUTH_WEST_OUT=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
+				rmap.SOUTH_WEST_MINE=RegionInteger.createRegion(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1, my_width, my_height, width, height);
 			}
 		}
-		else if(rmap.up_out==null)
+		else if(rmap.NORTH_OUT==null)
 		{
 			//peer 1
 			myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-MAX_DISTANCE-1);
 
 			//corner down left
-			rmap.corner_out_down_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
-			rmap.corner_mine_down_left=RegionInteger.createRegion(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
+			rmap.SOUTH_WEST_OUT=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
+			rmap.SOUTH_WEST_MINE=RegionInteger.createRegion(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
 
 			//corner down right
-			rmap.corner_out_down_right_diag_center=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
-			rmap.corner_mine_down_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1, my_width, my_height, width,height);
+			rmap.SOUTH_EAST_OUT=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
+			rmap.SOUTH_EAST_MINE=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1, my_width, my_height, width,height);
 		}
-		else if(rmap.down_out==null)
+		else if(rmap.SOUTH_OUT==null)
 		{
 			//peer 7
 			myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-1);
 
 			//corner up left	
-			rmap.corner_out_up_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
-			rmap.corner_mine_up_left=RegionInteger.createRegion(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
+			rmap.NORTH_WEST_OUT=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
+			rmap.NORTH_WEST_MINE=RegionInteger.createRegion(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 
 			//corner up right
-			rmap.corner_out_up_right_diag_center = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
-			rmap.corner_mine_up_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
+			rmap.NORTH_EAST_OUT = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
+			rmap.NORTH_EAST_MINE=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 		}
 		else
 		{
 			myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-MAX_DISTANCE-1);
 
 			//corner up left
-			rmap.corner_out_up_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
-			rmap.corner_mine_up_left=RegionInteger.createRegion(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1,my_width, my_height, width, height);
+			rmap.NORTH_WEST_OUT=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
+			rmap.NORTH_WEST_MINE=RegionInteger.createRegion(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1,my_width, my_height, width, height);
 
 			//corner up right
-			rmap.corner_out_up_right_diag_center = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
-			rmap.corner_mine_up_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
+			rmap.NORTH_EAST_OUT = RegionInteger.createRegion(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
+			rmap.NORTH_EAST_MINE=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 
 			//corner down left
-			rmap.corner_out_down_left_diag_center=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
-			rmap.corner_mine_down_left=RegionInteger.createRegion(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
+			rmap.SOUTH_WEST_OUT=RegionInteger.createRegion(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
+			rmap.SOUTH_WEST_MINE=RegionInteger.createRegion(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
 
 			//corner down right
-			rmap.corner_out_down_right_diag_center=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
-			rmap.corner_mine_down_right=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1,my_width, my_height, width,height);
+			rmap.SOUTH_EAST_OUT=RegionInteger.createRegion(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
+			rmap.SOUTH_EAST_MINE=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1,my_width, my_height, width,height);
 
 		}
 		return true;
@@ -518,11 +518,11 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		memorizeRegionOut();
 
 		//--> publishing the regions to correspondent topics for the neighbors
-		if(rmap.left_out!=null)
+		if(rmap.WEST_OUT!=null)
 		{
 			try 
 			{
-				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.left_mine,rmap.left_out,
+				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.WEST_MINE,rmap.WEST_OUT,
 						(sm.schedule.getSteps()-1),cellType,DistributedRegion.LEFT);
 
 				connWorker.publishToTopic(dr,topicPrefix+cellType+"L", NAME);
@@ -531,41 +531,41 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 
 			} catch (Exception e1) { e1.printStackTrace();}
 		}
-		if(rmap.right_out!=null)
+		if(rmap.EAST_OUT!=null)
 		{
 			try 
 			{
-				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.right_mine,rmap.right_out,(sm.schedule.getSteps()-1),cellType,DistributedRegion.RIGHT);				
+				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.EAST_MINE,rmap.EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.RIGHT);				
 
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"R", NAME);
 
 			} catch (Exception e1) {e1.printStackTrace(); }
 		}
-		if(rmap.up_out!=null )
+		if(rmap.NORTH_OUT!=null )
 		{
 			try 
 			{
-				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.up_mine,rmap.up_out,(sm.schedule.getSteps()-1),cellType,DistributedRegion.UP);
+				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.NORTH_MINE,rmap.NORTH_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.UP);
 
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"U", NAME);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
 
-		if(rmap.down_out!=null )
+		if(rmap.SOUTH_OUT!=null )
 		{
 			try 
 			{
-				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.down_mine,rmap.down_out,(sm.schedule.getSteps()-1),cellType,DistributedRegion.DOWN);
+				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.SOUTH_MINE,rmap.SOUTH_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.DOWN);
 
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"D", NAME);
 
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
 
-		if(rmap.corner_out_up_left_diag_center!=null)
+		if(rmap.NORTH_WEST_OUT!=null)
 		{
-			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.corner_mine_up_left,rmap.corner_out_up_left_diag_center,
+			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.NORTH_WEST_MINE,rmap.NORTH_WEST_OUT,
 					(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_UP_LEFT);
 			try 
 			{
@@ -574,9 +574,9 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 
 			} catch (Exception e1) { e1.printStackTrace();}
 		}
-		if(rmap.corner_out_up_right_diag_center!=null)
+		if(rmap.NORTH_EAST_OUT!=null)
 		{
-			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.corner_mine_up_right,rmap.corner_out_up_right_diag_center,
+			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.NORTH_EAST_MINE,rmap.NORTH_EAST_OUT,
 					(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_UP_RIGHT);
 			try 
 			{
@@ -585,20 +585,20 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
-		if( rmap.corner_out_down_left_diag_center!=null)
+		if( rmap.SOUTH_WEST_OUT!=null)
 		{
-			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.corner_mine_down_left,
-					rmap.corner_out_down_left_diag_center,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_LEFT);
+			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.SOUTH_WEST_MINE,
+					rmap.SOUTH_WEST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_LEFT);
 			try 
 			{
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDL", NAME);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
-		if(rmap.corner_out_down_right_diag_center!=null)
+		if(rmap.SOUTH_EAST_OUT!=null)
 		{
-			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.corner_mine_down_right,
-					rmap.corner_out_down_right_diag_center,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_RIGHT);
+			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.SOUTH_EAST_MINE,
+					rmap.SOUTH_EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_RIGHT);
 
 			try 
 			{
@@ -760,93 +760,93 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	 */
 	private boolean setAgents(RemotePositionedAgent<Int2D> rm,Int2D location)
 	{
-		if(rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(location.x,location.y))
+		if(rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(location.x,location.y))
 		{
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
 			if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 				GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 
-			rmap.corner_mine_up_left.addAgents(new EntryAgent<Int2D>(rm, location));
-			rmap.left_mine.addAgents(new EntryAgent<Int2D>(rm, location));
+			rmap.NORTH_WEST_MINE.addAgents(new EntryAgent<Int2D>(rm, location));
+			rmap.WEST_MINE.addAgents(new EntryAgent<Int2D>(rm, location));
 			myfield.addAgents(new EntryAgent<Int2D>(rm, location));	
-			return rmap.up_mine.addAgents(new EntryAgent<Int2D>(rm, location));
+			return rmap.NORTH_MINE.addAgents(new EntryAgent<Int2D>(rm, location));
 		}
 		else
-			if(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(location.x,location.y))
+			if(rmap.NORTH_EAST_MINE!=null && rmap.NORTH_EAST_MINE.isMine(location.x,location.y))
 			{
 				if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 					tmp_zoom.add(rm);
 				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 					GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-				rmap.corner_mine_up_right.addAgents(new EntryAgent<Int2D>(rm, location));
-				rmap.right_mine.addAgents(new EntryAgent<Int2D>(rm, location));
+				rmap.NORTH_EAST_MINE.addAgents(new EntryAgent<Int2D>(rm, location));
+				rmap.EAST_MINE.addAgents(new EntryAgent<Int2D>(rm, location));
 				myfield.addAgents(new EntryAgent<Int2D>(rm, location));
-				return rmap.up_mine.addAgents(new EntryAgent<Int2D>(rm, location));
+				return rmap.NORTH_MINE.addAgents(new EntryAgent<Int2D>(rm, location));
 			}
 			else
-				if(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(location.x,location.y))
+				if(rmap.SOUTH_WEST_MINE!=null && rmap.SOUTH_WEST_MINE.isMine(location.x,location.y))
 				{
 					if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 						tmp_zoom.add(rm);
 					if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 						GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-					rmap.corner_mine_down_left.addAgents(new EntryAgent<Int2D>(rm, location));
-					rmap.left_mine.addAgents(new EntryAgent<Int2D>(rm, location));
+					rmap.SOUTH_WEST_MINE.addAgents(new EntryAgent<Int2D>(rm, location));
+					rmap.WEST_MINE.addAgents(new EntryAgent<Int2D>(rm, location));
 					myfield.addAgents(new EntryAgent<Int2D>(rm, location));
-					return rmap.down_mine.addAgents(new EntryAgent<Int2D>(rm, location));
+					return rmap.SOUTH_MINE.addAgents(new EntryAgent<Int2D>(rm, location));
 				}
 				else
-					if(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(location.x,location.y))
+					if(rmap.SOUTH_EAST_MINE!=null && rmap.SOUTH_EAST_MINE.isMine(location.x,location.y))
 					{
 						if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 							tmp_zoom.add(rm);
 						if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 							GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
-						rmap.corner_mine_down_right.addAgents(new EntryAgent<Int2D>(rm, location));
-						rmap.right_mine.addAgents(new EntryAgent<Int2D>(rm, location));
+						rmap.SOUTH_EAST_MINE.addAgents(new EntryAgent<Int2D>(rm, location));
+						rmap.EAST_MINE.addAgents(new EntryAgent<Int2D>(rm, location));
 						myfield.addAgents(new EntryAgent<Int2D>(rm, location));
-						return rmap.down_mine.addAgents(new EntryAgent<Int2D>(rm, location));
+						return rmap.SOUTH_MINE.addAgents(new EntryAgent<Int2D>(rm, location));
 					}
 					else
-						if(rmap.left_mine != null && rmap.left_mine.isMine(location.x,location.y))
+						if(rmap.WEST_MINE != null && rmap.WEST_MINE.isMine(location.x,location.y))
 						{
 							if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 								tmp_zoom.add(rm);
 							if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 								GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 							myfield.addAgents(new EntryAgent<Int2D>(rm, location));
-							return rmap.left_mine.addAgents(new EntryAgent<Int2D>(rm, location));
+							return rmap.WEST_MINE.addAgents(new EntryAgent<Int2D>(rm, location));
 						}
 						else
-							if(rmap.right_mine != null && rmap.right_mine.isMine(location.x,location.y))
+							if(rmap.EAST_MINE != null && rmap.EAST_MINE.isMine(location.x,location.y))
 							{
 								if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 									tmp_zoom.add(rm);
 								if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 									GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 								myfield.addAgents(new EntryAgent<Int2D>(rm, location));
-								return rmap.right_mine.addAgents(new EntryAgent<Int2D>(rm, location));
+								return rmap.EAST_MINE.addAgents(new EntryAgent<Int2D>(rm, location));
 							}
 							else
-								if(rmap.up_mine != null && rmap.up_mine.isMine(location.x,location.y))
+								if(rmap.NORTH_MINE != null && rmap.NORTH_MINE.isMine(location.x,location.y))
 								{
 									if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 										tmp_zoom.add(rm);
 									if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 										GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 									myfield.addAgents(new EntryAgent<Int2D>(rm, location));
-									return rmap.up_mine.addAgents(new EntryAgent<Int2D>(rm, location));
+									return rmap.NORTH_MINE.addAgents(new EntryAgent<Int2D>(rm, location));
 								}
 								else
-									if(rmap.down_mine != null && rmap.down_mine.isMine(location.x,location.y))
+									if(rmap.SOUTH_MINE != null && rmap.SOUTH_MINE.isMine(location.x,location.y))
 									{
 										if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 											tmp_zoom.add(rm);
 										if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 											GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 										myfield.addAgents(new EntryAgent<Int2D>(rm, location));
-										return rmap.down_mine.addAgents(new EntryAgent<Int2D>(rm, location));
+										return rmap.SOUTH_MINE.addAgents(new EntryAgent<Int2D>(rm, location));
 									}
 									else
 										if(myfield.isMine(location.x,location.y))
@@ -858,29 +858,29 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 											return myfield.addAgents(new EntryAgent<Int2D>(rm, location));
 										}
 										else
-											if(rmap.left_out!=null && rmap.left_out.isMine(location.x,location.y)) 
-												return rmap.left_out.addAgents(new EntryAgent<Int2D>(rm, location));
+											if(rmap.WEST_OUT!=null && rmap.WEST_OUT.isMine(location.x,location.y)) 
+												return rmap.WEST_OUT.addAgents(new EntryAgent<Int2D>(rm, location));
 											else
-												if(rmap.right_out!=null && rmap.right_out.isMine(location.x,location.y)) 
-													return rmap.right_out.addAgents(new EntryAgent<Int2D>(rm, location));
+												if(rmap.EAST_OUT!=null && rmap.EAST_OUT.isMine(location.x,location.y)) 
+													return rmap.EAST_OUT.addAgents(new EntryAgent<Int2D>(rm, location));
 												else
-													if(rmap.up_out!=null && rmap.up_out.isMine(location.x,location.y))
-														return rmap.up_out.addAgents(new EntryAgent<Int2D>(rm, location));
+													if(rmap.NORTH_OUT!=null && rmap.NORTH_OUT.isMine(location.x,location.y))
+														return rmap.NORTH_OUT.addAgents(new EntryAgent<Int2D>(rm, location));
 													else
-														if(rmap.down_out!=null && rmap.down_out.isMine(location.x,location.y))
-															return rmap.down_out.addAgents(new EntryAgent<Int2D>(rm, location));
+														if(rmap.SOUTH_OUT!=null && rmap.SOUTH_OUT.isMine(location.x,location.y))
+															return rmap.SOUTH_OUT.addAgents(new EntryAgent<Int2D>(rm, location));
 														else
-															if(rmap.corner_out_up_left_diag_center!=null && rmap.corner_out_up_left_diag_center.isMine(location.x,location.y)) 
-																return rmap.corner_out_up_left_diag_center.addAgents(new EntryAgent<Int2D>(rm, location));
+															if(rmap.NORTH_WEST_OUT!=null && rmap.NORTH_WEST_OUT.isMine(location.x,location.y)) 
+																return rmap.NORTH_WEST_OUT.addAgents(new EntryAgent<Int2D>(rm, location));
 															else 
-																if(rmap.corner_out_down_left_diag_center!=null && rmap.corner_out_down_left_diag_center.isMine(location.x,location.y)) 
-																	return rmap.corner_out_down_left_diag_center.addAgents(new EntryAgent<Int2D>(rm, location));
+																if(rmap.SOUTH_WEST_OUT!=null && rmap.SOUTH_WEST_OUT.isMine(location.x,location.y)) 
+																	return rmap.SOUTH_WEST_OUT.addAgents(new EntryAgent<Int2D>(rm, location));
 																else
-																	if(rmap.corner_out_up_right_diag_center!=null && rmap.corner_out_up_right_diag_center.isMine(location.x,location.y)) 
-																		return rmap.corner_out_up_right_diag_center.addAgents(new EntryAgent<Int2D>(rm, location));
+																	if(rmap.NORTH_EAST_OUT!=null && rmap.NORTH_EAST_OUT.isMine(location.x,location.y)) 
+																		return rmap.NORTH_EAST_OUT.addAgents(new EntryAgent<Int2D>(rm, location));
 																	else
-																		if(rmap.corner_out_down_right_diag_center!=null && rmap.corner_out_down_right_diag_center.isMine(location.x,location.y))
-																			return rmap.corner_out_down_right_diag_center.addAgents(new EntryAgent<Int2D>(rm, location));
+																		if(rmap.SOUTH_EAST_OUT!=null && rmap.SOUTH_EAST_OUT.isMine(location.x,location.y))
+																			return rmap.SOUTH_EAST_OUT.addAgents(new EntryAgent<Int2D>(rm, location));
 
 		return false;
 	}
@@ -1010,16 +1010,16 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	@Override
 	public boolean verifyPosition(Int2D pos) {
 		
-		return (rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(pos.x,pos.y))||
+		return (rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(pos.x,pos.y))||
 				
-				(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(pos.x,pos.y))
+				(rmap.NORTH_EAST_MINE!=null && rmap.NORTH_EAST_MINE.isMine(pos.x,pos.y))
 				||
-					(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(pos.x,pos.y))
-					||(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(pos.x,pos.y))
-						||(rmap.left_mine != null && rmap.left_mine.isMine(pos.x,pos.y))
-							||(rmap.right_mine != null && rmap.right_mine.isMine(pos.x,pos.y))
-								||(rmap.up_mine != null && rmap.up_mine.isMine(pos.x,pos.y))
-									||(rmap.down_mine != null && rmap.down_mine.isMine(pos.x,pos.y))
+					(rmap.SOUTH_WEST_MINE!=null && rmap.SOUTH_WEST_MINE.isMine(pos.x,pos.y))
+					||(rmap.SOUTH_EAST_MINE!=null && rmap.SOUTH_EAST_MINE.isMine(pos.x,pos.y))
+						||(rmap.WEST_MINE != null && rmap.WEST_MINE.isMine(pos.x,pos.y))
+							||(rmap.EAST_MINE != null && rmap.EAST_MINE.isMine(pos.x,pos.y))
+								||(rmap.NORTH_MINE != null && rmap.NORTH_MINE.isMine(pos.x,pos.y))
+									||(rmap.SOUTH_MINE != null && rmap.SOUTH_MINE.isMine(pos.x,pos.y))
 										||(myfield.isMine(pos.x,pos.y));
 
 	}
