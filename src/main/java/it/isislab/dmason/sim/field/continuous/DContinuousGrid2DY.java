@@ -30,28 +30,19 @@ import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.sim.field.support.globals.GlobalInspectorHelper;
-import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.util.visualization.zoomviewerapp.ZoomArrayList;
-
 import java.awt.image.BufferedImage;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
-import java.util.logging.Logger;
-
 import sim.engine.SimState;
 import sim.util.Double2D;
-import sim.util.Int2D;
 
 /**
  *  <h3>This Field extends Continuous2D, to be used in a distributed
