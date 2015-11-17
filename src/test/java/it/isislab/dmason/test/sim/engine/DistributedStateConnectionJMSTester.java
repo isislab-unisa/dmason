@@ -253,110 +253,7 @@ public class DistributedStateConnectionJMSTester {
 			return null;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * it.isislab.dmason.sim.field.DistributedField#getToSendForBalance()
-		 */
-		@Override
-		public HashMap getToSendForBalance() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * it.isislab.dmason.sim.field.DistributedField#setIsSplitted(boolean)
-		 */
-		@Override
-		public void setIsSplitted(boolean isSplitted) {
-			// TODO Auto-generated method stub
-
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.field.DistributedField#isSplitted()
-		 */
-		@Override
-		public boolean isSplitted() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * it.isislab.dmason.sim.field.DistributedField#isPrepareForBalance()
-		 */
-		@Override
-		public boolean isPrepareForBalance() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.field.DistributedField#isUnited()
-		 */
-		@Override
-		public boolean isUnited() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * it.isislab.dmason.sim.field.DistributedField#prepareForBalance(boolean
-		 * )
-		 */
-		@Override
-		public void prepareForBalance(boolean prepareForBalance) {
-			// TODO Auto-generated method stub
-
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.field.DistributedField#getToSendForUnion()
-		 */
-		@Override
-		public HashMap getToSendForUnion() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * it.isislab.dmason.sim.field.DistributedField#prepareForUnion(boolean)
-		 */
-		@Override
-		public void prepareForUnion(boolean prepareForUnion) {
-			// TODO Auto-generated method stub
-
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.field.DistributedField#getNumAgents()
-		 */
-		@Override
-		public int getNumAgents() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
+		
 
 		/*
 		 * (non-Javadoc)
@@ -459,6 +356,12 @@ public class DistributedStateConnectionJMSTester {
 		public boolean verifyPosition(Double2D pos) {
 			// TODO Auto-generated method stub
 			return false;
+		}
+
+		@Override
+		public int getNumAgents() {
+			// TODO Auto-generated method stub
+			return 0;
 		}
 
 	}
