@@ -27,7 +27,6 @@ import it.isislab.dmason.sim.field.support.field2D.DistributedRegionNumeric;
 import it.isislab.dmason.sim.field.support.field2D.EntryNum;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.RegionNumeric;
-import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;

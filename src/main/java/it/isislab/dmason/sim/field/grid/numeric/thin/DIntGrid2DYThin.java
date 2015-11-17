@@ -27,19 +27,16 @@ import it.isislab.dmason.sim.field.support.field2D.DistributedRegionNumeric;
 import it.isislab.dmason.sim.field.support.field2D.EntryNum;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.RegionNumeric;
-import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.util.visualization.zoomviewerapp.ZoomArrayList;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
-
 import sim.engine.SimState;
 import sim.util.Int2D;
 
@@ -88,14 +85,14 @@ import sim.util.Int2D;
  * <PRE>
  * -----------------------------------------------------------------------------------------------------------
  * |             |  |  |            |  |  |           |  |  |                       |  |  |                  |
- * |             |  |  |            |  |  |           |  R  R                       L  L  |                  |
- * |             |  |  |            |  |  |           |  I  I                       E  E  |                  |
- * |    00       |  |  |     01     |  |  |    02     |  G  G                       F  F  |  NUM_PEERS - 1   |
- * |             |  |  |            |  |  |           |  H  H***********************T  T  |                  |
- * |             |  |  |            |  |  |  MYFIELD  |  T  T                       |  |  |                  |
- * |             |  |  |            |  |  |           |  |  |                       O  M  |                  |
- * |             |  |  |            |  |  |           |  M  O                       |  |  |                  |
- * |             |  |  |            |  |  |           |  |  |                       |  |  |                  |
+ * |             |  |  |            |  |  |           |  E  E                       O  O  |                  |
+ * |             |  |  |            |  |  |           |  S  S                       V  V  |                  |
+ * |    00       |  |  |     01     |  |  |    02     |  T  T                       E  E  |  NUM_PEERS - 1   |
+ * |             |  |  |            |  |  |           |  |  |***********************S  S  |                  |
+ * |             |  |  |            |  |  |  MYFIELD  |  M  O                       T  T  |                  |
+ * |             |  |  |            |  |  |           |  |  U                       O  M  |                  |
+ * |             |  |  |            |  |  |           |  N  T                       U  I  |                  |
+ * |             |  |  |            |  |  |           |  E  |                       T  N  |                  |
  * ----------------------------------------------------------------------------------------------------------
  * </PRE>
  */
