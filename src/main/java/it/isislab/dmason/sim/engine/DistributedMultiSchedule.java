@@ -26,15 +26,10 @@ import it.isislab.dmason.sim.field.support.field2D.loadbalanced.UpdatePositionIn
 import it.isislab.dmason.sim.field.support.loadbalancing.LoadBalancingInterface;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.util.visualization.globalviewer.ViewerMonitor;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Logger;
-
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -61,17 +56,10 @@ public class DistributedMultiSchedule<E> extends Schedule
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	private static Logger logger;
-	
-	private static Logger loggerStep;
-	private static Logger loggerBalance;
-
-	
 	public ArrayList<DistributedField2D> fields2D;
 	public ArrayList<DistributedFieldNetwork> fieldsNetwork;
 	Steppable zombie = null;
-	
+
 	private HashMap<String, String> peers;
 	private boolean split;
 	private boolean merge;
@@ -85,62 +73,51 @@ public class DistributedMultiSchedule<E> extends Schedule
 	private double thresholdSplit;
 	private double thresholdMerge;
 
-	
-    private final ReentrantLock lock = new ReentrantLock();
-    private final Condition block = lock.newCondition();
-    
-    public HashMap<String,Object> deferredUpdates=new HashMap<String, Object>();
-    
-    /**
-     * Count how many viewers are active on this schedule. Using this
-     * subclass allows to increment/decrement the counter atomically.
-     */
-    public class CounterViewer
-    {
+
+	private final ReentrantLock lock = new ReentrantLock();
+	private final Condition block = lock.newCondition();
+
+	public HashMap<String,Object> deferredUpdates=new HashMap<String, Object>();
+
+	/**
+	 * Count how many viewers are active on this schedule. Using this
+	 * subclass allows to increment/decrement the counter atomically.
+	 */
+	public class CounterViewer
+	{
 		private int count = 0;
 		public synchronized void increment() { count++;	}
 		public synchronized void decrement(){ count--; }
 		public synchronized int getCount(){	return count; }
 	}
-    
-    /**
-     * Number of the viewers active on this schedules.
-     */
+
+	/**
+	 * Number of the viewers active on this schedules.
+	 */
 	public CounterViewer numViewers = new CounterViewer();
-	
+
 	public boolean isEnableZoomView = false;
-	
+
 	public ViewerMonitor monitor = new ViewerMonitor();
-	
+
 	/**
 	 * Counts the number of threads that have done synchronizing.
 	 */
-    private int n = 0;
-    
-    /**
-     * Every region in this worker, after synchronization, will store a
-     * boolean in this ArrayList stating if the synchronization itself
-     * was successful or not.
-     */
-    private ArrayList<Boolean> synchResults = new ArrayList<Boolean>(); 
-    private ArrayList<Boolean> synchNetworkResults = new ArrayList<Boolean>(); 
-	
-    
- // profiling code
- 	long startStep;
- 	long endStep;
- 	long numStep;
- 	long time;
- 	double sleepTime = 0.0;
- 	FileAppender file;
- 	FileAppender file2;
+	private int n = 0;
 
- 	// end profiling code
-    
+	/**
+	 * Every region in this worker, after synchronization, will store a
+	 * boolean in this ArrayList stating if the synchronization itself
+	 * was successful or not.
+	 */
+	private ArrayList<Boolean> synchResults = new ArrayList<Boolean>(); 
+	private ArrayList<Boolean> synchNetworkResults = new ArrayList<Boolean>(); 
+
+
 	public DistributedMultiSchedule() {
-		
-		
-		
+
+
+
 		fields2D = new ArrayList<DistributedField2D>();
 		fieldsNetwork = new ArrayList<DistributedFieldNetwork>();
 		peers = new HashMap<String, String>();
@@ -149,21 +126,10 @@ public class DistributedMultiSchedule<E> extends Schedule
 		numAgents = 0;
 		externalAgents = 0;
 		numExt = 0;
-		
-		thresholdSplit=3;
+		thresholdSplit=3; 
 		thresholdMerge=1.5;
-		// profiling code
-				startStep = 0;
-				endStep = 0;
-				
-				
-				
-
-				numStep = 0;
-				time = 0;
-		// end profiling code
 	}
-	
+
 	/**
 	 * Steps the schedule for each field, gathering and ordering all the items to step on the next time step (skipping
 	 * blank time steps), and then stepping all of them in the decided order.
@@ -171,9 +137,9 @@ public class DistributedMultiSchedule<E> extends Schedule
 	 */
 	@Override
 	public synchronized boolean step(final SimState simstate)
-    {
+	{
 		state = (DistributedState)simstate;
-		
+
 		//load peers list
 		if(getSteps()==0){
 			int numP = (int) Math.sqrt(state.NUMPEERS);
@@ -185,59 +151,21 @@ public class DistributedMultiSchedule<E> extends Schedule
 				}
 			}
 		}
-		
-		// profiling code
-				if(getSteps()==0){
-					
-					logger = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+state.TYPE.toString());
-					
-					loggerStep = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+"Step");
-					loggerBalance = Logger.getLogger(DistributedMultiSchedule.class.getCanonicalName()+"Balance");
-					/*loggerStep.setLevel(Level.DEBUG);
-					loggerBalance.setLevel(Level.DEBUG);
-					if(loggerStep.getLevel()!=Level.OFF){
-					 file = new FileAppender();
-					  file.setName("FileLogger"+"Region"+((DistributedState)state).TYPE.toString());
-					  file.setFile("Worker"+ManagementFactory.getRuntimeMXBean().getName()+".log");
-					  file.setLayout(new SimpleLayout());
-					  file.setThreshold(Level.DEBUG);
-					  file.activateOptions();
-					loggerStep.addAppender(file);
 
-					} 
-					if(loggerBalance.getLevel()!=Level.OFF){
-					  file2 = new FileAppender();
-					  file2.setName("FileLogger"+"Balance"+((DistributedState)state).TYPE.toString());
-					  file2.setFile("Balance"+ManagementFactory.getRuntimeMXBean().getName()+".log");
-					  file2.setLayout(new SimpleLayout());
-					  file2.setThreshold(Level.DEBUG);
-					  file2.setAppend(true);
-					  file2.activateOptions();
-						loggerBalance.addAppender(file2);
-
-					}
-
-					loggerBalance.addAppender(file2); */
-			}
-								
-				numStep = getSteps();
-				// end profiling code
-		
-		
-				
+	
 		// If not already present, adds a "zombie" agent to the schedule
 		// in order to prevent stopping the simulation.
 		if (zombie == null)
 		{ 
 			zombie = new Steppable()
-			        	{
-							static final long serialVersionUID = 6330208166095250478L;
-							@Override
-							public void step(SimState state) { /* do nothing*/ }
-			        	};
+			{
+				static final long serialVersionUID = 6330208166095250478L;
+				@Override
+				public void step(SimState state) { /* do nothing*/ }
+			};
 			this.scheduleRepeating(zombie);
 		}
-		
+
 		synchronized (monitor)
 		{
 			if (monitor.isZoom)
@@ -245,21 +173,14 @@ public class DistributedMultiSchedule<E> extends Schedule
 			else
 				monitor.ZOOM = false;
 		}
-		
+
 		// Execute the simulation step
 		super.step(state);
 		deferredUpdates.clear();
-		
-		
+
+
 		verifyBalance();
-	
-		
-		// profiling code
-    	endStep = System.currentTimeMillis();
-   		loggerStep.debug(";"+state.TYPE.toString()+";"+(numStep)+";"+(numAgents)+";"+(startStep)+";"+(endStep));
-   		// end profiling code
-		
-		
+
 		// Create a thread for each field assigned to this worker, in order
 		// to do synchronization
 		for(DistributedField2D<E> f : fields2D)
@@ -267,7 +188,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 			MyThread t = new MyThread(f, this);
 			t.start();
 		}
-		
+
 		// Waits for every synchronization thread.
 		// Note: synchronization threads will update the synchResults array
 		//       as well as the n variable.
@@ -277,13 +198,12 @@ public class DistributedMultiSchedule<E> extends Schedule
 			{
 				block.await(); // Will be signaled by a thread
 			} catch (InterruptedException e) {
-				logger.fatal("Error during block.await()");
 				e.printStackTrace();
 			}
 		}
 		n = 0;
 		lock.unlock();
-		
+
 		class MyNetworkThread<E> extends Thread
 		{ 
 			DistributedFieldNetwork<E> field;
@@ -294,7 +214,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 				field = f;
 				schedule = s;
 			} 
-			
+
 			@Override
 			public void run()
 			{ 
@@ -309,20 +229,19 @@ public class DistributedMultiSchedule<E> extends Schedule
 			MyNetworkThread t = new MyNetworkThread(f, this);
 			t.start();
 		}
-		
+
 		lock.lock();
 		while(n < fieldsNetwork.size())
 		{
 			try {
 				block.await();
 			} catch (Exception e) {
-				logger.fatal("Error during Network block.await()");
 				e.printStackTrace();
 			}
 		}
 		n=0;
 		lock.unlock();
-		
+
 		for (Boolean b : synchNetworkResults)
 		{
 			if (b == false)
@@ -330,7 +249,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 				return false;
 			}
 		}	
-		
+
 		// Check if fields did synchronize successfully
 		for (Boolean b : synchResults)
 		{
@@ -339,8 +258,8 @@ public class DistributedMultiSchedule<E> extends Schedule
 				return false;
 			}
 		}	
-		
-		
+
+
 		// If there is an active zoom synchronous monitor, wait for it 
 		if(monitor.ZOOM && monitor.isSynchro)
 		{
@@ -349,15 +268,14 @@ public class DistributedMultiSchedule<E> extends Schedule
 			{
 				monitor.awaitForAckStep(currentStep);
 			} catch (InterruptedException e) {
-				logger.fatal("Error on monitor.awaitForAckStep(" + currentStep + ")");
-				e.printStackTrace();
+						e.printStackTrace();
 			}
 		}
-		
+
 		// Done
 		return true;
-    }
-	
+	}
+
 	/**
 	 * This subclass is in charge of synchronizing a single region.
 	 * @param <E> the type of coordinates
@@ -372,7 +290,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 			field = f;
 			schedule = s;
 		} 
-		
+
 		@Override
 		public void run()
 		{ 
@@ -381,7 +299,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 			schedule.statusSyn(field.synchro());
 		} 
 	} 
-	
+
 	/**
 	 * Stores result of a field synchronization's result. This method is meant
 	 * to be be called by an inner thread <code>MyThread</code> in charge of
@@ -391,33 +309,33 @@ public class DistributedMultiSchedule<E> extends Schedule
 	public void statusSyn(boolean b)
 	{
 		lock.lock();
-			n++;	             // Increase number of threads that did synchronize
-			synchResults.add(b); // Update the array of synchronization results
-			block.signal();      // Signal DistributedMultiSchedule
+		n++;	             // Increase number of threads that did synchronize
+		synchResults.add(b); // Update the array of synchronization results
+		block.signal();      // Signal DistributedMultiSchedule
 		lock.unlock();
 	}
-	
+
 	public void statusNetworkSyn(boolean b)
 	{
 		lock.lock();
-			n++;	             // Increase number of threads that did synchronize
-			synchNetworkResults.add(b); // Update the array of synchronization results
-			block.signal();      // Signal DistributedMultiSchedule
+		n++;	             // Increase number of threads that did synchronize
+		synchNetworkResults.add(b); // Update the array of synchronization results
+		block.signal();      // Signal DistributedMultiSchedule
 		lock.unlock();
 	}
-	
+
 	// Getters and setters
 	public ArrayList<DistributedField2D> getFields() { return fields2D; }
 	public void setFields(ArrayList<DistributedField2D> fields) { this.fields2D = fields; }
 	public void addField(DistributedField2D<E> f) { fields2D.add(f); }	
 	public void addNetworkField(DistributedFieldNetwork<E> f) { fieldsNetwork.add(f); }
-	
+
 	public void manageBalance(HashMap<Integer,UpdatePositionInterface> hashUpdatesPosition, 
 			DistributedField2DLB field, CellType cellType,LoadBalancingInterface balance) {
 		if(getSteps()>state.NUMPEERS)
 		{
 			HashMap<CellType, MyCellInterface> h =field.getToSendForBalance();
-			
+
 			if(state.TYPE.toString().equals(peers.get((getSteps()%(3*state.NUMPEERS))+"")) && !field.isSplitted()
 					&& split)
 			{
@@ -430,8 +348,8 @@ public class DistributedMultiSchedule<E> extends Schedule
 				hashUpdatesPosition.get(MyCellInterface.DOWN).setPreBalance(true);
 				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreBalance(true);
 				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreBalance(true);
-				loggerBalance.debug(";"+state.TYPE.toString()+";Split: "+(numStep)+";"+(numAgents));
-				
+
+
 			}
 			else
 				if(state.TYPE.toString().equals(peers.get(((getSteps()%(3*state.NUMPEERS))-1)+"")) && !field.isSplitted()
@@ -443,37 +361,37 @@ public class DistributedMultiSchedule<E> extends Schedule
 					m0.setPosition(balance.calculatePositionForBalance(m0.getPosition()));
 					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setMyCell(m0);
 					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreBalance(true);
-					
+
 					MyCellInterface m1 = h.get(MyCellInterface.UP);
 					m1.setPosition(balance.calculatePositionForBalance(m1.getPosition()));
 					hashUpdatesPosition.get(MyCellInterface.UP).setMyCell(m1);
 					hashUpdatesPosition.get(MyCellInterface.UP).setPreBalance(true);
-					
+
 					MyCellInterface m2 = h.get(MyCellInterface.CORNER_DIAG_UP_RIGHT);
 					m2.setPosition(balance.calculatePositionForBalance(m2.getPosition()));
 					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setMyCell(m2);
 					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreBalance(true);
-					
+
 					MyCellInterface m3 = h.get(MyCellInterface.RIGHT);
 					m3.setPosition(balance.calculatePositionForBalance(m3.getPosition()));
 					hashUpdatesPosition.get(MyCellInterface.RIGHT).setMyCell(m3);
 					hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreBalance(true);
-					
+
 					MyCellInterface m4 = h.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT);
 					m4.setPosition(balance.calculatePositionForBalance(m4.getPosition()));
 					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setMyCell(m4);
 					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreBalance(true);
-					
+
 					MyCellInterface m5 = h.get(MyCellInterface.DOWN);
 					m5.setPosition(balance.calculatePositionForBalance(m5.getPosition()));
 					hashUpdatesPosition.get(MyCellInterface.DOWN).setMyCell(m5);
 					hashUpdatesPosition.get(MyCellInterface.DOWN).setPreBalance(true);
-					
+
 					MyCellInterface m6 = h.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT);
 					m6.setPosition(balance.calculatePositionForBalance(m6.getPosition()));
 					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setMyCell(m6);
 					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreBalance(true);
-		
+
 					MyCellInterface m7 = h.get(MyCellInterface.LEFT);
 					m7.setPosition(balance.calculatePositionForBalance(m7.getPosition()));
 					hashUpdatesPosition.get(MyCellInterface.LEFT).setMyCell(m7);
@@ -490,10 +408,10 @@ public class DistributedMultiSchedule<E> extends Schedule
 					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreBalance(false);
 					hashUpdatesPosition.get(MyCellInterface.LEFT).setPreBalance(false);
 				}
-			
+
 		}
 	}
-	
+
 	public void manageMerge(HashMap<Integer,UpdatePositionInterface> hashUpdatesPosition, 
 			DistributedField2DLB field, CellType cellType) {
 		if(getSteps()>state.NUMPEERS)
@@ -510,10 +428,10 @@ public class DistributedMultiSchedule<E> extends Schedule
 				hashUpdatesPosition.get(MyCellInterface.DOWN).setPreUnion(true);
 				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(true);
 				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(true);
-				
-				loggerBalance.debug(";"+state.TYPE.toString()+";Merge: "+(numStep)+";"+(numExt));
+
+			
 				numExt = 0;
-				
+
 			}
 			else
 				if(state.TYPE.toString().equals(peers.get(((getSteps()%(3*state.NUMPEERS))-1)+"")) && !field.isUnited()
@@ -540,14 +458,14 @@ public class DistributedMultiSchedule<E> extends Schedule
 					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(false);
 					hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(false);
 				}
-			
+
 			HashMap<Integer, MyCellInterface> cellToSend = field.getToSendForUnion();
 			for(Integer s : cellToSend.keySet())
 			{
 				if(cellToSend.get(s)!=null)
 				{
 					MyCellInterface mc = cellToSend.get(s);
-	
+
 					hashUpdatesPosition.get(s).setUnion(true);
 					hashUpdatesPosition.get(s).setMyCell(mc);
 				}
@@ -557,7 +475,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 			}
 		}
 	}
-	
+
 	private void verifyBalance(){
 
 		double average = state.NUMAGENTS/(state.rows*state.columns);
