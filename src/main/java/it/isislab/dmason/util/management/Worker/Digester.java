@@ -17,7 +17,6 @@
 
 package it.isislab.dmason.util.management.Worker;
 
-import it.isislab.dmason.exception.NoDigestFoundException;
 import it.isislab.dmason.util.management.DigestAlgorithm;
 
 import java.io.FileInputStream;
@@ -80,9 +79,9 @@ public class Digester
 		return digest;
 	}
 	
-	public void storeToPropFile(String path) throws NoDigestFoundException
+	public void storeToPropFile(String path) throws Exception
 	{
-		if( digest == null) throw new NoDigestFoundException();
+		if( digest == null) throw new Exception("No digest found, create it before store it.");
 		else
 		{
 			Properties prop = new Properties();

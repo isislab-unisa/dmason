@@ -16,7 +16,6 @@
  */
 
 package it.isislab.dmason.util.management.Worker;
-import it.isislab.dmason.exception.NoDigestFoundException;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.management.DigestAlgorithm;
 import it.isislab.dmason.util.management.Master.MasterDaemonStarter;
@@ -345,7 +344,7 @@ public class WorkerUpdater extends javax.swing.JFrame
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (NoDigestFoundException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

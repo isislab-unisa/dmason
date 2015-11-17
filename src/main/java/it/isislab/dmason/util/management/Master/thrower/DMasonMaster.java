@@ -18,7 +18,6 @@
 package it.isislab.dmason.util.management.Master.thrower;
 
 import it.isislab.dmason.annotation.ThinAnnotation;
-import it.isislab.dmason.exception.NoDigestFoundException;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.tools.batch.BatchExecutor;
 import it.isislab.dmason.tools.batch.BatchWizard.DistributionType;
@@ -3175,7 +3174,7 @@ public class DMasonMaster extends JFrame  implements Observer{
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (NoDigestFoundException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

@@ -17,7 +17,6 @@
 
 package it.isislab.dmason.util.management.Worker.thrower;
 
-import it.isislab.dmason.exception.NoDigestFoundException;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.jms.BeaconMessageListener;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
@@ -163,7 +162,7 @@ public class DMasonWorker implements StartWorkerInterface,  Observer {
 
 			} catch (IOException ex) {
 				ex.printStackTrace();
-			} catch (NoDigestFoundException e) {
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
