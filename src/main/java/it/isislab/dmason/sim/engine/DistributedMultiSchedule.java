@@ -20,6 +20,7 @@ package it.isislab.dmason.sim.engine;
 
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
+import it.isislab.dmason.sim.field.DistributedField2DLB;
 import it.isislab.dmason.sim.field.DistributedFieldNetwork;
 import it.isislab.dmason.sim.field.support.field2D.loadbalanced.UpdatePositionInterface;
 import it.isislab.dmason.sim.field.support.loadbalancing.LoadBalancingInterface;
@@ -412,7 +413,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 	public void addNetworkField(DistributedFieldNetwork<E> f) { fieldsNetwork.add(f); }
 	
 	public void manageBalance(HashMap<Integer,UpdatePositionInterface> hashUpdatesPosition, 
-			DistributedField2D field, CellType cellType,LoadBalancingInterface balance) {
+			DistributedField2DLB field, CellType cellType,LoadBalancingInterface balance) {
 		if(getSteps()>state.NUMPEERS)
 		{
 			HashMap<CellType, MyCellInterface> h =field.getToSendForBalance();
@@ -494,7 +495,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 	}
 	
 	public void manageMerge(HashMap<Integer,UpdatePositionInterface> hashUpdatesPosition, 
-			DistributedField2D field, CellType cellType) {
+			DistributedField2DLB field, CellType cellType) {
 		if(getSteps()>state.NUMPEERS)
 		{
 			if(state.TYPE.toString().equals(peers.get((getSteps()%(3*state.NUMPEERS))+"")) && !field.isUnited() 
