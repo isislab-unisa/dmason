@@ -21,6 +21,7 @@ import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
+import it.isislab.dmason.sim.field.DistributedField2DLB;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2D;
 import it.isislab.dmason.sim.field.grid.numeric.region.RegionIntegerNumericLB;
@@ -123,7 +124,7 @@ import sim.util.Int2D;
  * </PRE>
  */
 
-public class DIntGrid2DXYLB extends DIntGrid2D {
+public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 
 	/**
 	 * 

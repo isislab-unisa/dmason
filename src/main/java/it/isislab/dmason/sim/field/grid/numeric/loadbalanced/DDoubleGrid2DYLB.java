@@ -21,6 +21,7 @@ import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
+import it.isislab.dmason.sim.field.DistributedField2DLB;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.grid.numeric.DDoubleGrid2D;
 import it.isislab.dmason.sim.field.grid.numeric.region.RegionDoubleNumeric;
@@ -100,7 +101,7 @@ import sim.util.Int2D;
  * ----------------------------------------------------------------------------------------------------------
  * </PRE>
  */
-public class DDoubleGrid2DYLB extends DDoubleGrid2D {
+public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2DLB {
 
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
 	private ZoomArrayList<EntryNum<Double, Int2D>> tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();

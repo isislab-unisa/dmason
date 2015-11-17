@@ -22,6 +22,7 @@ import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.CellType;
+import it.isislab.dmason.sim.field.DistributedField2DLB;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.TraceableField;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
@@ -111,7 +112,7 @@ import sim.util.Double2D;
  * </PRE>
  */
 
-public class DContinuousGrid2DYLB extends DContinuousGrid2D implements TraceableField
+public class DContinuousGrid2DYLB extends DContinuousGrid2D implements TraceableField, DistributedField2DLB
 {	
 	private static final long serialVersionUID = 1L;
 
