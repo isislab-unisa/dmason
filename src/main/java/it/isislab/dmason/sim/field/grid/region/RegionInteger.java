@@ -15,7 +15,7 @@
    limitations under the License.
  */
 
- package it.isislab.dmason.sim.field.grid.region;
+package it.isislab.dmason.sim.field.grid.region;
 
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
@@ -51,15 +51,15 @@ public class RegionInteger extends Region<Integer,Int2D>
 			Integer HEIGHT) {
 		if(upl_xx < 0 || upl_yy < 0)
 		{				
-				return null;
+			return null;
 		}
-		
+
 		if( upl_xx>= WIDTH || upl_yy >= HEIGHT)
 		{
 			return null;
 		}
-	
-	  return new RegionInteger(upl_xx,upl_yy,down_xx,down_yy);
+
+		return new RegionInteger(upl_xx,upl_yy,down_xx,down_yy);
 	}
 
 	@Override
@@ -89,6 +89,6 @@ public class RegionInteger extends Region<Integer,Int2D>
 		this.put(e.r.getId(),e);
 		return true;
 	}
-	
+
 
 }
