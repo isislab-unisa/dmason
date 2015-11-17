@@ -26,13 +26,8 @@ import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 import it.isislab.dmason.tools.batch.data.EntryParam;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
-
 import java.awt.Color;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.util.List;
-
 import sim.engine.SimState;
 import sim.portrayal.SimplePortrayal2D;
 import sim.portrayal.simple.AdjustablePortrayal2D;
@@ -119,19 +114,7 @@ public class DFlockersNonUniformPartitioning extends DistributedState<Double2D>
     public static String topicPrefix = "";
     
     
-    
-//    int localTest = 1; int globalTest = -1;
-//    public int getTest() { return localTest; }
-//    public void setTest(int value) { localTest = value; }
-//    public boolean globalTest() { return true; }
-//    public int getGlobalTest() { return globalTest; }
-//    public void setGlobalTest(Object value) { globalTest = (Integer)value; }
-//    public Integer reduceTest(Object[] shard) {
-//    	int globalTest = 0;
-//    	for (int i = 0; i < shard.length; i++) globalTest +=  ((Integer)shard[i]).intValue();
-//    	return globalTest;
-//    } 
-   
+ 
     
     public DFlockersNonUniformPartitioning(GeneralParam params)
     {    	

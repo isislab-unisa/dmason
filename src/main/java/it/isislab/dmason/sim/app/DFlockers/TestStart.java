@@ -20,7 +20,6 @@ package it.isislab.dmason.sim.app.DFlockers;
  */
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.connection.ConnectionType;
 
