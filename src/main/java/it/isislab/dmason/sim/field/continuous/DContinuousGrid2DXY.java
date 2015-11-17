@@ -31,16 +31,12 @@ import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.sim.field.support.globals.GlobalInspectorHelper;
 import it.isislab.dmason.sim.field.support.globals.GlobalParametersHelper;
-import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.util.visualization.zoomviewerapp.ZoomArrayList;
 
 import java.awt.image.BufferedImage;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -87,7 +83,7 @@ import sim.util.Double2D;
  *	</ul></p>
  *	
  * <PRE>
- * ---------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------
  * |                        |  |  |                      |  |  |                         |
  * |                        |  |  |                      |  |  |                         |
  * |                        |  |  |                      |  |  |                         |
@@ -97,21 +93,21 @@ import sim.util.Double2D;
  * |                        |  |  |                      |  |  |   CORNER DIAG           |
  * |                        |  |  |                      |  |  |  /                      |
  * |                        |  |  |                      |  |  | /                       |
- * |________________________|__|__|______UP_OUT__________|__|__|/________________________|
- * |________________________|__|__|______UP_MINE_________|__|__|_________________________|
+ * |________________________|__|__|______NORTH_OUT_______|__|__|/________________________|
+ * |________________________|__|__|______NORTH_MINE______|__|__|_________________________|
  * |________________________|__|__|______________________|__|__|_________________________|
  * |                        |  |  |                     /|  |  |                         |
- * |                        L  L  |                    / |  R  R                         |
- * |                        E  E  |                   /  |  I  I                         |
- * |         10             F  F  |         11   CORNER  |  G  G         12              |
- * |                        T  T  |               MINE   |  H  H                         |
- * |                        |  |  |                      |  T  T                         |
- * |                        O  M  |       MYFIELD        |  |  |                         |
- * |                        U  I  |                      |  M  O                         |
- * |                        T  N  |                      |  I  U                         |
+ * |                        O  O  |                    / |  E  E                         |
+ * |                        V  V  |                   /  |  S  S                         |
+ * |         10             E  E  |         11   CORNER  |  T  T         12              |
+ * |                        S  S  |               MINE   |  |  |                         |
+ * |                        T  T  |                      |  M  O                         |
+ * |                        O  M  |       MYFIELD        |  |  U                         |
+ * |                        U  I  |                      |  N  T                         |
+ * |                        T  N  |                      |  E  |                         |
  * |________________________|__|__|______________________|__|__|_________________________|
- * |________________________|__|__|___DOWN_MINE__________|__|__|_________________________|
- * |________________________|__|__|___DOWN_OUT___________|__|__|_________________________|
+ * |________________________|__|__|___SOUTH_MINE_________|__|__|_________________________|
+ * |________________________|__|__|___SOUTH_OUT__________|__|__|_________________________|
  * |                        |  |  |                      |  |  |                         |
  * |                        |  |  |                      |  |  |                         |
  * |                        |  |  |                      |  |  |                         |
