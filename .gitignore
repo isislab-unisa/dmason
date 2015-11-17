@@ -7,3 +7,4 @@
 .DS_Store
 /logs
 /resources/app/test-network
+*.umlcd
