@@ -8,3 +8,4 @@
 /logs
 /resources/app/test-network
 *.umlcd
+*.uml
