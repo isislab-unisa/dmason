@@ -1505,7 +1505,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 
 		if(position == MyCellInterface.CORNER_DIAG_UP_LEFT)
 		{
-			for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>) ((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center().values())
+			for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>) ((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getNORTH_WEST_OUT().values())
 			{			    	
 				RemotePositionedAgent<Int2D> rm=e.r;
 				Int2D loc=e.l;
@@ -1518,7 +1518,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 		else
 			if(position == MyCellInterface.UP)
 			{
-				for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center().values())
+				for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getNORTH_EAST_OUT().values())
 				{			    	
 					RemotePositionedAgent<Int2D> rm=e.r;
 					Int2D loc=e.l;
@@ -1527,7 +1527,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 					sm.schedule.scheduleOnce(rm);
 					setObjectLocation(rm,loc);
 				}
-				for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.UP).get(cellType)).getMyRMap().getup_out().values())
+				for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.UP).get(cellType)).getMyRMap().getNORTH_OUT().values())
 				{			    	
 					RemotePositionedAgent<Int2D> rm=e.r;
 					Int2D loc=e.l;
@@ -1536,7 +1536,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 					sm.schedule.scheduleOnce(rm);
 					setObjectLocation(rm,loc);
 				}
-				for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center().values())
+				for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getNORTH_WEST_OUT().values())
 				{			    	
 					RemotePositionedAgent<Int2D> rm=e.r;
 					Int2D loc=e.l;
@@ -1549,7 +1549,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 			else
 				if(position == MyCellInterface.CORNER_DIAG_UP_RIGHT)
 				{
-					for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center().values())
+					for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getNORTH_EAST_OUT().values())
 					{			    	
 						RemotePositionedAgent<Int2D> rm=e.r;
 						Int2D loc=e.l;
@@ -1562,7 +1562,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 				else
 					if(position == MyCellInterface.RIGHT)
 					{
-						for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center().values())
+						for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getSOUTH_EAST_OUT().values())
 						{			    	
 							RemotePositionedAgent<Int2D> rm=e.r;
 							Int2D loc=e.l;
@@ -1571,7 +1571,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							sm.schedule.scheduleOnce(rm);
 							setObjectLocation(rm,loc);
 						}
-						for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.RIGHT).get(cellType)).getMyRMap().getright_out().values())
+						for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.RIGHT).get(cellType)).getMyRMap().getEAST_OUT().values())
 						{			    	
 							RemotePositionedAgent<Int2D> rm=e.r;
 							Int2D loc=e.l;
@@ -1580,7 +1580,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							sm.schedule.scheduleOnce(rm);
 							setObjectLocation(rm,loc);
 						}
-						for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center().values())
+						for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getNORTH_EAST_OUT().values())
 						{			    	
 							RemotePositionedAgent<Int2D> rm=e.r;
 							Int2D loc=e.l;
@@ -1593,7 +1593,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 					else
 						if(position == MyCellInterface.CORNER_DIAG_DOWN_RIGHT)
 						{
-							for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center().values())
+							for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getSOUTH_EAST_OUT().values())
 							{			    	
 								RemotePositionedAgent<Int2D> rm=e.r;
 								Int2D loc=e.l;
@@ -1606,7 +1606,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 						else
 							if(position == MyCellInterface.DOWN)
 							{
-								for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center().values())
+								for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT().values())
 								{			    	
 									RemotePositionedAgent<Int2D> rm=e.r;
 									Int2D loc=e.l;
@@ -1615,7 +1615,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 									sm.schedule.scheduleOnce(rm);
 									setObjectLocation(rm,loc);
 								}
-								for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.DOWN).get(cellType)).getMyRMap().getdown_out().values())
+								for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.DOWN).get(cellType)).getMyRMap().getSOUTH_OUT().values())
 								{			    	
 									RemotePositionedAgent<Int2D> rm=e.r;
 									Int2D loc=e.l;
@@ -1624,7 +1624,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 									sm.schedule.scheduleOnce(rm);
 									setObjectLocation(rm,loc);
 								}
-								for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center().values())
+								for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getSOUTH_EAST_OUT().values())
 								{			    	
 									RemotePositionedAgent<Int2D> rm=e.r;
 									Int2D loc=e.l;
@@ -1637,7 +1637,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							else
 								if(position == MyCellInterface.CORNER_DIAG_DOWN_LEFT)
 								{
-									for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center().values())
+									for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT().values())
 									{			    	
 										RemotePositionedAgent<Int2D> rm=e.r;
 										Int2D loc=e.l;
@@ -1650,7 +1650,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 								else
 									if(position == MyCellInterface.LEFT)
 									{
-										for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center().values())
+										for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getNORTH_WEST_OUT().values())
 										{			    	
 											RemotePositionedAgent<Int2D> rm=e.r;
 											Int2D loc=e.l;
@@ -1659,7 +1659,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 											sm.schedule.scheduleOnce(rm);
 											setObjectLocation(rm,loc);
 										}
-										for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.LEFT).get(cellType)).getMyRMap().getleft_out().values())
+										for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.LEFT).get(cellType)).getMyRMap().getWEST_OUT().values())
 										{			    	
 											RemotePositionedAgent<Int2D> rm=e.r;
 											Int2D loc=e.l;
@@ -1668,7 +1668,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 											sm.schedule.scheduleOnce(rm);
 											setObjectLocation(rm,loc);
 										}
-										for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center().values())
+										for(EntryAgent<Int2D> e: (Collection<EntryAgent<Int2D>>)((MyCellIntegerField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT().values())
 										{			    	
 											RemotePositionedAgent<Int2D> rm=e.r;
 											Int2D loc=e.l;

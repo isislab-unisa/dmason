@@ -146,56 +146,42 @@ public class RegionMap<E,F> implements Serializable
 	}
 
 	//getters and setters 
-	public Region<E,F>getleft_out() { return WEST_OUT; }
-	public void setleft_out(Region<E,F>left_out) { this.WEST_OUT = left_out; }
-	public Region<E,F>getleft_mine() { return WEST_MINE; }
-	public void setleft_mine(Region<E,F>left_mine) { this.WEST_MINE = left_mine;}
-	public Region<E,F>getright_mine() {return EAST_MINE;}
-	public void setright_mine(Region<E,F>right_mine) {this.EAST_MINE = right_mine;}
-	public Region<E,F>getright_out() { return EAST_OUT;}
-	public void setright_out(Region<E,F>right_out) {this.EAST_OUT = right_out;	}
-	public Region<E,F>getdown_mine() {return SOUTH_MINE; }
-	public void setdown_mine(Region<E,F>down_mine) {this.SOUTH_MINE = down_mine;}
-	public Region<E,F>getdown_out() {return SOUTH_OUT;}
-	public void setdown_out(Region<E,F>down_out) {this.SOUTH_OUT = down_out;}
-	public Region<E,F>getup_mine() {return NORTH_MINE;}
-	public void setup_mine(Region<E,F>up_mine) {this.NORTH_MINE = up_mine;}
-	public Region<E,F>getup_out() {	return NORTH_OUT; }
-	public void setup_out(Region<E,F>up_out) {this.NORTH_OUT = up_out; }
-	public Region<E,F>getcorner_mine_up_left() {return NORTH_WEST_MINE;	}
-	public void setcorner_mine_up_left(Region<E,F>corner_mine_up_left) {this.NORTH_WEST_MINE = corner_mine_up_left;	}
-	public Region<E,F>getcorner_out_up_left_diag_center() {return NORTH_WEST_OUT;}
-	public void setcorner_out_up_left_diag_center(Region<E,F>corner_out_up_left_diag_center) {this.NORTH_WEST_OUT = corner_out_up_left_diag_center;}
-	public Region<E,F>getcorner_out_up_left_diag_up() {return corner_out_up_left_diag_up;}
-	public void setcorner_out_up_left_diag_up(Region<E,F> corner_out_up_left_diag_up) {this.corner_out_up_left_diag_up = corner_out_up_left_diag_up;}
-	public Region<E,F>getcorner_out_up_left_diag_left() {return corner_out_up_left_diag_left;}
-	public void setCorner_out_up_left_diag_left(Region<E,F> corner_out_up_left_diag_left) {this.corner_out_up_left_diag_left = corner_out_up_left_diag_left;}	
-	public Region<E,F>getcorner_mine_up_right() {return NORTH_EAST_MINE;}
-	public void setcorner_mine_up_right(Region<E,F>corner_mine_up_right) {this.NORTH_EAST_MINE = corner_mine_up_right;}
-	public Region<E,F>getcorner_out_up_right_diag_center() {return NORTH_EAST_OUT;}
-	public void setcorner_out_up_right_diag_center(Region<E,F>corner_out_up_right_diag_center) {this.NORTH_EAST_OUT = corner_out_up_right_diag_center;}
-	public Region<E,F>getcorner_out_up_right_diag_up() {return corner_out_up_right_diag_up;}
-	public void setcorner_out_up_right_diag_up(Region<E,F> corner_out_up_right_diag_up) {this.corner_out_up_right_diag_up = corner_out_up_right_diag_up;}
-	public Region<E,F> getcorner_out_up_right_diag_right() {return corner_out_up_right_diag_right;}
-	public void setcorner_out_up_right_diag_right(Region<E, F> corner_out_up_right_diag_right) {this.corner_out_up_right_diag_right = corner_out_up_right_diag_right;}	
-	public Region<E,F>getcorner_mine_down_left() {return SOUTH_WEST_MINE;}
-	public void setcorner_mine_down_left(Region<E,F>corner_mine_down_left) {this.SOUTH_WEST_MINE = corner_mine_down_left;}
-	public Region<E,F>getcorner_out_down_left_diag_center() {return SOUTH_WEST_OUT;}
-	public void setcorner_out_down_left_diag_center(Region<E,F>corner_out_down_left_diag_center) {this.SOUTH_WEST_OUT = corner_out_down_left_diag_center;}
-	public Region<E,F>getcorner_out_down_left_diag_left() {return corner_out_down_left_diag_left;}
-	public void setcorner_out_down_left_diag_left(Region<E,F> corner_out_down_left_diag_left) {this.corner_out_down_left_diag_left = corner_out_down_left_diag_left;}
-	public Region<E,F> getcorner_out_down_left_diag_down() {return corner_out_down_left_diag_down;}
-	public void setcorner_out_down_left_diag_down(Region<E,F> corner_out_down_left_diag_down) {this.corner_out_down_left_diag_down = corner_out_down_left_diag_down;}	
-	public Region<E,F>getcorner_mine_down_right() {return SOUTH_EAST_MINE;	}
-	public void setcorner_mine_down_right(Region<E,F>corner_mine_down_right) {this.SOUTH_EAST_MINE = corner_mine_down_right;}
-	public Region<E,F>getcorner_out_down_right_diag_center() {return SOUTH_EAST_OUT;}
-	public void setcorner_out_down_right_diag_center(Region<E,F>corner_out_down_right_diag_center) {this.SOUTH_EAST_OUT = corner_out_down_right_diag_center;}
-	public Region<E,F> getcorner_out_down_right_diag_right() {return corner_out_down_right_diag_right;}
-	public void setcorner_out_down_right_diag_right(Region<E,F> corner_out_down_right_diag_right) {this.corner_out_down_right_diag_right = corner_out_down_right_diag_right;}
-	public Region<E,F> getcorner_out_down_right_diag_down() {return corner_out_down_right_diag_down;}
-	public void setcorner_out_down_right_diag_down(Region<E,F> corner_out_down_right_diag_down) {this.corner_out_down_right_diag_down = corner_out_down_right_diag_down;}
-
-
+	public Region<E,F>getWEST_OUT() { return WEST_OUT; }
+	public void setWEST_OUT(Region<E,F>WEST_OUT) { this.WEST_OUT = WEST_OUT; }
+	public Region<E,F>getWEST_MINE() { return WEST_MINE; }
+	public void setWEST_MINE(Region<E,F>WEST_MINE) { this.WEST_MINE = WEST_MINE;}
+	public Region<E,F>getEAST_MINE() {return EAST_MINE;}
+	public void setEAST_MINE(Region<E,F>EAST_MINE) {this.EAST_MINE = EAST_MINE;}
+	public Region<E,F>getEAST_OUT() { return EAST_OUT;}
+	public void setEAST_OUT(Region<E,F>EAST_OUT) {this.EAST_OUT = EAST_OUT;	}
+	public Region<E,F>getSOUTH_MINE() {return SOUTH_MINE; }
+	public void setSOUTH_MINE(Region<E,F>SOUTH_MINE) {this.SOUTH_MINE = SOUTH_MINE;}
+	public Region<E,F>getSOUTH_OUT() {return SOUTH_OUT;}
+	public void setSOUTH_OUT(Region<E,F>SOUTH_OUT) {this.SOUTH_OUT = SOUTH_OUT;}
+	public Region<E,F>getNORTH_MINE() {return NORTH_MINE;}
+	public void setNORTH_MINE(Region<E,F>NORTH_MINE) {this.NORTH_MINE = NORTH_MINE;}
+	public Region<E,F>getNORTH_OUT() {	return NORTH_OUT; }
+	public void setNORTH_OUT(Region<E,F>NORTH_OUT) {this.NORTH_OUT = NORTH_OUT; }
+	public Region<E,F>getNORTH_WEST_MINE() {return NORTH_WEST_MINE;	}
+	public void setNORTH_WEST_MINE(Region<E,F>NORTH_WEST_MINE) {this.NORTH_WEST_MINE = NORTH_WEST_MINE;	}
+	public Region<E,F>getNORTH_WEST_OUT() {return NORTH_WEST_OUT;}
+	public void setNORTH_WEST_OUT(Region<E,F>NORTH_WEST_OUT) {this.NORTH_WEST_OUT = NORTH_WEST_OUT;}
+		
+	public Region<E,F>getNORTH_EAST_MINE() {return NORTH_EAST_MINE;}
+	public void setNORTH_EAST_MINE(Region<E,F>NORTH_EAST_MINE) {this.NORTH_EAST_MINE = NORTH_EAST_MINE;}
+	public Region<E,F>getNORTH_EAST_OUT() {return NORTH_EAST_OUT;}
+	public void setNORTH_EAST_OUT(Region<E,F>NORTH_EAST_OUT) {this.NORTH_EAST_OUT = NORTH_EAST_OUT;}
+	
+	public Region<E,F>getSOUTH_WEST_MINE() {return SOUTH_WEST_MINE;}
+	public void setSOUTH_WEST_MINE(Region<E,F>SOUTH_WEST_MINE) {this.SOUTH_WEST_MINE = SOUTH_WEST_MINE;}
+	public Region<E,F>getSOUTH_WEST_OUT() {return SOUTH_WEST_OUT;}
+	public void setSOUTH_WEST_OUT(Region<E,F>SOUTH_WEST_OUT) {this.SOUTH_WEST_OUT = SOUTH_WEST_OUT;}
+	
+	public Region<E,F>getSOUTH_EAST_MINE() {return SOUTH_EAST_MINE;	}
+	public void setSOUTH_EAST_MINE(Region<E,F>SOUTH_EAST_MINE) {this.SOUTH_EAST_MINE = SOUTH_EAST_MINE;}
+	public Region<E,F>getSOUTH_EAST_OUT() {return SOUTH_EAST_OUT;}
+	public void setSOUTH_EAST_OUT(Region<E,F>SOUTH_EAST_OUT) {this.SOUTH_EAST_OUT = SOUTH_EAST_OUT;}
+	
 	@Override
 	public String toString() {
 		return "RegionMap [left_out=" + WEST_OUT + ", left_mine=" + WEST_MINE + ", right_mine=" + EAST_MINE

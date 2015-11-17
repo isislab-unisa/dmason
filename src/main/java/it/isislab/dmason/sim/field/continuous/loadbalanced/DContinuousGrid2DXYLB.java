@@ -1562,9 +1562,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 
 		if(position == MyCellInterface.CORNER_DIAG_UP_LEFT)
 		{
-			for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center().keySet())
+			for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getNORTH_WEST_OUT().keySet())
 			{			    	
-				EntryAgent<Double2D> e = (EntryAgent<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center().get(agent_id);
+				EntryAgent<Double2D> e = (EntryAgent<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getNORTH_WEST_OUT().get(agent_id);
 				RemotePositionedAgent<Double2D> rm=e.r;
 				Double2D loc=e.l;
 				rm.setPos(loc);
@@ -1577,9 +1577,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 		else
 			if(position == MyCellInterface.UP)
 			{
-				for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center().keySet())
+				for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getNORTH_EAST_OUT().keySet())
 				{	
-					EntryAgent<Double2D> e = (EntryAgent<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center().get(agent_id);
+					EntryAgent<Double2D> e = (EntryAgent<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getNORTH_EAST_OUT().get(agent_id);
 					RemotePositionedAgent<Double2D> rm=e.r;
 					Double2D loc=e.l;
 					rm.setPos(loc);
@@ -1588,9 +1588,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 					setObjectLocation(rm,loc);
 					setPortrayalForObject(rm);
 				}
-				for(String agent_id: (Set<String>) ((MyCellDoubleField)listGrid.get(MyCellInterface.UP).get(cellType)).getMyRMap().getup_out().keySet())
+				for(String agent_id: (Set<String>) ((MyCellDoubleField)listGrid.get(MyCellInterface.UP).get(cellType)).getMyRMap().getNORTH_OUT().keySet())
 				{	
-					EntryAgent<Double2D> e = (EntryAgent<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.UP).get(cellType)).getMyRMap().getup_out().get(agent_id);
+					EntryAgent<Double2D> e = (EntryAgent<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.UP).get(cellType)).getMyRMap().getNORTH_OUT().get(agent_id);
 					RemotePositionedAgent<Double2D> rm=e.r;
 					Double2D loc=e.l;
 					rm.setPos(loc);
@@ -1599,9 +1599,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 					setObjectLocation(rm,loc);
 					setPortrayalForObject(rm);
 				}
-				for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center().keySet())
+				for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getNORTH_WEST_OUT().keySet())
 				{	
-					EntryAgent<Double2D> e = (EntryAgent<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center().get(agent_id);
+					EntryAgent<Double2D> e = (EntryAgent<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getNORTH_WEST_OUT().get(agent_id);
 					RemotePositionedAgent<Double2D> rm=e.r;
 					Double2D loc=e.l;
 					rm.setPos(loc);
@@ -1614,9 +1614,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 			else
 				if(position == MyCellInterface.CORNER_DIAG_UP_RIGHT)
 				{
-					for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center().keySet())
+					for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getNORTH_EAST_OUT().keySet())
 					{	
-						EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center().get(agent_id);
+						EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getNORTH_EAST_OUT().get(agent_id);
 						RemotePositionedAgent<Double2D> rm=e.r;
 						Double2D loc=e.l;
 						rm.setPos(loc);
@@ -1629,9 +1629,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 				else
 					if(position == MyCellInterface.RIGHT)
 					{
-						for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center().keySet())
+						for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getSOUTH_EAST_OUT().keySet())
 						{	
-							EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center().get(agent_id);
+							EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getSOUTH_EAST_OUT().get(agent_id);
 							RemotePositionedAgent<Double2D> rm=e.r;
 							Double2D loc=e.l;
 							rm.setPos(loc);
@@ -1640,9 +1640,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							setObjectLocation(rm,loc);
 							setPortrayalForObject(rm);
 						}
-						for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.RIGHT).get(cellType)).getMyRMap().getright_out().keySet())
+						for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.RIGHT).get(cellType)).getMyRMap().getEAST_OUT().keySet())
 						{			    	
-							EntryAgent<Double2D> e = (EntryAgent<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.RIGHT).get(cellType)).getMyRMap().getright_out().get(agent_id);
+							EntryAgent<Double2D> e = (EntryAgent<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.RIGHT).get(cellType)).getMyRMap().getEAST_OUT().get(agent_id);
 							RemotePositionedAgent<Double2D> rm=e.r;
 							Double2D loc=e.l;
 							rm.setPos(loc);
@@ -1651,9 +1651,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							setObjectLocation(rm,loc);
 							setPortrayalForObject(rm);
 						}
-						for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center().keySet())
+						for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getNORTH_EAST_OUT().keySet())
 						{			    	
-							EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_up_right_diag_center().get(agent_id);
+							EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getNORTH_EAST_OUT().get(agent_id);
 							RemotePositionedAgent<Double2D> rm=e.r;
 							Double2D loc=e.l;
 							rm.setPos(loc);
@@ -1666,9 +1666,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 					else
 						if(position == MyCellInterface.CORNER_DIAG_DOWN_RIGHT)
 						{
-							for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center().keySet())
+							for(String agent_id: (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getSOUTH_EAST_OUT().keySet())
 							{			    	
-								EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center().get(agent_id);
+								EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getSOUTH_EAST_OUT().get(agent_id);
 								RemotePositionedAgent<Double2D> rm=e.r;
 								Double2D loc=e.l;
 								rm.setPos(loc);
@@ -1681,8 +1681,8 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						else
 							if(position == MyCellInterface.DOWN)
 							{
-								for(String agent_id: (Set<String>) (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center().keySet())
-								{	EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center().get(agent_id);
+								for(String agent_id: (Set<String>) (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT().keySet())
+								{	EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT().get(agent_id);
 									RemotePositionedAgent<Double2D> rm=e.r;
 									Double2D loc=e.l;
 									rm.setPos(loc);
@@ -1691,9 +1691,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 									setObjectLocation(rm,loc);
 									setPortrayalForObject(rm);
 								}
-								for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.DOWN).get(cellType)).getMyRMap().getdown_out().keySet())
+								for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.DOWN).get(cellType)).getMyRMap().getSOUTH_OUT().keySet())
 								{		
-									EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.DOWN).get(cellType)).getMyRMap().getdown_out().get(agent_id);
+									EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.DOWN).get(cellType)).getMyRMap().getSOUTH_OUT().get(agent_id);
 									RemotePositionedAgent<Double2D> rm=e.r;
 									Double2D loc=e.l;
 									rm.setPos(loc);
@@ -1702,9 +1702,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 									setObjectLocation(rm,loc);
 									setPortrayalForObject(rm);
 								}
-								for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center().keySet())
+								for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getSOUTH_EAST_OUT().keySet())
 								{	
-									EntryAgent<Double2D> e  = (EntryAgent<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_right_diag_center().get(agent_id);
+									EntryAgent<Double2D> e  = (EntryAgent<Double2D>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getSOUTH_EAST_OUT().get(agent_id);
 									RemotePositionedAgent<Double2D> rm=e.r;
 									Double2D loc=e.l;
 									rm.setPos(loc);
@@ -1717,9 +1717,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							else
 								if(position == MyCellInterface.CORNER_DIAG_DOWN_LEFT)
 								{
-									for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center().keySet())
+									for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT().keySet())
 									{		
-										EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center().get(agent_id);
+										EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT().get(agent_id);
 										RemotePositionedAgent<Double2D> rm=e.r;
 										Double2D loc=e.l;
 										rm.setPos(loc);
@@ -1732,9 +1732,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 								else
 									if(position == MyCellInterface.LEFT)
 									{
-										for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center().keySet())
+										for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getNORTH_WEST_OUT().keySet())
 										{	
-											EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getcorner_out_up_left_diag_center().get(agent_id);
+											EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getNORTH_WEST_OUT().get(agent_id);
 											RemotePositionedAgent<Double2D> rm=e.r;
 											Double2D loc=e.l;
 											rm.setPos(loc);
@@ -1743,9 +1743,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 											setObjectLocation(rm,loc);
 											setPortrayalForObject(rm);
 										}
-										for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.LEFT).get(cellType)).getMyRMap().getleft_out().keySet())
+										for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.LEFT).get(cellType)).getMyRMap().getWEST_OUT().keySet())
 										{	
-											EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.LEFT).get(cellType)).getMyRMap().getleft_out().get(agent_id);
+											EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.LEFT).get(cellType)).getMyRMap().getWEST_OUT().get(agent_id);
 											RemotePositionedAgent<Double2D> rm=e.r;
 											Double2D loc=e.l;
 											rm.setPos(loc);
@@ -1754,9 +1754,9 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 											setObjectLocation(rm,loc);
 											setPortrayalForObject(rm);
 										}
-										for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center().keySet())
+										for(String agent_id : (Set<String>)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT().keySet())
 										{	
-											EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getcorner_out_down_left_diag_center().get(agent_id);
+											EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT().get(agent_id);
 											RemotePositionedAgent<Double2D> rm=e.r;
 											Double2D loc=e.l;
 											rm.setPos(loc);
