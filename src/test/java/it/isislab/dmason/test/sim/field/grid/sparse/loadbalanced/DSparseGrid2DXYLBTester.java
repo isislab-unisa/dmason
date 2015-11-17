@@ -270,6 +270,8 @@ public class DSparseGrid2DXYLBTester {
 				System.out.println(((MyCellIntegerField)c[i]).getMyRMap().toString());
 			}
 		}
+		
+		
 	}
 
 	/**
