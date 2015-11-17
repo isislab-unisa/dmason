@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import sim.util.Int2D;
 /**
-* The Class RegionIntegerTester. Tests the RegionInteger.
+ * The Class RegionIntegerTester. Tests the RegionInteger.
  * @author Michele Carillo
  * @author Flavio Serrapica
  * @author Carmine Spagnuolo
@@ -70,7 +70,7 @@ public class RegionIntegerTester {
 		assertTrue(rd.isMine(1, 0));
 	}
 
-	
+
 
 	// createRegion
 	/**
@@ -153,7 +153,7 @@ public class RegionIntegerTester {
 
 	}
 
-	
+
 
 	// addAgents
 
@@ -215,17 +215,15 @@ public class RegionIntegerTester {
 		EntryAgent<Int2D> e = new EntryAgent<Int2D>(c, f);
 		rd.addAgents(e);
 		RegionInteger clone = null;
-		
+
 		try {
 			clone = (RegionInteger) rd.clone();// per poter funzionare bisogna implementare il metodo equals 
-			   // alla classe Region ed Entry -> implica che ogni RemotePositionedAgent deve implementare il metodo equals
+			// alla classe Region ed Entry -> implica che ogni RemotePositionedAgent deve implementare il metodo equals
 
 		} catch (NullPointerException err) {
 			fail("clone fail");
 		}
-		System.out.println(rd.toString());
-		System.out.println(clone.toString());
 		assertEquals("incorrect copy of entry", rd, clone);
-				
+
 	}
 }
