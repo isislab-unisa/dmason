@@ -17,7 +17,9 @@
 
 package it.isislab.dmason.sim.field.support.field2D;
 
-import it.isislab.dmason.sim.engine.RemotePositionedAgent;
+import it.isislab.dmason.sim.app.DParticlesThin.DParticle;
+import it.isislab.dmason.sim.engine.RemotePositionedAgent;import mpi.Int2;
+import sim.util.Int2D;
 
 import java.io.Serializable;
 
@@ -33,7 +35,7 @@ import java.io.Serializable;
  * @author Flavio Serrapica
  * @author Carmine Spagnuolo
  */
-public class EntryAgent<E> implements Serializable
+public class EntryAgent<E> implements Serializable, Cloneable
 {	
 
 	/**
@@ -42,6 +44,8 @@ public class EntryAgent<E> implements Serializable
 	private static final long serialVersionUID = 1L;
 	public  RemotePositionedAgent<E> r;
 	public  E l;
+	
+	
 	
 	public EntryAgent(final RemotePositionedAgent<E> r,final E l)
 	{
@@ -56,8 +60,6 @@ public class EntryAgent<E> implements Serializable
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
 		EntryAgent other = (EntryAgent) obj;
 		if (l == null) {
 			if (other.l != null)
@@ -71,6 +73,6 @@ public class EntryAgent<E> implements Serializable
 			return false;
 		return true;
 	}
-	
+
 	
 }

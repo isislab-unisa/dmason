@@ -17,10 +17,10 @@
 
  package it.isislab.dmason.sim.field.grid.region;
 
-import it.isislab.dmason.sim.engine.RemotePositionedAgent; 
+import it.isislab.dmason.sim.engine.RemotePositionedAgent;
+import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.util.Util;
-import sim.util.Double2D;
 import sim.util.Int2D;
 
 /**
@@ -68,7 +68,8 @@ public class RegionInteger extends Region<Integer,Int2D>
 		RegionInteger r=new RegionInteger(upl_xx, upl_yy, down_xx, down_yy);
 		for(it.isislab.dmason.sim.field.support.field2D.EntryAgent<Int2D> e: this.values())
 		{
-			r.put(e.r.getId(),new it.isislab.dmason.sim.field.support.field2D.EntryAgent(((RemotePositionedAgent<Int2D>)(Util.clone(e.r))),e.l));
+			EntryAgent<Int2D> toClone = new EntryAgent(((RemotePositionedAgent<Int2D>)(Util.clone(e.r))),e.l);
+			r.put(e.r.getId(),toClone);
 		}
 		return r;
 	}

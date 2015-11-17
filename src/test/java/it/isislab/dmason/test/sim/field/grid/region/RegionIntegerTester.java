@@ -189,7 +189,7 @@ public class RegionIntegerTester {
 		Int2D f = new Int2D(2, 4);
 		EntryAgent<Int2D> e = new EntryAgent<Int2D>(c, f);
 		rd.addAgents(e);
-		assertEquals(e, rd.get(0));
+		assertEquals(e, rd.get(e.r.getId()));
 	}
 
 	// clone
@@ -215,6 +215,7 @@ public class RegionIntegerTester {
 		EntryAgent<Int2D> e = new EntryAgent<Int2D>(c, f);
 		rd.addAgents(e);
 		RegionInteger clone = null;
+		
 		try {
 			clone = (RegionInteger) rd.clone();// per poter funzionare bisogna implementare il metodo equals 
 			   // alla classe Region ed Entry -> implica che ogni RemotePositionedAgent deve implementare il metodo equals
@@ -222,6 +223,8 @@ public class RegionIntegerTester {
 		} catch (NullPointerException err) {
 			fail("clone fail");
 		}
+		System.out.println(rd.toString());
+		System.out.println(clone.toString());
 		assertEquals("incorrect copy of entry", rd, clone);
 				
 	}

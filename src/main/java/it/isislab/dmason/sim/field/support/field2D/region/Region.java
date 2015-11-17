@@ -13,15 +13,13 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
- */
+*/ 
 
- package it.isislab.dmason.sim.field.support.field2D.region;
+package it.isislab.dmason.sim.field.support.field2D.region;
 
 import java.io.Serializable;
-
 import java.util.HashMap;
-import java.util.Map.Entry;
-
+import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 
 
 /**
@@ -40,7 +38,7 @@ import java.util.Map.Entry;
  * @author Flavio Serrapica
  * @author Carmine Spagnuolo
  */
-public abstract class Region<E,F> extends HashMap<String,it.isislab.dmason.sim.field.support.field2D.EntryAgent<F>> implements Serializable,Cloneable
+public abstract class Region<E,F> extends HashMap<String,EntryAgent<F>> implements Serializable,Cloneable
 {
 	
 	
@@ -83,7 +81,7 @@ public abstract class Region<E,F> extends HashMap<String,it.isislab.dmason.sim.f
 	 * @param e the Entry with an agent
 	 * @return true o false
 	 */
-	public abstract boolean addAgents(it.isislab.dmason.sim.field.support.field2D.EntryAgent<F> e);
+	public abstract boolean addAgents(EntryAgent<F> e);
 	//<--
 	
 	@Override
@@ -144,10 +142,10 @@ public abstract class Region<E,F> extends HashMap<String,it.isislab.dmason.sim.f
 		} else if (!upl_yy.equals(other.upl_yy)) {
 			return false;
 		}
-		for(Entry<String, it.isislab.dmason.sim.field.support.field2D.EntryAgent<F>> e : this.entrySet())
-			if(!other.containsKey(e.getKey()))
+		for(String agent_id : this.keySet())
+			if(!other.containsKey(agent_id))
 				return false;
-			else if(!other.get(e.getKey()).equals(e))
+			else if(!other.get(agent_id).equals(this.get(agent_id)))
 				return false;
 		
 		return true;
