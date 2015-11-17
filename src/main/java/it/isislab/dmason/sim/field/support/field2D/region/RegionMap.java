@@ -36,7 +36,13 @@ public class RegionMap<E,F> implements Serializable
 {
 	
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public Region<E,F> WEST_OUT,WEST_MINE,EAST_MINE,EAST_OUT,SOUTH_MINE,SOUTH_OUT,NORTH_MINE,NORTH_OUT=null;//left,mine,right,down
+
 	public Region<E,F> NORTH_WEST_MINE,NORTH_WEST_OUT=null;  //corner up left
 
 	
