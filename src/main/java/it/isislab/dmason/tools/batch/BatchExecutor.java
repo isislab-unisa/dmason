@@ -27,8 +27,8 @@ import it.isislab.dmason.tools.batch.data.EntryParam.ParamType;
 import it.isislab.dmason.util.Util;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
-import it.isislab.dmason.util.management.Master.EntryVal;
-import it.isislab.dmason.util.management.Master.MasterDaemonStarter;
+import it.isislab.dmason.util.management.master.EntryVal;
+import it.isislab.dmason.util.management.master.MasterDaemonStarter;
 
 import java.util.ArrayList;
 import java.util.HashMap;

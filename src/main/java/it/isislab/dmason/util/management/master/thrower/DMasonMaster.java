@@ -15,7 +15,7 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.util.management.Master.thrower;
+package it.isislab.dmason.util.management.master.thrower;
 
 import it.isislab.dmason.annotation.ThinAnnotation;
 import it.isislab.dmason.sim.field.DistributedField2D;
@@ -45,15 +45,15 @@ import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
 import it.isislab.dmason.util.management.DigestAlgorithm;
 import it.isislab.dmason.util.management.JarClassLoader;
 import it.isislab.dmason.util.management.Release;
-import it.isislab.dmason.util.management.Master.EntryVal;
-import it.isislab.dmason.util.management.Master.MasterDaemonStarter;
-import it.isislab.dmason.util.management.Master.ModelPanel;
-import it.isislab.dmason.util.management.Worker.Digester;
-import it.isislab.dmason.util.management.Worker.PeerStatusInfo;
-import it.isislab.dmason.util.management.Worker.UpdateData;
-import it.isislab.dmason.util.management.Worker.WorkerUpdater;
-import it.isislab.dmason.util.management.Worker.thrower.DMasonWorkerWithGui;
 import it.isislab.dmason.util.management.garbagecollector.Start;
+import it.isislab.dmason.util.management.master.EntryVal;
+import it.isislab.dmason.util.management.master.MasterDaemonStarter;
+import it.isislab.dmason.util.management.master.ModelPanel;
+import it.isislab.dmason.util.management.worker.Digester;
+import it.isislab.dmason.util.management.worker.PeerStatusInfo;
+import it.isislab.dmason.util.management.worker.UpdateData;
+import it.isislab.dmason.util.management.worker.WorkerUpdater;
+import it.isislab.dmason.util.management.worker.thrower.DMasonWorkerWithGui;
 import it.isislab.dmason.util.trigger.Trigger;
 import it.isislab.dmason.util.trigger.TriggerListener;
 

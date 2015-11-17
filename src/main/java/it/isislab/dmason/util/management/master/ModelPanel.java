@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package it.isislab.dmason.util.management.Master;
+package it.isislab.dmason.util.management.master;
 
 import it.isislab.dmason.sim.engine.DistributedState;
 

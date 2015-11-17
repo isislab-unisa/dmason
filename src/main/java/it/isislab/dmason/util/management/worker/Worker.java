@@ -15,7 +15,7 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.util.management.Worker;
+package it.isislab.dmason.util.management.worker;
 
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.MessageListener;

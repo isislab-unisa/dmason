@@ -15,7 +15,7 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.util.management.Worker;
+package it.isislab.dmason.util.management.worker;
 
 import java.io.Serializable;
 /**

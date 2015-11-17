@@ -15,11 +15,11 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.util.management.Master;
+package it.isislab.dmason.util.management.master;
 
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
-import it.isislab.dmason.util.management.Worker.PeerStatusInfo;
+import it.isislab.dmason.util.management.worker.PeerStatusInfo;
 
 import java.util.HashMap;
 import java.util.Observable;

@@ -15,11 +15,11 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.util.management.Worker;
+package it.isislab.dmason.util.management.worker;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.management.DigestAlgorithm;
-import it.isislab.dmason.util.management.Master.MasterDaemonStarter;
-import it.isislab.dmason.util.management.Master.thrower.DMasonMaster;
+import it.isislab.dmason.util.management.master.MasterDaemonStarter;
+import it.isislab.dmason.util.management.master.thrower.DMasonMaster;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;

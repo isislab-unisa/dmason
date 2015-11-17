@@ -15,7 +15,7 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.util.management.Worker;
+package it.isislab.dmason.util.management.worker;
 
 import it.isislab.dmason.tools.batch.data.EntryParam;
 import it.isislab.dmason.tools.batch.data.GeneralParam;

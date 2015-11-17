@@ -15,12 +15,12 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.util.management.Worker;
+package it.isislab.dmason.util.management.worker;
 
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
-import it.isislab.dmason.util.management.Worker.thrower.DMasonWorker;
-import it.isislab.dmason.util.management.Worker.thrower.DMasonWorkerWithGui;
+import it.isislab.dmason.util.management.worker.thrower.DMasonWorker;
+import it.isislab.dmason.util.management.worker.thrower.DMasonWorkerWithGui;
 
 import java.net.InetAddress;
 import java.rmi.server.UID;

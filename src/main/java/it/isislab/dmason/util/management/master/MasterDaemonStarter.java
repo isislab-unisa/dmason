@@ -15,7 +15,7 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.util.management.Master;
+package it.isislab.dmason.util.management.master;
 
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
@@ -24,11 +24,11 @@ import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
-import it.isislab.dmason.util.management.Master.thrower.DMasonMaster;
-import it.isislab.dmason.util.management.Worker.PeerStatusInfo;
-import it.isislab.dmason.util.management.Worker.StartUpData;
-import it.isislab.dmason.util.management.Worker.UpdateData;
-import it.isislab.dmason.util.management.Worker.Updater;
+import it.isislab.dmason.util.management.master.thrower.DMasonMaster;
+import it.isislab.dmason.util.management.worker.PeerStatusInfo;
+import it.isislab.dmason.util.management.worker.StartUpData;
+import it.isislab.dmason.util.management.worker.UpdateData;
+import it.isislab.dmason.util.management.worker.Updater;
 import it.sauronsoftware.ftp4j.FTPClient;
 
 import java.net.InetAddress;

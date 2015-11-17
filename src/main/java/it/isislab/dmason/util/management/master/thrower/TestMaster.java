@@ -1,4 +1,4 @@
-package it.isislab.dmason.util.management.Master.thrower;
+package it.isislab.dmason.util.management.master.thrower;
 
 
 

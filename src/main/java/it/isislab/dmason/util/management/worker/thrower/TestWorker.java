@@ -1,4 +1,4 @@
-package it.isislab.dmason.util.management.Worker.thrower;
+package it.isislab.dmason.util.management.worker.thrower;
 
 
 public class TestWorker {

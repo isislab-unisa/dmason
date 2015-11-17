@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package it.isislab.dmason.util.management.Worker;
+package it.isislab.dmason.util.management.worker;
 
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.util.connection.Connection;

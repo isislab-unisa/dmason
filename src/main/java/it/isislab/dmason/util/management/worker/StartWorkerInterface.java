@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package it.isislab.dmason.util.management.Worker;
+package it.isislab.dmason.util.management.worker;
 /**
 * @author Michele Carillo
 * @author Ada Mancuso

@@ -15,15 +15,15 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.util.management.Worker.thrower;
+package it.isislab.dmason.util.management.worker.thrower;
 
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.jms.BeaconMessageListener;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.management.DigestAlgorithm;
-import it.isislab.dmason.util.management.Worker.Digester;
-import it.isislab.dmason.util.management.Worker.PeerDaemonStarter;
-import it.isislab.dmason.util.management.Worker.StartWorkerInterface;
+import it.isislab.dmason.util.management.worker.Digester;
+import it.isislab.dmason.util.management.worker.PeerDaemonStarter;
+import it.isislab.dmason.util.management.worker.StartWorkerInterface;
 
 import java.io.BufferedReader;
 import java.io.File;
