@@ -2,22 +2,18 @@ package it.isislab.dmason.sim.app.DBreadthFirstSearch;
 
 
 import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 import it.isislab.dmason.sim.field.network.partitioning.Partitioner;
 import it.isislab.dmason.sim.field.network.partitioning.SuperGraphStats;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.connection.ConnectionType;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import mpi.MPI;
 import mpi.MPIException;
-
 import org.apache.log4j.LogManager;
 
 /**

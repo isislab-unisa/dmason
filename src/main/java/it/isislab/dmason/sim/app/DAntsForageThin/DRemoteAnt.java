@@ -30,9 +30,7 @@ import sim.util.IntBag;
 
 public class DRemoteAnt extends RemoteAnt<Int2D>
 {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	public boolean getHasFoodItem() { return hasFoodItem; }
 	public void setHasFoodItem(boolean val) { hasFoodItem = val; }
