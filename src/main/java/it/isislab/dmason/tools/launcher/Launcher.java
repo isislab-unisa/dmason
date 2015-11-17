@@ -34,9 +34,9 @@ public class Launcher
 	private static final int SUGGESTED_WORKERS = 2;
 	private static final int MAX_WORKERS = 8;
 	
-	private static final Class<?> WRAPPER_CLASS = it.isislab.dmason.util.SystemManagement.wrapper.activemq.launcher.ActiveMQWrapper.class;
-	private static final Class<?> WORKER_CLASS = it.isislab.dmason.util.SystemManagement.Worker.thrower.DMasonWorkerWithGui.class;
-	private static final Class<?> MASTER_CLASS = it.isislab.dmason.util.SystemManagement.Master.thrower.DMasonMaster.class;
+	private static final Class<?> WRAPPER_CLASS = it.isislab.dmason.util.management.wrapper.activemq.launcher.ActiveMQWrapper.class;
+	private static final Class<?> WORKER_CLASS = it.isislab.dmason.util.management.Worker.thrower.DMasonWorkerWithGui.class;
+	private static final Class<?> MASTER_CLASS = it.isislab.dmason.util.management.Master.thrower.DMasonMaster.class;
 	private static final Class<?> INSPECTOR_CLASS = it.isislab.dmason.util.visualization.globalviewer.GlobalViewer.class;
 	
 	Process wrapperProcess = null;

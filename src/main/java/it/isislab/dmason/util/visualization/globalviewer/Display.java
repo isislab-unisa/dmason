@@ -19,10 +19,10 @@
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 import it.isislab.dmason.util.DistributedProperties;
-import it.isislab.dmason.util.SystemManagement.inspection.DistributedInspector;
-import it.isislab.dmason.util.SystemManagement.inspection.InspectableSchedule;
-import it.isislab.dmason.util.SystemManagement.inspection.InspectableState;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
+import it.isislab.dmason.util.management.inspection.DistributedInspector;
+import it.isislab.dmason.util.management.inspection.InspectableSchedule;
+import it.isislab.dmason.util.management.inspection.InspectableState;
 import it.isislab.dmason.util.visualization.zoomviewerapp.ConsoleZoom;
 
 import java.awt.BorderLayout;

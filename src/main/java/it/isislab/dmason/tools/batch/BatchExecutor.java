@@ -25,10 +25,10 @@ import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.tools.batch.data.TestParam;
 import it.isislab.dmason.tools.batch.data.EntryParam.ParamType;
 import it.isislab.dmason.util.Util;
-import it.isislab.dmason.util.SystemManagement.Master.EntryVal;
-import it.isislab.dmason.util.SystemManagement.Master.MasterDaemonStarter;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
+import it.isislab.dmason.util.management.Master.EntryVal;
+import it.isislab.dmason.util.management.Master.MasterDaemonStarter;
 
 import java.util.ArrayList;
 import java.util.HashMap;

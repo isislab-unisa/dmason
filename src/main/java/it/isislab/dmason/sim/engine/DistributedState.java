@@ -22,10 +22,10 @@ import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.tools.batch.data.EntryParam;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
-import it.isislab.dmason.util.SystemManagement.globals.util.UpdateGlobalVarAtStep;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.ConnectionType;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
+import it.isislab.dmason.util.management.globals.util.UpdateGlobalVarAtStep;
 import it.isislab.dmason.util.trigger.Trigger;
 
 import java.util.ArrayList;

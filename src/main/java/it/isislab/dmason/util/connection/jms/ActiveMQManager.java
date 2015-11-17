@@ -16,7 +16,7 @@
  */
 package it.isislab.dmason.util.connection.jms;
 
-import it.isislab.dmason.util.SystemManagement.wrapper.activemq.rmi.Command;
+import it.isislab.dmason.util.management.wrapper.activemq.rmi.Command;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;

@@ -29,11 +29,11 @@ import it.isislab.dmason.sim.field.DistributedFieldNetwork;
 import it.isislab.dmason.sim.field.network.DNetwork;
 import it.isislab.dmason.sim.field.support.network.DNetworkJMSMessageListener;
 import it.isislab.dmason.sim.field.support.network.UpdaterThreadJMSForNetworkListener;
-import it.isislab.dmason.util.SystemManagement.globals.util.UpdateGlobalVarAtStep;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.connection.testconnection.VirtualConnectionNFieldsWithVirtualJMS;
 import it.isislab.dmason.util.connection.testconnection.VirtualMessageListener;
+import it.isislab.dmason.util.management.globals.util.UpdateGlobalVarAtStep;
 import it.isislab.dmason.util.trigger.Trigger;
 
 import java.util.ArrayList;
