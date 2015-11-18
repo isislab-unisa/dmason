@@ -875,17 +875,6 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		System.err.println("You are using a not implemented method (resetParameters) from "+this.getClass().getName());
 	}
 
-	@Override
-	public int getLeftMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getRightMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	@Override
 	public VisualizationUpdateMap<String, Object> getGlobals()

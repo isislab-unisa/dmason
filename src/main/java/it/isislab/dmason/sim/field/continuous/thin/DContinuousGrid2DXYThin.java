@@ -961,17 +961,6 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 		}
 	}
 
-	@Override
-	public int getLeftMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getRightMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	@Override
 	public Double2D getObjectLocationThin(Object obj) {

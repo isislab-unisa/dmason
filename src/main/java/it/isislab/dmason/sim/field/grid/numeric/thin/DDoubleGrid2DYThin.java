@@ -656,18 +656,6 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 
 
 	@Override
-	public int getLeftMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-
-	@Override
-	public int getRightMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	@Override
 	public void setThin(int i,int j, double val){
 		if(i-own_x+2*MAX_DISTANCE>=0 && i-own_x+2*MAX_DISTANCE<field_width)
 			field[i-own_x+2*MAX_DISTANCE][j]=val;

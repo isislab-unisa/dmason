@@ -733,18 +733,6 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 	}
 
 
-	@Override
-	public int getLeftMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getRightMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 
 	@Override
 	public int numObjectsAtLocationThin(final int x, final int y)

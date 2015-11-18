@@ -19,9 +19,7 @@ package it.isislab.dmason.sim.field;
 
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
-import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,14 +77,14 @@ public interface DistributedField<E> extends Serializable
 	 * Get number of agents in the left mine
 	 * @return number of agents in the left mine
 	 */
-	public int getLeftMineSize();
+	//public int getLeftMineSize();
 	
 	
 	/**
 	 * Get number of agents in the right mine
 	 * @return number of agents in the right mine
 	 */
-	public int getRightMineSize();
+	//public int getRightMineSize();
 	
 	/**
 	 * User fot global parameters synchronization.

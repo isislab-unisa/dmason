@@ -892,18 +892,6 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 
 
 	@Override
-	public int getLeftMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-
-	@Override
-	public int getRightMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	@Override
 	public void setThin(int i,int j, int val){
 		if(i-own_x+2*MAX_DISTANCE>=0 && i-own_x+2*MAX_DISTANCE<field_width && j-own_y+2*MAX_DISTANCE>=0 && j-own_y+2*MAX_DISTANCE<field_height)
 			field[i-own_x+2*MAX_DISTANCE][j-own_y+2*MAX_DISTANCE]=val;

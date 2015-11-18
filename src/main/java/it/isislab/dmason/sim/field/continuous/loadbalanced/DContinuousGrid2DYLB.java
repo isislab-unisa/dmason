@@ -37,13 +37,9 @@ import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.util.visualization.zoomviewerapp.ZoomArrayList;
-
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -51,7 +47,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.logging.Logger;
-
 import sim.engine.SimState;
 import sim.util.Double2D;
 
@@ -484,7 +479,7 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 					rmap.WEST_OUT.clone(),
 					sm.schedule.getSteps() - 1,
 					cellType,
-					DistributedRegionLB.LEFT,((DistributedState)sm).getField().getNumAgents(),((DistributedState)sm).getField().getLeftMineSize(),my_width);
+					DistributedRegionLB.LEFT,((DistributedState)sm).getField().getNumAgents(), getLeftMineSize(),my_width);
 			try 
 			{				
 				connWorker.publishToTopic(dr1, topicPrefix+cellType + "L", name);
@@ -501,7 +496,7 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 					rmap.EAST_OUT.clone(),
 					sm.schedule.getSteps() - 1,
 					cellType,
-					DistributedRegionLB.RIGHT,((DistributedState)sm).getField().getNumAgents(),((DistributedState)sm).getField().getRightMineSize(),my_width);
+					DistributedRegionLB.RIGHT,((DistributedState)sm).getField().getNumAgents(), getRightMineSize(),my_width);
 			try 
 			{		
 				connWorker.publishToTopic(dr2, topicPrefix+cellType + "R", name);
@@ -560,7 +555,7 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 						isLeft=true;
 
 
-						balanceR=dynamic3(my_width, ((DistributedState)sm).getField().getNumAgents(), region.numAgents, region.mineNumAgents, ((DistributedState)sm).getField().getRightMineSize())-my_width;
+						balanceR=dynamic3(my_width, ((DistributedState)sm).getField().getNumAgents(), region.numAgents, region.mineNumAgents, getRightMineSize())-my_width;
 
 
 						//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null
@@ -608,7 +603,7 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 						isLeft=false;
 
 
-						balanceL=region.width-dynamic3(region.width,region.numAgents, ((DistributedState)sm).getField().getNumAgents(),((DistributedState)sm).getField().getLeftMineSize(), region.mineNumAgents);
+						balanceL=region.width-dynamic3(region.width,region.numAgents, ((DistributedState)sm).getField().getNumAgents(), getLeftMineSize(), region.mineNumAgents);
 
 
 						//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null

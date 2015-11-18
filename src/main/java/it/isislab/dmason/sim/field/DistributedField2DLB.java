@@ -53,4 +53,18 @@ public interface DistributedField2DLB<E> {
 	 * Get number of agents of a region
 	 * @return number of agents of a region
 	 */
+	/**USATI SOLO NELLE Y***/
+	/**
+	 * Get number of agents in the left mine
+	 * @return number of agents in the left mine
+	 */
+	public int getLeftMineSize();
+	
+	
+	/**
+	 * Get number of agents in the right mine
+	 * @return number of agents in the right mine
+	 */
+	public int getRightMineSize();
+	
 }

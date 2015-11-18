@@ -269,28 +269,6 @@ public class DistributedStateConnectionJMSTester {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see it.isislab.dmason.sim.field.DistributedField#getLeftMineSize()
-		 */
-		@Override
-		public int getLeftMineSize() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.field.DistributedField#getRightMineSize()
-		 */
-		@Override
-		public int getRightMineSize() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
 		 * @see it.isislab.dmason.sim.field.DistributedField#getGlobals()
 		 */
 		@Override

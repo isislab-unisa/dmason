@@ -710,18 +710,6 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 
 
 	@Override
-	public int getLeftMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getRightMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public VisualizationUpdateMap<String, Object> getGlobals()
 	{
 		return globals;

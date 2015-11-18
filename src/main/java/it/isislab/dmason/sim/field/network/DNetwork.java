@@ -264,17 +264,6 @@ public class DNetwork extends Network implements DistributedFieldNetwork{
 		numVertex=0;
 	}
 
-	@Override
-	public int getLeftMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getRightMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	@Override
 	public VisualizationUpdateMap getGlobals() {

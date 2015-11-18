@@ -407,7 +407,7 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 		if( rmap.left_out!=null )
 		{
 
-			DistributedRegionNumericLB<Integer,EntryNum<Double,Int2D>> dr1=new DistributedRegionNumericLB<Integer,EntryNum<Double,Int2D>>(rmap.left_mine.clone(),rmap.left_out.clone(),(sm.schedule.getSteps()-1),cellType,DistributedRegionNumericLB.LEFT,((DistributedState)sm).getField().getNumAgents(),((DistributedState)sm).getField().getLeftMineSize(),my_width/*,cellsLeft*/);
+			DistributedRegionNumericLB<Integer,EntryNum<Double,Int2D>> dr1=new DistributedRegionNumericLB<Integer,EntryNum<Double,Int2D>>(rmap.left_mine.clone(),rmap.left_out.clone(),(sm.schedule.getSteps()-1),cellType,DistributedRegionNumericLB.LEFT,((DistributedState)sm).getField().getNumAgents(), getLeftMineSize(),my_width/*,cellsLeft*/);
 			try 
 			{	
 				connWorker.publishToTopic(dr1,topicPrefix+cellType+"L", NAME);
@@ -418,7 +418,7 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 		
 		if( rmap.right_out!=null )
 		{
-			DistributedRegionNumericLB<Integer,EntryNum<Double,Int2D>> dr2=new DistributedRegionNumericLB<Integer,EntryNum<Double,Int2D>>(rmap.right_mine.clone(),rmap.right_out.clone(),(sm.schedule.getSteps()-1),cellType,DistributedRegionNumericLB.RIGHT,((DistributedState)sm).getField().getNumAgents(),((DistributedState)sm).getField().getRightMineSize(),my_width/*,cellsRight*/);
+			DistributedRegionNumericLB<Integer,EntryNum<Double,Int2D>> dr2=new DistributedRegionNumericLB<Integer,EntryNum<Double,Int2D>>(rmap.right_mine.clone(),rmap.right_out.clone(),(sm.schedule.getSteps()-1),cellType,DistributedRegionNumericLB.RIGHT,((DistributedState)sm).getField().getNumAgents(), getRightMineSize(),my_width/*,cellsRight*/);
 			try 
 			{			
 				connWorker.publishToTopic(dr2,topicPrefix+cellType+"R", NAME);
@@ -490,7 +490,7 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 							}
 							
 
-								balanceR=dynamic3(my_width, ((DistributedState)sm).getField().getNumAgents(), region.numAgents, region.mineNumAgents, (((DistributedState)sm).getField().getRightMineSize()))-my_width;
+								balanceR=dynamic3(my_width, ((DistributedState)sm).getField().getNumAgents(), region.numAgents, region.mineNumAgents, getRightMineSize())-my_width;
 							
 							
 							
@@ -571,7 +571,7 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 								prevBalanceL=0;
 							}
 
-								balanceL=region.width-dynamic3(region.width,region.numAgents,((DistributedState)sm).getField().getNumAgents(),(((DistributedState)sm).getField().getLeftMineSize()), region.mineNumAgents);
+								balanceL=region.width-dynamic3(region.width,region.numAgents,((DistributedState)sm).getField().getNumAgents(),getLeftMineSize(), region.mineNumAgents);
 							
 							
 							//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null

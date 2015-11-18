@@ -794,17 +794,6 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 		numAgents=0;
 	}
 
-	@Override
-	public int getLeftMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getRightMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	@Override
 	public Double2D getObjectLocationThin(Object obj) {

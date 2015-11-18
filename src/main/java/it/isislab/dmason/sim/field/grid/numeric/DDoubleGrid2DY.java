@@ -647,19 +647,6 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 	}
 
 
-	@Override
-	public int getLeftMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-
-	@Override
-	public int getRightMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 
 	@Override
 	public VisualizationUpdateMap<String, Object> getGlobals()

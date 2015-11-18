@@ -770,17 +770,6 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 	}
 
 	@Override
-	public int getLeftMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getRightMineSize() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	@Override
 	public boolean verifyPosition(Double2D pos) {
 		
 		return (rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(pos.x,pos.y))||
