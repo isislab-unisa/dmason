@@ -75,7 +75,8 @@ public class RegionInteger extends Region<Integer,Int2D>
 	@Override
 	public boolean isMine(Integer x ,Integer y)
 	{		
-		return (x >= upl_xx) && (x <= down_xx) && (y >= upl_yy) && (y <= down_yy);
+		return (x>=upl_xx) && (y >= upl_yy) && (x < down_xx) && (y< down_yy);
+		//return (x >= upl_xx) && (x <= down_xx) && (y >= upl_yy) && (y <= down_yy);
 	}
 
 	@Override
