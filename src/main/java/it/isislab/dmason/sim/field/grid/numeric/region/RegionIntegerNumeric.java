@@ -43,6 +43,7 @@ public class RegionIntegerNumeric extends RegionNumeric<Integer, EntryNum<Intege
 	 * Static method to create a Region.
 	 * @return null if the parameters are not 
 	 */
+	@Deprecated
 	public static RegionNumeric<Integer, EntryNum<Integer, Int2D>> createRegionNumeric(Integer upl_xx, Integer upl_yy, Integer down_xx,
 			Integer down_yy, Integer MY_WIDTH, Integer MY_HEIGHT, Integer WIDTH,
 			Integer HEIGHT) 
