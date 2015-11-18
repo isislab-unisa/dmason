@@ -15,9 +15,9 @@
    limitations under the License.
  */
 
- package it.isislab.dmason.sim.field.continuous.region;
+package it.isislab.dmason.sim.field.continuous.region;
 
- import it.isislab.dmason.sim.engine.RemotePositionedAgent;
+import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.util.Util;
 import sim.util.Double2D;
@@ -71,11 +71,11 @@ public class RegionDouble extends Region<Double,Double2D>
 	public boolean addAgents(it.isislab.dmason.sim.field.support.field2D.EntryAgent<Double2D> e)  
 	{
 		if(e == null || e.l == null || e.r == null) return false;
-		
+
 		if(this.containsKey(e.r.getId()) && this.get(e.r.getId()).equals(e)) return true;
-			
+
 		this.put(e.r.getId(),e);
 		return true;
 	}	
-	
+
 }
