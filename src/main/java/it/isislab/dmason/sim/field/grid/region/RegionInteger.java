@@ -45,6 +45,7 @@ public class RegionInteger extends Region<Integer,Int2D>
 	 * Static method to create a Region.
 	 * @return null if the parameters are not 
 	 */
+	@Deprecated
 	public static Region<Integer,Int2D> createRegion(Integer upl_xx, Integer upl_yy, Integer down_xx,
 			Integer down_yy, Integer MY_WIDTH, Integer MY_HEIGHT, Integer WIDTH,
 			Integer HEIGHT) {
