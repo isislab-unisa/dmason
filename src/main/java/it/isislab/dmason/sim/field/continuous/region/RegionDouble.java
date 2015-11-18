@@ -17,8 +17,7 @@
 
  package it.isislab.dmason.sim.field.continuous.region;
 
-import it.isislab.dmason.exception.DMasonException;
-import it.isislab.dmason.sim.engine.RemotePositionedAgent;
+ import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.util.Util;
 import sim.util.Double2D;
