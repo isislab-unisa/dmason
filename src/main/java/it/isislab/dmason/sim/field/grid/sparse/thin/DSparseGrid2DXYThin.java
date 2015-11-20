@@ -1022,11 +1022,6 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 		// TODO Auto-generated method stub
 		return updates;
 	}
-	@Override
-	public int getNumAgents() {
-		return numAgents;
-	}
-
 
 	@Override
 	public void resetParameters() {

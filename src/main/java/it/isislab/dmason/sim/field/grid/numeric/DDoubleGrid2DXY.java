@@ -864,11 +864,6 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		return updates;
 	}
 
-	@Override
-	public int getNumAgents() {
-		System.err.println("You are using a not implemented method (getNumAgents) from "+this.getClass().getName());
-		return 0;
-	}
 
 	@Override
 	public void resetParameters() {

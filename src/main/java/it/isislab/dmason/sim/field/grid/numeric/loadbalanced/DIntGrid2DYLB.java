@@ -369,7 +369,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 		//--> publishing the regions to correspondent topics for the neighbors
 		if( rmap.left_out!=null )
 		{
-			DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>> dr1=new DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>>(rmap.left_mine,rmap.left_out,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumericLB.LEFT,((DistributedState)sm).getField().getNumAgents(), getLeftMineSize(),my_width);
+			DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>> dr1=new DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>>(rmap.left_mine,rmap.left_out,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumericLB.LEFT,((DistributedField2DLB)((DistributedState)sm).getField()).getNumAgents(), getLeftMineSize(),my_width);
 			try 
 			{	
 				connWorker.publishToTopic(dr1,topicPrefix+cellType+"L", NAME);	
@@ -377,7 +377,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 		}
 		if( rmap.right_out!=null )
 		{
-			DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>> dr2=new DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>>(rmap.right_mine,rmap.right_out,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumericLB.RIGHT,((DistributedState)sm).getField().getNumAgents(),getRightMineSize(),my_width);
+			DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>> dr2=new DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>>(rmap.right_mine,rmap.right_out,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumericLB.RIGHT,((DistributedField2DLB)((DistributedState)sm).getField()).getNumAgents(),getRightMineSize(),my_width);
 			try 
 			{			
 				connWorker.publishToTopic(dr2,topicPrefix+cellType+"R", NAME);		
@@ -445,7 +445,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 								prevBalanceR=0;
 							}
 							
-								balanceR=dynamic3(my_width, ((DistributedState)sm).getField().getNumAgents(), region.numAgents, region.mineNumAgents, getRightMineSize())-my_width;
+								balanceR=dynamic3(my_width, ((DistributedField2DLB)((DistributedState)sm).getField()).getNumAgents(), region.numAgents, region.mineNumAgents, getRightMineSize())-my_width;
 							
 							
 							
@@ -526,7 +526,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 								prevBalanceL=0;
 							}
 
-								balanceL=region.width-dynamic3(region.width,region.numAgents,((DistributedState)sm).getField().getNumAgents(), getLeftMineSize(), region.mineNumAgents);
+								balanceL=region.width-dynamic3(region.width,region.numAgents,((DistributedField2DLB)((DistributedState)sm).getField()).getNumAgents(), getLeftMineSize(), region.mineNumAgents);
 							
 							
 							//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null

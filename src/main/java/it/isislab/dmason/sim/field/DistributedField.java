@@ -65,7 +65,7 @@ public interface DistributedField<E> extends Serializable
 	
 	//public  UpdateMapNet  getUpdatesNet();
 
-	public int getNumAgents();
+	//public int getNumAgents();
 	
 	
 	/**

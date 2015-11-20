@@ -4,7 +4,7 @@ import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
 
 import java.util.HashMap;
 
-public interface DistributedField2DLB<E> {
+public interface DistributedField2DLB<E>{
 
 
 	//Methods for Load Balancing, if you don't need these methods you must "Add Unimplement Method"
@@ -66,5 +66,7 @@ public interface DistributedField2DLB<E> {
 	 * @return number of agents in the right mine
 	 */
 	public int getRightMineSize();
+	
+	public int getNumAgents();
 	
 }

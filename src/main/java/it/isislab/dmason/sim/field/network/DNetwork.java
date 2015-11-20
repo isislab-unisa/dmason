@@ -253,12 +253,6 @@ public class DNetwork extends Network implements DistributedFieldNetwork{
 		return graph_id;
 	}
 
-
-	@Override
-	public int getNumAgents() {
-		return numVertex;
-	}
-
 	@Override
 	public void resetParameters() {
 		numVertex=0;

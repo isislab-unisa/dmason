@@ -955,12 +955,6 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		return updates;
 	}
 
-	@Override
-	public int getNumAgents() {
-		System.err.println("You are using an not implemented method (getNumAgents) from "+this.getClass().getName());
-		return 0;
-	}
-
 
 	@Override
 	public void resetParameters() {

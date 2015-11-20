@@ -879,10 +879,6 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 		// TODO Auto-generated method stub
 		return updates;
 	}
-	@Override
-	public int getNumAgents() {
-		return numAgents;
-	}
 
 
 	@Override

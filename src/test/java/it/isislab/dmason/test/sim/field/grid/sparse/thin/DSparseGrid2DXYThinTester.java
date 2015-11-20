@@ -302,7 +302,7 @@ public class DSparseGrid2DXYThinTester {
 			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
 					sa, /* SimState */ss);
 		}
-		assertEquals(1, toTest.getNumAgents());
+		assertEquals(1, toTest.myfield.size());
 	}
 
 	/**
@@ -317,7 +317,7 @@ public class DSparseGrid2DXYThinTester {
 			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
 					new StubRemotePositionedAgent(), /* SimState */ss);
 		}
-		assertEquals(numLoop, toTest.getNumAgents());
+		assertEquals(numLoop, toTest.myfield.size());
 	}
 
 	// AGENTS IS MEMORIZED IN THE rmap

@@ -754,11 +754,6 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 	}
 
 	@Override
-	public int getNumAgents() {
-		System.err.println("You are using a not implemented method (getNumAgents) from "+this.getClass().getName());
-		return 0;
-	}
-	@Override
 	public void resetParameters() {
 		System.err.println("You are using a not implemented method (resetParameters) from "+this.getClass().getName());
 	}

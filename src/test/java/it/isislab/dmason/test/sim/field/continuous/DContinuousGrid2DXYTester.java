@@ -306,7 +306,7 @@ public class DContinuousGrid2DXYTester {
 			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
 					sa, /* SimState */ss);
 		}
-		assertEquals(1, toTest.getNumAgents());
+		assertEquals(1, toTest.myfield.size());
 	}
 
 	/**
@@ -323,7 +323,7 @@ public class DContinuousGrid2DXYTester {
 					/* RemotePositionedAgent */	new StubRemotePositionedAgent(),
 					/* SimState */ss);
 		}
-		assertEquals(numLoop, toTest.getNumAgents());
+		assertEquals(numLoop, toTest.myfield.size());
 	}
 
 	/**

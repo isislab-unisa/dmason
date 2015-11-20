@@ -784,11 +784,6 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 		return updates;
 	}
 
-
-	@Override
-	public int getNumAgents() {
-		return numAgents;
-	}
 	@Override
 	public void resetParameters() {
 		numAgents=0;

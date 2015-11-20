@@ -336,11 +336,6 @@ public class DistributedStateConnectionJMSTester {
 			return false;
 		}
 
-		@Override
-		public int getNumAgents() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
 
 	}
 

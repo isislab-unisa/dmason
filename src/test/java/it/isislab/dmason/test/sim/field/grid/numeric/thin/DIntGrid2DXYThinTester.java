@@ -253,7 +253,7 @@ public class DIntGrid2DXYThinTester {
 			toTest.setDistributedObjectLocation(location, /* grid value */
 					i, /* SimState */ss);
 		}
-		assertEquals(1, toTest.getNumAgents());
+		assertEquals(1, toTest.myfield.size());
 	}
 
 	/**
@@ -268,7 +268,7 @@ public class DIntGrid2DXYThinTester {
 			toTest.setDistributedObjectLocation(location, /* grid value */
 					i, /* SimState */ss);
 		}
-		assertEquals(numLoop, toTest.getNumAgents());
+		assertEquals(numLoop, toTest.myfield.size());
 	}
 
 	// AGENTS IS MEMORIZED IN THE rmap

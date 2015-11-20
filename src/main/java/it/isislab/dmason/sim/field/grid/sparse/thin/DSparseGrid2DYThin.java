@@ -702,11 +702,6 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 
 
 	@Override
-	public int getNumAgents() {
-		return numAgents;
-	}
-
-	@Override
 	public void resetParameters() {
 		numAgents=0;
 	}

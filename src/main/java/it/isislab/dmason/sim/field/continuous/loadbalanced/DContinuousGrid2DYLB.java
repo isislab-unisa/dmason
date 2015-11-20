@@ -479,7 +479,7 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 					rmap.WEST_OUT.clone(),
 					sm.schedule.getSteps() - 1,
 					cellType,
-					DistributedRegionLB.LEFT,((DistributedState)sm).getField().getNumAgents(), getLeftMineSize(),my_width);
+					DistributedRegionLB.LEFT,((DistributedField2DLB)((DistributedState)sm).getField()).getNumAgents(), getLeftMineSize(),my_width);
 			try 
 			{				
 				connWorker.publishToTopic(dr1, topicPrefix+cellType + "L", name);
@@ -496,7 +496,7 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 					rmap.EAST_OUT.clone(),
 					sm.schedule.getSteps() - 1,
 					cellType,
-					DistributedRegionLB.RIGHT,((DistributedState)sm).getField().getNumAgents(), getRightMineSize(),my_width);
+					DistributedRegionLB.RIGHT,((DistributedField2DLB)((DistributedState)sm).getField()).getNumAgents(), getRightMineSize(),my_width);
 			try 
 			{		
 				connWorker.publishToTopic(dr2, topicPrefix+cellType + "R", name);
@@ -555,7 +555,7 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 						isLeft=true;
 
 
-						balanceR=dynamic3(my_width, ((DistributedState)sm).getField().getNumAgents(), region.numAgents, region.mineNumAgents, getRightMineSize())-my_width;
+						balanceR=dynamic3(my_width, ((DistributedField2DLB)((DistributedState)sm).getField()).getNumAgents(), region.numAgents, region.mineNumAgents, getRightMineSize())-my_width;
 
 
 						//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null
@@ -602,8 +602,8 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 					if(region.type.pos_j == cellType.pos_j-1 && cellType.pos_j!=0 && region.position==DistributedRegionLB.RIGHT){
 						isLeft=false;
 
-
-						balanceL=region.width-dynamic3(region.width,region.numAgents, ((DistributedState)sm).getField().getNumAgents(), getLeftMineSize(), region.mineNumAgents);
+						balanceL=region.width-dynamic3(region.width,region.numAgents, ((DistributedField2DLB)((DistributedState)sm).getField()).getNumAgents(), getLeftMineSize(), region.mineNumAgents);
+						//balanceL=region.width-dynamic3(region.width,region.numAgents, ((DistributedState)sm).getField().getNumAgents(), getLeftMineSize(), region.mineNumAgents);
 
 
 						//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null

@@ -929,12 +929,6 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 		return updates;
 	}
 
-
-	@Override
-	public int getNumAgents() {
-		return numAgents;
-	}
-
 	@Override
 	public void resetParameters() {
 		numAgents=0;

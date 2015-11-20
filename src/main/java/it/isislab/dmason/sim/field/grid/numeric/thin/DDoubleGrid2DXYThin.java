@@ -864,12 +864,6 @@ public class DDoubleGrid2DXYThin extends DDoubleGrid2DThin {
 		return updates;
 	}
 
-
-	@Override
-	public int getNumAgents() {
-		return numAgents;
-	}
-
 	@Override
 	public void resetParameters() {
 		numAgents=0;
