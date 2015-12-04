@@ -176,6 +176,28 @@ public class RegionMapNumeric<E,F> implements Serializable{
 	public RegionNumeric<E,F>getSOUTH_EAST_OUT() {return SOUTH_EAST_OUT;}
 	public void setSOUTH_EAST_OUT(RegionNumeric<E,F>SOUTH_EAST_OUT) {this.SOUTH_EAST_OUT = SOUTH_EAST_OUT;}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	public RegionNumeric<E,F> getcorner_out_up_left_diag_up(){return corner_out_up_left_diag_up;}  //corner up left up
+	public RegionNumeric<E,F>getcorner_out_up_left_diag_left(){return corner_out_up_left_diag_left;} //corner up left left
+
+	public RegionNumeric<E,F>getcorner_out_up_right_diag_up(){return corner_out_up_right_diag_up;}//corner up right up
+	public RegionNumeric<E,F>getcorner_out_up_right_diag_right(){return corner_out_up_right_diag_right;} //corner up right right
+	
+	public RegionNumeric<E,F>getcorner_out_down_left_diag_left(){return corner_out_down_left_diag_left;} //corner down left left
+	public RegionNumeric<E,F>getcorner_out_down_left_diag_down(){return corner_out_down_left_diag_down;} //corner down left down
+	
+	public RegionNumeric<E,F>getcorner_out_down_right_diag_right(){return corner_out_down_right_diag_right;} //corner down right right
+	public RegionNumeric<E,F>getcorner_out_down_right_diag_down(){return corner_out_down_right_diag_down;} //corner down right down
+	
+	
+	
 	@Override
 	public String toString() {
 		return "RegionMapNumeric [left_out=" + WEST_OUT + ", left_mine=" + WEST_MINE + ", right_mine=" + EAST_MINE
