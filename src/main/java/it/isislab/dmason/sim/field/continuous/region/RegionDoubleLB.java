@@ -13,7 +13,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
- */
+ *//*
 
  package it.isislab.dmason.sim.field.continuous.region;
 
@@ -22,15 +22,15 @@ import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.util.Util;
 import sim.util.Double2D;
 
-/**
+*//**
  * A Region specialized to be used in a field with Double coordinates
- */
+ *//*
 public class RegionDoubleLB extends Region<Double,Double2D>
 {
 	public static double width,height;
 	
 	
-	/**
+	*//**
 	 * Constructor of class,it use the costructor of superclass and adds two parameters : width and height
 	 * 
 	 * 
@@ -40,7 +40,7 @@ public class RegionDoubleLB extends Region<Double,Double2D>
 	 * @param down_yy       y of right down corner
 	 * @param width         width of region
 	 * @param height        height of region
-	 */
+	 *//*
 	public RegionDoubleLB(Double upl_xx, Double upl_yy, Double down_xx,
 			Double down_yy,double width,double height) 
 	{		
@@ -85,4 +85,4 @@ public class RegionDoubleLB extends Region<Double,Double2D>
 	}	
      
      
-}
+}*/

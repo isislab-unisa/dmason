@@ -25,7 +25,7 @@ import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2DLB;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
-import it.isislab.dmason.sim.field.continuous.region.RegionDoubleLB;
+import it.isislab.dmason.sim.field.continuous.region.RegionDouble;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegion;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
@@ -157,7 +157,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 	private HashMap<Integer, UpdatePositionDoubleField<DistributedRegion<Double,Double2D>>> hashUpdatesPosition;
 	private HashMap<Integer, MyCellInterface> toSendForBalance;
 	private HashMap<Integer, MyCellInterface> toSendForUnion;
-	private RegionDoubleLB outAgents;
+	private RegionDouble outAgents;
 
 	// --> only for testing
 	private int numAgents;
@@ -247,7 +247,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 		this.unionDone = false;
 		this.isUnited = true;
 
-		outAgents = new RegionDoubleLB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+		outAgents = new RegionDouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
 		updates_cacheLB=new ArrayList<ArrayList<Region<Double,Double2D>>>();
 		numAgents=0;
@@ -868,7 +868,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 					((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
 				}
 
-		outAgents = new RegionDoubleLB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+		outAgents = new RegionDouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
 		this.reset();
 
@@ -1681,7 +1681,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						else
 							if(position == MyCellInterface.DOWN)
 							{
-								for(String agent_id: (Set<String>) (RegionDoubleLB)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT().keySet())
+								for(String agent_id: (Set<String>) (RegionDouble)((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT().keySet())
 								{	EntryAgent<Double2D> e = (EntryAgent<Double2D>) ((MyCellDoubleField)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT().get(agent_id);
 									RemotePositionedAgent<Double2D> rm=e.r;
 									Double2D loc=e.l;
@@ -1880,7 +1880,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						}
 						else
 						{
-							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_right);
+							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_right);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_down_right_right = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -1908,7 +1908,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						}
 						else
 						{
-							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_right);
+							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_right);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_down_right_right = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -1928,7 +1928,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						}
 						else
 						{
-							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_down);
+							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_down);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_down_right_down = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -1965,7 +1965,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						}
 						else
 						{
-							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_down);
+							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_down);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_down_right_down = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -2091,7 +2091,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						}
 						else
 						{
-							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_down);
+							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_down);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_down_left_down = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2118,7 +2118,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						}
 						else
 						{
-							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_down);
+							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_down);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_down_left_down = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2137,7 +2137,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						}
 						else
 						{
-							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_left);
+							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_left);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_down_left_left = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2173,7 +2173,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						}
 						else
 						{
-							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_left);
+							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_left);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_down_left_left = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2250,7 +2250,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						}
 						else
 						{
-							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_up);
+							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_up);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_up_left_up = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -2279,7 +2279,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						}
 						else
 						{
-							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_up);
+							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_up);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_up_left_up = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -2346,7 +2346,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						}
 						else
 						{
-							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_left);
+							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_left);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_up_left_left = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -2373,7 +2373,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						}
 						else
 						{
-							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_left);
+							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_left);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_up_left_left = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -2470,7 +2470,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						}
 						else
 						{
-							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_up);
+							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_up);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_up_right_up = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -2496,7 +2496,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						}
 						else
 						{
-							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_up);
+							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_up);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_up_right_up = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -2516,7 +2516,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						}
 						else
 						{
-							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_right);
+							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_right);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_up_right_right = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -2543,7 +2543,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 						}
 						else
 						{
-							RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_right);
+							RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_right);
 							empty.clear();
 							DistributedRegion<Double, Double2D> dr_corner_up_right_right = 
 									new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -2698,7 +2698,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_right);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_right);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_right_right = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -2725,7 +2725,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_right);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_right);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_right_right = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -2744,7 +2744,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_down);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_down);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_right_down = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -2780,7 +2780,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_down);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_down);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_right_down = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -2905,7 +2905,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_right);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_right);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_right_right = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -2924,7 +2924,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_left);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_left);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_left_left = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -3037,7 +3037,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_down);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_down);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_left_down = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -3064,7 +3064,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_down);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_down);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_left_down = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -3083,7 +3083,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_left);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_left);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_left_left = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -3119,7 +3119,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_left);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_left);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_left_left = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -3179,7 +3179,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_up);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_up);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_left_up = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3242,7 +3242,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 								hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_diag_down);
 							}
 							else{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_down);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_down);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_left_down = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -3275,7 +3275,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_up);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_up);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_left_up = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3303,7 +3303,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_up);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_up);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_left_up = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3406,7 +3406,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_left);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_left);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_left_left = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3433,7 +3433,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_left);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_left);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_left_left = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3491,7 +3491,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_right);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_right);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_right_right = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3555,7 +3555,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_left);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_left);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_left_left = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3609,7 +3609,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_up);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_up);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_right_up = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3635,7 +3635,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_up);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_up);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_right_up = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3654,7 +3654,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_right);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_right);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_right_right = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3681,7 +3681,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_right);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_right);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_right_right = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3815,7 +3815,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_up);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_up);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_up_right_up = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3834,7 +3834,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 							}
 							else
 							{
-								RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_down);
+								RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_down);
 								empty.clear();
 								DistributedRegion<Double, Double2D> dr_corner_down_right_down = 
 										new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -3910,7 +3910,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 					}
 					else
 					{
-						RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_left);
+						RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_left);
 						empty.clear();
 						DistributedRegion<Double, Double2D> dr_corner_down_left_left = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -3959,7 +3959,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_MINE,
 										md.getMyRMap().NORTH_OUT, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_up);
-						RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_up);
+						RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_up);
 						empty.clear();
 						DistributedRegion<Double, Double2D> dr_corner_up_right_up = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -4024,7 +4024,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 					}
 					else
 					{
-						RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_up);
+						RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_up);
 						empty.clear();
 						DistributedRegion<Double, Double2D> dr_left_corner_up_diag_up = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -4075,7 +4075,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().EAST_MINE,
 										md.getMyRMap().EAST_OUT, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right);
-						RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_right);
+						RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_right);
 						empty.clear();
 						DistributedRegion<Double, Double2D> dr_right_corner_down_diag_right = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -4142,7 +4142,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 					}
 					else
 					{
-						RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_right_diag_right);
+						RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_right_diag_right);
 						empty.clear();
 						DistributedRegion<Double, Double2D> dr_right_corner_up_diag_right = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -4191,7 +4191,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_MINE,
 										md.getMyRMap().SOUTH_OUT, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_down);
-						RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_left_diag_down);
+						RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_left_diag_down);
 						empty.clear();
 						DistributedRegion<Double, Double2D> dr_left_corner_down_diag_down = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -4255,7 +4255,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 					}
 					else
 					{
-						RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_down_right_diag_down);
+						RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_down_right_diag_down);
 						empty.clear();
 						DistributedRegion<Double, Double2D> dr_right_corner_down_diag_down = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -4304,7 +4304,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().WEST_MINE,
 										md.getMyRMap().WEST_OUT, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_left);
-						RegionDoubleLB empty = ((RegionDoubleLB)md.getMyRMap().corner_out_up_left_diag_left);
+						RegionDouble empty = ((RegionDouble)md.getMyRMap().corner_out_up_left_diag_left);
 						empty.clear();
 						DistributedRegion<Double, Double2D> dr_left_corner_up_diag_left = 
 								new DistributedRegion<Double, Double2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -5290,7 +5290,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 
 		int counter = 0;
 
-		counter = counter + ((RegionDoubleLB)mc.getMyField()).size();
+		counter = counter + ((RegionDouble)mc.getMyField()).size();
 
 		Class o=mc.getMyRMap().getClass();
 

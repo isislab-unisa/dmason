@@ -569,7 +569,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 			try 
 			{
 				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.WEST_MINE,rmap.WEST_OUT,
-						(sm.schedule.getSteps()-1),cellType,DistributedRegion.LEFT);
+						(sm.schedule.getSteps()-1),cellType,DistributedRegion.WEST);
 
 				connWorker.publishToTopic(dr,topicPrefix+cellType+"L",name);
 
@@ -580,7 +580,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 			try 
 			{
 				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.EAST_MINE,rmap.EAST_OUT,
-						(sm.schedule.getSteps()-1),cellType,DistributedRegion.RIGHT);				
+						(sm.schedule.getSteps()-1),cellType,DistributedRegion.EAST);				
 
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"R",name);
 
@@ -591,7 +591,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 			try 
 			{
 				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.NORTH_MINE,rmap.NORTH_OUT,
-						(sm.schedule.getSteps()-1),cellType,DistributedRegion.UP);
+						(sm.schedule.getSteps()-1),cellType,DistributedRegion.NORTH);
 
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"U",name);
 
@@ -603,7 +603,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 			try 
 			{
 				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.SOUTH_MINE,rmap.SOUTH_OUT,
-						(sm.schedule.getSteps()-1),cellType,DistributedRegion.DOWN);
+						(sm.schedule.getSteps()-1),cellType,DistributedRegion.SOUTH);
 
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"D",name);
 
@@ -614,7 +614,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		{
 			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.NORTH_WEST_MINE,
 					rmap.NORTH_WEST_OUT,
-					(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_UP_LEFT);
+					(sm.schedule.getSteps()-1),cellType,DistributedRegion.NORTH_WEST);
 			try 
 			{
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDL",name);
@@ -626,7 +626,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		{
 			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.NORTH_EAST_MINE,
 					rmap.NORTH_EAST_OUT,
-					(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_UP_RIGHT);
+					(sm.schedule.getSteps()-1),cellType,DistributedRegion.NORTH_EAST);
 			try 
 			{
 
@@ -637,7 +637,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		if( rmap.SOUTH_WEST_OUT!=null)
 		{
 			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.SOUTH_WEST_MINE,
-					rmap.SOUTH_WEST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_LEFT);
+					rmap.SOUTH_WEST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.SOUTH_WEST);
 			try 
 			{
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDL",name);
@@ -647,7 +647,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		if(rmap.SOUTH_EAST_OUT!=null)
 		{
 			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.SOUTH_EAST_MINE,
-					rmap.SOUTH_EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_RIGHT);
+					rmap.SOUTH_EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.SOUTH_EAST);
 
 			try 
 			{				

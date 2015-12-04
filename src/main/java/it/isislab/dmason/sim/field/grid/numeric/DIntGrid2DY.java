@@ -22,6 +22,7 @@ import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.MessageListener;
+import it.isislab.dmason.sim.field.grid.numeric.region.RegionDoubleNumeric;
 import it.isislab.dmason.sim.field.grid.numeric.region.RegionIntegerNumeric;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegionNumeric;
 import it.isislab.dmason.sim.field.support.field2D.EntryNum;
@@ -70,10 +71,10 @@ import sim.util.Int2D;
  * <ul>
  *	<li>MYFIELD : Region to be simulated by peer.</li>
  *
- * 	<li>LEFT_MINE, RIGHT_MINE :
+ * 	<li>LEFT_MINE, EAST_MINE :
  *	Boundaries Regions those must be simulated and sent to neighbors.</li>
  *	
- *	<li>LEFT_OUT, RIGHT_OUT : 
+ *	<li>LEFT_OUT, EAST_OUT : 
  *	Boundaries Regions those must not be simulated and sent to neighbors to be simulated.
  * </li>
  * 	All peers subscribes to the topic of boundary region which want the information and run a asynchronous thread
@@ -168,7 +169,92 @@ public class DIntGrid2DY extends DIntGrid2D {
 	 */
 	private boolean createRegion()
 	{
+		int jumpDistance=MAX_DISTANCE; 
 		//upper left corner's coordinates
+		if(cellType.pos_j<(width%columns))
+			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
+		else
+			own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
+
+		own_y=0; // in this mode the y coordinate is ever 0
+
+		// own width and height
+		if(cellType.pos_j<(width%columns))
+			my_width=(int) Math.floor(width/columns+1);
+		else
+			my_width=(int) Math.floor(width/columns);
+		my_height=height;
+
+
+		//calculating the neighbors
+		int v1 = cellType.pos_j - 1;
+		int v2 = cellType.pos_j + 1;
+		if(isToroidal())
+		{
+			if( v1 >= 0 )
+			{
+
+				neighborhood.add(cellType.getNeighbourLeft());
+
+
+			}
+			if( v2 <= columns - 1 )
+			{
+
+				neighborhood.add(cellType.getNeighbourRight());
+			}	
+		}else{
+
+			if( v1 >= 0 )
+			{
+
+				neighborhood.add(cellType.getNeighbourLeft());
+
+			}
+			if( v2 < columns  )
+			{
+
+				neighborhood.add(cellType.getNeighbourRight());
+			}	
+		}
+
+		myfield = new RegionIntegerNumeric(
+				own_x + jumpDistance,            // MyField's x0 coordinate
+				own_y,                           // MyField's y0 coordinate
+				own_x + my_width - jumpDistance, // MyField x1 coordinate
+				height,                          // MyField y1 coordinate
+				width, height);                  // Global width and height 
+
+		rmap.WEST_OUT = new RegionIntegerNumeric(
+				(own_x - jumpDistance + width) % width, // Left-out x0
+				0,									// Left-out y0
+				(own_x + width) % (width),				// Left-out x1
+				height,									// Left-out y1
+				width, height);
+
+		rmap.WEST_MINE = new RegionIntegerNumeric(
+				(own_x + width) % width,				// Left-mine x0
+				0,									// Left-mine y0
+				(own_x + jumpDistance + width) % width,	// Left-mine x1
+				height,									// Left-mine y1
+				width, height);
+
+		rmap.EAST_OUT = new RegionIntegerNumeric(
+				(own_x + my_width + width) % width,                // Right-out x0
+				0,                                               // Right-out y0
+				(own_x + my_width + jumpDistance + width) % width, // Right-out x1
+				height,                                            // Right-out y1
+				width, height);
+
+		rmap.EAST_MINE = new RegionIntegerNumeric(
+				(own_x + my_width - jumpDistance + width) % width, // Right-mine x0
+				0,											   // Right-mine y0
+				(own_x + my_width + width) % width,                // Right-mine x1
+				height,                                            // Right-mine y1
+				width, height);
+
+		return true;
+		/*//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
 		else
@@ -217,35 +303,35 @@ public class DIntGrid2DY extends DIntGrid2D {
 		}
 
 		// Building the regions
-		rmap.left_out=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height),my_width, my_height, width, height);
-		if(rmap.left_out!=null)
-			rmap.left_mine=RegionIntegerNumeric.createRegionNumeric(own_x,own_y,own_x + MAX_DISTANCE -1, (own_y+my_height)-1,my_width, my_height, width, height);
+		rmap.WEST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height),my_width, my_height, width, height);
+		if(rmap.WEST_OUT!=null)
+			rmap.WEST_MINE=RegionIntegerNumeric.createRegionNumeric(own_x,own_y,own_x + MAX_DISTANCE -1, (own_y+my_height)-1,my_width, my_height, width, height);
 
-		rmap.right_out=RegionIntegerNumeric.createRegionNumeric(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, (own_y+my_height)-1,my_width, my_height, width, height);
-		if(rmap.right_out!=null)
-			rmap.right_mine=RegionIntegerNumeric.createRegionNumeric(own_x + my_width -MAX_DISTANCE,own_y,own_x +my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
+		rmap.EAST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, (own_y+my_height)-1,my_width, my_height, width, height);
+		if(rmap.EAST_OUT!=null)
+			rmap.EAST_MINE=RegionIntegerNumeric.createRegionNumeric(own_x + my_width -MAX_DISTANCE,own_y,own_x +my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
 
-		if(rmap.left_out == null)
+		if(rmap.WEST_OUT == null)
 		{
 			//peer 0
 			myfield=new RegionIntegerNumeric(own_x,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
 
 		}
 
-		if(rmap.right_out == null)
+		if(rmap.EAST_OUT == null)
 		{
 			//peer NUMPEERS-1
 			myfield=new RegionIntegerNumeric(own_x+MAX_DISTANCE,own_y, own_x+my_width-1, own_y+my_height-1);
 
 		}
 
-		if(rmap.left_out!=null && rmap.right_out!=null)
+		if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 		{
 			myfield=new RegionIntegerNumeric(own_x+MAX_DISTANCE,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
 
 		}
 
-		return true;
+		return true;*/
 	}
 
 	/**
@@ -294,17 +380,17 @@ public class DIntGrid2DY extends DIntGrid2D {
 
 
 		//--> publishing the regions to correspondent topics for the neighbors
-		if( rmap.left_out!=null )
+		if( rmap.WEST_OUT!=null )
 		{
-			DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr1=new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(rmap.left_mine,rmap.left_out,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.LEFT);
+			DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr1=new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(rmap.WEST_MINE,rmap.WEST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.WEST);
 			try 
 			{	
 				connWorker.publishToTopic(dr1,topicPrefix+cellType+"L", NAME);	
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
-		if( rmap.right_out!=null )
+		if( rmap.EAST_OUT!=null )
 		{
-			DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr2=new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(rmap.right_mine,rmap.right_out,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.RIGHT);
+			DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr2=new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(rmap.EAST_MINE,rmap.EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.EAST);
 			try 
 			{			
 				connWorker.publishToTopic(dr2,topicPrefix+cellType+"R", NAME);		
@@ -610,17 +696,17 @@ public class DIntGrid2DY extends DIntGrid2D {
 	@Override
 	public boolean verifyPosition(Int2D pos) {
 		
-		return (rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(pos.x,pos.y))||
-				
-				(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(pos.x,pos.y))
+		return (rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(pos.x,pos.y))||
+
+				(rmap.NORTH_EAST_MINE!=null && rmap.NORTH_EAST_MINE.isMine(pos.x,pos.y))
 				||
-					(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(pos.x,pos.y))
-					||(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(pos.x,pos.y))
-						||(rmap.left_mine != null && rmap.left_mine.isMine(pos.x,pos.y))
-							||(rmap.right_mine != null && rmap.right_mine.isMine(pos.x,pos.y))
-								||(rmap.up_mine != null && rmap.up_mine.isMine(pos.x,pos.y))
-									||(rmap.down_mine != null && rmap.down_mine.isMine(pos.x,pos.y))
-										||(myfield.isMine(pos.x,pos.y));
+				(rmap.SOUTH_WEST_MINE!=null && rmap.SOUTH_WEST_MINE.isMine(pos.x,pos.y))
+				||(rmap.SOUTH_EAST_MINE!=null && rmap.SOUTH_EAST_MINE.isMine(pos.x,pos.y))
+				||(rmap.WEST_MINE != null && rmap.WEST_MINE.isMine(pos.x,pos.y))
+				||(rmap.EAST_MINE != null && rmap.EAST_MINE.isMine(pos.x,pos.y))
+				||(rmap.NORTH_MINE != null && rmap.NORTH_MINE.isMine(pos.x,pos.y))
+				||(rmap.SOUTH_MINE != null && rmap.SOUTH_MINE.isMine(pos.x,pos.y))
+				||(myfield.isMine(pos.x,pos.y));
 
 	}
 }

@@ -102,10 +102,10 @@ public class MyCellIntegerNumeric implements MyCellInterface,Serializable{
 		this.positionPublish = positionPublish;
 		this.positionGood = positionGood;
 		this.makeUnion = false;
-		this.upl_xx = (Integer) MYRMAP.corner_out_up_left_diag_center.upl_xx; 
-		this.upl_yy = (Integer) MYRMAP.corner_out_up_left_diag_center.upl_yy;
-		this.down_xx = (Integer) MYRMAP.corner_out_down_right_diag_center.down_xx; 
-		this.down_yy = (Integer) MYRMAP.corner_out_down_right_diag_center.down_xx;
+		this.upl_xx = (Integer) MYRMAP.NORTH_WEST_OUT.upl_xx; 
+		this.upl_yy = (Integer) MYRMAP.NORTH_WEST_OUT.upl_yy;
+		this.down_xx = (Integer) MYRMAP.SOUTH_EAST_OUT.down_xx; 
+		this.down_yy = (Integer) MYRMAP.SOUTH_EAST_OUT.down_xx;
 		
 	}
 
@@ -139,10 +139,10 @@ public class MyCellIntegerNumeric implements MyCellInterface,Serializable{
 		this.PARENTTYPE = parentType;
 		this.POSITION = position;
 		this.makeUnion = false;
-		this.upl_xx = (Integer) MYRMAP.corner_out_up_left_diag_center.upl_xx; 
-		this.upl_yy = (Integer) MYRMAP.corner_out_up_left_diag_center.upl_yy;
-		this.down_xx = (Integer) MYRMAP.corner_out_down_right_diag_center.down_xx; 
-		this.down_yy = (Integer) MYRMAP.corner_out_down_right_diag_center.down_xx;
+		this.upl_xx = (Integer) MYRMAP.NORTH_WEST_OUT.upl_xx; 
+		this.upl_yy = (Integer) MYRMAP.NORTH_WEST_OUT.upl_yy;
+		this.down_xx = (Integer) MYRMAP.SOUTH_EAST_OUT.down_xx; 
+		this.down_yy = (Integer) MYRMAP.SOUTH_EAST_OUT.down_xx;
 		
 		positionPublish = new HashMap<Integer, Boolean>();
 		positionGood = new HashMap<Integer, Boolean>();

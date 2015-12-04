@@ -470,7 +470,7 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 					rmap.WEST_OUT,
 					sm.schedule.getSteps() - 1,
 					cellType,
-					DistributedRegion.LEFT);
+					DistributedRegion.WEST);
 			try 
 			{				
 				connWorker.publishToTopic(dr1, topicPrefix+cellType + "L", name);
@@ -487,7 +487,7 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 					rmap.EAST_OUT,
 					sm.schedule.getSteps() - 1,
 					cellType,
-					DistributedRegion.RIGHT);
+					DistributedRegion.EAST);
 			try 
 			{		
 				connWorker.publishToTopic(dr2, topicPrefix+cellType + "R", name);

@@ -13,7 +13,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
- */
+ *//*
 
 package it.isislab.dmason.sim.field.grid.numeric.region;
 
@@ -21,15 +21,15 @@ import it.isislab.dmason.sim.field.support.field2D.EntryNum;
 import it.isislab.dmason.sim.field.support.field2D.region.RegionNumeric;
 import sim.util.Int2D;
 
-/**
+*//**
  * A Region specialized to be used in a field with Integer coordinates and double value
- */
+ *//*
 public class RegionDoubleNumericLB extends RegionNumeric<Integer, EntryNum<Double, Int2D>>{
 
 	private static int height;
 	private static int width;
 
-	/**
+	*//**
 	 * Constructor of class,it use the costructor of superclass and adds a width and a height
 	 * 
 	 * 
@@ -39,7 +39,7 @@ public class RegionDoubleNumericLB extends RegionNumeric<Integer, EntryNum<Doubl
 	 * @param down_yy       y of right down corner
 	 * @param width         width of region
 	 * @param height        height of region
-	 */
+	 *//*
 	public RegionDoubleNumericLB(Integer upl_xx, Integer upl_yy, Integer down_xx,
 			Integer down_yy,int width, int height) 
 	{
@@ -82,3 +82,4 @@ public class RegionDoubleNumericLB extends RegionNumeric<Integer, EntryNum<Doubl
 		this.put(e.l.toString(),e);
 		return true;	}
 }
+*/

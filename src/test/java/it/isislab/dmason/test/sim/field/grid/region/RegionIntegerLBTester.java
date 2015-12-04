@@ -1,4 +1,4 @@
-package it.isislab.dmason.test.sim.field.grid.region;
+/*package it.isislab.dmason.test.sim.field.grid.region;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -11,26 +11,26 @@ import it.isislab.dmason.test.sim.app.DParticles.DParticle;
 import org.junit.Before;
 import org.junit.Test;
 import sim.util.Int2D;
-/**
+*//**
 * The Class RegionIntegerLBTester. Tests the RegionIntegerLB.
  * @author Michele Carillo
  * @author Flavio Serrapica
  * @author Carmine Spagnuolo
  * @author Mario Capuozzo
- */
+ *//*
 public class RegionIntegerLBTester {
-	/** The rd. */
+	*//** The rd. *//*
 	RegionIntegerLB rd;
 
-	/** The loop test. */
+	*//** The loop test. *//*
 	int loopTest;
 
-	/**
+	*//**
 	 * Sets the up.
 	 *
 	 * @throws Exception
 	 *             the exception
-	 */
+	 *//*
 	@Before
 	public void setUp() throws Exception {
 		rd = new RegionIntegerLB(0, 0,1,1, 1, 1);
@@ -40,27 +40,27 @@ public class RegionIntegerLBTester {
 	// isMine
 	// verify if an entry is located in my region
 
-	/**
+	*//**
 	 * Test is mine0_0.
-	 */
+	 *//*
 	@Test
 	public void testIsMine0_0() {
 		// (x>=0) && (y >= 0) && (x <1 ) && (y<1 );
 		assertTrue(rd.isMine(0, 0));
 	}
 
-	/**
+	*//**
 	 * Test is mine0_1.
-	 */
+	 *//*
 	@Test
 	public void testIsMine0_1() {
 		// (x>=0) && (y >= 0) && (x <1 ) && (y<1 );
 		assertFalse(rd.isMine(0, 1));
 	}
 
-	/**
+	*//**
 	 * Test is mine1_0.
-	 */
+	 *//*
 	@Test
 	public void testIsMine1_0() {
 		// (x>=0) && (y >= 0) && (x <1 ) && (y<1 );
@@ -68,9 +68,9 @@ public class RegionIntegerLBTester {
 	}
 
 	
-	/**
+	*//**
 	 * Test is mine range0_1_0_1.
-	 */
+	 *//*
 	@Test
 	public void testIsMineRange0_1_0_1() {
 		// (x>=0) && (y >= 0) && (x <1 ) && (y<1 );
@@ -87,9 +87,9 @@ public class RegionIntegerLBTester {
 
 	}
 
-	/**
+	*//**
 	 * Test is mine negative range1_0_0_1.
-	 */
+	 *//*
 	@Test
 	public void testIsMineNegativeRange1_0_0_1() {
 		// (x>=0) && (y >= 0) && (x <1 ) && (y<1 );
@@ -106,7 +106,7 @@ public class RegionIntegerLBTester {
 
 	}
 	
-/*
+
 	// createRegion
 	*//**
 	 * Test create region xx under0.
@@ -188,40 +188,40 @@ public class RegionIntegerLBTester {
 
 	}
 
-	*/
+	
 
 	// addAgents
 
-	/**
+	*//**
 	 * Test add agents null.
-	 */
+	 *//*
 	@Test
 	public void testAddAgentsNull() {
-		/*
+		
 		 * BUG FIND mi fa inserire un entry null
-		 */
+		 
 		EntryAgent<Int2D> e = null;
 		assertFalse(rd.addAgents(e));
 	}
 
-	/**
+	*//**
 	 * Test add agents.
-	 */
+	 *//*
 	@Test
 	public void testAddAgents() {
 		RemotePositionedAgent<Int2D> c = null;
 		Int2D f = null;
-		/*
+		
 		 * BUG FIND mi fa inserire un entry con valori null
-		 */
+		 
 		EntryAgent<Int2D> e = new EntryAgent<Int2D>(c, f);
 		
 		assertTrue(rd.addAgents(e));
 	}
 
-	/**
+	*//**
 	 * Test add agents verify.
-	 */
+	 *//*
 	@Test
 	public void testAddAgentsVerify() {
 		RemotePositionedAgent<Int2D> c = null;
@@ -232,9 +232,9 @@ public class RegionIntegerLBTester {
 	}
 
 	// clone
-	/**
+	*//**
 	 * Test clone.
-	 */
+	 *//*
 	@Test
 	public void testClone() {
 
@@ -243,9 +243,9 @@ public class RegionIntegerLBTester {
 		assertEquals(rd, clone);
 	}
 
-	/**
+	*//**
 	 * Test clone with entry.
-	 */
+	 *//*
 	@Test
 	public void testCloneWithEntry() {
 		rd.clear();
@@ -263,3 +263,4 @@ public class RegionIntegerLBTester {
 		assertEquals("incorrect copy of entry", rd, clone);
 	}
 }
+*/

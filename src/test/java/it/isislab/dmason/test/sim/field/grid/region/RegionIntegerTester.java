@@ -24,7 +24,7 @@ public class RegionIntegerTester {
 
 	/** The rd. */
 	RegionInteger rd;
-
+    int width,height;
 	/** The loop test. */
 	int loopTest;
 
@@ -36,7 +36,9 @@ public class RegionIntegerTester {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		rd = new RegionInteger(0, 0, 1, 1);
+		width=100;
+		height=100;
+		rd = new RegionInteger(0, 0, 100, 100,width,height);
 		loopTest = 10000;
 	}
 
@@ -68,89 +70,6 @@ public class RegionIntegerTester {
 	public void testIsMine1_0() {
 		// (x>=0) && (y >= 0) && (x <=1 ) && (y<=1 );
 		assertTrue(rd.isMine(1, 0));
-	}
-
-
-
-	// createRegion
-	/**
-	 * Test create region xx under0.
-	 */
-	@Test
-	public void testCreateRegionXXUnder0() {
-
-		assertNull(rd.createRegion(-1, 0, 0, 0, 0, 0, 10, 10));
-
-	}
-
-	/**
-	 * Test create region yy under0.
-	 */
-	@Test
-	public void testCreateRegionYYUnder0() {
-
-		assertNull(rd.createRegion(0, -1, 0, 0, 0, 0, 10, 10));
-
-	}
-
-	/**
-	 * Test create region xx over0.
-	 */
-	@Test
-	public void testCreateRegionXXOver0() {
-
-		assertNotNull(rd.createRegion(1, 0, 0, 0, 0, 0, 10, 10));
-
-	}
-
-	/**
-	 * Test create region yy over0.
-	 */
-	@Test
-	public void testCreateRegionYYOver0() {
-
-		assertNotNull(rd.createRegion(0, 1, 0, 0, 0, 0, 10, 10));
-
-	}
-
-	/**
-	 * Test create region xxw over w.
-	 */
-	@Test
-	public void testCreateRegionXxwOverW() {
-
-		assertNull(rd.createRegion(11, 0, 0, 0, 0, 0, 10, 10));
-
-	}
-
-	/**
-	 * Test create region xxw equal w.
-	 */
-	@Test
-	public void testCreateRegionXxwEqualW() {
-
-		assertNull(rd.createRegion(10, 0, 0, 0, 0, 0, 10, 10));
-
-	}
-
-	/**
-	 * Test create region yyh over h.
-	 */
-	@Test
-	public void testCreateRegionYyhOverH() {
-
-		assertNull(rd.createRegion(0, 11, 0, 0, 0, 0, 10, 10));
-
-	}
-
-	/**
-	 * Test create region yyh equal h.
-	 */
-	@Test
-	public void testCreateRegionYyhEqualH() {
-
-		assertNull(rd.createRegion(0, 10, 0, 0, 0, 0, 10, 10));
-
 	}
 
 

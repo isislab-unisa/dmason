@@ -26,6 +26,7 @@ public class RegionDoubleTester {
 
 	/** The rd. */
 	RegionDouble rd;
+	double width,height;
 
 	/** The loop test. */
 	int loopTest;
@@ -38,7 +39,9 @@ public class RegionDoubleTester {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		rd = new RegionDouble(0.0, 0.0, 0.0, 0.0, 1.0, 1.0);
+		width=100;
+		height=100;
+		rd = new RegionDouble(0.0, 0.0, 100.0, 100.0, width,height);
 		loopTest = 10000;
 	}
 
@@ -60,7 +63,7 @@ public class RegionDoubleTester {
 	@Test
 	public void testIsMine0_1() {
 		// (x>=0) && (y >= 0) && (x <1 ) && (y<1 );
-		assertFalse(rd.isMine(0.0, 1.0));
+		assertTrue(rd.isMine(0.0, 1.0));
 	}
 
 	/**
@@ -69,7 +72,7 @@ public class RegionDoubleTester {
 	@Test
 	public void testIsMine1_0() {
 		// (x>=0) && (y >= 0) && (x <1 ) && (y<1 );
-		assertFalse(rd.isMine(1.0, 0.0));
+		assertTrue(rd.isMine(1.0, 0.0));
 	}
 
 	/**
@@ -142,7 +145,7 @@ public class RegionDoubleTester {
 		Double2D f = new Double2D(0, 0);
 		EntryAgent<Double2D> e = new EntryAgent<Double2D>(c, f);
 		rd.addAgents(e);
-		assertEquals(e, rd.get(0));
+		assertEquals(e, rd.get(c.getId()));
 	}
 
 	// clone

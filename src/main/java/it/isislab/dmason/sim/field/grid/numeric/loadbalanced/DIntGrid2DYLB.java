@@ -23,6 +23,7 @@ import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2DLB;
 import it.isislab.dmason.sim.field.MessageListener;
+import it.isislab.dmason.sim.field.TraceableField;
 import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2D;
 import it.isislab.dmason.sim.field.grid.numeric.region.RegionIntegerNumeric;
 import it.isislab.dmason.sim.field.support.field2D.EntryNum;
@@ -34,14 +35,12 @@ import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.util.visualization.zoomviewerapp.ZoomArrayList;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
-
 import sim.engine.SimState;
 import sim.util.Int2D;
 
@@ -72,10 +71,10 @@ import sim.util.Int2D;
  * <ul>
  *	<li>MYFIELD : Region to be simulated by peer.</li>
  *
- * 	<li>LEFT_MINE, RIGHT_MINE :
+ * 	<li>LEFT_MINE, EAST_MINE :
  *	Boundaries Regions those must be simulated and sent to neighbors.</li>
  *	
- *	<li>LEFT_OUT, RIGHT_OUT : 
+ *	<li>LEFT_OUT, EAST_OUT : 
  *	Boundaries Regions those must not be simulated and sent to neighbors to be simulated.
  * </li>
  * 	All peers subscribes to the topic of boundary region which want the information and run a asynchronous thread
@@ -106,13 +105,13 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
 	private int initialValue;
 	private ZoomArrayList<EntryNum<Integer, Int2D>> tmp_zoom=null;
-	
+
 	/**
 	 * It's the name of the specific field
 	 */
 	private String NAME;
-	
-	
+
+
 	private DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>> region;
 
 	private static volatile int numAgents;
@@ -131,7 +130,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	// -----------------------------------------------------------------------
 	/** Will contain globals properties */
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
-	
+
 	/**
 	 * Constructor of class with paramaters:
 	 * 
@@ -149,7 +148,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	 */
 	public DIntGrid2DYLB(int width, int height,SimState sm,int max_distance,int i,int j,int rows, int columns, 
 			int initialGridValue, String name, String prefix) {
-		
+
 		super(width, height, initialGridValue);
 		this.width=width;
 		this.height=height;
@@ -163,7 +162,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 		initialValue=initialGridValue;
 		this.topicPrefix = prefix;
 		updates_cache= new ArrayList<RegionNumeric<Integer,EntryNum<Integer,Int2D>>>();
-		
+
 		numAgents=0;
 		balanceR=0;
 		balanceL=0;
@@ -172,9 +171,9 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 		leftMineSize=0;
 		rightMineSize=0;
 		createRegion();		
-			
+
 	}
-	
+
 
 	/**
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
@@ -182,87 +181,174 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	 */
 	private boolean createRegion()
 	{
+		int jumpDistance=MAX_DISTANCE;
 		//upper left corner's coordinates
+				if(cellType.pos_j<(width%columns))
+					own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
+				else
+					own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
+
+				own_y=0; // in this mode the y coordinate is ever 0
+
+				// own width and height
+				if(cellType.pos_j<(width%columns))
+					my_width=(int) Math.floor(width/columns+1);
+				else
+					my_width=(int) Math.floor(width/columns);
+				my_height=height;
+
+
+				//calculating the neighbors
+				int v1 = cellType.pos_j - 1;
+				int v2 = cellType.pos_j + 1;
+				if(isToroidal())
+				{
+					if( v1 >= 0 )
+					{
+
+						neighborhood.add(cellType.getNeighbourLeft());
+
+
+					}
+					if( v2 <= columns - 1 )
+					{
+
+						neighborhood.add(cellType.getNeighbourRight());
+					}	
+				}else{
+
+					if( v1 >= 0 )
+					{
+
+						neighborhood.add(cellType.getNeighbourLeft());
+
+					}
+					if( v2 < columns  )
+					{
+
+						neighborhood.add(cellType.getNeighbourRight());
+					}	
+				}
+
+				myfield = new RegionIntegerNumeric(
+						own_x + jumpDistance,            // MyField's x0 coordinate
+						own_y,                           // MyField's y0 coordinate
+						own_x + my_width - jumpDistance, // MyField x1 coordinate
+						height,                          // MyField y1 coordinate
+						width, height);                  // Global width and height 
+
+				rmap.WEST_OUT = new RegionIntegerNumeric(
+						(own_x - jumpDistance + width) % width, // Left-out x0
+						0,									// Left-out y0
+						(own_x + width) % (width),				// Left-out x1
+						height,									// Left-out y1
+						width, height);
+
+				rmap.WEST_MINE = new RegionIntegerNumeric(
+						(own_x + width) % width,				// Left-mine x0
+						0,									// Left-mine y0
+						(own_x + jumpDistance + width) % width,	// Left-mine x1
+						height,									// Left-mine y1
+						width, height);
+
+				rmap.EAST_OUT = new RegionIntegerNumeric(
+						(own_x + my_width + width) % width,                // Right-out x0
+						0,                                               // Right-out y0
+						(own_x + my_width + jumpDistance + width) % width, // Right-out x1
+						height,                                            // Right-out y1
+						width, height);
+
+				rmap.EAST_MINE = new RegionIntegerNumeric(
+						(own_x + my_width - jumpDistance + width) % width, // Right-mine x0
+						0,											   // Right-mine y0
+						(own_x + my_width + width) % width,                // Right-mine x1
+						height,                                            // Right-mine y1
+						width, height);
+
+
+				return true;
+		
+		/*//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
 		else
 			own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
 
 		own_y=0; // in this mode the y coordinate is ever 0
-		
+
 		// own width and height
 		if(cellType.pos_j<(width%columns))
 			my_width=(int) Math.floor(width/columns+1);
 		else
 			my_width=(int) Math.floor(width/columns);
 		my_height=height;
-	
-	
-	//calculating the neighbors
-	int v1 = cellType.pos_j - 1;
-	int v2 = cellType.pos_j + 1;
-	if(isToroidal())
-	{
-		if( v1 >= 0 )
+
+
+		//calculating the neighbors
+		int v1 = cellType.pos_j - 1;
+		int v2 = cellType.pos_j + 1;
+		if(isToroidal())
 		{
-		
-			neighborhood.add(cellType.getNeighbourLeft());
-					
-			
+			if( v1 >= 0 )
+			{
+
+				neighborhood.add(cellType.getNeighbourLeft());
+
+
+			}
+			if( v2 <= columns - 1 )
+			{
+
+				neighborhood.add(cellType.getNeighbourRight());
+			}	
+		}else{
+
+			if( v1 >= 0 )
+			{
+
+				neighborhood.add(cellType.getNeighbourLeft());
+
+			}
+			if( v2 < columns  )
+			{
+
+				neighborhood.add(cellType.getNeighbourRight());
+			}	
 		}
-		if( v2 <= columns - 1 )
-		{
-			
-			neighborhood.add(cellType.getNeighbourRight());
-		}	
-	}else{
-		
-		if( v1 >= 0 )
-		{
-			
-			neighborhood.add(cellType.getNeighbourLeft());
-			
-		}
-		if( v2 < columns  )
-		{
-			
-			neighborhood.add(cellType.getNeighbourRight());
-		}	
-	}
-	
+
 		// Building the regions
-		rmap.left_out=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height),my_width, my_height, width, height);
-		if(rmap.left_out!=null)
-			rmap.left_mine=RegionIntegerNumeric.createRegionNumeric(own_x,own_y,own_x + MAX_DISTANCE -1, (own_y+my_height)-1,my_width, my_height, width, height);
-		
-		rmap.right_out=RegionIntegerNumeric.createRegionNumeric(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, (own_y+my_height)-1,my_width, my_height, width, height);
-		if(rmap.right_out!=null)
-			rmap.right_mine=RegionIntegerNumeric.createRegionNumeric(own_x + my_width -MAX_DISTANCE,own_y,own_x +my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
-				
-		if(rmap.left_out == null)
+		rmap.WEST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height),my_width, my_height, width, height);
+		if(rmap.WEST_OUT!=null)
+			rmap.WEST_MINE=RegionIntegerNumeric.createRegionNumeric(own_x,own_y,own_x + MAX_DISTANCE -1, (own_y+my_height)-1,my_width, my_height, width, height);
+
+		rmap.EAST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, (own_y+my_height)-1,my_width, my_height, width, height);
+		if(rmap.EAST_OUT!=null)
+			rmap.EAST_MINE=RegionIntegerNumeric.createRegionNumeric(own_x + my_width -MAX_DISTANCE,own_y,own_x +my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
+
+		if(rmap.WEST_OUT == null)
 		{
 			//peer 0
 			myfield=new RegionIntegerNumeric(own_x,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
-		
+
 		}
-		
-		if(rmap.right_out == null)
+
+		if(rmap.EAST_OUT == null)
 		{
 			//peer NUMPEERS-1
 			myfield=new RegionIntegerNumeric(own_x+MAX_DISTANCE,own_y, own_x+my_width-1, own_y+my_height-1);
 
 		}
-		
-		if(rmap.left_out!=null && rmap.right_out!=null)
+
+		if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 		{
 			myfield=new RegionIntegerNumeric(own_x+MAX_DISTANCE,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
 
 		}
 
-	  return true;
+		return true;*/
 	}
-	
-    /**
+
+	/**
 	 * 	This method provides the synchronization in the distributed environment.
 	 * 	It's called after every step of schedule.
 	 */
@@ -271,8 +357,8 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 
 		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
-		
-		
+
+
 		if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
 		{
 			tmp_zoom=new ZoomArrayList<EntryNum<Integer, Int2D>>();
@@ -300,103 +386,103 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 				e1.printStackTrace();
 			}
 		}
-		
+
 		updateFields(); //update fields with java reflect
-		
+
 		updates_cache=new ArrayList<RegionNumeric<Integer,EntryNum<Integer,Int2D>>>();
-			
+
 		memorizeRegionOut();
-			
+
 		if(isLeft){ 
-			
+
 			if(balanceR<0){
-		
-				rmap.right_out.clear();
-			
-			for (int i = 0; i < height; i++) {
-				for (int j = rmap.right_out.upl_xx; j <= rmap.right_out.down_xx-MAX_DISTANCE; j++) {
-					rmap.right_out.addEntryNum(new EntryNum<Integer, Int2D>(
-							field[j][i], new Int2D(j, i)));
-				}
-			}
-			
-			
-			for (int i = 0; i < height; i++) 
-				for (int j = rmap.right_mine.upl_xx; j <= rmap.right_mine.down_xx; j++) 
-						rmap.right_mine.addEntryNum(new EntryNum<Integer, Int2D>(
+
+				rmap.EAST_OUT.clear();
+
+				for (int i = 0; i < height; i++) {
+					for (int j = rmap.EAST_OUT.upl_xx; j <= rmap.EAST_OUT.down_xx-MAX_DISTANCE; j++) {
+						rmap.EAST_OUT.addEntryNum(new EntryNum<Integer, Int2D>(
 								field[j][i], new Int2D(j, i)));
-		
-		
-			
-			
+					}
+				}
+
+
+				for (int i = 0; i < height; i++) 
+					for (int j = rmap.EAST_MINE.upl_xx; j <= rmap.EAST_MINE.down_xx; j++) 
+						rmap.EAST_MINE.addEntryNum(new EntryNum<Integer, Int2D>(
+								field[j][i], new Int2D(j, i)));
+
+
+
+
 			}
 			else if(balanceR>0){
-				
-				rmap.right_mine.clear();
-			
-				rmap.right_out.clear();
-				
-			}
-	}else if(!isLeft) {
-		
-			if(balanceL<0){
-			
-				rmap.left_out.clear();
 
-			for (int i = 0; i < height; i++) {
-				for (int j = rmap.left_out.upl_xx+MAX_DISTANCE; j <= rmap.left_out.down_xx; j++) {
-						rmap.left_out.addEntryNum(new EntryNum<Integer, Int2D>(
-							field[j][i], new Int2D(j, i)));
-				}
+				rmap.EAST_MINE.clear();
+
+				rmap.EAST_OUT.clear();
+
 			}
-			
-			for (int i = 0; i < height; i++) 
-				for (int j = rmap.left_mine.upl_xx; j <= rmap.left_mine.down_xx; j++) 
-						rmap.left_mine.addEntryNum(new EntryNum<Integer, Int2D>(
+		}else if(!isLeft) {
+
+			if(balanceL<0){
+
+				rmap.WEST_OUT.clear();
+
+				for (int i = 0; i < height; i++) {
+					for (int j = rmap.WEST_OUT.upl_xx+MAX_DISTANCE; j <= rmap.WEST_OUT.down_xx; j++) {
+						rmap.WEST_OUT.addEntryNum(new EntryNum<Integer, Int2D>(
 								field[j][i], new Int2D(j, i)));
-			
+					}
+				}
+
+				for (int i = 0; i < height; i++) 
+					for (int j = rmap.WEST_MINE.upl_xx; j <= rmap.WEST_MINE.down_xx; j++) 
+						rmap.WEST_MINE.addEntryNum(new EntryNum<Integer, Int2D>(
+								field[j][i], new Int2D(j, i)));
+
 			}
 			else if (balanceL>0){
 
-				rmap.left_mine.clear();
+				rmap.WEST_MINE.clear();
 
-			
-			
-				rmap.left_out.clear();
-				
+
+
+				rmap.WEST_OUT.clear();
+
 			}
-	}
+		}
 		//--> publishing the regions to correspondent topics for the neighbors
-		if( rmap.left_out!=null )
+		if( rmap.WEST_OUT!=null )
 		{
-			DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>> dr1=new DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>>(rmap.left_mine,rmap.left_out,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumericLB.LEFT,((DistributedField2DLB)((DistributedState)sm).getField()).getNumAgents(), getLeftMineSize(),my_width);
+			DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>> dr1=new DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>>(rmap.WEST_MINE,rmap.WEST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumericLB.LEFT,((DistributedField2DLB)((DistributedState)sm).getField()).getNumAgents(), getLeftMineSize(),my_width);
 			try 
 			{	
 				connWorker.publishToTopic(dr1,topicPrefix+cellType+"L", NAME);	
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
-		if( rmap.right_out!=null )
+		if( rmap.EAST_OUT!=null )
 		{
-			DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>> dr2=new DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>>(rmap.right_mine,rmap.right_out,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumericLB.RIGHT,((DistributedField2DLB)((DistributedState)sm).getField()).getNumAgents(),getRightMineSize(),my_width);
+			DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>> dr2=new DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>>(rmap.EAST_MINE,rmap.EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumericLB.RIGHT,((DistributedField2DLB)((DistributedState)sm).getField()).getNumAgents(),getRightMineSize(),my_width);
 			try 
 			{			
 				connWorker.publishToTopic(dr2,topicPrefix+cellType+"R", NAME);		
 			} catch (Exception e1) {e1.printStackTrace();}
 		}			
-		
+
 		//This block restores the mine and the out modified for the exchange of agents during the load balancing phase 
 		if(isLeft){
 			//The region was the left in the previous step
 			if(balanceR>0){
 				//The width of the region was increased in the previous step
-				//So the right_mine must be restored on the start's dimensions but maintaining the new positions
-				rmap.right_mine.setUpl_xx(own_x + my_width -MAX_DISTANCE);
+				//So the EAST_MINE must be restored on the start's dimensions but maintaining the new positions
+				rmap.EAST_MINE.setUpl_xx(own_x + my_width -MAX_DISTANCE);
 			}
 			else if(balanceR<0){
-				
+
 				//The width of the region was decreased in the previous step
-				//So the right_out must be restored on the start's dimensions but maintaining the new positions
-				rmap.right_out.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
+				//So the EAST_OUT must be restored on the start's dimensions but maintaining the new positions
+				rmap.EAST_OUT.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
 				prevBalanceR=balanceR;
 
 			}
@@ -407,23 +493,23 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 			if(balanceL>0){
 				//The width of the region was increased in the previous step
 				//So the left_mine must be restored on the start's dimensions but maintaining the new positions
-				rmap.left_mine.setDown_xx(own_x + MAX_DISTANCE -1);
+				rmap.WEST_MINE.setDown_xx(own_x + MAX_DISTANCE -1);
 			}
 			else if(balanceL<0){
-				
+
 				//The width of the region was increased in the previous step
 				//So the left_out must be restored on the start's dimensions but maintaining the new positions
-				rmap.left_out.setUpl_xx(own_x-MAX_DISTANCE);
+				rmap.WEST_OUT.setUpl_xx(own_x-MAX_DISTANCE);
 				prevBalanceL=balanceL;
 			}
 			balanceL=0;
 		}
-		
+
 		//take from UpdateMap the updates for current last terminated step and use 
 		//verifyUpdates() to elaborate informations
 
 		PriorityQueue<Object> q;
-		
+
 		try 
 		{
 			q = updates.getUpdates(sm.schedule.getSteps()-1, neighborhood.size());
@@ -431,24 +517,24 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 			{
 				region=(DistributedRegionNumericLB<Integer,EntryNum<Integer,Int2D>>)q.poll();
 				if(sm.schedule.getSteps()%1==0){
-				if((sm.schedule.getSteps() % 2 == 0 && cellType.pos_j % 2 == 0)||(sm.schedule.getSteps() % 2 != 0 && cellType.pos_j % 2 != 0)){
+					if((sm.schedule.getSteps() % 2 == 0 && cellType.pos_j % 2 == 0)||(sm.schedule.getSteps() % 2 != 0 && cellType.pos_j % 2 != 0)){
 						//this region is the left
 						if(region.type.pos_j == cellType.pos_j+1 && cellType.pos_j!=columns-1){
 							isLeft=true;
 							if (prevBalanceR<0){
 								for (int i = 0; i < height; i++) {
-									for (int j = rmap.right_out.upl_xx+MAX_DISTANCE; j <= rmap.right_out.down_xx-prevBalanceR; j++) {
+									for (int j = rmap.EAST_OUT.upl_xx+MAX_DISTANCE; j <= rmap.EAST_OUT.down_xx-prevBalanceR; j++) {
 										field[j][i]=initialValue;
 
 									}
 								}
 								prevBalanceR=0;
 							}
-							
-								balanceR=dynamic3(my_width, ((DistributedField2DLB)((DistributedState)sm).getField()).getNumAgents(), region.numAgents, region.mineNumAgents, getRightMineSize())-my_width;
-							
-							
-							
+
+							balanceR=dynamic3(my_width, ((DistributedField2DLB)((DistributedState)sm).getField()).getNumAgents(), region.numAgents, region.mineNumAgents, getRightMineSize())-my_width;
+
+
+
 							//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null
 							if(balanceR>region.width-MAX_DISTANCE-1){
 								balanceR=region.width-MAX_DISTANCE-1;
@@ -458,17 +544,17 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 								balanceR=-my_width+MAX_DISTANCE+1;
 
 							}
-							
-														
+
+
 							if(balanceR<0){
 								//the region becames smaller
-								//the right_out becames bigger so the agents can be passed to the right neighbor
-								rmap.right_out.setUpl_xx(own_x+my_width+balanceR);
-								rmap.right_out.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
+								//the EAST_OUT becames bigger so the agents can be passed to the right neighbor
+								rmap.EAST_OUT.setUpl_xx(own_x+my_width+balanceR);
+								rmap.EAST_OUT.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
 								my_width=my_width+balanceR;
-								rmap.right_mine.setUpl_xx(own_x + my_width-MAX_DISTANCE);
-								rmap.right_mine.setDown_xx(own_x +my_width-1);
-								if(rmap.left_out == null)
+								rmap.EAST_MINE.setUpl_xx(own_x + my_width-MAX_DISTANCE);
+								rmap.EAST_MINE.setDown_xx(own_x +my_width-1);
+								if(rmap.WEST_OUT == null)
 								{
 									//peer 0
 									myfield.setUpl_xx(own_x);
@@ -477,24 +563,24 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 								}
 
 
-								if(rmap.left_out!=null && rmap.right_out!=null)
+								if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 								{
 									myfield.setUpl_xx(own_x+MAX_DISTANCE);
 									myfield.setDown_xx(own_x+my_width-MAX_DISTANCE-1);
 
 								}
-								
+
 							}else 
 								if(balanceR>0){
 									//the region becames bigger
-									//the right_mine becames bigger so the agents can be received from the right neighbor
-									rmap.right_mine.setUpl_xx(own_x + my_width-MAX_DISTANCE);
-									rmap.right_mine.setDown_xx(own_x +my_width-1+balanceR);
+									//the EAST_MINE becames bigger so the agents can be received from the right neighbor
+									rmap.EAST_MINE.setUpl_xx(own_x + my_width-MAX_DISTANCE);
+									rmap.EAST_MINE.setDown_xx(own_x +my_width-1+balanceR);
 									my_width=my_width+balanceR;
-									rmap.right_out.setUpl_xx(own_x + my_width);
-									rmap.right_out.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
-									
-									if(rmap.left_out == null)
+									rmap.EAST_OUT.setUpl_xx(own_x + my_width);
+									rmap.EAST_OUT.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
+
+									if(rmap.WEST_OUT == null)
 									{
 										//peer 0
 										myfield.setUpl_xx(own_x);
@@ -502,33 +588,33 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 
 									}
 
-									if(rmap.left_out!=null && rmap.right_out!=null)
+									if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 									{
 										myfield.setUpl_xx(own_x+MAX_DISTANCE);
 										myfield.setDown_xx(own_x+my_width-MAX_DISTANCE-1);
 
 									}
-									
+
 								}
 						}
-				}
+					}
 					else{
 						//this region is the right
 						if(region.type.pos_j == cellType.pos_j-1 && cellType.pos_j!=0){
 							isLeft=false;
 							if(prevBalanceL<0){
 								for (int i = 0; i < height; i++) {
-									for (int j = rmap.left_out.upl_xx+prevBalanceL; j <= rmap.left_out.down_xx-MAX_DISTANCE; j++) {
+									for (int j = rmap.WEST_OUT.upl_xx+prevBalanceL; j <= rmap.WEST_OUT.down_xx-MAX_DISTANCE; j++) {
 										field[j][i]=initialValue;
-									
+
 									}
 								}
 								prevBalanceL=0;
 							}
 
-								balanceL=region.width-dynamic3(region.width,region.numAgents,((DistributedField2DLB)((DistributedState)sm).getField()).getNumAgents(), getLeftMineSize(), region.mineNumAgents);
-							
-							
+							balanceL=region.width-dynamic3(region.width,region.numAgents,((DistributedField2DLB)((DistributedState)sm).getField()).getNumAgents(), getLeftMineSize(), region.mineNumAgents);
+
+
 							//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null
 							if(balanceL>region.width-MAX_DISTANCE-1)
 								balanceL=region.width-MAX_DISTANCE-1;
@@ -538,14 +624,14 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 							if(balanceL<0){
 								//the region becames smaller
 								//the left_out becames bigger so the agents can be passed to the left neighbor
-								rmap.left_out.setUpl_xx(own_x-MAX_DISTANCE);
-								rmap.left_out.setDown_xx(own_x-1-balanceL);
+								rmap.WEST_OUT.setUpl_xx(own_x-MAX_DISTANCE);
+								rmap.WEST_OUT.setDown_xx(own_x-1-balanceL);
 								own_x=own_x-balanceL;
 								my_width=my_width+balanceL;
-								rmap.left_mine.setUpl_xx(own_x);
-								rmap.left_mine.setDown_xx(own_x + MAX_DISTANCE -1);
-								
-								if(rmap.right_out == null)
+								rmap.WEST_MINE.setUpl_xx(own_x);
+								rmap.WEST_MINE.setDown_xx(own_x + MAX_DISTANCE -1);
+
+								if(rmap.EAST_OUT == null)
 								{
 									//peer NUMPEERS-1
 									myfield.setUpl_xx(own_x+MAX_DISTANCE);
@@ -553,28 +639,28 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 
 								}
 
-								if(rmap.left_out!=null && rmap.right_out!=null)
+								if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 								{
 									myfield.setUpl_xx(own_x+MAX_DISTANCE);
 									myfield.setDown_xx( own_x+my_width-MAX_DISTANCE-1);
 
 								}			
-								
+
 							}else 
 								if(balanceL>0){
 									//the region becames bigger
 									//the left_mine becames bigger so the agents can be received from the left neighbor
-									rmap.left_mine.setUpl_xx(own_x-balanceL);
-									rmap.left_mine.setDown_xx(own_x + MAX_DISTANCE -1);
+									rmap.WEST_MINE.setUpl_xx(own_x-balanceL);
+									rmap.WEST_MINE.setDown_xx(own_x + MAX_DISTANCE -1);
 									own_x=own_x-balanceL;
-								
+
 									my_width=my_width+balanceL;
-									rmap.left_out.setUpl_xx(own_x-MAX_DISTANCE);
-									rmap.left_out.setDown_xx(own_x-1);
-									
+									rmap.WEST_OUT.setUpl_xx(own_x-MAX_DISTANCE);
+									rmap.WEST_OUT.setDown_xx(own_x-1);
 
 
-									if(rmap.right_out == null)
+
+									if(rmap.EAST_OUT == null)
 									{
 										//peer NUMPEERS-1
 										myfield.setUpl_xx(own_x+MAX_DISTANCE);
@@ -582,7 +668,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 
 									}
 
-									if(rmap.left_out!=null && rmap.right_out!=null)
+									if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 									{
 										myfield.setUpl_xx(own_x+MAX_DISTANCE);
 										myfield.setDown_xx( own_x+my_width-MAX_DISTANCE-1);
@@ -598,7 +684,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-			
+
 		for(RegionNumeric<Integer,EntryNum<Integer,Int2D>> region : updates_cache)
 		{
 			for(EntryNum<Integer,Int2D> e_m: region.values())
@@ -607,7 +693,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 				field[i.getX()][i.getY()]=e_m.r;
 			}
 		}
-		
+
 		this.reset();
 
 		return true;
@@ -624,49 +710,49 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	{
 		RegionNumeric<Integer,EntryNum<Integer,Int2D>> r_mine=box.out;
 		RegionNumeric<Integer,EntryNum<Integer,Int2D>> r_out=box.mine;
-		
+
 		for(EntryNum<Integer,Int2D> e_m: r_mine.values())
 		{
-				Int2D i=new Int2D(e_m.l.getX(),e_m.l.getY());
-				
-				field[i.getX()][i.getY()]=e_m.r;		  		
+			Int2D i=new Int2D(e_m.l.getX(),e_m.l.getY());
+
+			field[i.getX()][i.getY()]=e_m.r;		  		
 		}		
 		updates_cache.add(r_out);
 	}
-	
-	
+
+
 	/**
 	 * with java Reflect expect to memorize the region out
 	 */
 	public void memorizeRegionOut()
 	{
 		Class o=rmap.getClass();
-		
-		Field[] fields = o.getDeclaredFields();
-	    for (int z = 0; z < fields.length; z++)
-	    {
-	      fields[z].setAccessible(true);
-	      try
-	      {
-	    	 String name=fields[z].getName();
-		     Method method = o.getMethod("get"+name, null);
-		     Object returnValue = method.invoke(rmap, null);
-		     if(returnValue!=null)
-		     {
-		    	 RegionNumeric<Integer,EntryNum<Integer,Int2D>> region=((RegionNumeric<Integer,EntryNum<Integer,Int2D>>)returnValue);
-		    	 if(name.contains("out"))
-			  	 {
 
-		    		 updates_cache.add(region.clone());
-			  	  }
-		     }
-	       }
-	       catch (IllegalArgumentException e){e.printStackTrace();} 
-	       catch (IllegalAccessException e) {e.printStackTrace();} 
-	       catch (SecurityException e) {e.printStackTrace();} 
-	       catch (NoSuchMethodException e) {e.printStackTrace();} 
-	       catch (InvocationTargetException e) {e.printStackTrace();}
-	    }	     
+		Field[] fields = o.getDeclaredFields();
+		for (int z = 0; z < fields.length; z++)
+		{
+			fields[z].setAccessible(true);
+			try
+			{
+				String name=fields[z].getName();
+				Method method = o.getMethod("get"+name, null);
+				Object returnValue = method.invoke(rmap, null);
+				if(returnValue!=null)
+				{
+					RegionNumeric<Integer,EntryNum<Integer,Int2D>> region=((RegionNumeric<Integer,EntryNum<Integer,Int2D>>)returnValue);
+					if(name.contains("out"))
+					{
+
+						updates_cache.add(region.clone());
+					}
+				}
+			}
+			catch (IllegalArgumentException e){e.printStackTrace();} 
+			catch (IllegalAccessException e) {e.printStackTrace();} 
+			catch (SecurityException e) {e.printStackTrace();} 
+			catch (NoSuchMethodException e) {e.printStackTrace();} 
+			catch (InvocationTargetException e) {e.printStackTrace();}
+		}	     
 	}
 
 
@@ -680,51 +766,51 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	public void updateFields()
 	{
 		Class o=rmap.getClass();
-		
+
 		Field[] fields = o.getDeclaredFields();
-	    for (int z = 0; z < fields.length; z++)
-	    {
-	      fields[z].setAccessible(true);
-	      try
-	      {
-	    	 String name=fields[z].getName();
-		     Method method = o.getMethod("get"+name, null);
-		     Object returnValue = method.invoke(rmap, null);
-		     if(returnValue!=null)
-		     {
-		    	 RegionNumeric<Integer,EntryNum<Integer,Int2D>> region=((RegionNumeric<Integer,EntryNum<Integer,Int2D>>)returnValue);
-		    	 
-		    	 if(name.contains("out"))
-			  	 {
-		    		 for(EntryNum<Integer,Int2D> e : region.values()){
-		    			 
-		    			 Int2D pos = new Int2D(e.l.getX(), e.l.getY());
-		    			 int i = e.r;
-		    			 this.field[pos.getX()][pos.getY()]=i;
-		    		 }
-			  	  }
-		    	  else
-		    		  if(name.contains("mine"))
-		    		  {
-		    			  for(EntryNum<Integer,Int2D> e : region.values()){
-				    			 
-				    			 Int2D pos = new Int2D(e.l.getX(), e.l.getY());
-				    			 int i = e.r;
-				    			 this.field[pos.getX()][pos.getY()]=i;
-		    			  }
-		    			  
-		    		  }
-		     	}
-	       }
-	       catch (IllegalArgumentException e){e.printStackTrace();} 
-	       catch (IllegalAccessException e) {e.printStackTrace();} 
-	       catch (SecurityException e) {e.printStackTrace();} 
-	       catch (NoSuchMethodException e) {e.printStackTrace();} 
-	       catch (InvocationTargetException e) {e.printStackTrace();}
-	    }	 
+		for (int z = 0; z < fields.length; z++)
+		{
+			fields[z].setAccessible(true);
+			try
+			{
+				String name=fields[z].getName();
+				Method method = o.getMethod("get"+name, null);
+				Object returnValue = method.invoke(rmap, null);
+				if(returnValue!=null)
+				{
+					RegionNumeric<Integer,EntryNum<Integer,Int2D>> region=((RegionNumeric<Integer,EntryNum<Integer,Int2D>>)returnValue);
+
+					if(name.contains("out"))
+					{
+						for(EntryNum<Integer,Int2D> e : region.values()){
+
+							Int2D pos = new Int2D(e.l.getX(), e.l.getY());
+							int i = e.r;
+							this.field[pos.getX()][pos.getY()]=i;
+						}
+					}
+					else
+						if(name.contains("mine"))
+						{
+							for(EntryNum<Integer,Int2D> e : region.values()){
+
+								Int2D pos = new Int2D(e.l.getX(), e.l.getY());
+								int i = e.r;
+								this.field[pos.getX()][pos.getY()]=i;
+							}
+
+						}
+				}
+			}
+			catch (IllegalArgumentException e){e.printStackTrace();} 
+			catch (IllegalAccessException e) {e.printStackTrace();} 
+			catch (SecurityException e) {e.printStackTrace();} 
+			catch (NoSuchMethodException e) {e.printStackTrace();} 
+			catch (InvocationTargetException e) {e.printStackTrace();}
+		}	 
 	}
-	
-	
+
+
 	/**
 	 * Clear all Regions.
 	 * @return true if the clearing is successful, false if exception is generated
@@ -732,35 +818,35 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	public  boolean reset()
 	{
 		myfield.clear();
-	
+
 		Class o=rmap.getClass();
-		
+
 		Field[] fields = o.getDeclaredFields();
 		for (int z = 0; z < fields.length; z++)
 		{
-		     fields[z].setAccessible(true);
-		     try
-		     {
-		    	String name=fields[z].getName();
-		    	Method method = o.getMethod("get"+name, null);
-		    	Object returnValue = method.invoke(rmap, null);
-		    	
-		    	if(returnValue!=null)
-		    	{
-		    		RegionNumeric<Integer,EntryNum<Integer, Int2D>> region=((RegionNumeric<Integer,EntryNum<Integer, Int2D>>)returnValue);
-		    		region.clear();    
-		    	}
-		      }
-		      catch (IllegalArgumentException e){e.printStackTrace(); return false;} 
-		      catch (IllegalAccessException e) {e.printStackTrace();return false;} 
-		      catch (SecurityException e) {e.printStackTrace();return false;} 
-		      catch (NoSuchMethodException e) {e.printStackTrace();return false;} 
-		      catch (InvocationTargetException e) {e.printStackTrace();return false;}
-		    }
+			fields[z].setAccessible(true);
+			try
+			{
+				String name=fields[z].getName();
+				Method method = o.getMethod("get"+name, null);
+				Object returnValue = method.invoke(rmap, null);
+
+				if(returnValue!=null)
+				{
+					RegionNumeric<Integer,EntryNum<Integer, Int2D>> region=((RegionNumeric<Integer,EntryNum<Integer, Int2D>>)returnValue);
+					region.clear();    
+				}
+			}
+			catch (IllegalArgumentException e){e.printStackTrace(); return false;} 
+			catch (IllegalAccessException e) {e.printStackTrace();return false;} 
+			catch (SecurityException e) {e.printStackTrace();return false;} 
+			catch (NoSuchMethodException e) {e.printStackTrace();return false;} 
+			catch (InvocationTargetException e) {e.printStackTrace();return false;}
+		}
 		return true;
 	}
 
-	
+
 	/**
 	 * Provide the double value shift logic among the peers
 	 * @param d
@@ -771,22 +857,22 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	//public boolean setDistributedObjectLocation(int i, Int2D l, SimState sm){
 	public boolean setDistributedObjectLocation( Int2D l, Object remoteValue ,SimState sm) throws DMasonException{
 
-		
-		
+
+
 		if(!(remoteValue instanceof Integer)) throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");
-		
+
 		int i=(Integer) remoteValue;
 		numAgents++;
 		if(myfield.isMine(l.getX(), l.getY()))
-    	{    		
-    		return myfield.addEntryNum(new EntryNum<Integer,Int2D>(i, l));
-    	}
-    	else
-    		if(setValue(i, l))
-    			return true;
-    		else
-    				System.out.println(cellType+")OH MY GOD!"); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
-    	
+		{    		
+			return myfield.addEntryNum(new EntryNum<Integer,Int2D>(i, l));
+		}
+		else
+			if(setValue(i, l))
+				return true;
+			else
+				System.out.println(cellType+")OH MY GOD!"); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
+
 		return false;
 	}
 
@@ -798,46 +884,46 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	 * @return true if the value is added in right way
 	 */
 	public boolean setValue(int value, Int2D l){
-		
+
 		Class o=rmap.getClass();
-		
+
 		Field[] fields = o.getDeclaredFields();
-	    for (int z = 0; z < fields.length; z++)
-	    {
-	      fields[z].setAccessible(true);
-	      try
-	      {
-	       		String name=fields[z].getName();
-	       		Method method = o.getMethod("get"+name, null);
-	       		Object returnValue = method.invoke(rmap, null);
-	    	
-	       		if(returnValue!=null)
-	       		{ 
-	       			RegionNumeric<Integer,EntryNum<Integer,Int2D>> region = ((RegionNumeric<Integer,EntryNum<Integer,Int2D>>)returnValue);
-	       			if(region.isMine(l.getX(),l.getY()))
-	       			{   	
-	       				if(name.contains("left_mine"))
+		for (int z = 0; z < fields.length; z++)
+		{
+			fields[z].setAccessible(true);
+			try
+			{
+				String name=fields[z].getName();
+				Method method = o.getMethod("get"+name, null);
+				Object returnValue = method.invoke(rmap, null);
+
+				if(returnValue!=null)
+				{ 
+					RegionNumeric<Integer,EntryNum<Integer,Int2D>> region = ((RegionNumeric<Integer,EntryNum<Integer,Int2D>>)returnValue);
+					if(region.isMine(l.getX(),l.getY()))
+					{   	
+						if(name.contains("left_mine"))
 							leftMineSize++;
-						if(name.contains("right_mine"))
+						if(name.contains("EAST_MINE"))
 							rightMineSize++;
-	       				if(name.contains("mine")){
+						if(name.contains("mine")){
 							if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 								tmp_zoom.add(new EntryNum<Integer,Int2D>(value, l));
-	       				}
-	    	    		 return region.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
-	    	    	}
-	       		}
-	      }
-	      catch (IllegalArgumentException e){e.printStackTrace();} 
-	      catch (IllegalAccessException e) {e.printStackTrace();} 
-	      catch (SecurityException e) {e.printStackTrace();} 
-	      catch (NoSuchMethodException e) {e.printStackTrace();} 
-	      catch (InvocationTargetException e) {e.printStackTrace();}
-	    }
-	    
-	    return false;	       			       			
+						}
+						return region.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+					}
+				}
+			}
+			catch (IllegalArgumentException e){e.printStackTrace();} 
+			catch (IllegalAccessException e) {e.printStackTrace();} 
+			catch (SecurityException e) {e.printStackTrace();} 
+			catch (NoSuchMethodException e) {e.printStackTrace();} 
+			catch (InvocationTargetException e) {e.printStackTrace();}
+		}
+
+		return false;	       			       			
 	}
-	
+
 	@Override
 	public DistributedState getState() {
 
@@ -859,7 +945,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	@Override
 	public void setTable(HashMap table) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -883,7 +969,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	@Override
 	public void setIsSplitted(boolean isSplitted) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -907,7 +993,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	@Override
 	public void prepareForBalance(boolean prepareForBalance) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -919,14 +1005,14 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	@Override
 	public void prepareForUnion(boolean prepareForUnion) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public int getNumAgents() {
 		return numAgents;
 	}
-	
+
 	@Override
 	public void resetParameters() {
 		numAgents=0;
@@ -972,9 +1058,9 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	}
 	@Override
 	public boolean verifyPosition(Int2D pos) {
-		
+
 		//we have to implement this
 		return false;
 
-	}
+	}	
 }

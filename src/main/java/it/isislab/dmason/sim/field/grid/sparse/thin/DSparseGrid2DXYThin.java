@@ -165,6 +165,11 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 	private int field_height;
 	private String topicPrefix = "";
 
+	
+	
+	/** The image to send */
+	private BufferedImage currentBitmap;
+	
 	// -----------------------------------------------------------------------
 	// GLOBAL PROPERTIES -----------------------------------------------------
 	// -----------------------------------------------------------------------
@@ -213,7 +218,109 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 	 */
 	private boolean createRegion()
 	{
+		
+
 		//upper left corner's coordinates
+		if(cellType.pos_j<(width%columns))
+			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
+		else
+			own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
+
+		if(cellType.pos_i<(height%rows))
+			own_y=(int)Math.floor(height/rows+1)*cellType.pos_i; 
+		else
+			own_y=(int)Math.floor(height/rows+1)*((height%rows))+(int)Math.floor(height/rows)*(cellType.pos_i-((height%rows))); 
+
+
+
+		// own width and height
+		if(cellType.pos_j<(width%columns))
+			my_width=(int) Math.floor(width/columns+1);
+		else
+			my_width=(int) Math.floor(width/columns);
+
+		if(cellType.pos_i<(height%rows))
+			my_height=(int) Math.floor(height/rows+1);
+		else
+			my_height=(int) Math.floor(height/rows);
+
+
+		//calculating the neighbors
+		for (int k = -1; k <= 1; k++) 
+		{
+			for (int k2 = -1; k2 <= 1; k2++) 
+			{				
+				int v1=cellType.pos_i+k;
+				int v2=cellType.pos_j+k2;
+				if(v1>=0 && v2 >=0 && v1<rows && v2<columns)
+					if( v1!=cellType.pos_i || v2!=cellType.pos_j)
+					{
+						neighborhood.add(v1+""+v2);
+					}	
+			}
+		}
+		try{
+			currentBitmap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
+		}
+		catch(Exception e)
+		{
+			System.out.println("Do not use the GlobalViewer, the requirements of the simulation exceed the limits of the BufferedImage.\n");
+		}
+		actualTime = sm.schedule.getTime();
+		actualStats = new HashMap<String, Object>();
+		isSendingGraphics = false;
+		writer=currentBitmap.getRaster();
+
+		// Building the regions
+
+		myfield=new RegionInteger(own_x+jumpDistance,own_y+jumpDistance, own_x+my_width-jumpDistance , own_y+my_height-jumpDistance,width,height);
+
+		//corner up left
+		rmap.NORTH_WEST_OUT=new RegionInteger((own_x-jumpDistance + width)%width, (own_y-jumpDistance+height)%height, 
+				(own_x+width)%width, (own_y+height)%height,width,height);
+		rmap.NORTH_WEST_MINE=new RegionInteger(own_x, own_y, 
+				own_x+jumpDistance, own_y+jumpDistance,width,height);
+
+		//corner up right
+		rmap.NORTH_EAST_OUT = new RegionInteger((own_x+my_width+width)%width, (own_y-jumpDistance+height)%height,
+				(own_x+my_width+jumpDistance+width)%width, (own_y+height)%height,width,height);
+		rmap.NORTH_EAST_MINE=new RegionInteger(own_x+my_width-jumpDistance, own_y, 
+				own_x+my_width, own_y+jumpDistance,width,height);
+
+		//corner down left
+		rmap.SOUTH_WEST_OUT=new RegionInteger((own_x-jumpDistance+width)%width, (own_y+my_height+height)%height,
+				(own_x+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
+		rmap.SOUTH_WEST_MINE=new RegionInteger(own_x, own_y+my_height-jumpDistance,
+				own_x+jumpDistance, own_y+my_height,width,height);
+
+		//corner down right
+		rmap.SOUTH_EAST_OUT=new RegionInteger((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
+				(own_x+my_width+jumpDistance+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
+		rmap.SOUTH_EAST_MINE=new RegionInteger(own_x+my_width-jumpDistance, own_y+my_height-jumpDistance,
+				own_x+my_width,own_y+my_height,width,height);
+
+		rmap.WEST_OUT=new RegionInteger((own_x-jumpDistance+width)%width,(own_y+height)%height,
+				(own_x+width)%width, ((own_y+my_height)+height)%height,width,height);
+		rmap.WEST_MINE=new RegionInteger(own_x,own_y,
+				own_x + jumpDistance , own_y+my_height,width,height);
+
+		rmap.EAST_OUT=new RegionInteger((own_x+my_width+width)%width,(own_y+height)%height,
+				(own_x+my_width+jumpDistance+width)%width, (own_y+my_height+height)%height,width,height);
+		rmap.EAST_MINE=new RegionInteger(own_x + my_width - jumpDistance,own_y,
+				own_x +my_width , own_y+my_height,width,height);
+
+		rmap.NORTH_OUT=new RegionInteger((own_x+width)%width, (own_y - jumpDistance+height)%height,
+				(own_x+ my_width +width)%width,(own_y+height)%height,width,height);
+		rmap.NORTH_MINE=new RegionInteger(own_x ,own_y,
+				own_x+my_width, own_y + jumpDistance ,width,height);
+
+		rmap.SOUTH_OUT=new RegionInteger((own_x+width)%width,(own_y+my_height+height)%height,
+				(own_x+my_width+width)%width, (own_y+my_height+jumpDistance+height)%height,width,height);
+		rmap.SOUTH_MINE=new RegionInteger(own_x,own_y+my_height-jumpDistance,
+				own_x+my_width, (own_y+my_height),width,height);
+
+		return true;
+		/*//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
 		else
@@ -411,7 +518,7 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 						rmap.SOUTH_EAST_MINE=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1,my_width, my_height, width,height);
 
 					}
-		return true;
+		return true;*/
 	}
 
 	/**
@@ -482,6 +589,230 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 	{		
 
 		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
+		Connection connWorker = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationWorkerConnection();
+
+		// If there is any viewer, send a snap
+		if(conn!=null &&
+				((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
+		{
+			RemoteSnap snap = new RemoteSnap(cellType, sm.schedule.getSteps() - 1, actualTime);
+			actualTime = sm.schedule.getTime();
+
+			if (isSendingGraphics)
+			{
+				try
+				{
+					ByteArrayOutputStream by = new ByteArrayOutputStream();
+					ImageIO.write(currentBitmap, "png", by);
+					by.flush();
+					snap.image = by.toByteArray();
+					by.close();
+					currentBitmap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
+					writer=currentBitmap.getRaster();
+				}
+				catch(Exception e)
+				{
+					System.out.println("Do not use the GlobalViewer, the requirements of the simulation exceed the limits of the BufferedImage.\n");
+				}
+			}
+
+			//if (isSendingGraphics || tracing.size() > 0)
+			/* The above line is commented because if we don't send the
+			 * RemoteSnap at every simulation step, the global viewer
+			 * will block waiting on the queue.
+			 */
+			{
+				try
+				{
+					snap.stats = actualStats;
+					conn.publishToTopic(snap, "GRAPHICS", "GRAPHICS");
+				} catch (Exception e) {
+					logger.severe("Error while publishing the snap message");
+					e.printStackTrace();
+				}
+			}
+
+			// Update statistics
+			Class<?> simClass = sm.getClass();
+			for (int i = 0; i < tracing.size(); i++)
+			{
+				try
+				{
+					Method m = simClass.getMethod("get" + tracing.get(i), (Class<?>[])null);
+					Object res = m.invoke(sm, new Object [0]);
+					snap.stats.put(tracing.get(i), res);
+				} catch (Exception e) {
+					logger.severe("Reflection error while calling get" + tracing.get(i));
+					e.printStackTrace();
+				}
+			}
+
+		} //numViewers > 0
+
+		for(Region<Integer, Int2D> region : updates_cache)
+		{
+			for(EntryAgent<Int2D> remote_agent : region.values())
+			{
+				this.remove(remote_agent.r);
+			}
+		}
+
+		//every agent in the myfield region is scheduled
+		for(EntryAgent<Int2D> e: myfield.values())
+		{
+			RemotePositionedAgent<Int2D> rm=e.r;
+			Int2D loc=e.l;
+			rm.setPos(loc);
+			this.remove(rm);
+			sm.schedule.scheduleOnce(rm);
+			setObjectLocation(rm,loc);
+
+		}   
+
+		updateFields(); //update fields with java reflect
+		updates_cache=new ArrayList<Region<Integer,Int2D>>();
+
+		memorizeRegionOut();
+
+		//--> publishing the regions to correspondent topics for the neighbors
+		if(rmap.WEST_OUT!=null)
+		{
+			try 
+			{
+				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.WEST_MINE,rmap.WEST_OUT,
+						(sm.schedule.getSteps()-1),cellType,DistributedRegion.WEST);
+
+				connWorker.publishToTopic(dr,topicPrefix+cellType+"L",NAME);
+
+			} catch (Exception e1) { e1.printStackTrace();}
+		}
+		if(rmap.EAST_OUT!=null)
+		{
+			try 
+			{
+				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.EAST_MINE,rmap.EAST_OUT,
+						(sm.schedule.getSteps()-1),cellType,DistributedRegion.EAST);				
+
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"R",NAME);
+
+			} catch (Exception e1) {e1.printStackTrace(); }
+		}
+		if(rmap.NORTH_OUT!=null )
+		{
+			try 
+			{
+				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.NORTH_MINE,rmap.NORTH_OUT,
+						(sm.schedule.getSteps()-1),cellType,DistributedRegion.NORTH);
+
+				connWorker.publishToTopic(dr,cellType.toString()+"U",NAME);
+
+			} catch (Exception e1) {e1.printStackTrace();}
+		}
+
+		if(rmap.SOUTH_OUT!=null )
+		{
+			try 
+			{
+				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.SOUTH_MINE,rmap.SOUTH_OUT,
+						(sm.schedule.getSteps()-1),cellType,DistributedRegion.SOUTH);
+
+				connWorker.publishToTopic(dr,cellType.toString()+"D",NAME);
+
+			} catch (Exception e1) { e1.printStackTrace(); }
+		}
+
+		if(rmap.NORTH_WEST_OUT!=null)
+		{
+			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.NORTH_WEST_MINE,
+					rmap.NORTH_WEST_OUT,
+					(sm.schedule.getSteps()-1),cellType,DistributedRegion.NORTH_WEST);
+			try 
+			{
+				connWorker.publishToTopic(dr,cellType.toString()+"CUDL",NAME);
+
+			} catch (Exception e1) { e1.printStackTrace();}
+
+		}
+		if(rmap.NORTH_EAST_OUT!=null)
+		{
+			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.NORTH_EAST_MINE,
+					rmap.NORTH_EAST_OUT,
+					(sm.schedule.getSteps()-1),cellType,DistributedRegion.NORTH_EAST);
+			try 
+			{
+
+				connWorker.publishToTopic(dr,cellType.toString()+"CUDR",NAME);
+
+			} catch (Exception e1) {e1.printStackTrace();}
+		}
+		if( rmap.SOUTH_WEST_OUT!=null)
+		{
+			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.SOUTH_WEST_MINE,
+					rmap.SOUTH_WEST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.SOUTH_WEST);
+			try 
+			{
+				connWorker.publishToTopic(dr,cellType.toString()+"CDDL",NAME);
+
+			} catch (Exception e1) {e1.printStackTrace();}
+		}
+		if(rmap.SOUTH_EAST_OUT!=null)
+		{
+			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.SOUTH_EAST_MINE,
+					rmap.SOUTH_EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.SOUTH_EAST);
+
+			try 
+			{				
+
+				connWorker.publishToTopic(dr,cellType.toString()+"CDDR",NAME);
+
+			} catch (Exception e1) { e1.printStackTrace(); }
+		}//<--
+
+		//take from UpdateMap the updates for current last terminated step and use 
+		//verifyUpdates() to elaborate informations
+
+		PriorityQueue<Object> q;
+		try 
+		{
+			q = updates.getUpdates(sm.schedule.getSteps()-1, 8);
+			while(!q.isEmpty())
+			{
+				DistributedRegion<Integer, Int2D> region=(DistributedRegion<Integer,Int2D>)q.poll();
+				verifyUpdates(region);
+			}
+		} catch (InterruptedException e1) {e1.printStackTrace(); } catch (DMasonException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		for(Region<Integer, Int2D> region : updates_cache)
+			for(EntryAgent<Int2D> e_m: region.values())
+			{
+				RemotePositionedAgent<Int2D> rm=e_m.r;
+				((DistributedState<Int2D>)sm).addToField(rm,e_m.l);
+			}
+
+		this.reset();
+		/*
+		/ps.println(sm.schedule.getSteps()+";"+System.currentTimeMillis());
+		 */
+
+		if(conn!=null && 
+				((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+		{
+			try {
+				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
+				conn.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
+				tmp_zoom=new ZoomArrayList<RemotePositionedAgent>();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+
+		return true;	
+		
+/*		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
 
 		if(conn!=null
@@ -514,10 +845,10 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 			}
 
 			//if (isSendingGraphics || tracing.size() > 0)
-			/* The above line is commented because if we don't send the
+			 The above line is commented because if we don't send the
 			 * RemoteSnap at every simulation step, the global viewer
 			 * will block waiting on the queue.
-			 */
+			 
 			{
 				try
 				{
@@ -704,9 +1035,9 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 			}
 
 		this.reset();
-		/*
+		
 			ps.println(sm.schedule.getSteps()+";"+System.currentTimeMillis());
-		 */
+		 
 		if(conn!=null &&
 				((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 		{
@@ -719,7 +1050,7 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 				e1.printStackTrace();
 			}
 		}
-		return true;
+		return true;*/	
 	}
 
 	public void memorizeRegionOut()
@@ -749,7 +1080,7 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 			catch (SecurityException e) {e.printStackTrace();} 
 			catch (NoSuchMethodException e) {e.printStackTrace();} 
 			catch (InvocationTargetException e) {e.printStackTrace();}
-		}	     
+		}     
 	}
 	/**
 	 * This method takes updates from box and schedules every agent in the regions out.

@@ -9,7 +9,6 @@ import it.isislab.dmason.test.sim.field.UpdateCellTester;
 import it.isislab.dmason.test.sim.field.continuous.DContinuousGrid2DFactoryTester;
 import it.isislab.dmason.test.sim.field.continuous.DContinuousGrid2DXYTester;
 import it.isislab.dmason.test.sim.field.continuous.loadbalanced.DContinuousGrid2DXYLBTester;
-import it.isislab.dmason.test.sim.field.continuous.region.RegionDoubleLBTester;
 import it.isislab.dmason.test.sim.field.continuous.region.RegionDoubleTester;
 import it.isislab.dmason.test.sim.field.continuous.thin.DContinuousGrid2DXYThinTester;
 import it.isislab.dmason.test.sim.field.grid.numeric.DDoubleGrid2DFactoryTester;
@@ -22,14 +21,12 @@ import it.isislab.dmason.test.sim.field.grid.numeric.region.RegionDoubleNumericT
 import it.isislab.dmason.test.sim.field.grid.numeric.region.RegionIntegerNumericTester;
 import it.isislab.dmason.test.sim.field.grid.numeric.thin.DDoubleGrid2DXYThinTester;
 import it.isislab.dmason.test.sim.field.grid.numeric.thin.DIntGrid2DXYThinTester;
-import it.isislab.dmason.test.sim.field.grid.region.RegionIntegerLBTester;
 import it.isislab.dmason.test.sim.field.grid.region.RegionIntegerTester;
 import it.isislab.dmason.test.sim.field.grid.sparse.DSparse2DFactoryTester;
 import it.isislab.dmason.test.sim.field.grid.sparse.DSparseGrid2DXYTester;
 import it.isislab.dmason.test.sim.field.grid.sparse.loadbalanced.DSparseGrid2DXYLBTester;
 import it.isislab.dmason.test.sim.field.grid.sparse.thin.DSparseGrid2DXYThinTester;
 import it.isislab.dmason.test.sim.field.support.field2D.UpdateMapTester;
-
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -44,18 +41,18 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({
-	
+
 	/*******Simulations**************/
 	TestDFlockers.class,
 	TestDParticles.class,
 	TestDAntsForage.class,
-	
+
 	/********Grid Factory*************/
 	DSparse2DFactoryTester.class,		
 	DContinuousGrid2DFactoryTester.class,
 	DIntGrid2DFactoryTester.class,
 	DDoubleGrid2DFactoryTester.class,
-	
+
 	/*********************/
 	CellTypeTester.class,
 	UpdateCellTester.class, 		
@@ -63,7 +60,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 	/*********Connection************/
 	DistributedStateConnectionJMSTester.class,
-	
+
 	/*****Distributed Fields****************/
 	DSparseGrid2DXYTester.class,
 	DContinuousGrid2DXYTester.class,
@@ -71,21 +68,21 @@ import org.junit.runners.Suite.SuiteClasses;
 	DDoubleGrid2DXYTester.class,
 
 	/*****Distrubuted Fields Load Balancing ****************/
-    DSparseGrid2DXYLBTester.class,		
+	DSparseGrid2DXYLBTester.class,		
 	DContinuousGrid2DXYLBTester.class,		
 	DIntGrid2DXYLBTester.class,
 	DDoubleGrid2DXYLBTester.class,
-	
+
 	/*******Regions**************/
 	RegionIntegerTester.class,		
 	RegionDoubleTester.class,
-    RegionDoubleNumericTester.class,
+	RegionDoubleNumericTester.class,
 	RegionIntegerNumericTester.class,
-	
+
 	/*******Load Balancing Regions**************/
-	RegionIntegerLBTester.class,
-	RegionDoubleLBTester.class,		
-	
+	//RegionIntegerLBTester.class, deprecated
+	//RegionDoubleLBTester.class, deprecated		
+
 	/*******Thin Distributed Fields**************/
 	DSparseGrid2DXYThinTester.class,
 	DContinuousGrid2DXYThinTester.class,

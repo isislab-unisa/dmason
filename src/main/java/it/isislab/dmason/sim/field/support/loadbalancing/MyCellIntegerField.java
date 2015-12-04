@@ -18,7 +18,7 @@
 package it.isislab.dmason.sim.field.support.loadbalancing;
 
 import it.isislab.dmason.sim.field.CellType;
-import it.isislab.dmason.sim.field.grid.region.RegionIntegerLB;
+import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.region.RegionMap;
 
 import java.io.Serializable;
@@ -56,7 +56,7 @@ public class MyCellIntegerField implements MyCellInterface,Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	private RegionMap MYRMAP;
-	private RegionIntegerLB MYFIELD;
+	private RegionInteger MYFIELD;
 	private String NAME;
 	private CellType PARENTTYPE;
 	private int own_x; 
@@ -86,7 +86,7 @@ public class MyCellIntegerField implements MyCellInterface,Serializable{
 	 * @param positionGood a HashMap<Integer,Boolean> where the key is the region and the associated value indicates if is possible to send the update
 	 * @param position is the position of cell into field
 	 */
-	public MyCellIntegerField(RegionMap MYRMAP, RegionIntegerLB MYFIELD, String name, int own_x, int own_y, 
+	public MyCellIntegerField(RegionMap MYRMAP, RegionInteger MYFIELD, String name, int own_x, int own_y, 
 			int my_width, int my_height, long step, CellType parentType, HashMap<Integer, 
 				Boolean> positionPublish,HashMap<Integer, Boolean> positionGood, int position) {
 	
@@ -103,10 +103,10 @@ public class MyCellIntegerField implements MyCellInterface,Serializable{
 		this.positionPublish = positionPublish;
 		this.positionGood = positionGood;
 		this.makeUnion = false;
-		this.upl_xx = ((RegionIntegerLB)MYRMAP.NORTH_WEST_OUT).upl_xx; 
-		this.upl_yy = ((RegionIntegerLB)MYRMAP.NORTH_WEST_OUT).upl_yy;
-		this.down_xx = ((RegionIntegerLB)MYRMAP.SOUTH_EAST_OUT).down_xx; 
-		this.down_yy = ((RegionIntegerLB)MYRMAP.SOUTH_EAST_OUT).down_xx;
+		this.upl_xx = ((RegionInteger)MYRMAP.NORTH_WEST_OUT).upl_xx; 
+		this.upl_yy = ((RegionInteger)MYRMAP.NORTH_WEST_OUT).upl_yy;
+		this.down_xx = ((RegionInteger)MYRMAP.SOUTH_EAST_OUT).down_xx; 
+		this.down_yy = ((RegionInteger)MYRMAP.SOUTH_EAST_OUT).down_xx;
 		
 	}
 
@@ -123,7 +123,7 @@ public class MyCellIntegerField implements MyCellInterface,Serializable{
 	 * @param parentType CellType of Cell which is divided 
 	 * @param position is the position of cell into field
 	 */
-	public MyCellIntegerField(RegionMap MYRMAP, RegionIntegerLB MYFIELD, String name, int own_x, int own_y, 
+	public MyCellIntegerField(RegionMap MYRMAP, RegionInteger MYFIELD, String name, int own_x, int own_y, 
 			int my_width, int my_height, long step, CellType parentType, int position) {
 		
 		this.NAME = name;
@@ -138,10 +138,10 @@ public class MyCellIntegerField implements MyCellInterface,Serializable{
 		this.POSITION = position;
 		this.makeUnion = false;
 		
-		this.upl_xx = ((RegionIntegerLB)MYRMAP.NORTH_WEST_OUT).upl_xx; 
-		this.upl_yy = ((RegionIntegerLB)MYRMAP.NORTH_WEST_OUT).upl_yy;
-		this.down_xx = ((RegionIntegerLB)MYRMAP.SOUTH_EAST_OUT).down_xx; 
-		this.down_yy = ((RegionIntegerLB)MYRMAP.SOUTH_EAST_OUT).down_xx;
+		this.upl_xx = ((RegionInteger)MYRMAP.NORTH_WEST_OUT).upl_xx; 
+		this.upl_yy = ((RegionInteger)MYRMAP.NORTH_WEST_OUT).upl_yy;
+		this.down_xx = ((RegionInteger)MYRMAP.SOUTH_EAST_OUT).down_xx; 
+		this.down_yy = ((RegionInteger)MYRMAP.SOUTH_EAST_OUT).down_xx;
 		
 		positionPublish = new HashMap<Integer, Boolean>();
 		positionGood = new HashMap<Integer, Boolean>();
@@ -177,9 +177,9 @@ public class MyCellIntegerField implements MyCellInterface,Serializable{
 	@Override
 	public void setMYRMAP(Object myRMap) {MYRMAP = (RegionMap)myRMap;}
 	@Override
-	public RegionIntegerLB getMyField() {return MYFIELD;}
+	public RegionInteger getMyField() {return MYFIELD;}
 	@Override
-	public void setMyField(Object myField) {MYFIELD = (RegionIntegerLB)myField;}
+	public void setMyField(Object myField) {MYFIELD = (RegionInteger)myField;}
 	@Override
 	public Object getOwn_x(){return own_x;}
 	@Override

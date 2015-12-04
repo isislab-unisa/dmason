@@ -30,13 +30,11 @@ import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.sim.field.support.globals.GlobalInspectorHelper;
-import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.RemoteSnap;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.util.visualization.zoomviewerapp.ZoomArrayList;
-
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
@@ -47,9 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.logging.Logger;
-
 import javax.imageio.ImageIO;
-
 import sim.engine.SimState;
 import sim.util.Bag;
 import sim.util.Double2D;
@@ -98,24 +94,24 @@ import sim.util.MutableInt2D;
  * |                        |  |  |                      |  |  |                         |
  * |         00             |  |  |          01          |  |  |            02           |
  * |                        |  |  |                      |  |  |                         |
- * |                        |  |  |                      |  |  |   CORNER DIAG           |
+ * |                        |  |  |                      |  |  |   NORTH EAST            |
  * |                        |  |  |                      |  |  |  /                      |
  * |                        |  |  |                      |  |  | /                       |
- * |________________________|__|__|______UP_OUT__________|__|__|/________________________|
- * |________________________|__|__|______UP_MINE_________|__|__|_________________________|
+ * |________________________|__|__|______NORTH_OUT__________|__|__|/________________________|
+ * |________________________|__|__|______NORTH_MINE_________|__|__|_________________________|
  * |________________________|__|__|______________________|__|__|_________________________|
  * |                        |  |  |                     /|  |  |                         |
- * |                        L  L  |                    / |  R  R                         |
- * |                        E  E  |                   /  |  I  I                         |
- * |         10             F  F  |         11   CORNER  |  G  G         12              |
- * |                        T  T  |               MINE   |  H  H                         |
+ * |                        W  W  |                    / |  |  |                         |
+ * |                        E  E  |                   /  |  E  E                         |
+ * |         10             S  S  |         11   CORNER  |  A  A         12              |
+ * |                        T  T  |               MINE   |  S  S                         |
  * |                        |  |  |                      |  T  T                         |
  * |                        O  M  |       MYFIELD        |  |  |                         |
  * |                        U  I  |                      |  M  O                         |
  * |                        T  N  |                      |  I  U                         |
  * |________________________|__|__|______________________|__|__|_________________________|
- * |________________________|__|__|___DOWN_MINE__________|__|__|_________________________|
- * |________________________|__|__|___DOWN_OUT___________|__|__|_________________________|
+ * |________________________|__|__|___SOUTH_MINE__________|__|__|_________________________|
+ * |________________________|__|__|___SOUTH_OUT___________|__|__|_________________________|
  * |                        |  |  |                      |  |  |                         |
  * |                        |  |  |                      |  |  |                         |
  * |                        |  |  |                      |  |  |                         |
@@ -159,7 +155,6 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 	boolean isSendingGraphics;
 
 	private ZoomArrayList<RemotePositionedAgent> tmp_zoom=new ZoomArrayList<RemotePositionedAgent>();
-	private int numAgents;
 	private double width,height,field_width,field_height;
 	private String topicPrefix = "";
 
@@ -202,7 +197,6 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 		this.topicPrefix = prefix;
 
 		
-		numAgents=0;
 		createRegion();		
 	}
 
@@ -476,7 +470,7 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 			try 
 			{
 				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.WEST_MINE,rmap.WEST_OUT,
-						(sm.schedule.getSteps()-1),cellType,DistributedRegion.LEFT);
+						(sm.schedule.getSteps()-1),cellType,DistributedRegion.WEST);
 
 				connWorker.publishToTopic(dr,topicPrefix+cellType+"L",name);
 
@@ -487,7 +481,7 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 			try 
 			{
 				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.EAST_MINE,rmap.EAST_OUT,
-						(sm.schedule.getSteps()-1),cellType,DistributedRegion.RIGHT);				
+						(sm.schedule.getSteps()-1),cellType,DistributedRegion.EAST);				
 
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"R",name);
 
@@ -498,7 +492,7 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 			try 
 			{
 				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.NORTH_MINE,rmap.NORTH_OUT,
-						(sm.schedule.getSteps()-1),cellType,DistributedRegion.UP);
+						(sm.schedule.getSteps()-1),cellType,DistributedRegion.NORTH);
 
 				connWorker.publishToTopic(dr,cellType.toString()+"U",name);
 
@@ -510,7 +504,7 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 			try 
 			{
 				DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.SOUTH_MINE,rmap.SOUTH_OUT,
-						(sm.schedule.getSteps()-1),cellType,DistributedRegion.DOWN);
+						(sm.schedule.getSteps()-1),cellType,DistributedRegion.SOUTH);
 
 				connWorker.publishToTopic(dr,cellType.toString()+"D",name);
 
@@ -519,9 +513,10 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 
 		if(rmap.NORTH_WEST_OUT!=null)
 		{
-			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.NORTH_WEST_MINE,
+			DistributedRegion<Double,Double2D> dr=
+					new DistributedRegion<Double,Double2D>(rmap.NORTH_WEST_MINE,
 					rmap.NORTH_WEST_OUT,
-					(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_UP_LEFT);
+					(sm.schedule.getSteps()-1),cellType,DistributedRegion.NORTH_WEST);
 			try 
 			{
 				connWorker.publishToTopic(dr,cellType.toString()+"CUDL",name);
@@ -531,9 +526,10 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 		}
 		if(rmap.NORTH_EAST_OUT!=null)
 		{
-			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.NORTH_EAST_MINE,
+			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(
+					rmap.NORTH_EAST_MINE,
 					rmap.NORTH_EAST_OUT,
-					(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_UP_RIGHT);
+					(sm.schedule.getSteps()-1),cellType,DistributedRegion.NORTH_EAST);
 			try 
 			{
 
@@ -544,7 +540,7 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 		if( rmap.SOUTH_WEST_OUT!=null)
 		{
 			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.SOUTH_WEST_MINE,
-					rmap.SOUTH_WEST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_LEFT);
+					rmap.SOUTH_WEST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.SOUTH_WEST);
 			try 
 			{
 				connWorker.publishToTopic(dr,cellType.toString()+"CDDL",name);
@@ -553,8 +549,9 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 		}
 		if(rmap.SOUTH_EAST_OUT!=null)
 		{
-			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(rmap.SOUTH_EAST_MINE,
-					rmap.SOUTH_EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_RIGHT);
+			DistributedRegion<Double,Double2D> dr=new DistributedRegion<Double,Double2D>(
+					rmap.SOUTH_EAST_MINE,
+					rmap.SOUTH_EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.SOUTH_EAST);
 
 			try 
 			{				
@@ -931,7 +928,7 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 
 	@Override
 	public void resetParameters() {
-		numAgents=0;
+		
 	}
 
 	@Override

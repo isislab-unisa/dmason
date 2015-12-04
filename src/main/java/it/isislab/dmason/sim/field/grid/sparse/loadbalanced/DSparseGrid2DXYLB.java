@@ -24,7 +24,7 @@ import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2DLB;
 import it.isislab.dmason.sim.field.MessageListener;
-import it.isislab.dmason.sim.field.grid.region.RegionIntegerLB;
+import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2D;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegion;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
@@ -128,7 +128,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
 	private String NAME;
-	private RegionIntegerLB outAgents;
+	private RegionInteger outAgents;
 	//quando ricevo cellette e ho splittato a mia volta imposto i topic diversamente delle cellette
 	private boolean isSplitted;
 	private boolean splitDone;
@@ -187,7 +187,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 		NUMPEERS=rows*columns;
 		toSendForBalance = new HashMap<Integer, MyCellInterface>();
 		toSendForUnion = new HashMap<Integer, MyCellInterface>();
-		outAgents = new RegionIntegerLB(0, 0, 0, 0, 0, 0);
+		outAgents = new RegionInteger(0, 0, 0, 0, 0, 0);
 
 		//upper left corner's coordinates
 		own_x=(width/((int)Math.sqrt(NUMPEERS)))* cellType.pos_j; //inversione
@@ -848,7 +848,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 					((DistributedState<Int2D>)sm).addToField(rm,e_m.l);
 				}
 
-		outAgents = new RegionIntegerLB(0, 0, 0, 0, 0, 0);
+		outAgents = new RegionInteger(0, 0, 0, 0, 0, 0);
 
 		this.reset();
 		/*
@@ -1792,7 +1792,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 						}
 						else
 						{
-							RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_right_diag_right);
+							RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_right_diag_right);
 							empty.clear();
 							DistributedRegion<Integer,Int2D> dr_corner_down_right_right = 
 									new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -1820,7 +1820,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 						}
 						else
 						{
-							RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_right_diag_right);
+							RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_right_diag_right);
 							empty.clear();
 							DistributedRegion<Integer,Int2D> dr_corner_down_right_right = 
 									new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -1840,7 +1840,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 						}
 						else
 						{
-							RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_right_diag_down);
+							RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_right_diag_down);
 							empty.clear();
 							DistributedRegion<Integer,Int2D> dr_corner_down_right_down = 
 									new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -1877,7 +1877,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 						}
 						else
 						{
-							RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_right_diag_down);
+							RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_right_diag_down);
 							empty.clear();
 							DistributedRegion<Integer,Int2D> dr_corner_down_right_down = 
 									new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -2003,7 +2003,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 						}
 						else
 						{
-							RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_left_diag_down);
+							RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_left_diag_down);
 							empty.clear();
 							DistributedRegion<Integer,Int2D> dr_corner_down_left_down = 
 									new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2030,7 +2030,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 						}
 						else
 						{
-							RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_left_diag_down);
+							RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_left_diag_down);
 							empty.clear();
 							DistributedRegion<Integer,Int2D> dr_corner_down_left_down = 
 									new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2049,7 +2049,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 						}
 						else
 						{
-							RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_left_diag_left);
+							RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_left_diag_left);
 							empty.clear();
 							DistributedRegion<Integer,Int2D> dr_corner_down_left_left = 
 									new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2085,7 +2085,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 						}
 						else
 						{
-							RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_left_diag_left);
+							RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_left_diag_left);
 							empty.clear();
 							DistributedRegion<Integer,Int2D> dr_corner_down_left_left = 
 									new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2162,7 +2162,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 						}
 						else
 						{
-							RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_left_diag_up);
+							RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_left_diag_up);
 							empty.clear();
 							DistributedRegion<Integer,Int2D> dr_corner_up_left_up = 
 									new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -2191,7 +2191,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 						}
 						else
 						{
-							RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_left_diag_up);
+							RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_left_diag_up);
 							empty.clear();
 							DistributedRegion<Integer,Int2D> dr_corner_up_left_up = 
 									new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -2258,7 +2258,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 						}
 						else
 						{
-							RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_left_diag_left);
+							RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_left_diag_left);
 							empty.clear();
 							DistributedRegion<Integer,Int2D> dr_corner_up_left_left = 
 									new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -2285,7 +2285,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 						}
 						else
 						{
-							RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_left_diag_left);
+							RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_left_diag_left);
 							empty.clear();
 							DistributedRegion<Integer,Int2D> dr_corner_up_left_left = 
 									new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -2382,7 +2382,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 						}
 						else
 						{
-							RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_right_diag_up);
+							RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_right_diag_up);
 							empty.clear();
 							DistributedRegion<Integer,Int2D> dr_corner_up_right_up = 
 									new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -2408,7 +2408,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 						}
 						else
 						{
-							RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_right_diag_up);
+							RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_right_diag_up);
 							empty.clear();
 							DistributedRegion<Integer,Int2D> dr_corner_up_right_up = 
 									new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -2428,7 +2428,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 						}
 						else
 						{
-							RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_right_diag_right);
+							RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_right_diag_right);
 							empty.clear();
 							DistributedRegion<Integer,Int2D> dr_corner_up_right_right = 
 									new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -2455,7 +2455,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 						}
 						else
 						{
-							RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_right_diag_right);
+							RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_right_diag_right);
 							empty.clear();
 							DistributedRegion<Integer,Int2D> dr_corner_up_right_right = 
 									new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -2610,7 +2610,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_right_diag_right);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_right_diag_right);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_down_right_right = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -2637,7 +2637,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_right_diag_right);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_right_diag_right);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_down_right_right = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -2656,7 +2656,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_right_diag_down);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_right_diag_down);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_down_right_down = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -2692,7 +2692,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_right_diag_down);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_right_diag_down);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_down_right_down = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -2817,7 +2817,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_right_diag_right);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_right_diag_right);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_down_right_right = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -2836,7 +2836,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_left_diag_left);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_left_diag_left);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_down_left_left = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2949,7 +2949,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_left_diag_down);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_left_diag_down);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_down_left_down = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2976,7 +2976,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_left_diag_down);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_left_diag_down);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_down_left_down = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2995,7 +2995,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_left_diag_left);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_left_diag_left);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_down_left_left = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -3031,7 +3031,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_left_diag_left);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_left_diag_left);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_down_left_left = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -3091,7 +3091,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_left_diag_up);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_left_diag_up);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_up_left_up = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3154,7 +3154,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 								hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_diag_down);
 							}
 							else{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_left_diag_down);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_left_diag_down);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_down_left_down = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -3187,7 +3187,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_left_diag_up);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_left_diag_up);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_up_left_up = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3215,7 +3215,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_left_diag_up);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_left_diag_up);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_up_left_up = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3318,7 +3318,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_left_diag_left);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_left_diag_left);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_up_left_left = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3345,7 +3345,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_left_diag_left);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_left_diag_left);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_up_left_left = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3403,7 +3403,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_right_diag_right);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_right_diag_right);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_up_right_right = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3467,7 +3467,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_left_diag_left);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_left_diag_left);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_up_left_left = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3521,7 +3521,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_right_diag_up);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_right_diag_up);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_up_right_up = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3547,7 +3547,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_right_diag_up);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_right_diag_up);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_up_right_up = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3566,7 +3566,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_right_diag_right);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_right_diag_right);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_up_right_right = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3593,7 +3593,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_right_diag_right);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_right_diag_right);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_up_right_right = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3727,7 +3727,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_right_diag_up);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_right_diag_up);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_up_right_up = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3746,7 +3746,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 							}
 							else
 							{
-								RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_right_diag_down);
+								RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_right_diag_down);
 								empty.clear();
 								DistributedRegion<Integer,Int2D> dr_corner_down_right_down = 
 										new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -3822,7 +3822,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 					}
 					else
 					{
-						RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_left_diag_left);
+						RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_left_diag_left);
 						empty.clear();
 						DistributedRegion<Integer,Int2D> dr_corner_down_left_left = 
 								new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -3871,7 +3871,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 								new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_MINE,
 										md.getMyRMap().NORTH_OUT, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_up);
-						RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_right_diag_up);
+						RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_right_diag_up);
 						empty.clear();
 						DistributedRegion<Integer,Int2D> dr_corner_up_right_up = 
 								new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3936,7 +3936,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 					}
 					else
 					{
-						RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_left_diag_up);
+						RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_left_diag_up);
 						empty.clear();
 						DistributedRegion<Integer,Int2D> dr_left_corner_up_diag_up = 
 								new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3984,7 +3984,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 								new DistributedRegion<Integer,Int2D>(md.getMyRMap().EAST_MINE,
 										md.getMyRMap().EAST_OUT, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right);
-						RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_right_diag_right);
+						RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_right_diag_right);
 						empty.clear();
 						DistributedRegion<Integer,Int2D> dr_right_corner_down_diag_right = 
 								new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -4045,7 +4045,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 					}
 					else
 					{
-						RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_right_diag_right);
+						RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_right_diag_right);
 						empty.clear();
 						DistributedRegion<Integer,Int2D> dr_right_corner_up_diag_right = 
 								new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -4094,7 +4094,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 								new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_MINE,
 										md.getMyRMap().SOUTH_OUT, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_down);
-						RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_left_diag_down);
+						RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_left_diag_down);
 						empty.clear();
 						DistributedRegion<Integer,Int2D> dr_left_corner_down_diag_down = 
 								new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_EAST_MINE,
@@ -4158,7 +4158,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 					}
 					else
 					{
-						RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_down_right_diag_down);
+						RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_down_right_diag_down);
 						empty.clear();
 						DistributedRegion<Integer,Int2D> dr_right_corner_down_diag_down = 
 								new DistributedRegion<Integer,Int2D>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -4207,7 +4207,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 								new DistributedRegion<Integer,Int2D>(md.getMyRMap().WEST_MINE,
 										md.getMyRMap().WEST_OUT, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_left);
-						RegionIntegerLB empty = ((RegionIntegerLB)md.getMyRMap().corner_out_up_left_diag_left);
+						RegionInteger empty = ((RegionInteger)md.getMyRMap().corner_out_up_left_diag_left);
 						empty.clear();
 						DistributedRegion<Integer,Int2D> dr_left_corner_up_diag_left = 
 								new DistributedRegion<Integer,Int2D>(md.getMyRMap().NORTH_WEST_MINE,

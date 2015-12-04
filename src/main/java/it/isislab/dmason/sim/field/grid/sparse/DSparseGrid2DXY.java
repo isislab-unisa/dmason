@@ -24,6 +24,7 @@ import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.TraceableField;
+import it.isislab.dmason.sim.field.continuous.region.RegionDouble;
 import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegion;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
@@ -221,6 +222,97 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	private boolean createRegion()
 	{
 		//upper left corner's coordinates
+				if(cellType.pos_j<(width%columns))
+					own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
+				else
+					own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
+
+				if(cellType.pos_i<(height%rows))
+					own_y=(int)Math.floor(height/rows+1)*cellType.pos_i; 
+				else
+					own_y=(int)Math.floor(height/rows+1)*((height%rows))+(int)Math.floor(height/rows)*(cellType.pos_i-((height%rows))); 
+
+
+
+				// own width and height
+				if(cellType.pos_j<(width%columns))
+					my_width=(int) Math.floor(width/columns+1);
+				else
+					my_width=(int) Math.floor(width/columns);
+
+				if(cellType.pos_i<(height%rows))
+					my_height=(int) Math.floor(height/rows+1);
+				else
+					my_height=(int) Math.floor(height/rows);
+
+
+				//calculating the neighbors
+				for (int k = -1; k <= 1; k++) 
+				{
+					for (int k2 = -1; k2 <= 1; k2++) 
+					{				
+						int v1=cellType.pos_i+k;
+						int v2=cellType.pos_j+k2;
+						if(v1>=0 && v2 >=0 && v1<rows && v2<columns)
+							if( v1!=cellType.pos_i || v2!=cellType.pos_j)
+							{
+								neighborhood.add(v1+""+v2);
+							}	
+					}
+				}
+
+				// Building the regions
+
+				myfield=new RegionInteger(own_x+jumpDistance,own_y+jumpDistance, own_x+my_width-jumpDistance , own_y+my_height-jumpDistance,width,height);
+
+				//corner up left
+				rmap.NORTH_WEST_OUT=new RegionInteger((own_x-jumpDistance + width)%width, (own_y-jumpDistance+height)%height, 
+						(own_x+width)%width, (own_y+height)%height,width,height);
+				rmap.NORTH_WEST_MINE=new RegionInteger(own_x, own_y, 
+						own_x+jumpDistance, own_y+jumpDistance,width,height);
+
+				//corner up right
+				rmap.NORTH_EAST_OUT = new RegionInteger((own_x+my_width+width)%width, (own_y-jumpDistance+height)%height,
+						(own_x+my_width+jumpDistance+width)%width, (own_y+height)%height,width,height);
+				rmap.NORTH_EAST_MINE=new RegionInteger(own_x+my_width-jumpDistance, own_y, 
+						own_x+my_width, own_y+jumpDistance,width,height);
+
+				//corner down left
+				rmap.SOUTH_WEST_OUT=new RegionInteger((own_x-jumpDistance+width)%width, (own_y+my_height+height)%height,
+						(own_x+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
+				rmap.SOUTH_WEST_MINE=new RegionInteger(own_x, own_y+my_height-jumpDistance,
+						own_x+jumpDistance, own_y+my_height,width,height);
+
+				//corner down right
+				rmap.SOUTH_EAST_OUT=new RegionInteger((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
+						(own_x+my_width+jumpDistance+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
+				rmap.SOUTH_EAST_MINE=new RegionInteger(own_x+my_width-jumpDistance, own_y+my_height-jumpDistance,
+						own_x+my_width,own_y+my_height,width,height);
+
+				rmap.WEST_OUT=new RegionInteger((own_x-jumpDistance+width)%width,(own_y+height)%height,
+						(own_x+width)%width, ((own_y+my_height)+height)%height,width,height);
+				rmap.WEST_MINE=new RegionInteger(own_x,own_y,
+						own_x + jumpDistance , own_y+my_height,width,height);
+
+				rmap.EAST_OUT=new RegionInteger((own_x+my_width+width)%width,(own_y+height)%height,
+						(own_x+my_width+jumpDistance+width)%width, (own_y+my_height+height)%height,width,height);
+				rmap.EAST_MINE=new RegionInteger(own_x + my_width - jumpDistance,own_y,
+						own_x +my_width , own_y+my_height,width,height);
+
+				rmap.NORTH_OUT=new RegionInteger((own_x+width)%width, (own_y - jumpDistance+height)%height,
+						(own_x+ my_width +width)%width,(own_y+height)%height,width,height);
+				rmap.NORTH_MINE=new RegionInteger(own_x ,own_y,
+						own_x+my_width, own_y + jumpDistance ,width,height);
+
+				rmap.SOUTH_OUT=new RegionInteger((own_x+width)%width,(own_y+my_height+height)%height,
+						(own_x+my_width+width)%width, (own_y+my_height+jumpDistance+height)%height,width,height);
+				rmap.SOUTH_MINE=new RegionInteger(own_x,own_y+my_height-jumpDistance,
+						own_x+my_width, (own_y+my_height),width,height);
+
+				return true;
+		
+		/*
+		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
 		else
@@ -402,7 +494,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 			rmap.SOUTH_EAST_MINE=RegionInteger.createRegion(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1,my_width, my_height, width,height);
 
 		}
-		return true;
+		return true;*/
 	}
 
 
@@ -523,7 +615,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 			try 
 			{
 				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.WEST_MINE,rmap.WEST_OUT,
-						(sm.schedule.getSteps()-1),cellType,DistributedRegion.LEFT);
+						(sm.schedule.getSteps()-1),cellType,DistributedRegion.WEST);
 
 				connWorker.publishToTopic(dr,topicPrefix+cellType+"L", NAME);
 
@@ -535,7 +627,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		{
 			try 
 			{
-				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.EAST_MINE,rmap.EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.RIGHT);				
+				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.EAST_MINE,rmap.EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.EAST);				
 
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"R", NAME);
 
@@ -545,7 +637,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		{
 			try 
 			{
-				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.NORTH_MINE,rmap.NORTH_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.UP);
+				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.NORTH_MINE,rmap.NORTH_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.NORTH);
 
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"U", NAME);
 
@@ -556,7 +648,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		{
 			try 
 			{
-				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.SOUTH_MINE,rmap.SOUTH_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.DOWN);
+				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.SOUTH_MINE,rmap.SOUTH_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.SOUTH);
 
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"D", NAME);
 
@@ -566,7 +658,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		if(rmap.NORTH_WEST_OUT!=null)
 		{
 			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.NORTH_WEST_MINE,rmap.NORTH_WEST_OUT,
-					(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_UP_LEFT);
+					(sm.schedule.getSteps()-1),cellType,DistributedRegion.NORTH_WEST);
 			try 
 			{
 
@@ -577,7 +669,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		if(rmap.NORTH_EAST_OUT!=null)
 		{
 			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.NORTH_EAST_MINE,rmap.NORTH_EAST_OUT,
-					(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_UP_RIGHT);
+					(sm.schedule.getSteps()-1),cellType,DistributedRegion.NORTH_EAST);
 			try 
 			{
 
@@ -588,7 +680,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		if( rmap.SOUTH_WEST_OUT!=null)
 		{
 			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.SOUTH_WEST_MINE,
-					rmap.SOUTH_WEST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_LEFT);
+					rmap.SOUTH_WEST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.SOUTH_WEST);
 			try 
 			{
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDL", NAME);
@@ -598,7 +690,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		if(rmap.SOUTH_EAST_OUT!=null)
 		{
 			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.SOUTH_EAST_MINE,
-					rmap.SOUTH_EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.CORNER_DIAG_DOWN_RIGHT);
+					rmap.SOUTH_EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.SOUTH_EAST);
 
 			try 
 			{

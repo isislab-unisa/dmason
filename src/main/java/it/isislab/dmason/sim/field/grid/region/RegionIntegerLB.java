@@ -13,7 +13,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
- */
+ *//*
 
  package it.isislab.dmason.sim.field.grid.region;
 
@@ -22,9 +22,9 @@ import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.util.Util;
 import sim.util.Int2D;
 
-/**
+*//**
  * A Region specialized to be used in a field with Integer coordinates
- */
+ *//*
 public class RegionIntegerLB extends Region<Integer,Int2D>
 {
 
@@ -32,7 +32,7 @@ public class RegionIntegerLB extends Region<Integer,Int2D>
 	private static int width;
 	
 	
-	/**
+	*//**
 	 * Constructor of class,it use the costructor of superclass and adds a width and a height
 	 * 
 	 * 
@@ -42,7 +42,7 @@ public class RegionIntegerLB extends Region<Integer,Int2D>
 	 * @param down_yy       y of right down corner
 	 * @param width         width of region
 	 * @param height        height of region
-	 */
+	 *//*
 	public RegionIntegerLB(Integer upl_xx, Integer upl_yy, Integer down_xx,
 			Integer down_yy, Integer width, Integer height) 
 	{
@@ -65,12 +65,12 @@ public class RegionIntegerLB extends Region<Integer,Int2D>
 	public int getUX(){return upl_xx;}
 	public int getUY(){return upl_yy;}
 	
-	/**
+	*//**
 	 * @deprecated
 	 *  Static method to create a Region
 	 * 	
-	 *  */
-	/*@Deprecated
+	 *  *//*
+	@Deprecated
 	public static Region<Integer,Int2D> createRegion(Integer upl_xx, Integer upl_yy, Integer down_xx,
 			Integer down_yy, Integer MY_WIDTH, Integer MY_HEIGHT, Integer WIDTH,
 			Integer HEIGHT) {
@@ -85,7 +85,7 @@ public class RegionIntegerLB extends Region<Integer,Int2D>
 		}
 	
 	  return new RegionIntegerLB(upl_xx,upl_yy,down_xx,down_yy, MY_HEIGHT, MY_WIDTH);
-	}*/
+	}
 
 	@Override
 	public Region<Integer,Int2D> clone() 
@@ -113,4 +113,4 @@ public class RegionIntegerLB extends Region<Integer,Int2D>
 		this.put(e.r.getId(),e);
 		return true;
 	}
-}
+}*/

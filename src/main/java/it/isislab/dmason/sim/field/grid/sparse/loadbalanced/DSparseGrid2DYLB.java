@@ -201,7 +201,92 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 	 */
 	private boolean createRegion()
 	{
+		//upper left corner's coordinates
+				if(cellType.pos_j<(width%columns))
+					own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
+				else
+					own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
 
+				own_y=0; // in this mode the y coordinate is ever 0
+
+				// own width and height
+				if(cellType.pos_j<(width%columns))
+					my_width=(int) Math.floor(width/columns+1);
+				else
+					my_width=(int) Math.floor(width/columns);
+				my_height=height;
+
+
+				//calculating the neighbors
+				int v1 = cellType.pos_j - 1;
+				int v2 = cellType.pos_j + 1;
+				if(isToroidal())
+				{
+					if( v1 >= 0 )
+					{
+
+						neighborhood.add(cellType.getNeighbourLeft());
+
+
+					}
+					if( v2 <= columns - 1 )
+					{
+
+						neighborhood.add(cellType.getNeighbourRight());
+					}	
+				}else{
+
+					if( v1 >= 0 )
+					{
+
+						neighborhood.add(cellType.getNeighbourLeft());
+
+					}
+					if( v2 < columns  )
+					{
+
+						neighborhood.add(cellType.getNeighbourRight());
+					}	
+				}
+
+				myfield = new RegionInteger(
+						own_x + jumpDistance,            // MyField's x0 coordinate
+						own_y,                           // MyField's y0 coordinate
+						own_x + my_width - jumpDistance, // MyField x1 coordinate
+						height,                          // MyField y1 coordinate
+						width, height);                  // Global width and height 
+
+				rmap.WEST_OUT = new RegionInteger(
+						(own_x - jumpDistance + width) % width, // Left-out x0
+						0,									// Left-out y0
+						(own_x + width) % (width),				// Left-out x1
+						height,									// Left-out y1
+						width, height);
+
+				rmap.WEST_MINE = new RegionInteger(
+						(own_x + width) % width,				// Left-mine x0
+						0,									// Left-mine y0
+						(own_x + jumpDistance + width) % width,	// Left-mine x1
+						height,									// Left-mine y1
+						width, height);
+
+				rmap.EAST_OUT = new RegionInteger(
+						(own_x + my_width + width) % width,                // Right-out x0
+						0,                                               // Right-out y0
+						(own_x + my_width + jumpDistance + width) % width, // Right-out x1
+						height,                                            // Right-out y1
+						width, height);
+
+				rmap.EAST_MINE = new RegionInteger(
+						(own_x + my_width - jumpDistance + width) % width, // Right-mine x0
+						0,											   // Right-mine y0
+						(own_x + my_width + width) % width,                // Right-mine x1
+						height,                                            // Right-mine y1
+						width, height);
+
+
+				return true;
+/*
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
@@ -280,7 +365,7 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 
 		}
 
-		return true;
+		return true;*/
 	}
 
 	/**

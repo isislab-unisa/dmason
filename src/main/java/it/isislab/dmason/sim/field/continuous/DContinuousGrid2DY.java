@@ -432,7 +432,7 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 					rmap.WEST_OUT,
 					sm.schedule.getSteps() - 1,
 					cellType,
-					DistributedRegion.LEFT);
+					DistributedRegion.WEST);
 			try 
 			{				
 				connWorker.publishToTopic(dr1, topicPrefix+cellType + "L", name);
@@ -449,7 +449,7 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 					rmap.EAST_OUT,
 					sm.schedule.getSteps() - 1,
 					cellType,
-					DistributedRegion.RIGHT);
+					DistributedRegion.EAST);
 			try 
 			{		
 				connWorker.publishToTopic(dr2, topicPrefix+cellType + "R", name);

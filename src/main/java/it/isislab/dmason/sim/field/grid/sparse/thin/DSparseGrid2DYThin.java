@@ -24,6 +24,7 @@ import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.TraceableField;
+import it.isislab.dmason.sim.field.continuous.thin.DContinuousGrid2DYThin;
 import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegion;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
@@ -45,6 +46,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
@@ -125,6 +127,9 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 	private boolean isSendingGraphics;
 	private String topicPrefix = "";
 
+	
+	private static Logger logger = Logger.getLogger(DSparseGrid2DYThin.class.getCanonicalName());
+	
 	/** List of parameters to trace */
 	private ArrayList<String> tracing = new ArrayList<String>();
 
@@ -180,7 +185,173 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 	 */
 	private boolean createRegion()
 	{
-		//upper left corner's coordinates
+		
+		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
+		Connection connWorker = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationWorkerConnection();
+
+		// If there is any viewer, send a snap
+		if(conn!=null &&
+				((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
+		{
+			RemoteSnap snap = new RemoteSnap(cellType, sm.schedule.getSteps() - 1, actualTime);
+			actualTime = sm.schedule.getTime();
+
+			if (isSendingGraphics)
+			{
+				try
+				{
+					ByteArrayOutputStream by = new ByteArrayOutputStream();
+					ImageIO.write(actualSnap, "png", by);
+					by.flush();
+					snap.image = by.toByteArray();
+					by.close();
+					actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
+					writer=actualSnap.getRaster();
+				}
+				catch(Exception e)
+				{
+					System.out.println("Do not use the GlobalViewer, the requirements of the simulation exceed the limits of the BufferedImage.\n");
+				}
+			}
+
+			//if (isSendingGraphics || tracing.size() > 0)
+			/* The above line is commented because if we don't send the
+			 * RemoteSnap at every simulation step, the global viewer
+			 * will block waiting on the queue.
+			 */
+			{
+				try
+				{
+					snap.stats = actualStats;
+					conn.publishToTopic(snap, "GRAPHICS", "GRAPHICS");
+				} catch (Exception e) {
+					logger.severe("Error while publishing the snap message");
+					e.printStackTrace();
+				}
+			}
+
+			// Update statistics
+			Class<?> simClass = sm.getClass();
+			for (int i = 0; i < tracing.size(); i++)
+			{
+				try
+				{
+					Method m = simClass.getMethod("get" + tracing.get(i), (Class<?>[])null);
+					Object res = m.invoke(sm, new Object [0]);
+					snap.stats.put(tracing.get(i), res);
+				} catch (Exception e) {
+					logger.severe("Reflection error while calling get" + tracing.get(i));
+					e.printStackTrace();
+				}
+			}
+
+		} //numViewers > 0
+
+		// Remove agents migrated to neighbor regions
+		for(Region<Integer, Int2D> region : updates_cache)
+		{
+			for(EntryAgent<Int2D> remote_agent : region.values())
+			{
+				this.remove(remote_agent.r);
+			}
+		}
+
+		// Schedule agents in MyField region
+		for(EntryAgent<Int2D> e : myfield.values())
+		{
+			RemotePositionedAgent<Int2D> rm = e.r;
+			Int2D loc = e.l;
+			rm.setPos(loc);
+			this.remove(rm);
+			sm.schedule.scheduleOnce(rm);
+			setObjectLocation(rm, loc);	
+		}   
+
+		// Update fields using Java Reflection
+		updateFields(); 
+
+		// Clear update_cache
+		updates_cache = new ArrayList<Region<Integer,Int2D>>();
+
+		memorizeRegionOut();
+
+		// Publish left mine&out regions to correspondent topic
+		if ( rmap.WEST_OUT != null )
+		{
+			DistributedRegion<Integer,Int2D> dr1 = new DistributedRegion<Integer,Int2D>(
+					rmap.WEST_MINE,
+					rmap.WEST_OUT,
+					sm.schedule.getSteps() - 1,
+					cellType,
+					DistributedRegion.WEST);
+			try 
+			{				
+				connWorker.publishToTopic(dr1, topicPrefix+cellType + "L", NAME);
+			} catch (Exception e1) {
+				logger.severe("Unable to publish region to topic: " + cellType + "L");
+			}
+		}
+
+		// Publish right mine&out regions to correspondent topic
+		if ( rmap.EAST_OUT != null )
+		{
+			DistributedRegion<Integer,Int2D> dr2 = new DistributedRegion<Integer,Int2D>(
+					rmap.EAST_MINE,
+					rmap.EAST_OUT,
+					sm.schedule.getSteps() - 1,
+					cellType,
+					DistributedRegion.EAST);
+			try 
+			{		
+				connWorker.publishToTopic(dr2, topicPrefix+cellType + "R", NAME);
+			} catch (Exception e1) {
+				logger.severe("Unable to publish region to topic: " + cellType + "R");
+			}
+		}
+
+		//take from UpdateMap the updates for current last terminated step and use 
+		//verifyUpdates() to elaborate informations
+
+		PriorityQueue<Object> q;
+		try 
+		{
+			q = updates.getUpdates(sm.schedule.getSteps() - 1, 2);
+			while(!q.isEmpty())
+			{
+				DistributedRegion<Integer, Int2D> region=(DistributedRegion<Integer,Int2D>)q.poll();
+				verifyUpdates(region);
+			}
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		} catch (DMasonException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		for(Region<Integer, Int2D> region : updates_cache)
+			for(EntryAgent<Int2D> e_m : region.values())
+			{
+				RemotePositionedAgent<Int2D> rm = e_m.r;
+				((DistributedState<Int2D>)sm).addToField(rm,e_m.l);	
+			}
+
+		this.reset();
+
+		// If there is a zoom viewer active...
+		if(conn!=null &&
+				((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+		{
+			try
+			{
+				tmp_zoom.STEP = ((DistributedMultiSchedule)sm.schedule).getSteps() - 1;
+				conn.publishToTopic(tmp_zoom, "GRAPHICS" + cellType, NAME);
+				tmp_zoom = new ZoomArrayList<RemotePositionedAgent>();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+	/*	//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
 		else
@@ -248,7 +419,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 			myfield=new RegionInteger(own_x+MAX_DISTANCE,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
 
 		}
-
+*/
 		return true;
 	}
 
@@ -404,7 +575,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 
 			DistributedRegion<Integer,Int2D> dr1 = 
 					new DistributedRegion<Integer,Int2D>(rmap.WEST_MINE,rmap.WEST_OUT,
-							(sm.schedule.getSteps()-1),cellType,DistributedRegion.LEFT);
+							(sm.schedule.getSteps()-1),cellType,DistributedRegion.WEST);
 			try 
 			{	
 				connWorker.publishToTopic(dr1,topicPrefix+cellType+"L", NAME);
@@ -415,7 +586,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 
 			DistributedRegion<Integer,Int2D> dr2 = 
 					new DistributedRegion<Integer,Int2D>(rmap.EAST_MINE,rmap.EAST_OUT,
-							(sm.schedule.getSteps()-1),cellType,DistributedRegion.RIGHT);
+							(sm.schedule.getSteps()-1),cellType,DistributedRegion.EAST);
 			try 
 			{			
 				connWorker.publishToTopic(dr2,topicPrefix+cellType+"R", NAME);	

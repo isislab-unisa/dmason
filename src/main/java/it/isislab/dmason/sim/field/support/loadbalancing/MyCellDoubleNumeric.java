@@ -18,9 +18,8 @@
 package it.isislab.dmason.sim.field.support.loadbalancing;
 
 import it.isislab.dmason.sim.field.CellType;
-import it.isislab.dmason.sim.field.grid.numeric.region.RegionDoubleNumericLB;
+import it.isislab.dmason.sim.field.grid.numeric.region.RegionDoubleNumeric;
 import it.isislab.dmason.sim.field.support.field2D.region.RegionMapNumeric;
-
 import java.io.Serializable;
 import java.util.HashMap;
 
@@ -56,7 +55,7 @@ public class MyCellDoubleNumeric implements MyCellInterface,Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	private RegionMapNumeric MYRMAP;
-	private RegionDoubleNumericLB MYFIELD;
+	private RegionDoubleNumeric MYFIELD;
 	private String NAME;
 	private CellType PARENTTYPE;
 	private int own_x; 
@@ -86,7 +85,7 @@ public class MyCellDoubleNumeric implements MyCellInterface,Serializable{
 	 * @param positionGood a HashMap<Integer,Boolean> where the key is the region and the associated value indicates if is possible to send the update
 	 * @param position is the position of cell into field
 	 */
-	public MyCellDoubleNumeric(RegionMapNumeric MYRMAP, RegionDoubleNumericLB MYFIELD, String name, int own_x, int own_y, 
+	public MyCellDoubleNumeric(RegionMapNumeric MYRMAP, RegionDoubleNumeric MYFIELD, String name, int own_x, int own_y, 
 			int my_width, int my_height, long step, CellType parentType, HashMap<Integer, 
 				Boolean> positionPublish,HashMap<Integer, Boolean> positionGood, int position) {
 	
@@ -103,14 +102,14 @@ public class MyCellDoubleNumeric implements MyCellInterface,Serializable{
 		this.positionPublish = positionPublish;
 		this.positionGood = positionGood;
 		this.makeUnion = false;
-		this.upl_xx = (Integer) MYRMAP.corner_out_up_left_diag_center.upl_xx; 
-		this.upl_yy = (Integer) MYRMAP.corner_out_up_left_diag_center.upl_yy;
-		this.down_xx = (Integer) MYRMAP.corner_out_down_right_diag_center.down_xx; 
-		this.down_yy = (Integer) MYRMAP.corner_out_down_right_diag_center.down_xx;
+		this.upl_xx = (Integer) MYRMAP.NORTH_WEST_OUT.upl_xx; 
+		this.upl_yy = (Integer) MYRMAP.NORTH_WEST_OUT.upl_yy;
+		this.down_xx = (Integer) MYRMAP.SOUTH_EAST_OUT.down_xx; 
+		this.down_yy = (Integer) MYRMAP.SOUTH_EAST_OUT.down_xx;
 		
 	}
 
-	public MyCellDoubleNumeric(RegionMapNumeric MYRMAP, RegionDoubleNumericLB MYFIELD, String name, int own_x, int own_y, 
+	public MyCellDoubleNumeric(RegionMapNumeric MYRMAP, RegionDoubleNumeric MYFIELD, String name, int own_x, int own_y, 
 			int my_width, int my_height, long step, CellType parentType, int position) {
 		
 		this.NAME = name;
@@ -124,10 +123,10 @@ public class MyCellDoubleNumeric implements MyCellInterface,Serializable{
 		this.PARENTTYPE = parentType;
 		this.POSITION = position;
 		this.makeUnion = false;
-		this.upl_xx = (Integer) MYRMAP.corner_out_up_left_diag_center.upl_xx; 
-		this.upl_yy = (Integer) MYRMAP.corner_out_up_left_diag_center.upl_yy;
-		this.down_xx = (Integer) MYRMAP.corner_out_down_right_diag_center.down_xx; 
-		this.down_yy = (Integer) MYRMAP.corner_out_down_right_diag_center.down_xx;
+		this.upl_xx = (Integer) MYRMAP.NORTH_WEST_OUT.upl_xx; 
+		this.upl_yy = (Integer) MYRMAP.NORTH_WEST_OUT.upl_yy;
+		this.down_xx = (Integer) MYRMAP.SOUTH_EAST_OUT.down_xx; 
+		this.down_yy = (Integer) MYRMAP.SOUTH_EAST_OUT.down_xx;
 		
 		positionPublish = new HashMap<Integer, Boolean>();
 		positionGood = new HashMap<Integer, Boolean>();
@@ -163,9 +162,9 @@ public class MyCellDoubleNumeric implements MyCellInterface,Serializable{
 	@Override
 	public void setMYRMAP(Object myRMap) {MYRMAP = (RegionMapNumeric)myRMap;}
 	@Override
-	public RegionDoubleNumericLB getMyField() {return MYFIELD;}
+	public RegionDoubleNumeric getMyField() {return MYFIELD;}
 	@Override
-	public void setMyField(Object myField) {MYFIELD = (RegionDoubleNumericLB)myField;}
+	public void setMyField(Object myField) {MYFIELD = (RegionDoubleNumeric)myField;}
 	@Override
 	public Object getOwn_x(){return own_x;}
 	@Override

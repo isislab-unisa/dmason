@@ -33,16 +33,32 @@ import sim.util.Int2D;
  */
 public class RegionDoubleNumeric extends RegionNumeric<Integer, EntryNum<Double, Int2D>>{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static int height;
+	private static int width;
+	
 	public RegionDoubleNumeric(Integer upl_xx, Integer upl_yy, Integer down_xx,
-			Integer down_yy) 
+			Integer down_yy,int width,int height) 
 	{
-		super(upl_xx, upl_yy, down_xx, down_yy);	
+		super(upl_xx, upl_yy, down_xx, down_yy);
+		
+		RegionDoubleNumeric.height=height;
+		RegionDoubleNumeric.width=width;
+		
+		if(down_xx == 0)
+			super.down_xx = width;
+		
+		if(down_yy == 0)
+			super.down_yy = height;
 	}
 	
 	/**
 	 * Static method to create a Region.
 	 * @return null if the parameters are not 
-	 */
+	 *//*
 	@Deprecated
 	public static RegionNumeric<Integer, EntryNum<Double, Int2D>> createRegionNumeric(Integer upl_xx, Integer upl_yy, Integer down_xx,
 			Integer down_yy, Integer MY_WIDTH, Integer MY_HEIGHT, Integer WIDTH,
@@ -58,12 +74,12 @@ public class RegionDoubleNumeric extends RegionNumeric<Integer, EntryNum<Double,
 		}
 	
 	  return new RegionDoubleNumeric(upl_xx,upl_yy,down_xx,down_yy);
-	}
+	}*/
 	
 	@Override
 	public RegionNumeric<Integer, EntryNum<Double, Int2D>> clone() 
 	{
-		RegionDoubleNumeric r=new RegionDoubleNumeric(upl_xx, upl_yy, down_xx, down_yy);
+		RegionDoubleNumeric r=new RegionDoubleNumeric(upl_xx, upl_yy, down_xx, down_yy, width, height);
 		
 		
 		for(EntryNum<Double, Int2D> e: this.values())
@@ -86,7 +102,8 @@ public class RegionDoubleNumeric extends RegionNumeric<Integer, EntryNum<Double,
 	public boolean addEntryNum(EntryNum<Double, Int2D> e) 
 	{	
 		if(e == null || e.l == null || e.r == null) return false;
-		if(this.containsKey(e.l.toString()) && this.get(e.l.toString()).equals(e)) return true;
+		if(this.containsKey(e.l.toString()) && this.get(e.l.toString()).equals(e)) 
+			return true;
 		this.put(e.l.toString(),e);
 		return true;
 	}

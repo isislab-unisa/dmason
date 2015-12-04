@@ -34,6 +34,7 @@ import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.util.visualization.zoomviewerapp.ZoomArrayList;
+
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -41,6 +42,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
+
 import sim.engine.SimState;
 import sim.util.Int2D;
 
@@ -190,6 +192,92 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 	 */
 	private boolean createRegion()
 	{
+		
+		//upper left corner's coordinates
+				if(cellType.pos_j<(width%columns))
+					own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
+				else
+					own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
+
+				own_y=0; // in this mode the y coordinate is ever 0
+
+				// own width and height
+				if(cellType.pos_j<(width%columns))
+					my_width=(int) Math.floor(width/columns+1);
+				else
+					my_width=(int) Math.floor(width/columns);
+				my_height=height;
+
+
+				//calculating the neighbors
+				int v1 = cellType.pos_j - 1;
+				int v2 = cellType.pos_j + 1;
+				if(isToroidal())
+				{
+					if( v1 >= 0 )
+					{
+
+						neighborhood.add(cellType.getNeighbourLeft());
+
+
+					}
+					if( v2 <= columns - 1 )
+					{
+
+						neighborhood.add(cellType.getNeighbourRight());
+					}	
+				}else{
+
+					if( v1 >= 0 )
+					{
+
+						neighborhood.add(cellType.getNeighbourLeft());
+
+					}
+					if( v2 < columns  )
+					{
+
+						neighborhood.add(cellType.getNeighbourRight());
+					}	
+				}
+
+				myfield = new RegionInteger(
+						own_x + jumpDistance,            // MyField's x0 coordinate
+						own_y,                           // MyField's y0 coordinate
+						own_x + my_width - jumpDistance, // MyField x1 coordinate
+						height,                          // MyField y1 coordinate
+						width, height);                  // Global width and height 
+
+				rmap.WEST_OUT = new RegionInteger(
+						(own_x - jumpDistance + width) % width, // Left-out x0
+						0,									// Left-out y0
+						(own_x + width) % (width),				// Left-out x1
+						height,									// Left-out y1
+						width, height);
+
+				rmap.WEST_MINE = new RegionInteger(
+						(own_x + width) % width,				// Left-mine x0
+						0,									// Left-mine y0
+						(own_x + jumpDistance + width) % width,	// Left-mine x1
+						height,									// Left-mine y1
+						width, height);
+
+				rmap.EAST_OUT = new RegionInteger(
+						(own_x + my_width + width) % width,                // Right-out x0
+						0,                                               // Right-out y0
+						(own_x + my_width + jumpDistance + width) % width, // Right-out x1
+						height,                                            // Right-out y1
+						width, height);
+
+				rmap.EAST_MINE = new RegionInteger(
+						(own_x + my_width - jumpDistance + width) % width, // Right-mine x0
+						0,											   // Right-mine y0
+						(own_x + my_width + width) % width,                // Right-mine x1
+						height,                                            // Right-mine y1
+						width, height);
+
+				return true;
+		/*
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
@@ -268,7 +356,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 
 		}
 
-		return true;
+		return true;*/
 	}
 
 
@@ -384,7 +472,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 
 			DistributedRegion<Integer,Int2D> dr1 = 
 					new DistributedRegion<Integer,Int2D>(rmap.WEST_MINE,rmap.WEST_OUT,
-							(sm.schedule.getSteps()-1),cellType,DistributedRegion.LEFT);
+							(sm.schedule.getSteps()-1),cellType,DistributedRegion.WEST);
 			try 
 			{	
 				connWorker.publishToTopic(dr1,topicPrefix+cellType+"L", NAME);
@@ -395,7 +483,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 
 			DistributedRegion<Integer,Int2D> dr2 = 
 					new DistributedRegion<Integer,Int2D>(rmap.EAST_MINE,rmap.EAST_OUT,
-							(sm.schedule.getSteps()-1),cellType,DistributedRegion.RIGHT);
+							(sm.schedule.getSteps()-1),cellType,DistributedRegion.EAST);
 			try 
 			{			
 				connWorker.publishToTopic(dr2,topicPrefix+cellType+"R", NAME);	

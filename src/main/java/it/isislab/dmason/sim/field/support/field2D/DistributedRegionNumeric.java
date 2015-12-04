@@ -41,15 +41,15 @@ public class DistributedRegionNumeric<E,F> implements Serializable, DistributedR
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static int LEFT=1;
-	public static int RIGHT=2;
-	public static int UP=3;
-	public static int DOWN=4;
+	public static int WEST=1;
+	public static int EAST=2;
+	public static int NORTH=3;
+	public static int SOUTH=4;
 	
-	public static int CORNER_DIAG_DOWN_RIGHT=5;
-	public static int CORNER_DIAG_DOWN_LEFT=6;
-	public static int CORNER_DIAG_UP_RIGHT=7;
-	public static int CORNER_DIAG_UP_LEFT=8;
+	public static int SOUTH_EAST/*CORNER_DIAG_DOWN_RIGHT*/=5;
+	public static int SOUTH_WEST/*CORNER_DIAG_DOWN_LEFT*/=6;
+	public static int NORTH_EAST/*CORNER_DIAG_UP_RIGHT*/=7;
+	public static int NORTH_WEST/*CORNER_DIAG_UP_LEFT*/=8;
 	
 	public int POSITION;
 	

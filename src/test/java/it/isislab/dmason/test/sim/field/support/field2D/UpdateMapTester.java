@@ -7,10 +7,9 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.field.CellType;
-import it.isislab.dmason.sim.field.grid.region.RegionIntegerLB;
+import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegionInterface;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
@@ -33,7 +32,7 @@ public class UpdateMapTester {
 	RegionMap<Integer, Integer> myRMap;
 
 	/** The  field. */
-	RegionIntegerLB myField;
+	RegionInteger myField;
 
 	/** The parent type. */
 	CellType parentType;
@@ -90,11 +89,11 @@ public class UpdateMapTester {
 	@Before
 	public void setUp() throws Exception {
 		uc = new UpdateMap<Integer, Integer>();
-		Region<Integer, Integer> r = (Region) new RegionIntegerLB(0, 0, 0, 0,
+		Region<Integer, Integer> r = (Region) new RegionInteger(0, 0, 0, 0,
 				0, 0);
 		myRMap = new RegionMap<Integer, Integer>(r, r, r, r, r, r, r, r, r, r,
 				r, r, r, r, r, r, r, r, r, r, r, r, r, r);
-		myField = new RegionIntegerLB(0, 0, 0, 0, 0, 0);
+		myField = new RegionInteger(0, 0, 0, 0, 0, 0);
 		parentType = new CellType(0, 0);
 
 	}

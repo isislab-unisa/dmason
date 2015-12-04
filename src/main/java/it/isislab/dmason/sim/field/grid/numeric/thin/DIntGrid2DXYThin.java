@@ -22,6 +22,7 @@ import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.MessageListener;
+import it.isislab.dmason.sim.field.continuous.region.RegionDouble;
 import it.isislab.dmason.sim.field.grid.numeric.region.RegionIntegerNumeric;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegionNumeric;
 import it.isislab.dmason.sim.field.support.field2D.EntryNum;
@@ -33,6 +34,7 @@ import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.util.visualization.zoomviewerapp.ZoomArrayList;
 
+import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -56,10 +58,10 @@ import sim.util.Int2D;
  *	<ul>
  *	<li>MYFIELD : Region to be simulated by peer.</li>
  *
- *	<li>LEFT_MINE, RIGHT_MINE, UP_MINE, DOWN_MINE,CORNER_MINE_LEFT_UP,CORNER_MINE_LEFT_DOWN,
+ *	<li>LEFT_MINE, EAST_MINE, NORTH_MINE, SOUTH_MINE,CORNER_MINE_LEFT_UP,CORNER_MINE_LEFT_DOWN,
  *		CORNER_MINE_RIGHT_UP,CORNER_MINE_RIGHT_DOWN :Boundaries Regions those must be simulated and sent to neighbors.</li>
  *	
- *	<li>LEFT_OUT, RIGHT_OUT, UP_OUT, DOWN_OUT, CORNER_OUT_LEFT_UP_DIAG, CORNER_OUT_LEFT_DOWN_DIAG,
+ *	<li>LEFT_OUT, EAST_OUT, NORTH_OUT, SOUTH_OUT, CORNER_OUT_LEFT_UP_DIAG, CORNER_OUT_LEFT_DOWN_DIAG,
  *		CORNER_OUT_RIGHT_UP_DIAG, CORNER_OUT_RIGHT_DOWN_DIAG : Boundaries Regions those must not be simulated and sent to neighbors to be simulated.</li>
  *   <li>
  *	All peers subscribes to the topic of boundary region which want the information and run a asynchronous thread
@@ -125,8 +127,6 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 	private String NAME;
 	private double initialValue;
 	private ZoomArrayList<EntryNum<Integer, Int2D>> tmp_zoom=new ZoomArrayList<EntryNum<Integer,Int2D>>();
-
-	private int numAgents;
 	private int width,height,field_width,field_height;
 	private String topicPrefix = "";
 
@@ -170,7 +170,6 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 		this.initialValue = initialGridValue;
 
 		updates_cache = new ArrayList<RegionNumeric<Integer,EntryNum<Integer,Int2D>>>();
-		numAgents=0;
 		createRegion();		
 
 	}
@@ -182,6 +181,109 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 	 */
 	private boolean createRegion()
 	{
+        int jumpDistance=MAX_DISTANCE; 		
+
+		//upper left corner's coordinates
+		if(cellType.pos_j<(width%columns))
+			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
+		else
+			own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
+
+		if(cellType.pos_i<(height%rows))
+			own_y=(int)Math.floor(height/rows+1)*cellType.pos_i; 
+		else
+			own_y=(int)Math.floor(height/rows+1)*((height%rows))+(int)Math.floor(height/rows)*(cellType.pos_i-((height%rows))); 
+
+
+
+		// own width and height
+		if(cellType.pos_j<(width%columns))
+			my_width=(int) Math.floor(width/columns+1);
+		else
+			my_width=(int) Math.floor(width/columns);
+
+		if(cellType.pos_i<(height%rows))
+			my_height=(int) Math.floor(height/rows+1);
+		else
+			my_height=(int) Math.floor(height/rows);
+
+
+		//calculating the neighbors
+		for (int k = -1; k <= 1; k++) 
+		{
+			for (int k2 = -1; k2 <= 1; k2++) 
+			{				
+				int v1=cellType.pos_i+k;
+				int v2=cellType.pos_j+k2;
+				if(v1>=0 && v2 >=0 && v1<rows && v2<columns)
+					if( v1!=cellType.pos_i || v2!=cellType.pos_j)
+					{
+						neighborhood.add(v1+""+v2);
+					}	
+			}
+		}
+		/*try{
+			currentBitmap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
+		}
+		catch(Exception e)
+		{
+			System.out.println("Do not use the GlobalViewer, the requirements of the simulation exceed the limits of the BufferedImage.\n");
+		}
+		actualTime = sm.schedule.getTime();
+		actualStats = new HashMap<String, Object>();
+		isSendingGraphics = false;
+		writer=currentBitmap.getRaster();
+*/
+		// Building the regions
+
+		myfield=new RegionIntegerNumeric(own_x+jumpDistance,own_y+jumpDistance, own_x+my_width-jumpDistance , own_y+my_height-jumpDistance,width,height);
+
+		//corner up left
+		rmap.NORTH_WEST_OUT=new RegionIntegerNumeric((own_x-jumpDistance + width)%width, (own_y-jumpDistance+height)%height, 
+				(own_x+width)%width, (own_y+height)%height,width,height);
+		rmap.NORTH_WEST_MINE=new RegionIntegerNumeric(own_x, own_y, 
+				own_x+jumpDistance, own_y+jumpDistance,width,height);
+
+		//corner up right
+		rmap.NORTH_EAST_OUT = new RegionIntegerNumeric((own_x+my_width+width)%width, (own_y-jumpDistance+height)%height,
+				(own_x+my_width+jumpDistance+width)%width, (own_y+height)%height,width,height);
+		rmap.NORTH_EAST_MINE=new RegionIntegerNumeric(own_x+my_width-jumpDistance, own_y, 
+				own_x+my_width, own_y+jumpDistance,width,height);
+
+		//corner down left
+		rmap.SOUTH_WEST_OUT=new RegionIntegerNumeric((own_x-jumpDistance+width)%width, (own_y+my_height+height)%height,
+				(own_x+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
+		rmap.SOUTH_WEST_MINE=new RegionIntegerNumeric(own_x, own_y+my_height-jumpDistance,
+				own_x+jumpDistance, own_y+my_height,width,height);
+
+		//corner down right
+		rmap.SOUTH_EAST_OUT=new RegionIntegerNumeric((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
+				(own_x+my_width+jumpDistance+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
+		rmap.SOUTH_EAST_MINE=new RegionIntegerNumeric(own_x+my_width-jumpDistance, own_y+my_height-jumpDistance,
+				own_x+my_width,own_y+my_height,width,height);
+
+		rmap.WEST_OUT=new RegionIntegerNumeric((own_x-jumpDistance+width)%width,(own_y+height)%height,
+				(own_x+width)%width, ((own_y+my_height)+height)%height,width,height);
+		rmap.WEST_MINE=new RegionIntegerNumeric(own_x,own_y,
+				own_x + jumpDistance , own_y+my_height,width,height);
+
+		rmap.EAST_OUT=new RegionIntegerNumeric((own_x+my_width+width)%width,(own_y+height)%height,
+				(own_x+my_width+jumpDistance+width)%width, (own_y+my_height+height)%height,width,height);
+		rmap.EAST_MINE=new RegionIntegerNumeric(own_x + my_width - jumpDistance,own_y,
+				own_x +my_width , own_y+my_height,width,height);
+
+		rmap.NORTH_OUT=new RegionIntegerNumeric((own_x+width)%width, (own_y - jumpDistance+height)%height,
+				(own_x+ my_width +width)%width,(own_y+height)%height,width,height);
+		rmap.NORTH_MINE=new RegionIntegerNumeric(own_x ,own_y,
+				own_x+my_width, own_y + jumpDistance ,width,height);
+
+		rmap.SOUTH_OUT=new RegionIntegerNumeric((own_x+width)%width,(own_y+my_height+height)%height,
+				(own_x+my_width+width)%width, (own_y+my_height+jumpDistance+height)%height,width,height);
+		rmap.SOUTH_MINE=new RegionIntegerNumeric(own_x,own_y+my_height-jumpDistance,
+				own_x+my_width, (own_y+my_height),width,height);
+
+		return true;
+		/*
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
@@ -223,54 +325,54 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 		}
 
 		// Building the regions
-		rmap.left_out=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height-1),my_width, my_height, width, height);
-		if(rmap.left_out!=null)
+		rmap.WEST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height-1),my_width, my_height, width, height);
+		if(rmap.WEST_OUT!=null)
 		{
-			rmap.left_mine=RegionIntegerNumeric.createRegionNumeric(own_x,own_y,own_x + MAX_DISTANCE -1, own_y+my_height-1,my_width, my_height, width, height);
+			rmap.WEST_MINE=RegionIntegerNumeric.createRegionNumeric(own_x,own_y,own_x + MAX_DISTANCE -1, own_y+my_height-1,my_width, my_height, width, height);
 
 		}
 
-		rmap.right_out=RegionIntegerNumeric.createRegionNumeric(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
-		if(rmap.right_out!=null)
+		rmap.EAST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
+		if(rmap.EAST_OUT!=null)
 		{
-			rmap.right_mine=RegionIntegerNumeric.createRegionNumeric(own_x + my_width - MAX_DISTANCE,own_y,own_x +my_width - 1, own_y+my_height-1,my_width, my_height, width, height);
+			rmap.EAST_MINE=RegionIntegerNumeric.createRegionNumeric(own_x + my_width - MAX_DISTANCE,own_y,own_x +my_width - 1, own_y+my_height-1,my_width, my_height, width, height);
 
 		}
 
-		rmap.up_out=RegionIntegerNumeric.createRegionNumeric(own_x, own_y - MAX_DISTANCE,own_x+ my_width -1,own_y-1,my_width, my_height, width, height);
-		if(rmap.up_out!=null)
+		rmap.NORTH_OUT=RegionIntegerNumeric.createRegionNumeric(own_x, own_y - MAX_DISTANCE,own_x+ my_width -1,own_y-1,my_width, my_height, width, height);
+		if(rmap.NORTH_OUT!=null)
 		{
-			rmap.up_mine=RegionIntegerNumeric.createRegionNumeric(own_x ,own_y,own_x+my_width-1, own_y + MAX_DISTANCE -1,my_width, my_height, width, height);
+			rmap.NORTH_MINE=RegionIntegerNumeric.createRegionNumeric(own_x ,own_y,own_x+my_width-1, own_y + MAX_DISTANCE -1,my_width, my_height, width, height);
 
 		}
 
-		rmap.down_out=RegionIntegerNumeric.createRegionNumeric(own_x,own_y+my_height,own_x+my_width-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
-		if(rmap.down_out!=null)
+		rmap.SOUTH_OUT=RegionIntegerNumeric.createRegionNumeric(own_x,own_y+my_height,own_x+my_width-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
+		if(rmap.SOUTH_OUT!=null)
 		{
-			rmap.down_mine=RegionIntegerNumeric.createRegionNumeric(own_x,own_y+my_height-MAX_DISTANCE,own_x+my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
+			rmap.SOUTH_MINE=RegionIntegerNumeric.createRegionNumeric(own_x,own_y+my_height-MAX_DISTANCE,own_x+my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
 
 		}
 
-		if(rmap.left_out == null)
+		if(rmap.WEST_OUT == null)
 		{
-			if(rmap.up_out == null)
+			if(rmap.NORTH_OUT == null)
 			{
 				//peer 0
 				myfield=new RegionIntegerNumeric(own_x,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-MAX_DISTANCE-1);
 
 				//corner down right
-				rmap.corner_out_down_right_diag_center=RegionIntegerNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
+				rmap.SOUTH_EAST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
 				rmap.corner_mine_down_right=RegionIntegerNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1,my_width, my_height, width,height);
 
 			}
 			else
-				if(rmap.down_out==null)
+				if(rmap.SOUTH_OUT==null)
 				{
 					//peer 6
 					myfield=new RegionIntegerNumeric(own_x,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
 
 					//corner up right
-					rmap.corner_out_up_right_diag_center = RegionIntegerNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
+					rmap.NORTH_EAST_OUT = RegionIntegerNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
 					rmap.corner_mine_up_right=RegionIntegerNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 
 				}
@@ -280,36 +382,36 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 					myfield=new RegionIntegerNumeric(own_x,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-MAX_DISTANCE-1);
 
 					//corner up right
-					rmap.corner_out_up_right_diag_center = RegionIntegerNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1,my_width, my_height, width, height);
+					rmap.NORTH_EAST_OUT = RegionIntegerNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1,my_width, my_height, width, height);
 					rmap.corner_mine_up_right=RegionIntegerNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1,my_width, my_height, width, height);
 
 					//corner down right
-					rmap.corner_out_down_right_diag_center=RegionIntegerNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
+					rmap.SOUTH_EAST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
 					rmap.corner_mine_down_right=RegionIntegerNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1, my_width, my_height, width,height);
 
 				}			
 		}
 		else
-			if(rmap.right_out==null)
+			if(rmap.EAST_OUT==null)
 			{
-				if(rmap.up_out==null)
+				if(rmap.NORTH_OUT==null)
 				{
 					//peer 2
 					myfield=new RegionIntegerNumeric(own_x+MAX_DISTANCE,own_y, own_x+my_width-1, own_y+my_height-MAX_DISTANCE-1);
 
 					//corner down left
-					rmap.corner_out_down_left_diag_center=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
+					rmap.SOUTH_WEST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
 					rmap.corner_mine_down_left=RegionIntegerNumeric.createRegionNumeric(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
 
 				}
 				else
-					if(rmap.down_out==null)
+					if(rmap.SOUTH_OUT==null)
 					{
 						//peer 8
 						myfield=new RegionIntegerNumeric(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-1, own_y+my_height-1);
 
 						//corner up left	
-						rmap.corner_out_up_left_diag_center=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
+						rmap.NORTH_WEST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
 						rmap.corner_mine_up_left=RegionIntegerNumeric.createRegionNumeric(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 
 					}
@@ -319,42 +421,42 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 						myfield=new RegionIntegerNumeric(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-1, own_y+my_height-MAX_DISTANCE-1);
 
 						//corner up left					
-						rmap.corner_out_up_left_diag_center=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
+						rmap.NORTH_WEST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
 						rmap.corner_mine_up_left=RegionIntegerNumeric.createRegionNumeric(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 
 						//corner down left
-						rmap.corner_out_down_left_diag_center=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
+						rmap.SOUTH_WEST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
 						rmap.corner_mine_down_left=RegionIntegerNumeric.createRegionNumeric(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1, my_width, my_height, width, height);
 
 					}
 			}
 			else
-				if(rmap.up_out==null)
+				if(rmap.NORTH_OUT==null)
 				{
 					//peer 1
 					myfield=new RegionIntegerNumeric(own_x+MAX_DISTANCE,own_y, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-MAX_DISTANCE-1);
 
 					//corner down left
-					rmap.corner_out_down_left_diag_center=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
+					rmap.SOUTH_WEST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
 					rmap.corner_mine_down_left=RegionIntegerNumeric.createRegionNumeric(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
 
 					//corner down right
-					rmap.corner_out_down_right_diag_center=RegionIntegerNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
+					rmap.SOUTH_EAST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
 					rmap.corner_mine_down_right=RegionIntegerNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1, my_width, my_height, width,height);
 
 				}
 				else
-					if(rmap.down_out==null)
+					if(rmap.SOUTH_OUT==null)
 					{
 						//peer 7
 						myfield=new RegionIntegerNumeric(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-1);
 
 						//corner up left	
-						rmap.corner_out_up_left_diag_center=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
+						rmap.NORTH_WEST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
 						rmap.corner_mine_up_left=RegionIntegerNumeric.createRegionNumeric(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 
 						//corner up right
-						rmap.corner_out_up_right_diag_center = RegionIntegerNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
+						rmap.NORTH_EAST_OUT = RegionIntegerNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
 						rmap.corner_mine_up_right=RegionIntegerNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 
 					}
@@ -363,23 +465,23 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 						myfield=new RegionIntegerNumeric(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-MAX_DISTANCE-1);
 
 						//corner up left
-						rmap.corner_out_up_left_diag_center=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
+						rmap.NORTH_WEST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
 						rmap.corner_mine_up_left=RegionIntegerNumeric.createRegionNumeric(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1,my_width, my_height, width, height);
 
 						//corner up right
-						rmap.corner_out_up_right_diag_center = RegionIntegerNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
+						rmap.NORTH_EAST_OUT = RegionIntegerNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
 						rmap.corner_mine_up_right=RegionIntegerNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
 
 						//corner down left
-						rmap.corner_out_down_left_diag_center=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
+						rmap.SOUTH_WEST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
 						rmap.corner_mine_down_left=RegionIntegerNumeric.createRegionNumeric(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
 
 						//corner down right
-						rmap.corner_out_down_right_diag_center=RegionIntegerNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
+						rmap.SOUTH_EAST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
 						rmap.corner_mine_down_right=RegionIntegerNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1,my_width, my_height, width,height);
 
 					}
-		return true;
+		return true;*/
 	}
 
 	@Override
@@ -424,12 +526,12 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 		memorizeRegionOut();
 
 		//--> publishing the regions to correspondent topics for the neighbors
-		if(rmap.left_out!=null)
+		if(rmap.WEST_OUT!=null)
 		{
 			DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr =
 					new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>
-			(rmap.left_mine,rmap.left_out, (sm.schedule.getSteps()-1),
-					cellType,DistributedRegionNumeric.LEFT);
+			(rmap.WEST_MINE,rmap.WEST_OUT, (sm.schedule.getSteps()-1),
+					cellType,DistributedRegionNumeric.WEST);
 			try 
 			{				
 				connWorker.publishToTopic(dr,topicPrefix+cellType+"L", NAME);
@@ -437,24 +539,24 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 			} catch (Exception e1) { e1.printStackTrace();}
 		}
 
-		if(rmap.right_out!=null)
+		if(rmap.EAST_OUT!=null)
 		{
 			DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr = 
 					new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>
-			(rmap.right_mine,rmap.right_out,(sm.schedule.getSteps()-1),
-					cellType,DistributedRegionNumeric.RIGHT);	
+			(rmap.EAST_MINE,rmap.EAST_OUT,(sm.schedule.getSteps()-1),
+					cellType,DistributedRegionNumeric.EAST);	
 			try 
 			{				
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"R", NAME);
 
 			} catch (Exception e1) {e1.printStackTrace(); }
 		}
-		if(rmap.up_out!=null )
+		if(rmap.NORTH_OUT!=null )
 		{
 			DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr = 
 					new  DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>
-			(rmap.up_mine,rmap.up_out,(sm.schedule.getSteps()-1),
-					cellType,DistributedRegionNumeric.UP);
+			(rmap.NORTH_MINE,rmap.NORTH_OUT,(sm.schedule.getSteps()-1),
+					cellType,DistributedRegionNumeric.NORTH);
 			try 
 			{
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"U", NAME);
@@ -462,12 +564,12 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
 
-		if(rmap.down_out!=null )
+		if(rmap.SOUTH_OUT!=null )
 		{
 			DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr =
 					new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>
-			(rmap.down_mine,rmap.down_out,(sm.schedule.getSteps()-1),
-					cellType,DistributedRegionNumeric.DOWN);
+			(rmap.SOUTH_MINE,rmap.SOUTH_OUT,(sm.schedule.getSteps()-1),
+					cellType,DistributedRegionNumeric.SOUTH);
 
 			try 
 			{				
@@ -476,12 +578,13 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
 
-		if(rmap.corner_out_up_left_diag_center!=null)
+		if(rmap.NORTH_WEST_OUT!=null)
 		{
 			DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr = 
 					new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>
-			(rmap.corner_mine_up_left,rmap.corner_out_up_left_diag_center,
-					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.CORNER_DIAG_UP_LEFT);
+			(rmap.NORTH_WEST_MINE
+					/*rmap.corner_mine_up_left*/,rmap.NORTH_WEST_OUT,
+					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.NORTH_WEST);
 
 			try 
 			{
@@ -489,36 +592,42 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 
 			} catch (Exception e1) { e1.printStackTrace();}
 		}
-		if(rmap.corner_out_up_right_diag_center!=null)
+		if(rmap.NORTH_EAST_OUT!=null)
 		{
 			DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr = 
 					new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>	
-			(rmap.corner_mine_up_right,rmap.corner_out_up_right_diag_center,
-					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.CORNER_DIAG_UP_RIGHT);
+			(rmap.NORTH_EAST_MINE
+					/*rmap.corner_mine_up_right*/,
+					rmap.NORTH_EAST_OUT,
+					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.NORTH_EAST);
 			try 
 			{
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDR", NAME);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
-		if( rmap.corner_out_down_left_diag_center!=null)
+		if( rmap.SOUTH_WEST_OUT!=null)
 		{
 			DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr = 
 					new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>
-			(rmap.corner_mine_down_left, rmap.corner_out_down_left_diag_center,
-					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.CORNER_DIAG_DOWN_LEFT);
+			(rmap.SOUTH_EAST_MINE
+					/*rmap.corner_mine_down_left*/, 
+					rmap.SOUTH_WEST_OUT,
+					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.SOUTH_WEST);
 			try 
 			{
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDL", NAME);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
-		if(rmap.corner_out_down_right_diag_center!=null)
+		if(rmap.SOUTH_EAST_OUT!=null)
 		{
 			DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr = 
 					new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>
-			(rmap.corner_mine_down_right,rmap.corner_out_down_right_diag_center,
-					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.CORNER_DIAG_DOWN_RIGHT);
+			(rmap.SOUTH_EAST_MINE
+					/*rmap.corner_mine_down_right*/,
+					rmap.SOUTH_EAST_OUT,
+					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.SOUTH_EAST);
 			try 
 			{
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDR", NAME);
@@ -574,7 +683,6 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 		int i=(Integer) remoteValue;
 	
 	
-		numAgents++;
 
 		if(setValue(i, l)) return true;
 		else
@@ -600,76 +708,81 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 	private boolean setValue(int value, Int2D l){
 
 
-		if(rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(l.x,l.y))
+		//if(rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(l.x,l.y))
+		if(rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(l.x,l.y))
 		{
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(new EntryNum<Integer, Int2D>(value, l));
-			rmap.corner_mine_up_left.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
-			rmap.left_mine.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+			//rmap.corner_mine_up_left.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+			rmap.NORTH_WEST_MINE.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+			
+			rmap.WEST_MINE.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 			myfield.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
-			return rmap.up_mine.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+			return rmap.NORTH_MINE.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 		}
 		else
-			if(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(l.x,l.y))
-			{
+			//if(rmap.corner_mine_up_right!=null && rmap.corner_mine_up_right.isMine(l.x,l.y))
+			if(rmap.NORTH_EAST_MINE!=null && rmap.NORTH_EAST_MINE.isMine(l.x,l.y))	
+		{
 				if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 					tmp_zoom.add(new EntryNum<Integer, Int2D>(value, l));
-				rmap.corner_mine_up_right.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
-				rmap.right_mine.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+				rmap.NORTH_EAST_MINE/*corner_mine_up_right*/.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+				rmap.EAST_MINE.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 				myfield.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
-				return rmap.up_mine.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+				return rmap.NORTH_MINE.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 			}
 			else
-				if(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(l.x,l.y))
-				{
+				//if(rmap.corner_mine_down_left!=null && rmap.corner_mine_down_left.isMine(l.x,l.y))
+				if(rmap.SOUTH_WEST_MINE!=null && rmap.SOUTH_WEST_MINE.isMine(l.x,l.y))	
+			{
 					if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 						tmp_zoom.add(new EntryNum<Integer, Int2D>(value, l));
-					rmap.corner_mine_down_left.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
-					rmap.left_mine.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+					rmap.SOUTH_WEST_MINE.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+					rmap.WEST_MINE.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 					myfield.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
-					return rmap.down_mine.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+					return rmap.SOUTH_MINE.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 				}
 				else
-					if(rmap.corner_mine_down_right!=null && rmap.corner_mine_down_right.isMine(l.x,l.y))
+					if(rmap.SOUTH_EAST_MINE!=null && rmap.SOUTH_EAST_MINE.isMine(l.x,l.y))
 					{
 						if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 							tmp_zoom.add(new EntryNum<Integer, Int2D>(value, l));
-						rmap.corner_mine_down_right.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
-						rmap.right_mine.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+						rmap.SOUTH_EAST_MINE.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+						rmap.EAST_MINE.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 						myfield.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
-						return rmap.down_mine.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+						return rmap.SOUTH_MINE.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 					}
 					else
-						if(rmap.left_mine != null && rmap.left_mine.isMine(l.x,l.y))
+						if(rmap.WEST_MINE != null && rmap.WEST_MINE.isMine(l.x,l.y))
 						{
 							if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 								tmp_zoom.add(new EntryNum<Integer, Int2D>(value, l));
 							myfield.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
-							return rmap.left_mine.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+							return rmap.WEST_MINE.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 						}
 						else
-							if(rmap.right_mine != null && rmap.right_mine.isMine(l.x,l.y))
+							if(rmap.EAST_MINE != null && rmap.EAST_MINE.isMine(l.x,l.y))
 							{
 								if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 									tmp_zoom.add(new EntryNum<Integer, Int2D>(value, l));
 								myfield.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
-								return rmap.right_mine.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+								return rmap.EAST_MINE.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 							}
 							else
-								if(rmap.up_mine != null && rmap.up_mine.isMine(l.x,l.y))
+								if(rmap.NORTH_MINE != null && rmap.NORTH_MINE.isMine(l.x,l.y))
 								{
 									if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 										tmp_zoom.add(new EntryNum<Integer, Int2D>(value, l));
 									myfield.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
-									return rmap.up_mine.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+									return rmap.NORTH_MINE.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 								}
 								else
-									if(rmap.down_mine != null && rmap.down_mine.isMine(l.x,l.y))
+									if(rmap.SOUTH_MINE != null && rmap.SOUTH_MINE.isMine(l.x,l.y))
 									{
 										if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 											tmp_zoom.add(new EntryNum<Integer, Int2D>(value, l));
 										myfield.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
-										return rmap.down_mine.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+										return rmap.SOUTH_MINE.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 									}
 									else
 										if(myfield.isMine(l.x,l.y))
@@ -679,29 +792,29 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 											return myfield.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 										}
 										else
-											if(rmap.left_out!=null && rmap.left_out.isMine(l.x,l.y)) 
-												return rmap.left_out.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+											if(rmap.WEST_OUT!=null && rmap.WEST_OUT.isMine(l.x,l.y)) 
+												return rmap.WEST_OUT.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 											else
-												if(rmap.right_out!=null && rmap.right_out.isMine(l.x,l.y)) 
-													return rmap.right_out.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+												if(rmap.EAST_OUT!=null && rmap.EAST_OUT.isMine(l.x,l.y)) 
+													return rmap.EAST_OUT.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 												else
-													if(rmap.up_out!=null && rmap.up_out.isMine(l.x,l.y))
-														return rmap.up_out.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+													if(rmap.NORTH_OUT!=null && rmap.NORTH_OUT.isMine(l.x,l.y))
+														return rmap.NORTH_OUT.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 													else
-														if(rmap.down_out!=null && rmap.down_out.isMine(l.x,l.y))
-															return rmap.down_out.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+														if(rmap.SOUTH_OUT!=null && rmap.SOUTH_OUT.isMine(l.x,l.y))
+															return rmap.SOUTH_OUT.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 														else
-															if(rmap.corner_out_up_left_diag_center!=null && rmap.corner_out_up_left_diag_center.isMine(l.x,l.y)) 
-																return rmap.corner_out_up_left_diag_center.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+															if(rmap.NORTH_WEST_OUT!=null && rmap.NORTH_WEST_OUT.isMine(l.x,l.y)) 
+																return rmap.NORTH_WEST_OUT.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 															else 
-																if(rmap.corner_out_down_left_diag_center!=null && rmap.corner_out_down_left_diag_center.isMine(l.x,l.y)) 
-																	return rmap.corner_out_down_left_diag_center.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+																if(rmap.SOUTH_WEST_OUT!=null && rmap.SOUTH_WEST_OUT.isMine(l.x,l.y)) 
+																	return rmap.SOUTH_WEST_OUT.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 																else
-																	if(rmap.corner_out_up_right_diag_center!=null && rmap.corner_out_up_right_diag_center.isMine(l.x,l.y)) 
-																		return rmap.corner_out_up_right_diag_center.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+																	if(rmap.NORTH_EAST_OUT!=null && rmap.NORTH_EAST_OUT.isMine(l.x,l.y)) 
+																		return rmap.NORTH_EAST_OUT.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 																	else
-																		if(rmap.corner_out_down_right_diag_center!=null && rmap.corner_out_down_right_diag_center.isMine(l.x,l.y))
-																			return rmap.corner_out_down_right_diag_center.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
+																		if(rmap.SOUTH_EAST_OUT!=null && rmap.SOUTH_EAST_OUT.isMine(l.x,l.y))
+																			return rmap.SOUTH_EAST_OUT.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 
 
 		return false;	       			       			
@@ -883,7 +996,7 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 
 	@Override
 	public void resetParameters() {
-		numAgents=0;
+		
 	}
 
 

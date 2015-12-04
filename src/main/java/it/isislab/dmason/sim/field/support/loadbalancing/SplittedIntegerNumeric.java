@@ -142,12 +142,12 @@ public class SplittedIntegerNumeric implements Serializable {
 
 	      
 		//corner mine up left
-		rmap.corner_mine_up_left=new RegionIntegerNumericLB(own_x, own_y,own_x+MAX_DISTANCE, 
+		rmap.NORTH_WEST_MINE=new RegionIntegerNumericLB(own_x, own_y,own_x+MAX_DISTANCE, 
 				own_y+MAX_DISTANCE,TOTALWIDTH, TOTALHEIGHT);	
 		
 		
-		//corner out up left		
-		rmap.corner_out_up_left_diag_center=new RegionIntegerNumericLB((own_x-MAX_DISTANCE + TOTALWIDTH)%TOTALWIDTH, 
+		// nord ovest 		
+		rmap.NORTH_WEST_OUT=new RegionIntegerNumericLB((own_x-MAX_DISTANCE + TOTALWIDTH)%TOTALWIDTH, 
 				(own_y-MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,(own_x+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 		rmap.corner_out_up_left_diag_up=new RegionIntegerNumericLB((own_x + TOTALWIDTH)%TOTALWIDTH, 
@@ -159,12 +159,12 @@ public class SplittedIntegerNumeric implements Serializable {
 		
 		
 		//corner mine up right		
-		rmap.corner_mine_up_right=new RegionIntegerNumericLB(own_x+my_width-MAX_DISTANCE, own_y, 
+		rmap.NORTH_EAST_MINE=new RegionIntegerNumericLB(own_x+my_width-MAX_DISTANCE, own_y, 
 				own_x+my_width, own_y+MAX_DISTANCE,TOTALWIDTH, TOTALHEIGHT);
 		
 		
 		//corner out up right
-		rmap.corner_out_up_right_diag_center = new RegionIntegerNumericLB((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
+		rmap.NORTH_EAST_OUT = new RegionIntegerNumericLB((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y-MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT, (own_x+my_width+MAX_DISTANCE+TOTALWIDTH)
 				%TOTALWIDTH, (own_y+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 		rmap.corner_out_up_right_diag_up=new RegionIntegerNumericLB((own_x+my_width+TOTALWIDTH-MAX_DISTANCE)
@@ -176,12 +176,12 @@ public class SplittedIntegerNumeric implements Serializable {
 		
 		
 		// corner mine down left
-		rmap.corner_mine_down_left=new RegionIntegerNumericLB(own_x, own_y+my_height-MAX_DISTANCE,
+		rmap.SOUTH_WEST_MINE=new RegionIntegerNumericLB(own_x, own_y+my_height-MAX_DISTANCE,
 				own_x+MAX_DISTANCE, own_y+my_height,TOTALWIDTH, TOTALHEIGHT);
 		
 		
 		//corner out down left
-		rmap.corner_out_down_left_diag_center=new RegionIntegerNumericLB((own_x-MAX_DISTANCE+TOTALWIDTH)%TOTALWIDTH, 
+		rmap.SOUTH_WEST_OUT=new RegionIntegerNumericLB((own_x-MAX_DISTANCE+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+my_height+TOTALHEIGHT)%TOTALHEIGHT,(own_x+TOTALWIDTH)%TOTALWIDTH,
 				(own_y+my_height+MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 		rmap.corner_out_down_left_diag_down=new RegionIntegerNumericLB((own_x+TOTALWIDTH)%TOTALWIDTH, 
@@ -193,12 +193,12 @@ public class SplittedIntegerNumeric implements Serializable {
 
 		
 		//corner mine down right
-		rmap.corner_mine_down_right=new RegionIntegerNumericLB(own_x+my_width-MAX_DISTANCE, 
+		rmap.SOUTH_EAST_MINE=new RegionIntegerNumericLB(own_x+my_width-MAX_DISTANCE, 
 				own_y+my_height-MAX_DISTANCE,own_x+my_width,own_y+my_height,TOTALWIDTH,TOTALHEIGHT);		
 		
 		
 		//corner out down right
-		rmap.corner_out_down_right_diag_center=new RegionIntegerNumericLB((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
+		rmap.SOUTH_EAST_OUT=new RegionIntegerNumericLB((own_x+my_width+TOTALWIDTH)%TOTALWIDTH, 
 				(own_y+my_height+TOTALHEIGHT)%TOTALHEIGHT,(own_x+my_width+MAX_DISTANCE+TOTALWIDTH)
 				%TOTALWIDTH,(own_y+my_height+MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,TOTALWIDTH, TOTALHEIGHT);
 		rmap.corner_out_down_right_diag_down=new RegionIntegerNumericLB((own_x+my_width+TOTALWIDTH-MAX_DISTANCE)
@@ -211,10 +211,10 @@ public class SplittedIntegerNumeric implements Serializable {
 
 		
 		//mine left		
-		rmap.left_mine=new RegionIntegerNumericLB(own_x,own_y+MAX_DISTANCE,own_x + MAX_DISTANCE, 
+		rmap.WEST_MINE=new RegionIntegerNumericLB(own_x,own_y+MAX_DISTANCE,own_x + MAX_DISTANCE, 
 				own_y+my_height-MAX_DISTANCE,SUPERWIDTH-2*MAX_DISTANCE,SUPERHEIGHT-2*MAX_DISTANCE);
 		//out left
-		rmap.left_out=new RegionIntegerNumericLB((own_x-MAX_DISTANCE+TOTALWIDTH)%TOTALWIDTH,
+		rmap.WEST_OUT=new RegionIntegerNumericLB((own_x-MAX_DISTANCE+TOTALWIDTH)%TOTALWIDTH,
 				((own_y+TOTALHEIGHT)+MAX_DISTANCE)%TOTALHEIGHT,(own_x+TOTALWIDTH)%TOTALWIDTH, 
 				(((own_y+my_height)+TOTALHEIGHT)-MAX_DISTANCE)%TOTALHEIGHT,SUPERWIDTH-2*MAX_DISTANCE,
 				SUPERHEIGHT-2*MAX_DISTANCE);
@@ -222,31 +222,31 @@ public class SplittedIntegerNumeric implements Serializable {
 		
 		
 		//mine right
-		rmap.right_mine=new RegionIntegerNumericLB(own_x + my_width - MAX_DISTANCE,own_y+MAX_DISTANCE,
+		rmap.EAST_MINE=new RegionIntegerNumericLB(own_x + my_width - MAX_DISTANCE,own_y+MAX_DISTANCE,
 				own_x +my_width , own_y+my_height-MAX_DISTANCE,SUPERWIDTH-2*MAX_DISTANCE,
 				SUPERHEIGHT-2*MAX_DISTANCE);
 		//out right
-		rmap.right_out=new RegionIntegerNumericLB((own_x+my_width+TOTALWIDTH)%TOTALWIDTH,
+		rmap.EAST_OUT=new RegionIntegerNumericLB((own_x+my_width+TOTALWIDTH)%TOTALWIDTH,
 				((own_y+TOTALHEIGHT)+MAX_DISTANCE)%TOTALHEIGHT,(own_x+my_width+MAX_DISTANCE+TOTALWIDTH)
 				%TOTALWIDTH, ((own_y+my_height+TOTALHEIGHT)-MAX_DISTANCE)%TOTALHEIGHT,
 				SUPERWIDTH-2*MAX_DISTANCE,SUPERHEIGHT-2*MAX_DISTANCE);		
 
 		
 		//mine up
-		rmap.up_mine=new RegionIntegerNumericLB(own_x+MAX_DISTANCE,own_y,own_x+my_width-MAX_DISTANCE, 
+		rmap.NORTH_MINE=new RegionIntegerNumericLB(own_x+MAX_DISTANCE,own_y,own_x+my_width-MAX_DISTANCE, 
 				own_y + MAX_DISTANCE ,SUPERWIDTH-2*MAX_DISTANCE,SUPERHEIGHT-2*MAX_DISTANCE);
 		//out up
-		rmap.up_out=new RegionIntegerNumericLB(((own_x+TOTALWIDTH)+MAX_DISTANCE)%TOTALWIDTH, 
+		rmap.NORTH_OUT=new RegionIntegerNumericLB(((own_x+TOTALWIDTH)+MAX_DISTANCE)%TOTALWIDTH, 
 				(own_y - MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,((own_x+ my_width +TOTALWIDTH)-MAX_DISTANCE)
 				%TOTALWIDTH,(own_y+TOTALHEIGHT)%TOTALHEIGHT,SUPERWIDTH-2*MAX_DISTANCE,
 				SUPERHEIGHT-2*MAX_DISTANCE);		
 		
 		
 		//mine down
-		rmap.down_mine=new RegionIntegerNumericLB(own_x+MAX_DISTANCE,own_y+my_height-MAX_DISTANCE,own_x+my_width-MAX_DISTANCE, 
+		rmap.SOUTH_MINE=new RegionIntegerNumericLB(own_x+MAX_DISTANCE,own_y+my_height-MAX_DISTANCE,own_x+my_width-MAX_DISTANCE, 
 				(own_y+my_height),SUPERWIDTH-2*MAX_DISTANCE,SUPERHEIGHT-2*MAX_DISTANCE);
 		//out down
-		rmap.down_out=new RegionIntegerNumericLB( ((own_x+TOTALWIDTH)+MAX_DISTANCE) %TOTALWIDTH,
+		rmap.SOUTH_OUT=new RegionIntegerNumericLB( ((own_x+TOTALWIDTH)+MAX_DISTANCE) %TOTALWIDTH,
 				(own_y+my_height+TOTALHEIGHT)%TOTALHEIGHT,
 				((own_x+my_width+TOTALWIDTH)-MAX_DISTANCE)%TOTALWIDTH, 
 				(own_y+my_height+MAX_DISTANCE+TOTALHEIGHT)%TOTALHEIGHT,
