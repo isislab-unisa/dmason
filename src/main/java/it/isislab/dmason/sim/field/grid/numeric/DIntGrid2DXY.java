@@ -747,7 +747,6 @@ int jumpDistance=MAX_DISTANCE;
 								{
 									if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 										tmp_zoom.add(new EntryNum<Integer, Int2D>(value, l));
-									System.out.println("aaaaaaaaaaaaa");
 									myfield.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 									return rmap.NORTH_MINE.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 								}
