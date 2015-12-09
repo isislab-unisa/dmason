@@ -155,7 +155,7 @@ public class DDoubleGrid2DXYThinTester {
 
 		width = 100;
 		height = 100;
-		maxDistance = 0;
+		maxDistance = 1;
 		rows = 10;
 		columns = 10;
 		numAgents = numLoop;
@@ -264,7 +264,7 @@ public class DDoubleGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+						Double.parseDouble(""+i), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -321,7 +321,7 @@ public class DDoubleGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+						Double.parseDouble(""+i), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -357,7 +357,7 @@ public class DDoubleGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+						Double.parseDouble(""+i), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -393,7 +393,7 @@ public class DDoubleGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+						Double.parseDouble(""+i), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -427,7 +427,7 @@ public class DDoubleGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+						Double.parseDouble(""+i), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 
@@ -484,7 +484,7 @@ public class DDoubleGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+						Double.parseDouble(""+i), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -513,14 +513,14 @@ public class DDoubleGrid2DXYThinTester {
 				/ numLoop;
 
 		i += stepI;
-
+ 
 		int count = 0;
 		while (i < iEnd) {
 			j = toTest.rmap.EAST_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+						Double.parseDouble(i+""), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -556,7 +556,7 @@ public class DDoubleGrid2DXYThinTester {
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
 				if (toTest.setDistributedObjectLocation(location, /* grid value */
-						i, /* SimState */ss))
+						Double.parseDouble(""+i), /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -627,7 +627,7 @@ public class DDoubleGrid2DXYThinTester {
 		// i need that w and h is equal for using the Pitagora's theorem
 		int w = 10;
 		int h = 10;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DDoubleGrid2DXYThin) DDoubleGrid2DFactory
 				.createDDoubleGrid2DThin(w, h,/* simState */
@@ -689,7 +689,7 @@ public class DDoubleGrid2DXYThinTester {
 
 		int w = 10;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DDoubleGrid2DXYThin) DDoubleGrid2DFactory
 				.createDDoubleGrid2DThin(w, h,/* simState */
@@ -738,7 +738,7 @@ public class DDoubleGrid2DXYThinTester {
 
 		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DDoubleGrid2DXYThin) DDoubleGrid2DFactory
 				.createDDoubleGrid2DThin(w, h,/* simState */
@@ -784,9 +784,9 @@ public class DDoubleGrid2DXYThinTester {
 	@Test
 	public void testLeftMinePartitioning() throws DMasonException {
 
-		int w = 10;
+		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DDoubleGrid2DXYThin) DDoubleGrid2DFactory
 				.createDDoubleGrid2DThin(w, h,/* simState */
@@ -856,9 +856,9 @@ public class DDoubleGrid2DXYThinTester {
 	@Test
 	public void testUpOutPartitioning() throws DMasonException {
 
-		int w = 10;
+		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DDoubleGrid2DXYThin) DDoubleGrid2DFactory
 				.createDDoubleGrid2DThin(w, h,/* simState */
@@ -952,9 +952,9 @@ public class DDoubleGrid2DXYThinTester {
 	@Test
 	public void testLeftOutPartitioning() throws DMasonException {
 
-		int w = 10;
+		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DDoubleGrid2DXYThin) DDoubleGrid2DFactory
 				.createDDoubleGrid2DThin(w, h,/* simState */
@@ -978,7 +978,7 @@ public class DDoubleGrid2DXYThinTester {
 
 		int w = 100;
 		int h = w;
-		int maxD = 0;
+		int maxD = 1;
 
 		toTest = (DDoubleGrid2DXYThin) DDoubleGrid2DFactory
 				.createDDoubleGrid2DThin(w, h,/* simState */
