@@ -255,7 +255,7 @@ public class DSparseGrid2DXYTester {
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(
 				width, height,/* simState */
-				ss, maxDistance, /* i */2, /* j */2, rows, columns, mode,/* name */
+				ss, maxDistance, /* i */0, /* j */0, rows, columns, mode,/* name */
 				"test", /* prefix */"", true);
 
 	}
@@ -351,8 +351,10 @@ public class DSparseGrid2DXYTester {
 			j = toTest.rmap.NORTH_WEST_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
+				StubRemotePositionedAgent ag=new StubRemotePositionedAgent();
+				ag.setId(""+count);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+						ag, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -525,19 +527,24 @@ public class DSparseGrid2DXYTester {
 
 		i += stepI;
 
-		int count = 0;
+         		
+		int count = toTest.rmap.WEST_MINE.size();//agenti iniziali
+
+		
 		while (i < iEnd) {
 			j = toTest.rmap.WEST_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+				StubRemotePositionedAgent ag=new StubRemotePositionedAgent();
+				ag.setId(""+count);
+				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */ag, /* SimState */ss)){
 					count += 1;
+				}	
 				j += stepJ;
 			}
 			i += stepI;
 		}
-
+        
 		assertEquals(count, toTest.rmap.WEST_MINE.size());
 	}
 
@@ -602,8 +609,10 @@ public class DSparseGrid2DXYTester {
 			j = stepJ + toTest.rmap.NORTH_MINE.upl_yy;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
+				StubRemotePositionedAgent ag=new StubRemotePositionedAgent();
+				ag.setId(""+count);
 				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+						ag, /* SimState */ss))
 					count += 1;
 				j += stepJ;
 			}
@@ -700,7 +709,7 @@ public class DSparseGrid2DXYTester {
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(w,
 				h,/* simState */
-				ss, maxD, /* i */0, /* j */0, 2, 2, mode,/* name */
+				ss, maxD, /* i */1, /* j */1, 2, 2, mode,/* name */
 				"test", /* prefix */"", true);
 
 		Integer x2 = toTest.myfield.down_xx;
