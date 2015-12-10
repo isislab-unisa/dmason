@@ -687,8 +687,8 @@ public class DSparseGrid2DXYTester {
 	public void testMyFieldPartitioningMaxDistance1() throws DMasonException {
 
 		// i need that w and h is equal for using the Pitagora's theorem
-		int w = 10;
-		int h = 10;
+		int w = 100;
+		int h = 100;
 		int maxD = 1;
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(w,
