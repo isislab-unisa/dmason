@@ -153,7 +153,6 @@ public class TestDParticles {
 		assertEquals(initial_agents.size(), end_agents.size());
 
 		//verifico se gli array siano uguali
-		//System.out.println(initial_agents); 
 
 		ComparatoreParticle c=new ComparatoreParticle();
 

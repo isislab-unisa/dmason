@@ -340,9 +340,9 @@ public class DSparseGrid2DXYTester {
 		int jEnd = toTest.rmap.NORTH_WEST_MINE.down_yy;
 
 		int stepI = (toTest.rmap.NORTH_WEST_MINE.down_xx - toTest.rmap.NORTH_WEST_MINE.upl_xx)
-				/ numLoop;
+				/*/ numLoop*/;
 		int stepJ = (toTest.rmap.NORTH_WEST_MINE.down_yy - toTest.rmap.NORTH_WEST_MINE.upl_yy)
-				/ numLoop;
+				/*/ numLoop*/;
 
 		i += stepI;
 
@@ -376,26 +376,42 @@ public class DSparseGrid2DXYTester {
 
 		int iEnd = toTest.rmap.NORTH_EAST_MINE.down_xx;
 		int jEnd = toTest.rmap.NORTH_EAST_MINE.down_yy;
-
+		
 		int stepI = (toTest.rmap.NORTH_EAST_MINE.down_xx - toTest.rmap.NORTH_EAST_MINE.upl_xx)
-				/ numLoop;
+				/*/ numLoop*/;
 		int stepJ = (toTest.rmap.NORTH_EAST_MINE.down_yy - toTest.rmap.NORTH_EAST_MINE.upl_yy)
-				/ numLoop;
+				/*/ numLoop*/;
 
 		i += stepI;
 
 		int count = 0;
-		while (i < iEnd) {
+		/*while (i < iEnd) {
 			j = toTest.rmap.NORTH_EAST_MINE.upl_yy + stepJ;
 			while (j < jEnd) {
 				Int2D location = new Int2D(i, j);
-				if (toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-						new StubRemotePositionedAgent(), /* SimState */ss))
+				if (toTest.setDistributedObjectLocation(location,  RemotePositionedAgent 
+						new StubRemotePositionedAgent(),  SimState ss))
 					count += 1;
+				j += stepJ;
+				System.out.println(j+",,,,"+jEnd);
+			}
+			i += stepI;
+			System.out.println(i+";;;"+iEnd);
+		}*/
+		StubRemotePositionedAgent sRPA;
+		for(; i<iEnd; i++){
+			for(; j<jEnd; j++){
+				j = toTest.rmap.NORTH_EAST_MINE.upl_yy + stepJ;
+				Int2D location = new Int2D(i, j);
+				sRPA = new StubRemotePositionedAgent();
+				sRPA.setId(""+count);
+				if (toTest.setDistributedObjectLocation(location,sRPA,  ss))
+					count++;
 				j += stepJ;
 			}
 			i += stepI;
 		}
+				
 
 		assertEquals(count, toTest.rmap.NORTH_EAST_MINE.size());
 	}
@@ -414,9 +430,9 @@ public class DSparseGrid2DXYTester {
 		int jEnd = toTest.rmap.SOUTH_WEST_MINE.down_yy;
 
 		int stepI = (toTest.rmap.SOUTH_WEST_MINE.down_xx - toTest.rmap.SOUTH_WEST_MINE.upl_xx)
-				/ numLoop;
+				/*/ numLoop*/;
 		int stepJ = (toTest.rmap.SOUTH_WEST_MINE.down_yy - toTest.rmap.SOUTH_WEST_MINE.upl_yy)
-				/ numLoop;
+				/*/ numLoop*/;
 
 		i += stepI;
 
@@ -450,9 +466,9 @@ public class DSparseGrid2DXYTester {
 		int jEnd = toTest.rmap.SOUTH_EAST_MINE.down_yy;
 
 		int stepI = (toTest.rmap.SOUTH_EAST_MINE.down_xx - toTest.rmap.SOUTH_EAST_MINE.upl_xx)
-				/ numLoop;
+				/*/ numLoop*/;
 		int stepJ = (toTest.rmap.SOUTH_EAST_MINE.down_yy - toTest.rmap.SOUTH_EAST_MINE.upl_yy)
-				/ numLoop;
+				/*/ numLoop*/;
 
 		i += stepI;
 
@@ -485,8 +501,8 @@ public class DSparseGrid2DXYTester {
 		int iEnd = toTest.rmap.SOUTH_MINE.down_xx;
 		int jEnd = toTest.rmap.SOUTH_MINE.down_yy;
 
-		int stepI = (iEnd - i) / numLoop;
-		int stepJ = (jEnd - j) / numLoop;
+		int stepI = (iEnd - i) /*/ numLoop*/;
+		int stepJ = (jEnd - j) /*/ numLoop*/;
 
 		i += stepI;
 
@@ -521,9 +537,9 @@ public class DSparseGrid2DXYTester {
 		int jEnd = toTest.rmap.WEST_MINE.down_yy;
 
 		int stepI = (toTest.rmap.WEST_MINE.down_xx - toTest.rmap.WEST_MINE.upl_xx)
-				/ numLoop;
+				/*/ numLoop*/;
 		int stepJ = (toTest.rmap.WEST_MINE.down_yy - toTest.rmap.WEST_MINE.upl_yy)
-				/ numLoop;
+				/*/ numLoop*/;
 
 		i += stepI;
 
@@ -562,9 +578,9 @@ public class DSparseGrid2DXYTester {
 		int jEnd = toTest.rmap.EAST_MINE.down_yy;
 
 		int stepI = (toTest.rmap.EAST_MINE.down_xx - toTest.rmap.EAST_MINE.upl_xx)
-				/ numLoop;
+				/*/ numLoop*/;
 		int stepJ = (toTest.rmap.EAST_MINE.down_yy - toTest.rmap.EAST_MINE.upl_yy)
-				/ numLoop;
+			/*	/ numLoop*/;
 
 		i += stepI;
 
@@ -598,9 +614,9 @@ public class DSparseGrid2DXYTester {
 		int jEnd = toTest.rmap.NORTH_MINE.down_yy;
 
 		int stepI = (toTest.rmap.NORTH_MINE.down_xx - toTest.rmap.NORTH_MINE.upl_xx)
-				/ numLoop;
+				/*/ numLoop*/;
 		int stepJ = (toTest.rmap.NORTH_MINE.down_yy - toTest.rmap.NORTH_MINE.upl_yy)
-				/ numLoop;
+				/*/ numLoop*/;
 
 		i += stepI;
 
@@ -725,24 +741,20 @@ public class DSparseGrid2DXYTester {
 		
 
 		
-		System.out.println(x1+","+y1);
+		/*System.out.println(x1+","+y1);
 		System.out.println(toTest.rmap.getNORTH_WEST_MINE().upl_xx+","+toTest.rmap.getNORTH_WEST_MINE().upl_yy);
 		
 		System.out.println(x2+","+y2);
-		System.out.println(toTest.rmap.getSOUTH_EAST_MINE().down_xx+","+toTest.rmap.getSOUTH_EAST_MINE().down_yy);
+		System.out.println(toTest.rmap.getSOUTH_EAST_MINE().down_xx+","+toTest.rmap.getSOUTH_EAST_MINE().down_yy);*/
 
 		
 		
 		// find diagonal with the theorem of distance between 2 points
 		Double diag = Math.sqrt(Math.pow(x2 - x1, 2.0) + Math.pow(y2 - y1, 2.0));
-
-		System.out.println();
 		
 		// find diagonal with the theorem of Pitagora
-		//Double diagwh = Math.sqrt(Math.pow(w - 2 * maxD, 2.0)
-			//	+ Math.pow(h - 2 * maxD, 2.0));
+		Double diagwh = Math.sqrt(Math.pow(w/2 - 2 * maxD, 2.0)+ Math.pow(h/2 - 2 * maxD, 2.0));
 
-		Double diagwh= Math.sqrt(Math.pow(w/2, 2)+Math.pow(h/2, 2));
 		assertEquals(diag, diagwh);
 	}
 
@@ -1151,7 +1163,7 @@ public class DSparseGrid2DXYTester {
 				"test", /* prefix */"", true);
 
 		assertEquals("x", toTest.rmap.NORTH_EAST_MINE.upl_xx,
-				toTest.rmap.NORTH_EAST_OUT.down_xx, 0);
+				toTest.rmap.NORTH_EAST_OUT.down_xx);
 		assertEquals("y", toTest.rmap.NORTH_EAST_MINE.upl_yy,
 				toTest.rmap.NORTH_EAST_OUT.down_yy , 0);
 	}

@@ -1010,7 +1010,7 @@ public class DContinuousGrid2DXYTester {
 				.sqrt(Math.pow(x2 - x1, 2.0) + Math.pow(y2 - y1, 2.0));
 
 		// find diagonal with the theorem of Pitagora
-		Double diagwh = Math.sqrt(Math.pow(w/2,2 )+ Math.pow(h/2, 2));
+		Double diagwh = Math.sqrt(Math.pow(w/2-maxD*maxD,2 )+ Math.pow(h/2-maxD*maxD, 2));
 
 		assertEquals(diag, diagwh);
 	}
@@ -2319,7 +2319,7 @@ public class DContinuousGrid2DXYTester {
 		//		ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, /* name */
 		//		"test", /* prefix */"");
 		toTest = (DContinuousGrid2DXY) DContinuousGrid2DFactory.createDContinuous2D(
-				0.5, 10, 10, ss, 1, 1, 1, 3, 3, mode,
+				0.5, 1000, 1000, ss, /*maxD*/1, 1, 1, 3, 3, mode,
 				"test", "", true);
 
 		assertEquals("x", toTest.rmap.NORTH_EAST_MINE.upl_xx,
