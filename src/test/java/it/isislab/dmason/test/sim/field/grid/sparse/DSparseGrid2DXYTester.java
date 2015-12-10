@@ -313,10 +313,13 @@ public class DSparseGrid2DXYTester {
 	@Test
 	public void testGetNumAgentDifferentAgent() throws DMasonException {
 		// i'm positioning more agent in the DistributedState
+		StubRemotePositionedAgent ag=null;
 		for (int i = 0; i < numLoop; i++) {
+			ag=new StubRemotePositionedAgent();
+			ag.setId(""+i);
 			Int2D location = toTest.getAvailableRandomLocation();
 			toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
-					new StubRemotePositionedAgent(), /* SimState */ss);
+					ag, /* SimState */ss);
 		}
 		assertEquals(numLoop, toTest.myfield.size());
 	}
@@ -616,8 +619,11 @@ public class DSparseGrid2DXYTester {
 	 */
 	@Test
 	public void testSetDistributedObjectLocationCongruenceSize() throws DMasonException {
+		
+		
 		int i = toTest.rmap.NORTH_MINE.upl_xx;
 		int j = toTest.rmap.NORTH_MINE.upl_yy;
+		
 
 		int stepI = (toTest.rmap.NORTH_MINE.down_xx - toTest.rmap.NORTH_MINE.upl_xx) / 3;
 		int stepJ = (toTest.rmap.NORTH_MINE.down_yy - toTest.rmap.NORTH_MINE.upl_yy) / 3;
@@ -625,6 +631,7 @@ public class DSparseGrid2DXYTester {
 		Int2D location = new Int2D(i, j);
 
 		assertTrue(toTest.rmap.NORTH_MINE.isMine(i, j));
+		
 		toTest.setDistributedObjectLocation(location, /* RemotePositionedAgent */
 				sa, /* SimState */ss);
 
@@ -658,7 +665,7 @@ public class DSparseGrid2DXYTester {
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(w,
 				h,/* simState */
-				ss, maxD, /* i */0, /* j */0, rows, columns, mode,/* name */
+				ss, maxD, /* i */1, /* j */1, rows, columns, mode,/* name */
 				"test", /* prefix */"", true);
 
 		Integer x1 = toTest.rmap.NORTH_WEST_MINE.getUpl_xx();
@@ -674,7 +681,7 @@ public class DSparseGrid2DXYTester {
 				.sqrt(Math.pow(x2 - x1, 2.0) + Math.pow(y2 - y1, 2.0));
 
 		// find diagonal with the theorem of Pitagora
-		Double diagwh = Math.sqrt(Math.pow(w - 1, 2.0) + Math.pow(h - 1, 2.0));
+		Double diagwh = Math.sqrt(Math.pow(w, 2.0) + Math.pow(h, 2.0));
 
 		diagwh=diagwh/rows;// for Pitagora's theorem calculate only a region of cell 
 		assertEquals(diag, diagwh);
@@ -693,7 +700,7 @@ public class DSparseGrid2DXYTester {
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(w,
 				h,/* simState */
-				ss, maxD, /* i */0, /* j */0, 1, 1, mode,/* name */
+				ss, maxD, /* i */0, /* j */0, 2, 2, mode,/* name */
 				"test", /* prefix */"", true);
 
 		Integer x2 = toTest.myfield.down_xx;
@@ -733,7 +740,7 @@ public class DSparseGrid2DXYTester {
 		// find distance between 2 points
 		Integer side = x2 - x1;
 
-		assertEquals(w, side.intValue() + 1);
+		assertEquals(w, side.intValue());
 	}
 
 	/**
@@ -757,7 +764,7 @@ public class DSparseGrid2DXYTester {
 		// find distance between 2 points
 		Integer side = x2 - x1;
 
-		assertEquals(w / 10, side.intValue() + 1);
+		assertEquals(w / 10, side.intValue() );
 	}
 
 	/**
@@ -781,7 +788,7 @@ public class DSparseGrid2DXYTester {
 		// find distance between 2 points
 		Integer side = x2 - x1;
 
-		assertEquals(w / 10, side.intValue() + 1);
+		assertEquals(w / 10, side.intValue() );
 	}
 
 	/**
@@ -805,7 +812,7 @@ public class DSparseGrid2DXYTester {
 		// find distance between 2 points
 		Integer side = x2 - x1;
 
-		assertEquals(w / 10, side.intValue() + 1);
+		assertEquals(w / 10, side.intValue());
 	}
 
 	/**
@@ -829,7 +836,7 @@ public class DSparseGrid2DXYTester {
 		// find distance between 2 points
 		Integer side = x2 - x1;
 
-		assertEquals(h, side.intValue() + 1);
+		assertEquals(h, side.intValue());
 	}
 
 	/**
@@ -853,7 +860,7 @@ public class DSparseGrid2DXYTester {
 		// find distance between 2 points
 		Integer side = x2 - x1;
 
-		assertEquals(h / 10, side.intValue() + 1);
+		assertEquals(h / 10, side.intValue());
 	}
 
 	/**
@@ -877,7 +884,7 @@ public class DSparseGrid2DXYTester {
 		// find distance between 2 points
 		Integer side = x2 - x1;
 
-		assertEquals(h / 10, side.intValue() + 1);
+		assertEquals(h / 10, side.intValue() );
 	}
 
 	/**
@@ -901,7 +908,7 @@ public class DSparseGrid2DXYTester {
 		// find distance between 2 points
 		Integer side = x2 - x1;
 
-		assertEquals(h / 10, side.intValue() + 1);
+		assertEquals(h / 10, side.intValue());
 	}
 
 	/**
@@ -925,7 +932,7 @@ public class DSparseGrid2DXYTester {
 		// find distance between 2 points
 		Integer side = x2 - x1;
 
-		assertEquals(w, side.intValue() + 1);
+		assertEquals(w, side.intValue());
 	}
 
 	/**
@@ -950,7 +957,7 @@ public class DSparseGrid2DXYTester {
 		// find distance between 2 points
 		Integer side = x2 - x1;
         
-		assertEquals(w / 10, side.intValue() + 1);
+		assertEquals(w / 10, side.intValue() );
 	}
 
 	/**
@@ -974,7 +981,7 @@ public class DSparseGrid2DXYTester {
 		// find distance between 2 points
 		Integer side = x2 - x1;
 
-		assertEquals(w / 10, side.intValue() + 1);
+		assertEquals(w / 10, side.intValue());
 	}
 
 	/**
@@ -998,7 +1005,7 @@ public class DSparseGrid2DXYTester {
 		// find distance between 2 points
 		Integer side = x2 - x1;
 
-		assertEquals(w / 10, side.intValue() + 1);
+		assertEquals(w / 10, side.intValue());
 	}
 
 	/**
@@ -1022,7 +1029,7 @@ public class DSparseGrid2DXYTester {
 		// find distance between 2 points
 		Integer side = x2 - x1;
 
-		assertEquals(h, side.intValue() + 1);
+		assertEquals(h, side.intValue());
 	}
 
 	/**
@@ -1046,7 +1053,7 @@ public class DSparseGrid2DXYTester {
 		// find distance between 2 points
 		Integer side = x2 - x1;
 
-		assertEquals(h / 10, side.intValue() + 1);
+		assertEquals(h / 10, side.intValue());
 	}
 
 	/**
@@ -1070,7 +1077,7 @@ public class DSparseGrid2DXYTester {
 		// find distance between 2 points
 		Integer side = x2 - x1;
 
-		assertEquals(h / 10, side.intValue() + 1);
+		assertEquals(h / 10, side.intValue());
 	}
 
 	/**
@@ -1094,7 +1101,7 @@ public class DSparseGrid2DXYTester {
 		// find distance between 2 points
 		Integer side = x2 - x1;
 
-		assertEquals(h / 10, side.intValue() + 1);
+		assertEquals(h / 10, side.intValue());
 	}
 
 	/**
@@ -1108,9 +1115,9 @@ public class DSparseGrid2DXYTester {
 				"test", /* prefix */"", true);
 
 		assertEquals("x", toTest.rmap.NORTH_EAST_MINE.upl_xx,
-				toTest.rmap.NORTH_EAST_OUT.down_xx - 1, 0);
+				toTest.rmap.NORTH_EAST_OUT.down_xx, 0);
 		assertEquals("y", toTest.rmap.NORTH_EAST_MINE.upl_yy,
-				toTest.rmap.NORTH_EAST_OUT.down_yy + 1, 0);
+				toTest.rmap.NORTH_EAST_OUT.down_yy , 0);
 	}
 
 	/**
@@ -1124,9 +1131,9 @@ public class DSparseGrid2DXYTester {
 				"test", /* prefix */"", true);
 
 		assertEquals("x", toTest.rmap.NORTH_WEST_MINE.upl_xx,
-				toTest.rmap.NORTH_WEST_OUT.down_xx + 1, 0);
+				toTest.rmap.NORTH_WEST_OUT.down_xx, 0);
 		assertEquals("y", toTest.rmap.NORTH_WEST_MINE.upl_yy,
-				toTest.rmap.NORTH_WEST_OUT.down_yy + 1, 0);
+				toTest.rmap.NORTH_WEST_OUT.down_yy, 0);
 	}
 
 	/**
@@ -1140,9 +1147,9 @@ public class DSparseGrid2DXYTester {
 				"test", /* prefix */"", true);
 
 		assertEquals("x", toTest.rmap.SOUTH_WEST_MINE.upl_xx,
-				toTest.rmap.SOUTH_WEST_OUT.down_xx + 1, 0);
+				toTest.rmap.SOUTH_WEST_OUT.down_xx, 0);
 		assertEquals("y", toTest.rmap.SOUTH_WEST_MINE.upl_yy,
-				toTest.rmap.SOUTH_WEST_OUT.down_yy - 1, 0);
+				toTest.rmap.SOUTH_WEST_OUT.down_yy, 0);
 	}
 
 	/**
@@ -1156,9 +1163,9 @@ public class DSparseGrid2DXYTester {
 				"test", /* prefix */"", true);
 
 		assertEquals("x", toTest.rmap.SOUTH_EAST_MINE.down_xx,
-				toTest.rmap.SOUTH_EAST_OUT.upl_xx - 1, 0);
+				toTest.rmap.SOUTH_EAST_OUT.upl_xx , 0);
 		assertEquals("y", toTest.rmap.SOUTH_EAST_MINE.down_yy,
-				toTest.rmap.SOUTH_EAST_OUT.upl_yy - 1, 0);
+				toTest.rmap.SOUTH_EAST_OUT.upl_yy , 0);
 	}
 
 	/**
@@ -1173,14 +1180,14 @@ public class DSparseGrid2DXYTester {
 
 		// upLeft
 		assertEquals("X Up Left", toTest.myfield.upl_xx,
-				toTest.rmap.NORTH_MINE.upl_xx + 1, 0);
+				toTest.rmap.NORTH_MINE.upl_xx, 0);
 		assertEquals("Y Up Left", toTest.myfield.upl_yy,
-				toTest.rmap.NORTH_MINE.upl_yy + 1, 0);
+				toTest.rmap.NORTH_MINE.upl_yy, 0);
 		// downRight
 		assertEquals("X Down Right", toTest.myfield.down_xx,
-				toTest.rmap.SOUTH_MINE.down_xx - 1, 0);
+				toTest.rmap.SOUTH_MINE.down_xx, 0);
 		assertEquals("Y Down Right", toTest.myfield.down_yy,
-				toTest.rmap.SOUTH_MINE.down_yy - 1, 0);
+				toTest.rmap.SOUTH_MINE.down_yy, 0);
 
 	}
 

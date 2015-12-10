@@ -2,11 +2,7 @@ package it.isislab.dmason.test.sim.field.grid.numeric;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-
-import java.util.ArrayList;
-
 import org.junit.Test;
-
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
@@ -15,7 +11,6 @@ import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.numeric.DDoubleGrid2D;
 import it.isislab.dmason.sim.field.grid.numeric.DDoubleGrid2DFactory;
-import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.connection.ConnectionType;
 import sim.engine.SimState;
