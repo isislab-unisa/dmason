@@ -979,30 +979,38 @@ public class DContinuousGrid2DXYTester {
 	public void testMyFieldPartitioningMaxDistance1() throws DMasonException {
 
 		// i need that w and h is equal for using the Pitagora's theorem
-		double w = 10.0;
-		double h = 10.0;
+		double w = 100.0;
+		double h = 100.0;
 		int maxD = 1;
 
 		//		toTest = new DContinuous2DXY(/* discretization */0.5, w, h, /* simState */
 		//		ss, maxD, /* i */0, /* j */0, 1, 1, /* name */
 		//		"test", /* prefix */"");
 		toTest = (DContinuousGrid2DXY) DContinuousGrid2DFactory.createDContinuous2D(
-				0.5, w, h, ss, maxD, 0, 0, 1, 1, mode,
+				0.5, w, h, ss, maxD, 1, 1, 2, 2, mode,
 				"test", "", true);
 
 
-		Double x2 = toTest.myfield.down_xx;
+		
+		
 		Double x1 = toTest.myfield.upl_xx;
-		Double y2 = toTest.myfield.down_yy;
 		Double y1 = toTest.myfield.upl_yy;
+		Double x2 = toTest.myfield.down_xx;
+		Double y2 = toTest.myfield.down_yy;
+	
+		System.out.println(x1+","+y1);
+		System.out.println(toTest.rmap.getNORTH_WEST_MINE().upl_xx+","+toTest.rmap.getNORTH_WEST_MINE().upl_yy);
+		
+		System.out.println(x2+","+y2);
+		System.out.println(toTest.rmap.getSOUTH_EAST_MINE().down_xx+","+toTest.rmap.getSOUTH_EAST_MINE().down_yy);
+		
 
 		// find diagonal with the theorem of distance between 2 points
 		Double diag = Math
 				.sqrt(Math.pow(x2 - x1, 2.0) + Math.pow(y2 - y1, 2.0));
 
 		// find diagonal with the theorem of Pitagora
-		Double diagwh = Math.sqrt(Math.pow(w - 2 * maxD, 2.0)
-				+ Math.pow(h - 2 * maxD, 2.0));
+		Double diagwh = Math.sqrt(Math.pow(w/2,2 )+ Math.pow(h/2, 2));
 
 		assertEquals(diag, diagwh);
 	}
