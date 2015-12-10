@@ -1166,8 +1166,8 @@ public class DSparseGrid2DXYTester {
 	 */
 	@Test
 	public void testMyFieldCongruence() throws DMasonException {
-		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(10,
-				10,/* simState */
+		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(100,
+				100,/* simState */
 				ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, mode,/* name */
 				"test", /* prefix */"", true);
 

@@ -1,10 +1,8 @@
 package it.isislab.dmason.test.sim.field.grid.numeric;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
@@ -12,12 +10,9 @@ import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2DFactory;
 import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2DXY;
-import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
-import it.isislab.dmason.test.sim.field.continuous.DContinuousGrid2DXYTester.StubRemotePositionedAgent;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.connection.ConnectionType;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import sim.engine.SimState;
 import sim.util.Int2D;
