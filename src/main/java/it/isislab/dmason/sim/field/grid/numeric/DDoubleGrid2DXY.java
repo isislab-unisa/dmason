@@ -23,12 +23,10 @@ import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.grid.numeric.region.RegionDoubleNumeric;
-import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegionNumeric;
 import it.isislab.dmason.sim.field.support.field2D.EntryNum;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.RegionNumeric;
-import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
@@ -42,6 +40,7 @@ import java.util.HashMap;
 import java.util.PriorityQueue;
 
 import sim.engine.SimState;
+import sim.util.Double2D;
 import sim.util.Int2D;
 
 
@@ -549,8 +548,9 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 
 		memorizeRegionOut();
 
-		//--> publishing the regions to correspondent topics for the neighbors			
-		if(rmap.WEST_OUT!=null)
+		//--> publishing the regions to correspondent topics for the neighbors	
+		publishRegions(connWorker);
+		/*if(rmap.WEST_OUT!=null)
 		{
 			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr =
 					new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>
@@ -645,7 +645,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDR", NAME);
 
 			} catch (Exception e1) { e1.printStackTrace(); }
-		}
+		}*/
 		//<--
 
 		PriorityQueue<Object> q;
@@ -678,6 +678,103 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		this.reset();
 
 		return true;
+	}
+
+	private void publishRegions(Connection connWorker) {
+
+		if(rmap.WEST_OUT!=null)
+		{
+			try 
+			{
+				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr=new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(rmap.WEST_MINE,rmap.WEST_OUT,
+						(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.WEST);
+
+				connWorker.publishToTopic(dr,topicPrefix+cellType+"L",NAME);
+
+			} catch (Exception e1) { e1.printStackTrace();}
+		}
+		if(rmap.EAST_OUT!=null)
+		{
+			try 
+			{
+				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr=new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(rmap.EAST_MINE,rmap.EAST_OUT,
+						(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.EAST);				
+
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"R",NAME);
+
+			} catch (Exception e1) {e1.printStackTrace(); }
+		}
+		if(rmap.NORTH_OUT!=null )
+		{
+			try 
+			{
+				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr=new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(rmap.NORTH_MINE,rmap.NORTH_OUT,
+						(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.NORTH);
+
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"U",NAME);
+
+			} catch (Exception e1) {e1.printStackTrace();}
+		}
+
+		if(rmap.SOUTH_OUT!=null )
+		{
+			try 
+			{
+				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr=new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(rmap.SOUTH_MINE,rmap.SOUTH_OUT,
+						(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.SOUTH);
+
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"D",NAME);
+
+			} catch (Exception e1) { e1.printStackTrace(); }
+		}
+
+		if(rmap.NORTH_WEST_OUT!=null)
+		{
+			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr=new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(rmap.NORTH_WEST_MINE,
+					rmap.NORTH_WEST_OUT,
+					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.NORTH_WEST);
+			try 
+			{
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDL",NAME);
+
+			} catch (Exception e1) { e1.printStackTrace();}
+
+		}
+		if(rmap.NORTH_EAST_OUT!=null)
+		{
+			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr=new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(rmap.NORTH_EAST_MINE,
+					rmap.NORTH_EAST_OUT,
+					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.NORTH_EAST);
+			try 
+			{
+
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDR",NAME);
+
+			} catch (Exception e1) {e1.printStackTrace();}
+		}
+		if( rmap.SOUTH_WEST_OUT!=null)
+		{
+			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr=new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(rmap.SOUTH_WEST_MINE,
+					rmap.SOUTH_WEST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.SOUTH_WEST);
+			try 
+			{
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDL",NAME);
+
+			} catch (Exception e1) {e1.printStackTrace();}
+		}
+		if(rmap.SOUTH_EAST_OUT!=null)
+		{
+			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr=new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(rmap.SOUTH_EAST_MINE,
+					rmap.SOUTH_EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.SOUTH_EAST);
+
+			try 
+			{				
+
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDR",NAME);
+
+			} catch (Exception e1) { e1.printStackTrace(); }
+		}
+
 	}
 
 	@Override
