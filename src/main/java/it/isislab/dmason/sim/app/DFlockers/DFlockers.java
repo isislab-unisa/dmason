@@ -57,8 +57,7 @@ public class DFlockers extends DistributedState<Double2D>
 	 */
 	private static final long serialVersionUID = 1L;
 	public DContinuousGrid2D flockers;
-	//private static boolean isToroidal=true;
-
+	
 	@BatchAnnotation(
 			domain = "100-300",
 			suggestedValue = "250"
