@@ -105,6 +105,7 @@ public abstract class DIntGrid2D extends IntGrid2D implements DistributedField2D
 	 * It's the distance used for the updates
 	 */
 	public int MAX_DISTANCE;
+	public int jumpDistance;
 	/**
 	 * It represents the cell
 	 */

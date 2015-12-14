@@ -166,6 +166,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 		this.sm=sm;		
 		cellType = new CellType(i, j);
 		MAX_DISTANCE=max_distance;
+		jumpDistance=max_distance;
 		//NUMPEERS=num_peers;
 		this.rows = rows;
 		this.columns = columns;
@@ -183,7 +184,6 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	 */
 	private boolean createRegion()
 	{
-int jumpDistance=MAX_DISTANCE;
 		
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))

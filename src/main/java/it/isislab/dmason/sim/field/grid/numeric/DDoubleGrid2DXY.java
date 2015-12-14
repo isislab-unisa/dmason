@@ -169,6 +169,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		this.NAME = name;
 		this.sm=sm;		
 		cellType = new CellType(i, j);
+		jumpDistance=max_distance;
 		MAX_DISTANCE=max_distance;
 		//NUMPEERS=num_peers;
 		this.rows = rows;
@@ -185,7 +186,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	 * @return true if all is ok
 	 */
 	private boolean createRegion() {
-		int jumpDistance=MAX_DISTANCE;
+		
 		
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
