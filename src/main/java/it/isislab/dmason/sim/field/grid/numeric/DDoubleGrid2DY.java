@@ -174,7 +174,7 @@ public class DDoubleGrid2DY extends DDoubleGrid2D {
 	 */
 	private boolean createRegion()
 	{
-        int jumpDistance=MAX_DISTANCE; 
+        
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
