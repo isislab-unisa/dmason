@@ -46,7 +46,7 @@ import sim.util.Int2D;
  */
 public class DParticles extends DistributedState<Int2D> {
 
-	private static boolean isToroidal=true;
+	//private static boolean isToroidal=true;
 	public DSparseGrid2D particles;
 	public DDoubleGrid2D trails;
 	//public DoubleGrid2D trails;
