@@ -166,7 +166,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 	 * @param width field's width  
 	 * @param height field's height
 	 * @param sm The SimState of simulation
-	 * @param max_distance maximum shift distance of the agents
+	 * @param jumpDistance maximum shift distance of the agents
 	 * @param i i position in the field of the cell
 	 * @param j j position in the field of the cell
 	 * @param rows number of rows in the division
@@ -174,7 +174,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
-	public DSparseGrid2DXYLB(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns, String name, String prefix) 
+	public DSparseGrid2DXYLB(int width, int height,SimState sm,int jumpDist,int i,int j,int rows,int columns, String name, String prefix) 
 	{		
 		super(width, height);
 		this.width=width;
@@ -183,7 +183,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 		this.sm=sm;
 		this.topicPrefix = prefix;
 		cellType = new CellType(i, j);
-		MAX_DISTANCE=max_distance;
+		jumpDistance=jumpDist;
 		NUMPEERS=rows*columns;
 		toSendForBalance = new HashMap<Integer, MyCellInterface>();
 		toSendForUnion = new HashMap<Integer, MyCellInterface>();
@@ -210,7 +210,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 			toSendForUnion.put(k, null);
 		}
 		//contiene le celle divise inizialmente
-		ArrayList<MyCellInterface> listOriginalCell = balance.createRegions(this,my_width, my_height, MAX_DISTANCE, own_x,own_y,NUMPEERS);
+		ArrayList<MyCellInterface> listOriginalCell = balance.createRegions(this,my_width, my_height, jumpDistance, own_x,own_y,NUMPEERS);
 
 		//struttura in cui vengono inserite le mycell
 		listGrid = new HashMap<Integer,HashMap<CellType, MyCellInterface>>();

@@ -161,7 +161,8 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		this.height=height;
 		this.NAME = name;
 		this.sm=sm;
-		MAX_DISTANCE=max_distance;
+		//MAX_DISTANCE=max_distance;
+		jumpDistance=max_distance;
 		//NUMPEERS=num_peers;
 		this.rows = rows;
 		this.columns = columns;	

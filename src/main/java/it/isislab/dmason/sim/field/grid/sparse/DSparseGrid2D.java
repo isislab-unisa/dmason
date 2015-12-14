@@ -87,7 +87,7 @@ public abstract class DSparseGrid2D extends SparseGrid2D implements DistributedF
 	public ArrayList<ArrayList<Region<Integer, Int2D>>> updates_cacheLB;
 	public UpdateCell<Integer,MyCellIntegerField> updateCell = new UpdateCell<Integer, MyCellIntegerField>();
 
-	public int MAX_DISTANCE;
+	//public int MAX_DISTANCE;
 	public CellType cellType;
 	public UpdateMap<Integer,Int2D> updates=new UpdateMap<Integer,Int2D>();
 	public SimState sm ;
