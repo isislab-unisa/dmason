@@ -43,7 +43,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
 
 	/*******Simulations**************/
-	//TestDFlockers.class,
+	TestDFlockers.class,
 	TestDParticles.class,
 	TestDAntsForage.class,
 
