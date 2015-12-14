@@ -258,7 +258,7 @@ public class DDoubleGrid2DXYTester {
 		assertEquals("The celltype should be "+celltype.pos_j,celltype.pos_j,toTest.cellType.pos_j);
 		assertEquals("The columns should be "+columns,columns,toTest.columns);
 		assertEquals("The rows should be "+rows,rows,toTest.rows);
-		assertEquals("The maxDistance should be "+maxDistance,maxDistance,toTest.MAX_DISTANCE);
+		assertEquals("The maxDistance should be "+maxDistance,maxDistance,toTest.jumpDistance);
 		assertEquals("The width should be "+width,width,toTest.getWidth());
 		assertEquals("The height should be "+height,height,toTest.getHeight());
 		int my_width,my_height;

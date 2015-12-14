@@ -156,7 +156,8 @@ public class DDoubleGrid2DXYThin extends DDoubleGrid2DThin {
 		this.field_height=field_height;
 		this.NAME = name;
 		this.sm=sm;		 
-		MAX_DISTANCE=max_distance;
+		
+		jumpDistance=max_distance;
 		//NUMPEERS=num_peers;	
 		this.rows = rows;
 		this.columns = columns;
@@ -182,7 +183,7 @@ public class DDoubleGrid2DXYThin extends DDoubleGrid2DThin {
 	 */
 	private boolean createRegion() {
 
-		int jumpDistance=MAX_DISTANCE;
+		
 		
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
@@ -980,13 +981,13 @@ public class DDoubleGrid2DXYThin extends DDoubleGrid2DThin {
 
 	@Override
 	public void setThin(int i,int j, double val){
-		if(i-own_x+2*MAX_DISTANCE>=0 && i-own_x+2*MAX_DISTANCE<field_width && j-own_y+2*MAX_DISTANCE>=0 && j-own_y+2*MAX_DISTANCE<field_height)
-			field[i-own_x+2*MAX_DISTANCE][j-own_y+2*MAX_DISTANCE]=val;
+		if(i-own_x+2*jumpDistance>=0 && i-own_x+2*jumpDistance<field_width && j-own_y+2*jumpDistance>=0 && j-own_y+2*jumpDistance<field_height)
+			field[i-own_x+2*jumpDistance][j-own_y+2*jumpDistance]=val;
 	}
 	@Override
 	public double getThin(int i, int j){
-		if(i-own_x+2*MAX_DISTANCE>=0 && i-own_x+2*MAX_DISTANCE<field_width && j-own_y+2*MAX_DISTANCE>=0 && j-own_y+2*MAX_DISTANCE<field_height)
-			return field[i-own_x+2*MAX_DISTANCE][j-own_y+2*MAX_DISTANCE];
+		if(i-own_x+2*jumpDistance>=0 && i-own_x+2*jumpDistance<field_width && j-own_y+2*jumpDistance>=0 && j-own_y+2*jumpDistance<field_height)
+			return field[i-own_x+2*jumpDistance][j-own_y+2*jumpDistance];
 		return Double.MIN_VALUE;
 
 	}

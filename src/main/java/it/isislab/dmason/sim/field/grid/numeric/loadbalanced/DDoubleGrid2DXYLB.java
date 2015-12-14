@@ -199,8 +199,8 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D implements DistributedField
 		this.NAME = name;
 		this.sm=sm;
 		this.topicPrefix = prefix;
+		jumpDistance=max_distance;
 		cellType = new CellType(i, j);
-		MAX_DISTANCE=max_distance;
 		NUMPEERS=rows*columns;
 		toSendForBalance = new HashMap<Integer, MyCellInterface>();
 		toSendForUnion = new HashMap<Integer, MyCellInterface>();
@@ -218,7 +218,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D implements DistributedField
 		int [] lP = {0,1,2,7,8,3,6,5,4};
 
 		//contiene le celle divise inizialmente
-		ArrayList<MyCellDoubleNumeric> listOriginalCell = balance.createRegions(this,my_width,my_height,MAX_DISTANCE,own_x,own_y,NUMPEERS);
+		ArrayList<MyCellDoubleNumeric> listOriginalCell = balance.createRegions(this,my_width,my_height,jumpDistance,own_x,own_y,NUMPEERS);
 
 		//struttura in cui vengono inserite le MyCellForDouble
 		listGrid = new HashMap<Integer,HashMap<CellType, MyCellInterface>>();

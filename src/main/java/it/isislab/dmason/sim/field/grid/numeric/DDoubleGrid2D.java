@@ -109,7 +109,6 @@ public abstract class DDoubleGrid2D extends DoubleGrid2D implements DistributedF
 	 * It's the distance used for the updates in the simulation
 	 */
 	public int jumpDistance;
-	public int MAX_DISTANCE;
 	/**
 	 * It contains all the region out of the peer
 	 */

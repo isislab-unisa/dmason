@@ -170,7 +170,6 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		this.sm=sm;		
 		cellType = new CellType(i, j);
 		jumpDistance=max_distance;
-		MAX_DISTANCE=max_distance;
 		//NUMPEERS=num_peers;
 		this.rows = rows;
 		this.columns = columns;

@@ -160,7 +160,8 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 		this.height=height;
 		this.NAME = name;
 		this.sm=sm;		 
-		MAX_DISTANCE=max_distance;
+		
+		jumpDistance=max_distance;
 		//NUMPEERS=num_peers;
 		this.rows = rows;
 		this.columns = columns;
@@ -188,7 +189,7 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 	 */
 	private boolean createRegion()
 	{
-		int jumpDistance=MAX_DISTANCE;
+		
 
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
@@ -438,7 +439,7 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 				rmap.EAST_OUT.clear();
 
 				for (int i = 0; i < height; i++) {
-					for (int j = rmap.EAST_OUT.upl_xx; j <= rmap.EAST_OUT.down_xx-MAX_DISTANCE; j++) {
+					for (int j = rmap.EAST_OUT.upl_xx; j <= rmap.EAST_OUT.down_xx-jumpDistance; j++) {
 						rmap.EAST_OUT.addEntryNum(new EntryNum<Double, Int2D>(
 								field[j][i], new Int2D(j, i)));
 					}
@@ -468,7 +469,7 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 				rmap.WEST_OUT.clear();
 
 				for (int i = 0; i < height; i++) {
-					for (int j = rmap.WEST_OUT.upl_xx+MAX_DISTANCE; j <= rmap.WEST_OUT.down_xx; j++) {
+					for (int j = rmap.WEST_OUT.upl_xx+jumpDistance; j <= rmap.WEST_OUT.down_xx; j++) {
 						rmap.WEST_OUT.addEntryNum(new EntryNum<Double, Int2D>(
 								field[j][i], new Int2D(j, i)));
 					}
@@ -520,13 +521,13 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 			if(balanceR>0){
 				//The width of the region was increased in the previous step
 				//So the EAST_MINE must be restored on the start's dimensions but maintaining the new positions
-				rmap.EAST_MINE.setUpl_xx(own_x + my_width -MAX_DISTANCE);
+				rmap.EAST_MINE.setUpl_xx(own_x + my_width -jumpDistance);
 			}
 			else if(balanceR<0){
 
 				//The width of the region was decreased in the previous step
 				//So the EAST_OUT must be restored on the start's dimensions but maintaining the new positions
-				rmap.EAST_OUT.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
+				rmap.EAST_OUT.setDown_xx(own_x+my_width+jumpDistance-1);
 				prevBalanceR=balanceR;
 
 			}
@@ -537,13 +538,13 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 			if(balanceL>0){
 				//The width of the region was increased in the previous step
 				//So the left_mine must be restored on the start's dimensions but maintaining the new positions
-				rmap.WEST_MINE.setDown_xx(own_x + MAX_DISTANCE -1);
+				rmap.WEST_MINE.setDown_xx(own_x + jumpDistance -1);
 			}
 			else if(balanceL<0){
 
 				//The width of the region was increased in the previous step
 				//So the left_out must be restored on the start's dimensions but maintaining the new positions
-				rmap.WEST_OUT.setUpl_xx(own_x-MAX_DISTANCE);
+				rmap.WEST_OUT.setUpl_xx(own_x-jumpDistance);
 				prevBalanceL=balanceL;
 			}
 			balanceL=0;
@@ -569,7 +570,7 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 							isLeft=true;
 							if (prevBalanceR<0){
 								for (int i = 0; i < height; i++) {
-									for (int j = rmap.EAST_OUT.upl_xx+MAX_DISTANCE; j <= rmap.EAST_OUT.down_xx-prevBalanceR; j++) {
+									for (int j = rmap.EAST_OUT.upl_xx+jumpDistance; j <= rmap.EAST_OUT.down_xx-prevBalanceR; j++) {
 										field[j][i]=initialValue;
 
 									}
@@ -583,12 +584,12 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 
 
 							//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null
-							if(balanceR>region.width-MAX_DISTANCE-1){
-								balanceR=region.width-MAX_DISTANCE-1;
+							if(balanceR>region.width-jumpDistance-1){
+								balanceR=region.width-jumpDistance-1;
 							}
 							//The balance can't be smaller than its width+AOI+1 otherwise this region becames null
-							if(balanceR<-my_width+MAX_DISTANCE+1){
-								balanceR=-my_width+MAX_DISTANCE+1;
+							if(balanceR<-my_width+jumpDistance+1){
+								balanceR=-my_width+jumpDistance+1;
 
 							}
 
@@ -598,23 +599,23 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 								//the region becames smaller
 								//the EAST_OUT becames bigger so the agents can be passed to the right neighbor
 								rmap.EAST_OUT.setUpl_xx(own_x+my_width+balanceR);
-								rmap.EAST_OUT.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
+								rmap.EAST_OUT.setDown_xx(own_x+my_width+jumpDistance-1);
 								my_width=my_width+balanceR;
-								rmap.EAST_MINE.setUpl_xx(own_x + my_width-MAX_DISTANCE);
+								rmap.EAST_MINE.setUpl_xx(own_x + my_width-jumpDistance);
 								rmap.EAST_MINE.setDown_xx(own_x +my_width-1);
 								if(rmap.WEST_OUT == null)
 								{
 									//peer 0
 									myfield.setUpl_xx(own_x);
-									myfield.setDown_xx(own_x+my_width-MAX_DISTANCE-1);
+									myfield.setDown_xx(own_x+my_width-jumpDistance-1);
 
 								}
 
 
 								if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 								{
-									myfield.setUpl_xx(own_x+MAX_DISTANCE);
-									myfield.setDown_xx(own_x+my_width-MAX_DISTANCE-1);
+									myfield.setUpl_xx(own_x+jumpDistance);
+									myfield.setDown_xx(own_x+my_width-jumpDistance-1);
 
 								}
 
@@ -622,24 +623,24 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 								if(balanceR>0){
 									//the region becames bigger
 									//the EAST_MINE becames bigger so the agents can be received from the right neighbor
-									rmap.EAST_MINE.setUpl_xx(own_x + my_width-MAX_DISTANCE);
+									rmap.EAST_MINE.setUpl_xx(own_x + my_width-jumpDistance);
 									rmap.EAST_MINE.setDown_xx(own_x +my_width-1+balanceR);
 									my_width=my_width+balanceR;
 									rmap.EAST_OUT.setUpl_xx(own_x + my_width);
-									rmap.EAST_OUT.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
+									rmap.EAST_OUT.setDown_xx(own_x+my_width+jumpDistance-1);
 
 									if(rmap.WEST_OUT == null)
 									{
 										//peer 0
 										myfield.setUpl_xx(own_x);
-										myfield.setDown_xx(own_x+my_width-MAX_DISTANCE-1);
+										myfield.setDown_xx(own_x+my_width-jumpDistance-1);
 
 									}
 
 									if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 									{
-										myfield.setUpl_xx(own_x+MAX_DISTANCE);
-										myfield.setDown_xx(own_x+my_width-MAX_DISTANCE-1);
+										myfield.setUpl_xx(own_x+jumpDistance);
+										myfield.setDown_xx(own_x+my_width-jumpDistance-1);
 
 									}
 								}
@@ -651,7 +652,7 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 							isLeft=false;
 							if(prevBalanceL<0){
 								for (int i = 0; i < height; i++) {
-									for (int j = rmap.WEST_OUT.upl_xx+prevBalanceL; j <= rmap.WEST_OUT.down_xx-MAX_DISTANCE; j++) {
+									for (int j = rmap.WEST_OUT.upl_xx+prevBalanceL; j <= rmap.WEST_OUT.down_xx-jumpDistance; j++) {
 										field[j][i]=initialValue;
 
 									}
@@ -663,33 +664,33 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 
 
 							//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null
-							if(balanceL>Math.min(region.width-MAX_DISTANCE-1,100000/(height*((DistributedMultiSchedule)(sm.schedule)).getNumFields())))
-								balanceL=Math.min(region.width-MAX_DISTANCE-1,100000/(height*((DistributedMultiSchedule)(sm.schedule)).getNumFields()));
+							if(balanceL>Math.min(region.width-jumpDistance-1,100000/(height*((DistributedMultiSchedule)(sm.schedule)).getNumFields())))
+								balanceL=Math.min(region.width-jumpDistance-1,100000/(height*((DistributedMultiSchedule)(sm.schedule)).getNumFields()));
 							//The balance can't be smaller than its width+AOI+1 otherwise this region becames null
-							if(balanceL<Math.max(-my_width+MAX_DISTANCE+1,-100000/(height*((DistributedMultiSchedule)(sm.schedule)).getNumFields())))
-								balanceL=Math.max(-my_width+MAX_DISTANCE+1,-100000/(height*((DistributedMultiSchedule)(sm.schedule)).getNumFields()));
+							if(balanceL<Math.max(-my_width+jumpDistance+1,-100000/(height*((DistributedMultiSchedule)(sm.schedule)).getNumFields())))
+								balanceL=Math.max(-my_width+jumpDistance+1,-100000/(height*((DistributedMultiSchedule)(sm.schedule)).getNumFields()));
 							if(balanceL<0){
 								//the region becames smaller
 								//the left_out becames bigger so the agents can be passed to the left neighbor
-								rmap.WEST_OUT.setUpl_xx(own_x-MAX_DISTANCE);
+								rmap.WEST_OUT.setUpl_xx(own_x-jumpDistance);
 								rmap.WEST_OUT.setDown_xx(own_x-1-balanceL);
 								own_x=own_x-balanceL;
 								my_width=my_width+balanceL;
 								rmap.WEST_MINE.setUpl_xx(own_x);
-								rmap.WEST_MINE.setDown_xx(own_x + MAX_DISTANCE -1);
+								rmap.WEST_MINE.setDown_xx(own_x + jumpDistance -1);
 
 								if(rmap.EAST_OUT == null)
 								{
 									//peer NUMPEERS-1
-									myfield.setUpl_xx(own_x+MAX_DISTANCE);
+									myfield.setUpl_xx(own_x+jumpDistance);
 									myfield.setDown_xx(own_x+my_width-1);
 
 								}
 
 								if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 								{
-									myfield.setUpl_xx(own_x+MAX_DISTANCE);
-									myfield.setDown_xx( own_x+my_width-MAX_DISTANCE-1);
+									myfield.setUpl_xx(own_x+jumpDistance);
+									myfield.setDown_xx( own_x+my_width-jumpDistance-1);
 
 								}			
 
@@ -698,11 +699,11 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 									//the region becames bigger
 									//the left_mine becames bigger so the agents can be received from the left neighbor
 									rmap.WEST_MINE.setUpl_xx(own_x-balanceL);
-									rmap.WEST_MINE.setDown_xx(own_x + MAX_DISTANCE -1);
+									rmap.WEST_MINE.setDown_xx(own_x + jumpDistance -1);
 									own_x=own_x-balanceL;
 
 									my_width=my_width+balanceL;
-									rmap.WEST_OUT.setUpl_xx(own_x-MAX_DISTANCE);
+									rmap.WEST_OUT.setUpl_xx(own_x-jumpDistance);
 									rmap.WEST_OUT.setDown_xx(own_x-1);
 
 
@@ -710,15 +711,15 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 									if(rmap.EAST_OUT == null)
 									{
 										//peer NUMPEERS-1
-										myfield.setUpl_xx(own_x+MAX_DISTANCE);
+										myfield.setUpl_xx(own_x+jumpDistance);
 										myfield.setDown_xx(own_x+my_width-1);
 
 									}
 
 									if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 									{
-										myfield.setUpl_xx(own_x+MAX_DISTANCE);
-										myfield.setDown_xx( own_x+my_width-MAX_DISTANCE-1);
+										myfield.setUpl_xx(own_x+jumpDistance);
+										myfield.setDown_xx( own_x+my_width-jumpDistance-1);
 
 									}			
 
@@ -1015,15 +1016,15 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 
 		if(sr>sl){
 			if(el==0)
-				return al + MAX_DISTANCE;
+				return al + jumpDistance;
 			else
-				return al + Math.min(MAX_DISTANCE, (int) Math.ceil((sr-sl)/2.0)*MAX_DISTANCE/el);
+				return al + Math.min(jumpDistance, (int) Math.ceil((sr-sl)/2.0)*jumpDistance/el);
 		}
 		else if(sl>sr){
 			if(er==0)
-				return al - MAX_DISTANCE;
+				return al - jumpDistance;
 			else
-				return al + Math.max(-MAX_DISTANCE, (int) Math.ceil((sr-sl)/2.0)*MAX_DISTANCE/er);
+				return al + Math.max(-jumpDistance, (int) Math.ceil((sr-sl)/2.0)*jumpDistance/er);
 		}
 		return al;
 	}
