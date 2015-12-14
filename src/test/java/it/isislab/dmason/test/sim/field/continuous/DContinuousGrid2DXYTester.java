@@ -4,9 +4,11 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Random;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
 import sim.engine.SimState;
 import sim.util.Double2D;
 import it.isislab.dmason.exception.DMasonException;
@@ -997,12 +999,6 @@ public class DContinuousGrid2DXYTester {
 		Double y1 = toTest.myfield.upl_yy;
 		Double x2 = toTest.myfield.down_xx;
 		Double y2 = toTest.myfield.down_yy;
-	
-		System.out.println(x1+","+y1);
-		System.out.println(toTest.rmap.getNORTH_WEST_MINE().upl_xx+","+toTest.rmap.getNORTH_WEST_MINE().upl_yy);
-		
-		System.out.println(x2+","+y2);
-		System.out.println(toTest.rmap.getSOUTH_EAST_MINE().down_xx+","+toTest.rmap.getSOUTH_EAST_MINE().down_yy);
 		
 
 		// find diagonal with the theorem of distance between 2 points
@@ -1010,7 +1006,7 @@ public class DContinuousGrid2DXYTester {
 				.sqrt(Math.pow(x2 - x1, 2.0) + Math.pow(y2 - y1, 2.0));
 
 		// find diagonal with the theorem of Pitagora
-		Double diagwh = Math.sqrt(Math.pow(w/2-maxD*maxD,2 )+ Math.pow(h/2-maxD*maxD, 2));
+		Double diagwh = Math.sqrt(Math.pow(w/2 - 2 * maxD, 2.0)+ Math.pow(h/2 - 2 * maxD, 2.0));
 
 		assertEquals(diag, diagwh);
 	}

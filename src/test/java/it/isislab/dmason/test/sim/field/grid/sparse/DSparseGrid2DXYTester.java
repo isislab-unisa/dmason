@@ -724,7 +724,7 @@ public class DSparseGrid2DXYTester {
 		// i need that w and h is equal for using the Pitagora's theorem
 		int w = 100;
 		int h = 100;
-		int maxD = 2;
+		int maxD = 1;
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(w,
 				h,/* simState */
@@ -754,7 +754,8 @@ public class DSparseGrid2DXYTester {
 		
 		// find diagonal with the theorem of Pitagora
 		Double diagwh = Math.sqrt(Math.pow(w/2 - 2 * maxD, 2.0)+ Math.pow(h/2 - 2 * maxD, 2.0));
-
+		
+		
 		assertEquals(diag, diagwh);
 	}
 
@@ -1162,10 +1163,8 @@ public class DSparseGrid2DXYTester {
 				ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, mode,/* name */
 				"test", /* prefix */"", true);
 
-		assertEquals("x", toTest.rmap.NORTH_EAST_MINE.upl_xx,
-				toTest.rmap.NORTH_EAST_OUT.down_xx);
-		assertEquals("y", toTest.rmap.NORTH_EAST_MINE.upl_yy,
-				toTest.rmap.NORTH_EAST_OUT.down_yy , 0);
+		assertEquals("x", toTest.rmap.NORTH_EAST_MINE.upl_xx, toTest.rmap.NORTH_EAST_OUT.down_xx);
+		assertEquals("y", toTest.rmap.NORTH_EAST_MINE.upl_yy, toTest.rmap.NORTH_EAST_OUT.down_yy , 0);
 	}
 
 	/**
@@ -1189,15 +1188,13 @@ public class DSparseGrid2DXYTester {
 	 */
 	@Test
 	public void testCornerCongruenceDownLeft() throws DMasonException {
-		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(10,
-				10,/* simState */
-				ss, 1, /* i */1, /* j */1, /* rows */3, /* Colums */3, mode,/* name */
+		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(100,
+				100,/* simState */
+				ss, 1, /* i */1, /* j */1, /* rows */2, /* Colums */2, mode,/* name */
 				"test", /* prefix */"", true);
 
-		assertEquals("x", toTest.rmap.SOUTH_WEST_MINE.upl_xx,
-				toTest.rmap.SOUTH_WEST_OUT.down_xx, 0);
-		assertEquals("y", toTest.rmap.SOUTH_WEST_MINE.upl_yy,
-				toTest.rmap.SOUTH_WEST_OUT.down_yy, 0);
+		assertEquals("x", toTest.rmap.SOUTH_WEST_MINE.upl_xx, toTest.rmap.SOUTH_WEST_OUT.down_xx, 0);
+		assertEquals("y", toTest.rmap.SOUTH_WEST_MINE.upl_yy, toTest.rmap.SOUTH_WEST_OUT.down_yy, 0);
 	}
 
 	/**
@@ -1228,14 +1225,14 @@ public class DSparseGrid2DXYTester {
 
 		// upLeft
 		assertEquals("X Up Left", toTest.myfield.upl_xx,
-				toTest.rmap.NORTH_MINE.upl_xx, 0);
+				toTest.rmap.NORTH_MINE.upl_xx+1, 0);
 		assertEquals("Y Up Left", toTest.myfield.upl_yy,
-				toTest.rmap.NORTH_MINE.upl_yy, 0);
+				toTest.rmap.NORTH_MINE.upl_yy+1, 0);
 		// downRight
 		assertEquals("X Down Right", toTest.myfield.down_xx,
-				toTest.rmap.SOUTH_MINE.down_xx, 0);
+				toTest.rmap.SOUTH_MINE.down_xx-1, 0);
 		assertEquals("Y Down Right", toTest.myfield.down_yy,
-				toTest.rmap.SOUTH_MINE.down_yy, 0);
+				toTest.rmap.SOUTH_MINE.down_yy-1, 0);
 
 	}
 
