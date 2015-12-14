@@ -175,6 +175,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		this.columns = columns;
 
 		updates_cache = new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
+		this.topicPrefix = prefix + ""+name;
 
 		createRegion();	
 	}

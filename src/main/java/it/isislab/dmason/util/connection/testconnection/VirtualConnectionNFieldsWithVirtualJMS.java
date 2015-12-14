@@ -63,7 +63,7 @@ public class VirtualConnectionNFieldsWithVirtualJMS extends Observable
 				
 				while((vsubscribers.get(topic_name)==null) /*|| (vsubscribers.get(topic_name).size()!=8)*/)
 				{
-					System.out.println(topic_name+" "+vsubscribers);
+					System.out.println("[print from "+this.getClass().getSimpleName()+"] "+topic_name+" "+vsubscribers);
 					try {
 						condVar.await();
 					} catch (InterruptedException e) {
@@ -286,7 +286,7 @@ public class VirtualConnectionNFieldsWithVirtualJMS extends Observable
 			// subscribers.get(key).setMessageListener(listener);
 			ArrayList<VirtualMessageListener> lists = vsubscribers.get(key);
 			lists = (lists == null) ? new ArrayList<VirtualMessageListener>(): lists;
-			lists.add((it.isislab.dmason.util.connection.testconnection.VirtualMessageListener) listener);
+			lists.add((VirtualMessageListener) listener);
 			accesstotopic.addSubscriber();
 			
 			return vsubscribers.put(key, lists) != null;

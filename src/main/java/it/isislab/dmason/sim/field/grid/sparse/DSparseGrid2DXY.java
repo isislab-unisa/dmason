@@ -27,6 +27,7 @@ import it.isislab.dmason.sim.field.TraceableField;
 import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegion;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
+import it.isislab.dmason.sim.field.support.field2D.EntryNum;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.sim.field.support.globals.GlobalInspectorHelper;
@@ -190,7 +191,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		//NUMPEERS=num_peers;
 		this.rows = rows;
 		this.columns = columns;
-		this.topicPrefix = prefix;
+		this.topicPrefix = prefix+""+name;
 
 
 
@@ -609,7 +610,8 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		memorizeRegionOut();
 
 		//--> publishing the regions to correspondent topics for the neighbors
-		if(rmap.WEST_OUT!=null)
+		publishRegions(connWorker);
+		/*if(rmap.WEST_OUT!=null)
 		{
 			try 
 			{
@@ -697,7 +699,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDR", NAME);
 
 			} catch (Exception e1) { e1.printStackTrace(); }
-		}//<--
+		}*///<--
 
 		//take from UpdateMap the updates for current last terminated step and use 
 		//verifyUpdates() to elaborate informations
@@ -744,6 +746,103 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		//System.out.println("end  SparseGriddxy2");
 		return true;
 	}
+
+	private void publishRegions(Connection connWorker) {
+		if(rmap.WEST_OUT!=null)
+		{
+			try 
+			{
+				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.WEST_MINE,rmap.WEST_OUT,
+						(sm.schedule.getSteps()-1),cellType,DistributedRegion.WEST);
+
+				connWorker.publishToTopic(dr,topicPrefix+cellType+"L",NAME);
+
+			} catch (Exception e1) { e1.printStackTrace();}
+		}
+		if(rmap.EAST_OUT!=null)
+		{
+			try 
+			{
+				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.EAST_MINE,rmap.EAST_OUT,
+						(sm.schedule.getSteps()-1),cellType,DistributedRegion.EAST);				
+
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"R",NAME);
+
+			} catch (Exception e1) {e1.printStackTrace(); }
+		}
+		if(rmap.NORTH_OUT!=null )
+		{
+			try 
+			{
+				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.NORTH_MINE,rmap.NORTH_OUT,
+						(sm.schedule.getSteps()-1),cellType,DistributedRegion.NORTH);
+
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"U",NAME);
+
+			} catch (Exception e1) {e1.printStackTrace();}
+		}
+
+		if(rmap.SOUTH_OUT!=null )
+		{
+			try 
+			{
+				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.SOUTH_MINE,rmap.SOUTH_OUT,
+						(sm.schedule.getSteps()-1),cellType,DistributedRegion.SOUTH);
+
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"D",NAME);
+
+			} catch (Exception e1) { e1.printStackTrace(); }
+		}
+
+		if(rmap.NORTH_WEST_OUT!=null)
+		{
+			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.NORTH_WEST_MINE,
+					rmap.NORTH_WEST_OUT,
+					(sm.schedule.getSteps()-1),cellType,DistributedRegion.NORTH_WEST);
+			try 
+			{
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDL",NAME);
+
+			} catch (Exception e1) { e1.printStackTrace();}
+
+		}
+		if(rmap.NORTH_EAST_OUT!=null)
+		{
+			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.NORTH_EAST_MINE,
+					rmap.NORTH_EAST_OUT,
+					(sm.schedule.getSteps()-1),cellType,DistributedRegion.NORTH_EAST);
+			try 
+			{
+
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDR",NAME);
+
+			} catch (Exception e1) {e1.printStackTrace();}
+		}
+		if( rmap.SOUTH_WEST_OUT!=null)
+		{
+			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.SOUTH_WEST_MINE,
+					rmap.SOUTH_WEST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.SOUTH_WEST);
+			try 
+			{
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDL",NAME);
+
+			} catch (Exception e1) {e1.printStackTrace();}
+		}
+		if(rmap.SOUTH_EAST_OUT!=null)
+		{
+			DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.SOUTH_EAST_MINE,
+					rmap.SOUTH_EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.SOUTH_EAST);
+
+			try 
+			{				
+
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDR",NAME);
+
+			} catch (Exception e1) { e1.printStackTrace(); }
+		}
+		
+	}
+
 
 	public void memorizeRegionOut()
 	{
