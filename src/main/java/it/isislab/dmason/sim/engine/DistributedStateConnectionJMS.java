@@ -234,7 +234,7 @@ public class DistributedStateConnectionJMS<E> {
 		if (MODE == DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE || MODE == DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE) { // HORIZONTAL_MODE
 
 			try {
-				connectionJMS.createTopic(topicPrefix+TYPE.pos_i + "-" + TYPE.pos_j + "L",
+				/*connectionJMS.createTopic(topicPrefix+TYPE.pos_i + "-" + TYPE.pos_j + "L",
 						schedule.fields2D
 						.size());
 				connectionJMS.createTopic(topicPrefix+TYPE.pos_i + "-" + TYPE.pos_j + "R",
@@ -258,7 +258,82 @@ public class DistributedStateConnectionJMS<E> {
 								+ (((TYPE.pos_j + 1 + NUMPEERS)) % NUMPEERS)
 								+ "L",
 								schedule.fields2D, listeners);
+				u2.start();*/
+				
+				connectionJMS.createTopic(topicPrefix+TYPE + "L",
+						schedule.fields2D
+						.size());
+				connectionJMS.createTopic(topicPrefix+TYPE + "R",
+						schedule.fields2D
+						.size());
+			
+				connectionJMS.createTopic(topicPrefix+TYPE + "CUDL",
+						schedule.fields2D
+						.size());
+				connectionJMS.createTopic(topicPrefix+TYPE + "CUDR",
+						schedule.fields2D
+						.size());
+				connectionJMS.createTopic(topicPrefix+TYPE + "CDDL",
+						schedule.fields2D
+						.size());
+				connectionJMS.createTopic(topicPrefix+TYPE + "CDDR",
+						schedule.fields2D
+						.size());
+
+				int i = TYPE.pos_i, j = TYPE.pos_j;
+				int sqrt = (int) Math.sqrt(NUMPEERS);
+
+				connectionJMS.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
+						+ ((j + 1 + columns) % columns) + "L");
+				connectionJMS.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
+						+ ((j - 1 + columns) % columns) + "R");
+				
+				connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
+						+ ((j - 1 + columns) % columns) + "CDDR");
+				connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
+						+ ((j + 1 + columns) % columns) + "CDDL");
+				connectionJMS.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
+						+ ((j - 1 + columns) % columns) + "CUDR");
+				connectionJMS.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
+						+ ((j + 1 + columns) % columns) + "CUDL");
+
+				u1 = new UpdaterThreadForListener(
+						connectionJMS, topicPrefix+((i + rows) % rows) + "-"
+								+ ((j + 1 + columns) % columns) + "L",
+								schedule.fields2D, listeners);
+				u1.start();
+
+				u2 = new UpdaterThreadForListener(
+						connectionJMS, topicPrefix+((i + rows) % rows) + "-"
+								+ ((j - 1 + columns) % columns) + "R",
+								schedule.fields2D, listeners);
 				u2.start();
+
+
+				u5 = new UpdaterThreadForListener(
+						connectionJMS, topicPrefix+((i - 1 + rows) % rows) + "-"
+								+ ((j - 1 + columns) % columns) + "CDDR",
+								schedule.fields2D, listeners);
+				u5.start();
+
+				u6 = new UpdaterThreadForListener(
+						connectionJMS, topicPrefix+((i - 1 + rows) % rows) + "-"
+								+ ((j + 1 + columns) % columns) + "CDDL",
+								schedule.fields2D, listeners);
+				u6.start();
+
+				u7 = new UpdaterThreadForListener(
+						connectionJMS, topicPrefix+((i + 1 + rows) % rows) + "-"
+								+ ((j - 1 + columns) % columns) + "CUDR",
+								schedule.fields2D, listeners);
+				u7.start();
+
+				u8 = new UpdaterThreadForListener(
+						connectionJMS, topicPrefix+((i + 1 + rows) % rows) + "-"
+								+ ((j + 1 + columns) % columns) + "CUDL",
+								schedule.fields2D, listeners);
+				u8.start();
+				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -711,15 +786,15 @@ public class DistributedStateConnectionJMS<E> {
 				}
 				listToSubscribe.get(toSubscribe).add(distributedNetwork);
 
-				if(networkNumberOfSubscribersForField.get(distributedNetwork.getID())==null)
-					networkNumberOfSubscribersForField.put(distributedNetwork.getID(), new Integer(0));
-				networkNumberOfSubscribersForField.put(distributedNetwork.getID(), 
-						(networkNumberOfSubscribersForField.get(distributedNetwork.getID())+1));
+				if(networkNumberOfSubscribersForField.get(distributedNetwork.getDistributedFieldID())==null)
+					networkNumberOfSubscribersForField.put(distributedNetwork.getDistributedFieldID(), new Integer(0));
+				networkNumberOfSubscribersForField.put(distributedNetwork.getDistributedFieldID(), 
+						(networkNumberOfSubscribersForField.get(distributedNetwork.getDistributedFieldID())+1));
 			}	
 		}
 
 		for (DNetwork distributedNetwork : networkLists) {
-			((DistributedFieldNetwork)distributedNetwork).setNumberOfUpdatesToSynchro(networkNumberOfSubscribersForField.get(distributedNetwork.getID()));
+			((DistributedFieldNetwork)distributedNetwork).setNumberOfUpdatesToSynchro(networkNumberOfSubscribersForField.get(distributedNetwork.getDistributedFieldID()));
 		}
 
 		Set<String> keySetToPublish = listToPublish.keySet();

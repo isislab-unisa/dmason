@@ -18,6 +18,7 @@
 package it.isislab.dmason.sim.field.continuous.region;
 
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
+import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.util.Util;
 import sim.util.Double2D;
@@ -34,17 +35,10 @@ import sim.util.Double2D;
  */
 public class RegionDouble extends Region<Double,Double2D>
 {
-	public static double width,height;
-	public RegionDouble(Double upl_xx, Double upl_yy, Double down_xx,
-			Double down_yy,double width,double height) 
+
+	public RegionDouble(Double upl_xx, Double upl_yy, Double down_xx,Double down_yy) 
 	{		
 		super(upl_xx, upl_yy, down_xx, down_yy);
-		RegionDouble.width=width;
-		RegionDouble.height=height;
-		if(down_xx==0.0)
-			super.down_xx=width;
-		if(down_yy==0.0)
-			super.down_yy=height;
 	}
 
 
@@ -52,11 +46,11 @@ public class RegionDouble extends Region<Double,Double2D>
 	@Override
 	public Region<Double, Double2D> clone() 
 	{
-		RegionDouble r=new RegionDouble(upl_xx, upl_yy, down_xx, down_yy,width,height);
+		RegionDouble r=new RegionDouble(upl_xx, upl_yy, down_xx, down_yy);
 		for(String agent_id : this.keySet())
 		{
-			it.isislab.dmason.sim.field.support.field2D.EntryAgent<Double2D> e = this.get(agent_id);
-			r.put(e.r.getId(), new it.isislab.dmason.sim.field.support.field2D.EntryAgent<Double2D>(((RemotePositionedAgent<Double2D>)(Util.clone(e.r))),e.l));
+			EntryAgent<Double2D> e = this.get(agent_id);
+			r.put(e.r.getId(), new EntryAgent<Double2D>(((RemotePositionedAgent<Double2D>)(Util.clone(e.r))),e.l));
 		}
 		return r;
 	}
@@ -68,7 +62,7 @@ public class RegionDouble extends Region<Double,Double2D>
 	}
 
 	@Override
-	public boolean addAgents(it.isislab.dmason.sim.field.support.field2D.EntryAgent<Double2D> e)  
+	public boolean addAgents(EntryAgent<Double2D> e)  
 	{
 		if(e == null || e.l == null || e.r == null) return false;
 

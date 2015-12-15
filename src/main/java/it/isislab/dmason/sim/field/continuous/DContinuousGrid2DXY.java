@@ -45,6 +45,8 @@ import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.logging.Logger;
 
+import javax.xml.ws.soap.MTOMFeature;
+
 import sim.engine.SimState;
 import sim.util.Double2D;
 
@@ -174,13 +176,14 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	// -----------------------------------------------------------------------
 	private ZoomArrayList<RemotePositionedAgent> tmp_zoom = new ZoomArrayList<RemotePositionedAgent>();
 
-	
+
 	/**
 	 * Short-hand for complete constructor. Assumes number or region to be 8 (that is: square division mode)
 	 */
-	public DContinuousGrid2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix)
+	public DContinuousGrid2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix, boolean isToroidal)
 	{
-		this(discretization, width, height, sm, max_distance, i, j, rows, columns, name, prefix, 8);
+		this(discretization, width, height, sm, max_distance, i, j, rows, columns, name, prefix, rows==1?6:8,isToroidal);
+		
 	}
 
 	/**
@@ -198,12 +201,12 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
-	public DContinuousGrid2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix, int numNeighbours) {
+	public DContinuousGrid2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix, int numNeighbours,boolean isToroidal) {
 		super(discretization, width, height);
 		this.width=width;
 		this.height=height;
 		this.sm = sm;	
-		this.jumpDistance = max_distance;
+		this.AOI = max_distance;
 		this.rows = rows;
 		this.columns = columns;
 		this.cellType = new CellType(i, j);
@@ -211,11 +214,9 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		this.name = name;
 		this.topicPrefix = prefix;
 		this.numNeighbors = numNeighbours;
-
-
-		//setConnection(((DistributedState)sm).getConnection());
+		
+		setToroidal(isToroidal);
 		createRegion();
-
 		// Initialize variables for GlobalInspector
 		tracingFields = new ArrayList<String>();
 		try
@@ -236,7 +237,6 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		globalsMethods = new ArrayList<Method>();
 		GlobalParametersHelper.buildGlobalsList((DistributedState)sm, ((ConnectionJMS)((DistributedState)sm).getCommunicationVisualizationConnection()), topicPrefix, globalsNames, globalsMethods);
 	}
-
 	/**
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
 	 * @return true if all is ok
@@ -282,55 +282,57 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 					}	
 			}
 		}
+		
+		
+		
+		if(isToroidal()){
 
-		// Building the regions
+			myfield=new RegionDouble(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
+			
 
-		myfield=new RegionDouble(own_x+jumpDistance,own_y+jumpDistance, own_x+my_width-jumpDistance , own_y+my_height-jumpDistance,width,height);
+			//corner up left
+			rmap.NORTH_WEST_OUT=new RegionDouble((own_x-AOI + width)%width, (own_y-AOI+height)%height, 
+					(own_x+width)%width==0?width:(own_x+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
+			rmap.NORTH_WEST_MINE=new RegionDouble(own_x, own_y, own_x+AOI, own_y+AOI);
 
-		//corner up left
-		rmap.NORTH_WEST_OUT=new RegionDouble((own_x-jumpDistance + width)%width, (own_y-jumpDistance+height)%height, 
-				(own_x+width)%width, (own_y+height)%height,width,height);
-		rmap.NORTH_WEST_MINE=new RegionDouble(own_x, own_y, 
-				own_x+jumpDistance, own_y+jumpDistance,width,height);
+			//corner up right
+			rmap.NORTH_EAST_OUT = new RegionDouble((own_x+my_width+width)%width, (own_y-AOI+height)%height,
+					(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
+			rmap.NORTH_EAST_MINE=new RegionDouble(own_x+my_width-AOI, own_y, own_x+my_width, own_y+AOI);
 
-		//corner up right
-		rmap.NORTH_EAST_OUT = new RegionDouble((own_x+my_width+width)%width, (own_y-jumpDistance+height)%height,
-				(own_x+my_width+jumpDistance+width)%width, (own_y+height)%height,width,height);
-		rmap.NORTH_EAST_MINE=new RegionDouble(own_x+my_width-jumpDistance, own_y, 
-				own_x+my_width, own_y+jumpDistance,width,height);
+			//corner down left
+			rmap.SOUTH_WEST_OUT=new RegionDouble((own_x-AOI+width)%width, (own_y+my_height+height)%height,
+					(own_x+width)%width==0?width:(own_x+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+			rmap.SOUTH_WEST_MINE=new RegionDouble(own_x, own_y+my_height-AOI,own_x+AOI, own_y+my_height);
 
-		//corner down left
-		rmap.SOUTH_WEST_OUT=new RegionDouble((own_x-jumpDistance+width)%width, (own_y+my_height+height)%height,
-				(own_x+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
-		rmap.SOUTH_WEST_MINE=new RegionDouble(own_x, own_y+my_height-jumpDistance,
-				own_x+jumpDistance, own_y+my_height,width,height);
+			//corner down right
+			rmap.SOUTH_EAST_OUT=new RegionDouble((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
+					(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+			rmap.SOUTH_EAST_MINE=new RegionDouble(own_x+my_width-AOI, own_y+my_height-AOI,own_x+my_width,own_y+my_height);
 
-		//corner down right
-		rmap.SOUTH_EAST_OUT=new RegionDouble((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
-				(own_x+my_width+jumpDistance+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
-		rmap.SOUTH_EAST_MINE=new RegionDouble(own_x+my_width-jumpDistance, own_y+my_height-jumpDistance,
-				own_x+my_width,own_y+my_height,width,height);
+			rmap.WEST_OUT=new RegionDouble((own_x-AOI+width)%width,(own_y+height)%height,
+					(own_x+width)%width==0?width:(own_x+width)%width, ((own_y+my_height)+height)%height==0?height:((own_y+my_height)+height)%height);
+			rmap.WEST_MINE=new RegionDouble(own_x,own_y,own_x + AOI , own_y+my_height);
 
-		rmap.WEST_OUT=new RegionDouble((own_x-jumpDistance+width)%width,(own_y+height)%height,
-				(own_x+width)%width, ((own_y+my_height)+height)%height,width,height);
-		rmap.WEST_MINE=new RegionDouble(own_x,own_y,
-				own_x + jumpDistance , own_y+my_height,width,height);
+			rmap.EAST_OUT=new RegionDouble((own_x+my_width+width)%width,(own_y+height)%height,
+					(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height==0?height:(own_y+my_height+height)%height);
+			rmap.EAST_MINE=new RegionDouble(own_x + my_width - AOI,own_y,own_x +my_width , own_y+my_height);
 
-		rmap.EAST_OUT=new RegionDouble((own_x+my_width+width)%width,(own_y+height)%height,
-				(own_x+my_width+jumpDistance+width)%width, (own_y+my_height+height)%height,width,height);
-		rmap.EAST_MINE=new RegionDouble(own_x + my_width - jumpDistance,own_y,
-				own_x +my_width , own_y+my_height,width,height);
 
-		rmap.NORTH_OUT=new RegionDouble((own_x+width)%width, (own_y - jumpDistance+height)%height,
-				(own_x+ my_width +width)%width,(own_y+height)%height,width,height);
-		rmap.NORTH_MINE=new RegionDouble(own_x ,own_y,
-				own_x+my_width, own_y + jumpDistance ,width,height);
+			rmap.NORTH_MINE=new RegionDouble(own_x ,own_y,own_x+my_width, own_y + AOI);
 
-		rmap.SOUTH_OUT=new RegionDouble((own_x+width)%width,(own_y+my_height+height)%height,
-				(own_x+my_width+width)%width, (own_y+my_height+jumpDistance+height)%height,width,height);
-		rmap.SOUTH_MINE=new RegionDouble(own_x,own_y+my_height-jumpDistance,
-				own_x+my_width, (own_y+my_height),width,height);
 
+			rmap.SOUTH_MINE=new RegionDouble(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
+
+			//if square partitioning
+			if(rows>1){
+				rmap.NORTH_OUT=new RegionDouble((own_x+width)%width, (own_y - AOI+height)%height,
+						(own_x+ my_width +width)%width==0?width:(own_x+ my_width +width)%width,(own_y+height)%height==0?height:(own_y+height)%height);
+
+				rmap.SOUTH_OUT=new RegionDouble((own_x+width)%width,(own_y+my_height+height)%height,
+						(own_x+my_width+width)%width==0?width:(own_x+my_width+width)%width, (own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+			}
+		}
 		return true;
 	}
 
@@ -344,16 +346,9 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	{
 		double shiftx=((DistributedState)sm).random.nextDouble();
 		double shifty=((DistributedState)sm).random.nextDouble();
-	//	double x=(own_x+jumpDistance)+((/*(*/my_width/*+own_x-jumpDistance)-(own_x+jumpDistance)*/)*shiftx)-jumpDistance;
-	//	double y=(own_y+jumpDistance)+((/*(*/my_height/*+own_y-jumpDistance)-(own_y+jumpDistance)*/)*shifty)-jumpDistance;
 
-		double x= ((own_x+jumpDistance)+((my_width-2*jumpDistance))*shiftx);
-//		if(x >= 0 && x <= 10 || x >= 290 && x<=300)
-//		System.out.println(own_x + " "+ my_width+" "+jumpDistance + " "+shiftx + " prima somma "+ (own_x+jumpDistance)+ " seconda somma "+((my_width-2*jumpDistance))*shiftx + " "+x);
-//		
-		double y= ((own_y+jumpDistance)+((my_height-2*jumpDistance))*shifty);
-
-		//rm.setPos(new Double2D(x,y));
+		double x= ((own_x+AOI)+((my_width-(2*AOI)))*shiftx);	
+		double y= ((own_y+AOI)+((my_height-(2*AOI)))*shifty);
 
 		return (new Double2D(x, y));
 	}
@@ -368,21 +363,17 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	@Override
 	public boolean setDistributedObjectLocation(final Double2D location,Object remoteObject,SimState sm) throws DMasonException
 	{
-		
-		
 		RemotePositionedAgent<Double2D> rm= null;
-		
+
 		if(remoteObject instanceof RemotePositionedAgent ){
 			if(((RemotePositionedAgent)remoteObject).getPos() instanceof Double2D){
-			
-			rm=(RemotePositionedAgent<Double2D>) remoteObject;	
+
+				rm=(RemotePositionedAgent<Double2D>) remoteObject;	
 			}
-			else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter RemotePositionedAgent<E>, E must be a Double2D");}
+			else{throw new DMasonException("Cast Exception setDistributedObjectLocation					//, second input parameter RemotePositionedAgent<E>, E must be a Double2D");}
 		}
 		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}
-		
-		
-		
+
 		if(setAgents(rm, location))
 		{
 			//numAgents++;
@@ -406,12 +397,11 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	@SuppressWarnings("rawtypes")
 	public synchronized boolean synchro() 
 	{
-		
+
 		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
 		// If there is any viewer, send a snap
-		if(conn!=null &&
-				((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
+		if(conn!=null &&((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
 			GlobalInspectorHelper.synchronizeInspector(
 					(DistributedState<?>)sm,
@@ -432,56 +422,22 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
 
-		// If there are global parameters, synchronize
-		/*if (globalsNames.size() > 0)
-		{
-			// Update and send global parameters
-			GlobalParametersHelper.sendGlobalParameters(
-					sm,
-					connection,
-					topicPrefix,
-					cellType,
-					currentTime,
-					globalsNames);
-			// Receive global parameters from previous step and update the model
-			GlobalParametersHelper.receiveAndUpdate(
-					this,
-					globalsNames,
-					globalsMethods);
-		}*/
-
-		// -------------------------------------------------------------------
-		// -------------------------------------------------------------------
-		// -------------------------------------------------------------------
-
-		// Remove agents in "out" sections
-		for(Region<Double, Double2D> region : updates_cache)
-		{
-			for(String agent_id : region.keySet())
-			{
-				EntryAgent<Double2D> remote_agent = region.get(agent_id);
-				this.remove(remote_agent.r);
-			}
-		}
+		//CLEAR FIELD 
+		clear_ghost_regions();
+		//SAVE AGENTS IN THE GHOST SECTION
+		memorizeRegionOut();
 
 		// Schedule agents in "myField" region
-		for(String agent_id : myfield.keySet())
+		for(EntryAgent<Double2D> e : myfield.values())
 		{
-			EntryAgent<Double2D> e = myfield.get(agent_id);
 			RemotePositionedAgent<Double2D> rm=e.r;
 			Double2D loc=e.l;
 			rm.setPos(loc);
-			this.remove(rm);
 			sm.schedule.scheduleOnce(rm);
-			setObjectLocation(rm,loc);
+			((DistributedState<Double2D>)sm).addToField(rm,e.l);
 		}   
 
-		// Update fields using reflection
-		updateFields();
-		updates_cache=new ArrayList<Region<Double,Double2D>>();
 
-		//
-		memorizeRegionOut();
 
 		ArrayList<String> actualVar=null;
 		if(conn!=null)
@@ -534,6 +490,20 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		}
 		return true;
 	}
+	/**
+	 * This method removes the agents in the ghost regions; 
+	 * and removes all scheduled agents that in the last step was moved in the a ghost region.
+	 */
+	private void clear_ghost_regions() {
+		// Remove agents in "ghost" sections
+		for(Region<Double, Double2D> region : updates_cache)
+			for(EntryAgent<Double2D> e:region.values())
+				this.remove(e.r);
+
+		updateFields();
+		updates_cache=new ArrayList<Region<Double,Double2D>>();
+
+	}
 
 	protected void processUpdates()
 	{
@@ -551,13 +521,9 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		} catch (InterruptedException e1) {e1.printStackTrace(); } catch (DMasonException e1) {e1.printStackTrace(); }
 
 		for(Region<Double, Double2D> region : updates_cache)
-			
-			for(String agent_id : region.keySet())
-			{
-				EntryAgent<Double2D> e_m = region.get(agent_id);
-				RemotePositionedAgent<Double2D> rm=e_m.r;
-				((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
-			}
+			for(EntryAgent<Double2D> e_m:region.values())
+				((DistributedState<Double2D>)sm).addToField(e_m.r,e_m.l);
+
 
 		this.reset();
 	}
@@ -678,9 +644,10 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 				if(returnValue!=null)
 				{
 					Region<Double,Double2D> region=((Region<Double,Double2D>)returnValue);
-					if(name.contains("out"))
+					if(name.contains("OUT"))
 					{
 						updates_cache.add(region.clone());
+
 
 					}
 				}
@@ -711,56 +678,13 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 			RemotePositionedAgent<Double2D> rm=e_m.r;
 			((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
 			rm.setPos(e_m.l);
-			setPortrayalForObject(rm);
 			sm.schedule.scheduleOnce(rm);
 		}
 
 		updates_cache.add(r_out);
 	}
 
-	/**
-	 * This method, written with Java Reflect, follows two logical ways for all the regions:
-	 * - if a region is an out one, the agent's location is updated and it's insert a new Entry 
-	 * 		in the updates_cache (cause the agent is moving out and it's important to maintain the information
-	 * 		for the next step)
-	 * - if a region is a mine one, the agent's location is updated and the agent is scheduled.
-	 */
-	private void updateFields()
-	{
-		Class o=rmap.getClass();
 
-		Field[] fields = o.getDeclaredFields();
-		for (int z = 0; z < fields.length; z++)
-		{
-			fields[z].setAccessible(true);
-			try
-			{
-				String name=fields[z].getName();
-				Method method = o.getMethod("get"+name, null);
-				Object returnValue = method.invoke(rmap, null);
-				if(returnValue!=null)
-				{
-					Region<Double,Double2D> region=((Region<Double,Double2D>)returnValue);
-					if(name.contains("out"))
-					{
-
-						for(String agent_id : region.keySet())
-						{ 
-							EntryAgent<Double2D> e = region.get(agent_id);
-							RemotePositionedAgent<Double2D> rm=e.r;
-							rm.setPos(e.l);
-							this.remove(rm);
-						} 
-					}
-				}
-			}
-			catch (IllegalArgumentException e){e.printStackTrace();} 
-			catch (IllegalAccessException e) {e.printStackTrace();} 
-			catch (SecurityException e) {e.printStackTrace();} 
-			catch (NoSuchMethodException e) {e.printStackTrace();} 
-			catch (InvocationTargetException e) {e.printStackTrace();}
-		}	     
-	}
 
 	/**
 	 * This method, written with Java Reflect, provides to add the Remote Agent
@@ -895,7 +819,49 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 
 		return false;
 	}
+	/**
+	 * This method, written with Java Reflect, follows two logical ways for all the regions:
+	 * - if a region is an out one, the agent's location is updated and it's insert a new Entry 
+	 * 		in the updates_cache (cause the agent is moving out and it's important to maintain the information
+	 * 		for the next step)
+	 * - if a region is a mine one, the agent's location is updated and the agent is scheduled.
+	 */
+	private void updateFields()
+	{
+		Class o=rmap.getClass();
 
+		Field[] fields = o.getDeclaredFields();
+		for (int z = 0; z < fields.length; z++)
+		{
+			fields[z].setAccessible(true);
+			try
+			{
+				String name=fields[z].getName();
+				Method method = o.getMethod("get"+name, null);
+				Object returnValue = method.invoke(rmap, null);
+				if(returnValue!=null)
+				{
+					Region<Double,Double2D> region=((Region<Double,Double2D>)returnValue);
+					if(name.contains("OUT"))
+					{
+
+						for(String agent_id : region.keySet())
+						{ 
+							EntryAgent<Double2D> e = region.get(agent_id);
+							RemotePositionedAgent<Double2D> rm=e.r;
+							rm.setPos(e.l);
+							this.remove(rm);
+						} 
+					}
+				}
+			}
+			catch (IllegalArgumentException e){e.printStackTrace();} 
+			catch (IllegalAccessException e) {e.printStackTrace();} 
+			catch (SecurityException e) {e.printStackTrace();} 
+			catch (NoSuchMethodException e) {e.printStackTrace();} 
+			catch (InvocationTargetException e) {e.printStackTrace();}
+		}	     
+	}
 	/**
 	 * Clear all Regions.
 	 * @return true if the clearing is successful, false if exception is generated
@@ -930,21 +896,6 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		return true;
 	}
 
-	/**
-	 * A method that must be used when the specific simulation 
-	 * set the portrayal for the remote agents.
-	 * This method is used to repaint the portrayal when a remote agent moves.
-	 */
-	@Override
-	public boolean setPortrayalForObject(Object o)
-	{
-		if(p!=null)
-		{
-			((DistributedState<Double2D>)sm).setPortrayalForObject(o);
-			return true;
-		}
-		return false;
-	}
 
 	/**
 	 * Implemented method from the abstract class.
@@ -971,7 +922,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	}
 
 	@Override
-	public String getID() {
+	public String getDistributedFieldID() {
 		// TODO Auto-generated method stub
 		return name;
 	}
@@ -982,11 +933,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		return updates;
 	}
 
-		
-	@Override
-	public void resetParameters() {
-		System.err.println("You are using a not implemented method (resetParameters) from "+this.getClass().getName());
-	}
+
 
 	@Override
 	public void trace(String param)
@@ -1014,10 +961,10 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	{
 		return globals;
 	}
-	
-   /**
-    * Used by SociallyDamaginBehaviour because ...
-    */
+
+	/**
+	 * Used by SociallyDamaginBehaviour because ...
+	 */
 	public HashMap<String,EntryAgent<Double2D>> getAllVisibleAgent() {
 
 		HashMap<String,EntryAgent<Double2D>> thor=myfield.clone();
@@ -1049,44 +996,9 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 			catch (NoSuchMethodException e) {e.printStackTrace();} 
 			catch (InvocationTargetException e) {e.printStackTrace();}
 		}
-		
+
 		return thor;
 	}
-	/*
-	public ArrayList<Entry<Double2D>> getMineAgent() {
-		ArrayList<Entry<Double2D>> thor=myfield.clone();
-		Class o=rmap.getClass();
-
-		Field[] fields = o.getDeclaredFields();
-		for (int z = 0; z < fields.length; z++)
-		{
-			fields[z].setAccessible(true);
-			try
-			{
-				String name=fields[z].getName();
-
-				Method method = o.getMethod("get"+name, null);
-				Object returnValue = method.invoke(rmap, null);
-
-				if(returnValue!=null)
-				{
-					Region<Double,Double2D> region=((Region<Double,Double2D>)returnValue);
-					if(name.contains("mine"))
-						for(Entry<Double2D> e: region)
-							thor.add(e);		    		
-					//					thor.addAll(region);
-
-				}
-			}
-			catch (IllegalArgumentException e){e.printStackTrace();} 
-			catch (IllegalAccessException e) {e.printStackTrace();} 
-			catch (SecurityException e) {e.printStackTrace();} 
-			catch (NoSuchMethodException e) {e.printStackTrace();} 
-			catch (InvocationTargetException e) {e.printStackTrace();}
-		}
-		
-		return thor;
-	}*/
 	/**
 	 * Used by SociallyDamaginBehaviour
 	 * 
@@ -1134,7 +1046,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 								if(!tmp.contains(remoteAgent)) 
 								{
 									tmp.add(remoteAgent);
-									if(name.contains("mine")){
+									if(name.contains("MINE")){
 
 										this.remove(remoteAgent);
 										sm.schedule.scheduleOnce(remoteAgent);
@@ -1163,28 +1075,28 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 			} 
 			if(!inserito) return false;
 		}
-		
+
 		return true;
 	}
 
 	@Override
 	public boolean verifyPosition(Double2D pos) {
-		
+
 		return (rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(pos.x,pos.y))||
-		
-			(rmap.NORTH_EAST_MINE!=null && rmap.NORTH_EAST_MINE.isMine(pos.x,pos.y))
-			||
+
+				(rmap.NORTH_EAST_MINE!=null && rmap.NORTH_EAST_MINE.isMine(pos.x,pos.y))
+				||
 				(rmap.SOUTH_WEST_MINE!=null && rmap.SOUTH_WEST_MINE.isMine(pos.x,pos.y))
 				||(rmap.SOUTH_EAST_MINE!=null && rmap.SOUTH_EAST_MINE.isMine(pos.x,pos.y))
-					||(rmap.WEST_MINE != null && rmap.WEST_MINE.isMine(pos.x,pos.y))
-						||(rmap.EAST_MINE != null && rmap.EAST_MINE.isMine(pos.x,pos.y))
-							||(rmap.NORTH_MINE != null && rmap.NORTH_MINE.isMine(pos.x,pos.y))
-								||(rmap.SOUTH_MINE != null && rmap.SOUTH_MINE.isMine(pos.x,pos.y))
-									||(myfield.isMine(pos.x,pos.y));
-										
+				||(rmap.WEST_MINE != null && rmap.WEST_MINE.isMine(pos.x,pos.y))
+				||(rmap.EAST_MINE != null && rmap.EAST_MINE.isMine(pos.x,pos.y))
+				||(rmap.NORTH_MINE != null && rmap.NORTH_MINE.isMine(pos.x,pos.y))
+				||(rmap.SOUTH_MINE != null && rmap.SOUTH_MINE.isMine(pos.x,pos.y))
+				||(myfield.isMine(pos.x,pos.y));
+
 
 	}
 
-	
+
 
 }

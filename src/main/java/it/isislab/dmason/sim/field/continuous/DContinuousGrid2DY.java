@@ -107,7 +107,7 @@ import sim.util.Double2D;
  * @author Carmine Spagnuolo
  * </PRE>
  */
-
+/*
 public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableField
 {	
 	private static final long serialVersionUID = 1L;
@@ -124,29 +124,29 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 	// -----------------------------------------------------------------------
 	// GLOBAL INSPECTOR ------------------------------------------------------
 	// -----------------------------------------------------------------------
-	/** List of parameters to trace */
+	*//** List of parameters to trace *//*
 	private ArrayList<String> tracingFields = new ArrayList<String>();
-	/** The image to send */
+	*//** The image to send *//*
 	private BufferedImage currentBitmap;
-	/** Simulation's time when currentBitmap was generated */
+	*//** Simulation's time when currentBitmap was generated *//*
 	private double currentTime;
-	/** Statistics to send */
+	*//** Statistics to send *//*
 	HashMap<String, Object> currentStats;
-	/** True if the global inspector requested graphics **/
+	*//** True if the global inspector requested graphics **//*
 	boolean isTracingGraphics;
 
 	// -----------------------------------------------------------------------
 	// GLOBAL PROPERTIES -----------------------------------------------------
 	// -----------------------------------------------------------------------
-	/** Will contain globals properties */
+	*//** Will contain globals properties *//*
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
-	/**
+	*//**
 	 * Starts tracing a variable (or the graphic). To start tracing the graphic,
 	 * the global viewer must set param = "-GRAPHICS". We choose this particular
 	 * string because method names "get-GRAPHICS()" aren't allowed, so we are
 	 * sure that we aren't hiding any real simulation getter.
-	 **/
+	 **//*
 	@Override
 	public void trace(String param)
 	{ 
@@ -156,7 +156,7 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 			tracingFields.add(param);
 	}
 
-	/** Stops tracing a variable (or the graphic) **/
+	*//** Stops tracing a variable (or the graphic) **//*
 	@Override
 	public void untrace(String param)
 	{
@@ -169,7 +169,7 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		}
 	}	
 
-	/**
+	*//**
 	 * Constructor of class with paramaters:
 	 * 
 	 * @param discretization the discretization of the field
@@ -183,14 +183,14 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 	 * @param columns number of columns in the division
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
-	 */
+	 *//*
 	public DContinuousGrid2DY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix)
 	{
 		super(discretization, width, height);
 		this.width=width;
 		this.height=height;
 		this.sm = sm;		
-		this.jumpDistance = max_distance;
+		this.AOI = max_distance;
 		//this.numPeers = num_peers;
 		this.rows = rows;
 		this.columns = columns;
@@ -215,10 +215,10 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		isTracingGraphics = false;
 
 	}
-	/**
+	*//**
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
 	 * @return true if all is ok
-	 */
+	 *//*
 	private boolean createRegion()
 	{
 
@@ -271,14 +271,14 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		}
 
 		myfield = new RegionDouble(
-				own_x + jumpDistance,            // MyField's x0 coordinate
+				own_x + AOI,            // MyField's x0 coordinate
 				own_y,                           // MyField's y0 coordinate
-				own_x + my_width - jumpDistance, // MyField x1 coordinate
+				own_x + my_width - AOI, // MyField x1 coordinate
 				height,                          // MyField y1 coordinate
 				width, height);                  // Global width and height 
 
 		rmap.WEST_OUT = new RegionDouble(
-				(own_x - jumpDistance + width) % width, // Left-out x0
+				(own_x - AOI + width) % width, // Left-out x0
 				0.0,									// Left-out y0
 				(own_x + width) % (width),				// Left-out x1
 				height,									// Left-out y1
@@ -287,19 +287,19 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		rmap.WEST_MINE = new RegionDouble(
 				(own_x + width) % width,				// Left-mine x0
 				0.0,									// Left-mine y0
-				(own_x + jumpDistance + width) % width,	// Left-mine x1
+				(own_x + AOI + width) % width,	// Left-mine x1
 				height,									// Left-mine y1
 				width, height);
 
 		rmap.EAST_OUT = new RegionDouble(
 				(own_x + my_width + width) % width,                // Right-out x0
 				0.0,                                               // Right-out y0
-				(own_x + my_width + jumpDistance + width) % width, // Right-out x1
+				(own_x + my_width + AOI + width) % width, // Right-out x1
 				height,                                            // Right-out y1
 				width, height);
 
 		rmap.EAST_MINE = new RegionDouble(
-				(own_x + my_width - jumpDistance + width) % width, // Right-mine x0
+				(own_x + my_width - AOI + width) % width, // Right-mine x0
 				0.0,											   // Right-mine y0
 				(own_x + my_width + width) % width,                // Right-mine x1
 				height,                                            // Right-mine y1
@@ -308,31 +308,31 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		return true;
 	}
 
-	/**
+	*//**
 	 * Set a available location to a Remote Agent:
 	 * it generates the location depending on the field of expertise
 	 * @return The location assigned to Remote Agent
-	 */
+	 *//*
 	@Override
 	public Double2D getAvailableRandomLocation()
 	{		
 		double shiftx=((DistributedState)sm).random.nextDouble();
 		double shifty=((DistributedState)sm).random.nextDouble();
-		double x=(own_x+jumpDistance)+((my_width+own_x-jumpDistance)-(own_x+jumpDistance))*shiftx;
-		double y=(own_y+jumpDistance)+((my_height+own_y-jumpDistance)-(own_y+jumpDistance))*shifty;
+		double x=(own_x+AOI)+((my_width+own_x-AOI)-(own_x+AOI))*shiftx;
+		double y=(own_y+AOI)+((my_height+own_y-AOI)-(own_y+AOI))*shifty;
 
 		//rm.setPos(new Double2D(x,y));
 
 		return (new Double2D(x, y));
 	}
 
-	/** 
+	*//** 
 	 * Provide the agents' shift logic among the peers
 	 * @param location The new location of the remote agent
 	 * @param rm The remote agent to be stepped
 	 * @param sm SimState of simulation
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
-	 */
+	 *//*
 	public boolean setDistributedObjectLocation(final Double2D location,Object remoteObject,SimState sm) throws DMasonException
 	{	
 		RemotePositionedAgent<Double2D> rm= null;
@@ -364,10 +364,10 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		}
 	}
 
-	/**
+	*//**
 	 * 	This method provides the synchronization in the distributed environment.
 	 * 	It's called after every step of schedule.
-	 */
+	 *//*
 	@Override
 	public synchronized boolean synchro() 
 	{
@@ -503,13 +503,13 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		return true;
 	}
 
-	/**
+	*//**
 	 * This method takes updates from box and schedules every agent in the regions out.
 	 * Every agent in the regions mine is compared with every agent in the updates_cache:
 	 * if they are not equals, that in box mine is added.
 	 * 
 	 * @param box A Distributed Region that contains the updates
-	 */
+	 *//*
 	public void verifyUpdates(DistributedRegion<Double,Double2D> box)
 	{
 		Region<Double,Double2D> r_mine=box.out;
@@ -567,13 +567,13 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		}
 		return false;
 	}
-	/**
+	*//**
 	 * This method, written with Java Reflect, follows two logical ways for all the regions:
 	 * - if a region is an out one, the agent's location is updated and it's insert a new Entry 
 	 * 		in the updates_cache (cause the agent is moving out and it's important to maintain the information
 	 * 		for the next step)
 	 * - if a region is a mine one, the agent's location is updated and the agent is scheduled.
-	 */
+	 *//*
 	public void updateFields()
 	{
 		Class o=rmap.getClass();
@@ -624,13 +624,13 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		}	     
 	}
 
-	/**
+	*//**
 	 * This method, written with Java Reflect, provides to add the Remote Agent
 	 * in the right Region.
 	 * @param rm The Remote Agent to add
 	 * @param location The new location of the Remote Agent
 	 * @return true if the agent is added in right way
-	 */
+	 *//*
 	private boolean setAgents(RemotePositionedAgent<Double2D> rm,Double2D location)
 	{
 		Class o=rmap.getClass();
@@ -672,10 +672,10 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		return false;
 	}
 
-	/**
+	*//**
 	 * Clear all Regions.
 	 * @return true if the clearing is successful, false if exception is generated
-	 */
+	 *//*
 	public  boolean reset()
 	{
 		myfield.clear();
@@ -707,9 +707,9 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 		return true;
 	}
 
-	/**
+	*//**
 	 * Implemented method from the abstract class.
-	 */
+	 *//*
 	@Override
 	public DistributedState<Double2D> getState() {
 		return (DistributedState<Double2D>)sm; 
@@ -743,7 +743,7 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 			conn.setTable(table);
 	}
 	@Override
-	public String getID() {
+	public String getDistributedFieldID() {
 		// TODO Auto-generated method stub
 		return name;
 	}
@@ -781,4 +781,4 @@ public class DContinuousGrid2DY extends DContinuousGrid2D implements TraceableFi
 
 	}
 
-}
+}*/

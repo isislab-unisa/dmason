@@ -78,16 +78,11 @@ public abstract class DContinuousGrid2D extends Continuous2D  implements Distrib
 	 * where <i>i</i> is the row number, <i>j</i> is the column number.
 	 */
 	public CellType cellType;
-	
-	/**
-	 * The number of peers involved in the simulation.
-	 */
-	//public int numPeers;
-	
+
 	public int rows;
 
 	public int columns;
-	
+
 	/**
 	 * x coordinate of north-west corner.
 	 */
@@ -97,57 +92,48 @@ public abstract class DContinuousGrid2D extends Continuous2D  implements Distrib
 	 * y coordinate of north-west corner.
 	 */
 	public double own_y;
-	
+
 	/**
 	 * This field's width.
 	 */
 	public double my_width;
-	
+
 	/**
 	 * This field's height.
 	 */
 	public double my_height;
-	
-	
-	public int MAX_DISTANCE;
-	
-	/** Will contain globals parameters */
-	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
-	public RegionDouble myfield;
-	public RegionMap<Double,Double2D> rmap=new RegionMap<Double,Double2D>();
-	public ArrayList<Region<Double, Double2D>> updates_cache;
-	public int jumpDistance;
-	public UpdateMap<Double,Double2D> updates=new UpdateMap<Double,Double2D>();
-	public HashMap<Integer,HashMap<CellType, MyCellInterface>> listGrid;
-	public ArrayList<ArrayList<Region<Double, Double2D>>> updates_cacheLB;
-	public SimState sm;
-   // public ConnectionWithJMS connection=new ConnectionNFieldsWithActiveMQAPI();
-	public ArrayList<String> neighborhood=new ArrayList<String>();
-	public ContinuousPortrayal2D p;
-	public boolean gui=true;
+
+
+	/** Will contain globals parameters */
+	protected VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
+	protected RegionDouble myfield;
+	protected RegionMap<Double,Double2D> rmap=new RegionMap<Double,Double2D>();
+	protected ArrayList<Region<Double, Double2D>> updates_cache;
+	protected int AOI; //area of interest of an agent
+	protected UpdateMap<Double,Double2D> updates=new UpdateMap<Double,Double2D>();
+	protected HashMap<Integer,HashMap<CellType, MyCellInterface>> listGrid;
+	protected ArrayList<ArrayList<Region<Double, Double2D>>> updates_cacheLB;
+	protected SimState sm;
+	protected ArrayList<String> neighborhood=new ArrayList<String>();
+	protected boolean gui=true;
+	private static boolean isToroidal;
 	
-	// <-- instance variables
-		
 	public DContinuousGrid2D(double discretization, double width, double height) 
 	{
 		super(discretization, width, height);
 	}
-	
-	public  void attachPortrayal(ContinuousPortrayal2D p){this.p=p;}
-	public  ContinuousPortrayal2D getAttachedPortrayal(){return p;}
-	public abstract boolean setPortrayalForObject(Object o);
 
-	private boolean isToroidal;
 	
+
 	public boolean isToroidal()
 	{
 		return isToroidal;
 	}
-	
+
 	public void setToroidal(boolean isToroidal)
-	{
+	{	
 		this.isToroidal=isToroidal;
 	}
-	
+
 }

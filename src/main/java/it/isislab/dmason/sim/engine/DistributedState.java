@@ -236,8 +236,6 @@ public abstract class DistributedState<E> extends SimState {
 
 	public abstract SimState getState();
 
-	public abstract boolean setPortrayalForObject(Object o);
-
 	public CellType getType() {
 		return TYPE;
 	}

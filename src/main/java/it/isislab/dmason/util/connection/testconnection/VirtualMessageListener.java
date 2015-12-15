@@ -69,7 +69,7 @@ public 	class VirtualMessageListener extends MyMessageListener
 
 				for (DistributedField2D field : fields) {
 
-					DistributedRegionInterface obj = (DistributedRegionInterface)bo.get(field.getID());
+					DistributedRegionInterface obj = (DistributedRegionInterface)bo.get(field.getDistributedFieldID());
 					field.getUpdates().put(obj.getStep(), obj);
 				}
 

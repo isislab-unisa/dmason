@@ -69,7 +69,7 @@ public class DNetworkJMSMessageListener extends MyMessageListener
 				MyHashMap bo = (MyHashMap)parseMessage(arg0);
 			
 			for (DNetwork field : fields) {	
-				DNetworkRegion obj = (DNetworkRegion)bo.get(field.getID());
+				DNetworkRegion obj = (DNetworkRegion)bo.get(field.getDistributedFieldID());
 				field.getNetworkUpdates().put(obj.getStep(), obj);
 				
 			}

@@ -615,15 +615,15 @@ public class DistributedStateConnectionFake<E> extends DistributedStateConnectio
 				}
 				listToSubscribe.get(toSubscribe).add(distributedNetwork);
 
-				if(networkNumberOfSubscribersForField.get(distributedNetwork.getID())==null)
-					networkNumberOfSubscribersForField.put(distributedNetwork.getID(), new Integer(0));
-				networkNumberOfSubscribersForField.put(distributedNetwork.getID(), 
-						(networkNumberOfSubscribersForField.get(distributedNetwork.getID())+1));
+				if(networkNumberOfSubscribersForField.get(distributedNetwork.getDistributedFieldID())==null)
+					networkNumberOfSubscribersForField.put(distributedNetwork.getDistributedFieldID(), new Integer(0));
+				networkNumberOfSubscribersForField.put(distributedNetwork.getDistributedFieldID(), 
+						(networkNumberOfSubscribersForField.get(distributedNetwork.getDistributedFieldID())+1));
 			}	
 		}
 
 		for (DNetwork distributedNetwork : networkLists) {
-			((DistributedFieldNetwork)distributedNetwork).setNumberOfUpdatesToSynchro(networkNumberOfSubscribersForField.get(distributedNetwork.getID()));
+			((DistributedFieldNetwork)distributedNetwork).setNumberOfUpdatesToSynchro(networkNumberOfSubscribersForField.get(distributedNetwork.getDistributedFieldID()));
 		}
 
 		Set<String> keySetToPublish = listToPublish.keySet();

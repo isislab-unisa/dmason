@@ -29,6 +29,7 @@ import it.isislab.dmason.tools.batch.data.GeneralParam;
 import java.awt.Color;
 import sim.engine.SimState;
 import sim.portrayal.SimplePortrayal2D;
+import sim.portrayal.continuous.ContinuousPortrayal2D;
 import sim.portrayal.simple.AdjustablePortrayal2D;
 import sim.portrayal.simple.MovablePortrayal2D;
 import sim.portrayal.simple.OrientedPortrayal2D;
@@ -109,7 +110,7 @@ public class DFlockers extends DistributedState<Double2D>
     public int MODE;
     
     public static String topicPrefix = "";
-    
+    public ContinuousPortrayal2D p;
     
    
     /**
@@ -204,16 +205,15 @@ public class DFlockers extends DistributedState<Double2D>
     	return this;
     }
 
-    @Override
 	public boolean setPortrayalForObject(Object o) 
     {
-    	if(flockers.p!=null)
+    	if(p!=null)
     	{
     		DFlocker f=(DFlocker)o;
     		SimplePortrayal2D pp = new AdjustablePortrayal2D(new MovablePortrayal2D(new OrientedPortrayal2D(new SimplePortrayal2D(),0,4.0,
     				f.getColor(),
     				OrientedPortrayal2D.SHAPE_COMPASS)));
-    		flockers.p.setPortrayalForObject(o, pp);
+    		p.setPortrayalForObject(o, pp);
     		return true;
     	}
     	return false;

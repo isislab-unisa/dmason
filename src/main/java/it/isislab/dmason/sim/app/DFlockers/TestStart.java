@@ -40,21 +40,19 @@ import sim.display.Console;
  */
 public class TestStart {
 
-	private static boolean graphicsOn=true; //with or without graphics?
-	private static int numSteps = 3000; //only graphicsOn=false
+	private static boolean graphicsOn=false; //with or without graphics?
+	private static int numSteps = 30500; //only graphicsOn=false
 	private static int rows = 1; //number of rows
 	private static int columns = 3; //number of columns
 	private static int MAX_DISTANCE=10; //max distance
-	private static int NUM_AGENTS=2000; //number of agents
-	private static int WIDTH=900; //field width
-	private static int HEIGHT=900; //field height
+	private static int NUM_AGENTS=10000; //number of agents
+	private static int WIDTH=920; //field width
+	private static int HEIGHT=633; //field height
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
 	
-	//don't modify this...
-	//private static int MODE = (rows==1 || columns==1)? DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE : DContinuous2DFactory.SQUARE_DISTRIBUTION_MODE; 
-	private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE : DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE; 
-	
+	 
+	private static int MODE = rows==1?DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE:DistributedField2D.SQUARE_DISTRIBUTION_MODE;
 	
 	
 	public static void main(String[] args) 
@@ -71,7 +69,7 @@ public class TestStart {
 				int i=0;
 				while(i!=numSteps)
 				{
-					System.out.println(i);
+					//System.out.println(i);
 					ds.schedule.step(ds);
 					i++;
 				}
@@ -87,7 +85,7 @@ public class TestStart {
 				genParam.setJ(j);
 				genParam.setIp(ip);
 				genParam.setPort(port);
-				if(graphicsOn)
+				if(graphicsOn  || i==0 && j==0)
 				{
 					DFlockersWithUI sim =new DFlockersWithUI(genParam);
 					((Console)sim.createController()).pressPause();

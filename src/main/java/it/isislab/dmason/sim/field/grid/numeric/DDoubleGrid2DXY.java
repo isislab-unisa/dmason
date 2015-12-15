@@ -175,7 +175,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		this.columns = columns;
 
 		updates_cache = new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
-		this.topicPrefix = prefix + ""+name;
+		this.topicPrefix = prefix;
 
 		createRegion();	
 	}
@@ -1045,7 +1045,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	}
 
 	@Override
-	public String getID() {
+	public String getDistributedFieldID() {
 		// TODO Auto-generated method stub
 		return NAME;
 	}
@@ -1054,12 +1054,6 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	public UpdateMap getUpdates() {
 		// TODO Auto-generated method stub
 		return updates;
-	}
-
-
-	@Override
-	public void resetParameters() {
-		System.err.println("You are using a not implemented method (resetParameters) from "+this.getClass().getName());
 	}
 
 

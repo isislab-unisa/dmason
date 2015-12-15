@@ -90,7 +90,7 @@ public class LoadBalancingDoubleField <E> implements LoadBalancingInterface{
 					initializePositionGood(topics, positionGood);
 
 					SplittedDoubleField split = new SplittedDoubleField((Double)superOwnX, (Double)superOwnY, (Double)superWidth, 
-							(Double)superHeight, x.getState(), MAX_DISTANCE, i, j, numPeer, x.getID(), 
+							(Double)superHeight, x.getState(), MAX_DISTANCE, i, j, numPeer, x.getDistributedFieldID(), 
 							lP[k], x.getState().TYPE,topics,positionGood);
 
 					mD = split.createMyDivision();
@@ -120,7 +120,7 @@ public class LoadBalancingDoubleField <E> implements LoadBalancingInterface{
 						initializePositionGood(topics, positionGood);
 						
 						SplittedDoubleField split = new SplittedDoubleField((Double)superOwnX, (Double)superOwnY, (Double)superWidth, 
-								(Double)superHeight, x.getState(), MAX_DISTANCE, i, j, numPeer, x.getID(), 
+								(Double)superHeight, x.getState(), MAX_DISTANCE, i, j, numPeer, x.getDistributedFieldID(), 
 								lP[k], x.getState().TYPE,topics,positionGood);
 
 						mD = split.createMyDivision();
@@ -133,7 +133,7 @@ public class LoadBalancingDoubleField <E> implements LoadBalancingInterface{
 						positionGood = null;
 
 						SplittedDoubleField split = new SplittedDoubleField((Double)superOwnX, (Double)superOwnY, (Double)superWidth, 
-								(Double)superHeight, x.getState(), MAX_DISTANCE, i, j, numPeer, x.getID(), 
+								(Double)superHeight, x.getState(), MAX_DISTANCE, i, j, numPeer, x.getDistributedFieldID(), 
 								lP[k], x.getState().TYPE,topics,positionGood);
 
 						mD = split.createMyDivision();

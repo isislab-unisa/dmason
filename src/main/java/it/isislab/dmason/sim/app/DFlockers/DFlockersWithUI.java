@@ -94,6 +94,7 @@ public class DFlockersWithUI extends GUIState
     public void setupPortrayals()
     {
         DFlockers flock = (DFlockers)state;
+        
 
         flockersPortrayal.setField(flock.flockers);
         // uncomment this to try out trails  (also need to uncomment out some others in this file, look around)
@@ -117,18 +118,18 @@ public class DFlockersWithUI extends GUIState
                new TrailedPortrayal2D(this, p, trailsPortrayal, 100));
             */
             }
-        flock.flockers.attachPortrayal(flockersPortrayal);
+        flock.p=flockersPortrayal;
         
         // update the size of the display appropriately.
-        double w = flock.flockers.getWidth();
-        double h = flock.flockers.getHeight();
-        if (w == h)
-            { display.insideDisplay.width = display.insideDisplay.height = 750; }
-        else if (w > h)
-            { display.insideDisplay.width = 750; display.insideDisplay.height = 750 * (h/w); }
-        else if (w < h)
-            { display.insideDisplay.height = 750; display.insideDisplay.width = 750 * (w/h); }
-            
+//        double w = flock.flockers.getWidth();
+//        double h = flock.flockers.getHeight();
+//        if (w == h)
+//            { display.insideDisplay.width = display.insideDisplay.height = 750; }
+//        else if (w > h)
+//            { display.insideDisplay.width = 750; display.insideDisplay.height = 750 * (h/w); }
+//        else if (w < h)
+//            { display.insideDisplay.height = 750; display.insideDisplay.width = 750 * (w/h); }
+//            
         // reschedule the displayer
         display.reset();
                 
@@ -141,8 +142,9 @@ public class DFlockersWithUI extends GUIState
     {
         super.init(c);
 
+
         // make the displayer
-        display = new Display2D(750,750,this,1);
+        display = new Display2D(600,600,this,1);
         display.setBackdrop(Color.black);
 
         displayFrame = display.createFrame();

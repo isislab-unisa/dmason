@@ -5442,7 +5442,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D implements DistributedField
 	}
 
 	@Override
-	public String getID() {
+	public String getDistributedFieldID() {
 		// TODO Auto-generated method stub
 		return NAME;
 	}

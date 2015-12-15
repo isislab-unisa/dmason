@@ -24,7 +24,7 @@ import java.util.List;
 
 			for (DistributedField field : fields) {
 				
-				DistributedRegionInterface obj = (DistributedRegionInterface)bo.get(field.getID());
+				DistributedRegionInterface obj = (DistributedRegionInterface)bo.get(field.getDistributedFieldID());
 				
 				field.getUpdates().put(obj.getStep(), obj);
 				
