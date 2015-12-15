@@ -35,6 +35,7 @@ import java.io.PrintStream;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
+import sim.portrayal.grid.SparseGridPortrayal2D;
 import sim.util.Int2D;
 
 /**
@@ -58,6 +59,7 @@ public class DParticles extends DistributedState<Int2D> {
     public int gridWidth ;
     public int gridHeight ;   
     public int MODE;
+	public SparseGridPortrayal2D p;
    
     public static String topicPrefix = "";
     
@@ -177,12 +179,12 @@ public class DParticles extends DistributedState<Int2D> {
 		particles.setObjectLocation(rm, loc);
 	}
 
-	@Override
+	
 	public boolean setPortrayalForObject(Object o) 
 	{
-		if(particles.p!=null)
+		if(p!=null)
 		  {
-			  particles.p.setPortrayalForObject(o, new sim.portrayal.simple.OvalPortrayal2D(Color.YELLOW) );
+			 p.setPortrayalForObject(o, new sim.portrayal.simple.OvalPortrayal2D(Color.YELLOW) );
 		    return true;
 		  }
 		return false;

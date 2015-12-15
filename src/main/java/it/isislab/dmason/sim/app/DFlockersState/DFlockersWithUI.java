@@ -88,7 +88,7 @@ public class DFlockersWithUI extends GUIState
                new TrailedPortrayal2D(this, p, trailsPortrayal, 100));
             */
             }
-        flock.flockers.attachPortrayal(flockersPortrayal);
+        flock.p=flockersPortrayal;
         
         // update the size of the display appropriately.
         double w = flock.flockers.getWidth();

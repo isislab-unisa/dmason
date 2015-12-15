@@ -142,7 +142,7 @@ public class DRemoteAnt extends RemoteAnt<Int2D>
 		int x = location.x;
 		int y = location.y;    
 
-		af.buggrid.getNeighborsMaxDistanceThin(x, y, af.buggrid.jumpDistance, false, new IntBag(), new IntBag());
+		af.buggrid.getNeighborsMaxDistanceThin(x, y, af.buggrid.AOI, false, new IntBag(), new IntBag());
 
 		if (hasFoodItem)  // follow home pheromone
 		{

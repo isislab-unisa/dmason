@@ -13,7 +13,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
- */
+ *//*
 
 package it.isislab.dmason.sim.field.grid.sparse;
 
@@ -47,7 +47,7 @@ import sim.engine.SimState;
 import sim.util.Int2D;
 
 
-/**
+*//**
  *  <h3>This Field extends SparseGrid2D, to be used in a distributed environment. All the necessary informations for 
  *  the distribution of simulation are wrapped in this class.</h3>
  * <p> This version is for a distribution in a <i>horizontal mode</i>.
@@ -108,7 +108,7 @@ import sim.util.Int2D;
  * @author Francesco Raia
  * @author Flavio Serrapica
  * @author Carmine Spagnuolo
- */
+ *//*
 public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 {	
 	private String NAME;
@@ -122,25 +122,25 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 	// -----------------------------------------------------------------------
 	// GLOBAL INSPECTOR ------------------------------------------------------
 	// -----------------------------------------------------------------------
-	/** List of parameters to trace */
+	*//** List of parameters to trace *//*
 	private ArrayList<String> tracingFields = new ArrayList<String>();
-	/** The image to send */
+	*//** The image to send *//*
 	private BufferedImage currentBitmap;
-	/** Simulation's time when currentBitmap was generated */
+	*//** Simulation's time when currentBitmap was generated *//*
 	private double currentTime;
-	/** Statistics to send */
+	*//** Statistics to send *//*
 	HashMap<String, Object> currentStats;
-	/** True if the global inspector requested graphics **/
+	*//** True if the global inspector requested graphics **//*
 	boolean isTracingGraphics;
 
 	// -----------------------------------------------------------------------
 	// GLOBAL PROPERTIES -----------------------------------------------------
 	// -----------------------------------------------------------------------
-	/** Will contain globals properties */
+	*//** Will contain globals properties *//*
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
 	
-	/**
+	*//**
 	 * Constructor of class with paramaters:
 	 * 
 	 * @param width field's width  
@@ -153,7 +153,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 	 * @param columns number of columns in the division
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
-	 */
+	 *//*
 	public DSparseGrid2DY(int width, int height,SimState sm,int max_distance,int i,int j,int rows, int columns, String name, String prefix) 
 	{		
 		super(width, height);
@@ -162,7 +162,7 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		this.NAME = name;
 		this.sm=sm;
 		//MAX_DISTANCE=max_distance;
-		jumpDistance=max_distance;
+		AOI=max_distance;
 		//NUMPEERS=num_peers;
 		this.rows = rows;
 		this.columns = columns;	
@@ -187,10 +187,10 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		isTracingGraphics = false;
 	}
 
-	/**
+	*//**
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
 	 * @return true if all is ok
-	 */
+	 *//*
 	private boolean createRegion()
 	{
 		
@@ -243,14 +243,14 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 				}
 
 				myfield = new RegionInteger(
-						own_x + jumpDistance,            // MyField's x0 coordinate
+						own_x + AOI,            // MyField's x0 coordinate
 						own_y,                           // MyField's y0 coordinate
-						own_x + my_width - jumpDistance, // MyField x1 coordinate
+						own_x + my_width - AOI, // MyField x1 coordinate
 						height,                          // MyField y1 coordinate
 						width, height);                  // Global width and height 
 
 				rmap.WEST_OUT = new RegionInteger(
-						(own_x - jumpDistance + width) % width, // Left-out x0
+						(own_x - AOI + width) % width, // Left-out x0
 						0,									// Left-out y0
 						(own_x + width) % (width),				// Left-out x1
 						height,									// Left-out y1
@@ -259,26 +259,26 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 				rmap.WEST_MINE = new RegionInteger(
 						(own_x + width) % width,				// Left-mine x0
 						0,									// Left-mine y0
-						(own_x + jumpDistance + width) % width,	// Left-mine x1
+						(own_x + AOI + width) % width,	// Left-mine x1
 						height,									// Left-mine y1
 						width, height);
 
 				rmap.EAST_OUT = new RegionInteger(
 						(own_x + my_width + width) % width,                // Right-out x0
 						0,                                               // Right-out y0
-						(own_x + my_width + jumpDistance + width) % width, // Right-out x1
+						(own_x + my_width + AOI + width) % width, // Right-out x1
 						height,                                            // Right-out y1
 						width, height);
 
 				rmap.EAST_MINE = new RegionInteger(
-						(own_x + my_width - jumpDistance + width) % width, // Right-mine x0
+						(own_x + my_width - AOI + width) % width, // Right-mine x0
 						0,											   // Right-mine y0
 						(own_x + my_width + width) % width,                // Right-mine x1
 						height,                                            // Right-mine y1
 						width, height);
 
 				return true;
-		/*
+		
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
@@ -357,15 +357,15 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 
 		}
 
-		return true;*/
+		return true;
 	}
 
 
-	/**
+	*//**
 	 * Set a available location to a Remote Agent:
 	 * it generates the location depending on the field of expertise
 	 * @return The location assigned to Remote Agent
-	 */
+	 *//*
 	@Override
 	public Int2D getAvailableRandomLocation()
 	{
@@ -379,13 +379,13 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		return (new Int2D(x, y));
 	}
 
-	/** 
+	*//** 
 	 * Provide the agents' shift logic among the peers
 	 * @param location The new location of the remote agent
 	 * @param rm The remote agent to be stepped
 	 * @param sm SimState of simulation
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
-	 */
+	 *//*
 	@Override
 	public boolean setDistributedObjectLocation(final Int2D location, Object remoteObject,SimState sm) throws DMasonException
 	{
@@ -411,10 +411,10 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		return false;
 	}
 
-	/**
+	*//**
 	 * 	This method provides the synchronization in the distributed environment.
 	 * 	It's called after every step of schedule.
-	 */
+	 *//*
 	@Override
 	public synchronized boolean  synchro() 
 	{	
@@ -564,13 +564,13 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		}	     
 	}
 
-	/**
+	*//**
 	 * This method takes updates from box and schedules every agent in the regions out.
 	 * Every agent in the regions mine is compared with every agent in the updates_cache:
 	 * if they are not equals, that in box mine is added.
 	 * 
 	 * @param box A Distributed Region that contains the updates
-	 */
+	 *//*
 	public void verifyUpdates(DistributedRegion<Integer,Int2D> box)
 	{
 		Region<Integer,Int2D> r_mine=box.out;
@@ -587,13 +587,13 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		updates_cache.add(r_out);
 	}
 
-	/**
+	*//**
 	 * This method, written with Java Reflect, follows two logical ways for all the regions:
 	 * - if a region is an out one, the agent's location is updated and it's insert a new Entry 
 	 * 		in the updates_cache (cause the agent is moving out and it's important to maintain the information
 	 * 		for the next step)
 	 * - if a region is a mine one, the agent's location is updated and the agent is scheduled.
-	 */
+	 *//*
 	public void updateFields()
 	{
 		Class o=rmap.getClass();
@@ -643,13 +643,13 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		}	 
 	}
 
-	/**
+	*//**
 	 * This method, written with Java Reflect, provides to add the Remote Agent
 	 * in the right Region.
 	 * @param rm The Remote Agent to add
 	 * @param location The new location of the Remote Agent
 	 * @return true if the agent is added in right way
-	 */
+	 *//*
 	private boolean setAgents(RemotePositionedAgent<Int2D> rm,Int2D location)
 	{
 		Class o=rmap.getClass();
@@ -693,10 +693,10 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		return false;
 	}
 
-	/**
+	*//**
 	 * Clear all Regions.
 	 * @return true if the clearing is successful, false if exception is generated
-	 */
+	 *//*
 	public  boolean reset()
 	{
 		myfield.clear();
@@ -728,9 +728,9 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 		return true;
 	}
 
-	/**
+	*//**
 	 * Implemented method from the abstract class.
-	 */
+	 *//*
 	@Override
 	public DistributedState<Int2D> getState() { return (DistributedState)sm; }
 
@@ -816,3 +816,4 @@ public class DSparseGrid2DY extends DSparseGrid2D implements TraceableField
 	}
 
 }
+*/

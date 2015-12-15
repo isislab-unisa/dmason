@@ -34,11 +34,12 @@ import java.awt.Color;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
+import sim.portrayal.grid.SparseGridPortrayal2D;
 import sim.util.Int2D;
 @ThinAnnotation
 public class DParticles extends DistributedState<Int2D> {
     
-	private static boolean isToroidal=false;
+	public SparseGridPortrayal2D p;
     public DSparseGrid2DThin particles;
     public DDoubleGrid2DThin trails;
     //public DoubleGrid2D trails;
@@ -162,12 +163,12 @@ public class DParticles extends DistributedState<Int2D> {
 		particles.setObjectLocationThin(rm, loc);
 	}
 
-	@Override
+	
 	public boolean setPortrayalForObject(Object o) 
 	{
-		if(particles.p!=null)
+		if(p!=null)
 		  {
-			  particles.p.setPortrayalForObject(o, new sim.portrayal.simple.OvalPortrayal2D(Color.YELLOW) );
+			  p.setPortrayalForObject(o, new sim.portrayal.simple.OvalPortrayal2D(Color.YELLOW) );
 		    return true;
 		  }
 		return false;

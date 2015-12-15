@@ -88,7 +88,7 @@ public class DSociallyDamagingBehaviorWithUI extends GUIState
             new AdjustablePortrayal2D(new MovablePortrayal2D(basic)));
         trailsPortrayal.setPortrayalForObject(dsdb.human_being.allObjects.objs[x], basic );
         }
-        dsdb.human_being.attachPortrayal(DSDBPortrayal);
+        dsdb.p=DSDBPortrayal;
         
         // update the size of the display appropriately.
         double w = dsdb.human_being.getWidth();

@@ -77,29 +77,19 @@ public final class DSparseGrid2DFactory
 
 
 
-		if(MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE)
+		if(MODE==DistributedField2D.SQUARE_DISTRIBUTION_MODE || MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE)
 		{
 
-			//horizontal mode 1 row fixed and columns value 0<j<=n 
-			if(rows!=1){throw new DMasonException("Illegal rows dimension for horizontal mode, it must have one row");}
-			DistributedField2D field=new DSparseGrid2DY(width, height,sm, max_distance, i, j, rows,columns, name,topicPrefix);
-			field.setToroidal(isToroidal);
+			 
+			DistributedField2D field=new DSparseGrid2DXY(width, height,sm, max_distance, i, j, rows,columns, name,topicPrefix,isToroidal);
+			
 			((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 
 			return (DSparseGrid2D)field;
 
 
 		}
-		else
-			if(MODE==DistributedField2D.SQUARE_DISTRIBUTION_MODE)
-			{
-				if(rows!=columns){throw new DMasonException("In square mode rows and columns must be equals!");}
-				DistributedField2D field = new DSparseGrid2DXY(width, height,sm, max_distance, i, j, rows,columns, name,topicPrefix);
-				field.setToroidal(isToroidal);
-				((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
-				return (DSparseGrid2D)field;
-
-			}
+		
 			else
 				if(MODE==DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE)
 				{

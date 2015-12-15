@@ -108,7 +108,8 @@ public class DParticlesWithUI extends GUIState
         particlesPortrayal.setField(((DParticles)state).particles);
         particlesPortrayal.setPortrayalForAll( new sim.portrayal.simple.OvalPortrayal2D(Color.red) );
         
-        ((DParticles)state).particles.attachPortrayal(particlesPortrayal);
+       
+        ((DParticles)state).p=particlesPortrayal;
 
         // reschedule the displayer
         display.reset();

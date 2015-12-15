@@ -20,6 +20,7 @@ import java.util.List;
 
 import sim.engine.SimState;
 import sim.portrayal.SimplePortrayal2D;
+import sim.portrayal.continuous.ContinuousPortrayal2D;
 import sim.portrayal.simple.AdjustablePortrayal2D;
 import sim.portrayal.simple.MovablePortrayal2D;
 import sim.portrayal.simple.OrientedPortrayal2D;
@@ -34,6 +35,7 @@ public class DFlockers extends DistributedState<Double2D>
 	 */
 	private static final long serialVersionUID = 1L;
 	public DContinuousGrid2D flockers;
+	ContinuousPortrayal2D p;
 	private static boolean isToroidal=true;
 
 	@BatchAnnotation(
@@ -255,13 +257,13 @@ public class DFlockers extends DistributedState<Double2D>
 
 	public boolean setPortrayalForObject(Object o) 
 	{
-		if(flockers.p!=null)
+		if(p!=null)
 		{
 			DFlocker f=(DFlocker)o;
 			SimplePortrayal2D pp = new AdjustablePortrayal2D(new MovablePortrayal2D(new OrientedPortrayal2D(new SimplePortrayal2D(),0,4.0,
 					f.getColor(),
 					OrientedPortrayal2D.SHAPE_COMPASS)));
-			flockers.p.setPortrayalForObject(o, pp);
+			p.setPortrayalForObject(o, pp);
 			return true;
 		}
 		return false;

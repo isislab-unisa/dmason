@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 
 import sim.engine.*;
 import sim.portrayal.SimplePortrayal2D;
+import sim.portrayal.continuous.ContinuousPortrayal2D;
 import sim.portrayal.simple.AdjustablePortrayal2D;
 import sim.portrayal.simple.MovablePortrayal2D;
 import sim.portrayal.simple.OrientedPortrayal2D;
@@ -40,6 +41,7 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
     private static final long serialVersionUID = 1;
 	public DContinuousGrid2D human_being;
 	private static boolean isToroidal=true;
+	ContinuousPortrayal2D p;
 	//logger
 	public boolean logging = false;
 	public FileOutputStream file;
@@ -578,15 +580,15 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
 		// TODO Auto-generated method stub
 		return this;
 	}
-	@Override
+	
 	public boolean setPortrayalForObject(Object o) {
-    	if(human_being.p!=null)
+    	if(p!=null)
     	{
     		DHuman f=(DHuman)o;
     		SimplePortrayal2D pp = new AdjustablePortrayal2D(new MovablePortrayal2D(new OrientedPortrayal2D(new SimplePortrayal2D(),0,4.0,
     				f.getBehav_Color(),
     				OrientedPortrayal2D.SHAPE_COMPASS)));
-    		human_being.p.setPortrayalForObject(o, pp);
+    		p.setPortrayalForObject(o, pp);
     		return true;
     	}
     	return false;

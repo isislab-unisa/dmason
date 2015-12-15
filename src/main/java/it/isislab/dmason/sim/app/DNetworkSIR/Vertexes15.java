@@ -157,7 +157,7 @@ public class Vertexes15 extends DistributedState<Double2D>{
 		return null;
 	}
 
-	@Override
+	
 	public boolean setPortrayalForObject(Object o) {
 		// TODO Auto-generated method stub
 		for(Object oo:yard.allObjects)

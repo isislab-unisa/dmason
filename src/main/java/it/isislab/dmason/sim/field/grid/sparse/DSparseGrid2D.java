@@ -26,6 +26,7 @@ import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.sim.field.support.field2D.region.RegionMap;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellIntegerField;
 import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
+import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,21 +80,21 @@ public abstract class DSparseGrid2D extends SparseGrid2D implements DistributedF
 	public int own_y;	//y coordinate of north-west corner
 	public int my_width;
 	public int my_height;
-	public int jumpDistance;
+	public int AOI;
 	public RegionInteger myfield;
 	public RegionMap<Integer,Int2D> rmap=new RegionMap<Integer,Int2D>();
 	public ArrayList<Region<Integer, Int2D>> updates_cache;
 	public HashMap<Integer,HashMap<CellType, MyCellInterface>> listGrid;
 	public ArrayList<ArrayList<Region<Integer, Int2D>>> updates_cacheLB;
 	public UpdateCell<Integer,MyCellIntegerField> updateCell = new UpdateCell<Integer, MyCellIntegerField>();
-
-	//public int MAX_DISTANCE;
+    protected VisualizationUpdateMap<String, Object> globals= new VisualizationUpdateMap<String, Object>();
+	
+	
 	public CellType cellType;
 	public UpdateMap<Integer,Int2D> updates=new UpdateMap<Integer,Int2D>();
 	public SimState sm ;
 	public ArrayList<String> neighborhood=new ArrayList<String>();
 	public boolean gui = true;
-	public SparseGridPortrayal2D p;
 	private boolean isToroidal;
 	
 	public boolean isToroidal()
@@ -110,6 +111,5 @@ public abstract class DSparseGrid2D extends SparseGrid2D implements DistributedF
 	{
 		super(width, height);
 	}
-	public  void attachPortrayal(SparseGridPortrayal2D p){this.p=p;}
 
 }
