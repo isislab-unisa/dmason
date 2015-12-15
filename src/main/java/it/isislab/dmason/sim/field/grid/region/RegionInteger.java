@@ -36,52 +36,19 @@ import sim.util.Int2D;
 public class RegionInteger extends Region<Integer,Int2D>
 {
 	
-
-	private static int height;
-	private static int width;
-
-	
 	
 	public RegionInteger(Integer upl_xx, Integer upl_yy, Integer down_xx,
-			Integer down_yy, int width, int height) 
+			Integer down_yy) 
 	{
 		super(upl_xx, upl_yy, down_xx, down_yy);	
 		
-		RegionInteger.width = width;
-		RegionInteger.height = height;
-		
-		if(down_xx == 0)
-			super.down_xx = width;
-		
-		if(down_yy == 0)
-			super.down_yy = height;
 	}
 
-/*	*//**
-	 * Static method to create a Region.
-	 * @return null if the parameters are not 
-	 *//*
-	@Deprecated
-	public static Region<Integer,Int2D> createRegion(Integer upl_xx, Integer upl_yy, Integer down_xx,
-			Integer down_yy, Integer MY_WIDTH, Integer MY_HEIGHT, Integer WIDTH,
-			Integer HEIGHT) {
-		if(upl_xx < 0 || upl_yy < 0)
-		{				
-			return null;
-		}
 
-		if( upl_xx>= WIDTH || upl_yy >= HEIGHT)
-		{
-			return null;
-		}
-
-		return new RegionInteger(upl_xx,upl_yy,down_xx,down_yy);
-	}
-*/
 	@Override
 	public Region<Integer,Int2D> clone() 
 	{
-		RegionInteger r=new RegionInteger(upl_xx, upl_yy, down_xx, down_yy,width,height);
+		RegionInteger r=new RegionInteger(upl_xx, upl_yy, down_xx, down_yy);
 		for(it.isislab.dmason.sim.field.support.field2D.EntryAgent<Int2D> e: this.values())
 		{
 			EntryAgent<Int2D> toClone = new EntryAgent(((RemotePositionedAgent<Int2D>)(Util.clone(e.r))),e.l);
