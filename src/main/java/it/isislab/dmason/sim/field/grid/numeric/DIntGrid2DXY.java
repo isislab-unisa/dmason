@@ -13,7 +13,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
- */
+ *//*
 
 package it.isislab.dmason.sim.field.grid.numeric;
 
@@ -41,7 +41,7 @@ import sim.engine.SimState;
 import sim.util.Int2D;
 
 
-/**
+*//**
  *  <h3>This Field extends IntGrid2D, to be used in a distributed environment. All the necessary informations for 
  *  the distribution of simulation are wrapped in this class.</h3>
  * <p> This version is for a distribution in a <i>square mode</i>.
@@ -119,13 +119,13 @@ import sim.util.Int2D;
  * @author Francesco Raia
  * @author Flavio Serrapica
  * @author Carmine Spagnuolo
- */
+ *//*
 
 public class DIntGrid2DXY extends DIntGrid2D {
 
-	/**
+	*//**
 	 * It's the name of the specific field
-	 */
+	 *//*
 	private String NAME;
 
 	private double initialValue;
@@ -138,10 +138,10 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	// -----------------------------------------------------------------------
 	// GLOBAL PROPERTIES -----------------------------------------------------
 	// -----------------------------------------------------------------------
-	/** Will contain globals properties */
+	*//** Will contain globals properties *//*
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
-	/**
+	*//**
 	 * Constructor of class with paramaters:
 	 * 
 	 * @param width field's width  
@@ -155,7 +155,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	 * @param initialGridValue the initial value that we want to set at grid at begin simulation 
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
-	 */
+	 *//*
 	public DIntGrid2DXY(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns, 
 			Integer initialGridValue, String name, String prefix) 
 	{		
@@ -178,10 +178,10 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	}
 
 
-	/**
+	*//**
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
 	 * @return true if all is ok
-	 */
+	 *//*
 	private boolean createRegion()
 	{
 		
@@ -275,7 +275,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 
 		return true;
 		
-		/*//upper left corner's coordinates
+		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
 		else
@@ -473,7 +473,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 
 					}
 		return true;
-*/	}
+	}
 
 	@Override
 	public boolean synchro() {
@@ -647,13 +647,13 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	}
 
 
-	/**
+	*//**
 	 * Provide the int value shift logic among the peers
 	 * @param d
 	 * @param l
 	 * @param sm
 	 * @return
-	 */
+	 *//*
 	public boolean setDistributedObjectLocation( Int2D l, Object remoteValue ,SimState sm) throws DMasonException{
 		
 		
@@ -677,13 +677,13 @@ public class DIntGrid2DXY extends DIntGrid2D {
 		return (DistributedState)sm;
 	}
 
-	/**
+	*//**
 	 * This method, written with Java Reflect, provides to add the value
 	 * in the right Region.
 	 * @param value The value to add
 	 * @param l The new location of the value
 	 * @return true if the value is added in right way
-	 */
+	 *//*
 	private boolean setValue(int value, Int2D l){
 
 
@@ -795,13 +795,13 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	}
 
 
-	/**
+	*//**
 	 * This method, written with Java Reflect, follows two logical ways for all the regions:
 	 * - if a region is an out one, the value's location is updated and it's insert a new Entry 
 	 * 		in the updates_cache (cause the agent is moving out and it's important to maintain the information
 	 * 		for the next step)
 	 * - if a region is a mine one, the value's location is updated and the value is setted.
-	 */
+	 *//*
 	public void updateFields()
 	{
 		Class o=rmap.getClass();
@@ -870,13 +870,13 @@ public class DIntGrid2DXY extends DIntGrid2D {
 		}	     
 	}
 
-	/**
+	*//**
 	 * This method takes updates from box and set every value in the regions out.
 	 * Every value in the regions mine is compared with every value in the updates_cache:
 	 * if they are not equals, that in box mine is added.
 	 * 
 	 * @param box A Distributed Region that contains the updates
-	 */
+	 *//*
 	public void verifyUpdates(DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> box)
 	{
 		RegionNumeric<Integer,EntryNum<Integer,Int2D>> r_mine=box.out;
@@ -891,10 +891,10 @@ public class DIntGrid2DXY extends DIntGrid2D {
 		updates_cache.add(r_out);
 	}
 
-	/**
+	*//**
 	 * Clear all Regions.
 	 * @return true if the clearing is successful, false if exception is generated
-	 */
+	 *//*
 	public  boolean reset()
 	{
 		myfield.clear();
@@ -995,3 +995,4 @@ public class DIntGrid2DXY extends DIntGrid2D {
 
 	}
 }
+*/
