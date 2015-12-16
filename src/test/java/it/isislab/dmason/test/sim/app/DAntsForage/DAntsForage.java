@@ -322,11 +322,7 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 		// TODO Auto-generated method stub
 		return this;
 	}
-	@Override
-	public boolean setPortrayalForObject(Object o) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	
 	@Override
 	public void addToField(RemotePositionedAgent<Int2D> rm, Int2D loc) {
 		// TODO Auto-generated method stub
