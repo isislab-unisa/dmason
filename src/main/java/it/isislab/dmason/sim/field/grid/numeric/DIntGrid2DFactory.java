@@ -78,30 +78,20 @@ public class DIntGrid2DFactory {
 		if(max_distance>=Integer.MAX_VALUE ){throw new DMasonException("Illegal value : max_distance value exceded Integer max value");}
 		
 		
-		if(MODE==HORIZONTAL_DISTRIBUTION_MODE)
+		if(MODE==HORIZONTAL_DISTRIBUTION_MODE || MODE==SQUARE_DISTRIBUTION_MODE)
 		{
-			if(rows!=1){throw new DMasonException("Illegal rows dimension for horizontal mode, it must have one row");}
+		
 			  
-			DIntGrid2D field = new DIntGrid2DY(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name,topicPrefix);
-			field.setToroidal(isToroidal);
+			DIntGrid2D field = new DIntGrid2DXY(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name,topicPrefix,isToroidal);
 			if(!fixed)
 				((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 
 			return field;
 
 		}
-		else
-			if(MODE==SQUARE_DISTRIBUTION_MODE)
-			{
-                if(rows!=columns){throw new DMasonException("In square mode rows and columns must be equals!");}
-				DIntGrid2D field = new DIntGrid2DXY(width, height,sm, max_distance, i, j,rows,columns, initialGridValue, name,topicPrefix); 
-				field.setToroidal(isToroidal);
-				if(!fixed)
-					((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);	
-
-				return field;
-
-			}
+		
+		
+		
 			else if (MODE==SQUARE_BALANCED_DISTRIBUTION_MODE){
 				if(rows!=columns){throw new DMasonException("In square mode rows and columns must be equals!");}
 				if(((width% columns == 0) && (height% rows == 0)) && 

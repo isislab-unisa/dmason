@@ -666,7 +666,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		PriorityQueue<Object> q;
 		try 
 		{
-			q = updates.getUpdates(sm.schedule.getSteps()-1, neighborhood.size());
+			q = updates.getUpdates(sm.schedule.getSteps()-1, numNeighbors);
 
 			while(!q.isEmpty())
 			{
