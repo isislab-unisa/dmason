@@ -89,8 +89,8 @@ public class DDoubleGrid2DFactory {
 				if(((width% columns == 0) && (height% rows == 0)) && 
 						(((width/ columns)%3 == 0) && ((height/ rows)%3 == 0)))
 				{
-					DistributedField2D field = new DDoubleGrid2DXYLB(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name, topicPrefix);
-					field.setToroidal(isToroidal);
+					DistributedField2D field = new DDoubleGrid2DXYLB(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name, topicPrefix,isToroidal);
+					
 					if(!fixed)
 						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 					return (DDoubleGrid2D)field;
@@ -103,8 +103,8 @@ public class DDoubleGrid2DFactory {
 				{
 					if(rows >1) throw new DMasonException("In HORIZONTAL MODE the rows must be 1");
 
-					DistributedField2D field = new DDoubleGrid2DYLB(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name, topicPrefix);
-					field.setToroidal(isToroidal);
+					DistributedField2D field = new DDoubleGrid2DYLB(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name, topicPrefix,isToroidal);
+					
 					if(!fixed)
 						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 

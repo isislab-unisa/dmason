@@ -191,7 +191,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D implements DistributedField
 	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
 	public DDoubleGrid2DXYLB(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns,
-			double initialGridValue, String name, String prefix) 
+			double initialGridValue, String name, String prefix,boolean isToroidal) 
 	{	
 		super(width, height,initialGridValue);
 		this.width=width;
@@ -199,7 +199,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D implements DistributedField
 		this.NAME = name;
 		this.sm=sm;
 		this.topicPrefix = prefix;
-		jumpDistance=max_distance;
+		AOI=max_distance;
 		cellType = new CellType(i, j);
 		NUMPEERS=rows*columns;
 		toSendForBalance = new HashMap<Integer, MyCellInterface>();
@@ -214,11 +214,13 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D implements DistributedField
 
 		//Divide le celle inizialmente
 		balance = new LoadBalancingDoubleNumeric();
-
+        this.setToroidal(isToroidal);
+		
+		
 		int [] lP = {0,1,2,7,8,3,6,5,4};
 
 		//contiene le celle divise inizialmente
-		ArrayList<MyCellDoubleNumeric> listOriginalCell = balance.createRegions(this,my_width,my_height,jumpDistance,own_x,own_y,NUMPEERS);
+		ArrayList<MyCellDoubleNumeric> listOriginalCell = balance.createRegions(this,my_width,my_height,AOI,own_x,own_y,NUMPEERS);
 
 		//struttura in cui vengono inserite le MyCellForDouble
 		listGrid = new HashMap<Integer,HashMap<CellType, MyCellInterface>>();
@@ -232,7 +234,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D implements DistributedField
 			listGrid.get(lP[k]).put(cellType, listOriginalCell.get(k));
 		}
 
-		outAgents = new RegionDoubleNumeric(0,0,0,0,0,0);
+		outAgents = new RegionDoubleNumeric(0,0,0,0);
 
 		//Contenitore di UpdatePositionForDouble per gli aggiornamenti e le publish
 		hashUpdatesPosition = new HashMap<Integer, UpdatePositionDoubleNumeric<DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>>>();
@@ -848,7 +850,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D implements DistributedField
 					Int2D i=new Int2D(e_m.l.getX(), e_m.l.getY());
 					field[i.getX()][i.getY()]=e_m.r;	
 				}
-		outAgents = new RegionDoubleNumeric(0,0,0,0,0,0);
+		outAgents = new RegionDoubleNumeric(0,0,0,0);
 
 		this.reset();
 

@@ -166,7 +166,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 	 * @param width field's width  
 	 * @param height field's height
 	 * @param sm The SimState of simulation
-	 * @param jumpDistance maximum shift distance of the agents
+	 * @param AOI maximum shift distance of the agents
 	 * @param i i position in the field of the cell
 	 * @param j j position in the field of the cell
 	 * @param rows number of rows in the division
@@ -183,11 +183,11 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 		this.sm=sm;
 		this.topicPrefix = prefix;
 		cellType = new CellType(i, j);
-		jumpDistance=jumpDist;
+		AOI=jumpDist;
 		NUMPEERS=rows*columns;
 		toSendForBalance = new HashMap<Integer, MyCellInterface>();
 		toSendForUnion = new HashMap<Integer, MyCellInterface>();
-		outAgents = new RegionInteger(0, 0, 0, 0, 0, 0);
+		outAgents = new RegionInteger(0, 0, 0, 0);
 
 		//upper left corner's coordinates
 		own_x=(width/((int)Math.sqrt(NUMPEERS)))* cellType.pos_j; //inversione
@@ -210,7 +210,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 			toSendForUnion.put(k, null);
 		}
 		//contiene le celle divise inizialmente
-		ArrayList<MyCellInterface> listOriginalCell = balance.createRegions(this,my_width, my_height, jumpDistance, own_x,own_y,NUMPEERS);
+		ArrayList<MyCellInterface> listOriginalCell = balance.createRegions(this,my_width, my_height, AOI, own_x,own_y,NUMPEERS);
 
 		//struttura in cui vengono inserite le mycell
 		listGrid = new HashMap<Integer,HashMap<CellType, MyCellInterface>>();
@@ -848,7 +848,7 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 					((DistributedState<Int2D>)sm).addToField(rm,e_m.l);
 				}
 
-		outAgents = new RegionInteger(0, 0, 0, 0, 0, 0);
+		outAgents = new RegionInteger(0, 0, 0, 0);
 
 		this.reset();
 		/*
@@ -5459,11 +5459,6 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 			conn.setTable(table);
 	}
 
-	@Override
-	public String getID() {
-		// TODO Auto-generated method stub
-		return NAME;
-	}
 
 	@Override
 	public UpdateMap getUpdates() {
@@ -5530,11 +5525,6 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 	}
 
 
-	@Override
-	public void resetParameters() {
-		numAgents=0;
-	}
-
 
 	@Override
 	public int getLeftMineSize() {
@@ -5562,5 +5552,12 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 		//we have to implement this
 		return false;
 
+	}
+
+
+	@Override
+	public String getDistributedFieldID() {
+		// TODO Auto-generated method stub
+		return NAME;
 	}
 }

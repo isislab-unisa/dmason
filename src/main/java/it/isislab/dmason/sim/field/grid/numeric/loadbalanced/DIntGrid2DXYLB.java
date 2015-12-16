@@ -193,7 +193,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 		this.sm=sm;
 		this.topicPrefix = prefix;
 		cellType = new CellType(i, j);
-		MAX_DISTANCE=max_distance;
+		AOI=max_distance;
 		NUMPEERS=rows*columns;
 		toSendForBalance = new HashMap<Integer, MyCellInterface>();
 		toSendForUnion = new HashMap<Integer, MyCellInterface>();
@@ -210,7 +210,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 		balance = new LoadBalancingIntegerNumeric();
 
 		//contiene le celle divise inizialmente
-		ArrayList<MyCellIntegerNumeric> listOriginalCell = balance.createRegions(this,my_width,my_height,MAX_DISTANCE,own_x,own_y,NUMPEERS);
+		ArrayList<MyCellIntegerNumeric> listOriginalCell = balance.createRegions(this,my_width,my_height,AOI,own_x,own_y,NUMPEERS);
 
 		//struttura in cui vengono inserite le MyCellForInteger
 		listGrid = new HashMap<Integer,HashMap<CellType, MyCellInterface>>();
@@ -282,7 +282,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 	}
 
 	@Override
-	public String getID() {
+	public String getDistributedFieldID() {
 		// TODO Auto-generated method stub
 		return NAME;
 	}
@@ -5324,7 +5324,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 		return numAgents;
 	}
 
-	@Override
+	
 	public void resetParameters() {
 		numAgents=0;
 

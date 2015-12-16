@@ -194,13 +194,13 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
-	public DContinuousGrid2DYLB(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix)
+	public DContinuousGrid2DYLB(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix,boolean isToroidal)
 	{
 		super(discretization, width, height);
 		this.width=width;
 		this.height=height;
 		this.sm = sm;		
-		this.jumpDistance = max_distance;
+		this.AOI = max_distance;
 		//this.numPeers = num_peers;	
 		this.rows = rows;
 		this.columns = columns;
@@ -212,6 +212,7 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 		numAgents=0;
 		balanceR=0.0;
 		balanceL=0.0;
+		this.setToroidal(isToroidal);
 		createRegion();
 
 		// Initialize variables for GlobalInspector
@@ -286,39 +287,39 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 		}
 
 		myfield = new RegionDouble(
-				own_x + jumpDistance,            // MyField's x0 coordinate
+				own_x + AOI,            // MyField's x0 coordinate
 				own_y,                           // MyField's y0 coordinate
-				own_x + my_width - jumpDistance, // MyField x1 coordinate
-				height,                          // MyField y1 coordinate
-				width, height);                  // Global width and height 
+				own_x + my_width - AOI, // MyField x1 coordinate
+				height                          // MyField y1 coordinate
+				);                  // Global width and height 
 
 		rmap.WEST_OUT = new RegionDouble(
-				(own_x - jumpDistance + width) % width, // Left-out x0
+				(own_x - AOI + width) % width, // Left-out x0
 				0.0,									// Left-out y0
 				(own_x + width) % (width),				// Left-out x1
-				height,									// Left-out y1
-				width, height);
+				height								// Left-out y1
+				);
 
 		rmap.WEST_MINE = new RegionDouble(
 				(own_x + width) % width,				// Left-mine x0
 				0.0,									// Left-mine y0
-				(own_x + jumpDistance + width) % width,	// Left-mine x1
-				height,									// Left-mine y1
-				width, height);
+				(own_x + AOI + width) % width,	// Left-mine x1
+				height									// Left-mine y1
+				);
 
 		rmap.EAST_OUT = new RegionDouble(
 				(own_x + my_width + width) % width,                // Right-out x0
 				0.0,                                               // Right-out y0
-				(own_x + my_width + jumpDistance + width) % width, // Right-out x1
-				height,                                            // Right-out y1
-				width, height);
+				(own_x + my_width + AOI + width) % width, // Right-out x1
+				height                                            // Right-out y1
+				);
 
 		rmap.EAST_MINE = new RegionDouble(
-				(own_x + my_width - jumpDistance + width) % width, // Right-mine x0
+				(own_x + my_width - AOI + width) % width, // Right-mine x0
 				0.0,											   // Right-mine y0
 				(own_x + my_width + width) % width,                // Right-mine x1
-				height,                                            // Right-mine y1
-				width, height);
+				height                                            // Right-mine y1
+				);
 
 
 		return true;
@@ -334,8 +335,8 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 	{		
 		double shiftx=((DistributedState)sm).random.nextDouble();
 		double shifty=((DistributedState)sm).random.nextDouble();
-		double x=(own_x+jumpDistance)+((my_width+own_x-jumpDistance)-(own_x+jumpDistance))*shiftx;
-		double y=(own_y+jumpDistance)+((my_height+own_y-jumpDistance)-(own_y+jumpDistance))*shifty;
+		double x=(own_x+AOI)+((my_width+own_x-AOI)-(own_x+AOI))*shiftx;
+		double y=(own_y+AOI)+((my_height+own_y-AOI)-(own_y+AOI))*shifty;
 
 		//rm.setPos(new Double2D(x,y));
 
@@ -512,13 +513,13 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 			if(balanceR>0){
 				//The width of the region was increased in the previous step
 				//So the right_mine must be restored on the start's dimensions but maintaining the new positions
-				rmap.EAST_MINE.setUpl_xx((own_x + my_width - jumpDistance + width) % width);
+				rmap.EAST_MINE.setUpl_xx((own_x + my_width - AOI + width) % width);
 
 			}
 			else if(balanceR<0){
 				//The width of the region was decreased in the previous step
 				//So the right_out must be restored on the start's dimensions but maintaining the new positions
-				rmap.EAST_OUT.setDown_xx((own_x + my_width + jumpDistance + width) % width);
+				rmap.EAST_OUT.setDown_xx((own_x + my_width + AOI + width) % width);
 			}
 			balanceR=0;
 		}
@@ -527,13 +528,13 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 			if(balanceL>0){
 				//The width of the region was increased in the previous step
 				//So the left_mine must be restored on the start's dimensions but maintaining the new positions
-				rmap.WEST_MINE.setDown_xx((own_x + jumpDistance + width) % width);
+				rmap.WEST_MINE.setDown_xx((own_x + AOI + width) % width);
 
 			}
 			else if(balanceL<0){
 				//The width of the region was increased in the previous step
 				//So the left_out must be restored on the start's dimensions but maintaining the new positions
-				rmap.WEST_OUT.setUpl_xx((own_x - jumpDistance + width) % width);
+				rmap.WEST_OUT.setUpl_xx((own_x - AOI + width) % width);
 
 			}
 			balanceL=0;
@@ -559,12 +560,12 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 
 
 						//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null
-						if(balanceR>region.width-jumpDistance-1){
-							balanceR=region.width-jumpDistance-1;
+						if(balanceR>region.width-AOI-1){
+							balanceR=region.width-AOI-1;
 						}
 						//The balance can't be smaller than its width+AOI+1 otherwise this region becames null
-						if(balanceR<-my_width+jumpDistance+1){
-							balanceR=-my_width+jumpDistance+1;
+						if(balanceR<-my_width+AOI+1){
+							balanceR=-my_width+AOI+1;
 						}
 
 
@@ -572,26 +573,26 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 							//the region becames smaller
 							//the right_out becames bigger so the agents can be passed to the right neighbor
 							rmap.EAST_OUT.setUpl_xx((own_x + my_width + width+balanceR) % width);
-							rmap.EAST_OUT.setDown_xx((own_x + my_width + jumpDistance + width) % width);
+							rmap.EAST_OUT.setDown_xx((own_x + my_width + AOI + width) % width);
 							my_width=my_width+balanceR;
-							rmap.EAST_MINE.setUpl_xx((own_x + my_width - jumpDistance + width) % width);
+							rmap.EAST_MINE.setUpl_xx((own_x + my_width - AOI + width) % width);
 							rmap.EAST_MINE.setDown_xx((own_x + my_width + width) % width);
 
-							myfield.setUpl_xx(own_x + jumpDistance);
-							myfield.setDown_xx(own_x + my_width - jumpDistance);
+							myfield.setUpl_xx(own_x + AOI);
+							myfield.setDown_xx(own_x + my_width - AOI);
 							region.mine.clear();
 
 						}else 
 							if(balanceR>0){
 								//the region becames bigger
 								//the right_mine becames bigger so the agents can be received from the right neighbor
-								rmap.EAST_MINE.setUpl_xx((own_x + my_width - jumpDistance + width) % width);
+								rmap.EAST_MINE.setUpl_xx((own_x + my_width - AOI + width) % width);
 								rmap.EAST_MINE.setDown_xx((own_x + my_width + width+balanceR) % width);
 								my_width=my_width+balanceR;
 								rmap.EAST_OUT.setUpl_xx((own_x + my_width + width) % width);
-								rmap.EAST_OUT.setDown_xx((own_x + my_width + jumpDistance + width) % width);
-								myfield.setUpl_xx(own_x + jumpDistance);
-								myfield.setDown_xx(own_x + my_width - jumpDistance);
+								rmap.EAST_OUT.setDown_xx((own_x + my_width + AOI + width) % width);
+								myfield.setUpl_xx(own_x + AOI);
+								myfield.setDown_xx(own_x + my_width - AOI);
 
 							}
 
@@ -607,39 +608,39 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 
 
 						//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null
-						if(balanceL>region.width-jumpDistance-1)
-							balanceL=region.width-jumpDistance-1;
+						if(balanceL>region.width-AOI-1)
+							balanceL=region.width-AOI-1;
 						//The balance can't be smaller than its width+AOI+1 otherwise this region becames null
-						if(balanceL<-my_width+jumpDistance+1)
-							balanceL=-my_width+jumpDistance+1;
+						if(balanceL<-my_width+AOI+1)
+							balanceL=-my_width+AOI+1;
 
 
 						if(balanceL<0){
 							//the region becames smaller
 							//the left_out becames bigger so the agents can be passed to the left neighbor
 
-							rmap.WEST_OUT.setUpl_xx((own_x - jumpDistance + width) % width);
+							rmap.WEST_OUT.setUpl_xx((own_x - AOI + width) % width);
 							rmap.WEST_OUT.setDown_xx((own_x + width-balanceL) % (width));
 							own_x=own_x-balanceL;
 							my_width=my_width+balanceL;
 							rmap.WEST_MINE.setUpl_xx((own_x + width) % width);
-							rmap.WEST_MINE.setDown_xx((own_x + jumpDistance + width) % width);
-							myfield.setUpl_xx(own_x + jumpDistance);
-							myfield.setDown_xx(own_x + my_width - jumpDistance);
+							rmap.WEST_MINE.setDown_xx((own_x + AOI + width) % width);
+							myfield.setUpl_xx(own_x + AOI);
+							myfield.setDown_xx(own_x + my_width - AOI);
 
 						}else 
 							if(balanceL>0){
 								//the region becames bigger
 								//the left_mine becames bigger so the agents can be received from the left neighbor
 								rmap.WEST_MINE.setUpl_xx((own_x + width-balanceL) % width);
-								rmap.WEST_MINE.setDown_xx((own_x + jumpDistance + width) % width);
+								rmap.WEST_MINE.setDown_xx((own_x + AOI + width) % width);
 								own_x=own_x-balanceL;
 
 								my_width=my_width+balanceL;
-								rmap.WEST_OUT.setUpl_xx((own_x - jumpDistance + width) % width);
+								rmap.WEST_OUT.setUpl_xx((own_x - AOI + width) % width);
 								rmap.WEST_OUT.setDown_xx((own_x + width) % (width));
-								myfield.setUpl_xx(own_x + jumpDistance);
-								myfield.setDown_xx(own_x + my_width - jumpDistance);
+								myfield.setUpl_xx(own_x + AOI);
+								myfield.setDown_xx(own_x + my_width - AOI);
 
 								region.mine.clear();
 							}
@@ -705,7 +706,7 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 			RemotePositionedAgent<Double2D> rm=e_m.r;
 			((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
 			rm.setPos(e_m.l);
-			setPortrayalForObject(rm);
+			//setPortrayalForObject(rm);
 			sm.schedule.scheduleOnce(rm);
 		}
 		updates_cache.add(r_out);
@@ -741,8 +742,8 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 		}	     
 	}
 
-	@Override
-	public boolean setPortrayalForObject(Object o) 
+	
+	/*public boolean setPortrayalForObject(Object o) 
 	{
 		if(p!=null)
 		{
@@ -750,7 +751,7 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 			return true;
 		}
 		return false;
-	}
+	}*/
 	/**
 	 * This method, written with Java Reflect, follows two logical ways for all the regions:
 	 * - if a region is an out one, the agent's location is updated and it's insert a new Entry 
@@ -918,7 +919,7 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 			conn.setTable(table);
 	}
 	@Override
-	public String getID() {
+	public String getDistributedFieldID() {
 		// TODO Auto-generated method stub
 		return name;
 	}
@@ -972,15 +973,15 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 	private double dynamic3(double my_width, int sl, int sr, int el, int er){
 		if(sr>sl){
 			if(el==0)
-				return Math.round(my_width + jumpDistance);
+				return Math.round(my_width + AOI);
 			else
-				return Math.round(my_width + Math.min(jumpDistance, ((sr-sl)/2)*(jumpDistance/el)));
+				return Math.round(my_width + Math.min(AOI, ((sr-sl)/2)*(AOI/el)));
 		}
 		else{
 			if(er==0)
-				return Math.round(my_width - jumpDistance);
+				return Math.round(my_width - AOI);
 			else
-				return Math.round(my_width + Math.max(-jumpDistance, ((sr-sl)/2)*(jumpDistance/er)));
+				return Math.round(my_width + Math.max(-AOI, ((sr-sl)/2)*(AOI/er)));
 		}
 	}
 
@@ -990,7 +991,7 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 	}
 
 
-	@Override
+	
 	public void resetParameters() {
 		numAgents=0;
 		leftMineSize=0;
@@ -1021,6 +1022,8 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 		return false;
 
 	}
+
+	
 
 
 }

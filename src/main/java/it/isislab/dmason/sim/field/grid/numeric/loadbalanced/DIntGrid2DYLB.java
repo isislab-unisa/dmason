@@ -154,7 +154,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 		this.height=height;
 		this.NAME = name;
 		this.sm=sm;
-		MAX_DISTANCE=max_distance;
+		AOI=max_distance;
 		//NUMPEERS=num_peers;
 		this.rows = rows;
 		this.columns = columns;	
@@ -181,7 +181,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	 */
 	private boolean createRegion()
 	{
-		int jumpDistance=MAX_DISTANCE;
+		int jumpDistance=AOI;
 		//upper left corner's coordinates
 				if(cellType.pos_j<(width%columns))
 					own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
@@ -234,36 +234,36 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 						own_x + jumpDistance,            // MyField's x0 coordinate
 						own_y,                           // MyField's y0 coordinate
 						own_x + my_width - jumpDistance, // MyField x1 coordinate
-						height,                          // MyField y1 coordinate
-						width, height);                  // Global width and height 
+						height                          // MyField y1 coordinate
+						);                  // Global width and height 
 
 				rmap.WEST_OUT = new RegionIntegerNumeric(
 						(own_x - jumpDistance + width) % width, // Left-out x0
 						0,									// Left-out y0
 						(own_x + width) % (width),				// Left-out x1
-						height,									// Left-out y1
-						width, height);
+						height									// Left-out y1
+						);
 
 				rmap.WEST_MINE = new RegionIntegerNumeric(
 						(own_x + width) % width,				// Left-mine x0
 						0,									// Left-mine y0
 						(own_x + jumpDistance + width) % width,	// Left-mine x1
-						height,									// Left-mine y1
-						width, height);
+						height									// Left-mine y1
+						);
 
 				rmap.EAST_OUT = new RegionIntegerNumeric(
 						(own_x + my_width + width) % width,                // Right-out x0
 						0,                                               // Right-out y0
 						(own_x + my_width + jumpDistance + width) % width, // Right-out x1
-						height,                                            // Right-out y1
-						width, height);
+						height                                            // Right-out y1
+						);
 
 				rmap.EAST_MINE = new RegionIntegerNumeric(
 						(own_x + my_width - jumpDistance + width) % width, // Right-mine x0
 						0,											   // Right-mine y0
 						(own_x + my_width + width) % width,                // Right-mine x1
-						height,                                            // Right-mine y1
-						width, height);
+						height                                            // Right-mine y1
+						);
 
 
 				return true;
@@ -400,7 +400,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 				rmap.EAST_OUT.clear();
 
 				for (int i = 0; i < height; i++) {
-					for (int j = rmap.EAST_OUT.upl_xx; j <= rmap.EAST_OUT.down_xx-MAX_DISTANCE; j++) {
+					for (int j = rmap.EAST_OUT.upl_xx; j <= rmap.EAST_OUT.down_xx-AOI; j++) {
 						rmap.EAST_OUT.addEntryNum(new EntryNum<Integer, Int2D>(
 								field[j][i], new Int2D(j, i)));
 					}
@@ -430,7 +430,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 				rmap.WEST_OUT.clear();
 
 				for (int i = 0; i < height; i++) {
-					for (int j = rmap.WEST_OUT.upl_xx+MAX_DISTANCE; j <= rmap.WEST_OUT.down_xx; j++) {
+					for (int j = rmap.WEST_OUT.upl_xx+AOI; j <= rmap.WEST_OUT.down_xx; j++) {
 						rmap.WEST_OUT.addEntryNum(new EntryNum<Integer, Int2D>(
 								field[j][i], new Int2D(j, i)));
 					}
@@ -476,13 +476,13 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 			if(balanceR>0){
 				//The width of the region was increased in the previous step
 				//So the EAST_MINE must be restored on the start's dimensions but maintaining the new positions
-				rmap.EAST_MINE.setUpl_xx(own_x + my_width -MAX_DISTANCE);
+				rmap.EAST_MINE.setUpl_xx(own_x + my_width -AOI);
 			}
 			else if(balanceR<0){
 
 				//The width of the region was decreased in the previous step
 				//So the EAST_OUT must be restored on the start's dimensions but maintaining the new positions
-				rmap.EAST_OUT.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
+				rmap.EAST_OUT.setDown_xx(own_x+my_width+AOI-1);
 				prevBalanceR=balanceR;
 
 			}
@@ -493,13 +493,13 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 			if(balanceL>0){
 				//The width of the region was increased in the previous step
 				//So the left_mine must be restored on the start's dimensions but maintaining the new positions
-				rmap.WEST_MINE.setDown_xx(own_x + MAX_DISTANCE -1);
+				rmap.WEST_MINE.setDown_xx(own_x + AOI -1);
 			}
 			else if(balanceL<0){
 
 				//The width of the region was increased in the previous step
 				//So the left_out must be restored on the start's dimensions but maintaining the new positions
-				rmap.WEST_OUT.setUpl_xx(own_x-MAX_DISTANCE);
+				rmap.WEST_OUT.setUpl_xx(own_x-AOI);
 				prevBalanceL=balanceL;
 			}
 			balanceL=0;
@@ -523,7 +523,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 							isLeft=true;
 							if (prevBalanceR<0){
 								for (int i = 0; i < height; i++) {
-									for (int j = rmap.EAST_OUT.upl_xx+MAX_DISTANCE; j <= rmap.EAST_OUT.down_xx-prevBalanceR; j++) {
+									for (int j = rmap.EAST_OUT.upl_xx+AOI; j <= rmap.EAST_OUT.down_xx-prevBalanceR; j++) {
 										field[j][i]=initialValue;
 
 									}
@@ -536,12 +536,12 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 
 
 							//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null
-							if(balanceR>region.width-MAX_DISTANCE-1){
-								balanceR=region.width-MAX_DISTANCE-1;
+							if(balanceR>region.width-AOI-1){
+								balanceR=region.width-AOI-1;
 							}
 							//The balance can't be smaller than its width+AOI+1 otherwise this region becames null
-							if(balanceR<-my_width+MAX_DISTANCE+1){
-								balanceR=-my_width+MAX_DISTANCE+1;
+							if(balanceR<-my_width+AOI+1){
+								balanceR=-my_width+AOI+1;
 
 							}
 
@@ -550,23 +550,23 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 								//the region becames smaller
 								//the EAST_OUT becames bigger so the agents can be passed to the right neighbor
 								rmap.EAST_OUT.setUpl_xx(own_x+my_width+balanceR);
-								rmap.EAST_OUT.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
+								rmap.EAST_OUT.setDown_xx(own_x+my_width+AOI-1);
 								my_width=my_width+balanceR;
-								rmap.EAST_MINE.setUpl_xx(own_x + my_width-MAX_DISTANCE);
+								rmap.EAST_MINE.setUpl_xx(own_x + my_width-AOI);
 								rmap.EAST_MINE.setDown_xx(own_x +my_width-1);
 								if(rmap.WEST_OUT == null)
 								{
 									//peer 0
 									myfield.setUpl_xx(own_x);
-									myfield.setDown_xx(own_x+my_width-MAX_DISTANCE-1);
+									myfield.setDown_xx(own_x+my_width-AOI-1);
 
 								}
 
 
 								if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 								{
-									myfield.setUpl_xx(own_x+MAX_DISTANCE);
-									myfield.setDown_xx(own_x+my_width-MAX_DISTANCE-1);
+									myfield.setUpl_xx(own_x+AOI);
+									myfield.setDown_xx(own_x+my_width-AOI-1);
 
 								}
 
@@ -574,24 +574,24 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 								if(balanceR>0){
 									//the region becames bigger
 									//the EAST_MINE becames bigger so the agents can be received from the right neighbor
-									rmap.EAST_MINE.setUpl_xx(own_x + my_width-MAX_DISTANCE);
+									rmap.EAST_MINE.setUpl_xx(own_x + my_width-AOI);
 									rmap.EAST_MINE.setDown_xx(own_x +my_width-1+balanceR);
 									my_width=my_width+balanceR;
 									rmap.EAST_OUT.setUpl_xx(own_x + my_width);
-									rmap.EAST_OUT.setDown_xx(own_x+my_width+MAX_DISTANCE-1);
+									rmap.EAST_OUT.setDown_xx(own_x+my_width+AOI-1);
 
 									if(rmap.WEST_OUT == null)
 									{
 										//peer 0
 										myfield.setUpl_xx(own_x);
-										myfield.setDown_xx(own_x+my_width-MAX_DISTANCE-1);
+										myfield.setDown_xx(own_x+my_width-AOI-1);
 
 									}
 
 									if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 									{
-										myfield.setUpl_xx(own_x+MAX_DISTANCE);
-										myfield.setDown_xx(own_x+my_width-MAX_DISTANCE-1);
+										myfield.setUpl_xx(own_x+AOI);
+										myfield.setDown_xx(own_x+my_width-AOI-1);
 
 									}
 
@@ -604,7 +604,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 							isLeft=false;
 							if(prevBalanceL<0){
 								for (int i = 0; i < height; i++) {
-									for (int j = rmap.WEST_OUT.upl_xx+prevBalanceL; j <= rmap.WEST_OUT.down_xx-MAX_DISTANCE; j++) {
+									for (int j = rmap.WEST_OUT.upl_xx+prevBalanceL; j <= rmap.WEST_OUT.down_xx-AOI; j++) {
 										field[j][i]=initialValue;
 
 									}
@@ -616,33 +616,33 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 
 
 							//The balance can't be bigger than neighbor's width-AOI-1 otherwise the neighbor's region becames null
-							if(balanceL>region.width-MAX_DISTANCE-1)
-								balanceL=region.width-MAX_DISTANCE-1;
+							if(balanceL>region.width-AOI-1)
+								balanceL=region.width-AOI-1;
 							//The balance can't be smaller than its width+AOI+1 otherwise this region becames null
-							if(balanceL<-my_width+MAX_DISTANCE+1)
-								balanceL=-my_width+MAX_DISTANCE+1;
+							if(balanceL<-my_width+AOI+1)
+								balanceL=-my_width+AOI+1;
 							if(balanceL<0){
 								//the region becames smaller
 								//the left_out becames bigger so the agents can be passed to the left neighbor
-								rmap.WEST_OUT.setUpl_xx(own_x-MAX_DISTANCE);
+								rmap.WEST_OUT.setUpl_xx(own_x-AOI);
 								rmap.WEST_OUT.setDown_xx(own_x-1-balanceL);
 								own_x=own_x-balanceL;
 								my_width=my_width+balanceL;
 								rmap.WEST_MINE.setUpl_xx(own_x);
-								rmap.WEST_MINE.setDown_xx(own_x + MAX_DISTANCE -1);
+								rmap.WEST_MINE.setDown_xx(own_x + AOI -1);
 
 								if(rmap.EAST_OUT == null)
 								{
 									//peer NUMPEERS-1
-									myfield.setUpl_xx(own_x+MAX_DISTANCE);
+									myfield.setUpl_xx(own_x+AOI);
 									myfield.setDown_xx(own_x+my_width-1);
 
 								}
 
 								if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 								{
-									myfield.setUpl_xx(own_x+MAX_DISTANCE);
-									myfield.setDown_xx( own_x+my_width-MAX_DISTANCE-1);
+									myfield.setUpl_xx(own_x+AOI);
+									myfield.setDown_xx( own_x+my_width-AOI-1);
 
 								}			
 
@@ -651,11 +651,11 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 									//the region becames bigger
 									//the left_mine becames bigger so the agents can be received from the left neighbor
 									rmap.WEST_MINE.setUpl_xx(own_x-balanceL);
-									rmap.WEST_MINE.setDown_xx(own_x + MAX_DISTANCE -1);
+									rmap.WEST_MINE.setDown_xx(own_x + AOI -1);
 									own_x=own_x-balanceL;
 
 									my_width=my_width+balanceL;
-									rmap.WEST_OUT.setUpl_xx(own_x-MAX_DISTANCE);
+									rmap.WEST_OUT.setUpl_xx(own_x-AOI);
 									rmap.WEST_OUT.setDown_xx(own_x-1);
 
 
@@ -663,15 +663,15 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 									if(rmap.EAST_OUT == null)
 									{
 										//peer NUMPEERS-1
-										myfield.setUpl_xx(own_x+MAX_DISTANCE);
+										myfield.setUpl_xx(own_x+AOI);
 										myfield.setDown_xx(own_x+my_width-1);
 
 									}
 
 									if(rmap.WEST_OUT!=null && rmap.EAST_OUT!=null)
 									{
-										myfield.setUpl_xx(own_x+MAX_DISTANCE);
-										myfield.setDown_xx( own_x+my_width-MAX_DISTANCE-1);
+										myfield.setUpl_xx(own_x+AOI);
+										myfield.setDown_xx( own_x+my_width-AOI-1);
 
 									}			
 								}
@@ -949,7 +949,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	}
 
 	@Override
-	public String getID() {
+	public String getDistributedFieldID() {
 		// TODO Auto-generated method stub
 		return NAME;
 	}
@@ -1013,7 +1013,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 		return numAgents;
 	}
 
-	@Override
+	
 	public void resetParameters() {
 		numAgents=0;
 		leftMineSize=0;
@@ -1037,15 +1037,15 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 
 		if(sr>sl){
 			if(el==0)
-				return al + MAX_DISTANCE;
+				return al + AOI;
 			else
-				return al + Math.min(MAX_DISTANCE, (int) Math.ceil((sr-sl)/2.0)*MAX_DISTANCE/el);
+				return al + Math.min(AOI, (int) Math.ceil((sr-sl)/2.0)*AOI/el);
 		}
 		else if(sl>sr){
 			if(er==0)
-				return al - MAX_DISTANCE;
+				return al - AOI;
 			else
-				return al + Math.max(-MAX_DISTANCE, (int) Math.ceil((sr-sl)/2.0)*MAX_DISTANCE/er);
+				return al + Math.max(-AOI, (int) Math.ceil((sr-sl)/2.0)*AOI/er);
 		}
 		return al;
 	}
