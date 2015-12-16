@@ -23,6 +23,7 @@ import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.grid.numeric.region.RegionDoubleNumeric;
+import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DXY;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegionNumeric;
 import it.isislab.dmason.sim.field.support.field2D.EntryNum;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
@@ -38,6 +39,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
+import java.util.logging.Logger;
 
 import sim.engine.SimState;
 import sim.util.Double2D;
@@ -124,19 +126,36 @@ import sim.util.Int2D;
  * @author Carmine Spagnuolo
  */
 public class DDoubleGrid2DXY extends DDoubleGrid2D {
+
+
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+	private static Logger logger = Logger.getLogger(DDoubleGrid2DXY.class.getCanonicalName());
+
+
 	/**
 	 * It's the name of the specific field
 	 */
-	private String NAME;
-	/**
-	 * It represents the initial value of the field
-	 */	
-	private double initialValue;
+	private String name;
+
+
+	/** Number of neighbors of this cell, that is also the number of regions to create and of topics to publish/subscribe */ 
+	protected int numNeighbors;
+
+
+	private String topicPrefix = "";
+
+
+
 	private ZoomArrayList<EntryNum<Double, Int2D>> tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
 	private int width,height;
 
 
-	private String topicPrefix = "";
 
 	// -----------------------------------------------------------------------
 	// GLOBAL PROPERTIES -----------------------------------------------------
@@ -161,23 +180,24 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
 	public DDoubleGrid2DXY(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns,
-			double initialGridValue, String name, String prefix) 
+			double initialGridValue, String name, String prefix, boolean isToroidal) 
 	{	
 		super(width, height,initialGridValue);
 		this.width=width;
 		this.height=height;
-		this.NAME = name;
-		this.sm=sm;		
-		cellType = new CellType(i, j);
-		jumpDistance=max_distance;
-		//NUMPEERS=num_peers;
+		this.sm=sm;
+		this.AOI=max_distance;
 		this.rows = rows;
 		this.columns = columns;
+		this.cellType = new CellType(i, j);
+		this.updates_cache = new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();	
+		this.name = name;
+		this.topicPrefix = prefix;		
 
-		updates_cache = new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
-		this.topicPrefix = prefix;
+		setToroidal(isToroidal);
+		createRegion();
 
-		createRegion();	
+
 	}
 
 	/**
@@ -185,8 +205,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	 * @return true if all is ok
 	 */
 	private boolean createRegion() {
-		
-		
+
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
@@ -227,257 +246,190 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 			}
 		}
 
-		// Building the regions
 
-		myfield=new RegionDoubleNumeric(own_x+jumpDistance,own_y+jumpDistance, own_x+my_width-jumpDistance , own_y+my_height-jumpDistance,width,height);
+
+		if(isToroidal()) 
+			makeToroidalSections();
+		else
+			makeNoToroidalSections();
+
+
+		return true;
+	}
+
+
+
+	private void makeNoToroidalSections() {
+
+		myfield=new RegionDoubleNumeric(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
 
 		//corner up left
-		rmap.NORTH_WEST_OUT=new RegionDoubleNumeric((own_x-jumpDistance + width)%width, (own_y-jumpDistance+height)%height, 
-				(own_x+width)%width, (own_y+height)%height,width,height);
-		rmap.NORTH_WEST_MINE=new RegionDoubleNumeric(own_x, own_y, 
-				own_x+jumpDistance, own_y+jumpDistance,width,height);
+
+		rmap.NORTH_WEST_MINE=new RegionDoubleNumeric(own_x, own_y, own_x+AOI, own_y+AOI);
 
 		//corner up right
-		rmap.NORTH_EAST_OUT = new RegionDoubleNumeric((own_x+my_width+width)%width, (own_y-jumpDistance+height)%height,
-				(own_x+my_width+jumpDistance+width)%width, (own_y+height)%height,width,height);
-		rmap.NORTH_EAST_MINE=new RegionDoubleNumeric(own_x+my_width-jumpDistance, own_y, 
-				own_x+my_width, own_y+jumpDistance,width,height);
+
+		rmap.NORTH_EAST_MINE=new RegionDoubleNumeric(own_x+my_width-AOI, own_y, own_x+my_width, own_y+AOI);
 
 		//corner down left
-		rmap.SOUTH_WEST_OUT=new RegionDoubleNumeric((own_x-jumpDistance+width)%width, (own_y+my_height+height)%height,
-				(own_x+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
-		rmap.SOUTH_WEST_MINE=new RegionDoubleNumeric(own_x, own_y+my_height-jumpDistance,
-				own_x+jumpDistance, own_y+my_height,width,height);
+
+		rmap.SOUTH_WEST_MINE=new RegionDoubleNumeric(own_x, own_y+my_height-AOI,own_x+AOI, own_y+my_height);
+
+		//corner down right
+
+		rmap.SOUTH_EAST_MINE=new RegionDoubleNumeric(own_x+my_width-AOI, own_y+my_height-AOI,own_x+my_width,own_y+my_height);
+
+		rmap.WEST_MINE=new RegionDoubleNumeric(own_x,own_y,own_x + AOI , own_y+my_height);
+
+
+		rmap.EAST_MINE=new RegionDoubleNumeric(own_x + my_width - AOI,own_y,own_x +my_width , own_y+my_height);
+
+
+		rmap.NORTH_MINE=new RegionDoubleNumeric(own_x ,own_y,own_x+my_width, own_y + AOI);
+
+
+		rmap.SOUTH_MINE=new RegionDoubleNumeric(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
+
+		//horizontal partitioning
+		if(rows==1){
+			numNeighbors = 2;
+			if(cellType.pos_j>0 && cellType.pos_j<columns-1){
+
+
+				rmap.WEST_OUT=new RegionDoubleNumeric((own_x-AOI+width)%width,(own_y+height)%height,
+						(own_x+width)%width==0?width:(own_x+width)%width, ((own_y+my_height)+height)%height==0?height:((own_y+my_height)+height)%height);
+
+				rmap.EAST_OUT=new RegionDoubleNumeric((own_x+my_width+width)%width,(own_y+height)%height,
+						(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height==0?height:(own_y+my_height+height)%height);
+			}
+
+			else if(cellType.pos_j==0){
+				numNeighbors = 1;
+				rmap.EAST_OUT=new RegionDoubleNumeric((own_x+my_width+width)%width,(own_y+height)%height,
+						(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height==0?height:(own_y+my_height+height)%height);
+			}	
+
+
+			else if(cellType.pos_j==columns-1){
+				numNeighbors = 1;
+				rmap.WEST_OUT=new RegionDoubleNumeric((own_x-AOI+width)%width,(own_y+height)%height,
+						(own_x+width)%width==0?width:(own_x+width)%width, ((own_y+my_height)+height)%height==0?height:((own_y+my_height)+height)%height);	
+			}
+		}else{ //sqare partitioning 
+
+			/*
+			 * In this case we use a different approach: Firt we make all ghost sections, after that
+			 * we remove the useful ghost section
+			 * 
+			 * */
+			numNeighbors = 8;
+			//corner up left
+			rmap.NORTH_WEST_OUT=new RegionDoubleNumeric((own_x-AOI + width)%width, (own_y-AOI+height)%height, 
+					(own_x+width)%width==0?width:(own_x+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
+
+
+			//corner up right
+			rmap.NORTH_EAST_OUT = new RegionDoubleNumeric((own_x+my_width+width)%width, (own_y-AOI+height)%height,
+					(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
+
+
+			//corner down left
+			rmap.SOUTH_WEST_OUT=new RegionDoubleNumeric((own_x-AOI+width)%width, (own_y+my_height+height)%height,
+					(own_x+width)%width==0?width:(own_x+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+
+
+			//corner down right
+			rmap.SOUTH_EAST_OUT=new RegionDoubleNumeric((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
+					(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+
+
+			rmap.WEST_OUT=new RegionDoubleNumeric((own_x-AOI+width)%width,(own_y+height)%height,
+					(own_x+width)%width==0?width:(own_x+width)%width, ((own_y+my_height)+height)%height==0?height:((own_y+my_height)+height)%height);
+
+
+			rmap.EAST_OUT=new RegionDoubleNumeric((own_x+my_width+width)%width,(own_y+height)%height,
+					(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height==0?height:(own_y+my_height+height)%height);
+
+			if(cellType.pos_i==0 ){
+				numNeighbors = 3;
+				rmap.NORTH_OUT = null;
+				rmap.NORTH_WEST_OUT = null;
+				rmap.NORTH_EAST_OUT = null;
+			}
+
+			if(cellType.pos_j == 0){
+				numNeighbors = 3;
+				rmap.SOUTH_WEST_OUT = null;
+				rmap.NORTH_WEST_OUT=null;
+				rmap.WEST_OUT = null;
+			}
+
+			if(cellType.pos_i == rows -1){
+				numNeighbors = 3;
+				rmap.SOUTH_WEST_OUT = null;
+				rmap.SOUTH_OUT = null;
+				rmap.SOUTH_EAST_OUT = null;
+			}
+
+			if(cellType.pos_j == columns -1){
+				numNeighbors = 3;
+				rmap.NORTH_EAST_OUT = null;
+				rmap.EAST_OUT = null;
+				rmap.SOUTH_EAST_OUT = null;
+			}
+		}
+	}
+
+	private void makeToroidalSections() {
+		numNeighbors = 6;
+		myfield=new RegionDoubleNumeric(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
+
+
+		//corner up left
+		rmap.NORTH_WEST_OUT=new RegionDoubleNumeric((own_x-AOI + width)%width, (own_y-AOI+height)%height, 
+				(own_x+width)%width==0?width:(own_x+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
+		rmap.NORTH_WEST_MINE=new RegionDoubleNumeric(own_x, own_y, own_x+AOI, own_y+AOI);
+
+		//corner up right
+		rmap.NORTH_EAST_OUT = new RegionDoubleNumeric((own_x+my_width+width)%width, (own_y-AOI+height)%height,
+				(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
+		rmap.NORTH_EAST_MINE=new RegionDoubleNumeric(own_x+my_width-AOI, own_y, own_x+my_width, own_y+AOI);
+
+		//corner down left
+		rmap.SOUTH_WEST_OUT=new RegionDoubleNumeric((own_x-AOI+width)%width, (own_y+my_height+height)%height,
+				(own_x+width)%width==0?width:(own_x+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+		rmap.SOUTH_WEST_MINE=new RegionDoubleNumeric(own_x, own_y+my_height-AOI,own_x+AOI, own_y+my_height);
 
 		//corner down right
 		rmap.SOUTH_EAST_OUT=new RegionDoubleNumeric((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
-				(own_x+my_width+jumpDistance+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
-		rmap.SOUTH_EAST_MINE=new RegionDoubleNumeric(own_x+my_width-jumpDistance, own_y+my_height-jumpDistance,
-				own_x+my_width,own_y+my_height,width,height);
+				(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+		rmap.SOUTH_EAST_MINE=new RegionDoubleNumeric(own_x+my_width-AOI, own_y+my_height-AOI,own_x+my_width,own_y+my_height);
 
-		rmap.WEST_OUT=new RegionDoubleNumeric((own_x-jumpDistance+width)%width,(own_y+height)%height,
-				(own_x+width)%width, ((own_y+my_height)+height)%height,width,height);
-		rmap.WEST_MINE=new RegionDoubleNumeric(own_x,own_y,
-				own_x + jumpDistance , own_y+my_height,width,height);
+		rmap.WEST_OUT=new RegionDoubleNumeric((own_x-AOI+width)%width,(own_y+height)%height,
+				(own_x+width)%width==0?width:(own_x+width)%width, ((own_y+my_height)+height)%height==0?height:((own_y+my_height)+height)%height);
+		rmap.WEST_MINE=new RegionDoubleNumeric(own_x,own_y,own_x + AOI , own_y+my_height);
 
 		rmap.EAST_OUT=new RegionDoubleNumeric((own_x+my_width+width)%width,(own_y+height)%height,
-				(own_x+my_width+jumpDistance+width)%width, (own_y+my_height+height)%height,width,height);
-		rmap.EAST_MINE=new RegionDoubleNumeric(own_x + my_width - jumpDistance,own_y,
-				own_x +my_width , own_y+my_height,width,height);
-
-		rmap.NORTH_OUT=new RegionDoubleNumeric((own_x+width)%width, (own_y - jumpDistance+height)%height,
-				(own_x+ my_width +width)%width,(own_y+height)%height,width,height);
-		rmap.NORTH_MINE=new RegionDoubleNumeric(own_x ,own_y,
-				own_x+my_width, own_y + jumpDistance ,width,height);
-
-		rmap.SOUTH_OUT=new RegionDoubleNumeric((own_x+width)%width,(own_y+my_height+height)%height,
-				(own_x+my_width+width)%width, (own_y+my_height+jumpDistance+height)%height,width,height);
-		rmap.SOUTH_MINE=new RegionDoubleNumeric(own_x,own_y+my_height-jumpDistance,
-				own_x+my_width, (own_y+my_height),width,height);
-
-		return true;
-
-		/*//upper left corner's coordinates
-		if(cellType.pos_j<(width%columns))
-			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
-		else
-			own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
-
-		if(cellType.pos_i<(height%rows))
-			own_y=(int)Math.floor(height/rows+1)*cellType.pos_i; 
-		else
-			own_y=(int)Math.floor(height/rows+1)*((height%rows))+(int)Math.floor(height/rows)*(cellType.pos_i-((height%rows))); 
+				(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height==0?height:(own_y+my_height+height)%height);
+		rmap.EAST_MINE=new RegionDoubleNumeric(own_x + my_width - AOI,own_y,own_x +my_width , own_y+my_height);
 
 
-
-		// own width and height
-		if(cellType.pos_j<(width%columns))
-			my_width=(int) Math.floor(width/columns+1);
-		else
-			my_width=(int) Math.floor(width/columns);
-
-		if(cellType.pos_i<(height%rows))
-			my_height=(int) Math.floor(height/rows+1);
-		else
-			my_height=(int) Math.floor(height/rows);
+		rmap.NORTH_MINE=new RegionDoubleNumeric(own_x ,own_y,own_x+my_width, own_y + AOI);
 
 
-		//calculating the neighbors
-		for (int k = -1; k <= 1; k++) 
-		{
-			for (int k2 = -1; k2 <= 1; k2++) 
-			{				
-				int v1=cellType.pos_i+k;
-				int v2=cellType.pos_j+k2;
-				if(v1>=0 && v2 >=0 && v1<rows && v2<columns)
-					if( v1!=cellType.pos_i || v2!=cellType.pos_j)
-					{
-						neighborhood.add(v1+""+v2);
-					}	
-			}
+		rmap.SOUTH_MINE=new RegionDoubleNumeric(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
+
+		//if square partitioning
+		if(rows>1){
+			numNeighbors = 8;
+			rmap.NORTH_OUT=new RegionDoubleNumeric((own_x+width)%width, (own_y - AOI+height)%height,
+					(own_x+ my_width +width)%width==0?width:(own_x+ my_width +width)%width,(own_y+height)%height==0?height:(own_y+height)%height);
+
+			rmap.SOUTH_OUT=new RegionDoubleNumeric((own_x+width)%width,(own_y+my_height+height)%height,
+					(own_x+my_width+width)%width==0?width:(own_x+my_width+width)%width, (own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
 		}
-
-		// Building the regions
-		rmap.left_out=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height-1),my_width, my_height, width, height);
-		if(rmap.left_out!=null)
-		{
-			rmap.left_mine=RegionDoubleNumeric.createRegionNumeric(own_x,own_y,own_x + MAX_DISTANCE -1, own_y+my_height-1,my_width, my_height, width, height);
-
-		}
-		rmap.EAST_OUT=RegionDoubleNumeric.createRegionNumeric(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
-		if(rmap.EAST_OUT!=null)
-		{
-			rmap.EAST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x + my_width - MAX_DISTANCE,own_y,own_x +my_width - 1, own_y+my_height-1,my_width, my_height, width, height);
-
-		}
-		rmap.NORTH_OUT=RegionDoubleNumeric.createRegionNumeric(own_x, own_y - MAX_DISTANCE,own_x+ my_width -1,own_y-1,my_width, my_height, width, height);
-		if(rmap.NORTH_OUT!=null)
-		{
-			rmap.NORTH_MINE=RegionDoubleNumeric.createRegionNumeric(own_x ,own_y,own_x+my_width-1, own_y + MAX_DISTANCE -1,my_width, my_height, width, height);
-
-		}
-		rmap.SOUTH_OUT=RegionDoubleNumeric.createRegionNumeric(own_x,own_y+my_height,own_x+my_width-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
-		if(rmap.SOUTH_OUT!=null)
-		{
-			rmap.SOUTH_MINE=RegionDoubleNumeric.createRegionNumeric(own_x,own_y+my_height-MAX_DISTANCE,own_x+my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
-
-		}
-		if(rmap.left_out == null)
-		{
-			if(rmap.NORTH_OUT == null)
-			{
-				//peer 0
-				myfield=new RegionDoubleNumeric(own_x,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-MAX_DISTANCE-1);
-
-				//corner down right
-				rmap.SOUTH_EAST_OUT=RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
-				rmap.SOUTH_EAST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1,my_width, my_height, width,height);
-
-			}
-			else
-				if(rmap.SOUTH_OUT==null)
-				{
-					//peer 6
-					myfield=new RegionDoubleNumeric(own_x,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
-
-					//corner up right
-					rmap.NORTH_EAST_OUT = RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
-					rmap.NORTH_EAST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
-
-				}
-				else
-				{
-					//peer 3
-					myfield=new RegionDoubleNumeric(own_x,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-MAX_DISTANCE-1);
-
-					//corner up right
-					rmap.NORTH_EAST_OUT = RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1,my_width, my_height, width, height);
-					rmap.NORTH_EAST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1,my_width, my_height, width, height);
-
-					//corner down right
-					rmap.SOUTH_EAST_OUT=RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
-					rmap.SOUTH_EAST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1, my_width, my_height, width,height);
-
-				}			
-		}else
-			if(rmap.EAST_OUT==null)
-			{
-				if(rmap.NORTH_OUT==null)
-				{
-					//peer 2
-					myfield=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y, own_x+my_width-1, own_y+my_height-MAX_DISTANCE-1);
-
-					//corner down left
-					rmap.SOUTH_WEST_OUT=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
-					rmap.SOUTH_WEST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
-
-				}
-				else
-					if(rmap.SOUTH_OUT==null)
-					{
-						//peer 8
-						myfield=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-1, own_y+my_height-1);
-
-						//corner up left	
-						rmap.NORTH_WEST_OUT=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
-						rmap.NORTH_WEST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
-
-					}
-					else
-					{	
-						//peer 5
-						myfield=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-1, own_y+my_height-MAX_DISTANCE-1);
-
-						//corner up left					
-						rmap.NORTH_WEST_OUT=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
-						rmap.NORTH_WEST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
-
-						//corner down left
-						rmap.SOUTH_WEST_OUT=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
-						rmap.SOUTH_WEST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1, my_width, my_height, width, height);
-
-					}
-			}
-			else
-				if(rmap.NORTH_OUT==null)
-				{
-					//peer 1
-					myfield=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-MAX_DISTANCE-1);
-
-					//corner down left
-					rmap.SOUTH_WEST_OUT=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width, height);
-					rmap.SOUTH_WEST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
-
-					//corner down right
-					rmap.SOUTH_EAST_OUT=RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
-					rmap.SOUTH_EAST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1, my_width, my_height, width,height);
-
-				}
-				else
-					if(rmap.SOUTH_OUT==null)
-					{
-						//peer 7
-						myfield=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-1);
-
-						//corner up left	
-						rmap.NORTH_WEST_OUT=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1,my_width, my_height, width, height);
-						rmap.NORTH_WEST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
-
-						//corner up right
-						rmap.NORTH_EAST_OUT = RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
-						rmap.NORTH_EAST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
-
-					}
-					else
-					{
-						myfield=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y+MAX_DISTANCE, own_x+my_width-MAX_DISTANCE -1, own_y+my_height-MAX_DISTANCE-1);
-
-						//corner up left
-						rmap.NORTH_WEST_OUT=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y-MAX_DISTANCE, own_x-1, own_y-1, my_width, my_height, width, height);
-						rmap.NORTH_WEST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x, own_y, own_x+MAX_DISTANCE-1, own_y+MAX_DISTANCE-1,my_width, my_height, width, height);
-
-						//corner up right
-						rmap.NORTH_EAST_OUT = RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y-MAX_DISTANCE, own_x+my_width+MAX_DISTANCE-1, own_y-1, my_width, my_height, width, height);
-						rmap.NORTH_EAST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y, own_x+my_width-1, own_y+MAX_DISTANCE-1, my_width, my_height, width, height);
-
-						//corner down left
-						rmap.SOUTH_WEST_OUT=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE, own_y+my_height,own_x-1, own_y+my_height+MAX_DISTANCE-1,my_width, my_height, width, height);
-						rmap.SOUTH_WEST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x, own_y+my_height-MAX_DISTANCE,own_x+MAX_DISTANCE-1, own_y+my_height-1,my_width, my_height, width, height);
-
-						//corner down right
-						rmap.corner_out_down_right_diag_center=RegionDoubleNumeric.createRegionNumeric(own_x+my_width, own_y+my_height, own_x+my_width+MAX_DISTANCE-1,own_y+my_height+MAX_DISTANCE-1, my_width, my_height, width,height);
-						rmap.SOUTH_EAST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x+my_width-MAX_DISTANCE, own_y+my_height-MAX_DISTANCE, own_x+my_width-1,own_y+my_height-1,my_width, my_height, width,height);
-					}
-		return true;*/
 	}
 
-	/**
-	 * Provide the double value shift logic among the peers
-	 * @param d
-	 * @param l
-	 * @param sm
-	 * @return
-	 */
 
 	/**
 	 * Provide the double value shift logic among the peers
@@ -489,40 +441,96 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	@Override
 	public boolean setDistributedObjectLocation( Int2D l, Object remoteValue ,SimState sm) throws DMasonException{
 
-		double d= 0;
-				
-				
+		double d= 0.0;
+
+
 		if(remoteValue instanceof Double){
 			d=(Double) remoteValue;
 		}else
 		{throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a double");}
-	
-		if(setValue(d, l)) return true;
-		else
-			System.out.println(cellType+")OH MY GOD! "+d+" "+l+" from:" +this.getClass()); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
 
+		if(setValue(d, l)) return true;
+		else{
+			String errorMessage = String.format("Unable to set value on position (%f, %f): out of boundaries on cell %s. (ex OH MY GOD!)",
+					l.x, l.y, cellType);
+
+			logger.severe( errorMessage ); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
+
+		}
 		return false;
 	}
 
+
+
 	@Override
-	public boolean synchro() {
+	public synchronized boolean synchro() {
+
 
 		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
-		
+
 		//every value in the myfield region is setted
 		for(EntryNum<Double, Int2D> e: myfield.values())
 		{			
 			Int2D loc=e.l;
 			double d = e.r;
 			this.field[loc.getX()][loc.getY()]=d;
+
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(new EntryNum<Double, Int2D>(d, loc));
 		}     
 
-		
-		
-		
+
+
+
+
+		clear_ghost_regions();
+
+		memorizeRegionOut();
+
+
+
+		//--> publishing the regions to correspondent topics for the neighbors	
+		publishRegions(connWorker);
+
+
+		processUpdates();
+
+		// Update ZoomViewer (if any)
+		if(conn!=null &&
+				((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+		{
+
+
+			try {
+				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
+				conn.publishToTopic(tmp_zoom,topicPrefix+"GRAPHICS"+cellType,name);
+				tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+
+		return true;
+
+		/*		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
+		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
+
+		//every value in the myfield region is setted
+		for(EntryNum<Double, Int2D> e: myfield.values())
+		{			
+			Int2D loc=e.l;
+			double d = e.r;
+			this.field[loc.getX()][loc.getY()]=d;
+
+			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+				tmp_zoom.add(new EntryNum<Double, Int2D>(d, loc));
+		}     
+
+
+
+
 		if(conn!=null &&
 				((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 		{
@@ -536,7 +544,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 
 			try {
 				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
-				conn.publishToTopic(tmp_zoom,topicPrefix+"GRAPHICS"+cellType,NAME);
+				conn.publishToTopic(tmp_zoom,topicPrefix+"GRAPHICS"+cellType,name);
 				tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
@@ -551,103 +559,6 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 
 		//--> publishing the regions to correspondent topics for the neighbors	
 		publishRegions(connWorker);
-		/*if(rmap.WEST_OUT!=null)
-		{
-			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr =
-					new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>
-			(rmap.WEST_MINE,rmap.WEST_OUT,(sm.schedule.getSteps()-1),
-					cellType,DistributedRegionNumeric.WEST);
-			try 
-			{	
-				connWorker.publishToTopic(dr,topicPrefix+cellType+"L", NAME);
-
-			} catch (Exception e1) { e1.printStackTrace();}
-		}
-		if(rmap.EAST_OUT!=null)
-		{
-			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr = 
-					new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>
-			(rmap.EAST_MINE,rmap.EAST_OUT,(sm.schedule.getSteps()-1),
-					cellType,DistributedRegionNumeric.EAST);				
-			try 
-			{
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"R", NAME);
-
-			} catch (Exception e1) {e1.printStackTrace(); }
-		}
-		if(rmap.NORTH_OUT!=null )
-		{
-			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr = 
-					new  DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>
-			(rmap.NORTH_MINE,rmap.NORTH_OUT,(sm.schedule.getSteps()-1),
-					cellType,DistributedRegionNumeric.NORTH);
-			try 
-			{
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"U", NAME);
-
-			} catch (Exception e1) {e1.printStackTrace();}
-		}
-		if(rmap.SOUTH_OUT!=null )
-		{
-			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr =
-					new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>
-			(rmap.SOUTH_MINE,rmap.SOUTH_OUT,(sm.schedule.getSteps()-1),
-					cellType,DistributedRegionNumeric.SOUTH);
-			try 
-			{
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"D", NAME);
-
-			} catch (Exception e1) { e1.printStackTrace(); }
-		}
-		if(rmap.NORTH_WEST_OUT!=null)
-		{
-			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr = 
-					new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>
-			(rmap.NORTH_WEST_MINE,rmap.NORTH_WEST_OUT,
-					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.NORTH_WEST);
-			try 
-			{
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDL", NAME);
-
-			} catch (Exception e1) { e1.printStackTrace();}
-		}
-		if(rmap.NORTH_EAST_OUT!=null)
-		{
-			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr =
-					new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>
-			(rmap.NORTH_EAST_MINE,rmap.NORTH_EAST_OUT,
-					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.NORTH_EAST);
-			try 
-			{
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDR", NAME); 
-
-			} catch (Exception e1) {e1.printStackTrace();}
-		}
-		if( rmap.SOUTH_WEST_OUT!=null)
-		{
-			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr = 
-					new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>
-			(rmap.SOUTH_WEST_MINE,rmap.SOUTH_WEST_OUT,
-					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.SOUTH_WEST);
-			try 
-			{
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDL", NAME);
-
-			} catch (Exception e1) {e1.printStackTrace();}
-		}
-		if(rmap.SOUTH_EAST_OUT!=null)
-		{
-			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr = 
-					new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>
-			(rmap.SOUTH_EAST_MINE, rmap.SOUTH_EAST_OUT,
-					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.SOUTH_EAST);				
-			try 
-			{	
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDR", NAME);
-
-			} catch (Exception e1) { e1.printStackTrace(); }
-		}*/
-		//<--
 
 		PriorityQueue<Object> q;
 		try 
@@ -678,7 +589,43 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		}	
 		this.reset();
 
-		return true;
+		return true;*/
+	}
+
+	private void clear_ghost_regions() {
+		updateFields(); //update fields with java reflect
+		updates_cache= new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
+	}
+
+	protected void processUpdates() {
+		PriorityQueue<Object> q;
+		try 
+		{
+			q = updates.getUpdates(sm.schedule.getSteps()-1, neighborhood.size());
+
+			while(!q.isEmpty())
+			{
+				DistributedRegionNumeric<Integer, EntryNum<Double,Int2D>> region=
+						(DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>)q.poll();
+
+				verifyUpdates(region);	
+			}			
+
+		}catch (InterruptedException e1) {
+			e1.printStackTrace(); 
+		} catch (DMasonException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		for(RegionNumeric<Integer,EntryNum<Double,Int2D>> region : updates_cache){
+			for(EntryNum<Double,Int2D> e_m: region.values())
+			{
+				Int2D i=new Int2D(e_m.l.getX(), e_m.l.getY());
+				field[i.getX()][i.getY()]=e_m.r;	
+			}
+		}	
+		this.reset();
 	}
 
 	private void publishRegions(Connection connWorker) {
@@ -690,7 +637,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr=new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(rmap.WEST_MINE,rmap.WEST_OUT,
 						(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.WEST);
 
-				connWorker.publishToTopic(dr,topicPrefix+cellType+"L",NAME);
+				connWorker.publishToTopic(dr,topicPrefix+cellType+"L",name);
 
 			} catch (Exception e1) { e1.printStackTrace();}
 		}
@@ -701,7 +648,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr=new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(rmap.EAST_MINE,rmap.EAST_OUT,
 						(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.EAST);				
 
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"R",NAME);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"R",name);
 
 			} catch (Exception e1) {e1.printStackTrace(); }
 		}
@@ -712,7 +659,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr=new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(rmap.NORTH_MINE,rmap.NORTH_OUT,
 						(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.NORTH);
 
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"U",NAME);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"U",name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -724,7 +671,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 				DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr=new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(rmap.SOUTH_MINE,rmap.SOUTH_OUT,
 						(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.SOUTH);
 
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"D",NAME);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"D",name);
 
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
@@ -736,7 +683,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.NORTH_WEST);
 			try 
 			{
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDL",NAME);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDL",name);
 
 			} catch (Exception e1) { e1.printStackTrace();}
 
@@ -749,7 +696,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 			try 
 			{
 
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDR",NAME);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDR",name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -759,7 +706,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 					rmap.SOUTH_WEST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.SOUTH_WEST);
 			try 
 			{
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDL",NAME);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDL",name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -771,7 +718,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 			try 
 			{				
 
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDR",NAME);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDR",name);
 
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
@@ -926,7 +873,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 				{
 					RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
 
-					if(name.contains("out"))
+					if(name.contains("OUT"))
 					{
 						for(EntryNum<Double,Int2D> e : region.values()){
 
@@ -961,7 +908,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 				if(returnValue!=null)
 				{
 					RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
-					if(name.contains("out"))
+					if(name.contains("OUT"))
 					{
 
 						updates_cache.add(region.clone());
@@ -1040,14 +987,15 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 
 	@Override
 	public void setTable(HashMap table) {
-		// TODO Auto-generated method stub
-
+		ConnectionJMS conn = (ConnectionJMS) ((DistributedState<?>)sm).getCommunicationManagementConnection();
+		if(conn!=null)
+			conn.setTable(table);
 	}
 
 	@Override
 	public String getDistributedFieldID() {
 		// TODO Auto-generated method stub
-		return NAME;
+		return name;
 	}
 
 	@Override
@@ -1066,28 +1014,37 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 
 	@Override
 	public Int2D getAvailableRandomLocation() {
-		
-		int x=(((DistributedState)sm).random.nextInt(width)%(my_width-1))+own_x;
+
+		/*int x=(((DistributedState)sm).random.nextInt(width)%(my_width-1))+own_x;
 		if(x>(width-1)) x--;
 		int y=(((DistributedState)sm).random.nextInt(height)%(my_height-1))+own_y;
-		if(y>(height-1)) y--;
+		if(y>(height-1)) y--;*/
+		Integer shiftx=((DistributedState)sm).random.nextInt();
+		Integer shifty=((DistributedState)sm).random.nextInt();
+
+		int x= ((own_x+AOI)+((my_width-(2*AOI)))*shiftx);	
+		int y= ((own_y+AOI)+((my_height-(2*AOI)))*shifty);
+
 
 		return (new Int2D(x, y));
 	}
+
+
+
 	@Override
 	public boolean verifyPosition(Int2D pos) {
-		
+
 		return (rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(pos.x,pos.y))||
-				
+
 				(rmap.NORTH_EAST_MINE!=null && rmap.NORTH_EAST_MINE.isMine(pos.x,pos.y))
 				||
-					(rmap.SOUTH_WEST_MINE!=null && rmap.SOUTH_WEST_MINE.isMine(pos.x,pos.y))
-					||(rmap.SOUTH_EAST_MINE!=null && rmap.SOUTH_EAST_MINE.isMine(pos.x,pos.y))
-						||(rmap.WEST_MINE != null && rmap.WEST_MINE.isMine(pos.x,pos.y))
-							||(rmap.EAST_MINE != null && rmap.EAST_MINE.isMine(pos.x,pos.y))
-								||(rmap.NORTH_MINE != null && rmap.NORTH_MINE.isMine(pos.x,pos.y))
-									||(rmap.SOUTH_MINE != null && rmap.SOUTH_MINE.isMine(pos.x,pos.y))
-										||(myfield.isMine(pos.x,pos.y));
+				(rmap.SOUTH_WEST_MINE!=null && rmap.SOUTH_WEST_MINE.isMine(pos.x,pos.y))
+				||(rmap.SOUTH_EAST_MINE!=null && rmap.SOUTH_EAST_MINE.isMine(pos.x,pos.y))
+				||(rmap.WEST_MINE != null && rmap.WEST_MINE.isMine(pos.x,pos.y))
+				||(rmap.EAST_MINE != null && rmap.EAST_MINE.isMine(pos.x,pos.y))
+				||(rmap.NORTH_MINE != null && rmap.NORTH_MINE.isMine(pos.x,pos.y))
+				||(rmap.SOUTH_MINE != null && rmap.SOUTH_MINE.isMine(pos.x,pos.y))
+				||(myfield.isMine(pos.x,pos.y));
 
 	}
 
