@@ -26,6 +26,7 @@ import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.TraceableField;
+import it.isislab.dmason.sim.field.continuous.region.RegionDouble;
 import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegion;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
@@ -207,6 +208,8 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 
 		setToroidal(isToroidal);
 		createRegion();
+		
+		
 		// Initialize variables for GlobalInspector
 		tracingFields = new ArrayList<String>();
 		try
@@ -272,15 +275,12 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 					}	
 			}
 		}
-
-
 	
 		if(isToroidal()) 
 			makeToroidalSections();
 		else
 			makeNoToroidalSections();
 		
-
 		return true;
 	}
 
@@ -315,7 +315,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		rmap.NORTH_MINE=new RegionInteger(own_x ,own_y,own_x+my_width, own_y + AOI);
 
 
-		rmap.SOUTH_MINE=new RegionInteger(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
+		rmap.SOUTH_MINE=new RegionInteger(own_x,own_y+my_height-AOI,own_x+my_width, own_y+my_height);
 		 
 		//horizontal partitioning
 		if(rows==1){
@@ -323,24 +323,20 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 			if(cellType.pos_j>0 && cellType.pos_j<columns-1){
 
 
-				rmap.WEST_OUT=new RegionInteger((own_x-AOI+width)%width,(own_y+height)%height,
-						(own_x+width)%width==0?width:(own_x+width)%width, ((own_y+my_height)+height)%height==0?height:((own_y+my_height)+height)%height);
+				rmap.WEST_OUT=new RegionInteger(own_x-AOI,own_y,own_x, own_y+my_height);
 
-				rmap.EAST_OUT=new RegionInteger((own_x+my_width+width)%width,(own_y+height)%height,
-						(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height==0?height:(own_y+my_height+height)%height);
+				rmap.EAST_OUT=new RegionInteger(own_x+my_width,own_y,own_x+my_width,own_y+my_height);
 			}
 
 			else if(cellType.pos_j==0){
 				numNeighbors = 1;
-				rmap.EAST_OUT=new RegionInteger((own_x+my_width+width)%width,(own_y+height)%height,
-						(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height==0?height:(own_y+my_height+height)%height);
+				rmap.EAST_OUT=new RegionInteger(own_x+my_width,own_y,own_x+my_width,own_y+my_height);
 			}	
 
 
 			else if(cellType.pos_j==columns-1){
 				numNeighbors = 1;
-				rmap.WEST_OUT=new RegionInteger((own_x-AOI+width)%width,(own_y+height)%height,
-						(own_x+width)%width==0?width:(own_x+width)%width, ((own_y+my_height)+height)%height==0?height:((own_y+my_height)+height)%height);	
+				rmap.WEST_OUT=new RegionInteger(own_x-AOI,own_y,own_x, own_y+my_height);
 			}
 		}else{ //sqare partitioning 
 			
@@ -351,59 +347,61 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 			 * */
 			numNeighbors = 8;
 			//corner up left
-			rmap.NORTH_WEST_OUT=new RegionInteger((own_x-AOI + width)%width, (own_y-AOI+height)%height, 
-					(own_x+width)%width==0?width:(own_x+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
+			rmap.NORTH_WEST_OUT=new RegionInteger(own_x-AOI, own_y-AOI,own_x, own_y);
 		
 
 			//corner up right
-			rmap.NORTH_EAST_OUT = new RegionInteger((own_x+my_width+width)%width, (own_y-AOI+height)%height,
-					(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
+			rmap.NORTH_EAST_OUT = new RegionInteger(own_x+my_width,own_y-AOI,own_x+my_width+AOI,own_y);
 		
 
 			//corner down left
-			rmap.SOUTH_WEST_OUT=new RegionInteger((own_x-AOI+width)%width, (own_y+my_height+height)%height,
-					(own_x+width)%width==0?width:(own_x+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
-
+			rmap.SOUTH_WEST_OUT=new RegionInteger(own_x-AOI, own_y+my_height,own_x,own_y+my_height+AOI);
+			
+			rmap.NORTH_OUT=new RegionInteger(own_x, own_y - AOI,	own_x+ my_width,own_y);
 
 			//corner down right
-			rmap.SOUTH_EAST_OUT=new RegionInteger((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
-					(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
-			
+			rmap.SOUTH_EAST_OUT=new RegionInteger(own_x+my_width, own_y+my_height,own_x+my_width+AOI,own_y+my_height+AOI);
 
-			rmap.WEST_OUT=new RegionInteger((own_x-AOI+width)%width,(own_y+height)%height,
-					(own_x+width)%width==0?width:(own_x+width)%width, ((own_y+my_height)+height)%height==0?height:((own_y+my_height)+height)%height);
+			rmap.SOUTH_OUT=new RegionInteger(own_x,own_y+my_height,own_x+my_width, own_y+my_height+AOI);
+
+			rmap.WEST_OUT=new RegionInteger(own_x-AOI,own_y,own_x, own_y+my_height);
 		
 
-			rmap.EAST_OUT=new RegionInteger((own_x+my_width+width)%width,(own_y+height)%height,
-				(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height==0?height:(own_y+my_height+height)%height);
+			rmap.EAST_OUT=new RegionInteger(own_x+my_width,own_y,own_x+my_width+AOI,own_y+my_height);
 			
 			if(cellType.pos_i==0 ){
-				numNeighbors = 3;
+				numNeighbors = 5;
 				rmap.NORTH_OUT = null;
 				rmap.NORTH_WEST_OUT = null;
 				rmap.NORTH_EAST_OUT = null;
 			}
-			
+
 			if(cellType.pos_j == 0){
-				numNeighbors = 3;
+				numNeighbors = 5;
 				rmap.SOUTH_WEST_OUT = null;
 				rmap.NORTH_WEST_OUT=null;
 				rmap.WEST_OUT = null;
 			}
-			
+
 			if(cellType.pos_i == rows -1){
-				numNeighbors = 3;
+				numNeighbors = 5;
 				rmap.SOUTH_WEST_OUT = null;
 				rmap.SOUTH_OUT = null;
 				rmap.SOUTH_EAST_OUT = null;
 			}
-			
+
 			if(cellType.pos_j == columns -1){
-				numNeighbors = 3;
+				numNeighbors = 5;
 				rmap.NORTH_EAST_OUT = null;
 				rmap.EAST_OUT = null;
 				rmap.SOUTH_EAST_OUT = null;
 			}
+			
+			if((cellType.pos_i == 0 && cellType.pos_j == 0) || 
+					(cellType.pos_i == rows-1 && cellType.pos_j==0) || 
+					(cellType.pos_i == 0 && cellType.pos_j == columns -1) || 
+					(cellType.pos_i == rows-1 && cellType.pos_j == columns -1))
+				numNeighbors = 3;
 		}
 	}
 
@@ -465,11 +463,11 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	@Override
 	public Int2D getAvailableRandomLocation()
 	{
-		Integer shiftx=((DistributedState)sm).random.nextInt();
-		Integer shifty=((DistributedState)sm).random.nextInt();
+		double shiftx=((DistributedState)sm).random.nextDouble();
+		double shifty=((DistributedState)sm).random.nextDouble();
 
-		int x= ((own_x+AOI)+((my_width-(2*AOI)))*shiftx);	
-		int y= ((own_y+AOI)+((my_height-(2*AOI)))*shifty);
+		int x= (int)((own_x+AOI)+((my_width-(2*AOI)))*shiftx);	
+		int y= (int)((own_y+AOI)+((my_height-(2*AOI)))*shifty);
 
 		return (new Int2D(x, y));
 	}
@@ -502,7 +500,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		}
 		else
 		{
-			String errorMessage = String.format("Agent %s tried to set position (%f, %f): out of boundaries on cell %s. (ex OH MY GOD!)",
+			String errorMessage = String.format("Agent %s tried to set position (%d, %d): out of boundaries on cell %s. (ex OH MY GOD!)",
 					rm.getId(), location.x, location.y, cellType);
 			logger.severe( errorMessage );
 		}

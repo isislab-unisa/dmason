@@ -63,8 +63,7 @@ public class DParticle extends RemoteParticle<Int2D>
 
         try{
         	//tut.trails.setElement(location.x, location.y, 1.0);
-        	tut.trails.field[location.x][location.y] = 1.0;
-        	
+        	//tut.trails.field[location.x][location.y] = 1.0;
         	tut.trails.setDistributedObjectLocation(location,1.0,state);
         }catch(NullPointerException e){
         	e.printStackTrace();

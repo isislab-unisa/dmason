@@ -23,16 +23,22 @@ import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.grid.numeric.region.RegionDoubleNumeric;
+import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DXY;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegionNumeric;
+import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.sim.field.support.field2D.EntryNum;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
+import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.sim.field.support.field2D.region.RegionNumeric;
+import it.isislab.dmason.sim.field.support.globals.GlobalInspectorHelper;
+import it.isislab.dmason.sim.field.support.globals.GlobalParametersHelper;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.util.visualization.zoomviewerapp.ZoomArrayList;
 
+import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -164,6 +170,30 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 
 
+	// -----------------------------------------------------------------------
+	// GLOBAL INSPECTOR ------------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** List of parameters to trace */
+	private ArrayList<String> tracingFields;
+	/** The image to send */
+	private BufferedImage currentBitmap;
+	/** Simulation's time when currentBitmap was generated */
+	private double currentTime;
+	/** Statistics to send */
+	HashMap<String, Object> currentStats;
+	/** True if the global inspector requested graphics **/
+	boolean isTracingGraphics;
+
+	// -----------------------------------------------------------------------
+	// GLOBAL PARAMETERS -----------------------------------------------------
+	// -----------------------------------------------------------------------
+	/** Java class of current simulation */
+	protected Class<? extends SimState> simClass;
+	/** List of global parameters. These must be synchronized among fields at each step */
+	protected ArrayList<String> globalsNames;
+	/** List of methods called for global parameters. Used for increased speed */
+	protected ArrayList<Method> globalsMethods;
+
 	/**
 	 * Constructor of class with paramaters:
 	 * 
@@ -217,7 +247,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		else
 			own_y=(int)Math.floor(height/rows+1)*((height%rows))+(int)Math.floor(height/rows)*(cellType.pos_i-((height%rows))); 
 
-
+		System.out.println("x "+own_x+" y "+own_y);
 
 		// own width and height
 		if(cellType.pos_j<(width%columns))
@@ -247,16 +277,13 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		}
 
 
-
 		if(isToroidal()) 
 			makeToroidalSections();
 		else
 			makeNoToroidalSections();
 
-
 		return true;
 	}
-
 
 
 	private void makeNoToroidalSections() {
@@ -291,29 +318,25 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		rmap.SOUTH_MINE=new RegionDoubleNumeric(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
 
 		//horizontal partitioning
+		//horizontal partitioning
 		if(rows==1){
 			numNeighbors = 2;
 			if(cellType.pos_j>0 && cellType.pos_j<columns-1){
 
+				rmap.WEST_OUT=new RegionDoubleNumeric(own_x-AOI,own_y,own_x, own_y+my_height);
 
-				rmap.WEST_OUT=new RegionDoubleNumeric((own_x-AOI+width)%width,(own_y+height)%height,
-						(own_x+width)%width==0?width:(own_x+width)%width, ((own_y+my_height)+height)%height==0?height:((own_y+my_height)+height)%height);
-
-				rmap.EAST_OUT=new RegionDoubleNumeric((own_x+my_width+width)%width,(own_y+height)%height,
-						(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height==0?height:(own_y+my_height+height)%height);
+				rmap.EAST_OUT=new RegionDoubleNumeric(own_x+my_width,own_y,own_x+my_width,own_y+my_height);
 			}
 
 			else if(cellType.pos_j==0){
 				numNeighbors = 1;
-				rmap.EAST_OUT=new RegionDoubleNumeric((own_x+my_width+width)%width,(own_y+height)%height,
-						(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height==0?height:(own_y+my_height+height)%height);
+				rmap.EAST_OUT=new RegionDoubleNumeric(own_x+my_width,own_y,own_x+my_width,own_y+my_height);
 			}	
 
 
 			else if(cellType.pos_j==columns-1){
 				numNeighbors = 1;
-				rmap.WEST_OUT=new RegionDoubleNumeric((own_x-AOI+width)%width,(own_y+height)%height,
-						(own_x+width)%width==0?width:(own_x+width)%width, ((own_y+my_height)+height)%height==0?height:((own_y+my_height)+height)%height);	
+				rmap.WEST_OUT=new RegionDoubleNumeric(own_x-AOI,own_y,own_x, own_y+my_height);
 			}
 		}else{ //sqare partitioning 
 
@@ -324,59 +347,61 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 			 * */
 			numNeighbors = 8;
 			//corner up left
-			rmap.NORTH_WEST_OUT=new RegionDoubleNumeric((own_x-AOI + width)%width, (own_y-AOI+height)%height, 
-					(own_x+width)%width==0?width:(own_x+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
-
+			rmap.NORTH_WEST_OUT=new RegionDoubleNumeric(own_x-AOI, own_y-AOI,own_x, own_y);
+			
 
 			//corner up right
-			rmap.NORTH_EAST_OUT = new RegionDoubleNumeric((own_x+my_width+width)%width, (own_y-AOI+height)%height,
-					(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
-
+			rmap.NORTH_EAST_OUT = new RegionDoubleNumeric(own_x+my_width,own_y-AOI,own_x+my_width+AOI,own_y);
+		
 
 			//corner down left
-			rmap.SOUTH_WEST_OUT=new RegionDoubleNumeric((own_x-AOI+width)%width, (own_y+my_height+height)%height,
-					(own_x+width)%width==0?width:(own_x+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
-
+			rmap.SOUTH_WEST_OUT=new RegionDoubleNumeric(own_x-AOI, own_y+my_height,own_x,own_y+my_height+AOI);
+			
+			rmap.NORTH_OUT=new RegionDoubleNumeric(own_x, own_y - AOI,	own_x+ my_width,own_y);
 
 			//corner down right
-			rmap.SOUTH_EAST_OUT=new RegionDoubleNumeric((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
-					(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+			rmap.SOUTH_EAST_OUT=new RegionDoubleNumeric(own_x+my_width, own_y+my_height,own_x+my_width+AOI,own_y+my_height+AOI);
 
+			rmap.SOUTH_OUT=new RegionDoubleNumeric(own_x,own_y+my_height,own_x+my_width, own_y+my_height+AOI);
 
-			rmap.WEST_OUT=new RegionDoubleNumeric((own_x-AOI+width)%width,(own_y+height)%height,
-					(own_x+width)%width==0?width:(own_x+width)%width, ((own_y+my_height)+height)%height==0?height:((own_y+my_height)+height)%height);
+			rmap.WEST_OUT=new RegionDoubleNumeric(own_x-AOI,own_y,own_x, own_y+my_height);
+		
 
-
-			rmap.EAST_OUT=new RegionDoubleNumeric((own_x+my_width+width)%width,(own_y+height)%height,
-					(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height==0?height:(own_y+my_height+height)%height);
+			rmap.EAST_OUT=new RegionDoubleNumeric(own_x+my_width,own_y,own_x+my_width+AOI,own_y+my_height);
 
 			if(cellType.pos_i==0 ){
-				numNeighbors = 3;
+				numNeighbors = 5;
 				rmap.NORTH_OUT = null;
 				rmap.NORTH_WEST_OUT = null;
 				rmap.NORTH_EAST_OUT = null;
 			}
 
 			if(cellType.pos_j == 0){
-				numNeighbors = 3;
+				numNeighbors = 5;
 				rmap.SOUTH_WEST_OUT = null;
 				rmap.NORTH_WEST_OUT=null;
 				rmap.WEST_OUT = null;
 			}
 
 			if(cellType.pos_i == rows -1){
-				numNeighbors = 3;
+				numNeighbors = 5;
 				rmap.SOUTH_WEST_OUT = null;
 				rmap.SOUTH_OUT = null;
 				rmap.SOUTH_EAST_OUT = null;
 			}
 
 			if(cellType.pos_j == columns -1){
-				numNeighbors = 3;
+				numNeighbors = 5;
 				rmap.NORTH_EAST_OUT = null;
 				rmap.EAST_OUT = null;
 				rmap.SOUTH_EAST_OUT = null;
 			}
+
+			if((cellType.pos_i == 0 && cellType.pos_j == 0) || 
+					(cellType.pos_i == rows-1 && cellType.pos_j==0) || 
+					(cellType.pos_i == 0 && cellType.pos_j == columns -1) || 
+					(cellType.pos_i == rows-1 && cellType.pos_j == columns -1))
+				numNeighbors = 3;
 		}
 	}
 
@@ -418,7 +443,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 
 
 		rmap.SOUTH_MINE=new RegionDoubleNumeric(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
-
+		System.out.println(cellType+"] "+rmap);
 		//if square partitioning
 		if(rows>1){
 			numNeighbors = 8;
@@ -451,7 +476,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 
 		if(setValue(d, l)) return true;
 		else{
-			String errorMessage = String.format("Unable to set value on position (%f, %f): out of boundaries on cell %s. (ex OH MY GOD!)",
+			String errorMessage = String.format("Unable to set value on position (%d, %d): out of boundaries on cell %s. (ex OH MY GOD!)",
 					l.x, l.y, cellType);
 
 			logger.severe( errorMessage ); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
@@ -469,6 +494,28 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
 
+		if(conn!=null &&((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
+		{
+			GlobalInspectorHelper.synchronizeInspector(
+					(DistributedState<?>)sm,
+					conn,
+					topicPrefix,
+					cellType,
+					(int)own_x,
+					(int)own_y,
+					currentTime,
+					currentBitmap,
+					currentStats,
+					tracingFields,
+					isTracingGraphics);
+			currentTime = sm.schedule.getTime();
+		}
+
+
+		clear_ghost_regions();
+
+		memorizeRegionOut();
+
 		//every value in the myfield region is setted
 		for(EntryNum<Double, Int2D> e: myfield.values())
 		{			
@@ -481,13 +528,31 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		}     
 
 
+		ArrayList<String> actualVar=null;
+		if(conn!=null)
+			actualVar=((DistributedState<?>)sm).upVar.getAllGlobalVarForStep(sm.schedule.getSteps());
+		//upVar.getAllGlobalVarForStep(sm.schedule.getSteps()-1);
+		if (conn!=null
+				&& actualVar != null)
+		{
 
+			// Update and send global parameters
+			GlobalParametersHelper.sendGlobalParameters(
+					sm,
+					conn,
+					topicPrefix,
+					cellType,
+					currentTime,
+					actualVar
+					);
 
+			// Receive global parameters from previous step and update the model
+			GlobalParametersHelper.receiveAndUpdate(
+					this,
+					actualVar,
+					globalsMethods);
 
-		clear_ghost_regions();
-
-		memorizeRegionOut();
-
+		}
 
 
 		//--> publishing the regions to correspondent topics for the neighbors	

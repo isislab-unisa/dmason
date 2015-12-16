@@ -28,10 +28,6 @@ import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 
 import java.awt.Color;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -54,7 +50,6 @@ public class DParticles extends DistributedState<Int2D> {
 	
     public DSparseGrid2D particles;
     public DDoubleGrid2D trails;
-    //public DoubleGrid2D trails;
 
     public int gridWidth ;
     public int gridHeight ;   
@@ -75,25 +70,9 @@ public class DParticles extends DistributedState<Int2D> {
     	this.MODE=params.getMode();
     	gridWidth=params.getWidth();
     	gridHeight=params.getHeight();
-    	//((DistributedMultiSchedule)schedule).setThresholdMerge(1);
-        //((DistributedMultiSchedule)schedule).setThresholdSplit(5);
     
     } 
     
-    /*public DParticles(Object[] params)
-    {    	
-    	super((Integer)params[2],(Integer)params[3],(Integer)params[4],(Integer)params[7],
-    			(Integer)params[8],(String)params[0],(String)params[1],(Integer)params[9],
-    			isToroidal,new DistributedMultiSchedule<Int2D>());
-    	ip = params[0]+"";
-    	port = params[1]+"";
-    	this.MODE=(Integer)params[9];
-    	gridWidth=(Integer)params[5];
-    	gridHeight=(Integer)params[6];
-    	((DistributedMultiSchedule)schedule).setThresholdMerge(1);
-        ((DistributedMultiSchedule)schedule).setThresholdSplit(5);
-
-    } */   
 
     @Override
 	public void start()
@@ -102,9 +81,10 @@ public class DParticles extends DistributedState<Int2D> {
 
         try 
         {
-			
+        	
+        	particles = DSparseGrid2DFactory.createDSparseGrid2D(gridWidth, gridHeight,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE, "particles", topicPrefix,false);
         	trails = DDoubleGrid2DFactory.createDDoubleGrid2D(gridWidth, gridHeight,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,0,false,"trails",topicPrefix,false);
-			particles = DSparseGrid2DFactory.createDSparseGrid2D(gridWidth, gridHeight,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE, "particles", topicPrefix,false);
+			
 		    init_connection();
 		  
         }catch (DMasonException e) { e.printStackTrace();}

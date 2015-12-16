@@ -16,7 +16,6 @@
  */
 package it.isislab.dmason.sim.app.DParticles;
 
-import it.isislab.dmason.sim.app.DParticlesThin.DParticles;
 import it.isislab.dmason.tools.batch.data.GeneralParam;
 
 import java.awt.Color;

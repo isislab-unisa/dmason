@@ -76,8 +76,6 @@ public class DDoubleGrid2DFactory {
 		if(MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE || MODE==DistributedField2D.SQUARE_DISTRIBUTION_MODE)
 		{
 
-			if(rows >1) throw new DMasonException("In HORIZONTAL MODE the rows must be 1");
-
 			DistributedField2D field = new DDoubleGrid2DXY(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name,topicPrefix,isToroidal);
 			if(!fixed)
 				((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
