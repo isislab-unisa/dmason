@@ -177,6 +177,6 @@ public class Vertexes15 extends DistributedState<Double2D>{
 
 	@Override
 	public void addToField(RemotePositionedAgent<Double2D> rm, Double2D loc) {
-		// TODO Auto-generated method stub
+		setPortrayalForObject(rm);
 	}
 }

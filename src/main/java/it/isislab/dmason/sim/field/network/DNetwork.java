@@ -202,7 +202,7 @@ public class DNetwork extends Network implements DistributedFieldNetwork{
 						//and add the updated version
 						this.addNode(rnNew);
 
-						((DistributedState)sm).setPortrayalForObject(rnNew);
+						((DistributedState)sm).addToField(rnNew,null);
 
 						//Add the edges to the updated node
 						for (Object object : edgesOut) {
@@ -249,15 +249,9 @@ public class DNetwork extends Network implements DistributedFieldNetwork{
 	}
 
 	@Override
-	public String getID() {
+	public String getDistributedFieldID() {
 		return graph_id;
 	}
-
-	@Override
-	public void resetParameters() {
-		numVertex=0;
-	}
-
 
 	@Override
 	public VisualizationUpdateMap getGlobals() {
