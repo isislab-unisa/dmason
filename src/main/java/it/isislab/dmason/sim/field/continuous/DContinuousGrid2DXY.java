@@ -177,16 +177,6 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	// -----------------------------------------------------------------------
 	private ZoomArrayList<RemotePositionedAgent> tmp_zoom = new ZoomArrayList<RemotePositionedAgent>();
 
-
-	/**
-	 * Short-hand for complete constructor. Assumes number or region to be 8 (that is: square division mode)
-	 */
-	public DContinuousGrid2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix, boolean isToroidal)
-	{
-		this(discretization, width, height, sm, max_distance, i, j, rows, columns, name, prefix, rows==1?6:8,isToroidal);
-		
-	}
-
 	/**
 	 * Constructor of class with paramaters:
 	 * 
@@ -202,7 +192,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
-	public DContinuousGrid2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix, int numNeighbours,boolean isToroidal) {
+	public DContinuousGrid2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix,boolean isToroidal) {
 		super(discretization, width, height);
 		this.width=width;
 		this.height=height;
@@ -214,7 +204,6 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		this.updates_cache = new ArrayList<Region<Double,Double2D>>();
 		this.name = name;
 		this.topicPrefix = prefix;
-		this.numNeighbors = numNeighbours;
 		
 		setToroidal(isToroidal);
 		createRegion();
@@ -295,6 +284,8 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	}
 
 	private void makeToroidalSections() {
+		
+		numNeighbors = 8;
 		myfield=new RegionDouble(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
 		
 
@@ -331,14 +322,23 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 
 
 		rmap.SOUTH_MINE=new RegionDouble(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
+		
+		rmap.NORTH_OUT=new RegionDouble((own_x+width)%width, (own_y - AOI+height)%height,
+				(own_x+ my_width +width)%width==0?width:(own_x+ my_width +width)%width,(own_y+height)%height==0?height:(own_y+height)%height);
 
+		rmap.SOUTH_OUT=new RegionDouble((own_x+width)%width,(own_y+my_height+height)%height,
+				(own_x+my_width+width)%width==0?width:(own_x+my_width+width)%width, (own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+		
 		//if square partitioning
-		if(rows>1){
-			rmap.NORTH_OUT=new RegionDouble((own_x+width)%width, (own_y - AOI+height)%height,
-					(own_x+ my_width +width)%width==0?width:(own_x+ my_width +width)%width,(own_y+height)%height==0?height:(own_y+height)%height);
-
-			rmap.SOUTH_OUT=new RegionDouble((own_x+width)%width,(own_y+my_height+height)%height,
-					(own_x+my_width+width)%width==0?width:(own_x+my_width+width)%width, (own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+		if(rows==1 && columns >1){
+			numNeighbors = 6;
+			rmap.NORTH_OUT = null;
+			rmap.SOUTH_OUT = null;
+		}
+		else if(rows > 1 && columns == 1){
+			numNeighbors = 6;
+			rmap.EAST_OUT = null;
+			rmap.WEST_OUT = null;
 		}
 	}
 	
@@ -391,7 +391,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 
 
 			else if(cellType.pos_j==columns-1){
-				numNeighbors = 1;
+		 		numNeighbors = 1;
 				rmap.WEST_OUT=new RegionDouble(own_x-AOI,own_y,own_x, own_y+my_height);
 			}
 			

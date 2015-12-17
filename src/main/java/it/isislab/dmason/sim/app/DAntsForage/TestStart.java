@@ -42,8 +42,8 @@ public class TestStart {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 3000; //only graphicsOn=false
-	private static int rows = 1; //number of rows
-	private static int columns = 3; //number of columns
+	private static int rows = 3; //number of rows
+	private static int columns = 1; //number of columns
 	private static int MAX_DISTANCE=1; //max distance
 	private static int NUM_AGENTS=1000; //number of agents
 	private static int WIDTH=500; //field width
@@ -69,7 +69,7 @@ public class TestStart {
 				int i=0;
 				while(i!=numSteps)
 				{
-					System.out.println(i);
+					//System.out.println(i);
 					ds.schedule.step(ds);
 					i++;
 				}
@@ -85,7 +85,7 @@ public class TestStart {
 				genParam.setJ(j);
 				genParam.setIp(ip);
 				genParam.setPort(port);
-				if(graphicsOn || (i==0 && j == 2))
+				if(graphicsOn || (i==2 && j == 0))
 				{
 					DAntsForageWithUI sim =new DAntsForageWithUI(genParam);
 					((Console)sim.createController()).pressPause();

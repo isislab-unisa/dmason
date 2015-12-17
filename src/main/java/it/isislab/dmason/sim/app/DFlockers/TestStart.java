@@ -42,8 +42,8 @@ public class TestStart {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 30500; //only graphicsOn=false
-	private static int rows = 1; //number of rows
-	private static int columns = 3; //number of columns
+	private static int rows = 3; //number of rows
+	private static int columns = 5; //number of columns
 	private static int MAX_DISTANCE=10; //max distance
 	private static int NUM_AGENTS=10000; //number of agents
 	private static int WIDTH=920; //field width
@@ -52,7 +52,7 @@ public class TestStart {
 	private static String port="61616"; //port of activemq
 	
 	 
-	private static int MODE = rows==1?DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE:DistributedField2D.SQUARE_DISTRIBUTION_MODE;
+	private static int MODE = (rows==1 || columns ==1)?DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE:DistributedField2D.SQUARE_DISTRIBUTION_MODE;
 	
 	
 	public static void main(String[] args) 

@@ -22,6 +22,7 @@ import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.MessageListener;
+import it.isislab.dmason.sim.field.continuous.region.RegionDouble;
 import it.isislab.dmason.sim.field.grid.numeric.region.RegionDoubleNumeric;
 import it.isislab.dmason.sim.field.grid.numeric.region.RegionIntegerNumeric;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegionNumeric;
@@ -376,9 +377,10 @@ public class DIntGrid2DXY extends DIntGrid2D {
 			}
 
 			private void makeToroidalSections() {
-				numNeighbors = 6;
+				
+				numNeighbors = 8;
 				myfield=new RegionIntegerNumeric(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
-
+				
 
 				//corner up left
 				rmap.NORTH_WEST_OUT=new RegionIntegerNumeric((own_x-AOI + width)%width, (own_y-AOI+height)%height, 
@@ -413,14 +415,23 @@ public class DIntGrid2DXY extends DIntGrid2D {
 
 
 				rmap.SOUTH_MINE=new RegionIntegerNumeric(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
-				//if square partitioning
-				if(rows>1){
-					numNeighbors = 8;
-					rmap.NORTH_OUT=new RegionIntegerNumeric((own_x+width)%width, (own_y - AOI+height)%height,
-							(own_x+ my_width +width)%width==0?width:(own_x+ my_width +width)%width,(own_y+height)%height==0?height:(own_y+height)%height);
+				
+				rmap.NORTH_OUT=new RegionIntegerNumeric((own_x+width)%width, (own_y - AOI+height)%height,
+						(own_x+ my_width +width)%width==0?width:(own_x+ my_width +width)%width,(own_y+height)%height==0?height:(own_y+height)%height);
 
-					rmap.SOUTH_OUT=new RegionIntegerNumeric((own_x+width)%width,(own_y+my_height+height)%height,
-							(own_x+my_width+width)%width==0?width:(own_x+my_width+width)%width, (own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+				rmap.SOUTH_OUT=new RegionIntegerNumeric((own_x+width)%width,(own_y+my_height+height)%height,
+						(own_x+my_width+width)%width==0?width:(own_x+my_width+width)%width, (own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+				
+				//if square partitioning
+				if(rows==1 && columns >1){
+					numNeighbors = 6;
+					rmap.NORTH_OUT = null;
+					rmap.SOUTH_OUT = null;
+				}
+				else if(rows > 1 && columns == 1){
+					numNeighbors = 6;
+					rmap.EAST_OUT = null;
+					rmap.WEST_OUT = null;
 				}
 			}
 
