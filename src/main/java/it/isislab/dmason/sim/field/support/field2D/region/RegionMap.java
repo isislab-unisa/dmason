@@ -34,46 +34,43 @@ import java.io.Serializable;
  */
 public class RegionMap<E,F> implements Serializable
 {
-	
+
 
 	/**
 	 * 
 	 */
-//	private static final long serialVersionUID = 1L;
+	//	private static final long serialVersionUID = 1L;
 
 	public Region<E,F> WEST_OUT,WEST_MINE,EAST_MINE,EAST_OUT,SOUTH_MINE,SOUTH_OUT,NORTH_MINE,NORTH_OUT=null;//left,mine,right,down
 
 	public Region<E,F> NORTH_WEST_MINE,NORTH_WEST_OUT=null;  //corner up left
 
-	
+
 	public Region<E,F> NORTH_EAST_MINE,NORTH_EAST_OUT=null; //corner up right
-	
+
 	public Region<E,F> SOUTH_WEST_MINE,SOUTH_WEST_OUT=null; //corner down left
 
 	public Region<E,F> SOUTH_EAST_MINE,SOUTH_EAST_OUT=null; //corner down right
 
-	
-	
-	
+
+
+	//only for loadbalaancing xy
 	public Region<E,F> corner_out_up_left_diag_up = null; //corner up left up
 	public Region<E,F>corner_out_up_left_diag_left = null; //corner up left left
-
 	public Region<E,F>corner_out_up_right_diag_up=null; //corner up right up
 	public Region<E,F>corner_out_up_right_diag_right=null; //corner up right right
-	
 	public Region<E,F>corner_out_down_left_diag_left=null; //corner down left left
 	public Region<E,F>corner_out_down_left_diag_down=null; //corner down left down
-	
 	public Region<E,F>corner_out_down_right_diag_right=null; //corner down right right
 	public Region<E,F>corner_out_down_right_diag_down=null; //corner down right down
-	
-	
+
+
 	/**
 	 * Default constructor
 	 */
 	public RegionMap() { super(); }
-	
-	
+
+
 	/**
 	 * The Constructor create a RegionMap with the parameters:
 	 *
@@ -166,70 +163,55 @@ public class RegionMap<E,F> implements Serializable
 	public void setNORTH_WEST_MINE(Region<E,F>NORTH_WEST_MINE) {this.NORTH_WEST_MINE = NORTH_WEST_MINE;	}
 	public Region<E,F>getNORTH_WEST_OUT() {return NORTH_WEST_OUT;}
 	public void setNORTH_WEST_OUT(Region<E,F>NORTH_WEST_OUT) {this.NORTH_WEST_OUT = NORTH_WEST_OUT;}
-		
+
 	public Region<E,F>getNORTH_EAST_MINE() {return NORTH_EAST_MINE;}
 	public void setNORTH_EAST_MINE(Region<E,F>NORTH_EAST_MINE) {this.NORTH_EAST_MINE = NORTH_EAST_MINE;}
 	public Region<E,F>getNORTH_EAST_OUT() {return NORTH_EAST_OUT;}
 	public void setNORTH_EAST_OUT(Region<E,F>NORTH_EAST_OUT) {this.NORTH_EAST_OUT = NORTH_EAST_OUT;}
-	
+
 	public Region<E,F>getSOUTH_WEST_MINE() {return SOUTH_WEST_MINE;}
 	public void setSOUTH_WEST_MINE(Region<E,F>SOUTH_WEST_MINE) {this.SOUTH_WEST_MINE = SOUTH_WEST_MINE;}
 	public Region<E,F>getSOUTH_WEST_OUT() {return SOUTH_WEST_OUT;}
 	public void setSOUTH_WEST_OUT(Region<E,F>SOUTH_WEST_OUT) {this.SOUTH_WEST_OUT = SOUTH_WEST_OUT;}
-	
+
 	public Region<E,F>getSOUTH_EAST_MINE() {return SOUTH_EAST_MINE;	}
 	public void setSOUTH_EAST_MINE(Region<E,F>SOUTH_EAST_MINE) {this.SOUTH_EAST_MINE = SOUTH_EAST_MINE;}
 	public Region<E,F>getSOUTH_EAST_OUT() {return SOUTH_EAST_OUT;}
 	public void setSOUTH_EAST_OUT(Region<E,F>SOUTH_EAST_OUT) {this.SOUTH_EAST_OUT = SOUTH_EAST_OUT;}
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	public Region<E,F> getcorner_out_up_left_diag_up(){return corner_out_up_left_diag_up;}  //corner up left up
 	public Region<E,F>getcorner_out_up_left_diag_left(){return corner_out_up_left_diag_left;} //corner up left left
 
 	public Region<E,F>getcorner_out_up_right_diag_up(){return corner_out_up_right_diag_up;}//corner up right up
 	public Region<E,F>getcorner_out_up_right_diag_right(){return corner_out_up_right_diag_right;} //corner up right right
-	
+
 	public Region<E,F>getcorner_out_down_left_diag_left(){return corner_out_down_left_diag_left;} //corner down left left
 	public Region<E,F>getcorner_out_down_left_diag_down(){return corner_out_down_left_diag_down;} //corner down left down
-	
+
 	public Region<E,F>getcorner_out_down_right_diag_right(){return corner_out_down_right_diag_right;} //corner down right right
 	public Region<E,F>getcorner_out_down_right_diag_down(){return corner_out_down_right_diag_down;} //corner down right down
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
 	@Override
 	public String toString() {
-		return "RegionMap [left_out=" + WEST_OUT + ", left_mine=" + WEST_MINE + ", right_mine=" + EAST_MINE
-				+ ", right_out=" + EAST_OUT + ", down_mine=" + SOUTH_MINE + ", down_out=" + SOUTH_OUT + ", up_mine="
-				+ NORTH_MINE + ", up_out=" + NORTH_OUT + ", corner_mine_up_left=" + NORTH_WEST_MINE
-				+ ", corner_out_up_left_diag_center=" + NORTH_WEST_OUT + ", corner_out_up_left_diag_up="
-				+ corner_out_up_left_diag_up + ", corner_out_up_left_diag_left=" + corner_out_up_left_diag_left
-				+ ", corner_mine_up_right=" + NORTH_EAST_MINE + ", corner_out_up_right_diag_center="
-				+ NORTH_EAST_OUT + ", corner_out_up_right_diag_up=" + corner_out_up_right_diag_up
-				+ ", corner_out_up_right_diag_right=" + corner_out_up_right_diag_right + ", corner_mine_down_left="
-				+ SOUTH_WEST_MINE + ", corner_out_down_left_diag_center=" + SOUTH_WEST_OUT
-				+ ", corner_out_down_left_diag_left=" + corner_out_down_left_diag_left
-				+ ", corner_out_down_left_diag_down=" + corner_out_down_left_diag_down + ", corner_mine_down_right="
-				+ SOUTH_EAST_MINE + ", corner_out_down_right_diag_center=" + SOUTH_EAST_OUT
-				+ ", corner_out_down_right_diag_right=" + corner_out_down_right_diag_right
-				+ ", corner_out_down_right_diag_down=" + corner_out_down_right_diag_down + "]";
+		return "RegionMap [WEST_OUT=" + WEST_OUT + ", WEST_MINE=" + WEST_MINE + ", EAST_MINE=" + EAST_MINE
+				+ ", EAST_OUT=" + EAST_OUT + ", SOUTH_MINE=" + SOUTH_MINE + ", SOUTH_OUT=" + SOUTH_OUT + ", NORTH_MINE="
+				+ NORTH_MINE + ", NORTH_OUT=" + NORTH_OUT + ", NORTH_WEST_MINE=" + NORTH_WEST_MINE + ", NORTH_WEST_OUT="
+				+ NORTH_WEST_OUT + ", NORTH_EAST_MINE=" + NORTH_EAST_MINE + ", NORTH_EAST_OUT=" + NORTH_EAST_OUT
+				+ ", SOUTH_WEST_MINE=" + SOUTH_WEST_MINE + ", SOUTH_WEST_OUT=" + SOUTH_WEST_OUT + ", SOUTH_EAST_MINE="
+				+ SOUTH_EAST_MINE + ", SOUTH_EAST_OUT=" + SOUTH_EAST_OUT + "]";
 	}
-	
-	
+
+
+
+
 }
