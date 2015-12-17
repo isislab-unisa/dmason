@@ -24,7 +24,7 @@ import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2DLB;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2D;
-import it.isislab.dmason.sim.field.grid.numeric.region.RegionIntegerNumericLB;
+import it.isislab.dmason.sim.field.grid.numeric.region.RegionIntegerNumeric;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegionNumeric;
 import it.isislab.dmason.sim.field.support.field2D.EntryNum;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
@@ -146,7 +146,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 	private HashMap<Integer, UpdatePositionIntegerNumeric<DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>>> hashUpdatesPosition;
 	private HashMap<Integer, MyCellInterface> toSendForBalance;
 	private HashMap<Integer, MyCellInterface> toSendForUnion;
-	RegionIntegerNumericLB outAgents;
+	RegionIntegerNumeric outAgents;
 	private int width,height;
 
 	// codice profiling
@@ -236,7 +236,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 		this.unionDone = false;
 		this.isUnited = true;
 
-		outAgents = new RegionIntegerNumericLB(0, 0, 0, 0, 0, 0);
+		outAgents = new RegionIntegerNumeric(0, 0, 0, 0);
 
 		updates_cacheLB=new ArrayList<ArrayList<RegionNumeric<Integer,EntryNum<Integer,Int2D>>>>();	
 
@@ -555,7 +555,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 					for (int i =(Integer)mc.getOwn_y(); i <((Integer)mc.getOwn_y()+(Integer)mc.getMy_height()); i++)
 						if(setValue(field[j][i],new Int2D(j, i), mc)) continue;
 						else
-							((RegionIntegerNumericLB)mc.getMyField()).addEntryNum(new EntryNum<Integer,Int2D>(field[j][i], new Int2D(j, i)));
+							((RegionIntegerNumeric)mc.getMyField()).addEntryNum(new EntryNum<Integer,Int2D>(field[j][i], new Int2D(j, i)));
 				toSendForUnion.put(p, mc);
 				removeValue(mc);
 			}
@@ -619,7 +619,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 					for (int i =(Integer)mc.getOwn_y(); i <((Integer)mc.getOwn_y()+(Integer)mc.getMy_height()); i++)
 						if(setValue(field[j][i],new Int2D(j, i), mc)) continue;
 						else
-							((RegionIntegerNumericLB)mc.getMyField()).addEntryNum(new EntryNum<Integer,Int2D>(field[j][i], new Int2D(j, i)));
+							((RegionIntegerNumeric)mc.getMyField()).addEntryNum(new EntryNum<Integer,Int2D>(field[j][i], new Int2D(j, i)));
 				toSendForBalance.put(k, mc);
 				removeValue(mc);
 			}
@@ -856,7 +856,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 					Int2D i=new Int2D(e_m.l.getX(), e_m.l.getY());
 					field[i.getX()][i.getY()]=e_m.r;	
 				}
-		outAgents = new RegionIntegerNumericLB(0,0,0,0,0,0);
+		outAgents = new RegionIntegerNumeric(0,0,0,0);
 		this.reset();
 
 		return true;
@@ -1501,7 +1501,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 
 		if(position == MyCellInterface.CORNER_DIAG_UP_LEFT)
 		{
-			for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumericLB) ((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getNORTH_WEST_OUT()).values())
+			for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumeric) ((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getNORTH_WEST_OUT()).values())
 			{			    	
 				Int2D loc=e.l;
 				int i = e.r;
@@ -1511,19 +1511,19 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 		else
 			if(position == MyCellInterface.UP)
 			{
-				for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getNORTH_EAST_OUT()).values())
+				for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getNORTH_EAST_OUT()).values())
 				{			    	
 					Int2D loc=e.l;
 					int i = e.r;
 					field[loc.getX()][loc.getY()]=i;
 				}
-				for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.UP).get(cellType)).getMyRMap().getNORTH_OUT()).values())
+				for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.UP).get(cellType)).getMyRMap().getNORTH_OUT()).values())
 				{			    	
 					Int2D loc=e.l;
 					int i = e.r;
 					field[loc.getX()][loc.getY()]=i;
 				}
-				for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getNORTH_WEST_OUT()).values())
+				for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getNORTH_WEST_OUT()).values())
 				{			    	
 					Int2D loc=e.l;
 					int i = e.r;
@@ -1533,7 +1533,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 			else
 				if(position == MyCellInterface.CORNER_DIAG_UP_RIGHT)
 				{
-					for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getNORTH_EAST_OUT()).values())
+					for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getNORTH_EAST_OUT()).values())
 					{			    	
 						Int2D loc=e.l;
 						int i = e.r;
@@ -1543,19 +1543,19 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 				else
 					if(position == MyCellInterface.RIGHT)
 					{
-						for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getSOUTH_EAST_OUT()).values())
+						for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).get(cellType)).getMyRMap().getSOUTH_EAST_OUT()).values())
 						{			    	
 							Int2D loc=e.l;
 							int i = e.r;
 							field[loc.getX()][loc.getY()]=i;
 						}
-						for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.RIGHT).get(cellType)).getMyRMap().getEAST_OUT()).values())
+						for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.RIGHT).get(cellType)).getMyRMap().getEAST_OUT()).values())
 						{			    	
 							Int2D loc=e.l;
 							int i = e.r;
 							field[loc.getX()][loc.getY()]=i;
 						}
-						for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getNORTH_EAST_OUT()).values())
+						for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getNORTH_EAST_OUT()).values())
 						{			    	
 							Int2D loc=e.l;
 							int i = e.r;
@@ -1565,7 +1565,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 					else
 						if(position == MyCellInterface.CORNER_DIAG_DOWN_RIGHT)
 						{
-							for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getSOUTH_EAST_OUT()).values())
+							for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getSOUTH_EAST_OUT()).values())
 							{			    	
 								Int2D loc=e.l;
 								int i = e.r;
@@ -1575,19 +1575,19 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 						else
 							if(position == MyCellInterface.DOWN)
 							{
-								for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT()).values())
+								for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT()).values())
 								{			    	
 									Int2D loc=e.l;
 									int i = e.r;
 									field[loc.getX()][loc.getY()]=i;
 								}
-								for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.DOWN).get(cellType)).getMyRMap().getSOUTH_OUT()).values())
+								for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.DOWN).get(cellType)).getMyRMap().getSOUTH_OUT()).values())
 								{			    	
 									Int2D loc=e.l;
 									int i = e.r;
 									field[loc.getX()][loc.getY()]=i;
 								}
-								for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getSOUTH_EAST_OUT()).values())
+								for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getSOUTH_EAST_OUT()).values())
 								{			    	
 									Int2D loc=e.l;
 									int i = e.r;
@@ -1597,7 +1597,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							else
 								if(position == MyCellInterface.CORNER_DIAG_DOWN_LEFT)
 								{
-									for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT()).values())
+									for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT()).values())
 									{			    	
 										Int2D loc=e.l;
 										int i = e.r;
@@ -1607,19 +1607,19 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 								else
 									if(position == MyCellInterface.LEFT)
 									{
-										for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getNORTH_WEST_OUT()).values())
+										for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).get(cellType)).getMyRMap().getNORTH_WEST_OUT()).values())
 										{			    	
 											Int2D loc=e.l;
 											int i = e.r;
 											field[loc.getX()][loc.getY()]=i;
 										}
-										for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.LEFT).get(cellType)).getMyRMap().getNORTH_WEST_OUT()).values())
+										for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.LEFT).get(cellType)).getMyRMap().getNORTH_WEST_OUT()).values())
 										{			    	
 											Int2D loc=e.l;
 											int i = e.r;
 											field[loc.getX()][loc.getY()]=i;
 										}
-										for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumericLB)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT()).values())
+										for(EntryNum<Integer, Int2D> e: ((RegionIntegerNumeric)((MyCellIntegerNumeric)listGrid.get(MyCellInterface.CORNER_DIAG_UP_LEFT).get(cellType)).getMyRMap().getSOUTH_WEST_OUT()).values())
 										{			    	
 											Int2D loc=e.l;
 											int i = e.r;
@@ -1774,7 +1774,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 						}
 						else
 						{
-							RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
+							RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_right);
 							empty.clear();
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_right = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -1802,7 +1802,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 						}
 						else
 						{
-							RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
+							RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_right);
 							empty.clear();
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_right = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -1822,7 +1822,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 						}
 						else
 						{
-							RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
+							RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_down);
 							empty.clear();
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_down = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -1859,7 +1859,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 						}
 						else
 						{
-							RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
+							RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_down);
 							empty.clear();
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_down = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -1985,7 +1985,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 						}
 						else
 						{
-							RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
+							RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_down);
 							empty.clear();
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_down = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2012,7 +2012,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 						}
 						else
 						{
-							RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
+							RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_down);
 							empty.clear();
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_down = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2031,7 +2031,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 						}
 						else
 						{
-							RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
+							RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_left);
 							empty.clear();
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_left = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2067,7 +2067,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 						}
 						else
 						{
-							RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
+							RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_left);
 							empty.clear();
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_left = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2144,7 +2144,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 						}
 						else
 						{
-							RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
+							RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_up);
 							empty.clear();
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_up = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_WEST_MINE,
@@ -2173,7 +2173,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 						}
 						else
 						{
-							RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
+							RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_up);
 							empty.clear();
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_up = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_WEST_MINE,
@@ -2240,7 +2240,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 						}
 						else
 						{
-							RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
+							RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_left);
 							empty.clear();
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_left = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_WEST_MINE,
@@ -2267,7 +2267,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 						}
 						else
 						{
-							RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
+							RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_left);
 							empty.clear();
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_left = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_WEST_MINE,
@@ -2364,7 +2364,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 						}
 						else
 						{
-							RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
+							RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_up);
 							empty.clear();
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_up = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_EAST_MINE,
@@ -2390,7 +2390,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 						}
 						else
 						{
-							RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
+							RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_up);
 							empty.clear();
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_up = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_EAST_MINE,
@@ -2410,7 +2410,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 						}
 						else
 						{
-							RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
+							RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_right);
 							empty.clear();
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_right = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_EAST_MINE,
@@ -2437,7 +2437,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 						}
 						else
 						{
-							RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
+							RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_right);
 							empty.clear();
 							DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_right = 
 									new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_EAST_MINE,
@@ -2591,7 +2591,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_right);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_right = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -2618,7 +2618,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_right);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_right = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -2637,7 +2637,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_down);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_down = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -2673,7 +2673,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_down);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_down = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -2797,7 +2797,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_right);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_right = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -2816,7 +2816,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_left);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_left = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2928,7 +2928,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_down);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_down = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2955,7 +2955,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_down);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_down = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -2974,7 +2974,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_left);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_left = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -3010,7 +3010,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_left);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_left = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -3069,7 +3069,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_up);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_up = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3132,7 +3132,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 								hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_corner_down_left_diag_down);
 							}
 							else{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_down);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_down = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -3164,7 +3164,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_up);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_up = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3192,7 +3192,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_up);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_up = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3295,7 +3295,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_left);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_left = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3322,7 +3322,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_left);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_left = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3379,7 +3379,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_right);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_right = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3443,7 +3443,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_left);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_left_left = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3496,7 +3496,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_up);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_up = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3522,7 +3522,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_up);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_up = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3541,7 +3541,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_right);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_right = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3568,7 +3568,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_right);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_right = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3701,7 +3701,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_up);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_up = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3720,7 +3720,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 							}
 							else
 							{
-								RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
+								RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_down);
 								empty.clear();
 								DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_right_down = 
 										new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -3796,7 +3796,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 					}
 					else
 					{
-						RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_left);
+						RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_left);
 						empty.clear();
 						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_down_left_left = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_WEST_MINE,
@@ -3845,7 +3845,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_MINE,
 										md.getMyRMap().NORTH_OUT, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.LEFT).add(dr_up);
-						RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_up);
+						RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_up);
 						empty.clear();
 						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_corner_up_right_up = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_EAST_MINE,
@@ -3910,7 +3910,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 					}
 					else
 					{
-						RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_up);
+						RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_up);
 						empty.clear();
 						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left_corner_up_diag_up = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_WEST_MINE,
@@ -3961,7 +3961,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().EAST_MINE,
 										md.getMyRMap().EAST_OUT, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.UP).add(dr_right);
-						RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_right);
+						RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_right);
 						empty.clear();
 						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_right_corner_down_diag_right = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -4028,7 +4028,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 					}
 					else
 					{
-						RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_right_diag_right);
+						RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_right_diag_right);
 						empty.clear();
 						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_right_corner_up_diag_right = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_EAST_MINE,
@@ -4077,7 +4077,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_MINE,
 										md.getMyRMap().SOUTH_OUT, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.RIGHT).add(dr_down);
-						RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_left_diag_down);
+						RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_left_diag_down);
 						empty.clear();
 						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left_corner_down_diag_down = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_EAST_MINE,
@@ -4141,7 +4141,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 					}
 					else
 					{
-						RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_down_right_diag_down);
+						RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_down_right_diag_down);
 						empty.clear();
 						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_right_corner_down_diag_down = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().SOUTH_EAST_MINE,
@@ -4190,7 +4190,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().WEST_MINE,
 										md.getMyRMap().WEST_OUT, (sm.schedule.getSteps()-1),cellType);
 						hashUpdatesPosition.get(MyCellInterface.DOWN).add(dr_left);
-						RegionIntegerNumericLB empty = ((RegionIntegerNumericLB)md.getMyRMap().corner_out_up_left_diag_left);
+						RegionIntegerNumeric empty = ((RegionIntegerNumeric)md.getMyRMap().corner_out_up_left_diag_left);
 						empty.clear();
 						DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr_left_corner_up_diag_left = 
 								new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(md.getMyRMap().NORTH_WEST_MINE,
