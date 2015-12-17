@@ -38,7 +38,7 @@ public class RegionIntegerTester {
 	public void setUp() throws Exception {
 		width=100;
 		height=100;
-		rd = new RegionInteger(0, 0, 100, 100,width,height);
+		rd = new RegionInteger(0, 0, 100, 100);
 		loopTest = 10000;
 	}
 

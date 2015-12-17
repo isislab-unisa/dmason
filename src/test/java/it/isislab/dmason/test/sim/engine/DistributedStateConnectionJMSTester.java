@@ -101,20 +101,6 @@ public class DistributedStateConnectionJMSTester {
 			// TODO Auto-generated method stub
 			return null;
 		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * it.isislab.dmason.sim.engine.DistributedState#setPortrayalForObject
-		 * (java.lang.Object)
-		 */
-		@Override
-		public boolean setPortrayalForObject(Object o) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
 	}
 
 	/**
@@ -237,7 +223,7 @@ public class DistributedStateConnectionJMSTester {
 		 * @see it.isislab.dmason.sim.field.DistributedField#getID()
 		 */
 		@Override
-		public String getID() {
+		public String getDistributedFieldID() {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -255,16 +241,6 @@ public class DistributedStateConnectionJMSTester {
 
 		
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.field.DistributedField#resetParameters()
-		 */
-		@Override
-		public void resetParameters() {
-			// TODO Auto-generated method stub
-
-		}
 
 		/*
 		 * (non-Javadoc)

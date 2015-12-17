@@ -126,15 +126,6 @@ public class DDoubleGrid2DXYTester {
 			return null;
 		}
 
-		/* (non-Javadoc)
-		 * @see it.isislab.dmason.sim.engine.DistributedState#setPortrayalForObject(java.lang.Object)
-		 */
-		@Override
-		public boolean setPortrayalForObject(Object o) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
 	}
 
 
@@ -258,7 +249,7 @@ public class DDoubleGrid2DXYTester {
 		assertEquals("The celltype should be "+celltype.pos_j,celltype.pos_j,toTest.cellType.pos_j);
 		assertEquals("The columns should be "+columns,columns,toTest.columns);
 		assertEquals("The rows should be "+rows,rows,toTest.rows);
-		assertEquals("The maxDistance should be "+maxDistance,maxDistance,toTest.jumpDistance);
+		assertEquals("The maxDistance should be "+maxDistance,maxDistance,toTest.AOI);
 		assertEquals("The width should be "+width,width,toTest.getWidth());
 		assertEquals("The height should be "+height,height,toTest.getHeight());
 		int my_width,my_height;
