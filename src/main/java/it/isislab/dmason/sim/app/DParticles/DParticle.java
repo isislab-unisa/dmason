@@ -67,7 +67,7 @@ public class DParticle extends RemoteParticle<Int2D>
         	tut.trails.setDistributedObjectLocation(location,1.0,state);
         }catch(NullPointerException e){
         	e.printStackTrace();
-        	System.out.println("Error"+tut.TYPE+"--POSIZIONE: "+this.pos+" Direction="+xdir+"  "+ydir);
+        	//System.out.println("Error"+tut.TYPE+"--POSIZIONE: "+this.pos+" Direction="+xdir+"  "+ydir);
         } catch (DMasonException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

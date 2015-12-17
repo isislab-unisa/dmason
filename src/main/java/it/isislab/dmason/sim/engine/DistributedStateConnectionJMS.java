@@ -259,14 +259,14 @@ public class DistributedStateConnectionJMS<E> {
 								+ "L",
 								schedule.fields2D, listeners);
 				u2.start();*/
-				
+
 				connectionJMS.createTopic(topicPrefix+TYPE + "L",
 						schedule.fields2D
 						.size());
 				connectionJMS.createTopic(topicPrefix+TYPE + "R",
 						schedule.fields2D
 						.size());
-			
+
 				connectionJMS.createTopic(topicPrefix+TYPE + "CUDL",
 						schedule.fields2D
 						.size());
@@ -287,7 +287,7 @@ public class DistributedStateConnectionJMS<E> {
 						+ ((j + 1 + columns) % columns) + "L");
 				connectionJMS.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
 						+ ((j - 1 + columns) % columns) + "R");
-				
+
 				connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
 						+ ((j - 1 + columns) % columns) + "CDDR");
 				connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
@@ -333,7 +333,7 @@ public class DistributedStateConnectionJMS<E> {
 								+ ((j + 1 + columns) % columns) + "CUDL",
 								schedule.fields2D, listeners);
 				u8.start();
-				
+
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -497,50 +497,50 @@ public class DistributedStateConnectionJMS<E> {
 
 			try {
 
-//				connectionJMS.createTopic(topicPrefix+TYPE+"L",((DistributedMultiSchedule)schedule).fields2D.size());
-//				connectionJMS.createTopic(topicPrefix+TYPE+"R",((DistributedMultiSchedule)schedule).fields2D.size());
-//				connectionJMS.createTopic(topicPrefix+TYPE+"D",((DistributedMultiSchedule)schedule).fields2D.size());
-//				connectionJMS.createTopic(topicPrefix+TYPE+"U",((DistributedMultiSchedule)schedule).fields2D.size());
-//				connectionJMS.createTopic(topicPrefix+TYPE+"CUDL",((DistributedMultiSchedule)schedule).fields2D.size());
-//				connectionJMS.createTopic(topicPrefix+TYPE+"CUDR",((DistributedMultiSchedule)schedule).fields2D.size());
-//				connectionJMS.createTopic(topicPrefix+TYPE+"CDDL",((DistributedMultiSchedule)schedule).fields2D.size());
-//				connectionJMS.createTopic(topicPrefix+TYPE+"CDDR",((DistributedMultiSchedule)schedule).fields2D.size());
-//
-//				int i=TYPE.pos_i,j=TYPE.pos_j;
-//				int sqrt=(int)Math.sqrt(NUMPEERS);
-//
-//				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L");
-//				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R");
-//				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U");
-//				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D");
-//				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR");
-//				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL");
-//				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR");
-//				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL");
-//
-//				u1 = new UpdaterThreadForListener(connectionJMS,topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L",((DistributedMultiSchedule)schedule).fields2D,listeners);
-//				u1.start();
-//
-//				u2 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R",((DistributedMultiSchedule)schedule).fields2D,listeners);
-//				u2.start();
-//
-//				u3 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U",((DistributedMultiSchedule)schedule).fields2D,listeners);
-//				u3.start();
-//
-//				u4 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D",((DistributedMultiSchedule)schedule).fields2D,listeners);
-//				u4.start();
-//
-//				u5 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR",((DistributedMultiSchedule)schedule).fields2D,listeners);
-//				u5.start();
-//
-//				u6 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL",((DistributedMultiSchedule)schedule).fields2D,listeners);
-//				u6.start();	
-//
-//				u7 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR",((DistributedMultiSchedule)schedule).fields2D,listeners);
-//				u7.start();		
-//
-//				u8 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL",((DistributedMultiSchedule)schedule).fields2D,listeners);
-//				u8.start();
+				//				connectionJMS.createTopic(topicPrefix+TYPE+"L",((DistributedMultiSchedule)schedule).fields2D.size());
+				//				connectionJMS.createTopic(topicPrefix+TYPE+"R",((DistributedMultiSchedule)schedule).fields2D.size());
+				//				connectionJMS.createTopic(topicPrefix+TYPE+"D",((DistributedMultiSchedule)schedule).fields2D.size());
+				//				connectionJMS.createTopic(topicPrefix+TYPE+"U",((DistributedMultiSchedule)schedule).fields2D.size());
+				//				connectionJMS.createTopic(topicPrefix+TYPE+"CUDL",((DistributedMultiSchedule)schedule).fields2D.size());
+				//				connectionJMS.createTopic(topicPrefix+TYPE+"CUDR",((DistributedMultiSchedule)schedule).fields2D.size());
+				//				connectionJMS.createTopic(topicPrefix+TYPE+"CDDL",((DistributedMultiSchedule)schedule).fields2D.size());
+				//				connectionJMS.createTopic(topicPrefix+TYPE+"CDDR",((DistributedMultiSchedule)schedule).fields2D.size());
+				//
+				//				int i=TYPE.pos_i,j=TYPE.pos_j;
+				//				int sqrt=(int)Math.sqrt(NUMPEERS);
+				//
+				//				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L");
+				//				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R");
+				//				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U");
+				//				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D");
+				//				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR");
+				//				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL");
+				//				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR");
+				//				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL");
+				//
+				//				u1 = new UpdaterThreadForListener(connectionJMS,topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				//				u1.start();
+				//
+				//				u2 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				//				u2.start();
+				//
+				//				u3 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				//				u3.start();
+				//
+				//				u4 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				//				u4.start();
+				//
+				//				u5 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				//				u5.start();
+				//
+				//				u6 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				//				u6.start();	
+				//
+				//				u7 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				//				u7.start();		
+				//
+				//				u8 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				//				u8.start();
 
 			}catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -556,29 +556,78 @@ public class DistributedStateConnectionJMS<E> {
 		if (MODE == DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE || MODE == DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE) { // HORIZONTAL_MODE
 
 			try {
-
-				if(TYPE.pos_j < columns){
-					connectionJMS.createTopic(topicPrefix+TYPE + "R",
-							schedule.fields2D
-							.size());
-
-					connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "L");
-					UpdaterThreadForListener u2 = new UpdaterThreadForListener(
-							connectionJMS, topicPrefix+TYPE.getNeighbourRight() + "L",
-							schedule.fields2D, listeners);
-					u2.start();
+				
+				if(rows>1 && columns==1){
+					if(TYPE.pos_i==0){
+						//crea sotto e sottomettiti a i+1-spra
+						connectionJMS.createTopic(topicPrefix+TYPE + "D",
+								schedule.fields2D
+								.size());
+						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourDown() + "U");
+						UpdaterThreadForListener u1 = new UpdaterThreadForListener(
+								connectionJMS, topicPrefix+TYPE.getNeighbourDown() + "U",
+								schedule.fields2D, listeners);
+						u1.start();
+					}
+					else if(TYPE.pos_i == rows-1){
+						//crea sopra e sottomettiti a i-1-sotto
+						connectionJMS.createTopic(topicPrefix+TYPE + "U",
+								schedule.fields2D
+								.size());
+						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourUp() + "D");
+						UpdaterThreadForListener u1 = new UpdaterThreadForListener(
+								connectionJMS, topicPrefix+TYPE.getNeighbourUp() + "D",
+								schedule.fields2D, listeners);
+						u1.start();
+						}
+					else{
+						connectionJMS.createTopic(topicPrefix+TYPE + "D",
+								schedule.fields2D
+								.size());
+						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourDown() + "U");
+						UpdaterThreadForListener u1 = new UpdaterThreadForListener(
+								connectionJMS, topicPrefix+TYPE.getNeighbourDown() + "U",
+								schedule.fields2D, listeners);
+						u1.start();
+						
+						connectionJMS.createTopic(topicPrefix+TYPE + "U",
+								schedule.fields2D
+								.size());
+						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourUp() + "D");
+						UpdaterThreadForListener u2 = new UpdaterThreadForListener(
+								connectionJMS, topicPrefix+TYPE.getNeighbourUp() + "D",
+								schedule.fields2D, listeners);
+						u2.start();
+					}	
+					//crea sopra e sotto e sottomettiti a i-1-sotto e a i+1 sopra
 
 				}
-				if(TYPE.pos_j > 0){
-					connectionJMS.createTopic(topicPrefix+TYPE + "L",
-							schedule.fields2D
-							.size());
+				else if(rows==1 && columns > 1){
 
-					connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "R");
-					UpdaterThreadForListener u1 = new UpdaterThreadForListener(
-							connectionJMS, topicPrefix+TYPE.getNeighbourLeft() + "R",
-							schedule.fields2D, listeners);
-					u1.start();
+
+					if(TYPE.pos_j < columns){
+						connectionJMS.createTopic(topicPrefix+TYPE + "R",
+								schedule.fields2D
+								.size());
+
+						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "L");
+						UpdaterThreadForListener u2 = new UpdaterThreadForListener(
+								connectionJMS, topicPrefix+TYPE.getNeighbourRight() + "L",
+								schedule.fields2D, listeners);
+						u2.start();
+
+					}
+					if(TYPE.pos_j > 0){
+						connectionJMS.createTopic(topicPrefix+TYPE + "L",
+								schedule.fields2D
+								.size());
+
+						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "R");
+						UpdaterThreadForListener u1 = new UpdaterThreadForListener(
+								connectionJMS, topicPrefix+TYPE.getNeighbourLeft() + "R",
+								schedule.fields2D, listeners);
+						u1.start();
+					}
 				}
 
 			} catch (Exception e) {
@@ -625,7 +674,7 @@ public class DistributedStateConnectionJMS<E> {
 
 				if(TYPE.pos_i > 0 && TYPE.pos_j > 0){
 					connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagLeftUp()
-							+ "CDDR");
+					+ "CDDR");
 					UpdaterThreadForListener u1 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+TYPE.getNeighbourDiagLeftUp() + "CDDR",
 							schedule.fields2D, listeners);
@@ -633,7 +682,7 @@ public class DistributedStateConnectionJMS<E> {
 				}
 				if(TYPE.pos_i > 0 && TYPE.pos_j < columns){
 					connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagRightUp()
-							+ "CDDL");
+					+ "CDDL");
 					UpdaterThreadForListener u2 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+TYPE.getNeighbourDiagRightUp() + "CDDL",
 							schedule.fields2D, listeners);
@@ -642,7 +691,7 @@ public class DistributedStateConnectionJMS<E> {
 
 				if(TYPE.pos_i < rows && TYPE.pos_j > 0){
 					connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagLeftDown()
-							+ "CUDR");
+					+ "CUDR");
 					UpdaterThreadForListener u3 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+TYPE.getNeighbourDiagLeftDown() + "CUDR",
 							schedule.fields2D, listeners);
@@ -650,7 +699,7 @@ public class DistributedStateConnectionJMS<E> {
 				}
 				if(TYPE.pos_i < rows && TYPE.pos_j < columns){
 					connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagRightDown()
-							+ "CUDL");
+					+ "CUDL");
 					UpdaterThreadForListener u4 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+TYPE.getNeighbourDiagRightDown() + "CUDL",
 							schedule.fields2D, listeners);

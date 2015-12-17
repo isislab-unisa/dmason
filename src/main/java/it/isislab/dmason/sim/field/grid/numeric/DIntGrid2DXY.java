@@ -22,6 +22,7 @@ import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.MessageListener;
+import it.isislab.dmason.sim.field.grid.numeric.region.RegionDoubleNumeric;
 import it.isislab.dmason.sim.field.grid.numeric.region.RegionIntegerNumeric;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegionNumeric;
 import it.isislab.dmason.sim.field.support.field2D.EntryNum;
@@ -128,7 +129,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(DDoubleGrid2DXY.class.getCanonicalName());
-	
+
 	/**
 	 * It's the name of the specific field
 	 */
@@ -181,9 +182,9 @@ public class DIntGrid2DXY extends DIntGrid2D {
 		this.updates_cache = new ArrayList<RegionNumeric<Integer,EntryNum<Integer,Int2D>>>();
 		this.name = name;
 		this.topicPrefix=prefix;		
-		
+
 		setToroidal(isToroidal);		
-	    createRegion();	
+		createRegion();	
 
 	}
 
@@ -193,231 +194,242 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	 * @return true if all is ok
 	 */
 	private boolean createRegion()
-	{//upper left corner's coordinates
-		if(cellType.pos_j<(width%columns))
-			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
-		else
-			own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
+	{
+		//upper left corner's coordinates
+				if(cellType.pos_j<(width%columns))
+					own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
+				else
+					own_x=(int)Math.floor(width/columns+1)*((width%columns))+(int)Math.floor(width/columns)*(cellType.pos_j-((width%columns))); 
 
-		if(cellType.pos_i<(height%rows))
-			own_y=(int)Math.floor(height/rows+1)*cellType.pos_i; 
-		else
-			own_y=(int)Math.floor(height/rows+1)*((height%rows))+(int)Math.floor(height/rows)*(cellType.pos_i-((height%rows))); 
+				if(cellType.pos_i<(height%rows))
+					own_y=(int)Math.floor(height/rows+1)*cellType.pos_i; 
+				else
+					own_y=(int)Math.floor(height/rows+1)*((height%rows))+(int)Math.floor(height/rows)*(cellType.pos_i-((height%rows))); 
 
-		System.out.println("x "+own_x+" y "+own_y);
+				// own width and height
+				if(cellType.pos_j<(width%columns))
+					my_width=(int) Math.floor(width/columns+1);
+				else
+					my_width=(int) Math.floor(width/columns);
 
-		// own width and height
-		if(cellType.pos_j<(width%columns))
-			my_width=(int) Math.floor(width/columns+1);
-		else
-			my_width=(int) Math.floor(width/columns);
-
-		if(cellType.pos_i<(height%rows))
-			my_height=(int) Math.floor(height/rows+1);
-		else
-			my_height=(int) Math.floor(height/rows);
+				if(cellType.pos_i<(height%rows))
+					my_height=(int) Math.floor(height/rows+1);
+				else
+					my_height=(int) Math.floor(height/rows);
 
 
-		//calculating the neighbors
-		for (int k = -1; k <= 1; k++) 
-		{
-			for (int k2 = -1; k2 <= 1; k2++) 
-			{				
-				int v1=cellType.pos_i+k;
-				int v2=cellType.pos_j+k2;
-				if(v1>=0 && v2 >=0 && v1<rows && v2<columns)
-					if( v1!=cellType.pos_i || v2!=cellType.pos_j)
-					{
-						neighborhood.add(v1+""+v2);
+				//calculating the neighbors
+				for (int k = -1; k <= 1; k++) 
+				{
+					for (int k2 = -1; k2 <= 1; k2++) 
+					{				
+						int v1=cellType.pos_i+k;
+						int v2=cellType.pos_j+k2;
+						if(v1>=0 && v2 >=0 && v1<rows && v2<columns)
+							if( v1!=cellType.pos_i || v2!=cellType.pos_j)
+							{
+								neighborhood.add(v1+""+v2);
+							}	
+					}
+				}
+
+
+				if(isToroidal()) 
+					makeToroidalSections();
+				else
+					makeNoToroidalSections();
+
+				return true;
+			}
+
+
+			private void makeNoToroidalSections() {
+
+				myfield=new RegionIntegerNumeric(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
+
+				//corner up left
+
+				rmap.NORTH_WEST_MINE=new RegionIntegerNumeric(own_x, own_y, own_x+AOI, own_y+AOI);
+
+				//corner up right
+
+				rmap.NORTH_EAST_MINE=new RegionIntegerNumeric(own_x+my_width-AOI, own_y, own_x+my_width, own_y+AOI);
+
+				//corner down left
+
+				rmap.SOUTH_WEST_MINE=new RegionIntegerNumeric(own_x, own_y+my_height-AOI,own_x+AOI, own_y+my_height);
+
+				//corner down right
+
+				rmap.SOUTH_EAST_MINE=new RegionIntegerNumeric(own_x+my_width-AOI, own_y+my_height-AOI,own_x+my_width,own_y+my_height);
+
+				rmap.WEST_MINE=new RegionIntegerNumeric(own_x,own_y,own_x + AOI , own_y+my_height);
+
+
+				rmap.EAST_MINE=new RegionIntegerNumeric(own_x + my_width - AOI,own_y,own_x +my_width , own_y+my_height);
+
+
+				rmap.NORTH_MINE=new RegionIntegerNumeric(own_x ,own_y,own_x+my_width, own_y + AOI);
+
+
+				rmap.SOUTH_MINE=new RegionIntegerNumeric(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
+
+				//horizontal partitioning
+				//horizontal partitioning
+				if(rows==1){
+					numNeighbors = 2;
+					if(cellType.pos_j>0 && cellType.pos_j<columns-1){
+
+						rmap.WEST_OUT=new RegionIntegerNumeric(own_x-AOI,own_y,own_x, own_y+my_height);
+
+						rmap.EAST_OUT=new RegionIntegerNumeric(own_x+my_width,own_y,own_x+my_width,own_y+my_height);
+					}
+
+					else if(cellType.pos_j==0){
+						numNeighbors = 1;
+						rmap.EAST_OUT=new RegionIntegerNumeric(own_x+my_width,own_y,own_x+my_width+AOI,own_y+my_height);
 					}	
-			}
-		}
 
 
-		if(isToroidal()) 
-			makeToroidalSections();
-		else
-			makeNoToroidalSections();
+					else if(cellType.pos_j==columns-1){
+						numNeighbors = 1;
+						rmap.WEST_OUT=new RegionIntegerNumeric(own_x-AOI,own_y,own_x, own_y+my_height);
+					}
+				}else 
+					if(rows>1 && columns == 1){ // Horizontal partitionig
+						numNeighbors =2;
+						rmap.NORTH_OUT=new RegionIntegerNumeric(own_x, own_y - AOI,	own_x+ my_width,own_y);
+						rmap.SOUTH_OUT=new RegionIntegerNumeric(own_x,own_y+my_height,own_x+my_width, own_y+my_height+AOI);
+						if(cellType.pos_i == 0){
+							numNeighbors =1;
+							rmap.NORTH_OUT = null;
+						}
+						if(cellType.pos_i == rows-1){
+							numNeighbors =1;
+							rmap.SOUTH_OUT= null;
+						}
+					}else{ //sqare partitioning 
 
-		return true;
-	}
-
-
-	private void makeNoToroidalSections() {
-
-		myfield=new RegionIntegerNumeric(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
-
-		//corner up left
-
-		rmap.NORTH_WEST_MINE=new RegionIntegerNumeric(own_x, own_y, own_x+AOI, own_y+AOI);
-
-		//corner up right
-
-		rmap.NORTH_EAST_MINE=new RegionIntegerNumeric(own_x+my_width-AOI, own_y, own_x+my_width, own_y+AOI);
-
-		//corner down left
-
-		rmap.SOUTH_WEST_MINE=new RegionIntegerNumeric(own_x, own_y+my_height-AOI,own_x+AOI, own_y+my_height);
-
-		//corner down right
-
-		rmap.SOUTH_EAST_MINE=new RegionIntegerNumeric(own_x+my_width-AOI, own_y+my_height-AOI,own_x+my_width,own_y+my_height);
-
-		rmap.WEST_MINE=new RegionIntegerNumeric(own_x,own_y,own_x + AOI , own_y+my_height);
+					/*
+					 * In this case we use a different approach: Firt we make all ghost sections, after that
+					 * we remove the useful ghost section
+					 * 
+					 * */
+					numNeighbors = 8;
+					//corner up left
+					rmap.NORTH_WEST_OUT=new RegionIntegerNumeric(own_x-AOI, own_y-AOI,own_x, own_y);
 
 
-		rmap.EAST_MINE=new RegionIntegerNumeric(own_x + my_width - AOI,own_y,own_x +my_width , own_y+my_height);
+					//corner up right
+					rmap.NORTH_EAST_OUT = new RegionIntegerNumeric(own_x+my_width,own_y-AOI,own_x+my_width+AOI,own_y);
 
 
-		rmap.NORTH_MINE=new RegionIntegerNumeric(own_x ,own_y,own_x+my_width, own_y + AOI);
+					//corner down left
+					rmap.SOUTH_WEST_OUT=new RegionIntegerNumeric(own_x-AOI, own_y+my_height,own_x,own_y+my_height+AOI);
+
+					rmap.NORTH_OUT=new RegionIntegerNumeric(own_x, own_y - AOI,	own_x+ my_width,own_y);
+
+					//corner down right
+					rmap.SOUTH_EAST_OUT=new RegionIntegerNumeric(own_x+my_width, own_y+my_height,own_x+my_width+AOI,own_y+my_height+AOI);
+
+					rmap.SOUTH_OUT=new RegionIntegerNumeric(own_x,own_y+my_height,own_x+my_width, own_y+my_height+AOI);
+
+					rmap.WEST_OUT=new RegionIntegerNumeric(own_x-AOI,own_y,own_x, own_y+my_height);
 
 
-		rmap.SOUTH_MINE=new RegionIntegerNumeric(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
+					rmap.EAST_OUT=new RegionIntegerNumeric(own_x+my_width,own_y,own_x+my_width+AOI,own_y+my_height);
 
-		//horizontal partitioning
-		//horizontal partitioning
-		if(rows==1){
-			numNeighbors = 2;
-			if(cellType.pos_j>0 && cellType.pos_j<columns-1){
+					if(cellType.pos_i==0 ){
+						numNeighbors = 5;
+						rmap.NORTH_OUT = null;
+						rmap.NORTH_WEST_OUT = null;
+						rmap.NORTH_EAST_OUT = null;
+					}
 
-				rmap.WEST_OUT=new RegionIntegerNumeric(own_x-AOI,own_y,own_x, own_y+my_height);
+					if(cellType.pos_j == 0){
+						numNeighbors = 5;
+						rmap.SOUTH_WEST_OUT = null;
+						rmap.NORTH_WEST_OUT=null;
+						rmap.WEST_OUT = null;
+					}
 
-				rmap.EAST_OUT=new RegionIntegerNumeric(own_x+my_width,own_y,own_x+my_width,own_y+my_height);
-			}
+					if(cellType.pos_i == rows -1){
+						numNeighbors = 5;
+						rmap.SOUTH_WEST_OUT = null;
+						rmap.SOUTH_OUT = null;
+						rmap.SOUTH_EAST_OUT = null;
+					}
 
-			else if(cellType.pos_j==0){
-				numNeighbors = 1;
-				rmap.EAST_OUT=new RegionIntegerNumeric(own_x+my_width,own_y,own_x+my_width,own_y+my_height);
-			}	
+					if(cellType.pos_j == columns -1){
+						numNeighbors = 5;
+						rmap.NORTH_EAST_OUT = null;
+						rmap.EAST_OUT = null;
+						rmap.SOUTH_EAST_OUT = null;
+					}
 
-
-			else if(cellType.pos_j==columns-1){
-				numNeighbors = 1;
-				rmap.WEST_OUT=new RegionIntegerNumeric(own_x-AOI,own_y,own_x, own_y+my_height);
-			}
-		}else{ //sqare partitioning 
-
-			/*
-			 * In this case we use a different approach: Firt we make all ghost sections, after that
-			 * we remove the useful ghost section
-			 * 
-			 * */
-			numNeighbors = 8;
-			//corner up left
-			rmap.NORTH_WEST_OUT=new RegionIntegerNumeric(own_x-AOI, own_y-AOI,own_x, own_y);
-			
-
-			//corner up right
-			rmap.NORTH_EAST_OUT = new RegionIntegerNumeric(own_x+my_width,own_y-AOI,own_x+my_width+AOI,own_y);
-		
-
-			//corner down left
-			rmap.SOUTH_WEST_OUT=new RegionIntegerNumeric(own_x-AOI, own_y+my_height,own_x,own_y+my_height+AOI);
-			
-			rmap.NORTH_OUT=new RegionIntegerNumeric(own_x, own_y - AOI,	own_x+ my_width,own_y);
-
-			//corner down right
-			rmap.SOUTH_EAST_OUT=new RegionIntegerNumeric(own_x+my_width, own_y+my_height,own_x+my_width+AOI,own_y+my_height+AOI);
-
-			rmap.SOUTH_OUT=new RegionIntegerNumeric(own_x,own_y+my_height,own_x+my_width, own_y+my_height+AOI);
-
-			rmap.WEST_OUT=new RegionIntegerNumeric(own_x-AOI,own_y,own_x, own_y+my_height);
-		
-
-			rmap.EAST_OUT=new RegionIntegerNumeric(own_x+my_width,own_y,own_x+my_width+AOI,own_y+my_height);
-
-			if(cellType.pos_i==0 ){
-				numNeighbors = 5;
-				rmap.NORTH_OUT = null;
-				rmap.NORTH_WEST_OUT = null;
-				rmap.NORTH_EAST_OUT = null;
+					if((cellType.pos_i == 0 && cellType.pos_j == 0) || 
+							(cellType.pos_i == rows-1 && cellType.pos_j==0) || 
+							(cellType.pos_i == 0 && cellType.pos_j == columns -1) || 
+							(cellType.pos_i == rows-1 && cellType.pos_j == columns -1))
+						numNeighbors = 3;
+				}
 			}
 
-			if(cellType.pos_j == 0){
-				numNeighbors = 5;
-				rmap.SOUTH_WEST_OUT = null;
-				rmap.NORTH_WEST_OUT=null;
-				rmap.WEST_OUT = null;
+			private void makeToroidalSections() {
+				numNeighbors = 6;
+				myfield=new RegionIntegerNumeric(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
+
+
+				//corner up left
+				rmap.NORTH_WEST_OUT=new RegionIntegerNumeric((own_x-AOI + width)%width, (own_y-AOI+height)%height, 
+						(own_x+width)%width==0?width:(own_x+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
+				rmap.NORTH_WEST_MINE=new RegionIntegerNumeric(own_x, own_y, own_x+AOI, own_y+AOI);
+
+				//corner up right
+				rmap.NORTH_EAST_OUT = new RegionIntegerNumeric((own_x+my_width+width)%width, (own_y-AOI+height)%height,
+						(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
+				rmap.NORTH_EAST_MINE=new RegionIntegerNumeric(own_x+my_width-AOI, own_y, own_x+my_width, own_y+AOI);
+
+				//corner down left
+				rmap.SOUTH_WEST_OUT=new RegionIntegerNumeric((own_x-AOI+width)%width, (own_y+my_height+height)%height,
+						(own_x+width)%width==0?width:(own_x+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+				rmap.SOUTH_WEST_MINE=new RegionIntegerNumeric(own_x, own_y+my_height-AOI,own_x+AOI, own_y+my_height);
+
+				//corner down right
+				rmap.SOUTH_EAST_OUT=new RegionIntegerNumeric((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
+						(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+				rmap.SOUTH_EAST_MINE=new RegionIntegerNumeric(own_x+my_width-AOI, own_y+my_height-AOI,own_x+my_width,own_y+my_height);
+
+				rmap.WEST_OUT=new RegionIntegerNumeric((own_x-AOI+width)%width,(own_y+height)%height,
+						(own_x+width)%width==0?width:(own_x+width)%width, ((own_y+my_height)+height)%height==0?height:((own_y+my_height)+height)%height);
+				rmap.WEST_MINE=new RegionIntegerNumeric(own_x,own_y,own_x + AOI , own_y+my_height);
+
+				rmap.EAST_OUT=new RegionIntegerNumeric((own_x+my_width+width)%width,(own_y+height)%height,
+						(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height==0?height:(own_y+my_height+height)%height);
+				rmap.EAST_MINE=new RegionIntegerNumeric(own_x + my_width - AOI,own_y,own_x +my_width , own_y+my_height);
+
+
+				rmap.NORTH_MINE=new RegionIntegerNumeric(own_x ,own_y,own_x+my_width, own_y + AOI);
+
+
+				rmap.SOUTH_MINE=new RegionIntegerNumeric(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
+				//if square partitioning
+				if(rows>1){
+					numNeighbors = 8;
+					rmap.NORTH_OUT=new RegionIntegerNumeric((own_x+width)%width, (own_y - AOI+height)%height,
+							(own_x+ my_width +width)%width==0?width:(own_x+ my_width +width)%width,(own_y+height)%height==0?height:(own_y+height)%height);
+
+					rmap.SOUTH_OUT=new RegionIntegerNumeric((own_x+width)%width,(own_y+my_height+height)%height,
+							(own_x+my_width+width)%width==0?width:(own_x+my_width+width)%width, (own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+				}
 			}
-
-			if(cellType.pos_i == rows -1){
-				numNeighbors = 5;
-				rmap.SOUTH_WEST_OUT = null;
-				rmap.SOUTH_OUT = null;
-				rmap.SOUTH_EAST_OUT = null;
-			}
-
-			if(cellType.pos_j == columns -1){
-				numNeighbors = 5;
-				rmap.NORTH_EAST_OUT = null;
-				rmap.EAST_OUT = null;
-				rmap.SOUTH_EAST_OUT = null;
-			}
-
-			if((cellType.pos_i == 0 && cellType.pos_j == 0) || 
-					(cellType.pos_i == rows-1 && cellType.pos_j==0) || 
-					(cellType.pos_i == 0 && cellType.pos_j == columns -1) || 
-					(cellType.pos_i == rows-1 && cellType.pos_j == columns -1))
-				numNeighbors = 3;
-		}
-	}
-
-	private void makeToroidalSections() {
-		numNeighbors = 6;
-		myfield=new RegionIntegerNumeric(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
-
-
-		//corner up left
-		rmap.NORTH_WEST_OUT=new RegionIntegerNumeric((own_x-AOI + width)%width, (own_y-AOI+height)%height, 
-				(own_x+width)%width==0?width:(own_x+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
-		rmap.NORTH_WEST_MINE=new RegionIntegerNumeric(own_x, own_y, own_x+AOI, own_y+AOI);
-
-		//corner up right
-		rmap.NORTH_EAST_OUT = new RegionIntegerNumeric((own_x+my_width+width)%width, (own_y-AOI+height)%height,
-				(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
-		rmap.NORTH_EAST_MINE=new RegionIntegerNumeric(own_x+my_width-AOI, own_y, own_x+my_width, own_y+AOI);
-
-		//corner down left
-		rmap.SOUTH_WEST_OUT=new RegionIntegerNumeric((own_x-AOI+width)%width, (own_y+my_height+height)%height,
-				(own_x+width)%width==0?width:(own_x+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
-		rmap.SOUTH_WEST_MINE=new RegionIntegerNumeric(own_x, own_y+my_height-AOI,own_x+AOI, own_y+my_height);
-
-		//corner down right
-		rmap.SOUTH_EAST_OUT=new RegionIntegerNumeric((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
-				(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
-		rmap.SOUTH_EAST_MINE=new RegionIntegerNumeric(own_x+my_width-AOI, own_y+my_height-AOI,own_x+my_width,own_y+my_height);
-
-		rmap.WEST_OUT=new RegionIntegerNumeric((own_x-AOI+width)%width,(own_y+height)%height,
-				(own_x+width)%width==0?width:(own_x+width)%width, ((own_y+my_height)+height)%height==0?height:((own_y+my_height)+height)%height);
-		rmap.WEST_MINE=new RegionIntegerNumeric(own_x,own_y,own_x + AOI , own_y+my_height);
-
-		rmap.EAST_OUT=new RegionIntegerNumeric((own_x+my_width+width)%width,(own_y+height)%height,
-				(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height==0?height:(own_y+my_height+height)%height);
-		rmap.EAST_MINE=new RegionIntegerNumeric(own_x + my_width - AOI,own_y,own_x +my_width , own_y+my_height);
-
-
-		rmap.NORTH_MINE=new RegionIntegerNumeric(own_x ,own_y,own_x+my_width, own_y + AOI);
-
-
-		rmap.SOUTH_MINE=new RegionIntegerNumeric(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
-		System.out.println(cellType+"] "+rmap);
-		//if square partitioning
-		if(rows>1){
-			numNeighbors = 8;
-			rmap.NORTH_OUT=new RegionIntegerNumeric((own_x+width)%width, (own_y - AOI+height)%height,
-					(own_x+ my_width +width)%width==0?width:(own_x+ my_width +width)%width,(own_y+height)%height==0?height:(own_y+height)%height);
-
-			rmap.SOUTH_OUT=new RegionIntegerNumeric((own_x+width)%width,(own_y+my_height+height)%height,
-					(own_x+my_width+width)%width==0?width:(own_x+my_width+width)%width, (own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
-		}
-	}
 
 	@Override
 	public synchronized boolean synchro() {
 
 		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
-		
+
 		if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
 		{
 			tmp_zoom=new ZoomArrayList<EntryNum<Integer, Int2D>>();
@@ -426,8 +438,8 @@ public class DIntGrid2DXY extends DIntGrid2D {
 
 		clear_ghost_regions();
 		memorizeRegionOut();
-		
-		
+
+
 		//every value in the myfield region is setted
 		for(EntryNum<Integer, Int2D> e: myfield.values())
 		{			
@@ -450,7 +462,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 			}
 		}
 
-		
+
 
 
 		//--> publishing the regions to correspondent topics for the neighbors	
@@ -596,13 +608,13 @@ public class DIntGrid2DXY extends DIntGrid2D {
 		//<--
 	}
 
-	
+
 	private void clear_ghost_regions() {
 		updateFields(); //update fields with java reflect
 		updates_cache= new ArrayList<RegionNumeric<Integer,EntryNum<Integer,Int2D>>>();
 	}
-	
-	
+
+
 
 	/**
 	 * Provide the int value shift logic among the peers
@@ -612,11 +624,11 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	 * @return
 	 */
 	public boolean setDistributedObjectLocation( Int2D l, Object remoteValue ,SimState sm) throws DMasonException{
-		
-		
+
+
 		if(!(remoteValue instanceof Integer))
 			throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");
-		
+
 		int d = (Integer) remoteValue;
 
 		if(setValue(d, l)) return true;
@@ -892,14 +904,14 @@ public class DIntGrid2DXY extends DIntGrid2D {
 		if(x>(width-1)) x--;
 		int y=(((DistributedState)sm).random.nextInt(height)%(my_height-1))+own_y;
 		if(y>(height-1)) y--;
-*/
+		 */
 		//rm.setPos(new Int2D(x, y));
 
 		Integer shiftx=((DistributedState)sm).random.nextInt();
 		Integer shifty=((DistributedState)sm).random.nextInt();
 		int x= ((own_x+AOI)+((my_width-(2*AOI)))*shiftx);	
 		int y= ((own_y+AOI)+((my_height-(2*AOI)))*shifty);
-		
+
 		return (new Int2D(x, y));
 	}
 
@@ -918,7 +930,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	}
 
 
-	
+
 
 	@Override
 	public UpdateMap getUpdates() {
@@ -926,7 +938,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 		return updates;
 	}
 
-	
+
 
 
 
@@ -937,25 +949,25 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	}
 	@Override
 	public boolean verifyPosition(Int2D pos) {
-		
+
 		return (rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(pos.x,pos.y))||
-				
+
 				(rmap.NORTH_EAST_MINE!=null && rmap.NORTH_EAST_MINE.isMine(pos.x,pos.y))
 				||
-					(rmap.SOUTH_WEST_MINE!=null && rmap.SOUTH_WEST_MINE.isMine(pos.x,pos.y))
-					||(rmap.SOUTH_EAST_MINE!=null && rmap.SOUTH_EAST_MINE.isMine(pos.x,pos.y))
-						||(rmap.WEST_MINE != null && rmap.WEST_MINE.isMine(pos.x,pos.y))
-							||(rmap.EAST_MINE != null && rmap.EAST_MINE.isMine(pos.x,pos.y))
-								||(rmap.NORTH_MINE != null && rmap.NORTH_MINE.isMine(pos.x,pos.y))
-									||(rmap.SOUTH_MINE != null && rmap.SOUTH_MINE.isMine(pos.x,pos.y))
-										||(myfield.isMine(pos.x,pos.y));
+				(rmap.SOUTH_WEST_MINE!=null && rmap.SOUTH_WEST_MINE.isMine(pos.x,pos.y))
+				||(rmap.SOUTH_EAST_MINE!=null && rmap.SOUTH_EAST_MINE.isMine(pos.x,pos.y))
+				||(rmap.WEST_MINE != null && rmap.WEST_MINE.isMine(pos.x,pos.y))
+				||(rmap.EAST_MINE != null && rmap.EAST_MINE.isMine(pos.x,pos.y))
+				||(rmap.NORTH_MINE != null && rmap.NORTH_MINE.isMine(pos.x,pos.y))
+				||(rmap.SOUTH_MINE != null && rmap.SOUTH_MINE.isMine(pos.x,pos.y))
+				||(myfield.isMine(pos.x,pos.y));
 
 	}
 
 
 	@Override
 	public String getDistributedFieldID() {
-		
+
 		return name;
 	}
 }

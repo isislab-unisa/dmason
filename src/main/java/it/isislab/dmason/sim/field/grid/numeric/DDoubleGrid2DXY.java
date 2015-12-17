@@ -247,8 +247,6 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		else
 			own_y=(int)Math.floor(height/rows+1)*((height%rows))+(int)Math.floor(height/rows)*(cellType.pos_i-((height%rows))); 
 
-		System.out.println("x "+own_x+" y "+own_y);
-
 		// own width and height
 		if(cellType.pos_j<(width%columns))
 			my_width=(int) Math.floor(width/columns+1);
@@ -330,7 +328,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 
 			else if(cellType.pos_j==0){
 				numNeighbors = 1;
-				rmap.EAST_OUT=new RegionDoubleNumeric(own_x+my_width,own_y,own_x+my_width,own_y+my_height);
+				rmap.EAST_OUT=new RegionDoubleNumeric(own_x+my_width,own_y,own_x+my_width+AOI,own_y+my_height);
 			}	
 
 
@@ -338,7 +336,20 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 				numNeighbors = 1;
 				rmap.WEST_OUT=new RegionDoubleNumeric(own_x-AOI,own_y,own_x, own_y+my_height);
 			}
-		}else{ //sqare partitioning 
+		}else 
+			if(rows>1 && columns == 1){ // Horizontal partitionig
+				numNeighbors =2;
+				rmap.NORTH_OUT=new RegionDoubleNumeric(own_x, own_y - AOI,	own_x+ my_width,own_y);
+				rmap.SOUTH_OUT=new RegionDoubleNumeric(own_x,own_y+my_height,own_x+my_width, own_y+my_height+AOI);
+				if(cellType.pos_i == 0){
+					numNeighbors =1;
+					rmap.NORTH_OUT = null;
+				}
+				if(cellType.pos_i == rows-1){
+					numNeighbors =1;
+					rmap.SOUTH_OUT= null;
+				}
+			}else{ //sqare partitioning 
 
 			/*
 			 * In this case we use a different approach: Firt we make all ghost sections, after that
@@ -348,15 +359,15 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 			numNeighbors = 8;
 			//corner up left
 			rmap.NORTH_WEST_OUT=new RegionDoubleNumeric(own_x-AOI, own_y-AOI,own_x, own_y);
-			
+
 
 			//corner up right
 			rmap.NORTH_EAST_OUT = new RegionDoubleNumeric(own_x+my_width,own_y-AOI,own_x+my_width+AOI,own_y);
-		
+
 
 			//corner down left
 			rmap.SOUTH_WEST_OUT=new RegionDoubleNumeric(own_x-AOI, own_y+my_height,own_x,own_y+my_height+AOI);
-			
+
 			rmap.NORTH_OUT=new RegionDoubleNumeric(own_x, own_y - AOI,	own_x+ my_width,own_y);
 
 			//corner down right
@@ -365,7 +376,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 			rmap.SOUTH_OUT=new RegionDoubleNumeric(own_x,own_y+my_height,own_x+my_width, own_y+my_height+AOI);
 
 			rmap.WEST_OUT=new RegionDoubleNumeric(own_x-AOI,own_y,own_x, own_y+my_height);
-		
+
 
 			rmap.EAST_OUT=new RegionDoubleNumeric(own_x+my_width,own_y,own_x+my_width+AOI,own_y+my_height);
 
@@ -443,7 +454,6 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 
 
 		rmap.SOUTH_MINE=new RegionDoubleNumeric(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
-		System.out.println(cellType+"] "+rmap);
 		//if square partitioning
 		if(rows>1){
 			numNeighbors = 8;
@@ -478,7 +488,6 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		else{
 			String errorMessage = String.format("Unable to set value on position (%d, %d): out of boundaries on cell %s. (ex OH MY GOD!)",
 					l.x, l.y, cellType);
-
 			logger.severe( errorMessage ); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
 
 		}
@@ -806,14 +815,16 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	 */
 	private boolean setValue(double value, Int2D l){
 
-
+		
 		if(rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(l.x,l.y))
 		{
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
+			
+
 			rmap.NORTH_WEST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 			rmap.WEST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
-			myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
+			myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));	
 			return rmap.NORTH_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 		}
 		else
@@ -821,6 +832,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 			{
 				if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 					tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
+				
 				rmap.NORTH_EAST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 				rmap.EAST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 				myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
@@ -831,6 +843,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 				{
 					if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 						tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
+					
 					rmap.SOUTH_WEST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 					rmap.WEST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 					myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
@@ -841,6 +854,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 					{
 						if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 							tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
+						
 						rmap.SOUTH_EAST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 						rmap.EAST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 						myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
@@ -851,6 +865,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 						{
 							if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 								tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
+							
 							myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 							return rmap.WEST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 						}
@@ -859,6 +874,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 							{
 								if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 									tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
+								
 								myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 								return rmap.EAST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 							}
@@ -867,6 +883,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 								{
 									if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 										tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
+									
 									myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 									return rmap.NORTH_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 								}
@@ -875,6 +892,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 									{
 										if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 											tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
+										
 										myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 										return rmap.SOUTH_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 									}
@@ -883,14 +901,15 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 										{
 											if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 												tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
+											
 											return myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 										}
 										else
 											if(rmap.WEST_OUT!=null && rmap.WEST_OUT.isMine(l.x,l.y)) 
 												return rmap.WEST_OUT.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 											else
-												if(rmap.EAST_OUT!=null && rmap.EAST_OUT.isMine(l.x,l.y)) 
-													return rmap.EAST_OUT.addEntryNum(new EntryNum<Double,Int2D>(value, l));
+												if(rmap.EAST_OUT!=null && rmap.EAST_OUT.isMine(l.x,l.y))
+													return rmap.EAST_OUT.addEntryNum(new EntryNum<Double,Int2D>(value, l));	
 												else
 													if(rmap.NORTH_OUT!=null && rmap.NORTH_OUT.isMine(l.x,l.y))
 														return rmap.NORTH_OUT.addEntryNum(new EntryNum<Double,Int2D>(value, l));
@@ -909,6 +928,8 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 																	else
 																		if(rmap.SOUTH_EAST_OUT!=null && rmap.SOUTH_EAST_OUT.isMine(l.x,l.y))
 																			return rmap.SOUTH_EAST_OUT.addEntryNum(new EntryNum<Double,Int2D>(value, l));
+
+
 
 
 		return false;	       			       			

@@ -25,6 +25,7 @@ import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.TraceableField;
 import it.isislab.dmason.sim.field.continuous.region.RegionDouble;
+import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegion;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
@@ -285,55 +286,194 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		
 		
 		
-		if(isToroidal()){
-
-			myfield=new RegionDouble(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
-			
-
-			//corner up left
-			rmap.NORTH_WEST_OUT=new RegionDouble((own_x-AOI + width)%width, (own_y-AOI+height)%height, 
-					(own_x+width)%width==0?width:(own_x+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
-			rmap.NORTH_WEST_MINE=new RegionDouble(own_x, own_y, own_x+AOI, own_y+AOI);
-
-			//corner up right
-			rmap.NORTH_EAST_OUT = new RegionDouble((own_x+my_width+width)%width, (own_y-AOI+height)%height,
-					(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
-			rmap.NORTH_EAST_MINE=new RegionDouble(own_x+my_width-AOI, own_y, own_x+my_width, own_y+AOI);
-
-			//corner down left
-			rmap.SOUTH_WEST_OUT=new RegionDouble((own_x-AOI+width)%width, (own_y+my_height+height)%height,
-					(own_x+width)%width==0?width:(own_x+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
-			rmap.SOUTH_WEST_MINE=new RegionDouble(own_x, own_y+my_height-AOI,own_x+AOI, own_y+my_height);
-
-			//corner down right
-			rmap.SOUTH_EAST_OUT=new RegionDouble((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
-					(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
-			rmap.SOUTH_EAST_MINE=new RegionDouble(own_x+my_width-AOI, own_y+my_height-AOI,own_x+my_width,own_y+my_height);
-
-			rmap.WEST_OUT=new RegionDouble((own_x-AOI+width)%width,(own_y+height)%height,
-					(own_x+width)%width==0?width:(own_x+width)%width, ((own_y+my_height)+height)%height==0?height:((own_y+my_height)+height)%height);
-			rmap.WEST_MINE=new RegionDouble(own_x,own_y,own_x + AOI , own_y+my_height);
-
-			rmap.EAST_OUT=new RegionDouble((own_x+my_width+width)%width,(own_y+height)%height,
-					(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height==0?height:(own_y+my_height+height)%height);
-			rmap.EAST_MINE=new RegionDouble(own_x + my_width - AOI,own_y,own_x +my_width , own_y+my_height);
-
-
-			rmap.NORTH_MINE=new RegionDouble(own_x ,own_y,own_x+my_width, own_y + AOI);
-
-
-			rmap.SOUTH_MINE=new RegionDouble(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
-
-			//if square partitioning
-			if(rows>1){
-				rmap.NORTH_OUT=new RegionDouble((own_x+width)%width, (own_y - AOI+height)%height,
-						(own_x+ my_width +width)%width==0?width:(own_x+ my_width +width)%width,(own_y+height)%height==0?height:(own_y+height)%height);
-
-				rmap.SOUTH_OUT=new RegionDouble((own_x+width)%width,(own_y+my_height+height)%height,
-						(own_x+my_width+width)%width==0?width:(own_x+my_width+width)%width, (own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
-			}
-		}
+		if(isToroidal())
+			makeToroidalSections();
+		else
+			makeNoToroidalSections();
+		
 		return true;
+	}
+
+	private void makeToroidalSections() {
+		myfield=new RegionDouble(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
+		
+
+		//corner up left
+		rmap.NORTH_WEST_OUT=new RegionDouble((own_x-AOI + width)%width, (own_y-AOI+height)%height, 
+				(own_x+width)%width==0?width:(own_x+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
+		rmap.NORTH_WEST_MINE=new RegionDouble(own_x, own_y, own_x+AOI, own_y+AOI);
+
+		//corner up right
+		rmap.NORTH_EAST_OUT = new RegionDouble((own_x+my_width+width)%width, (own_y-AOI+height)%height,
+				(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+height)%height==0?height:(own_y+height)%height);
+		rmap.NORTH_EAST_MINE=new RegionDouble(own_x+my_width-AOI, own_y, own_x+my_width, own_y+AOI);
+
+		//corner down left
+		rmap.SOUTH_WEST_OUT=new RegionDouble((own_x-AOI+width)%width, (own_y+my_height+height)%height,
+				(own_x+width)%width==0?width:(own_x+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+		rmap.SOUTH_WEST_MINE=new RegionDouble(own_x, own_y+my_height-AOI,own_x+AOI, own_y+my_height);
+
+		//corner down right
+		rmap.SOUTH_EAST_OUT=new RegionDouble((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
+				(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width,(own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+		rmap.SOUTH_EAST_MINE=new RegionDouble(own_x+my_width-AOI, own_y+my_height-AOI,own_x+my_width,own_y+my_height);
+
+		rmap.WEST_OUT=new RegionDouble((own_x-AOI+width)%width,(own_y+height)%height,
+				(own_x+width)%width==0?width:(own_x+width)%width, ((own_y+my_height)+height)%height==0?height:((own_y+my_height)+height)%height);
+		rmap.WEST_MINE=new RegionDouble(own_x,own_y,own_x + AOI , own_y+my_height);
+
+		rmap.EAST_OUT=new RegionDouble((own_x+my_width+width)%width,(own_y+height)%height,
+				(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height==0?height:(own_y+my_height+height)%height);
+		rmap.EAST_MINE=new RegionDouble(own_x + my_width - AOI,own_y,own_x +my_width , own_y+my_height);
+
+
+		rmap.NORTH_MINE=new RegionDouble(own_x ,own_y,own_x+my_width, own_y + AOI);
+
+
+		rmap.SOUTH_MINE=new RegionDouble(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
+
+		//if square partitioning
+		if(rows>1){
+			rmap.NORTH_OUT=new RegionDouble((own_x+width)%width, (own_y - AOI+height)%height,
+					(own_x+ my_width +width)%width==0?width:(own_x+ my_width +width)%width,(own_y+height)%height==0?height:(own_y+height)%height);
+
+			rmap.SOUTH_OUT=new RegionDouble((own_x+width)%width,(own_y+my_height+height)%height,
+					(own_x+my_width+width)%width==0?width:(own_x+my_width+width)%width, (own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
+		}
+	}
+	
+	
+	private void makeNoToroidalSections() {
+
+		myfield=new RegionDouble(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
+
+		//corner up left
+
+		rmap.NORTH_WEST_MINE=new RegionDouble(own_x, own_y, own_x+AOI, own_y+AOI);
+
+		//corner up right
+
+		rmap.NORTH_EAST_MINE=new RegionDouble(own_x+my_width-AOI, own_y, own_x+my_width, own_y+AOI);
+
+		//corner down left
+
+		rmap.SOUTH_WEST_MINE=new RegionDouble(own_x, own_y+my_height-AOI,own_x+AOI, own_y+my_height);
+
+		//corner down right
+
+		rmap.SOUTH_EAST_MINE=new RegionDouble(own_x+my_width-AOI, own_y+my_height-AOI,own_x+my_width,own_y+my_height);
+
+		rmap.WEST_MINE=new RegionDouble(own_x,own_y,own_x + AOI , own_y+my_height);
+
+
+		rmap.EAST_MINE=new RegionDouble(own_x + my_width - AOI,own_y,own_x +my_width , own_y+my_height);
+
+
+		rmap.NORTH_MINE=new RegionDouble(own_x ,own_y,own_x+my_width, own_y + AOI);
+
+
+		rmap.SOUTH_MINE=new RegionDouble(own_x,own_y+my_height-AOI,own_x+my_width, own_y+my_height);
+
+		//Vertical partitioning
+		if(rows==1){
+			numNeighbors = 2;
+			if(cellType.pos_j>0 && cellType.pos_j<columns-1){
+
+				rmap.WEST_OUT=new RegionDouble(own_x-AOI,own_y,own_x, own_y+my_height);
+
+				rmap.EAST_OUT=new RegionDouble(own_x+my_width,own_y,own_x+my_width+AOI,own_y+my_height);
+			}
+
+			else if(cellType.pos_j==0){
+				numNeighbors = 1;
+				rmap.EAST_OUT=new RegionDouble(own_x+my_width,own_y,own_x+my_width+AOI,own_y+my_height);
+			}	
+
+
+			else if(cellType.pos_j==columns-1){
+				numNeighbors = 1;
+				rmap.WEST_OUT=new RegionDouble(own_x-AOI,own_y,own_x, own_y+my_height);
+			}
+			
+		}else 
+			if(rows>1 && columns == 1){ // Horizontal partitionig
+				numNeighbors =2;
+				rmap.NORTH_OUT=new RegionDouble(own_x, own_y - AOI,	own_x+ my_width,own_y);
+				rmap.SOUTH_OUT=new RegionDouble(own_x,own_y+my_height,own_x+my_width, own_y+my_height+AOI);
+				if(cellType.pos_i == 0){
+					numNeighbors =1;
+					rmap.NORTH_OUT = null;
+				}
+				if(cellType.pos_i == rows-1){
+					numNeighbors =1;
+					rmap.SOUTH_OUT= null;
+				}
+			}
+			else{ //sqare partitioning 
+
+				/*
+				 * In this case we use a different approach: Firt we make all ghost sections, after that
+				 * we remove the useful ghost section
+				 * 
+				 * */
+				numNeighbors = 8;
+				//corner up left
+				rmap.NORTH_WEST_OUT=new RegionDouble(own_x-AOI, own_y-AOI,own_x, own_y);
+
+
+				//corner up right
+				rmap.NORTH_EAST_OUT = new RegionDouble(own_x+my_width,own_y-AOI,own_x+my_width+AOI,own_y);
+
+
+				//corner down left
+				rmap.SOUTH_WEST_OUT=new RegionDouble(own_x-AOI, own_y+my_height,own_x,own_y+my_height+AOI);
+
+				rmap.NORTH_OUT=new RegionDouble(own_x, own_y - AOI,	own_x+ my_width,own_y);
+
+				//corner down right
+				rmap.SOUTH_EAST_OUT=new RegionDouble(own_x+my_width, own_y+my_height,own_x+my_width+AOI,own_y+my_height+AOI);
+
+				rmap.SOUTH_OUT=new RegionDouble(own_x,own_y+my_height,own_x+my_width, own_y+my_height+AOI);
+
+				rmap.WEST_OUT=new RegionDouble(own_x-AOI,own_y,own_x, own_y+my_height);
+
+
+				rmap.EAST_OUT=new RegionDouble(own_x+my_width,own_y,own_x+my_width+AOI,own_y+my_height);
+
+				if(cellType.pos_i==0 ){
+					numNeighbors = 5;
+					rmap.NORTH_OUT = null;
+					rmap.NORTH_WEST_OUT = null;
+					rmap.NORTH_EAST_OUT = null;
+				}
+
+				if(cellType.pos_j == 0){
+					numNeighbors = 5;
+					rmap.SOUTH_WEST_OUT = null;
+					rmap.NORTH_WEST_OUT=null;
+					rmap.WEST_OUT = null;
+				}
+
+				if(cellType.pos_i == rows -1){
+					numNeighbors = 5;
+					rmap.SOUTH_WEST_OUT = null;
+					rmap.SOUTH_OUT = null;
+					rmap.SOUTH_EAST_OUT = null;
+				}
+
+				if(cellType.pos_j == columns -1){
+					numNeighbors = 5;
+					rmap.NORTH_EAST_OUT = null;
+					rmap.EAST_OUT = null;
+					rmap.SOUTH_EAST_OUT = null;
+				}
+
+				if((cellType.pos_i == 0 && cellType.pos_j == 0) || 
+						(cellType.pos_i == rows-1 && cellType.pos_j==0) || 
+						(cellType.pos_i == 0 && cellType.pos_j == columns -1) || 
+						(cellType.pos_i == rows-1 && cellType.pos_j == columns -1))
+					numNeighbors = 3;
+			}
 	}
 
 	/**
