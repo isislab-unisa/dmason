@@ -74,7 +74,7 @@ public final class DSparseGrid2DFactory
 		if(max_distance>=width ){throw new DMasonException(String.format("Illegal value : max_distance (%d) value exceded width(%d) value",max_distance,width));}
 		if(width<=0) {throw new DMasonException("Illegal value: Field width <= 0 is not defined");}
 		if(columns<=0 || rows <=0){throw new DMasonException("Illegal value : columns value and rows value must be greater than 0");}
-
+		if(rows==1 && columns==1){throw new DMasonException("Illegal value : field partitioning with one row and one column is not defined");}
 
 
 		if(MODE==DistributedField2D.SQUARE_DISTRIBUTION_MODE || MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE)
