@@ -33,7 +33,7 @@ public class RegionIntegerNumericTester {
 	public void setUp() throws Exception {
 		int widht=100;
 		int height=100;
-		rd = new RegionIntegerNumeric(0, 0, 100, 100,widht,height);
+		rd = new RegionIntegerNumeric(0, 0, 100, 100);
 		
 		loopTest = 10000;
 	}

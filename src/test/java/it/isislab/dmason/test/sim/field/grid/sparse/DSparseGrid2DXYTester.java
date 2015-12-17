@@ -132,19 +132,6 @@ public class DSparseGrid2DXYTester {
 			return null;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * it.isislab.dmason.sim.engine.DistributedState#setPortrayalForObject
-		 * (java.lang.Object)
-		 */
-		@Override
-		public boolean setPortrayalForObject(Object o) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
 	}
 
 	/**

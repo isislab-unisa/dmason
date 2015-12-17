@@ -41,7 +41,7 @@ public class RegionDoubleTester {
 	public void setUp() throws Exception {
 		width=100;
 		height=100;
-		rd = new RegionDouble(0.0, 0.0, 100.0, 100.0, width,height);
+		rd = new RegionDouble(0.0, 0.0, 100.0, 100.0);
 		loopTest = 10000;
 	}
 

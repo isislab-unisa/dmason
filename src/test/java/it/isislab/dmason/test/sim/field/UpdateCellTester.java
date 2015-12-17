@@ -54,11 +54,10 @@ public class UpdateCellTester {
 	@Before
 	public void setUp() throws Exception {
 		uc = new UpdateCell<Integer, Integer>();
-		Region<Integer, Integer> r = (Region) new RegionInteger(0, 0, 0, 0,
-				0, 0);
+		Region<Integer, Integer> r = (Region) new RegionInteger(0, 0, 0, 0);
 		myRMap = new RegionMap<Integer, Integer>(r, r, r, r, r, r, r, r, r, r,
 				r, r, r, r, r, r, r, r, r, r, r, r, r, r);
-		myField = new RegionInteger(0, 0, 0, 0, 0, 0);
+		myField = new RegionInteger(0, 0, 0, 0);
 		parentType = new CellType(0, 0);
 	}
 

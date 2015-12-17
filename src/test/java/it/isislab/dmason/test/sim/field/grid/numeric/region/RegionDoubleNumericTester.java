@@ -37,7 +37,7 @@ public class RegionDoubleNumericTester {
 	public void setUp() throws Exception {
 		int width=100;
 		int height=100;
-		rd = new RegionDoubleNumeric(0, 0, 100, 100,width,height);
+		rd = new RegionDoubleNumeric(0, 0, 100, 100);
 		
 		loopTest = 10000;
 	}
