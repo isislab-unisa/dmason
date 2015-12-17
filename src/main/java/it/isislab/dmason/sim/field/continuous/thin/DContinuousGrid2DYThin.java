@@ -202,7 +202,7 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 		this.field_width=field_width;
 		this.field_height=field_height;
 		this.sm = sm;		
-		this.jumpDistance = max_distance;
+		this.AOI = max_distance;
 		//this.numPeers = num_peers;	
 		this.rows = rows;
 		this.columns = columns;
@@ -265,39 +265,39 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 		writer = actualSnap.getRaster();
 
 		myfield = new RegionDouble(
-				own_x + jumpDistance,            // MyField's x0 coordinate
+				own_x + AOI,            // MyField's x0 coordinate
 				own_y,                           // MyField's y0 coordinate
-				own_x + my_width - jumpDistance, // MyField x1 coordinate
-				height,                          // MyField y1 coordinate
-				width, height);                  // Global width and height 
+				own_x + my_width - AOI, // MyField x1 coordinate
+				height                          // MyField y1 coordinate
+				);                  // Global width and height 
 
 		rmap.WEST_OUT = new RegionDouble(
-				(own_x - jumpDistance + width) % width, // Left-out x0
+				(own_x - AOI + width) % width, // Left-out x0
 				0.0,									// Left-out y0
 				(own_x + width) % (width),				// Left-out x1
-				height,									// Left-out y1
-				width, height);
+				height									// Left-out y1
+				);
 
 		rmap.WEST_MINE = new RegionDouble(
 				(own_x + width) % width,				// Left-mine x0
 				0.0,									// Left-mine y0
-				(own_x + jumpDistance + width) % width,	// Left-mine x1
-				height,									// Left-mine y1
-				width, height);
+				(own_x + AOI + width) % width,	// Left-mine x1
+				height									// Left-mine y1
+				);
 
 		rmap.EAST_OUT = new RegionDouble(
 				(own_x + my_width + width) % width,                // Right-out x0
 				0.0,                                               // Right-out y0
-				(own_x + my_width + jumpDistance + width) % width, // Right-out x1
-				height,                                            // Right-out y1
-				width, height);
+				(own_x + my_width + AOI + width) % width, // Right-out x1
+				height                                            // Right-out y1
+				);
 
 		rmap.EAST_MINE = new RegionDouble(
-				(own_x + my_width - jumpDistance + width) % width, // Right-mine x0
+				(own_x + my_width - AOI + width) % width, // Right-mine x0
 				0.0,											   // Right-mine y0
 				(own_x + my_width + width) % width,                // Right-mine x1
-				height,                                            // Right-mine y1
-				width, height);
+				height                                            // Right-mine y1
+				);
 
 		return true;
 	}
@@ -312,8 +312,8 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 	{		
 		double shiftx=((DistributedState)sm).random.nextDouble();
 		double shifty=((DistributedState)sm).random.nextDouble();
-		double x=(own_x+jumpDistance)+((my_width+own_x-jumpDistance)-(own_x+jumpDistance))*shiftx;
-		double y=(own_y+jumpDistance)+((my_height+own_y-jumpDistance)-(own_y+jumpDistance))*shifty;
+		double x=(own_x+AOI)+((my_width+own_x-AOI)-(own_x+AOI))*shiftx;
+		double y=(own_y+AOI)+((my_height+own_y-AOI)-(own_y+AOI))*shifty;
 
 		// rm.setPos(new Double2D(x,y));
 
@@ -558,7 +558,7 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 			RemotePositionedAgent<Double2D> rm=e_m.r;
 			((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
 			rm.setPos(e_m.l);
-			setPortrayalForObject(rm);
+		//	setPortrayalForObject(rm);
 			sm.schedule.scheduleOnce(rm);
 		}
 		updates_cache.add(r_out);
@@ -594,16 +594,6 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 		}	     
 	}
 
-	@Override
-	public boolean setPortrayalForObject(Object o) 
-	{
-		if(p!=null)
-		{
-			((DistributedState<Double2D>)sm).setPortrayalForObject(o);
-			return true;
-		}
-		return false;
-	}
 	/**
 	 * This method, written with Java Reflect, follows two logical ways for all the regions:
 	 * - if a region is an out one, the agent's location is updated and it's insert a new Entry 
@@ -695,8 +685,8 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 							{
 								writer.setPixel((int)(location.x%my_width), (int)(location.y%my_height), white);
 							}
-							myfield.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance, location.y)));
-							return region.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*jumpDistance,location.y)));
+							myfield.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*AOI, location.y)));
+							return region.addAgents(new EntryAgent<Double2D>(rm, new Double2D(location.x-own_x+2*AOI,location.y)));
 
 						}
 						if(name.contains("out"))
@@ -774,7 +764,7 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 			conn.setTable(table);
 	}
 	@Override
-	public String getID() {
+	public String getDistributedFieldID() {
 		// TODO Auto-generated method stub
 		return name;
 	}
@@ -784,7 +774,7 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 		return updates;
 	}
 
-	@Override
+	
 	public void resetParameters() {
 		numAgents=0;
 	}
@@ -793,30 +783,30 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 	@Override
 	public Double2D getObjectLocationThin(Object obj) {
 		Double2D loc=super.getObjectLocation(obj);
-		return new Double2D(loc.x+own_x-2*jumpDistance,loc.y);
+		return new Double2D(loc.x+own_x-2*AOI,loc.y);
 	}
 
 	@Override
 	public Double2D getObjectLocationAsDouble2DThin(Object obj) {
 		Double2D loc=super.getObjectLocationAsDouble2D(obj);
-		return new Double2D(loc.x+own_x-2*jumpDistance,loc.y);
+		return new Double2D(loc.x+own_x-2*AOI,loc.y);
 	}
 
 	@Override
 	public boolean setObjectLocationThin(Object obj, Double2D location) {
-		Double2D loc=new Double2D(location.x-own_x+2*jumpDistance,location.y);
+		Double2D loc=new Double2D(location.x-own_x+2*AOI,location.y);
 		return super.setObjectLocation(obj, loc);
 	}
 
 	@Override
 	public Bag getRawObjectsAtLocationThin(MutableInt2D loc) {
-		int ownD= (int)((own_x+2*jumpDistance) / discretization);
+		int ownD= (int)((own_x+2*AOI) / discretization);
 		return super.getRawObjectsAtLocation(new Double2D((loc.x-ownD), loc.y));
 	}
 
 	@Override
 	public Bag getRawObjectsAtLocationThin(Int2D loc) {
-		int ownD= (int)((own_x+2*jumpDistance) / discretization);
+		int ownD= (int)((own_x+2*AOI) / discretization);
 		return super.getRawObjectsAtLocation(new Double2D((loc.x-ownD), loc.y));
 	}
 

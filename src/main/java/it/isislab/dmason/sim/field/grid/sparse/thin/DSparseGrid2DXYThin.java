@@ -183,7 +183,7 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 	 * @param width field's width  
 	 * @param height field's height
 	 * @param sm The SimState of simulation
-	 * @param jumpDistance maximum shift distance of the agents
+	 * @param AOI maximum shift distance of the agents
 	 * @param i i position in the field of the cell
 	 * @param j j position in the field of the cell
 	 * @param rows number of rows in the division
@@ -201,7 +201,7 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 		this.NAME = name;
 		this.sm=sm;
 		cellType = new CellType(i, j);
-		jumpDistance=max_distance;
+		this.AOI=max_distance;
 		//NUMPEERS=num_peers;
 		this.rows = rows;
 		this.columns = columns;
@@ -273,51 +273,51 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 
 		// Building the regions
 
-		myfield=new RegionInteger(own_x+jumpDistance,own_y+jumpDistance, own_x+my_width-jumpDistance , own_y+my_height-jumpDistance,width,height);
+		myfield=new RegionInteger(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
 
 		//corner up left
-		rmap.NORTH_WEST_OUT=new RegionInteger((own_x-jumpDistance + width)%width, (own_y-jumpDistance+height)%height, 
-				(own_x+width)%width, (own_y+height)%height,width,height);
+		rmap.NORTH_WEST_OUT=new RegionInteger((own_x-AOI + width)%width, (own_y-AOI+height)%height, 
+				(own_x+width)%width, (own_y+height)%height);
 		rmap.NORTH_WEST_MINE=new RegionInteger(own_x, own_y, 
-				own_x+jumpDistance, own_y+jumpDistance,width,height);
+				own_x+AOI, own_y+AOI);
 
 		//corner up right
-		rmap.NORTH_EAST_OUT = new RegionInteger((own_x+my_width+width)%width, (own_y-jumpDistance+height)%height,
-				(own_x+my_width+jumpDistance+width)%width, (own_y+height)%height,width,height);
-		rmap.NORTH_EAST_MINE=new RegionInteger(own_x+my_width-jumpDistance, own_y, 
-				own_x+my_width, own_y+jumpDistance,width,height);
+		rmap.NORTH_EAST_OUT = new RegionInteger((own_x+my_width+width)%width, (own_y-AOI+height)%height,
+				(own_x+my_width+AOI+width)%width, (own_y+height)%height);
+		rmap.NORTH_EAST_MINE=new RegionInteger(own_x+my_width-AOI, own_y, 
+				own_x+my_width, own_y+AOI);
 
 		//corner down left
-		rmap.SOUTH_WEST_OUT=new RegionInteger((own_x-jumpDistance+width)%width, (own_y+my_height+height)%height,
-				(own_x+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
-		rmap.SOUTH_WEST_MINE=new RegionInteger(own_x, own_y+my_height-jumpDistance,
-				own_x+jumpDistance, own_y+my_height,width,height);
+		rmap.SOUTH_WEST_OUT=new RegionInteger((own_x-AOI+width)%width, (own_y+my_height+height)%height,
+				(own_x+width)%width,(own_y+my_height+AOI+height)%height);
+		rmap.SOUTH_WEST_MINE=new RegionInteger(own_x, own_y+my_height-AOI,
+				own_x+AOI, own_y+my_height);
 
 		//corner down right
 		rmap.SOUTH_EAST_OUT=new RegionInteger((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
-				(own_x+my_width+jumpDistance+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
-		rmap.SOUTH_EAST_MINE=new RegionInteger(own_x+my_width-jumpDistance, own_y+my_height-jumpDistance,
-				own_x+my_width,own_y+my_height,width,height);
+				(own_x+my_width+AOI+width)%width,(own_y+my_height+AOI+height)%height);
+		rmap.SOUTH_EAST_MINE=new RegionInteger(own_x+my_width-AOI, own_y+my_height-AOI,
+				own_x+my_width,own_y+my_height);
 
-		rmap.WEST_OUT=new RegionInteger((own_x-jumpDistance+width)%width,(own_y+height)%height,
-				(own_x+width)%width, ((own_y+my_height)+height)%height,width,height);
+		rmap.WEST_OUT=new RegionInteger((own_x-AOI+width)%width,(own_y+height)%height,
+				(own_x+width)%width, ((own_y+my_height)+height)%height);
 		rmap.WEST_MINE=new RegionInteger(own_x,own_y,
-				own_x + jumpDistance , own_y+my_height,width,height);
+				own_x + AOI , own_y+my_height);
 
 		rmap.EAST_OUT=new RegionInteger((own_x+my_width+width)%width,(own_y+height)%height,
-				(own_x+my_width+jumpDistance+width)%width, (own_y+my_height+height)%height,width,height);
-		rmap.EAST_MINE=new RegionInteger(own_x + my_width - jumpDistance,own_y,
-				own_x +my_width , own_y+my_height,width,height);
+				(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height);
+		rmap.EAST_MINE=new RegionInteger(own_x + my_width - AOI,own_y,
+				own_x +my_width , own_y+my_height);
 
-		rmap.NORTH_OUT=new RegionInteger((own_x+width)%width, (own_y - jumpDistance+height)%height,
-				(own_x+ my_width +width)%width,(own_y+height)%height,width,height);
+		rmap.NORTH_OUT=new RegionInteger((own_x+width)%width, (own_y - AOI+height)%height,
+				(own_x+ my_width +width)%width,(own_y+height)%height);
 		rmap.NORTH_MINE=new RegionInteger(own_x ,own_y,
-				own_x+my_width, own_y + jumpDistance ,width,height);
+				own_x+my_width, own_y + AOI );
 
 		rmap.SOUTH_OUT=new RegionInteger((own_x+width)%width,(own_y+my_height+height)%height,
-				(own_x+my_width+width)%width, (own_y+my_height+jumpDistance+height)%height,width,height);
-		rmap.SOUTH_MINE=new RegionInteger(own_x,own_y+my_height-jumpDistance,
-				own_x+my_width, (own_y+my_height),width,height);
+				(own_x+my_width+width)%width, (own_y+my_height+AOI+height)%height);
+		rmap.SOUTH_MINE=new RegionInteger(own_x,own_y+my_height-AOI,
+				own_x+my_width, (own_y+my_height));
 
 		return true;
 		/*//upper left corner's coordinates
@@ -1166,10 +1166,10 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 			if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 				GlobalInspectorHelper.updateBitmap(actualSnap, rm, location, own_x, own_y);
 
-			rmap.NORTH_WEST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-			rmap.WEST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-			myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));	
-			return rmap.NORTH_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+			rmap.NORTH_WEST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
+			rmap.WEST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
+			myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));	
+			return rmap.NORTH_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
 		}
 		else
 			if(rmap.NORTH_EAST_MINE!=null && rmap.NORTH_EAST_MINE.isMine(location.x,location.y))
@@ -1178,10 +1178,10 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 					tmp_zoom.add(rm);
 				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 					GlobalInspectorHelper.updateBitmap(actualSnap, rm, location, own_x, own_y);
-				rmap.NORTH_EAST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-				rmap.EAST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-				myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-				return rmap.NORTH_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+				rmap.NORTH_EAST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
+				rmap.EAST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
+				myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
+				return rmap.NORTH_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
 			}
 			else
 				if(rmap.SOUTH_WEST_MINE!=null && rmap.SOUTH_WEST_MINE.isMine(location.x,location.y))
@@ -1190,10 +1190,10 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 						tmp_zoom.add(rm);
 					if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 						GlobalInspectorHelper.updateBitmap(actualSnap, rm, location, own_x, own_y);
-					rmap.SOUTH_WEST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-					rmap.WEST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-					myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-					return rmap.SOUTH_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+					rmap.SOUTH_WEST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
+					rmap.WEST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
+					myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
+					return rmap.SOUTH_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
 				}
 				else
 					if(rmap.SOUTH_EAST_MINE!=null && rmap.SOUTH_EAST_MINE.isMine(location.x,location.y))
@@ -1202,10 +1202,10 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 							tmp_zoom.add(rm);
 						if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 							GlobalInspectorHelper.updateBitmap(actualSnap, rm, location, own_x, own_y);
-						rmap.SOUTH_EAST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-						rmap.EAST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-						myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-						return rmap.SOUTH_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+						rmap.SOUTH_EAST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
+						rmap.EAST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
+						myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
+						return rmap.SOUTH_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
 					}
 					else
 						if(rmap.WEST_MINE != null && rmap.WEST_MINE.isMine(location.x,location.y))
@@ -1214,8 +1214,8 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 								tmp_zoom.add(rm);
 							if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 								GlobalInspectorHelper.updateBitmap(actualSnap, rm, location, own_x, own_y);
-							myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-							return rmap.WEST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+							myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
+							return rmap.WEST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
 						}
 						else
 							if(rmap.EAST_MINE != null && rmap.EAST_MINE.isMine(location.x,location.y))
@@ -1224,8 +1224,8 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 									tmp_zoom.add(rm);
 								if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 									GlobalInspectorHelper.updateBitmap(actualSnap, rm, location, own_x, own_y);
-								myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-								return rmap.EAST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+								myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
+								return rmap.EAST_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
 							}
 							else
 								if(rmap.NORTH_MINE != null && rmap.NORTH_MINE.isMine(location.x,location.y))
@@ -1234,8 +1234,8 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 										tmp_zoom.add(rm);
 									if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 										GlobalInspectorHelper.updateBitmap(actualSnap, rm, location, own_x, own_y);
-									myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-									return rmap.NORTH_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+									myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
+									return rmap.NORTH_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
 								}
 								else
 									if(rmap.SOUTH_MINE != null && rmap.SOUTH_MINE.isMine(location.x,location.y))
@@ -1244,8 +1244,8 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 											tmp_zoom.add(rm);
 										if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 											GlobalInspectorHelper.updateBitmap(actualSnap, rm, location, own_x, own_y);
-										myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
-										return rmap.SOUTH_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+										myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
+										return rmap.SOUTH_MINE.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
 									}
 									else
 										if(myfield.isMine(location.x,location.y))
@@ -1254,7 +1254,7 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 												tmp_zoom.add(rm);
 											if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 												GlobalInspectorHelper.updateBitmap(actualSnap, rm, location, own_x, own_y);
-											return myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance)));
+											return myfield.addAgents(new EntryAgent<Int2D>(rm, new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI)));
 										}
 										else
 											if(rmap.WEST_OUT!=null && rmap.WEST_OUT.isMine(location.x,location.y)) 
@@ -1343,7 +1343,7 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 	}
 
 	@Override
-	public String getID() {
+	public String getDistributedFieldID() {
 		// TODO Auto-generated method stub
 		return NAME;
 	}
@@ -1354,7 +1354,7 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 		return updates;
 	}
 
-	@Override
+
 	public void resetParameters() {
 		numAgents=0;
 	}
@@ -1383,14 +1383,14 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 	@Override
 	public int numObjectsAtLocationThin(final int x, final int y)
 	{
-		MutableInt2D speedyMutableInt2D = new MutableInt2D(x-own_x+2*jumpDistance, y-own_y+2*jumpDistance);
+		MutableInt2D speedyMutableInt2D = new MutableInt2D(x-own_x+2*AOI, y-own_y+2*AOI);
 		return numObjectsAtLocation(speedyMutableInt2D);
 	}
 
 	@Override
 	public Bag getObjectsAtLocationThin(final int x, final int y)
 	{
-		MutableInt2D speedyMutableInt2D = new MutableInt2D(x-own_x+2*jumpDistance, y-own_y+2*jumpDistance);
+		MutableInt2D speedyMutableInt2D = new MutableInt2D(x-own_x+2*AOI, y-own_y+2*AOI);
 		return super.getObjectsAtLocation(speedyMutableInt2D);
 	}
 
@@ -1399,21 +1399,21 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 	{
 		Int2D loc = (Int2D) super.getRawObjectLocation(obj);
 		if (loc == null) return null;
-		return new Double2D(loc.x+own_x-2*jumpDistance,loc.y+own_y-2*jumpDistance);
+		return new Double2D(loc.x+own_x-2*AOI,loc.y+own_y-2*AOI);
 	}
 
 	@Override
 	public Int2D getObjectLocationThin(Object obj)
 	{
 		Int2D loc=(Int2D)super.getRawObjectLocation(obj);
-		return new Int2D(loc.x+own_x-2*jumpDistance,loc.y+own_y-2*jumpDistance);
+		return new Int2D(loc.x+own_x-2*AOI,loc.y+own_y-2*AOI);
 	}
 
 
 	@Override
 	public Bag removeObjectsAtLocationThin(final int x, final int y)
 	{
-		MutableInt2D speedyMutableInt2D = new MutableInt2D(x-own_x+2*jumpDistance, y-own_y+2*jumpDistance);
+		MutableInt2D speedyMutableInt2D = new MutableInt2D(x-own_x+2*AOI, y-own_y+2*AOI);
 		return removeObjectsAtLocation(speedyMutableInt2D);
 	}
 
@@ -1421,7 +1421,7 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 	@Override
 	public boolean setObjectLocationThin(final Object obj, final int x, final int y)
 	{
-		Int2D loc=new Int2D(x-own_x+2*jumpDistance,y-own_y+2*jumpDistance);
+		Int2D loc=new Int2D(x-own_x+2*AOI,y-own_y+2*AOI);
 		return super.setObjectLocation(obj, x,y);	  
 	}
 
@@ -1429,7 +1429,7 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 	@Override
 	public boolean setObjectLocationThin(Object obj, final Int2D location)
 	{
-		Int2D loc=new Int2D(location.x-own_x+2*jumpDistance,location.y-own_y+2*jumpDistance);
+		Int2D loc=new Int2D(location.x-own_x+2*AOI,location.y-own_y+2*AOI);
 		return super.setObjectLocation(obj, loc.x,loc.y);
 	}
 
@@ -1446,4 +1446,7 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 		return false;
 
 	}
+
+
+
 }

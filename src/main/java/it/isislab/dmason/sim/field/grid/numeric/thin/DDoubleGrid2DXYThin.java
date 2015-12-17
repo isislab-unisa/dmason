@@ -157,7 +157,7 @@ public class DDoubleGrid2DXYThin extends DDoubleGrid2DThin {
 		this.NAME = name;
 		this.sm=sm;		 
 		
-		jumpDistance=max_distance;
+		AOI=max_distance;
 		//NUMPEERS=num_peers;	
 		this.rows = rows;
 		this.columns = columns;
@@ -238,51 +238,51 @@ public class DDoubleGrid2DXYThin extends DDoubleGrid2DThin {
 */
 		// Building the regions
 
-		myfield=new RegionDoubleNumeric(own_x+jumpDistance,own_y+jumpDistance, own_x+my_width-jumpDistance , own_y+my_height-jumpDistance,width,height);
+		myfield=new RegionDoubleNumeric(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
 
 		//corner up left
-		rmap.NORTH_WEST_OUT=new RegionDoubleNumeric((own_x-jumpDistance + width)%width, (own_y-jumpDistance+height)%height, 
-				(own_x+width)%width, (own_y+height)%height,width,height);
+		rmap.NORTH_WEST_OUT=new RegionDoubleNumeric((own_x-AOI + width)%width, (own_y-AOI+height)%height, 
+				(own_x+width)%width, (own_y+height)%height);
 		rmap.NORTH_WEST_MINE=new RegionDoubleNumeric(own_x, own_y, 
-				own_x+jumpDistance, own_y+jumpDistance,width,height);
+				own_x+AOI, own_y+AOI);
 
 		//corner up right
-		rmap.NORTH_EAST_OUT = new RegionDoubleNumeric((own_x+my_width+width)%width, (own_y-jumpDistance+height)%height,
-				(own_x+my_width+jumpDistance+width)%width, (own_y+height)%height,width,height);
-		rmap.NORTH_EAST_MINE=new RegionDoubleNumeric(own_x+my_width-jumpDistance, own_y, 
-				own_x+my_width, own_y+jumpDistance,width,height);
+		rmap.NORTH_EAST_OUT = new RegionDoubleNumeric((own_x+my_width+width)%width, (own_y-AOI+height)%height,
+				(own_x+my_width+AOI+width)%width, (own_y+height)%height);
+		rmap.NORTH_EAST_MINE=new RegionDoubleNumeric(own_x+my_width-AOI, own_y, 
+				own_x+my_width, own_y+AOI);
 
 		//corner down left
-		rmap.SOUTH_WEST_OUT=new RegionDoubleNumeric((own_x-jumpDistance+width)%width, (own_y+my_height+height)%height,
-				(own_x+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
-		rmap.SOUTH_WEST_MINE=new RegionDoubleNumeric(own_x, own_y+my_height-jumpDistance,
-				own_x+jumpDistance, own_y+my_height,width,height);
+		rmap.SOUTH_WEST_OUT=new RegionDoubleNumeric((own_x-AOI+width)%width, (own_y+my_height+height)%height,
+				(own_x+width)%width,(own_y+my_height+AOI+height)%height);
+		rmap.SOUTH_WEST_MINE=new RegionDoubleNumeric(own_x, own_y+my_height-AOI,
+				own_x+AOI, own_y+my_height);
 
 		//corner down right
 		rmap.SOUTH_EAST_OUT=new RegionDoubleNumeric((own_x+my_width+width)%width, (own_y+my_height+height)%height, 
-				(own_x+my_width+jumpDistance+width)%width,(own_y+my_height+jumpDistance+height)%height,width,height);
-		rmap.SOUTH_EAST_MINE=new RegionDoubleNumeric(own_x+my_width-jumpDistance, own_y+my_height-jumpDistance,
-				own_x+my_width,own_y+my_height,width,height);
+				(own_x+my_width+AOI+width)%width,(own_y+my_height+AOI+height)%height);
+		rmap.SOUTH_EAST_MINE=new RegionDoubleNumeric(own_x+my_width-AOI, own_y+my_height-AOI,
+				own_x+my_width,own_y+my_height);
 
-		rmap.WEST_OUT=new RegionDoubleNumeric((own_x-jumpDistance+width)%width,(own_y+height)%height,
-				(own_x+width)%width, ((own_y+my_height)+height)%height,width,height);
+		rmap.WEST_OUT=new RegionDoubleNumeric((own_x-AOI+width)%width,(own_y+height)%height,
+				(own_x+width)%width, ((own_y+my_height)+height)%height);
 		rmap.WEST_MINE=new RegionDoubleNumeric(own_x,own_y,
-				own_x + jumpDistance , own_y+my_height,width,height);
+				own_x + AOI , own_y+my_height);
 
 		rmap.EAST_OUT=new RegionDoubleNumeric((own_x+my_width+width)%width,(own_y+height)%height,
-				(own_x+my_width+jumpDistance+width)%width, (own_y+my_height+height)%height,width,height);
-		rmap.EAST_MINE=new RegionDoubleNumeric(own_x + my_width - jumpDistance,own_y,
-				own_x +my_width , own_y+my_height,width,height);
+				(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height);
+		rmap.EAST_MINE=new RegionDoubleNumeric(own_x + my_width - AOI,own_y,
+				own_x +my_width , own_y+my_height);
 
-		rmap.NORTH_OUT=new RegionDoubleNumeric((own_x+width)%width, (own_y - jumpDistance+height)%height,
-				(own_x+ my_width +width)%width,(own_y+height)%height,width,height);
+		rmap.NORTH_OUT=new RegionDoubleNumeric((own_x+width)%width, (own_y - AOI+height)%height,
+				(own_x+ my_width +width)%width,(own_y+height)%height);
 		rmap.NORTH_MINE=new RegionDoubleNumeric(own_x ,own_y,
-				own_x+my_width, own_y + jumpDistance ,width,height);
+				own_x+my_width, own_y + AOI );
 
 		rmap.SOUTH_OUT=new RegionDoubleNumeric((own_x+width)%width,(own_y+my_height+height)%height,
-				(own_x+my_width+width)%width, (own_y+my_height+jumpDistance+height)%height,width,height);
-		rmap.SOUTH_MINE=new RegionDoubleNumeric(own_x,own_y+my_height-jumpDistance,
-				own_x+my_width, (own_y+my_height),width,height);
+				(own_x+my_width+width)%width, (own_y+my_height+AOI+height)%height);
+		rmap.SOUTH_MINE=new RegionDoubleNumeric(own_x,own_y+my_height-AOI,
+				own_x+my_width, (own_y+my_height));
 
 		return true;
 		/*//upper left corner's coordinates
@@ -963,7 +963,7 @@ public class DDoubleGrid2DXYThin extends DDoubleGrid2DThin {
 	}
 
 	@Override
-	public String getID() {
+	public String getDistributedFieldID() {
 		// TODO Auto-generated method stub
 		return NAME;
 	}
@@ -974,20 +974,20 @@ public class DDoubleGrid2DXYThin extends DDoubleGrid2DThin {
 		return updates;
 	}
 
-	@Override
+	
 	public void resetParameters() {
 		numAgents=0;
 	}
 
 	@Override
 	public void setThin(int i,int j, double val){
-		if(i-own_x+2*jumpDistance>=0 && i-own_x+2*jumpDistance<field_width && j-own_y+2*jumpDistance>=0 && j-own_y+2*jumpDistance<field_height)
-			field[i-own_x+2*jumpDistance][j-own_y+2*jumpDistance]=val;
+		if(i-own_x+2*AOI>=0 && i-own_x+2*AOI<field_width && j-own_y+2*AOI>=0 && j-own_y+2*AOI<field_height)
+			field[i-own_x+2*AOI][j-own_y+2*AOI]=val;
 	}
 	@Override
 	public double getThin(int i, int j){
-		if(i-own_x+2*jumpDistance>=0 && i-own_x+2*jumpDistance<field_width && j-own_y+2*jumpDistance>=0 && j-own_y+2*jumpDistance<field_height)
-			return field[i-own_x+2*jumpDistance][j-own_y+2*jumpDistance];
+		if(i-own_x+2*AOI>=0 && i-own_x+2*AOI<field_width && j-own_y+2*AOI>=0 && j-own_y+2*AOI<field_height)
+			return field[i-own_x+2*AOI][j-own_y+2*AOI];
 		return Double.MIN_VALUE;
 
 	}

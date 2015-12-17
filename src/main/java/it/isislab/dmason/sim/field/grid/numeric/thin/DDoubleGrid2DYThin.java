@@ -150,7 +150,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 		this.NAME = name;
 		this.sm=sm;		 
 		
-		jumpDistance=max_distance;
+		AOI=max_distance;
 		//NUMPEERS=num_peers;
 		this.rows = rows;
 		this.columns = columns;
@@ -214,39 +214,39 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 				writer = actualSnap.getRaster();*/
 
 				myfield = new RegionDoubleNumeric(
-						own_x + jumpDistance,            // MyField's x0 coordinate
+						own_x + AOI,            // MyField's x0 coordinate
 						own_y,                           // MyField's y0 coordinate
-						own_x + my_width - jumpDistance, // MyField x1 coordinate
-						height,                          // MyField y1 coordinate
-						width, height);                  // Global width and height 
+						own_x + my_width - AOI, // MyField x1 coordinate
+						height                          // MyField y1 coordinate
+						);                  // Global width and height 
 
 				rmap.WEST_OUT = new RegionDoubleNumeric(
-						(own_x - jumpDistance + width) % width, // Left-out x0
+						(own_x - AOI + width) % width, // Left-out x0
 						0,									// Left-out y0
 						(own_x + width) % (width),				// Left-out x1
-						height,									// Left-out y1
-						width, height);
+						height									// Left-out y1
+						);
 
 				rmap.WEST_MINE = new RegionDoubleNumeric(
 						(own_x + width) % width,				// Left-mine x0
 						0,									// Left-mine y0
-						(own_x + jumpDistance + width) % width,	// Left-mine x1
-						height,									// Left-mine y1
-						width, height);
+						(own_x + AOI + width) % width,	// Left-mine x1
+						height									// Left-mine y1
+						);
 
 				rmap.EAST_OUT = new RegionDoubleNumeric(
 						(own_x + my_width + width) % width,                // Right-out x0
 						0,                                               // Right-out y0
-						(own_x + my_width + jumpDistance + width) % width, // Right-out x1
-						height,                                            // Right-out y1
-						width, height);
+						(own_x + my_width + AOI + width) % width, // Right-out x1
+						height                                            // Right-out y1
+						);
 
 				rmap.EAST_MINE = new RegionDoubleNumeric(
-						(own_x + my_width - jumpDistance + width) % width, // Right-mine x0
+						(own_x + my_width - AOI + width) % width, // Right-mine x0
 						0,											   // Right-mine y0
 						(own_x + my_width + width) % width,                // Right-mine x1
-						height,                                            // Right-mine y1
-						width, height);
+						height                                            // Right-mine y1
+						);
 
 				return true;
 		
@@ -715,7 +715,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	}
 
 	@Override
-	public String getID() {
+	public String getDistributedFieldID() {
 		// TODO Auto-generated method stub
 		return NAME;
 	}
@@ -727,7 +727,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	}
 
 
-	@Override
+	
 	public void resetParameters() {
 		numAgents=0;
 	}
@@ -735,13 +735,13 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 
 	@Override
 	public void setThin(int i,int j, double val){
-		if(i-own_x+2*jumpDistance>=0 && i-own_x+2*jumpDistance<field_width)
-			field[i-own_x+2*jumpDistance][j]=val;
+		if(i-own_x+2*AOI>=0 && i-own_x+2*AOI<field_width)
+			field[i-own_x+2*AOI][j]=val;
 	}
 	@Override
 	public double getThin(int i, int j){
-		if(i-own_x+2*jumpDistance>=0 && i-own_x+2*jumpDistance<field_width)
-			return field[i-own_x+2*jumpDistance][j];
+		if(i-own_x+2*AOI>=0 && i-own_x+2*AOI<field_width)
+			return field[i-own_x+2*AOI][j];
 		return Double.MIN_VALUE;
 
 	}

@@ -145,7 +145,7 @@ public class DIntGrid2DYThin extends DIntGrid2DThin {
 		this.field_height=field_height;
 		this.NAME = name;
 		this.sm=sm;
-		MAX_DISTANCE=max_distance;
+		AOI=max_distance;
 		//NUMPEERS=num_peers;
 		this.rows = rows;
 		this.columns = columns;	
@@ -164,7 +164,7 @@ public class DIntGrid2DYThin extends DIntGrid2DThin {
 	 */
 	private boolean createRegion()
 	{
-		int jumpDistance=MAX_DISTANCE;
+		int jumpDistance=AOI;
 		//upper left corner's coordinates
 				if(cellType.pos_j<(width%columns))
 					own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
@@ -209,36 +209,36 @@ public class DIntGrid2DYThin extends DIntGrid2DThin {
 						own_x + jumpDistance,            // MyField's x0 coordinate
 						own_y,                           // MyField's y0 coordinate
 						own_x + my_width - jumpDistance, // MyField x1 coordinate
-						height,                          // MyField y1 coordinate
-						width, height);                  // Global width and height 
+						height                          // MyField y1 coordinate
+						);                  // Global width and height 
 
 				rmap.WEST_OUT = new RegionIntegerNumeric(
 						(own_x - jumpDistance + width) % width, // Left-out x0
 						0,									// Left-out y0
 						(own_x + width) % (width),				// Left-out x1
-						height,									// Left-out y1
-						width, height);
+						height									// Left-out y1
+						);
 
 				rmap.WEST_MINE = new RegionIntegerNumeric(
 						(own_x + width) % width,				// Left-mine x0
 						0,									// Left-mine y0
 						(own_x + jumpDistance + width) % width,	// Left-mine x1
-						height,									// Left-mine y1
-						width, height);
+						height									// Left-mine y1
+						);
 
 				rmap.EAST_OUT = new RegionIntegerNumeric(
 						(own_x + my_width + width) % width,                // Right-out x0
 						0,                                               // Right-out y0
 						(own_x + my_width + jumpDistance + width) % width, // Right-out x1
-						height,                                            // Right-out y1
-						width, height);
+						height                                            // Right-out y1
+						);
 
 				rmap.EAST_MINE = new RegionIntegerNumeric(
 						(own_x + my_width - jumpDistance + width) % width, // Right-mine x0
 						0,											   // Right-mine y0
 						(own_x + my_width + width) % width,                // Right-mine x1
-						height,                                            // Right-mine y1
-						width, height);
+						height                                            // Right-mine y1
+						);
 
 				return true;
 		
@@ -665,7 +665,7 @@ public class DIntGrid2DYThin extends DIntGrid2DThin {
 	}
 
 	@Override
-	public String getID() {
+	public String getDistributedFieldID() {
 		// TODO Auto-generated method stub
 		return NAME;
 	}
@@ -676,7 +676,7 @@ public class DIntGrid2DYThin extends DIntGrid2DThin {
 		return updates;
 	}
 
-	@Override
+	
 	public void resetParameters() {
 		numAgents=0;
 	}
@@ -684,13 +684,13 @@ public class DIntGrid2DYThin extends DIntGrid2DThin {
 	
 	@Override
 	public void setThin(int i,int j, int val){
-		if(i-own_x+2*MAX_DISTANCE>=0 && i-own_x+2*MAX_DISTANCE<field_width)
-			field[i-own_x+2*MAX_DISTANCE][j]=val;
+		if(i-own_x+2*AOI>=0 && i-own_x+2*AOI<field_width)
+			field[i-own_x+2*AOI][j]=val;
 	}
 	@Override
 	public int getThin(int i, int j){
-		if(i-own_x+2*MAX_DISTANCE>=0 && i-own_x+2*MAX_DISTANCE<field_width)
-			return field[i-own_x+2*MAX_DISTANCE][j];
+		if(i-own_x+2*AOI>=0 && i-own_x+2*AOI<field_width)
+			return field[i-own_x+2*AOI][j];
 		return Integer.MIN_VALUE;
 	}
 

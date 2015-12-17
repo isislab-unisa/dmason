@@ -148,7 +148,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 	 * @param width field's width  
 	 * @param height field's height
 	 * @param sm The SimState of simulation
-	 * @param jumpDistance maximum shift distance of the agents
+	 * @param AOI maximum shift distance of the agents
 	 * @param i i position in the field of the cell
 	 * @param j j position in the field of the cell
 	 * @param rows number of rows in the division
@@ -156,7 +156,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
-	public DSparseGrid2DYThin(int width, int height,int field_width,int field_height,SimState sm,int jumpDistance,int i,int j,int rows, int columns, String name,String prefix) 
+	public DSparseGrid2DYThin(int width, int height,int field_width,int field_height,SimState sm,int AOI,int i,int j,int rows, int columns, String name,String prefix) 
 	{		
 		super(field_width, field_height, width, height);
 		this.width=width;
@@ -165,7 +165,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 		this.field_height=field_height;
 		this.NAME = name;
 		this.sm=sm;
-		this.jumpDistance=jumpDistance;
+		this.AOI=AOI;
 		//NUMPEERS=num_peers;
 		this.rows = rows;
 		this.columns = columns;	
@@ -467,7 +467,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 				writer.setPixel(location.x%my_width, location.y%my_height, white);
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
-			return myfield.addAgents(new EntryAgent<Int2D>(rm,new Int2D(location.x-own_x+2*jumpDistance, location.y)));
+			return myfield.addAgents(new EntryAgent<Int2D>(rm,new Int2D(location.x-own_x+2*AOI, location.y)));
 		}
 		else
 			if(setAgents(rm, location))
@@ -616,7 +616,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 			{
 				RemotePositionedAgent<Int2D> rm=e_m.r;
 				rm.setPos(e_m.l);
-				((DistributedState<Int2D>)sm).addToField(rm,new Int2D(e_m.l.x-own_x+2*jumpDistance, e_m.l.y));	
+				((DistributedState<Int2D>)sm).addToField(rm,new Int2D(e_m.l.x-own_x+2*AOI, e_m.l.y));	
 			}
 
 		this.reset();
@@ -783,7 +783,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 								writer.setPixel(location.x%my_width, location.y%my_height, white);
 
 							}
-							return region.addAgents(new EntryAgent<Int2D>(rm,new Int2D(location.x-own_x+2*jumpDistance,location.y)));
+							return region.addAgents(new EntryAgent<Int2D>(rm,new Int2D(location.x-own_x+2*AOI,location.y)));
 
 						}
 						if(name.contains("out"))
@@ -860,7 +860,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 	}
 
 	@Override
-	public String getID() {
+	public String getDistributedFieldID() {
 		// TODO Auto-generated method stub
 		return NAME;
 	}
@@ -872,7 +872,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 	}
 
 
-	@Override
+	
 	public void resetParameters() {
 		numAgents=0;
 	}
@@ -903,14 +903,14 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 	@Override
 	public int numObjectsAtLocationThin(final int x, final int y)
 	{
-		MutableInt2D speedyMutableInt2D = new MutableInt2D(x-own_x+2*jumpDistance, y);
+		MutableInt2D speedyMutableInt2D = new MutableInt2D(x-own_x+2*AOI, y);
 		return numObjectsAtLocation(speedyMutableInt2D);
 	}
 
 	@Override
 	public Bag getObjectsAtLocationThin(final int x, final int y)
 	{
-		MutableInt2D speedyMutableInt2D = new MutableInt2D(x-own_x+2*jumpDistance, y);
+		MutableInt2D speedyMutableInt2D = new MutableInt2D(x-own_x+2*AOI, y);
 		return super.getObjectsAtLocation(speedyMutableInt2D);
 	}
 
@@ -919,21 +919,21 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 	{
 		Int2D loc = (Int2D) super.getRawObjectLocation(obj);
 		if (loc == null) return null;
-		return new Double2D(loc.x+own_x-2*jumpDistance,loc.y);
+		return new Double2D(loc.x+own_x-2*AOI,loc.y);
 	}
 
 	@Override
 	public Int2D getObjectLocationThin(Object obj)
 	{
 		Int2D loc=(Int2D)super.getRawObjectLocation(obj);
-		return new Int2D(loc.x+own_x-2*jumpDistance,loc.y);
+		return new Int2D(loc.x+own_x-2*AOI,loc.y);
 	}
 
 
 	@Override
 	public Bag removeObjectsAtLocationThin(final int x, final int y)
 	{
-		MutableInt2D speedyMutableInt2D = new MutableInt2D(x-own_x+2*jumpDistance, y);
+		MutableInt2D speedyMutableInt2D = new MutableInt2D(x-own_x+2*AOI, y);
 		return removeObjectsAtLocation(speedyMutableInt2D);
 	}
 
@@ -941,7 +941,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 	@Override
 	public boolean setObjectLocationThin(final Object obj, final int x, final int y)
 	{
-		Int2D loc=new Int2D(x-own_x+2*jumpDistance,y);
+		Int2D loc=new Int2D(x-own_x+2*AOI,y);
 		return super.setObjectLocation(obj, x,y);	  
 	}
 
@@ -949,7 +949,7 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 	@Override
 	public boolean setObjectLocationThin(Object obj, final Int2D location)
 	{
-		Int2D loc=new Int2D(location.x-own_x+2*jumpDistance,location.y);
+		Int2D loc=new Int2D(location.x-own_x+2*AOI,location.y);
 		return super.setObjectLocation(obj, loc.x,loc.y);
 	}
 
