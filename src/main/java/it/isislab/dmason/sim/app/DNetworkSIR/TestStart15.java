@@ -61,13 +61,13 @@ public class TestStart15 {
 			@Override
 			public void run() {
 
-								int i=0;
+				int i=0;
 				while(true)
-									{
-										System.out.println(i);
+				{
+					System.out.println(i);
 					ds.schedule.step(ds);
-									i++;
-								}
+					i++;
+				}
 			}
 		}
 
