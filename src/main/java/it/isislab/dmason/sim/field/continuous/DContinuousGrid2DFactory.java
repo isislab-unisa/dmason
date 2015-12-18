@@ -80,8 +80,8 @@ public final class DContinuousGrid2DFactory
 		if(rows==1 && columns==1){throw new DMasonException("Illegal value : field partitioning with one row and one column is not defined");}
 
 
-		if(MODE==DistributedField2D.SQUARE_DISTRIBUTION_MODE || MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE)
-		{
+		if(MODE==DistributedField2D.UNIFORM_PARTIONING_MODE /*|| MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE*/)
+		{  
 			DistributedField2D field = new DContinuousGrid2DXY(discretization,width, height,sm, max_distance, i, j, rows,columns,name,topicPrefix,isToroidal);
 			((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 
@@ -94,7 +94,7 @@ public final class DContinuousGrid2DFactory
 
 
 				int my_width=(int) (width/columns);
-				int my_height=(int) (height/rows);
+				//int my_height=(int) (height/rows);
 				double safezone = my_width /3;
 				if(((width% columns == 0) && (height% rows == 0)) && 
 						(((width/ columns)%3 == 0) && ((height/ rows)%3 == 0)) && max_distance < safezone/2 ){
@@ -144,7 +144,9 @@ public final class DContinuousGrid2DFactory
 	public static final DContinuousGrid2DThin createDContinuous2DThin(double discretization,double width, double height,SimState sm,int max_distance,int i,int j,int rows,int columns, int MODE, String name, String topicPrefix, boolean isToroidal)
 			throws DMasonException
 	{
-		if(MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE)
+		
+		
+		if(MODE==DistributedField2D.THIN_MODE)
 		{
 			double field_width,field_height;
 
@@ -165,7 +167,7 @@ public final class DContinuousGrid2DFactory
 
 		}
 		else
-			if(MODE==DistributedField2D.SQUARE_DISTRIBUTION_MODE)
+			if(MODE==DistributedField2D.THIN_MODE)
 			{
 				double field_width,field_height;
 
