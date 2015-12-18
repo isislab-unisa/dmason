@@ -72,9 +72,8 @@ public class DDoubleGrid2DFactory {
 		if(max_distance <=0 ) throw new DMasonException("Illegal value, max_distance value must be greater than 0");
 		if(rows <=0 ) throw new DMasonException("Rows cannot be less than zero");
 		if(columns <=0 ) throw new DMasonException("Columns cannot be less than zero");
-		if(rows==1 && columns==1){throw new DMasonException("Illegal value : field partitioning with one row and one column is not defined");}
 		
-		if(MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE || MODE==DistributedField2D.SQUARE_DISTRIBUTION_MODE)
+		if(MODE==DistributedField2D.UNIFORM_PARTIONING_MODE)
 		{
 
 			DistributedField2D field = new DDoubleGrid2DXY(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name,topicPrefix,isToroidal);
@@ -143,7 +142,7 @@ public class DDoubleGrid2DFactory {
 			double initialGridValue, boolean fixed, String name, String topicPrefix, boolean isToroidal)
 					throws DMasonException
 	{
-		if(MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE)
+		if(MODE==DistributedField2D.THIN_MODE)
 		{
 			int field_width,field_height;
 
@@ -165,7 +164,7 @@ public class DDoubleGrid2DFactory {
 
 		}
 		else
-			if(MODE==DistributedField2D.SQUARE_DISTRIBUTION_MODE)
+			if(MODE==DistributedField2D.UNIFORM_PARTIONING_MODE)
 			{
 				int field_width,field_height;
 
