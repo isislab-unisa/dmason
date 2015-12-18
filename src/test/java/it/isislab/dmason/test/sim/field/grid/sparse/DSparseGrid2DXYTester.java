@@ -230,7 +230,7 @@ public class DSparseGrid2DXYTester {
 		rows = 5;
 		columns = 5;
 		numAgents = numLoop;
-		mode = DistributedField2D.SQUARE_DISTRIBUTION_MODE;
+		mode = DistributedField2D.UNIFORM_PARTITIONING_MODE;
 		connectionType = ConnectionType.pureActiveMQ;
 
 		GeneralParam genParam = new GeneralParam(width, height, maxDistance,

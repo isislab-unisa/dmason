@@ -109,7 +109,7 @@ public class DIntGrid2DFactoryTester {
 					dint = DIntGrid2DFactory.createDIntGrid2D(/* width */i, /* height */
 							j, /* SimState */new StubDistributedState(),/* max_distance */
 							1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
-							DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+							DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 							1, /* fixed */true, /* name */"test",/* topicPrefix */
 							"",/* isToroidal */false);
 
@@ -135,7 +135,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */0, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -158,7 +158,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					0, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -181,7 +181,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					-3, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -204,7 +204,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */-10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -228,7 +228,7 @@ public class DIntGrid2DFactoryTester {
 					/* width */Integer.MAX_VALUE, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -252,7 +252,7 @@ public class DIntGrid2DFactoryTester {
 					Integer.MAX_VALUE, /* SimState */
 					new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -275,7 +275,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					0, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -299,7 +299,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					-1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -326,13 +326,13 @@ public class DIntGrid2DFactoryTester {
 					/* rows */2,
 					/* columns */2,
 					/* numAgents */1,
-					/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */2, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -356,7 +356,7 @@ public class DIntGrid2DFactoryTester {
 				dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 						10, /* SimState */new StubDistributedState(),/* max_distance */
 						1, /* i */0, /* j */0, /* rows */1, /* columns */j, /* MODE */
-						DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+						DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 						1, /* fixed */true, /* name */"test",/* topicPrefix */
 						"",/* isToroidal */false);
 
@@ -380,7 +380,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */-10, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 			fail("really you can have a negative rows???");
@@ -401,7 +401,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */-10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 			fail("really you can have a negative columns???");
@@ -422,7 +422,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */0, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 			fail("really you can have 0 columns???");
@@ -443,7 +443,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */0, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 			fail("really you can have 0 rows???");
@@ -464,7 +464,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */false, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 			assertEquals("width", 10, dint.getWidth());
@@ -492,7 +492,7 @@ public class DIntGrid2DFactoryTester {
 					dint = DIntGrid2DFactory.createDIntGrid2D(/* width */i, /* height */
 							j, /* SimState */new StubDistributedState(),/* max_distance */
 							1, /* i */0, /* j */0, /* rows */10, /* columns */10, /* MODE */
-							DIntGrid2DFactory.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+							DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 							1, /* fixed */true, /* name */"test",/* topicPrefix */
 							"",/* isToroidal */false);
 
@@ -518,7 +518,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */0, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */10, /* columns */10, /* MODE */
-					DIntGrid2DFactory.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -541,7 +541,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					0, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */10, /* columns */10, /* MODE */
-					DIntGrid2DFactory.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -564,7 +564,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					-3, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */10, /* columns */10, /* MODE */
-					DIntGrid2DFactory.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -587,7 +587,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */-10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */10, /* columns */10, /* MODE */
-					DIntGrid2DFactory.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -611,7 +611,7 @@ public class DIntGrid2DFactoryTester {
 					/* width */Integer.MAX_VALUE, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */10, /* columns */10, /* MODE */
-					DIntGrid2DFactory.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -635,7 +635,7 @@ public class DIntGrid2DFactoryTester {
 					Integer.MAX_VALUE, /* SimState */
 					new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */10, /* columns */10, /* MODE */
-					DIntGrid2DFactory.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -658,7 +658,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					-1, /* i */0, /* j */0, /* rows */10, /* columns */10, /* MODE */
-					DIntGrid2DFactory.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -685,7 +685,7 @@ public class DIntGrid2DFactoryTester {
 					dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 							10, /* SimState */new StubDistributedState(),/* max_distance */
 							1, /* i */0, /* j */0, /* rows */i, /* columns */j, /* MODE */
-							DIntGrid2DFactory.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+							DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 							1, /* fixed */true, /* name */"test",/* topicPrefix */
 							"",/* isToroidal */false);
 					assertEquals(i, dint.rows);
@@ -709,7 +709,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */-10, /* columns */10, /* MODE */
-					DIntGrid2DFactory.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 			fail("really you can have a negative rows???");
@@ -730,7 +730,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */10, /* columns */-10, /* MODE */
-					DIntGrid2DFactory.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 			fail("really you can have a negative columns???");
@@ -751,7 +751,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */10, /* columns */0, /* MODE */
-					DIntGrid2DFactory.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 			fail("really you can have 0 columns???");
@@ -772,7 +772,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */0, /* columns */10, /* MODE */
-					DIntGrid2DFactory.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 			fail("really you can have 0 rows???");
@@ -793,7 +793,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */10, /* columns */10, /* MODE */
-					DIntGrid2DFactory.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1, /* fixed */false, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 			assertEquals("width", 10, dint.getWidth());
@@ -828,7 +828,7 @@ public class DIntGrid2DFactoryTester {
 									0, /* rows */
 									1, /* columns */
 									10, /* MODE */
-									DIntGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
+									DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 									1, /* fixed */true, /* name */"test",/* topicPrefix */
 									"",/* isToroidal */false);
 
@@ -854,7 +854,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */0, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -877,7 +877,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					0, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -900,7 +900,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					-3, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -923,7 +923,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */-10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -947,7 +947,7 @@ public class DIntGrid2DFactoryTester {
 					/* width */Integer.MAX_VALUE, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -971,7 +971,7 @@ public class DIntGrid2DFactoryTester {
 					Integer.MAX_VALUE, /* SimState */
 					new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -994,7 +994,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					-1, /* i */0, /* j */0, /* rows */1, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 
@@ -1026,7 +1026,7 @@ public class DIntGrid2DFactoryTester {
 								0, /* rows */
 								1, /* columns */
 								j, /* MODE */
-								DIntGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
+								DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 								1, /* fixed */true, /* name */"test",/* topicPrefix */
 								"",/* isToroidal */false);
 
@@ -1050,7 +1050,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */-10, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 			fail("really you can have a negative rows???");
@@ -1071,7 +1071,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */-10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 			fail("really you can have a negative columns???");
@@ -1092,7 +1092,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */1, /* columns */0, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 			fail("really you can have 0 columns???");
@@ -1113,7 +1113,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */0, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 					1, /* fixed */true, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 			fail("really you can have 0 rows???");
@@ -1134,7 +1134,7 @@ public class DIntGrid2DFactoryTester {
 			dint = DIntGrid2DFactory.createDIntGrid2D(/* width */10, /* height */
 					10, /* SimState */new StubDistributedState(),/* max_distance */
 					1, /* i */0, /* j */0, /* rows */10, /* columns */10, /* MODE */
-					DIntGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 					1, /* fixed */false, /* name */"test",/* topicPrefix */
 					"",/* isToroidal */false);
 			assertEquals("width", 10, dint.getWidth());
@@ -1169,7 +1169,7 @@ public class DIntGrid2DFactoryTester {
 									0, /* rows */
 									1, /* columns */
 									10, /* MODE */
-									DIntGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
+									DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 									1, /* fixed */false, /* name */"test",/* topicPrefix */
 									"",/* isToroidal */false);
 
@@ -1200,7 +1200,7 @@ public class DIntGrid2DFactoryTester {
 									0, /* rows */
 									1, /* columns */
 									10, /* MODE */
-									DIntGrid2DFactory.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
+									DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE, /* initialGridValue */
 									1, /* fixed */false, /* name */"test",/* topicPrefix */
 									"",/* isToroidal */false);
 

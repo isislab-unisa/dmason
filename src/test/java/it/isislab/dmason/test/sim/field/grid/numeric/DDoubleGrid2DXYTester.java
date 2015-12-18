@@ -143,7 +143,7 @@ public class DDoubleGrid2DXYTester {
 		rows = 10;
 		columns = 10;
 		numAgents = numLoop;
-		mode = DistributedField2D.SQUARE_DISTRIBUTION_MODE;
+		mode = DistributedField2D.UNIFORM_PARTITIONING_MODE;
 		connectionType = ConnectionType.pureActiveMQ;
 		celltype = new CellType(0, 0);
 		genParam = new GeneralParam(width, height, maxDistance,

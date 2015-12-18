@@ -146,7 +146,7 @@ public class DDoubleGrid2DXYThinTester {
 		rows = 10;
 		columns = 10;
 		numAgents = numLoop;
-		mode = DistributedField2D.SQUARE_DISTRIBUTION_MODE;
+		mode = DistributedField2D.THIN_MODE;
 		connectionType = ConnectionType.pureActiveMQ;
 
 		GeneralParam genParam = new GeneralParam(width, height, maxDistance,

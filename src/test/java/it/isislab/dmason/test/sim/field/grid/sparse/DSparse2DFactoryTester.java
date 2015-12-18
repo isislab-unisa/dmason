@@ -103,7 +103,7 @@ public class DSparse2DFactoryTester {
 							/* rows */1,
 							/* columns */2,
 							/* numAgents */1,
-							/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+							/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 							ConnectionType.pureActiveMQ);
 
 
@@ -118,7 +118,7 @@ public class DSparse2DFactoryTester {
 							1, /* i */
 							0, /* j */
 							0,/* rows */1,/* colums */2,/* mode */
-							DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+							DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 							"test", /* topicPrefix */"",/* isToroidal */true);
 
 
@@ -147,7 +147,7 @@ public class DSparse2DFactoryTester {
 					/* rows */1,
 					/* columns */2,
 					/* numAgents */1,
-					/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DSparseGrid2DFactory.createDSparseGrid2D(
@@ -159,7 +159,7 @@ public class DSparse2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */10, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */2,/* mode */
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("should throw an exception for width=0");
@@ -184,7 +184,7 @@ public class DSparse2DFactoryTester {
 					/* rows */1,
 					/* columns */2,
 					/* numAgents */1,
-					/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DSparseGrid2DFactory.createDSparseGrid2D(
@@ -196,7 +196,7 @@ public class DSparse2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */10, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */2,/* mode */
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("should throw an exception for height=0");
@@ -221,7 +221,7 @@ public class DSparse2DFactoryTester {
 					/* rows */1,
 					/* columns */2,
 					/* numAgents */1,
-					/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DSparseGrid2DFactory.createDSparseGrid2D(
@@ -234,7 +234,7 @@ public class DSparse2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */10, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */2,/* mode */
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("should throw an exception for width<0");
@@ -259,7 +259,7 @@ public class DSparse2DFactoryTester {
 					/* rows */1,
 					/* columns */2,
 					/* numAgents */1,
-					/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DSparseGrid2DFactory.createDSparseGrid2D(
@@ -271,7 +271,7 @@ public class DSparse2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */10, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */2,/* mode */
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("should throw an exception for width<0");
@@ -297,7 +297,7 @@ public class DSparse2DFactoryTester {
 					/* rows */1,
 					/* columns */2,
 					/* numAgents */1,
-					/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DSparseGrid2DFactory.createDSparseGrid2D(
@@ -310,7 +310,7 @@ public class DSparse2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */10, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */2,/* mode */
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 			fail("should throw an exception");
 		} catch (DMasonException e) {
@@ -335,7 +335,7 @@ public class DSparse2DFactoryTester {
 					/* rows */1,
 					/* columns */2,
 					/* numAgents */1,
-					/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DSparseGrid2DFactory.createDSparseGrid2D(
@@ -347,7 +347,7 @@ public class DSparse2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */10, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */2,/* mode */
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 			fail("should throw an exception");
 		} catch (DMasonException e) {
@@ -372,7 +372,7 @@ public class DSparse2DFactoryTester {
 					/* rows */1,
 					/* columns */2,
 					/* numAgents */1,
-					/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DSparseGrid2DFactory.createDSparseGrid2D(
@@ -384,7 +384,7 @@ public class DSparse2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */app, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */2,/* mode */
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 			fail("max_distance exceeds max integer value");
 		} catch (DMasonException e) {
@@ -408,7 +408,7 @@ public class DSparse2DFactoryTester {
 					/* rows */1,
 					/* columns */2,
 					/* numAgents */1,
-					/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DSparseGrid2DFactory.createDSparseGrid2D(
@@ -420,7 +420,7 @@ public class DSparse2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */0, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */2,/* mode */
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("max distance with value 0 is an error");
@@ -446,7 +446,7 @@ public class DSparse2DFactoryTester {
 					/* rows */1,
 					/* columns */2,
 					/* numAgents */1,
-					/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DSparseGrid2DFactory.createDSparseGrid2D(
@@ -458,7 +458,7 @@ public class DSparse2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */-3, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */2,/* mode */
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("really you can measure a distance with a negative number??");
@@ -484,7 +484,7 @@ public class DSparse2DFactoryTester {
 						/* rows */1,
 						/* columns */j,
 						/* numAgents */1,
-						/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+						/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 						ConnectionType.pureActiveMQ);
 
 				dcon = DSparseGrid2DFactory.createDSparseGrid2D(
@@ -497,7 +497,7 @@ public class DSparse2DFactoryTester {
 						new StubDistributedState(genParam),/* maxDistance */1, /* i */
 						0, /* j */
 						0,/* rows */1,/* colums */j,/* mode */
-						DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+						DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 						"test", /* topicPrefix */"",/* isToroidal */true);
 
 				assertEquals("rows value failure",1, dcon.rows);
@@ -526,7 +526,7 @@ public class DSparse2DFactoryTester {
 					/* rows */0,
 					/* columns */2,
 					/* numAgents */1,
-					/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DSparseGrid2DFactory.createDSparseGrid2D(
@@ -538,7 +538,7 @@ public class DSparse2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */1, /* i */
 					0, /* j */
 					0,/* rows */0,/* colums */2,/* mode */
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("really you can have 0 rows??");
@@ -563,7 +563,7 @@ public class DSparse2DFactoryTester {
 					/* rows */2,
 					/* columns */2,
 					/* numAgents */1,
-					/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DSparseGrid2DFactory.createDSparseGrid2D(
@@ -575,7 +575,7 @@ public class DSparse2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */1, /* i */
 					0, /* j */
 					0,/* rows */2,/* colums */2,/* mode */
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("horizontal mode can not have more than one column");
@@ -600,7 +600,7 @@ public class DSparse2DFactoryTester {
 					/* rows */1,
 					/* columns */0,
 					/* numAgents */1,
-					/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DSparseGrid2DFactory.createDSparseGrid2D(
@@ -612,7 +612,7 @@ public class DSparse2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */1, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */0,/* mode */
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("really you can have 0 colums??");
@@ -637,7 +637,7 @@ public class DSparse2DFactoryTester {
 					/* rows */-1,
 					/* columns */2,
 					/* numAgents */1,
-					/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DSparseGrid2DFactory.createDSparseGrid2D(
@@ -649,7 +649,7 @@ public class DSparse2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */1, /* i */
 					0, /* j */
 					0,/* rows */-1,/* colums */2,/* mode */
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("really you can have 0 rows??");
@@ -674,7 +674,7 @@ public class DSparse2DFactoryTester {
 					/* rows */1,
 					/* columns */-1,
 					/* numAgents */1,
-					/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DSparseGrid2DFactory.createDSparseGrid2D(
@@ -686,7 +686,7 @@ public class DSparse2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */1, /* i */
 					0, /* j */
 					0,/* rows */1,/* colums */-1,/* mode */
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			fail("really you can have negative colums??");
@@ -712,7 +712,7 @@ public class DSparse2DFactoryTester {
 					/* rows */2,
 					/* columns */2,
 					/* numAgents */1,
-					/* mode */DistributedField2D.SQUARE_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
 			dcon = DSparseGrid2DFactory.createDSparseGrid2D(
@@ -724,7 +724,7 @@ public class DSparse2DFactoryTester {
 					new StubDistributedState(genParam),/* maxDistance */1, /* i */
 					0, /* j */
 					0,/* rows */2,/* colums */2,/* mode */
-					DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* name */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 					"test", /* topicPrefix */"",/* isToroidal */true);
 
 			//fail("errore");
@@ -888,7 +888,7 @@ public class DSparse2DFactoryTester {
 						/* rows */1,
 						/* columns */j,
 						/* numAgents */1,
-						/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+						/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 						ConnectionType.pureActiveMQ);
 
 				dcon = DSparseGrid2DFactory.createDSparseGrid2DThin(
@@ -901,7 +901,7 @@ public class DSparse2DFactoryTester {
 						new StubDistributedState(genParam),/* maxDistance */1, /* i */
 						0, /* j */
 						0,/* rows */1,/* colums */j,/* mode */
-						DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* name */
+						DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 						"test", /* topicPrefix */"",/* isToroidal */true);
 
 				assertEquals(1, dcon.rows);
@@ -932,7 +932,7 @@ public class DSparse2DFactoryTester {
 							/* rows */i,
 							/* columns */j,
 							/* numAgents */1,
-							/* mode */DistributedField2D.SQUARE_DISTRIBUTION_MODE,
+							/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 							ConnectionType.pureActiveMQ);
 
 					dcon = DSparseGrid2DFactory.createDSparseGrid2DThin(
@@ -946,7 +946,7 @@ public class DSparse2DFactoryTester {
 							1, /* i */
 							0, /* j */
 							0,/* rows */i,/* colums */j,/* mode */
-							DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* name */
+							DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
 							"test", /* topicPrefix */"",/* isToroidal */true);
 
 					assertEquals(i, dcon.rows);

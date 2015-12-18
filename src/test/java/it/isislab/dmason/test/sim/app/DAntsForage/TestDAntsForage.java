@@ -68,7 +68,7 @@ public class TestDAntsForage {
 	//don't modify this...
 	//private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE : DistributedField2D.SQUARE_DISTRIBUTION_MODE; 
 	//private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE : DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE; 
-	private static int MODE =DistributedField2D.SQUARE_DISTRIBUTION_MODE;
+	private static int MODE =DistributedField2D.UNIFORM_PARTITIONING_MODE;
 	ArrayList<DRemoteAnt> initial_agents = new ArrayList<DRemoteAnt>();
 	ArrayList<DRemoteAnt> end_agents = new ArrayList<DRemoteAnt>();
 	@Test

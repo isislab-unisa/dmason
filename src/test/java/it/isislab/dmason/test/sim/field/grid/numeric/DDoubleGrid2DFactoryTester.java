@@ -114,7 +114,7 @@ public class DDoubleGrid2DFactoryTester {
 								/* simState */new StubDistributedState(),
 								/* max_distance */1,
 								i ,j,rows,columns,
-								DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+								DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 								1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 								"", /* isToroidal */false);
 						ddg[i][j]=df;
@@ -150,7 +150,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */0, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */1, /* columns */10,
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 			fail("should throw an exception for width=0");
@@ -172,7 +172,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					0, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */1, /* columns */10,
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 			fail("should throw an exception for height=0");
@@ -194,7 +194,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					-3, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */1, /* columns */10,
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 			fail("really you can have a height <0?!?!?");
@@ -216,7 +216,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */-10, /* height */
 					3, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */1, /* columns */10,
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 			fail("really you can have a width <0?!?!?");
@@ -238,7 +238,7 @@ public class DDoubleGrid2DFactoryTester {
 					/* width */Integer.MAX_VALUE, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */1, /* columns */10,
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 			fail("should throw an exception");
@@ -260,7 +260,7 @@ public class DDoubleGrid2DFactoryTester {
 					Integer.MAX_VALUE, /* simState */
 					new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */1, /* columns */10,
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 			fail("should throw an exception");
@@ -282,7 +282,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					0, /* i */0,/* j */1, /* rows */1, /* columns */10,
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 
@@ -306,7 +306,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					-1, /* i */0,/* j */1, /* rows */1, /* columns */10,
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 
@@ -328,7 +328,7 @@ public class DDoubleGrid2DFactoryTester {
 				df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 						10, /* simState */new StubDistributedState(),/* max_distance */
 						1, /* i */0,/* j */0, /* rows */1, /* columns */j,
-						DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+						DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 						1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 						"", /* isToroidal */false);
 
@@ -352,7 +352,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */-10, /* columns */10,
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 
@@ -373,7 +373,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */1, /* columns */-10,
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 
@@ -394,7 +394,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */1, /* columns */0,
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 
@@ -415,7 +415,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */0, /* columns */10,
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 
@@ -436,7 +436,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */1, /* columns */10,
-					DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */false, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 			assertEquals("width", 10, df.getWidth());
@@ -459,7 +459,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */10, /* columns */10,
-					DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */false, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 			assertEquals("width", 10, df.getWidth());
@@ -496,7 +496,7 @@ public class DDoubleGrid2DFactoryTester {
 							/* simState */new StubDistributedState(),
 							/* max_distance */1, /* Celltype i */i,/*Celltype j */j, 
 							/* rows */rows, /* columns */columns,
-							DistributedField2D.SQUARE_DISTRIBUTION_MODE, 
+							DistributedField2D.UNIFORM_PARTITIONING_MODE, 
 							/* initialGridValue */ 1.0, /* fixed */true, /* name */"testGrid",
 							/* topicPrefix */"", /* isToroidal */false);
 					regions[i][j] = df;
@@ -535,7 +535,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */0, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */10, /* columns */10,
-					DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 			fail("should throw an exception for width=0");
@@ -557,7 +557,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					0, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */10, /* columns */10,
-					DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 			fail("should throw an exception for width=0");
@@ -579,7 +579,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					-3, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */10, /* columns */10,
-					DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 			fail("really you can have a height <0?!?!?");
@@ -601,7 +601,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */-10, /* height */
 					3, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */10, /* columns */10,
-					DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 			fail("really you can have a width <0?!?!?");
@@ -623,7 +623,7 @@ public class DDoubleGrid2DFactoryTester {
 					/* width */Integer.MAX_VALUE, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */10, /* columns */10,
-					DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 			fail("should throw an exception");
@@ -645,7 +645,7 @@ public class DDoubleGrid2DFactoryTester {
 					Integer.MAX_VALUE, /* simState */
 					new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */10, /* columns */10,
-					DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 			fail("should throw an exception");
@@ -666,7 +666,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					0, /* i */0,/* j */1, /* rows */10, /* columns */10,
-					DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 
@@ -687,7 +687,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					-1, /* i */0,/* j */1, /* rows */10, /* columns */10,
-					DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 
@@ -709,7 +709,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */-10, /* columns */10,
-					DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 
@@ -730,7 +730,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */10, /* columns */-10,
-					DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 
@@ -751,7 +751,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */10, /* columns */0,
-					DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 
@@ -772,7 +772,7 @@ public class DDoubleGrid2DFactoryTester {
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
 					10, /* simState */new StubDistributedState(),/* max_distance */
 					1, /* i */0,/* j */1, /* rows */0, /* columns */10,
-					DistributedField2D.SQUARE_DISTRIBUTION_MODE, /* initialGridValue */
+					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* initialGridValue */
 					1.0, /* fixed */true, /* name */"testGrid", /* topicPrefix */
 					"", /* isToroidal */false);
 
@@ -1030,7 +1030,7 @@ public class DDoubleGrid2DFactoryTester {
 					/* rows */2,
 					/* columns */2,
 					/* numAgents */1,
-					/* mode */DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+					/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
 			df = DDoubleGrid2DFactory.createDDoubleGrid2D(/* width */10, /* height */
