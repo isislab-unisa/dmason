@@ -41,10 +41,6 @@ import sim.engine.SimState;
  */
 public class DIntGrid2DFactory {
 
-	public static final int HORIZONTAL_DISTRIBUTION_MODE=0;
-	public static final int SQUARE_DISTRIBUTION_MODE=1;
-	public static final int SQUARE_BALANCED_DISTRIBUTION_MODE=2;
-	public static final int HORIZONTAL_BALANCED_DISTRIBUTION_MODE=3;
 
 	/**
 	 * 
@@ -78,7 +74,7 @@ public class DIntGrid2DFactory {
 		if(max_distance>=Integer.MAX_VALUE ){throw new DMasonException("Illegal value : max_distance value exceded Integer max value");}
 		if(rows==1 && columns==1){throw new DMasonException("Illegal value : field partitioning with one row and one column is not defined");}
 		
-		if(MODE==HORIZONTAL_DISTRIBUTION_MODE || MODE==SQUARE_DISTRIBUTION_MODE)
+		if(MODE==DistributedField2D.UNIFORM_PARTIONING_MODE)
 		{
 		
 			  
@@ -92,7 +88,7 @@ public class DIntGrid2DFactory {
 		
 		
 		
-			else if (MODE==SQUARE_BALANCED_DISTRIBUTION_MODE){
+			else if (MODE==DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE){
 				if(rows!=columns){throw new DMasonException("In square mode rows and columns must be equals!");}
 				if(((width% columns == 0) && (height% rows == 0)) && 
 						(((width/ columns)%3 == 0) && ((height/ rows)%3 == 0)))
@@ -109,7 +105,7 @@ public class DIntGrid2DFactory {
 					throw new DMasonException("Illegal width or height dimension for NUM_PEERS:"+(rows*columns));
 			}
 			else
-				if(MODE==HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
+				if(MODE==DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
 				{
 					
 					DIntGrid2D field = new DIntGrid2DYLB(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name,topicPrefix);
@@ -150,7 +146,7 @@ public class DIntGrid2DFactory {
 			int initialGridValue, boolean fixed, String name, String topicPrefix, boolean isToroidal)
 					throws DMasonException
 					{
-		if(MODE==HORIZONTAL_DISTRIBUTION_MODE)
+		if(MODE==DistributedField2D.THIN_MODE)
 		{
 			int field_width,field_height;
 			//upper left corner's coordinates
@@ -171,7 +167,7 @@ public class DIntGrid2DFactory {
 
 		}
 		else
-			if(MODE==SQUARE_DISTRIBUTION_MODE)
+			if(MODE==DistributedField2D.THIN_MODE)
 			{
 				int field_width,field_height;
 
