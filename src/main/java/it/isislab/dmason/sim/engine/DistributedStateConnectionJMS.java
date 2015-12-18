@@ -231,7 +231,7 @@ public class DistributedStateConnectionJMS<E> {
 
 	private void connection_IS_toroidal() {
 
-		if (MODE == DistributedField2D.UNIFORM_PARTITIONING_MODE || MODE == DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE) { // HORIZONTAL_MODE
+		if (MODE == DistributedField2D.UNIFORM_PARTITIONING_MODE) { // HORIZONTAL_MODE
 			int i = TYPE.pos_i, j = TYPE.pos_j;
 			try {
 
@@ -475,6 +475,84 @@ public class DistributedStateConnectionJMS<E> {
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else if(MODE == DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE){
+			int i = TYPE.pos_i, j = TYPE.pos_j;
+			try{
+			connectionJMS.createTopic(topicPrefix+TYPE + "L",
+					schedule.fields2D
+					.size());
+			connectionJMS.createTopic(topicPrefix+TYPE + "R",
+					schedule.fields2D
+					.size());
+
+			connectionJMS.createTopic(topicPrefix+TYPE + "CUDL",
+					schedule.fields2D
+					.size());
+			connectionJMS.createTopic(topicPrefix+TYPE + "CUDR",
+					schedule.fields2D
+					.size());
+			connectionJMS.createTopic(topicPrefix+TYPE + "CDDL",
+					schedule.fields2D
+					.size());
+			connectionJMS.createTopic(topicPrefix+TYPE + "CDDR",
+					schedule.fields2D
+					.size());
+
+			
+
+			connectionJMS.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
+					+ ((j + 1 + columns) % columns) + "L");
+			connectionJMS.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
+					+ ((j - 1 + columns) % columns) + "R");
+
+			connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
+					+ ((j - 1 + columns) % columns) + "CDDR");
+			connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
+					+ ((j + 1 + columns) % columns) + "CDDL");
+			connectionJMS.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
+					+ ((j - 1 + columns) % columns) + "CUDR");
+			connectionJMS.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
+					+ ((j + 1 + columns) % columns) + "CUDL");
+
+			u1 = new UpdaterThreadForListener(
+					connectionJMS, topicPrefix+((i + rows) % rows) + "-"
+							+ ((j + 1 + columns) % columns) + "L",
+							schedule.fields2D, listeners);
+			u1.start();
+
+			u2 = new UpdaterThreadForListener(
+					connectionJMS, topicPrefix+((i + rows) % rows) + "-"
+							+ ((j - 1 + columns) % columns) + "R",
+							schedule.fields2D, listeners);
+			u2.start();
+
+
+			u5 = new UpdaterThreadForListener(
+					connectionJMS, topicPrefix+((i - 1 + rows) % rows) + "-"
+							+ ((j - 1 + columns) % columns) + "CDDR",
+							schedule.fields2D, listeners);
+			u5.start();
+
+			u6 = new UpdaterThreadForListener(
+					connectionJMS, topicPrefix+((i - 1 + rows) % rows) + "-"
+							+ ((j + 1 + columns) % columns) + "CDDL",
+							schedule.fields2D, listeners);
+			u6.start();
+
+			u7 = new UpdaterThreadForListener(
+					connectionJMS, topicPrefix+((i + 1 + rows) % rows) + "-"
+							+ ((j - 1 + columns) % columns) + "CUDR",
+							schedule.fields2D, listeners);
+			u7.start();
+
+			u8 = new UpdaterThreadForListener(
+					connectionJMS, topicPrefix+((i + 1 + rows) % rows) + "-"
+							+ ((j + 1 + columns) % columns) + "CUDL",
+							schedule.fields2D, listeners);
+			u8.start();
+			}catch(Exception e){
 				e.printStackTrace();
 			}
 		} else if (MODE == DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE) { // SQUARE BALANCED
