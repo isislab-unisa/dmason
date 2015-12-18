@@ -42,10 +42,10 @@ public class TestStart {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 3000; //only graphicsOn=false
-	private static int rows = 3; //number of rows
-	private static int columns = 1; //number of columns
+	private static int rows = 5; //number of rows
+	private static int columns = 3; //number of columns
 	private static int MAX_DISTANCE=1; //max distance
-	private static int NUM_AGENTS=1000; //number of agents
+	private static int NUM_AGENTS=10000; //number of agents
 	private static int WIDTH=500; //field width
 	private static int HEIGHT=500; //field height
 	private static String ip="127.0.0.1"; //ip of activemq
@@ -53,7 +53,7 @@ public class TestStart {
 	
 	//don't modify this...
 	//private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE : DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE; 
-	private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE : DistributedField2D.SQUARE_DISTRIBUTION_MODE; 
+	private static int MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE; 
 	
 	public static void main(String[] args) 
 	{		
@@ -85,7 +85,7 @@ public class TestStart {
 				genParam.setJ(j);
 				genParam.setIp(ip);
 				genParam.setPort(port);
-				if(graphicsOn || (i==2 && j == 0))
+				if(graphicsOn || (i==0 && j == 0))
 				{
 					DAntsForageWithUI sim =new DAntsForageWithUI(genParam);
 					((Console)sim.createController()).pressPause();

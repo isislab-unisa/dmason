@@ -52,7 +52,7 @@ public class TestStart {
 	private static String port="61616"; //port of activemq
 	
 	//don't modify this...
-	private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE : DistributedField2D.SQUARE_DISTRIBUTION_MODE; 
+	private static int MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;  
 	
 	public static void main(String[] args) 
 	{		

@@ -114,7 +114,7 @@ public class BatchExecutor extends Thread
 
 			genP = testParam.getGenParams();
 			HashMap<String, EntryVal<Integer, Boolean>> config = assignRegions(genP.getRows()*genP.getColumns(),numPeers);
-	
+
 			int mode = getMode(genP.getRows(),genP.getColumns());
 			if(mode != -1)
 				genP.setMode(mode);
@@ -275,20 +275,16 @@ public class BatchExecutor extends Thread
 	}
 	private int getMode(int rows, int columns)
 	{
-		if(rows==1)
-		{
-			if(!isBalanced)
-				mode = DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE;
-			else
+
+		if(!isBalanced)
+			mode = DistributedField2D.UNIFORM_PARTITIONING_MODE;
+		else{
+			if(rows==1)
 				mode = DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE;
-		}
-		else
-		{	
-			if(!isBalanced)
-				mode = DistributedField2D.SQUARE_DISTRIBUTION_MODE;
 			else
 				mode = DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE;
 		}
+
 
 		return mode;
 	}
@@ -296,68 +292,68 @@ public class BatchExecutor extends Thread
 	private HashMap<String, EntryVal<Integer, Boolean>> assignRegions(int numRegions, int numPeers) {
 		HashMap<String,EntryVal<Integer,Boolean>> config = new HashMap<String, EntryVal<Integer,Boolean>>();
 
-		
-				int regionsToPeers = numRegions / numPeers;
-				int remainder = numRegions % numPeers;
-				
-				EntryVal<Integer, Boolean> value;
-				int last=0;
-				try{
-					for (int i = 0; i < numRegions; i++) {
 
-						if(config.get(master.getTopicList().get(last))==null)
-						{
-							value = new EntryVal<Integer, Boolean>(1,false/*withGui*/);
-							config.put(master.getTopicList().get(last), value);
+		int regionsToPeers = numRegions / numPeers;
+		int remainder = numRegions % numPeers;
 
-						}else
-							config.get(master.getTopicList().get(last)).setNum(config.get(master.getTopicList().get(last)).getNum()+1);
+		EntryVal<Integer, Boolean> value;
+		int last=0;
+		try{
+			for (int i = 0; i < numRegions; i++) {
 
-						last=(last+1)%(master.getTopicList().size());
-
-					}
-				}
-				catch(Exception e)
+				if(config.get(master.getTopicList().get(last))==null)
 				{
-					System.err.println("The Workers does not works! :P");
-				}
-//				if(remainder == 0) // all the workers will have the same number of regions
-//				{
-//					EntryVal<Integer, Boolean> value; 
-//					try{
-//						for(String topic : myWorkers){
-//							value = new EntryVal<Integer, Boolean>(regionsToPeers, false/*withGui*/);
-//							//config.put(topic, div);
-//							config.put(topic, value);
-//						}
-//		
-//					}catch (Exception e) {
-//						e.printStackTrace();
-//					}
-//				}
-//				else
-//				{
-//					try { // there will be some workers(remainders) that will have one more regions
-//						int count = 0;
-//						EntryVal<Integer, Boolean> value;
-//						
-//						for(String topic : myWorkers) {
-//							if(count < remainder)
-//								value = new EntryVal<Integer, Boolean>(regionsToPeers+1,false/*withGui*/);
-//							else
-//								value = new EntryVal<Integer, Boolean>(regionsToPeers,false/*withGui*/);
-//							
-//							config.put(topic, value);
-//							
-//							count++;
-//						}
-//						
-//					} catch (Exception e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}
-				
+					value = new EntryVal<Integer, Boolean>(1,false/*withGui*/);
+					config.put(master.getTopicList().get(last), value);
+
+				}else
+					config.get(master.getTopicList().get(last)).setNum(config.get(master.getTopicList().get(last)).getNum()+1);
+
+				last=(last+1)%(master.getTopicList().size());
+
+			}
+		}
+		catch(Exception e)
+		{
+			System.err.println("The Workers does not works! :P");
+		}
+		//				if(remainder == 0) // all the workers will have the same number of regions
+		//				{
+		//					EntryVal<Integer, Boolean> value; 
+		//					try{
+		//						for(String topic : myWorkers){
+		//							value = new EntryVal<Integer, Boolean>(regionsToPeers, false/*withGui*/);
+		//							//config.put(topic, div);
+		//							config.put(topic, value);
+		//						}
+		//		
+		//					}catch (Exception e) {
+		//						e.printStackTrace();
+		//					}
+		//				}
+		//				else
+		//				{
+		//					try { // there will be some workers(remainders) that will have one more regions
+		//						int count = 0;
+		//						EntryVal<Integer, Boolean> value;
+		//						
+		//						for(String topic : myWorkers) {
+		//							if(count < remainder)
+		//								value = new EntryVal<Integer, Boolean>(regionsToPeers+1,false/*withGui*/);
+		//							else
+		//								value = new EntryVal<Integer, Boolean>(regionsToPeers,false/*withGui*/);
+		//							
+		//							config.put(topic, value);
+		//							
+		//							count++;
+		//						}
+		//						
+		//					} catch (Exception e) {
+		//						// TODO Auto-generated catch block
+		//						e.printStackTrace();
+		//					}
+		//				}
+
 		return config;
 	}
 

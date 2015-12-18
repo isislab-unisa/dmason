@@ -76,7 +76,7 @@ public final class DSparseGrid2DFactory
 		if(columns<=0 || rows <=0){throw new DMasonException("Illegal value : columns value and rows value must be greater than 0");}
 
 
-		if(MODE==DistributedField2D.UNIFORM_PARTIONING_MODE )
+		if(MODE==DistributedField2D.UNIFORM_PARTITIONING_MODE )
 		{
 
 			 

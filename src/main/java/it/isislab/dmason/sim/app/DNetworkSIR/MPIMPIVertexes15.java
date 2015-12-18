@@ -63,7 +63,7 @@ public class MPIMPIVertexes15 {
 				/*rows*/1,
 				/*columns*/col,
 				/*numAgents*/0,
-				/*mode*/DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE,
+				/*mode*/DistributedField2D.UNIFORM_PARTITIONING_MODE,
 				ConnectionType.pureMPIParallel);
 
 		/**

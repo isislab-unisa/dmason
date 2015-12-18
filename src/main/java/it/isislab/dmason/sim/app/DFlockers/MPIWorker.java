@@ -67,7 +67,7 @@ public class MPIWorker {
 				/*rows*/Integer.parseInt(args[3]),
 				/*columns*/Integer.parseInt(args[4]),
 				/*numAgents*/agent_number,
-				/*mode*/(Integer.parseInt(args[3])==1)?DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE:DistributedField2D.SQUARE_DISTRIBUTION_MODE,
+				/*mode*/DistributedField2D.UNIFORM_PARTITIONING_MODE,
 				ConnectionType.pureMPIMultipleThreads);
 
 		/**

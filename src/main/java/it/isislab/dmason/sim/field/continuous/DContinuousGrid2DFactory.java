@@ -80,7 +80,7 @@ public final class DContinuousGrid2DFactory
 		if(rows==1 && columns==1){throw new DMasonException("Illegal value : field partitioning with one row and one column is not defined");}
 
 
-		if(MODE==DistributedField2D.UNIFORM_PARTIONING_MODE /*|| MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE*/)
+		if(MODE==DistributedField2D.UNIFORM_PARTITIONING_MODE /*|| MODE==DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE*/)
 		{  
 			DistributedField2D field = new DContinuousGrid2DXY(discretization,width, height,sm, max_distance, i, j, rows,columns,name,topicPrefix,isToroidal);
 			((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);

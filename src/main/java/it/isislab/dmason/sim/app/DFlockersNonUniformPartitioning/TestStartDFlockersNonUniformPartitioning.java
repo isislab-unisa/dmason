@@ -50,7 +50,7 @@ public class TestStartDFlockersNonUniformPartitioning {
 	
 	//don't modify this...
 
-	private static int MODE =  DistributedField2D.NON_UNIFORM_DISTRIBUTION_MODE;
+	private static int MODE =  DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
 	
 	
 	

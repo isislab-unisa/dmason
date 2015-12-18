@@ -56,7 +56,7 @@ public class MPIGUIWorker {
 				/*rows*/Integer.parseInt(args[3]),
 				/*columns*/Integer.parseInt(args[4]),
 				/*numAgents*/agent_number,
-				/*mode*/DistributedField2D.SQUARE_DISTRIBUTION_MODE,
+				/*mode*/DistributedField2D.UNIFORM_PARTITIONING_MODE,
 				ConnectionType.pureMPIParallel);
 
 		printParams(args, agent_number);

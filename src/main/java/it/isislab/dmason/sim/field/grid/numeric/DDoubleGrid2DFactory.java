@@ -73,7 +73,7 @@ public class DDoubleGrid2DFactory {
 		if(rows <=0 ) throw new DMasonException("Rows cannot be less than zero");
 		if(columns <=0 ) throw new DMasonException("Columns cannot be less than zero");
 		
-		if(MODE==DistributedField2D.UNIFORM_PARTIONING_MODE)
+		if(MODE==DistributedField2D.UNIFORM_PARTITIONING_MODE)
 		{
 
 			DistributedField2D field = new DDoubleGrid2DXY(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name,topicPrefix,isToroidal);
@@ -164,7 +164,7 @@ public class DDoubleGrid2DFactory {
 
 		}
 		else
-			if(MODE==DistributedField2D.UNIFORM_PARTIONING_MODE)
+			if(MODE==DistributedField2D.UNIFORM_PARTITIONING_MODE)
 			{
 				int field_width,field_height;
 
