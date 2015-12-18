@@ -7,10 +7,10 @@ import it.isislab.dmason.test.sim.engine.DistributedStateConnectionJMSTester;
 import it.isislab.dmason.test.sim.field.CellTypeTester;
 import it.isislab.dmason.test.sim.field.UpdateCellTester;
 import it.isislab.dmason.test.sim.field.continuous.DContinuousGrid2DFactoryTester;
-import it.isislab.dmason.test.sim.field.continuous.DContinuousGrid2DXYTester;
+//import it.isislab.dmason.test.sim.field.continuous.DContinuousGrid2DXYTester;
 import it.isislab.dmason.test.sim.field.continuous.loadbalanced.DContinuousGrid2DXYLBTester;
 import it.isislab.dmason.test.sim.field.continuous.region.RegionDoubleTester;
-import it.isislab.dmason.test.sim.field.continuous.thin.DContinuousGrid2DXYThinTester;
+//import it.isislab.dmason.test.sim.field.continuous.thin.DContinuousGrid2DXYThinTester;
 import it.isislab.dmason.test.sim.field.grid.numeric.DDoubleGrid2DFactoryTester;
 import it.isislab.dmason.test.sim.field.grid.numeric.DDoubleGrid2DXYTester;
 import it.isislab.dmason.test.sim.field.grid.numeric.DIntGrid2DFactoryTester;
@@ -63,7 +63,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 	/*****Distributed Fields****************/
 	DSparseGrid2DXYTester.class,
-	DContinuousGrid2DXYTester.class,
+//	DContinuousGrid2DXYTester.class,
 	DIntGrid2DXYTester.class,
 	DDoubleGrid2DXYTester.class,
 
@@ -85,7 +85,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 	/*******Thin Distributed Fields**************/
 	DSparseGrid2DXYThinTester.class,
-	DContinuousGrid2DXYThinTester.class,
+//	DContinuousGrid2DXYThinTester.class,
 	DIntGrid2DXYThinTester.class,
 	DDoubleGrid2DXYThinTester.class		
 })

@@ -31,7 +31,6 @@ import java.util.HashMap;
 
 import sim.engine.SimState;
 import sim.field.continuous.Continuous2D;
-import sim.portrayal.continuous.ContinuousPortrayal2D;
 import sim.util.Double2D;
 
 /**
@@ -106,17 +105,17 @@ public abstract class DContinuousGrid2D extends Continuous2D  implements Distrib
 
 
 	/** Will contain globals parameters */
-	protected VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
-	protected RegionDouble myfield;
-	protected RegionMap<Double,Double2D> rmap=new RegionMap<Double,Double2D>();
-	protected ArrayList<Region<Double, Double2D>> updates_cache;
-	protected int AOI; //area of interest of an agent
-	protected UpdateMap<Double,Double2D> updates=new UpdateMap<Double,Double2D>();
-	protected HashMap<Integer,HashMap<CellType, MyCellInterface>> listGrid;
-	protected ArrayList<ArrayList<Region<Double, Double2D>>> updates_cacheLB;
-	protected SimState sm;
-	protected ArrayList<String> neighborhood=new ArrayList<String>();
-	protected boolean gui=true;
+	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
+	public RegionDouble myfield;
+	public RegionMap<Double,Double2D> rmap=new RegionMap<Double,Double2D>();
+	public ArrayList<Region<Double, Double2D>> updates_cache;
+	public int AOI; //area of interest of an agent
+	public UpdateMap<Double,Double2D> updates=new UpdateMap<Double,Double2D>();
+	public HashMap<Integer,HashMap<CellType, MyCellInterface>> listGrid;
+	public ArrayList<ArrayList<Region<Double, Double2D>>> updates_cacheLB;
+	public SimState sm;
+	public ArrayList<String> neighborhood=new ArrayList<String>();
+	public boolean gui=true;
 	private static boolean isToroidal;
 	
 	public DContinuousGrid2D(double discretization, double width, double height) 

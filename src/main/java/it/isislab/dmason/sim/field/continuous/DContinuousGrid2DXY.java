@@ -25,7 +25,6 @@ import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.TraceableField;
 import it.isislab.dmason.sim.field.continuous.region.RegionDouble;
-import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegion;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
