@@ -15,6 +15,8 @@
    limitations under the License.
  */
 package it.isislab.dmason.sim.app.DFlockersNonUniformPartitioning;
+import java.util.ArrayList;
+
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 /*
  * THIS CLASS HAS BEEN USED FOR TESTING PURPOSES IN THE BEGINNINGS,
@@ -22,7 +24,6 @@ import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.util.connection.ConnectionType;
-import java.util.ArrayList;
 import sim.display.Console;
 
 /**
@@ -38,21 +39,19 @@ import sim.display.Console;
  */
 public class TestStartDFlockersNonUniformPartitioning {
 
-	private static boolean graphicsOn=true; //with or without graphics?
-	private static int numSteps = 3000; //only graphicsOn=false
+	private static boolean graphicsOn=false; //with or without graphics?
+	private static int numSteps = Integer.MAX_VALUE; //only graphicsOn=false
 	private static int P=9;
-	private static int MAX_DISTANCE=10; //max distance
+	private static int MAX_DISTANCE=40; //max distance
 	private static int NUM_AGENTS=2000; //number of agents
-	private static int WIDTH=900; //field width
-	private static int HEIGHT=900; //field height
+	private static int WIDTH=600; //field width
+	private static int HEIGHT=600; //field height
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
 	
 	//don't modify this...
 
 	private static int MODE =  DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
-	
-	
 	
 	public static void main(String[] args) 
 	{		
@@ -78,14 +77,14 @@ public class TestStartDFlockersNonUniformPartitioning {
 		ArrayList<worker> myWorker = new ArrayList<worker>();
 		
 		for (int i = 0; i < P; i++) {
-		
-				GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, MAX_DISTANCE,P,NUM_AGENTS, MODE,ConnectionType.fakeUnitTestJMS); 
+	
+				GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, MAX_DISTANCE,P,NUM_AGENTS,MODE,ConnectionType.pureActiveMQ); 
 				genParam.setI(0);
 				genParam.setJ(i);
 				genParam.setIp(ip);
 				genParam.setPort(port);
 		
-				if(graphicsOn)
+				if(graphicsOn || i==0)
 				{
 					DFlockersNonUniformPartitioningWithUI sim =new DFlockersNonUniformPartitioningWithUI(genParam);
 					((Console)sim.createController()).pressPause();

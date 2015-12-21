@@ -15,18 +15,17 @@
    limitations under the License.
  */
 package it.isislab.dmason.sim.app.DFlockersNonUniformPartitioning;
+import java.awt.Color;
+
+import ec.util.MersenneTwisterFast;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
-
-import java.awt.Color;
-
 import sim.engine.SimState;
 import sim.field.continuous.Continuous2D;
 import sim.portrayal.Orientable2D;
 import sim.util.Bag;
 import sim.util.Double2D;
-import ec.util.MersenneTwisterFast;
 /**
  * 
  * @author Michele Carillo
@@ -40,7 +39,8 @@ import ec.util.MersenneTwisterFast;
  */
 public class DFlockerNonUniformPartitioning extends RemoteFlockNonUniformPartitioning<Double2D> implements Orientable2D
 {
-    public Double2D lastd = new Double2D(0,0);
+    
+	public Double2D lastd = new Double2D(0,0);
     public Color color;
     public boolean dead = false;
 
@@ -53,7 +53,8 @@ public class DFlockerNonUniformPartitioning extends RemoteFlockNonUniformPartiti
     
     public Bag getNeighbors(DistributedState<Double2D> sm)
     {
-        return ((DContinuousGrid2D)sm.getField()).getObjectsExactlyWithinDistance(pos, ((DFlockersNonUniformPartitioning)sm).neighborhood, true);
+    	 return ((DContinuousGrid2D)sm.getField()).getObjectsExactlyWithinDistance(pos, ((DFlockersNonUniformPartitioning)sm).neighborhood, true);
+        //return (((DFlockersNonUniformPartitioning)sm).flockers).getNeighborsWithinDistance(pos, ((DFlockersNonUniformPartitioning)sm).neighborhood, true);
     }
     
     public double getOrientation() { return orientation2D(); }

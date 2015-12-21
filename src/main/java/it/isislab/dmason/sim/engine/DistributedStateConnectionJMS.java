@@ -21,6 +21,8 @@ import it.isislab.dmason.annotation.AuthorAnnotation;
 import it.isislab.dmason.experimentals.util.trigger.Trigger;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.ThreadVisualizationCellMessageListener;
 import it.isislab.dmason.experimentals.util.visualization.zoomviewerapp.ThreadZoomInCellMessageListener;
+import it.isislab.dmason.nonuniform.QuadTree;
+import it.isislab.dmason.nonuniform.QuadTree.ORIENTATION;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;
@@ -35,18 +37,18 @@ import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.management.globals.UpdaterThreadForGlobalsListener;
 import it.isislab.dmason.util.management.globals.util.UpdateGlobalVarAtStep;
-
+import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
-
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.jms.JMSException;
+import javax.jms.Message;
 
 /**
  * 
- * @param <E>
- *            the type of locations
- *            
+ * @param <E> the type of locations   
  * @author Michele Carillo
  * @author Ada Mancuso
  * @author Dario Mazzeo
@@ -160,10 +162,39 @@ public class DistributedStateConnectionJMS<E> {
 		networkNumberOfSubscribersForField=dm.networkNumberOfSubscribersForField;
 	}
 
+	public int CONNECTIONS_CREATED_STATUS_P;
+	public boolean CONNECTIONS_CREATED=false;
 	public void init_connection() {
 
 		try {
 			connectionJMS.setupConnection(new Address(ip, port));
+			
+			if(MODE == DistributedField2D.NON_UNIFORM_PARTITIONING_MODE)
+			{
+				try {
+					connectionJMS.createTopic("CONNECTIONS_CREATED", 1);
+					connectionJMS.subscribeToTopic("CONNECTIONS_CREATED");
+					connectionJMS.asynchronousReceive("CONNECTIONS_CREATED", new MyMessageListener() {
+						
+						@Override
+						public void onMessage(Message msg) {
+							// TODO Auto-generated method stub
+							CONNECTIONS_CREATED_STATUS_P++;
+							if(CONNECTIONS_CREATED_STATUS_P==dm.P)
+							{
+								CONNECTIONS_CREATED=true;
+								lock.lock();
+									block.signal();
+								lock.unlock();
+							}
+						}
+					});
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -173,6 +204,47 @@ public class DistributedStateConnectionJMS<E> {
 			init_spatial_connection();
 		if(((DistributedMultiSchedule<E>)dm.schedule).fieldsNetwork.size()>0)
 			init_network_connection();
+	}
+	private  ReentrantLock lock;
+	private  Condition block;
+	public void initNonUnfiromCommunication(QuadTree q)
+	{
+		lock=new ReentrantLock();
+		block=lock.newCondition();
+		
+		try {
+			for(ORIENTATION neighbors:q.neighborhood.keySet())
+			{
+				connectionJMS.createTopic(topicPrefix+q.ID + neighbors,
+						schedule.fields2D
+						.size());	
+				
+				for(QuadTree neighbor:q.neighborhood.get(neighbors))
+				{
+					connectionJMS.subscribeToTopic(topicPrefix+neighbor.ID+QuadTree.swapOrientation(neighbors));
+					UpdaterThreadForListener u1 = new UpdaterThreadForListener(
+					connectionJMS,topicPrefix+neighbor.ID+QuadTree.swapOrientation(neighbors),schedule.fields2D, listeners);
+					u1.start();
+				}
+
+			}
+
+			connectionJMS.publishToTopic("READY "+q.ID, "CONNECTIONS_CREATED", "");	
+
+			while(!CONNECTIONS_CREATED)
+			{
+				//Block this thread
+				lock.lock();
+					block.await();
+				lock.unlock();
+				
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
 	}
 
 	private void init_spatial_connection() {
@@ -694,7 +766,7 @@ public class DistributedStateConnectionJMS<E> {
 		else if (MODE == DistributedField2D.NON_UNIFORM_PARTITIONING_MODE) { // NON UNFIRORM DISTRIBUTION MODE TOROIDAL
 
 			try {
-
+				System.out.println("Non Uniform Partitioning.");
 				//				connectionJMS.createTopic(topicPrefix+TYPE+"L",((DistributedMultiSchedule)schedule).fields2D.size());
 				//				connectionJMS.createTopic(topicPrefix+TYPE+"R",((DistributedMultiSchedule)schedule).fields2D.size());
 				//				connectionJMS.createTopic(topicPrefix+TYPE+"D",((DistributedMultiSchedule)schedule).fields2D.size());

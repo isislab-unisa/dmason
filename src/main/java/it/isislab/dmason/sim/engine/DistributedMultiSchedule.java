@@ -22,18 +22,23 @@ import it.isislab.dmason.experimentals.sim.field.support.field2D.loadbalanced.Up
 import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.LoadBalancingInterface;
 import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.ViewerMonitor;
+import it.isislab.dmason.nonuniform.QuadTree;
+import it.isislab.dmason.nonuniform.TreeObject;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.DistributedField2DLB;
 import it.isislab.dmason.sim.field.DistributedFieldNetwork;
+import it.isislab.dmason.sim.field.continuous.DContinuousNonUniform;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
+import sim.util.Double2D;
 
 
 /**
@@ -113,11 +118,12 @@ public class DistributedMultiSchedule<E> extends Schedule
 	 */
 	private ArrayList<Boolean> synchResults = new ArrayList<Boolean>(); 
 	private ArrayList<Boolean> synchNetworkResults = new ArrayList<Boolean>(); 
-
+	//NON UNIFORM
+	private QuadTree tree_partitioning;
+	private HashMap<RemotePositionedAgent<E>, DistributedField2D<E>> map_agents_on_fields=new HashMap<RemotePositionedAgent<E>, DistributedField2D<E>>();
+	private HashMap<RemotePositionedAgent<E>,E> map_agents_on_position=new HashMap<RemotePositionedAgent<E>,E>();
 
 	public DistributedMultiSchedule() {
-
-
 
 		fields2D = new ArrayList<DistributedField2D>();
 		fieldsNetwork = new ArrayList<DistributedFieldNetwork>();
@@ -127,10 +133,42 @@ public class DistributedMultiSchedule<E> extends Schedule
 		numAgents = 0;
 		externalAgents = 0;
 		numExt = 0;
-		thresholdSplit=3; 
-		thresholdMerge=1.5;
-	}
 
+		thresholdSplit=3;
+		thresholdMerge=1.5;
+		// profiling code
+
+		time = 0;
+		// end profiling code
+	}
+	public DistributedMultiSchedule(int tot_agents,int number_of_cells, double width, double height,double aoi) {
+
+		fields2D = new ArrayList<DistributedField2D>();
+		fieldsNetwork = new ArrayList<DistributedFieldNetwork>();
+		peers = new HashMap<String, String>();
+		split = false;
+		merge = false;
+		numAgents = 0;
+		externalAgents = 0;
+		numExt = 0;
+		thresholdSplit=3;
+		thresholdMerge=1.5;
+		// profiling code
+		time = 0;
+		// end profiling code
+		tree_partitioning=new QuadTree(tot_agents/number_of_cells, 0, 0, width,height,aoi);
+
+	}
+	/**
+	 * The same method of MASON scheduleOnce(Steppable event) but for non uniform partitioning
+	 * @param event
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean scheduleOnceNonUniform(RemotePositionedAgent<E> event,double x, double y,DistributedField2D<E> onField, E pos) {
+		return  tree_partitioning.insert(event, x, y) && (map_agents_on_fields.put(event, onField)==null) && (map_agents_on_position.put(event, pos)==null);
+	}
 	/**
 	 * Steps the schedule for each field, gathering and ordering all the items to step on the next time step (skipping
 	 * blank time steps), and then stepping all of them in the decided order.
@@ -152,7 +190,36 @@ public class DistributedMultiSchedule<E> extends Schedule
 				}
 			}
 		}
+		//NON UNIFORM DISTRIBUTION MODE
+		if(getSteps()==0 && tree_partitioning!=null){
 
+			tree_partitioning.partition(state.P, tree_partitioning, true);
+
+			List<QuadTree> parts=tree_partitioning.getPartitioning(tree_partitioning);
+
+			QuadTree myCell=parts.get(state.TYPE.pos_j);
+
+			//PREPARAZIONE CAMPI
+			for(DistributedField2D<E> f : fields2D)
+			{
+				((DContinuousNonUniform)f).clear();
+
+				((DContinuousNonUniform)f).createRegions(myCell);
+
+			}
+
+			//ADD AGENTS TO CORRECT FIELD AND TO THE SCHEDULE OF THIS CELL
+			for(TreeObject agent: myCell.getObjects())
+			{
+				this.scheduleOnce((Steppable) agent.obj);
+
+				state.addToField((RemotePositionedAgent<E>) agent.obj, (Double2D)map_agents_on_position.get(agent.obj));
+			}
+
+			//CRAEZIONE DELLA COMUNICAZIONE
+			state.getDistributedStateConnectionJMS().initNonUnfiromCommunication(myCell);
+
+		}
 	
 		// If not already present, adds a "zombie" agent to the schedule
 		// in order to prevent stopping the simulation.
@@ -180,7 +247,8 @@ public class DistributedMultiSchedule<E> extends Schedule
 		deferredUpdates.clear();
 
 
-		verifyBalance();
+		if(tree_partitioning==null) verifyBalance();
+
 
 		// Create a thread for each field assigned to this worker, in order
 		// to do synchronization
@@ -269,7 +337,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 			{
 				monitor.awaitForAckStep(currentStep);
 			} catch (InterruptedException e) {
-						e.printStackTrace();
+				e.printStackTrace();
 			}
 		}
 
@@ -430,7 +498,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(true);
 				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(true);
 
-			
+
 				numExt = 0;
 
 			}

@@ -70,15 +70,16 @@ public abstract class DistributedState<E> extends SimState {
 	public int rows;
 	public int columns;
 	public String topicPrefix = "";
+	public int P;
 	public CellType TYPE;
-
 	public UpdateGlobalVarAtStep upVar = null;
 	private boolean isPureMPI = false;
 	private boolean isPureAMQ = false;
 	private boolean isHybrid = false;
 	private DistributedStateConnectionJMS<E> serviceJMS;
 	private DistributedStateConnectionMPI<E> serviceMPI;
-
+	
+	
 	public DistributedState() {
 		super(null, new DistributedMultiSchedule<E>());
 	}
@@ -87,7 +88,7 @@ public abstract class DistributedState<E> extends SimState {
 			DistributedMultiSchedule<E> sched, String prefix,
 			int typeOfConnection, ConnectionJMS conjms) {
 		super(null, sched);
-
+		P=params.getP();
 		long randomizer = 0;
 		if (prefix.startsWith("Batch"))
 			randomizer = System.currentTimeMillis();
@@ -110,7 +111,7 @@ public abstract class DistributedState<E> extends SimState {
 			DistributedMultiSchedule<E> sched, String prefix,
 			int typeOfConnection) {
 		super(null, sched);
-
+		P=params.getP();
 		long randomizer = 0;
 		if (prefix.startsWith("Batch"))
 			randomizer = System.currentTimeMillis();
@@ -127,6 +128,7 @@ public abstract class DistributedState<E> extends SimState {
 		this.MODE = params.getMode();
 		this.topicPrefix = prefix;
 
+		
 		switch (typeOfConnection) {
 		case ConnectionType.pureActiveMQ:
 			serviceJMS = new DistributedStateConnectionJMS(this,

@@ -119,6 +119,16 @@ public final class DContinuousGrid2DFactory
 				throw new DMasonException("Illegal Distribution Mode");
 			}
 	}
+	public static final DContinuousGrid2D createDContinuous2DNonUniform(double discretization,double width, double height,SimState sm,int max_distance, int id,int P, int MODE, String name, String topicPrefix, boolean isToroidal)
+	{	
+		if(MODE == DistributedField2D.NON_UNIFORM_PARTITIONING_MODE)
+		{
+			DistributedField2D field = new DContinuousNonUniform(discretization, width, height, sm, max_distance, id, P, name, topicPrefix);
+			field.setToroidal(isToroidal);
+			((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
+			return (DContinuousGrid2D)field;
+		}return null;
+	}
 
 	/**
 	 * Method used only for Thin simulations

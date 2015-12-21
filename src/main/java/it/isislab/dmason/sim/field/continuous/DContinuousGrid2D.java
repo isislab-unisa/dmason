@@ -68,6 +68,11 @@ import sim.util.Double2D;
 public abstract class DContinuousGrid2D extends Continuous2D  implements DistributedField2D<Double2D>
 {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Stores the coordinates of this distributed field relative to the
 	 * global field. For instance, assume a global field sized 200x100 units
 	 * (width * height). If we split the global field in two distributed field,

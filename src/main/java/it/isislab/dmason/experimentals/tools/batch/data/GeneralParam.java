@@ -38,7 +38,7 @@ public class GeneralParam implements Serializable
 	private boolean isBatch;
 	private int connectionType;
 	
-	private int P;
+private int P;
 	
 	public GeneralParam(int width, int height, int maxDistance,
 			int P, int numAgents, int mode, int connectionType) {
@@ -47,6 +47,7 @@ public class GeneralParam implements Serializable
 		this.Height = height;
 		this.MaxDistance = maxDistance;
 		//this.NumRegions = numRegions;
+	
 		this.P=P;
 		this.NumAgents = numAgents;
 		this.Mode = mode;
