@@ -210,7 +210,7 @@
 							<appendAssemblyId>true</appendAssemblyId>
 							<archive>
 								<manifest>
-									<mainClass>it.isislab.dmason.util.SystemManagement.Worker.thrower.DMasonWorker</mainClass>
+									<mainClass>it.isislab.dmason.util.management.Worker.thrower.DMasonWorker</mainClass>
 								</manifest>
 							</archive>
 							<descriptorRefs>
@@ -229,7 +229,7 @@
 							<appendAssemblyId>true</appendAssemblyId>
 							<archive>
 								<manifest>
-									<mainClass>it.isislab.dmason.util.SystemManagement.Worker.thrower.DMasonWorkerWithGui</mainClass>
+									<mainClass>it.isislab.dmason.util.management.worker.thrower.DMasonWorkerWithGui</mainClass>
 								</manifest>
 							</archive>
 							<descriptorRefs>
@@ -248,7 +248,7 @@
 							<appendAssemblyId>true</appendAssemblyId>
 							<archive>
 								<manifest>
-									<mainClass>it.isislab.dmason.util.SystemManagement.Master.thrower.DMasonMaster</mainClass>
+									<mainClass>it.isislab.dmason.util.management.master.thrower.DMasonMaster</mainClass>
 								</manifest>
 							</archive>
 							<descriptorRefs>

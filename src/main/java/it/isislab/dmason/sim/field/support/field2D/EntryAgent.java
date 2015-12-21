@@ -17,9 +17,7 @@
 
 package it.isislab.dmason.sim.field.support.field2D;
 
-import it.isislab.dmason.sim.app.DParticlesThin.DParticle;
-import it.isislab.dmason.sim.engine.RemotePositionedAgent;import mpi.Int2;
-import sim.util.Int2D;
+import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 
 import java.io.Serializable;
 

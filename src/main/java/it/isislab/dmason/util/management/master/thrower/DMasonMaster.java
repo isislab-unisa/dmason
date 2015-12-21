@@ -2587,7 +2587,7 @@ public class DMasonMaster extends JFrame  implements Observer{
 		if(rows==0 || columns==0)
 			errors.add("Rows or Columns must not be equals to 0");
 
-		if(rows==1)
+		if(rows==1 || columns == 1)
 			if(!jCheckBoxLoadBalancing.isSelected())
 				MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;
 			else
@@ -2658,7 +2658,7 @@ public class DMasonMaster extends JFrame  implements Observer{
 		if(rows == 1 && columns == 1)
 			errors.add("Both Rows and Columns must not be equals to 1");
 
-		if(rows==1)
+		if(rows==1 || columns == 1)
 			if(!jCheckBoxLoadBalancing.isSelected())
 				MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;
 			else
@@ -2987,8 +2987,8 @@ public class DMasonMaster extends JFrame  implements Observer{
 
 		if(isHorizontal && !jCheckBoxLoadBalancing.isSelected()){
 			MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;
-			String w=(rows==1)?""+WIDTH:""+(int)(WIDTH/columns);
-			String h=(columns==1)?""+HEIGHT:""+(int)(HEIGHT/rows);
+			String w=(rows==1)?""+(int)(WIDTH/columns):""+WIDTH;
+			String h=(columns==1)?""+(int)(HEIGHT/rows):""+HEIGHT;
 			//if((Integer)WIDTH % columns == 0)
 			labelWriteRegWidth.setText(""+w);
 			labelWriteRegHeight.setText(""+h);
