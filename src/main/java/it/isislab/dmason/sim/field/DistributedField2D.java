@@ -40,8 +40,8 @@ public interface DistributedField2D<E> extends DistributedField<E>
 	public static final int UNIFORM_PARTITIONING_MODE=0;
 	public static final int SQUARE_BALANCED_DISTRIBUTION_MODE=1;
 	public static final int HORIZONTAL_BALANCED_DISTRIBUTION_MODE=2;
-	public static final int NON_UNIFORM_PARTITIONING_MODE=3;
-	public static final int THIN_MODE=4;
+	public static final int NON_UNIFORM_PARTITIONING_MODE=4;
+	public static final int THIN_MODE=3;
 	
 	/**  
 	 * Provide the shift logic of the agents among the peers
