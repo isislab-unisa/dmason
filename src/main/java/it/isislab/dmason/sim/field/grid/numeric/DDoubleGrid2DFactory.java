@@ -18,14 +18,14 @@
 package it.isislab.dmason.sim.field.grid.numeric;
 
 import it.isislab.dmason.exception.DMasonException;
+import it.isislab.dmason.experimentals.field.grid.numeric.thin.DDoubleGrid2DThin;
+import it.isislab.dmason.experimentals.field.grid.numeric.thin.DDoubleGrid2DXYThin;
+import it.isislab.dmason.experimentals.field.grid.numeric.thin.DDoubleGrid2DYThin;
+import it.isislab.dmason.experimentals.sim.field.grid.numeric.loadbalanced.DDoubleGrid2DXYLB;
+import it.isislab.dmason.experimentals.sim.field.grid.numeric.loadbalanced.DDoubleGrid2DYLB;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.sim.field.grid.numeric.loadbalanced.DDoubleGrid2DXYLB;
-import it.isislab.dmason.sim.field.grid.numeric.loadbalanced.DDoubleGrid2DYLB;
-import it.isislab.dmason.sim.field.grid.numeric.thin.DDoubleGrid2DThin;
-import it.isislab.dmason.sim.field.grid.numeric.thin.DDoubleGrid2DXYThin;
-import it.isislab.dmason.sim.field.grid.numeric.thin.DDoubleGrid2DYThin;
 import sim.engine.SimState;
 
 /**

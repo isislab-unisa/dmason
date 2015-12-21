@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import it.isislab.dmason.exception.DMasonException;
+import it.isislab.dmason.experimentals.sim.field.grid.sparse.loadbalanced.DSparseGrid2DXYLB;
+import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellIntegerField;
+import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellInterface;
+import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
@@ -15,10 +19,6 @@ import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
-import it.isislab.dmason.sim.field.grid.sparse.loadbalanced.DSparseGrid2DXYLB;
-import it.isislab.dmason.sim.field.support.loadbalancing.MyCellIntegerField;
-import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
-import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.connection.ConnectionType;
 
 import org.junit.Before;

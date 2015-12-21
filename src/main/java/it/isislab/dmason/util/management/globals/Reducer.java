@@ -16,17 +16,17 @@
  */
 package it.isislab.dmason.util.management.globals;
 
+import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
+import it.isislab.dmason.experimentals.util.visualization.globalviewer.RemoteSnap;
+import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.MessageListener;
-import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.management.JarClassLoader;
 import it.isislab.dmason.util.management.globals.util.UpdateGlobalVarAtStep;
 import it.isislab.dmason.util.management.worker.StartUpData;
 import it.isislab.dmason.util.management.worker.Updater;
-import it.isislab.dmason.util.visualization.globalviewer.RemoteSnap;
-import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;

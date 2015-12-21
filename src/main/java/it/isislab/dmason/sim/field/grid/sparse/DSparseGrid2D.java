@@ -17,6 +17,9 @@
 
 package it.isislab.dmason.sim.field.grid.sparse;
 
+import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellIntegerField;
+import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellInterface;
+import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.UpdateCell;
@@ -24,9 +27,6 @@ import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.sim.field.support.field2D.region.RegionMap;
-import it.isislab.dmason.sim.field.support.loadbalancing.MyCellIntegerField;
-import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
-import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;

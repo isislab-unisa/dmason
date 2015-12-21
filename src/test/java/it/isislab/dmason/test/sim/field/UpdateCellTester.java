@@ -11,12 +11,12 @@ import org.junit.Test;
 import org.junit.rules.Timeout;
 
 import it.isislab.dmason.exception.DMasonException;
+import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellIntegerField;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.UpdateCell;
 import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.sim.field.support.field2D.region.RegionMap;
-import it.isislab.dmason.sim.field.support.loadbalancing.MyCellIntegerField;
 import junit.framework.TestCase;
 
 // TODO: Auto-generated Javadoc

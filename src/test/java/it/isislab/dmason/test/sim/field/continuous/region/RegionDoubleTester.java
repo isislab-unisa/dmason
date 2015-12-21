@@ -11,7 +11,7 @@ import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.continuous.region.RegionDouble;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
-import it.isislab.dmason.test.sim.app.DFlockers.DFlocker;
+import it.isislab.dmason.test.sim.app.DFlockersUnitTest.DFlocker;
 
 // TODO: Auto-generated Javadoc
 /**

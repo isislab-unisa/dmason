@@ -17,9 +17,6 @@
 
 package it.isislab.dmason.util.management;
 
-import it.isislab.dmason.tools.batch.data.EntryParam;
-import it.isislab.dmason.tools.batch.data.GeneralParam;
-
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -30,6 +27,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
 import java.util.jar.Attributes;
+
+import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
+import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 
 /**
  * This class contains the mechanism for dynamically load jar

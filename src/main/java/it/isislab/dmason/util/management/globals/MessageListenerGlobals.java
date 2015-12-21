@@ -17,10 +17,10 @@
 
 package it.isislab.dmason.util.management.globals;
 
+import it.isislab.dmason.experimentals.util.visualization.globalviewer.RemoteSnap;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.util.connection.MyHashMap;
-import it.isislab.dmason.util.visualization.globalviewer.RemoteSnap;
 
 import java.util.ArrayList;
 

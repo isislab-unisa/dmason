@@ -9,6 +9,8 @@ import org.junit.Test;
 import sim.engine.SimState;
 import sim.util.Double2D;
 import it.isislab.dmason.exception.DMasonException;
+import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
+import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.DistributedStateConnectionJMS;
@@ -17,11 +19,9 @@ import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
-import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
 import it.isislab.dmason.util.connection.testconnection.VirtualConnection;
-import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 
 // TODO: Auto-generated Javadoc
 /**

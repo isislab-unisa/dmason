@@ -1,8 +1,8 @@
 package it.isislab.dmason.sim.field;
 
-import it.isislab.dmason.sim.field.support.loadbalancing.MyCellInterface;
-
 import java.util.HashMap;
+
+import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellInterface;
 
 public interface DistributedField2DLB<E>{
 

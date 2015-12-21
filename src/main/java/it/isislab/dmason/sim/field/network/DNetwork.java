@@ -18,6 +18,7 @@
 package it.isislab.dmason.sim.field.network;
 
 import it.isislab.dmason.annotation.AuthorAnnotation;
+import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemoteUnpositionedAgent;
 import it.isislab.dmason.sim.field.CellType;
@@ -28,7 +29,6 @@ import it.isislab.dmason.sim.field.support.network.DNetworkRegion;
 import it.isislab.dmason.sim.field.support.network.GraphSubscribersEdgeList;
 import it.isislab.dmason.sim.field.support.network.UpdateNetworkMap;
 import it.isislab.dmason.util.connection.Connection;
-import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

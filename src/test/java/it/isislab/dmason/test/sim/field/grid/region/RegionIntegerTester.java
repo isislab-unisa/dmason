@@ -9,7 +9,8 @@ import static org.junit.Assert.fail;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
-import it.isislab.dmason.test.sim.app.DParticles.DParticle;
+import it.isislab.dmason.test.sim.app.DParticlesUnittest.DParticle;
+
 import org.junit.Before;
 import org.junit.Test;
 import sim.util.Int2D;

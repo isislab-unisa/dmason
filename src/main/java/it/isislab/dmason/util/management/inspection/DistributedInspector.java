@@ -16,8 +16,6 @@
  */
 package it.isislab.dmason.util.management.inspection;
 
-import it.isislab.dmason.util.visualization.globalviewer.Display;
-
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -31,6 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import it.isislab.dmason.experimentals.util.visualization.globalviewer.Display;
 import sim.display.GUIState;
 import sim.portrayal.inspector.PropertyInspector;
 import sim.util.Interval;

@@ -17,8 +17,8 @@
 
 package it.isislab.dmason.util.management.worker;
 
-import it.isislab.dmason.tools.batch.data.EntryParam;
-import it.isislab.dmason.tools.batch.data.GeneralParam;
+import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
+import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.connection.Address;
 
 import java.io.Serializable;

@@ -17,9 +17,10 @@
 
 package it.isislab.dmason.sim.field;
 
+import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
-import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -17,10 +17,10 @@
 
 package it.isislab.dmason.util.management.worker;
 
+import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.TraceableField;
-import it.isislab.dmason.tools.batch.data.GeneralParam;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;

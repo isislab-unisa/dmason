@@ -1,8 +1,8 @@
 package it.isislab.dmason.test.testsuite;
 
-import it.isislab.dmason.test.sim.app.DAntsForage.TestDAntsForage;
-import it.isislab.dmason.test.sim.app.DFlockers.TestDFlockers;
-import it.isislab.dmason.test.sim.app.DParticles.TestDParticles;
+import it.isislab.dmason.test.sim.app.DAntsForageUnitTest.TestDAntsForage;
+import it.isislab.dmason.test.sim.app.DFlockersUnitTest.TestDFlockers;
+import it.isislab.dmason.test.sim.app.DParticlesUnittest.TestDParticles;
 import it.isislab.dmason.test.sim.engine.DistributedStateConnectionJMSTester;
 import it.isislab.dmason.test.sim.field.CellTypeTester;
 import it.isislab.dmason.test.sim.field.UpdateCellTester;

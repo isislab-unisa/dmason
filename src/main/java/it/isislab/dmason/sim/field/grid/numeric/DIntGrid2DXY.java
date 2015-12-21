@@ -18,6 +18,8 @@
 package it.isislab.dmason.sim.field.grid.numeric;
 
 import it.isislab.dmason.exception.DMasonException;
+import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
+import it.isislab.dmason.experimentals.util.visualization.zoomviewerapp.ZoomArrayList;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
@@ -31,8 +33,7 @@ import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.RegionNumeric;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
-import it.isislab.dmason.util.visualization.globalviewer.VisualizationUpdateMap;
-import it.isislab.dmason.util.visualization.zoomviewerapp.ZoomArrayList;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

@@ -19,7 +19,7 @@ package it.isislab.dmason.sim.field;
 
 
 import it.isislab.dmason.exception.DMasonException;
-import it.isislab.dmason.sim.field.support.loadbalancing.MyCellIntegerField;
+import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellIntegerField;
 
 import java.io.Serializable;
 import java.util.Comparator;
