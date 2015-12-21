@@ -72,6 +72,7 @@ public class DIntGrid2DFactory {
 		if(height>=Integer.MAX_VALUE) {throw new DMasonException("Illegal value : height value exceeds Integer max value");}
 		if(max_distance<=0){throw new DMasonException("Illegal value, max_distance value must be greater than 0");}
 		if(max_distance>=Integer.MAX_VALUE ){throw new DMasonException("Illegal value : max_distance value exceded Integer max value");}
+		if(rows==1 && columns==1){throw new DMasonException("Illegal value : field partitioning with one row and one column is not defined");}
 		
 		if(MODE==DistributedField2D.UNIFORM_PARTITIONING_MODE)
 		{
