@@ -967,13 +967,6 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 
 
 	@Override
-	public ArrayList<MessageListener> getLocalListener() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
 	public void setTable(HashMap table) {
 		// TODO Auto-generated method stub
 

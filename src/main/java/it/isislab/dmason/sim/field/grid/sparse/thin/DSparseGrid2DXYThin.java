@@ -135,7 +135,7 @@ import sim.util.MutableInt2D;
 public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableField
 {	
 
-	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
+	
 	private static Logger logger = Logger.getLogger(DSparseGrid2DXY.class.getCanonicalName());
 	private ConnectionJMS con = new ConnectionNFieldsWithActiveMQAPI();
 	private String NAME;
@@ -1329,11 +1329,6 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 	public void setOwn_x(int own_x) { this.own_x = own_x; }
 	public int getOwn_y() {	return own_y; }
 	public void setOwn_y(int own_y) { this.own_y = own_y; }
-
-	@Override
-	public ArrayList<MessageListener> getLocalListener() {
-		return listeners;
-	}
 
 	@Override
 	public void setTable(HashMap table) {

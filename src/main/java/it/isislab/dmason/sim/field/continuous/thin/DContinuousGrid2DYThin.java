@@ -118,7 +118,7 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 
 	private static Logger logger = Logger.getLogger(DContinuousGrid2DYThin.class.getCanonicalName());
 
-	public ArrayList<MessageListener> listeners;
+	
 	private String name;
 
 	/** The image to send */
@@ -207,7 +207,6 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 		this.rows = rows;
 		this.columns = columns;
 		this.cellType = new CellType(i, j);
-		this.listeners = new ArrayList<MessageListener>();
 		this.updates_cache = new ArrayList<Region<Double,Double2D>>();
 		this.name = name;
 		this.topicPrefix = prefix;
@@ -752,10 +751,6 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 	public double getOwn_y() {	return own_y; }
 	public void setOwn_y(double own_y) { this.own_y = own_y; }
 
-	@Override
-	public ArrayList<MessageListener> getLocalListener() {
-		return listeners;
-	}
 
 	@Override
 	public void setTable(HashMap table) {

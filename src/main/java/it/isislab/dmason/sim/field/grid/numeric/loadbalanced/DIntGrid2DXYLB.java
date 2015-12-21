@@ -269,12 +269,7 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 		return (DistributedState)sm;
 	}
 
-	@Override
-	public ArrayList<MessageListener> getLocalListener() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	@Override
 	public void setTable(HashMap table) {
 		// TODO Auto-generated method stub

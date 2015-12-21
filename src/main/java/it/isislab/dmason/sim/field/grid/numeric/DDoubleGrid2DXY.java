@@ -1076,11 +1076,6 @@ private void makeToroidalSections() {
 		return true;
 	}
 
-	@Override
-	public ArrayList<MessageListener> getLocalListener() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public void setTable(HashMap table) {

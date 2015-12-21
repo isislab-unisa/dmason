@@ -156,7 +156,7 @@ public class DDoubleGrid2DXYThin extends DDoubleGrid2DThin {
 		this.field_height=field_height;
 		this.NAME = name;
 		this.sm=sm;		 
-		
+
 		AOI=max_distance;
 		//NUMPEERS=num_peers;	
 		this.rows = rows;
@@ -183,8 +183,8 @@ public class DDoubleGrid2DXYThin extends DDoubleGrid2DThin {
 	 */
 	private boolean createRegion() {
 
-		
-		
+
+
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
@@ -235,7 +235,7 @@ public class DDoubleGrid2DXYThin extends DDoubleGrid2DThin {
 		actualStats = new HashMap<String, Object>();
 		isSendingGraphics = false;
 		writer=currentBitmap.getRaster();
-*/
+		 */
 		// Building the regions
 
 		myfield=new RegionDoubleNumeric(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
@@ -711,7 +711,7 @@ public class DDoubleGrid2DXYThin extends DDoubleGrid2DThin {
 
 
 		//if(rmap.corner_mine_up_left!=null && rmap.corner_mine_up_left.isMine(l.x,l.y))
-				if(rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(l.x,l.y))
+		if(rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(l.x,l.y))
 		{
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
@@ -949,13 +949,6 @@ public class DDoubleGrid2DXYThin extends DDoubleGrid2DThin {
 		}
 		return true;
 	}
-
-	@Override
-	public ArrayList<MessageListener> getLocalListener() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public void setTable(HashMap table) {
 		// TODO Auto-generated method stub
@@ -974,7 +967,7 @@ public class DDoubleGrid2DXYThin extends DDoubleGrid2DThin {
 		return updates;
 	}
 
-	
+
 	public void resetParameters() {
 		numAgents=0;
 	}

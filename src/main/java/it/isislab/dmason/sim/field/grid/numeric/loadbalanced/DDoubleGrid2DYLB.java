@@ -995,13 +995,6 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 	}
 
 
-	@Override
-	public ArrayList<MessageListener> getLocalListener() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
 	private int dynamic1(int al, int ar, int sl, int sr){
 		if(sl+sr!=0)
 			return al+(((sr-sl)/2)*(al+ar)/(sl+sr));

@@ -1018,10 +1018,6 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 	public int getOwn_y() {	return own_y; }
 	public void setOwn_y(int own_y) { this.own_y = own_y; }
 
-	@Override
-	public ArrayList<MessageListener> getLocalListener() {
-		return null;//listeners;
-	}
 
 	@Override
 	public void setTable(HashMap table) {

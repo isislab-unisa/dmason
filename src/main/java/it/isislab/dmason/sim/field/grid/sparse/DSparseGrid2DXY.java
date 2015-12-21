@@ -136,7 +136,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 
 	private static Logger logger = Logger.getLogger(DSparseGrid2DXY.class.getCanonicalName());
 
-	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
+	//private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
 
 	/** Name of the field. Used to identify fields in simulation using several fields. */
 	private String name;
@@ -1051,10 +1051,10 @@ private void makeToroidalSections() {
 	public Integer getOwn_y() {	return own_y; }
 	public void setOwn_y(Integer own_y) { this.own_y = own_y; }
 
-	@Override
+/*	@Override
 	public ArrayList<MessageListener> getLocalListener() {
 		return listeners;
-	}
+	}*/
 
 	@Override
 	public void setTable(HashMap table) {
@@ -1105,7 +1105,7 @@ private void makeToroidalSections() {
 	}
 
 	/**
-	 * Used by SociallyDamaginBehaviour because ...
+	 * 
 	 */
 	public HashMap<String,EntryAgent<Int2D>> getAllVisibleAgent() {
 
@@ -1142,7 +1142,6 @@ private void makeToroidalSections() {
 		return thor;
 	}
 	/**
-	 * Used by SociallyDamaginBehaviour
 	 * 
 	 * This method insert all agents in the field and in the corresponding region,
 	 * for this method you must use position of the actual cell

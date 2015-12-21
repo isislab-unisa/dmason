@@ -193,16 +193,7 @@ public class DistributedStateConnectionJMSTester {
 			return null;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.field.DistributedField#getLocalListener()
-		 */
-		@Override
-		public ArrayList getLocalListener() {
-			// TODO Auto-generated method stub
-			return null;
-		}
+		
 
 		/*
 		 * (non-Javadoc)

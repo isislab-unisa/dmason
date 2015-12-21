@@ -112,8 +112,6 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(DContinuousGrid2DYLB.class.getCanonicalName());
-
-	public ArrayList<MessageListener> listeners;
 	private String name;
 
 	private ZoomArrayList<RemotePositionedAgent> tmp_zoom=new ZoomArrayList<RemotePositionedAgent>();
@@ -205,7 +203,6 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 		this.rows = rows;
 		this.columns = columns;
 		this.cellType = new CellType(i, j);
-		this.listeners = new ArrayList<MessageListener>();
 		this.updates_cache = new ArrayList<Region<Double,Double2D>>();
 		this.name = name;
 		this.topicPrefix = prefix;
@@ -907,10 +904,6 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 	public double getOwn_y() {	return own_y; }
 	public void setOwn_y(double own_y) { this.own_y = own_y; }
 
-	@Override
-	public ArrayList<MessageListener> getLocalListener() {
-		return listeners;
-	}
 
 	@Override
 	public void setTable(HashMap table) {

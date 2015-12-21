@@ -5431,12 +5431,7 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D implements DistributedField
 		return (DistributedState)sm;
 	}
 
-	@Override
-	public ArrayList<MessageListener> getLocalListener() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	@Override
 	public void setTable(HashMap table) {
 		// TODO Auto-generated method stub

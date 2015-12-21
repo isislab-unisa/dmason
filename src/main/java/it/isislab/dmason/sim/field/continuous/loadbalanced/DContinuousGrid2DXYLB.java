@@ -138,8 +138,8 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 
 	private static Logger logger = Logger.getLogger(DContinuousGrid2DXYLB.class.getCanonicalName());
 
-	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
-	private String NAME;
+	
+	private String name;
 	private ConnectionJMS con = new ConnectionNFieldsWithActiveMQAPI();
 
 	//quando ricevo cellette e ho splittato a mia volta imposto i topic diversamente delle cellette
@@ -196,7 +196,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 		super(discretization, width, height);
 		this.width=width;
 		this.height=height;
-		this.NAME = name;
+		this.name = name;
 		this.sm=sm;	
 		this.topicPrefix = prefix;
 		AOI=max_distance;
@@ -687,14 +687,14 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 		try {
 			Connection connWorker = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationWorkerConnection();
 
-			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.LEFT),topicPrefix+cellType.toString()+"L", NAME);
-			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.RIGHT),topicPrefix+cellType.toString()+"R", NAME);
-			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.UP),topicPrefix+cellType.toString()+"U", NAME);
-			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.DOWN),topicPrefix+cellType.toString()+"D", NAME);
-			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT),topicPrefix+cellType.toString()+"CUDL", NAME);
-			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT),topicPrefix+cellType.toString()+"CUDR", NAME);
-			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT),topicPrefix+cellType.toString()+"CDDL", NAME);
-			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT),topicPrefix+cellType.toString()+"CDDR", NAME);	
+			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.LEFT),topicPrefix+cellType.toString()+"L", name);
+			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.RIGHT),topicPrefix+cellType.toString()+"R", name);
+			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.UP),topicPrefix+cellType.toString()+"U", name);
+			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.DOWN),topicPrefix+cellType.toString()+"D", name);
+			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT),topicPrefix+cellType.toString()+"CUDL", name);
+			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT),topicPrefix+cellType.toString()+"CUDR", name);
+			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT),topicPrefix+cellType.toString()+"CDDL", name);
+			connWorker.publishToTopic(hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT),topicPrefix+cellType.toString()+"CDDR", name);	
 
 		} catch (Exception e1) { e1.printStackTrace();}
 		//<--
@@ -5396,10 +5396,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 
 	public void setOwn_y(double own_y) { this.own_y = own_y; }
 
-	@Override
-	public ArrayList<MessageListener> getLocalListener() {
-		return listeners;
-	}
+	
 
 	@Override
 	public void setTable(HashMap table) {
@@ -5509,7 +5506,7 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 	@Override
 	public String getDistributedFieldID() {
 		// TODO Auto-generated method stub
-		return NAME;
+		return name;
 	}
 
 }

@@ -236,11 +236,6 @@ public class DNetwork extends Network implements DistributedFieldNetwork{
 		return (DistributedState)sm;
 	}
 
-	@Override
-	public ArrayList getLocalListener() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public void setTable(HashMap table) {

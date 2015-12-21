@@ -136,8 +136,6 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 
 	private static Logger logger = Logger.getLogger(DContinuousGrid2DXY.class.getCanonicalName());
 
-	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
-
 	/** Name of the field. Used to identify fields in simulation using several fields. */
 	private String name;
 
@@ -1048,10 +1046,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	public double getOwn_y() {	return own_y; }
 	public void setOwn_y(double own_y) { this.own_y = own_y; }
 
-	@Override
-	public ArrayList<MessageListener> getLocalListener() {
-		return listeners;
-	}
+
 
 	@Override
 	public void setTable(HashMap table) {
@@ -1102,8 +1097,8 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	}
 
 	/**
-	 * Used by SociallyDamaginBehaviour because ...
-	 */
+	 *	 
+	 **/
 	public HashMap<String,EntryAgent<Double2D>> getAllVisibleAgent() {
 
 		HashMap<String,EntryAgent<Double2D>> thor=myfield.clone();
@@ -1139,7 +1134,6 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		return thor;
 	}
 	/**
-	 * Used by SociallyDamaginBehaviour
 	 * 
 	 * This method insert all agents in the field and in the corresponding region,
 	 * for this method you must use position of the actual cell

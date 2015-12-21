@@ -53,7 +53,7 @@ public interface DistributedField<E> extends Serializable
 	public DistributedState<E> getState();
 
 
-	public ArrayList<MessageListener> getLocalListener();
+	//public ArrayList<MessageListener> getLocalListener();
 	
 	@SuppressWarnings("rawtypes")
 	public void setTable(HashMap table);

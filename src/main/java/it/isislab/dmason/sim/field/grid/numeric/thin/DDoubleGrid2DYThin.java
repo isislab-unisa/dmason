@@ -702,13 +702,6 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 
 
 	@Override
-	public ArrayList<MessageListener> getLocalListener() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
 	public void setTable(HashMap table) {
 		// TODO Auto-generated method stub
 

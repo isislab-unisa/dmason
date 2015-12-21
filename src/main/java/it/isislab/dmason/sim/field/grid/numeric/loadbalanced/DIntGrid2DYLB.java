@@ -936,11 +936,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 		return null;
 	}
 
-	@Override
-	public ArrayList<MessageListener> getLocalListener() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 	@Override
 	public void setTable(HashMap table) {
