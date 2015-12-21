@@ -36,6 +36,11 @@ import sim.util.Double2D;
 public class RegionDouble extends Region<Double,Double2D>
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public RegionDouble(Double upl_xx, Double upl_yy, Double down_xx,Double down_yy) 
 	{		
 		super(upl_xx, upl_yy, down_xx, down_yy);
