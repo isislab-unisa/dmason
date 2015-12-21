@@ -251,8 +251,8 @@ public class DMasonMaster extends JFrame  implements Observer{
 	private int totalTests;
 	private boolean dont=true;
 	private int MODE;
-	private Object WIDTH;
-	private Object HEIGHT;
+	private int WIDTH;
+	private int HEIGHT;
 	private int numRegions;
 	private int numAgents;
 	private int maxDistance;
@@ -2590,12 +2590,12 @@ public class DMasonMaster extends JFrame  implements Observer{
 
 		if(rows==1)
 			if(!jCheckBoxLoadBalancing.isSelected())
-				MODE = DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE;
+				MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;
 			else
 				MODE = DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE;
 		else
 			if(!jCheckBoxLoadBalancing.isSelected())
-				MODE = DistributedField2D.SQUARE_DISTRIBUTION_MODE;
+				MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;
 			else
 				MODE = DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE;
 
@@ -2661,12 +2661,12 @@ public class DMasonMaster extends JFrame  implements Observer{
 
 		if(rows==1)
 			if(!jCheckBoxLoadBalancing.isSelected())
-				MODE = DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE;
+				MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;
 			else
 				MODE = DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE;
 		else
 			if(!jCheckBoxLoadBalancing.isSelected())
-				MODE = DistributedField2D.SQUARE_DISTRIBUTION_MODE;
+				MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;
 			else
 				MODE = DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE;
 
@@ -2980,24 +2980,23 @@ public class DMasonMaster extends JFrame  implements Observer{
 
 		//		if(textFieldAgents.getText().equals(""))
 		//			textFieldAgents.setText("0");
-
-		if(Integer.parseInt(textFieldRows.getText()) == 1)
+		
+		if(Integer.parseInt(textFieldRows.getText()) == 1 || Integer.parseInt(textFieldColumns.getText()) == 1)
 			isHorizontal = true;
 		else
 			isHorizontal = false;
 
 		if(isHorizontal && !jCheckBoxLoadBalancing.isSelected()){
-			MODE = DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE;
-			String w="";
-			String h=""+HEIGHT;
+			MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;
+			String w=(rows==1)?""+WIDTH:""+(int)(WIDTH/columns);
+			String h=(columns==1)?""+HEIGHT:""+(int)(HEIGHT/rows);
 			//if((Integer)WIDTH % columns == 0)
-			w = ""+(Integer)WIDTH/columns;
 			labelWriteRegWidth.setText(""+w);
 			labelWriteRegHeight.setText(""+h);
 			labelWriteDistrMode.setText("HORIZONTAL MODE");
 		}
 		else if(!isHorizontal && !jCheckBoxLoadBalancing.isSelected()){
-			MODE = DistributedField2D.SQUARE_DISTRIBUTION_MODE;
+			MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;
 			//int rad = (int) Math.sqrt(numRegions);
 			String w="";
 			String h="";

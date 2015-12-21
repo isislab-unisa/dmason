@@ -44,14 +44,14 @@ import java.util.Observer;
 
 import javax.swing.JOptionPane;
 /**
-* @author Michele Carillo
-* @author Ada Mancuso
-* @author Dario Mazzeo
-* @author Francesco Milone
-* @author Francesco Raia
-* @author Flavio Serrapica
-* @author Carmine Spagnuolo
-**/
+ * @author Michele Carillo
+ * @author Ada Mancuso
+ * @author Dario Mazzeo
+ * @author Francesco Milone
+ * @author Francesco Raia
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
+ **/
 public class MasterDaemonStarter implements Observer
 {
 
@@ -65,12 +65,12 @@ public class MasterDaemonStarter implements Observer
 	 * The number of rows the field is split in.
 	 */
 	public int rows;
-	
+
 	/**
 	 * The number of columns the field is split in.
 	 */
 	public int columns;
-	
+
 	/**
 	 * Max distance an agent can travel in a single step. 
 	 */
@@ -80,12 +80,12 @@ public class MasterDaemonStarter implements Observer
 	 * Initial Number of agents.
 	 */
 	private int numAgents = 25;
-	
+
 	/**
 	 * Field global width.
 	 */
 	private int width = 201;
-	
+
 	/**
 	 * Field global height.
 	 */
@@ -177,12 +177,12 @@ public class MasterDaemonStarter implements Observer
 		String ip = this.address.getIPaddress();
 		Class<?> selClassUI = null;
 		Class<?> selClass = null;	
-		
+
 		this.testCounter = 0; //0 means that this is not a batch simulation
-	
+
 		String uploadDir = createUploadDir(selSim, ftpAddress);
-		
-		
+
+
 		boolean isJarSimulation = true;
 		if(!selSim.contains(".jar")) //hardcoded simulation
 		{
@@ -192,7 +192,7 @@ public class MasterDaemonStarter implements Observer
 				selClass = Class.forName(selSim);
 				//selClassUI = Class.forName(selSim);
 				selClassUI = Class.forName(selSim + "WithUI");
-	
+
 				isJarSimulation = false;
 			} catch (ClassNotFoundException e2) {
 				System.err.println("Unable to load the simulation class " + selSim);
@@ -203,7 +203,7 @@ public class MasterDaemonStarter implements Observer
 		{
 			addr = ftpAddress;
 		}
-	
+
 		//
 		if (ip.equals("127.0.0.1"))
 		{
@@ -214,9 +214,9 @@ public class MasterDaemonStarter implements Observer
 				e1.printStackTrace();
 			}
 		}
-	
-	
-		if (fieldMode == DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE || fieldMode == DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
+
+
+		if (fieldMode == DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
 		{
 			int cnt = 0;
 			// Repeat for each worker
@@ -228,16 +228,16 @@ public class MasterDaemonStarter implements Observer
 				for (int i = 0; i < fieldsInWorker; i++)
 				{
 					StartUpData data = new StartUpData();
-//					if (i==0 /*&& i == Math.sqrt(numRegions) / 2*/) {
-//						data.setStep(true);
-//					}
+					//					if (i==0 /*&& i == Math.sqrt(numRegions) / 2*/) {
+					//						data.setStep(true);
+					//					}
 					//if (cnt == numRegions / 2)
 					if (cnt == 0)
 					{
 						data.setStep(true);
 						data.reducer = true;
 					}
-	
+
 					if (config.get(workerTopic).isFlagTrue())
 					{
 						data.graphic = true;
@@ -260,8 +260,8 @@ public class MasterDaemonStarter implements Observer
 							data.setFTPAddress(addr);
 						}
 					}
-					
-					
+
+
 					GeneralParam genParam = new
 							GeneralParam(params.getWidth(),
 									params.getHeight(),
@@ -285,88 +285,162 @@ public class MasterDaemonStarter implements Observer
 				// Publish informations about simulation to worker's topic
 				connection.publishToTopic(classes, workerTopic, "classes");
 			}
-	
+
 			gui.setSystemSettingsEnabled(false);
 		}
-		else if(fieldMode == DistributedField2D.SQUARE_DISTRIBUTION_MODE)
+		else if(fieldMode == DistributedField2D.UNIFORM_PARTITIONING_MODE)
 		{
-	
-			// For each region...
-			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
-			for (int i=0;i<rows;i++){
-				for (int k=0;k<columns;k++){
-					StartUpData data = new StartUpData();
-					// Set step on the central region
-//					if (i==k /*&& i == Math.sqrt(numRegions) / 2*/) {
-//						data.setStep(true);
-//					}
-					if (i==0 && k==0 /*&& i == Math.sqrt(numRegions) / 2*/) {
-						data.setStep(true);
-					}
-					
-					if (i == rows / 2 && k == columns / 2)
-					{
-						data.reducer = true;
-					}
-					
-					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
-					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getRows(),
-							params.getColumns(), params.getNumAgents(), params.getMode(),params.getModel_params(),params.getMaxStep(),params.getConnectionType()); 
-					genParam.setI(i);
-					genParam.setJ(k);
-					genParam.setIp(ip);
-					genParam.setPort(this.address.getPort());
-					data.setParam(genParam);
-					data.setUploadDir(uploadDir);
-					defs.add(data);
-					data.graphic=false;
-				}
-			}
-			
-			int index=0;
-			for (String workerTopic : config.keySet())
-			{
-				ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
-				int fieldsInWorker = config.get(workerTopic).getNum();
-				for(int i=0;i<fieldsInWorker;i++)
+			//One row and N columns || One column and N rows
+			if(rows==1 || columns == 1){
+				int cnt = 0;
+				// Repeat for each worker
+				for (String workerTopic : config.keySet())
 				{
-					
-					defs.get(index).graphic = config.get(workerTopic).isFlagTrue();
-					if(config.get(workerTopic).isFlagTrue())
+					int fieldsInWorker = config.get(workerTopic).getNum();
+					ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
+					// Repeat for each field managed by this worker
+					for (int i = 0; i < fieldsInWorker; i++)
 					{
-						if(!isJarSimulation)
-							defs.get(index).setDef(selClassUI);
-						else
-						{	
-							defs.get(index).setJarName(selSim);
-							defs.get(index).setFTPAddress(addr);
+						StartUpData data = new StartUpData();
+						//					if (i==0 /*&& i == Math.sqrt(numRegions) / 2*/) {
+						//						data.setStep(true);
+						//					}
+						//if (cnt == numRegions / 2)
+						if (cnt == 0)
+						{
+							data.setStep(true);
+							data.reducer = true;
 						}
-						//defs.get(index).setDef(selClassUI);
+
+						if (config.get(workerTopic).isFlagTrue())
+						{
+							data.graphic = true;
+							if(!isJarSimulation)
+								data.setDef(selClassUI);
+							else
+							{	
+								data.setJarName(selSim);
+								data.setFTPAddress(addr);
+							}
+						}
+						else
+						{
+							data.graphic = false;
+							if(!isJarSimulation)
+								data.setDef(selClass);
+							else
+							{	
+								data.setJarName(selSim);
+								data.setFTPAddress(addr);
+							}
+						}
+
+
+						GeneralParam genParam = new
+								GeneralParam(params.getWidth(),
+										params.getHeight(),
+										params.getMaxDistance(), 
+										params.getRows(),
+										params.getColumns(),
+										params.getNumAgents(),
+										params.getMode(),
+										params.getModel_params(),
+										params.getMaxStep(),
+										params.getConnectionType()); 
+						genParam.setI((rows==1)?0:cnt);
+						genParam.setJ((columns==1)?0:cnt);
+						genParam.setIp(ip);
+						genParam.setPort(this.address.getPort());
+						data.setParam(genParam);
+						data.setUploadDir(uploadDir);
+						classes.add(data);
+						cnt++;
+					}
+					// Publish informations about simulation to worker's topic
+					connection.publishToTopic(classes, workerTopic, "classes");
+				}
+
+				gui.setSystemSettingsEnabled(false);
+			}
+			else // N rows and N columns
+			{
+				// For each region...
+				ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
+				for (int i=0;i<rows;i++){
+					for (int k=0;k<columns;k++){
+						StartUpData data = new StartUpData();
+						// Set step on the central region
+						//					if (i==k /*&& i == Math.sqrt(numRegions) / 2*/) {
+						//						data.setStep(true);
+						//					}
+						if (i==0 && k==0 /*&& i == Math.sqrt(numRegions) / 2*/) {
+							data.setStep(true);
+						}
+
+						if (i == rows / 2 && k == columns / 2)
+						{
+							data.reducer = true;
+						}
+
+						//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
+						GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getRows(),
+								params.getColumns(), params.getNumAgents(), params.getMode(),params.getModel_params(),params.getMaxStep(),params.getConnectionType()); 
+						genParam.setI(i);
+						genParam.setJ(k);
+						genParam.setIp(ip);
+						genParam.setPort(this.address.getPort());
+						data.setParam(genParam);
+						data.setUploadDir(uploadDir);
+						defs.add(data);
+						data.graphic=false;
+					}
+				}
+
+				int index=0;
+				for (String workerTopic : config.keySet())
+				{
+					ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
+					int fieldsInWorker = config.get(workerTopic).getNum();
+					for(int i=0;i<fieldsInWorker;i++)
+					{
+
+						defs.get(index).graphic = config.get(workerTopic).isFlagTrue();
+						if(config.get(workerTopic).isFlagTrue())
+						{
+							if(!isJarSimulation)
+								defs.get(index).setDef(selClassUI);
+							else
+							{	
+								defs.get(index).setJarName(selSim);
+								defs.get(index).setFTPAddress(addr);
+							}
+							//defs.get(index).setDef(selClassUI);
+						}
+						else
+						{
+							if(!isJarSimulation)
+								defs.get(index).setDef(selClass);
+							else
+							{	
+								defs.get(index).setJarName(selSim);
+								defs.get(index).setFTPAddress(addr);
+							}
+							//defs.get(index).setDef(selClass);
+						}
+						classes.add(defs.get(index));					
+						index++;
+					}
+
+
+					if(connection.publishToTopic(classes, workerTopic, "classes")==true)
+					{
+
+						gui.setSystemSettingsEnabled(false);
 					}
 					else
 					{
-						if(!isJarSimulation)
-							defs.get(index).setDef(selClass);
-						else
-						{	
-							defs.get(index).setJarName(selSim);
-							defs.get(index).setFTPAddress(addr);
-						}
-						//defs.get(index).setDef(selClass);
+						JOptionPane.showMessageDialog(null,"Setting failed !");
 					}
-					classes.add(defs.get(index));					
-					index++;
-				}
-	
-				
-				if(connection.publishToTopic(classes, workerTopic, "classes")==true)
-				{
-
-					gui.setSystemSettingsEnabled(false);
-				}
-				else
-				{
-					JOptionPane.showMessageDialog(null,"Setting failed !");
 				}
 			}
 		} else if (fieldMode==DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE){
@@ -394,7 +468,7 @@ public class MasterDaemonStarter implements Observer
 					genParam.setPort(this.address.getPort());
 					data.setUploadDir(uploadDir);
 					data.setParam(genParam);
-					
+
 					defs.add(data);
 					data.graphic=false;
 				}
@@ -421,7 +495,7 @@ public class MasterDaemonStarter implements Observer
 					else
 					{
 						//defs.get(index).setDef(selClass);
-						
+
 						if(!isJarSimulation)
 							defs.get(index).setDef(selClass);
 						else
@@ -433,7 +507,7 @@ public class MasterDaemonStarter implements Observer
 					classes.add(defs.get(index));					
 					index++;
 				}
-	
+
 				try{
 					connection.publishToTopic(classes,workerTopic,"classes");	
 				}catch (Exception e) {
@@ -450,11 +524,11 @@ public class MasterDaemonStarter implements Observer
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss_SS");
 		Date date = new Date();
 		dateFormat.format(date);
-		
+
 		String batch = "";
 		if(testCounter != 0)
 			batch = "Test-"+testCounter+"_"; 
-		
+
 		String uploadDir = batch+selSim+"_"+dateFormat.format(date);
 		try {
 			client.createDirectory(uploadDir);
@@ -478,15 +552,15 @@ public class MasterDaemonStarter implements Observer
 		String ip = this.address.getIPaddress();
 		Class<?> selClassUI = null;
 		Class<?> selClass = null;	
-		
+
 		String uploadDir;
 		synchronized (this) {
 			this.testCounter = testCounter;
 			this.topicPrefix =  topicPrefix;
-			
+
 			uploadDir = createUploadDir(selSim, ftpAddress);
 		}
-		
+
 		boolean isJarSimulation = true;
 		if(!selSim.contains(".jar")) //hardcoded simulation
 		{
@@ -496,7 +570,7 @@ public class MasterDaemonStarter implements Observer
 				selClass = Class.forName(selSim);
 				//selClassUI = Class.forName(selSim);
 				selClassUI = Class.forName(selSim + "WithUI");
-	
+
 				isJarSimulation = false;
 			} catch (ClassNotFoundException e2) {
 				System.err.println("Unable to load the simulation class " + selSim);
@@ -507,7 +581,7 @@ public class MasterDaemonStarter implements Observer
 		{
 			//addr = ftpAddress;
 		}
-	
+
 		//
 		if (ip.equals("127.0.0.1"))
 		{
@@ -518,11 +592,11 @@ public class MasterDaemonStarter implements Observer
 				e1.printStackTrace();
 			}
 		}
-	
-	
-		if (fieldMode == DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE || fieldMode == DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
+
+
+		if (fieldMode == DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
 		{
-			
+
 			int cnt = 0;
 			// Repeat for each worker
 			for (String workerTopic : config.keySet())
@@ -542,7 +616,7 @@ public class MasterDaemonStarter implements Observer
 						data.setStep(true);
 						data.reducer = true;
 					}
-	
+
 					if (config.get(workerTopic).isFlagTrue())
 					{
 						data.graphic = true;
@@ -584,76 +658,140 @@ public class MasterDaemonStarter implements Observer
 				// Publish informations about simulation to worker's topic
 				connection.publishToTopic(classes, workerTopic, "classes");
 			}
-	
+
 			//gui.setSystemSettingsEnabled(false);
-		} else if(fieldMode == DistributedField2D.SQUARE_DISTRIBUTION_MODE)
+		} else if(fieldMode == DistributedField2D.UNIFORM_PARTITIONING_MODE)
 		{
-			// For each region...
-			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
-			for (int i=0;i<rows;i++){
-				for (int k=0;k<columns;k++){
-					StartUpData data = new StartUpData();
-					// Set step on the central region
-					if (i==k /*&& i == Math.sqrt(numRegions) / 2*/)
-						data.setStep(true);
-					
-					if (i==rows/2 && k==rows/2)
-						data.reducer = true;
-					
-					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
-					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(),
-							params.getMaxDistance(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getMaxStep(),params.getConnectionType()); 
-					genParam.setI(i);
-					genParam.setJ(k);
-					genParam.setIp(ip);
-					genParam.setPort(this.address.getPort());
-					data.setParam(genParam);
-					data.setSimParam(simParam);
-					data.setUploadDir(uploadDir);
-					data.setTopicPrefix(topicPrefix);
-					data.setFTPAddress(ftpAddress);
-					defs.add(data);
-					data.graphic=false;
+			if(rows==1 || columns == 1){ // One row (column) N columns (rows)
+				int cnt = 0;
+				// Repeat for each worker
+				for (String workerTopic : config.keySet())
+				{
+					int fieldsInWorker = config.get(workerTopic).getNum();
+					ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
+					// Repeat for each field managed by this worker
+					for (int i = 0; i < fieldsInWorker; i++)
+					{
+						StartUpData data = new StartUpData();
+						if (i==0 /*&& i == Math.sqrt(numRegions) / 2*/) {
+							data.setStep(true);
+						}
+						//if (cnt == numRegions / 2)
+						if (cnt == 0)
+						{
+							data.setStep(true);
+							data.reducer = true;
+						}
+
+						if (config.get(workerTopic).isFlagTrue())
+						{
+							data.graphic = true;
+							if(!isJarSimulation)
+								data.setDef(selClassUI);
+							else
+							{	
+								data.setJarName(selSim);
+								data.setFTPAddress(addr);
+							}
+						}
+						else
+						{
+							data.graphic = false;
+							if(!isJarSimulation)
+								data.setDef(selClass);
+							else
+							{	
+								data.setJarName(selSim);
+								data.setFTPAddress(addr);
+							}
+						}
+						//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,0,cnt,DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE});
+						GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), 
+								params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getMaxStep(),params.getConnectionType()); 
+						genParam.setI((rows==1)?0:cnt);
+						genParam.setJ((columns==1)?0:cnt);
+						genParam.setIp(ip);
+						genParam.setPort(this.address.getPort());
+						data.setParam(genParam);
+						data.setSimParam(simParam);
+						data.setUploadDir(uploadDir);
+						data.setTopicPrefix(topicPrefix);
+						//System.out.println("FTP ADDRESS: "+ftpAddress.getIPaddress());
+						data.setFTPAddress(ftpAddress);
+						classes.add(data);
+						cnt++;
+					}
+					// Publish informations about simulation to worker's topic
+					connection.publishToTopic(classes, workerTopic, "classes");
 				}
 			}
-			
-			int index=0;
-			for (String workerTopic : config.keySet())
-			{
-				ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
-				int fieldsInWorker = config.get(workerTopic).getNum();
-				for(int i=0;i<fieldsInWorker;i++)
-				{
-					
-					defs.get(index).graphic = config.get(workerTopic).isFlagTrue();
-					if(config.get(workerTopic).isFlagTrue())
-					{
-						if(!isJarSimulation)
-							defs.get(index).setDef(selClassUI);
-						else
-						{	
-							defs.get(index).setJarName(selSim);
-							//defs.get(index).setFTPAddress(addr);
-						}
-						//defs.get(index).setDef(selClassUI);
+			else{
+				// For each region...
+				ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
+				for (int i=0;i<rows;i++){
+					for (int k=0;k<columns;k++){
+						StartUpData data = new StartUpData();
+						// Set step on the central region
+						if (i==k /*&& i == Math.sqrt(numRegions) / 2*/)
+							data.setStep(true);
+
+						if (i==rows/2 && k==rows/2)
+							data.reducer = true;
+
+						//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
+						GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(),
+								params.getMaxDistance(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getMaxStep(),params.getConnectionType()); 
+						genParam.setI(i);
+						genParam.setJ(k);
+						genParam.setIp(ip);
+						genParam.setPort(this.address.getPort());
+						data.setParam(genParam);
+						data.setSimParam(simParam);
+						data.setUploadDir(uploadDir);
+						data.setTopicPrefix(topicPrefix);
+						data.setFTPAddress(ftpAddress);
+						defs.add(data);
+						data.graphic=false;
 					}
-					else
-					{
-						if(!isJarSimulation)
-							defs.get(index).setDef(selClass);
-						else
-						{	
-							defs.get(index).setJarName(selSim);
-							//defs.get(index).setFTPAddress(addr);
-						}
-						//defs.get(index).setDef(selClass);
-					}
-					classes.add(defs.get(index));					
-					index++;
 				}
-	
-				connection.publishToTopic(classes, workerTopic, "classes");
-				/*if(connection.publishToTopic(classes, workerTopic, "classes")==true)
+
+				int index=0;
+				for (String workerTopic : config.keySet())
+				{
+					ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
+					int fieldsInWorker = config.get(workerTopic).getNum();
+					for(int i=0;i<fieldsInWorker;i++)
+					{
+
+						defs.get(index).graphic = config.get(workerTopic).isFlagTrue();
+						if(config.get(workerTopic).isFlagTrue())
+						{
+							if(!isJarSimulation)
+								defs.get(index).setDef(selClassUI);
+							else
+							{	
+								defs.get(index).setJarName(selSim);
+								//defs.get(index).setFTPAddress(addr);
+							}
+							//defs.get(index).setDef(selClassUI);
+						}
+						else
+						{
+							if(!isJarSimulation)
+								defs.get(index).setDef(selClass);
+							else
+							{	
+								defs.get(index).setJarName(selSim);
+								//defs.get(index).setFTPAddress(addr);
+							}
+							//defs.get(index).setDef(selClass);
+						}
+						classes.add(defs.get(index));					
+						index++;
+					}
+
+					connection.publishToTopic(classes, workerTopic, "classes");
+					/*if(connection.publishToTopic(classes, workerTopic, "classes")==true)
 				{
 					gui.setSystemSettingsEnabled(false);
 				}
@@ -661,6 +799,7 @@ public class MasterDaemonStarter implements Observer
 				{
 					JOptionPane.showMessageDialog(null,"Setting failed !");
 				}*/
+				}
 			}
 		}else if (fieldMode==DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE){
 			// For each region...
@@ -669,8 +808,8 @@ public class MasterDaemonStarter implements Observer
 				for (int k=0;k<columns;k++){
 					StartUpData data = new StartUpData();
 					// Set step on the central region
-//					if (i==k)
-//						data.setStep(true);
+					//					if (i==k)
+					//						data.setStep(true);
 					if (i==0 && k==0) {
 						data.setStep(true);
 					}
@@ -712,7 +851,7 @@ public class MasterDaemonStarter implements Observer
 					else
 					{
 						//defs.get(index).setDef(selClass);
-						
+
 						if(!isJarSimulation)
 							defs.get(index).setDef(selClass);
 						else
@@ -723,7 +862,7 @@ public class MasterDaemonStarter implements Observer
 					classes.add(defs.get(index));					
 					index++;
 				}
-	
+
 				try{
 					connection.publishToTopic(classes,workerTopic,"classes");	
 				}catch (Exception e) {
@@ -732,7 +871,7 @@ public class MasterDaemonStarter implements Observer
 			}
 		}
 	}
-	
+
 	public boolean connectToServer()
 	{
 		try
@@ -788,7 +927,7 @@ public class MasterDaemonStarter implements Observer
 	}
 
 	/** Command Section */
-	
+
 	/**
 	 * Pauses the workers.
 	 * @throws Exception
@@ -832,11 +971,11 @@ public class MasterDaemonStarter implements Observer
 
 	public void reset(List<String> myWorkers) throws Exception
 	{
-		
+
 		for(String topicName : myWorkers)
 			connection.publishToTopic("batch", topicName, "reset");
 	}
-	
+
 	/**
 	 * Starts/resumes the workers.
 	 * @throws Exception
@@ -846,10 +985,10 @@ public class MasterDaemonStarter implements Observer
 		for(String topicName : workerTopics)
 			connection.publishToTopic("play", topicName, "play");
 	}
-	
+
 	public void play(List<String> myWorkers) throws Exception
 	{
-		
+
 		for(String topicName : myWorkers)
 			connection.publishToTopic("play", topicName, "play");
 	}
@@ -877,13 +1016,13 @@ public class MasterDaemonStarter implements Observer
 	}
 
 	/** End Command Section */
-	
-	
+
+
 	// reiceves notify from MasterDeamonListener related to worker update
 	// and batch tests
 	@Override
 	public void update(Observable arg0, Object arg1) {
-	
+
 		/*if(arg1.equals("batch"))
 		{
 			masterUi.countFinishedTest();
@@ -895,44 +1034,44 @@ public class MasterDaemonStarter implements Observer
 			PeerStatusInfo workerInfo = (PeerStatusInfo) arg1;
 			masterUi.workerInfo(workerInfo);
 		}
-		
-		
-	
+
+
+
 	}
 
-//	Looks like this isn't used anymore
-//	public void hilbert(ArrayList<StartUpData> defs,ArrayList<String> clients)
-//	{
-//		ArrayQueue<StartUpData> queue = new ArrayQueue<StartUpData>(25);
-//		queue.add(defs.get(0));
-//		queue.add(defs.get(1));
-//		queue.add(defs.get(5));
-//		queue.add(defs.get(6));
-//		queue.add(defs.get(2));
-//		queue.add(defs.get(7));
-//		queue.add(defs.get(12));
-//		queue.add(defs.get(17));
-//		queue.add(defs.get(16));
-//		queue.add(defs.get(11));
-//		queue.add(defs.get(10));
-//		queue.add(defs.get(15));
-//		queue.add(defs.get(20));
-//		queue.add(defs.get(21));
-//		queue.add(defs.get(22));
-//		queue.add(defs.get(23));
-//		queue.add(defs.get(24));
-//		queue.add(defs.get(19));
-//		queue.add(defs.get(18));
-//		queue.add(defs.get(13));
-//		queue.add(defs.get(14));
-//		queue.add(defs.get(9));
-//		queue.add(defs.get(8));
-//		queue.add(defs.get(3));
-//		queue.add(defs.get(4));
-//		/*CentralGuiState g = new CentralGuiState(new CentralSimState());
-//		Console c = (Console) g.createController();
-//		c.pressPause();*/
-//	}
+	//	Looks like this isn't used anymore
+	//	public void hilbert(ArrayList<StartUpData> defs,ArrayList<String> clients)
+	//	{
+	//		ArrayQueue<StartUpData> queue = new ArrayQueue<StartUpData>(25);
+	//		queue.add(defs.get(0));
+	//		queue.add(defs.get(1));
+	//		queue.add(defs.get(5));
+	//		queue.add(defs.get(6));
+	//		queue.add(defs.get(2));
+	//		queue.add(defs.get(7));
+	//		queue.add(defs.get(12));
+	//		queue.add(defs.get(17));
+	//		queue.add(defs.get(16));
+	//		queue.add(defs.get(11));
+	//		queue.add(defs.get(10));
+	//		queue.add(defs.get(15));
+	//		queue.add(defs.get(20));
+	//		queue.add(defs.get(21));
+	//		queue.add(defs.get(22));
+	//		queue.add(defs.get(23));
+	//		queue.add(defs.get(24));
+	//		queue.add(defs.get(19));
+	//		queue.add(defs.get(18));
+	//		queue.add(defs.get(13));
+	//		queue.add(defs.get(14));
+	//		queue.add(defs.get(9));
+	//		queue.add(defs.get(8));
+	//		queue.add(defs.get(3));
+	//		queue.add(defs.get(4));
+	//		/*CentralGuiState g = new CentralGuiState(new CentralSimState());
+	//		Console c = (Console) g.createController();
+	//		c.pressPause();*/
+	//	}
 
 	public void start(GeneralParam params, HashMap<String, EntryVal<Integer, Boolean>> config, String selSim,Address ftpAddress)
 	{
@@ -947,12 +1086,12 @@ public class MasterDaemonStarter implements Observer
 		String ip = this.address.getIPaddress();
 		Class<?> selClassUI = null;
 		Class<?> selClass = null;	
-		
+
 		this.testCounter = 0; //0 means that this is not a batch simulation
-	
+
 		//String uploadDir = createUploadDir(selSim, ftpAddress);
-		
-		
+
+
 		boolean isJarSimulation = true;
 		if(!selSim.contains(".jar")) //hardcoded simulation
 		{
@@ -962,7 +1101,7 @@ public class MasterDaemonStarter implements Observer
 				selClass = Class.forName(selSim);
 				//selClassUI = Class.forName(selSim);
 				selClassUI = Class.forName(selSim + "WithUI");
-	
+
 				isJarSimulation = false;
 			} catch (ClassNotFoundException e2) {
 				System.err.println("Unable to load the simulation class " + selSim);
@@ -973,7 +1112,7 @@ public class MasterDaemonStarter implements Observer
 		{
 			addr = ftpAddress;
 		}
-	
+
 		//
 		if (ip.equals("127.0.0.1"))
 		{
@@ -984,9 +1123,9 @@ public class MasterDaemonStarter implements Observer
 				e1.printStackTrace();
 			}
 		}
-	
-	
-		if (fieldMode == DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE || fieldMode == DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
+
+
+		if (fieldMode == DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
 		{
 			int cnt = 0;
 			// Repeat for each worker
@@ -1003,7 +1142,7 @@ public class MasterDaemonStarter implements Observer
 						data.setStep(true);
 						data.reducer = true;
 					}
-	
+
 					if (config.get(workerTopic).isFlagTrue())
 					{
 						data.graphic = true;
@@ -1026,7 +1165,7 @@ public class MasterDaemonStarter implements Observer
 							data.setFTPAddress(addr);
 						}
 					}
-					
+
 					GeneralParam genParam = new
 							GeneralParam(params.getWidth(),
 									params.getHeight(),
@@ -1050,76 +1189,142 @@ public class MasterDaemonStarter implements Observer
 				// Publish informations about simulation to worker's topic
 				connection.publishToTopic(classes, workerTopic, "classes");
 			}
-	
+
 		}
-		else if(fieldMode == DistributedField2D.SQUARE_DISTRIBUTION_MODE)
+		else if(fieldMode == DistributedField2D.UNIFORM_PARTITIONING_MODE)
 		{
-			// For each region...
-			ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
-			for (int i=0;i<rows;i++){
-				for (int k=0;k<columns;k++){
-					StartUpData data = new StartUpData();
-					// Set step on the central region
-					if (i==k /*&& i == Math.sqrt(numRegions) / 2*/) {
-						data.setStep(true);
-					}
-					
-					if (i == rows / 2 && k == columns / 2)
+			if(rows==1 || columns==1){
+				int cnt = 0;
+				// Repeat for each worker
+				for (String workerTopic : config.keySet())
+				{
+					int fieldsInWorker = config.get(workerTopic).getNum();
+					ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
+					// Repeat for each field managed by this worker
+					for (int i = 0; i < fieldsInWorker; i++)
 					{
-						data.reducer = true;
+						StartUpData data = new StartUpData();
+						if (cnt == numRegions / 2)
+						{
+							data.setStep(true);
+							data.reducer = true;
+						}
+
+						if (config.get(workerTopic).isFlagTrue())
+						{
+							data.graphic = true;
+							if(!isJarSimulation)
+								data.setDef(selClassUI);
+							else
+							{	
+								data.setJarName(selSim);
+								data.setFTPAddress(addr);
+							}
+						}
+						else
+						{
+							data.graphic = false;
+							if(!isJarSimulation)
+								data.setDef(selClass);
+							else
+							{	
+								data.setJarName(selSim);
+								data.setFTPAddress(addr);
+							}
+						}
+
+						GeneralParam genParam = new
+								GeneralParam(params.getWidth(),
+										params.getHeight(),
+										params.getMaxDistance(), 
+										params.getRows(),
+										params.getColumns(), 
+										params.getNumAgents(),
+										params.getMode(),
+										params.getModel_params(),
+										params.getMaxStep(),
+										params.getConnectionType()); 
+						genParam.setI((rows==1)?0:cnt);
+						genParam.setJ((columns==1)?0:cnt);
+						genParam.setIp(ip);
+						genParam.setPort(this.address.getPort());
+						data.setParam(genParam);
+						//data.setUploadDir(uploadDir);
+						classes.add(data);
+						cnt++;
 					}
-					
-					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
-					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), 
-							params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getModel_params(),params.getMaxStep(),params.getConnectionType()); 
-					genParam.setI(i);
-					genParam.setJ(k);
-					genParam.setIp(ip);
-					genParam.setPort(this.address.getPort());
-					data.setParam(genParam);
-					//data.setUploadDir(uploadDir);
-					defs.add(data);
-					data.graphic=false;
+					// Publish informations about simulation to worker's topic
+					connection.publishToTopic(classes, workerTopic, "classes");
 				}
 			}
-			
-			int index=0;
-			for (String workerTopic : config.keySet())
-			{
-				ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
-				int fieldsInWorker = config.get(workerTopic).getNum();
-				for(int i=0;i<fieldsInWorker;i++)
-				{
-					
-					defs.get(index).graphic = config.get(workerTopic).isFlagTrue();
-					if(config.get(workerTopic).isFlagTrue())
-					{
-						if(!isJarSimulation)
-							defs.get(index).setDef(selClassUI);
-						else
-						{	
-							defs.get(index).setJarName(selSim);
-							defs.get(index).setFTPAddress(addr);
+			else{
+				// For each region...
+				ArrayList<StartUpData> defs = new ArrayList<StartUpData>();
+				for (int i=0;i<rows;i++){
+					for (int k=0;k<columns;k++){
+						StartUpData data = new StartUpData();
+						// Set step on the central region
+						if (i==k /*&& i == Math.sqrt(numRegions) / 2*/) {
+							data.setStep(true);
 						}
-						//defs.get(index).setDef(selClassUI);
-					}
-					else
-					{
-						if(!isJarSimulation)
-							defs.get(index).setDef(selClass);
-						else
-						{	
-							defs.get(index).setJarName(selSim);
-							defs.get(index).setFTPAddress(addr);
+
+						if (i == rows / 2 && k == columns / 2)
+						{
+							data.reducer = true;
 						}
-						//defs.get(index).setDef(selClass);
+
+						//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
+						GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), 
+								params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getModel_params(),params.getMaxStep(),params.getConnectionType()); 
+						genParam.setI(i);
+						genParam.setJ(k);
+						genParam.setIp(ip);
+						genParam.setPort(this.address.getPort());
+						data.setParam(genParam);
+						//data.setUploadDir(uploadDir);
+						defs.add(data);
+						data.graphic=false;
 					}
-					classes.add(defs.get(index));					
-					index++;
 				}
-	
-				if(!connection.publishToTopic(classes, workerTopic, "classes"))
-					System.err.println("Setting failed !");
+
+				int index=0;
+				for (String workerTopic : config.keySet())
+				{
+					ArrayList<StartUpData> classes = new ArrayList<StartUpData>();
+					int fieldsInWorker = config.get(workerTopic).getNum();
+					for(int i=0;i<fieldsInWorker;i++)
+					{
+
+						defs.get(index).graphic = config.get(workerTopic).isFlagTrue();
+						if(config.get(workerTopic).isFlagTrue())
+						{
+							if(!isJarSimulation)
+								defs.get(index).setDef(selClassUI);
+							else
+							{	
+								defs.get(index).setJarName(selSim);
+								defs.get(index).setFTPAddress(addr);
+							}
+							//defs.get(index).setDef(selClassUI);
+						}
+						else
+						{
+							if(!isJarSimulation)
+								defs.get(index).setDef(selClass);
+							else
+							{	
+								defs.get(index).setJarName(selSim);
+								defs.get(index).setFTPAddress(addr);
+							}
+							//defs.get(index).setDef(selClass);
+						}
+						classes.add(defs.get(index));					
+						index++;
+					}
+
+					if(!connection.publishToTopic(classes, workerTopic, "classes"))
+						System.err.println("Setting failed !");
+				}
 			}
 		} else if (fieldMode==DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE){
 			// For each region...
@@ -1142,7 +1347,7 @@ public class MasterDaemonStarter implements Observer
 					genParam.setPort(this.address.getPort());
 					//data.setUploadDir(uploadDir);
 					data.setParam(genParam);
-					
+
 					defs.add(data);
 					data.graphic=false;
 				}
@@ -1169,7 +1374,7 @@ public class MasterDaemonStarter implements Observer
 					else
 					{
 						//defs.get(index).setDef(selClass);
-						
+
 						if(!isJarSimulation)
 							defs.get(index).setDef(selClass);
 						else
@@ -1181,7 +1386,7 @@ public class MasterDaemonStarter implements Observer
 					classes.add(defs.get(index));					
 					index++;
 				}
-	
+
 				try{
 					connection.publishToTopic(classes,workerTopic,"classes");	
 				}catch (Exception e) {
