@@ -52,11 +52,8 @@ public class TestStart {
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
 	
-	//don't modify this...
-	//private static int MODE = (rows==1 || columns==1)? DContinuous2DFactory.HORIZONTAL_DISTRIBUTION_MODE : DContinuous2DFactory.SQUARE_DISTRIBUTION_MODE; 
-	private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE : DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE; 
 	
-	
+	private static int MODE =DistributedField2D.UNIFORM_PARTITIONING_MODE;
 	
 	public static void main(String[] args) 
 	{		
