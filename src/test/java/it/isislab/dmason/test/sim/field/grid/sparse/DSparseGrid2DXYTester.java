@@ -758,22 +758,15 @@ public class DSparseGrid2DXYTester {
 
 		toTest = (DSparseGrid2DXY) DSparseGrid2DFactory.createDSparseGrid2D(w,
 				h,/* simState */
-				ss, maxD, /* i */0, /* j */0, 1, 1, mode,/* name */
+				ss, maxD, /* i */0, /* j */0, 1, 2, mode,/* name */
 				"test", /* prefix */"", true);
 
 		Integer x2 = toTest.rmap.NORTH_MINE.down_xx;
 		Integer x1 = toTest.rmap.NORTH_MINE.upl_xx;
-
-		
-		
-		
 		
 		
 		// find distance between 2 points
-		Integer side = x2 - x1;
-
-		
-		
+		Integer side = x2 - x1;		
 		
 		
 		assertEquals(w, side.intValue());
