@@ -15,6 +15,7 @@
    limitations under the License.
  */
 package it.isislab.dmason.sim.app.DAntsForage;
+
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 /*
  * THIS CLASS HAS BEEN USED FOR TESTING PURPOSES IN THE BEGINNINGS,
@@ -51,9 +52,8 @@ public class TestStart {
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
 	
-	//don't modify this...
-	//private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE : DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE; 
 	private static int MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE; 
+	
 	
 	public static void main(String[] args) 
 	{		
@@ -69,7 +69,7 @@ public class TestStart {
 				int i=0;
 				while(i!=numSteps)
 				{
-					//System.out.println(i);
+					//System.out.println(i);//print step number
 					ds.schedule.step(ds);
 					i++;
 				}
