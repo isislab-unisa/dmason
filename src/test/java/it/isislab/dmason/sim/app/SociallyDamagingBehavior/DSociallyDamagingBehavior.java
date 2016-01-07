@@ -117,11 +117,10 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
 	public int honest = 0;
 	public int numHonest = 0;
 	public int dishonest = 0;
-	public int numDishonest = 0;
-        
+	public int numDishonest = 0;      
     public double gridWidth ;
     public double gridHeight ;   
-    public int MODE;
+  
     
     public static String topicPrefix = "";
     
