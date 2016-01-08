@@ -1,5 +1,6 @@
 # Test Suite Contents
-	.
+New version of this file must be edited.
+<!---	.
 	├── sim
 	│   ├── app
 	│   │   └── DFlockers
@@ -180,3 +181,4 @@ It would be appropriate to throw exceptions of type DMasonException before they 
 It would be appropriate to throw exceptions to prevent the user is given the opportunity to provide input on the type indicated, otherwise the results (of course inconsistent) would make the work of the unconscious user inconsistent.
 ###SB6 [R4.2.1]###
 The variable **safezone** was declared Integer, so the operation **/** returned a integer casted value
+-->
