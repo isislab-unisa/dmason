@@ -23,7 +23,6 @@ New version of this file must be edited.
 	│       │   ├── loadbalanced
 	│       │   │   └── DContinuous2DXYLBTester.java
 	│       │   ├── region
-	│       │   │   ├── RegionDoubleLBTester.java
 	│       │   │   └── RegionDoubleTester.java
 	│       │   └── thin
 	│       │       └── DContinuous2DXYThinTester.java
@@ -43,7 +42,6 @@ New version of this file must be edited.
 	│       │   │       ├── DDoubleGrid2DXYThinTester.java
 	│       │   │       └── DIntGrid2DXYThinTester.java
 	│       │   ├── region
-	│       │   │   ├── RegionIntegerLBTester.java
 	│       │   │   └── RegionIntegerTester.java
 	│       │   └── sparse
 	│       │       ├── DSparseGrid2DXYTester.java
