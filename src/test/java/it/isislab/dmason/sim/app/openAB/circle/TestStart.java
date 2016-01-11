@@ -44,10 +44,10 @@ public class TestStart {
 	private static int numSteps = 30500; //only graphicsOn=false
 	private static int rows = 2; //number of rows
 	private static int columns = 1; //number of columns
-	private static int MAX_DISTANCE=1; //max distance
-	private static int NUM_AGENTS=100; //number of agents
-	private static int WIDTH=251; //field width
-	private static int HEIGHT=453; //field height
+	private static int MAX_DISTANCE=10; //max distance
+	private static int NUM_AGENTS=1000; //number of agents
+	private static int WIDTH=150; //field width
+	private static int HEIGHT=150; //field height
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
 	

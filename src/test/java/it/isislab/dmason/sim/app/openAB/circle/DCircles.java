@@ -23,6 +23,7 @@ import sim.util.Double2D;
 
 public class DCircles extends DistributedState<Double2D> {
 
+	private static final long serialVersionUID = 1L;
 	public static final double XMIN = 0;
 	public static final double XMAX = 200;
 	public static final double YMIN = 0;
@@ -40,6 +41,7 @@ public class DCircles extends DistributedState<Double2D> {
 	
 	public ContinuousPortrayal2D p;
 	
+	public DCircles() { super();}
 	
 	public DCircles(GeneralParam params) {
 		super(params, new DistributedMultiSchedule<Double2D>(),topicPrefix,params.getConnectionType());
@@ -104,7 +106,7 @@ public class DCircles extends DistributedState<Double2D> {
 		try 
 		{
 			circles = DContinuousGrid2DFactory.createDContinuous2D(8.0,gridWidth, gridHeight,this,
-					super.AOI,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,"circles", topicPrefix,false);
+					super.AOI,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,"circles", topicPrefix,true);
 			init_connection();
 		} catch (DMasonException e) { e.printStackTrace(); }
 		

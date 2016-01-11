@@ -2,6 +2,7 @@ package it.isislab.dmason.sim.app.openAB.circle;
 
 import java.awt.Color;
 
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
 import sim.engine.SimState;
 import sim.util.Bag;
@@ -16,6 +17,8 @@ public class DCircle extends RemoteCircle<Double2D> {
 	static double RADIUS = 2;
 	Bag neighbors = null;
 
+	public DCircle(){}
+	
 	public DCircle(DistributedState<Double2D> sm, Double2D location){
 		super(sm,DCircles.DIAMETER);
 		pos = location;
@@ -49,8 +52,13 @@ public class DCircle extends RemoteCircle<Double2D> {
 				y +=(force * separation_distance * (other.pos.y - pos.y))/distance;
 			}
 		}
-		pos = new Double2D(pos.x + x, pos.y +y);
-		st.circles.setObjectLocation(this, pos);
+		pos = new Double2D(st.circles.stx(pos.x + x), st.circles.sty(pos.y +y));
+		try {
+			st.circles.setDistributedObjectLocation(pos,this, st);
+		} catch (DMasonException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
