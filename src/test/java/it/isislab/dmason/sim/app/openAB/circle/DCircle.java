@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
+import it.isislab.dmason.sim.field.CellType;
 import sim.engine.SimState;
 import sim.util.Bag;
 import sim.util.Double2D;
@@ -27,13 +28,13 @@ public class DCircle extends RemoteCircle<Double2D> {
 
 	@Override
 	public void step(SimState state) {
-		DCircles st = (DCircles)state;
+		final DCircles st = (DCircles)state;
 		double distance = 0.0;
 		double force = 0.0;
 		double separation_distance = 0.0;
 		double x=0.0, y = 0.0;
-
-		neighbors = st.circles.getNeighborsWithinDistance(pos, 3*RADIUS);
+		pos = st.circles.getObjectLocation(this);
+		neighbors = st.circles.getNeighborsWithinDistance(pos, 3*RADIUS,true);
 		for(Object b : neighbors){
 			DCircle other = (DCircle) b;
 			//System.out.println("me "+id+ "and you "+other.id);
@@ -54,7 +55,7 @@ public class DCircle extends RemoteCircle<Double2D> {
 		}
 		pos = new Double2D(st.circles.stx(pos.x + x), st.circles.sty(pos.y +y));
 		try {
-			st.circles.setDistributedObjectLocation(pos,this, st);
+			st.circles.setDistributedObjectLocation(pos,this, state);
 		} catch (DMasonException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

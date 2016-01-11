@@ -17,7 +17,7 @@ public abstract class RemoteCircle<E> extends OvalPortrayal2D implements Seriali
 	public RemoteCircle() {}
 	
 	public RemoteCircle(DistributedState<E> state, double diameter) {
-		super(4);
+		super(diameter);
 		int i=state.nextId();
 		this.id=state.getType().toString()+"-"+i;
 	}
