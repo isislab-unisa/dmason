@@ -41,7 +41,7 @@ import sim.display.Console;
  */
 public class TestStart {
 
-	private static boolean graphicsOn=false; //with or without graphics?
+	private static boolean graphicsOn=true; //with or without graphics?
 	private static int numSteps = 1000; 
 	private static int rows = 2; //number of rows
 	private static int columns = 2; //number of columns
@@ -69,7 +69,6 @@ public class TestStart {
 				int i=0;
 				while(i!=numSteps)
 				{
-					System.out.println(i);
 					ds.schedule.step(ds);
 					i++;
 				}
