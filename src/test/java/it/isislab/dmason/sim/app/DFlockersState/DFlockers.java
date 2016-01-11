@@ -36,7 +36,6 @@ public class DFlockers extends DistributedState<Double2D>
 	private static final long serialVersionUID = 1L;
 	public DContinuousGrid2D flockers;
 	ContinuousPortrayal2D p;
-	private static boolean isToroidal=true;
 
 	@BatchAnnotation(
 			domain = "100-300",
@@ -90,19 +89,6 @@ public class DFlockers extends DistributedState<Double2D>
 	public int MODE;
 
 	public static String topicPrefix = "";
-
-
-	//    int localTest = 1; int globalTest = -1;
-	//    public int getTest() { return localTest; }
-	//    public void setTest(int value) { localTest = value; }
-	//    public boolean globalTest() { return true; }
-	//    public int getGlobalTest() { return globalTest; }
-	//    public void setGlobalTest(Object value) { globalTest = (Integer)value; }
-	//    public Integer reduceTest(Object[] shard) {
-	//    	int globalTest = 0;
-	//    	for (int i = 0; i < shard.length; i++) globalTest +=  ((Integer)shard[i]).intValue();
-	//    	return globalTest;
-	//    } 
 
 
 	public DFlockers(GeneralParam params)
