@@ -104,7 +104,7 @@ public class DCircles extends DistributedState<Double2D> {
 		try 
 		{
 			circles = DContinuousGrid2DFactory.createDContinuous2D(8.0,gridWidth, gridHeight,this,
-					super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,"circles", topicPrefix,false);
+					super.AOI,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,"circles", topicPrefix,false);
 			init_connection();
 		} catch (DMasonException e) { e.printStackTrace(); }
 		

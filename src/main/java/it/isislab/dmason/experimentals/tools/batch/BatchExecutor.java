@@ -250,7 +250,7 @@ public class BatchExecutor extends Thread
 		ArrayList<String> errors = new ArrayList<String>();
 		int WIDTH = params.getWidth();
 		int HEIGHT = params.getHeight();
-		int maxDistance = params.getMaxDistance();
+		int maxDistance = params.getAoi();
 		int rows = params.getRows();
 		int columns = params.getColumns();
 		int MODE = params.getMode();

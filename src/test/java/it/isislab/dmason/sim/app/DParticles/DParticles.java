@@ -82,8 +82,8 @@ public class DParticles extends DistributedState<Int2D> {
         try 
         {
         	
-        	particles = DSparseGrid2DFactory.createDSparseGrid2D(gridWidth, gridHeight,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE, "particles", topicPrefix,false);
-        	trails = DDoubleGrid2DFactory.createDDoubleGrid2D(gridWidth, gridHeight,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,0,false,"trails",topicPrefix,false);
+        	particles = DSparseGrid2DFactory.createDSparseGrid2D(gridWidth, gridHeight,this,super.AOI,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE, "particles", topicPrefix,false);
+        	trails = DDoubleGrid2DFactory.createDDoubleGrid2D(gridWidth, gridHeight,this,super.AOI,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,0,false,"trails",topicPrefix,false);
 			
 		    init_connection();
 		  

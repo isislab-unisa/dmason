@@ -63,7 +63,7 @@ public abstract class DistributedState<E> extends SimState {
 	private static final long serialVersionUID = 1L;
 	public int NUMAGENTS;
 	private int count_id;
-	public int MAX_DISTANCE;
+	public int AOI;
 	public int NUMPEERS;
 	public int MODE;
 	public HashMap<String, Integer> networkNumberOfSubscribersForField = new HashMap<String, Integer>();
@@ -96,7 +96,7 @@ public abstract class DistributedState<E> extends SimState {
 		this.TYPE = new CellType(params.getI(), params.getJ());
 		this.random = new MersenneTwisterFast(randomizer
 				+ this.TYPE.getInitialValue());
-		this.MAX_DISTANCE = params.getMaxDistance();
+		this.AOI = params.getAoi();
 		this.NUMPEERS = params.getRows() * params.getColumns();
 		this.rows = params.getRows();
 		this.columns = params.getColumns();
@@ -119,7 +119,7 @@ public abstract class DistributedState<E> extends SimState {
 		this.TYPE = new CellType(params.getI(), params.getJ());
 		this.random = new MersenneTwisterFast(randomizer
 				+ this.TYPE.getInitialValue());
-		this.MAX_DISTANCE = params.getMaxDistance();
+		this.AOI = params.getAoi();
 		this.NUMPEERS = params.getRows() * params.getColumns();
 		this.rows = params.getRows();
 		this.columns = params.getColumns();
@@ -204,7 +204,7 @@ public abstract class DistributedState<E> extends SimState {
 		this.TYPE = new CellType(params.getI(), params.getJ());
 		this.random = new MersenneTwisterFast(randomizer
 				+ this.TYPE.getInitialValue());
-		this.MAX_DISTANCE = params.getMaxDistance();
+		this.AOI = params.getAoi();
 		this.NUMPEERS = params.getRows() * params.getColumns();
 		this.rows = params.getRows();
 		this.columns = params.getColumns();

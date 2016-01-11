@@ -172,7 +172,7 @@ public class MasterDaemonStarter implements Observer
 		this.width = params.getWidth();
 		this.height = params.getHeight();
 		this.fieldMode = params.getMode();
-		this.jumpDistance = params.getMaxDistance();
+		this.jumpDistance = params.getAoi();
 		String ip = this.address.getIPaddress();
 		Class<?> selClassUI = null;
 		Class<?> selClass = null;	
@@ -264,7 +264,7 @@ public class MasterDaemonStarter implements Observer
 					GeneralParam genParam = new
 							GeneralParam(params.getWidth(),
 									params.getHeight(),
-									params.getMaxDistance(), 
+									params.getAoi(), 
 									params.getRows(),
 									params.getColumns(),
 									params.getNumAgents(),
@@ -338,7 +338,7 @@ public class MasterDaemonStarter implements Observer
 						GeneralParam genParam = new
 								GeneralParam(params.getWidth(),
 										params.getHeight(),
-										params.getMaxDistance(), 
+										params.getAoi(), 
 										params.getRows(),
 										params.getColumns(),
 										params.getNumAgents(),
@@ -382,7 +382,7 @@ public class MasterDaemonStarter implements Observer
 						}
 
 						//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
-						GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), params.getRows(),
+						GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getAoi(), params.getRows(),
 								params.getColumns(), params.getNumAgents(), params.getMode(),params.getModel_params(),params.getMaxStep(),params.getConnectionType()); 
 						genParam.setI(i);
 						genParam.setJ(k);
@@ -459,7 +459,7 @@ public class MasterDaemonStarter implements Observer
 					}
 					//data.setDef(DAntsForage.class);
 					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE});
-					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(),
+					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getAoi(),
 							params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(), params.getModel_params(),params.getMaxStep(),params.getConnectionType()); 
 					genParam.setI(i);
 					genParam.setJ(k);
@@ -547,7 +547,7 @@ public class MasterDaemonStarter implements Observer
 		this.rows = params.getRows();
 		this.columns = params.getColumns();
 		this.fieldMode = params.getMode();
-		this.jumpDistance = params.getMaxDistance();
+		this.jumpDistance = params.getAoi();
 		String ip = this.address.getIPaddress();
 		Class<?> selClassUI = null;
 		Class<?> selClass = null;	
@@ -639,7 +639,7 @@ public class MasterDaemonStarter implements Observer
 						}
 					}
 					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,0,cnt,DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE});
-					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), 
+					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getAoi(), 
 							params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getMaxStep(),params.getConnectionType()); 
 					genParam.setI(0);
 					genParam.setJ(cnt);
@@ -705,7 +705,7 @@ public class MasterDaemonStarter implements Observer
 							}
 						}
 						//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,0,cnt,DSparseGrid2DFactory.HORIZONTAL_DISTRIBUTION_MODE});
-						GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), 
+						GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getAoi(), 
 								params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getMaxStep(),params.getConnectionType()); 
 						genParam.setI((rows==1)?0:cnt);
 						genParam.setJ((columns==1)?0:cnt);
@@ -739,7 +739,7 @@ public class MasterDaemonStarter implements Observer
 
 						//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
 						GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(),
-								params.getMaxDistance(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getMaxStep(),params.getConnectionType()); 
+								params.getAoi(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getMaxStep(),params.getConnectionType()); 
 						genParam.setI(i);
 						genParam.setJ(k);
 						genParam.setIp(ip);
@@ -815,7 +815,7 @@ public class MasterDaemonStarter implements Observer
 					//data.setDef(DAntsForage.class);
 					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE});
 					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(),
-							params.getMaxDistance(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getMaxStep(),params.getConnectionType()); 
+							params.getAoi(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getMaxStep(),params.getConnectionType()); 
 					genParam.setI(i);
 					genParam.setJ(k);
 					genParam.setIp(ip);
@@ -1081,7 +1081,7 @@ public class MasterDaemonStarter implements Observer
 		this.width = params.getWidth();
 		this.height = params.getHeight();
 		this.fieldMode = params.getMode();
-		this.jumpDistance = params.getMaxDistance();
+		this.jumpDistance = params.getAoi();
 		String ip = this.address.getIPaddress();
 		Class<?> selClassUI = null;
 		Class<?> selClass = null;	
@@ -1168,7 +1168,7 @@ public class MasterDaemonStarter implements Observer
 					GeneralParam genParam = new
 							GeneralParam(params.getWidth(),
 									params.getHeight(),
-									params.getMaxDistance(), 
+									params.getAoi(), 
 									params.getRows(),
 									params.getColumns(), 
 									params.getNumAgents(),
@@ -1235,7 +1235,7 @@ public class MasterDaemonStarter implements Observer
 						GeneralParam genParam = new
 								GeneralParam(params.getWidth(),
 										params.getHeight(),
-										params.getMaxDistance(), 
+										params.getAoi(), 
 										params.getRows(),
 										params.getColumns(), 
 										params.getNumAgents(),
@@ -1273,7 +1273,7 @@ public class MasterDaemonStarter implements Observer
 						}
 
 						//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE});
-						GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getMaxDistance(), 
+						GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(), params.getAoi(), 
 								params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getModel_params(),params.getMaxStep(),params.getConnectionType()); 
 						genParam.setI(i);
 						genParam.setJ(k);
@@ -1339,7 +1339,7 @@ public class MasterDaemonStarter implements Observer
 					//data.setDef(DAntsForage.class);
 					//data.setParam(new Object[]{ip,this.address.getPort(),jumpDistance,numRegions,numAgents,width,height,i,k,DSparseGrid2DFactory.SQUARE_BALANCED_DISTRIBUTION_MODE});
 					GeneralParam genParam = new GeneralParam(params.getWidth(), params.getHeight(),
-							params.getMaxDistance(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getModel_params(),params.getMaxStep(),params.getConnectionType()); 
+							params.getAoi(), params.getRows(), params.getColumns(), params.getNumAgents(), params.getMode(),params.getModel_params(),params.getMaxStep(),params.getConnectionType()); 
 					genParam.setI(i);
 					genParam.setJ(k);
 					genParam.setIp(ip);

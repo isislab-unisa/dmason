@@ -145,7 +145,7 @@ public class DFlockersNonUniformPartitioning extends DistributedState<Double2D>
 	private int P;
 	public DFlockersNonUniformPartitioning(GeneralParam params)
 	{    	
-		super(params,new DistributedMultiSchedule<Double2D>(params.getNumAgents(),params.getP(),params.getWidth(),params.getHeight(),params.getMaxDistance()), "",params.getConnectionType());
+		super(params,new DistributedMultiSchedule<Double2D>(params.getNumAgents(),params.getP(),params.getWidth(),params.getHeight(),params.getAoi()), "",params.getConnectionType());
 		this.MODE=params.getMode();
 		gridWidth=params.getWidth();
 		gridHeight=params.getHeight();
@@ -164,7 +164,7 @@ public class DFlockersNonUniformPartitioning extends DistributedState<Double2D>
 
 	public DFlockersNonUniformPartitioning(GeneralParam params,List<EntryParam<String, Object>> simParams, String prefix)
 	{    	
-		super(params,new DistributedMultiSchedule<Double2D>(params.getNumAgents(),params.getP(),params.getWidth(),params.getHeight(),params.getMaxDistance()), prefix,params.getConnectionType());
+		super(params,new DistributedMultiSchedule<Double2D>(params.getNumAgents(),params.getP(),params.getWidth(),params.getHeight(),params.getAoi()), prefix,params.getConnectionType());
 		this.MODE=params.getMode();
 		gridWidth=params.getWidth();
 		gridHeight=params.getHeight();
@@ -230,7 +230,7 @@ public class DFlockersNonUniformPartitioning extends DistributedState<Double2D>
 		super.start();
 
 
-		flockers = DContinuousGrid2DFactory.createDContinuous2DNonUniform(neighborhood/1.5, gridWidth, gridHeight, this, super.MAX_DISTANCE, TYPE.pos_j, P, MODE, "flcokers", topicPrefix, true);
+		flockers = DContinuousGrid2DFactory.createDContinuous2DNonUniform(neighborhood/1.5, gridWidth, gridHeight, this, super.AOI, TYPE.pos_j, P, MODE, "flcokers", topicPrefix, true);
 	
 		init_connection();
 

@@ -234,7 +234,7 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
     		log.info(
     					"SIMULATION PARAMETERS: \n"+
     					"CELL ID: "+human_being.cellType+" | "+" FIELD[WIDTH:"+gridWidth+",HEIGHT:"+gridHeight+"] | "+
-    					"AOI: "+MAX_DISTANCE+" | #AGENTS:"+numHumanBeing+" | EPOCH="+EPOCH+" | \n"+
+    					"AOI: "+AOI+" | #AGENTS:"+numHumanBeing+" | EPOCH="+EPOCH+" | \n"+
     					"MODEL PARAMETERS: \n"+
     					"SOCIAL_INFLUENCE:"+SOCIAL_INFLUENCE+" | \n"+
     					"DAM-PAY-PROB:"+DAMAGING_PAYOFF_PROB+" | \n"+
@@ -357,7 +357,7 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
 		try 
     	{
 			human_being =DContinuousGrid2DFactory.createDContinuous2D(neighborhood/1.5,gridWidth, gridHeight,this,
-    				super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,"humang_be", topicPrefix,true);
+    				super.AOI,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,"humang_be", topicPrefix,true);
     		init_connection();
     	} catch (DMasonException e) { e.printStackTrace(); }
 		
@@ -444,7 +444,7 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
     	
     	System.out.println("SIMULATION PARAMETERS: \n"+
 		"CELL ID: "+human_being.cellType+" | "+" FIELD[WIDTH:"+gridWidth+",HEIGHT:"+gridHeight+"] | "+
-		"AOI: "+MAX_DISTANCE+" | #AGENTS:"+numHumanBeing+" | EPOCH="+EPOCH+" | \n"+
+		"AOI: "+AOI+" | #AGENTS:"+numHumanBeing+" | EPOCH="+EPOCH+" | \n"+
 		"MODEL PARAMETERS: \n"+
 		"SOCIAL_INFLUENCE:"+SOCIAL_INFLUENCE+" | \n"+
 		"DAM-PAY-PROB:"+DAMAGING_PAYOFF_PROB+" | \n"+

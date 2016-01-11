@@ -196,11 +196,11 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 
 		try 
 		{       	
-			toFoodGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.rows,super.columns, MODE, 0, false, "toFoodGrid", topicPrefix,false);
-			toHomeGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.rows,super.columns, MODE, 0, false, "toHomeGrid", topicPrefix,false);
-			buggrid = DSparseGrid2DFactory.createDSparseGrid2D(GRID_WIDTH, GRID_HEIGHT,this,super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE, "buggrid", topicPrefix,false);
-			sites = DIntGrid2DFactory.createDIntGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.rows,super.columns, MODE, 0, true, "sites", topicPrefix,false);
-			obstacles = DIntGrid2DFactory.createDIntGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.MAX_DISTANCE, TYPE.pos_i, TYPE.pos_j, super.rows,super.columns, MODE, 0, true, "obstacles", topicPrefix,false);
+			toFoodGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.AOI, TYPE.pos_i, TYPE.pos_j, super.rows,super.columns, MODE, 0, false, "toFoodGrid", topicPrefix,false);
+			toHomeGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.AOI, TYPE.pos_i, TYPE.pos_j, super.rows,super.columns, MODE, 0, false, "toHomeGrid", topicPrefix,false);
+			buggrid = DSparseGrid2DFactory.createDSparseGrid2D(GRID_WIDTH, GRID_HEIGHT,this,super.AOI,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE, "buggrid", topicPrefix,false);
+			sites = DIntGrid2DFactory.createDIntGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.AOI, TYPE.pos_i, TYPE.pos_j, super.rows,super.columns, MODE, 0, true, "sites", topicPrefix,false);
+			obstacles = DIntGrid2DFactory.createDIntGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.AOI, TYPE.pos_i, TYPE.pos_j, super.rows,super.columns, MODE, 0, true, "obstacles", topicPrefix,false);
 			init_connection();
 		}catch (DMasonException e) { e.printStackTrace();}
 

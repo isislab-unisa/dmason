@@ -183,7 +183,7 @@ public class DFlockers extends DistributedState<Double2D>
 		{
 
 			flockers = DContinuousGrid2DFactory.createDContinuous2D(neighborhood/1.5,gridWidth, gridHeight,this,
-					super.MAX_DISTANCE,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,"flockers", topicPrefix,true);
+					super.AOI,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,"flockers", topicPrefix,true);
 			init_connection();
 		} catch (DMasonException e) { e.printStackTrace(); }
 

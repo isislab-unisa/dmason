@@ -26,7 +26,7 @@ public class GeneralParam implements Serializable
 	private int Height;
 	private int Rows;
 	private int Columns;
-	private int MaxDistance;
+	private int Aoi;
 	private int NumAgents;
 	private int Mode;
 	private long MaxStep;
@@ -40,14 +40,12 @@ public class GeneralParam implements Serializable
 	
 private int P;
 	
-	public GeneralParam(int width, int height, int maxDistance,
+	public GeneralParam(int width, int height, int aoi,
 			int P, int numAgents, int mode, int connectionType) {
 		super();
 		this.Width = width;
 		this.Height = height;
-		this.MaxDistance = maxDistance;
-		//this.NumRegions = numRegions;
-	
+		this.Aoi = aoi;
 		this.P=P;
 		this.NumAgents = numAgents;
 		this.Mode = mode;
@@ -63,13 +61,12 @@ private int P;
 		P = p;
 	}
 
-	public GeneralParam(int width, int height, int maxDistance,
+	public GeneralParam(int width, int height, int aoi,
 			int rows, int columns, int numAgents, int mode, int connectionType) {
 		super();
 		this.Width = width;
 		this.Height = height;
-		this.MaxDistance = maxDistance;
-		//this.NumRegions = numRegions;
+		this.Aoi = aoi;
 		this.P=rows*columns;
 		this.Rows = rows;
 		this.Columns = columns;
@@ -79,13 +76,12 @@ private int P;
 		this.connectionType=connectionType;
 	}
 	
-	public GeneralParam(int width, int height, int maxDistance,
+	public GeneralParam(int width, int height, int aoi,
 			int rows, int columns, int numAgents, int mode,long MaxStep, int connectionType) {
 		super();
 		this.Width = width;
 		this.Height = height;
-		this.MaxDistance = maxDistance;
-		//this.NumRegions = numRegions;
+		this.Aoi = aoi;
 		this.P=rows*columns;
 		this.Rows = rows;
 		this.Columns = columns;
@@ -96,15 +92,14 @@ private int P;
 		this.connectionType=connectionType;
 	}
 	
-	public GeneralParam(int width, int height, int maxDistance,
+	public GeneralParam(int width, int height, int aoi,
 			int rows, int columns, int numAgents, int mode, 
 			HashMap<String, Object> model_params,long MaxStep ,int connectionType) {
 		super();
 		this.Width = width;
 		this.Height = height;
-		this.MaxDistance = maxDistance;
+		this.Aoi = aoi;
 		this.P=rows*columns;
-		//this.NumRegions = numRegions;
 		this.Rows = rows;
 		this.Columns = columns;
 		this.NumAgents = numAgents;
@@ -166,21 +161,13 @@ private int P;
 		this.Height = height;
 	}
 
-	public int getMaxDistance() {
-		return MaxDistance;
+	public int getAoi() {
+		return Aoi;
 	}
 
-	public void setMaxDistance(int maxDistance) {
-		this.MaxDistance = maxDistance;
+	public void setAoi(int aoi) {
+		this.Aoi = aoi;
 	}
-
-	/*public int getNumRegions() {
-		return NumRegions;
-	}
-
-	public void setNumRegions(int numRegions) {
-		this.NumRegions = numRegions;
-	}*/
 
 	public int getNumAgents() {
 		return NumAgents;
@@ -246,8 +233,8 @@ private int P;
 	@Override
 	public String toString() {
 		return "GeneralParam [Width=" + Width + ", Height=" + Height
-				+ ", Rows=" + Rows + ", Columns=" + Columns + ", MaxDistance="
-				+ MaxDistance + ", NumAgents=" + NumAgents + ", Mode=" + Mode
+				+ ", Rows=" + Rows + ", Columns=" + Columns + ", AOI="
+				+ Aoi + ", NumAgents=" + NumAgents + ", Mode=" + Mode
 				+ ", MaxStep=" + MaxStep + ", ip=" + ip + ", port=" + port
 				+ ", i=" + i + ", j=" + j + ", isBatch=" + isBatch + "]";
 	}

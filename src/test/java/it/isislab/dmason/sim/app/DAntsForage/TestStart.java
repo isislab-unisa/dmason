@@ -43,12 +43,12 @@ public class TestStart {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 3000; //only graphicsOn=false
-	private static int rows = 5; //number of rows
-	private static int columns = 3; //number of columns
+	private static int rows = 2; //number of rows
+	private static int columns = 2; //number of columns
 	private static int MAX_DISTANCE=1; //max distance
-	private static int NUM_AGENTS=10000; //number of agents
-	private static int WIDTH=500; //field width
-	private static int HEIGHT=500; //field height
+	private static int NUM_AGENTS=100; //number of agents
+	private static int WIDTH=200; //field width
+	private static int HEIGHT=200; //field height
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
 	
@@ -85,7 +85,7 @@ public class TestStart {
 				genParam.setJ(j);
 				genParam.setIp(ip);
 				genParam.setPort(port);
-				if(graphicsOn || (i==0 && j == 0))
+				if(graphicsOn || (i==1 && j == 1))
 				{
 					DAntsForageWithUI sim =new DAntsForageWithUI(genParam);
 					((Console)sim.createController()).pressPause();

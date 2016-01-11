@@ -48,7 +48,7 @@ public final class DSparseGrid2DFactory
 	 * @param width The width of the simulated field
 	 * @param height The height of the simulated field
 	 * @param sm The SimState of simulation
-	 * @param max_distance The maximum distance of shift of the agents
+	 * @param aoi The maximum distance of shift of the agents
 	 * @param i i position in the field
 	 * @param j j position in the field
 	 * @param rows number of rows in the division
@@ -59,7 +59,7 @@ public final class DSparseGrid2DFactory
 	 * @return The right DSparseGrid2D
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */
-	public static final DSparseGrid2D createDSparseGrid2D(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns,int MODE, String name, String topicPrefix, boolean isToroidal)
+	public static final DSparseGrid2D createDSparseGrid2D(int width, int height,SimState sm,int aoi,int i,int j,int rows,int columns,int MODE, String name, String topicPrefix, boolean isToroidal)
 			throws DMasonException
 	{
 
@@ -69,9 +69,9 @@ public final class DSparseGrid2DFactory
 		if(width>=Integer.MAX_VALUE) {throw new DMasonException("Illegal value : width value exceeds Integer max value");}
 		if(height<=0) {throw new DMasonException("Illegal value: Field height <= 0 is not defined");}
 		if(height>=Integer.MAX_VALUE) {throw new DMasonException("Illegal value : height value exceeds Integer max value");}
-		if(max_distance<=0){throw new DMasonException("Illegal value, max_distance value must be greater than 0");}
-		if(max_distance>=Integer.MAX_VALUE ){throw new DMasonException("Illegal value : max_distance value exceded Integer max value");}
-		if(max_distance>=width ){throw new DMasonException(String.format("Illegal value : max_distance (%d) value exceded width(%d) value",max_distance,width));}
+		if(aoi<=0){throw new DMasonException("Illegal value, max_distance value must be greater than 0");}
+		if(aoi>=Integer.MAX_VALUE ){throw new DMasonException("Illegal value : max_distance value exceded Integer max value");}
+		if(aoi>=width ){throw new DMasonException(String.format("Illegal value : max_distance (%d) value exceded width(%d) value",aoi,width));}
 		if(width<=0) {throw new DMasonException("Illegal value: Field width <= 0 is not defined");}
 		if(columns<=0 || rows <=0){throw new DMasonException("Illegal value : columns value and rows value must be greater than 0");}
 		if(rows==1 && columns==1){throw new DMasonException("Illegal value : field partitioning with one row and one column is not defined");}
@@ -80,7 +80,7 @@ public final class DSparseGrid2DFactory
 		{
 
 			 
-			DistributedField2D field=new DSparseGrid2DXY(width, height,sm, max_distance, i, j, rows,columns, name,topicPrefix,isToroidal);
+			DistributedField2D field=new DSparseGrid2DXY(width, height,sm, aoi, i, j, rows,columns, name,topicPrefix,isToroidal);
 			
 			((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 
@@ -96,7 +96,7 @@ public final class DSparseGrid2DFactory
 					if(((width% columns == 0) && (height% rows == 0)) && 
 							(((width/ columns)%3 == 0) && ((height/ rows)%3 == 0)))
 					{
-						DistributedField2D field = new DSparseGrid2DXYLB(width, height,sm, max_distance, i, j, rows,columns, name,topicPrefix);
+						DistributedField2D field = new DSparseGrid2DXYLB(width, height,sm, aoi, i, j, rows,columns, name,topicPrefix);
 						field.setToroidal(isToroidal);
 						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 						return (DSparseGrid2D)field;
@@ -108,7 +108,7 @@ public final class DSparseGrid2DFactory
 					if(MODE==DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
 					{if(rows!=1){throw new DMasonException("Illegal rows dimension for horizontal balanced mode, it must have one row");}
 
-					DistributedField2D field=new DSparseGrid2DYLB(width, height,sm, max_distance, i, j, rows,columns, name,topicPrefix);
+					DistributedField2D field=new DSparseGrid2DYLB(width, height,sm, aoi, i, j, rows,columns, name,topicPrefix);
 					field.setToroidal(isToroidal);
 					((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 
