@@ -42,7 +42,7 @@ public class TestStartDFlockersNonUniformPartitioning {
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = Integer.MAX_VALUE; //only graphicsOn=false
 	private static int P=9;
-	private static int MAX_DISTANCE=40; //max distance
+	private static int AOI=40; //max distance
 	private static int NUM_AGENTS=2000; //number of agents
 	private static int WIDTH=600; //field width
 	private static int HEIGHT=600; //field height
@@ -78,7 +78,7 @@ public class TestStartDFlockersNonUniformPartitioning {
 		
 		for (int i = 0; i < P; i++) {
 	
-				GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, MAX_DISTANCE,P,NUM_AGENTS,MODE,ConnectionType.pureActiveMQ); 
+				GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, AOI,P,NUM_AGENTS,MODE,ConnectionType.pureActiveMQ); 
 				genParam.setI(0);
 				genParam.setJ(i);
 				genParam.setIp(ip);

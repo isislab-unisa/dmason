@@ -45,7 +45,7 @@ public class TestStart {
 	private static int numSteps = 1000; 
 	private static int rows = 2; //number of rows
 	private static int columns = 2; //number of columns
-	private static int MAX_DISTANCE=10; //max distance
+	private static int AOI=10; //max distance
 	private static int NUM_AGENTS=1000; //number of agents
 	private static int WIDTH=400; //field width
 	private static int HEIGHT=400; //field height
@@ -80,7 +80,7 @@ public class TestStart {
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
 				
-				GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, MAX_DISTANCE, rows,columns,NUM_AGENTS, MODE,ConnectionType.pureActiveMQ); 
+				GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, AOI, rows,columns,NUM_AGENTS, MODE,ConnectionType.pureActiveMQ); 
 				genParam.setI(i);
 				genParam.setJ(j);
 				genParam.setIp(ip);

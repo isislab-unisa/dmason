@@ -45,7 +45,7 @@ public class TestStart {
 	private static int numSteps = 3000; //only graphicsOn=false
 	private static int rows = 2; //number of rows
 	private static int columns = 2; //number of columns
-	private static int MAX_DISTANCE=1; //max distance
+	private static int AOI=1; //max distance
 	private static int NUM_AGENTS=100; //number of agents
 	private static int WIDTH=200; //field width
 	private static int HEIGHT=200; //field height
@@ -53,7 +53,6 @@ public class TestStart {
 	private static String port="61616"; //port of activemq
 	
 	private static int MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE; 
-	
 	
 	public static void main(String[] args) 
 	{		
@@ -80,7 +79,7 @@ public class TestStart {
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
 				
-				GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, MAX_DISTANCE, rows,columns,NUM_AGENTS, MODE,ConnectionType.pureActiveMQ); 
+				GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, AOI, rows,columns,NUM_AGENTS, MODE,ConnectionType.pureActiveMQ); 
 				genParam.setI(i);
 				genParam.setJ(j);
 				genParam.setIp(ip);
