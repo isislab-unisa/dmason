@@ -358,7 +358,7 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
     	{
 			human_being =DContinuousGrid2DFactory.createDContinuous2D(
 					neighborhood/1.5, gridWidth, gridHeight, this,
-    				super.AOI,TYPE.pos_i,TYPE.pos_j, super.rows,super.columns,MODE,"human", topicPrefix, false);
+    				super.AOI,TYPE.pos_i,TYPE.pos_j, super.rows,super.columns,MODE,"human", topicPrefix, true);
     		init_connection();
     	} catch (DMasonException e) { e.printStackTrace(); }
 		
