@@ -40,7 +40,7 @@ public class TestStart {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 3000; //only graphicsOn=false
-	private static int rows = 2; //number of rows
+	private static int rows = 1; //number of rows
 	private static int columns = 2; //number of columns
 	private static int AOI=1; //max distance
 	private static int NUM_AGENTS=50; //number of agents
