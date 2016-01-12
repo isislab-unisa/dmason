@@ -274,7 +274,7 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
 //    	super(params.getMaxDistance(),params.getRows(), params.getColumns(),params.getNumAgents(),params.getI(),
 //    			params.getJ(),params.getIp(),params.getPort(),params.getMode(),
 //    			isToroidal,new DistributedMultiSchedule<Double2D>(),topicPrefix);
-    	super(params,new DistributedMultiSchedule<Double2D>(), "DSB",params.getConnectionType());
+    	super(params,new DistributedMultiSchedule<Double2D>(), topicPrefix,params.getConnectionType());
     	numHumanBeing = params.getNumAgents();
 //    	ip = params.getIp();
 //    	port = params.getPort();
@@ -290,13 +290,13 @@ public class DSociallyDamagingBehavior extends DistributedState<Double2D>
     
     public DSociallyDamagingBehavior(GeneralParam params,List<EntryParam<String, Object>> simParams, String prefix)
     {    	
-    	super(params,new DistributedMultiSchedule<Double2D>(), "DSB",params.getConnectionType());
+    	super(params,new DistributedMultiSchedule<Double2D>(), topicPrefix, params.getConnectionType());
 //    	ip = params.getIp();
 //    	port = params.getPort();
     	this.MODE=params.getMode();
     	gridWidth=params.getWidth();
     	gridHeight=params.getHeight();
-    	topicPrefix = prefix; 
+    	//topicPrefix = prefix; 
 
     	for (EntryParam<String, Object> entryParam : simParams) {
     		

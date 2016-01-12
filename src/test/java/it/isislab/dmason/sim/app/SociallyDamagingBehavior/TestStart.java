@@ -40,7 +40,7 @@ public class TestStart {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 3000; //only graphicsOn=false
-	private static int rows = 1; //number of rows
+	private static int rows = 2; //number of rows
 	private static int columns = 2; //number of columns
 	private static int AOI=1; //max distance
 	private static int NUM_AGENTS=50; //number of agents
@@ -59,14 +59,15 @@ public class TestStart {
 			private DistributedState ds;
 			public worker(DistributedState ds) {
 				this.ds=ds;
-				ds.start();
+				
 			}
 			@Override
 			public void run() {
+				ds.start();
 				int i=0;
 				while(i!=numSteps)
 				{
-					System.out.println(i);
+					//System.out.println(i);
 					ds.schedule.step(ds);
 					i++;
 				}
@@ -82,7 +83,7 @@ public class TestStart {
 				genParam.setJ(j);
 				genParam.setIp(ip);
 				genParam.setPort(port);
-				if(graphicsOn)
+				if(/*graphicsOn*/i==0 && j==0)
 				{
 					DSociallyDamagingBehaviorWithUI sim =new DSociallyDamagingBehaviorWithUI(genParam);
 					((Console)sim.createController()).pressPause();
