@@ -197,7 +197,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		this.updates_cache = new ArrayList<Region<Double,Double2D>>();
 		this.name = name;
 		this.topicPrefix = prefix;
-		
+
 		setToroidal(isToroidal);
 		createRegion();
 		// Initialize variables for GlobalInspector
@@ -266,22 +266,22 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 					}	
 			}
 		}
-		
-		
-		
+
+
+
 		if(isToroidal())
 			makeToroidalSections();
 		else
 			makeNoToroidalSections();
-		
+
 		return true;
 	}
 
 	private void makeToroidalSections() {
-		
+
 		numNeighbors = 8;
 		myfield=new RegionDouble(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
-		
+
 
 		//corner up left
 		rmap.NORTH_WEST_OUT=new RegionDouble((own_x-AOI + width)%width, (own_y-AOI+height)%height, 
@@ -316,13 +316,13 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 
 
 		rmap.SOUTH_MINE=new RegionDouble(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
-		
+
 		rmap.NORTH_OUT=new RegionDouble((own_x+width)%width, (own_y - AOI+height)%height,
 				(own_x+ my_width +width)%width==0?width:(own_x+ my_width +width)%width,(own_y+height)%height==0?height:(own_y+height)%height);
 
 		rmap.SOUTH_OUT=new RegionDouble((own_x+width)%width,(own_y+my_height+height)%height,
 				(own_x+my_width+width)%width==0?width:(own_x+my_width+width)%width, (own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
-		
+
 		//if square partitioning
 		if(rows==1 && columns >1){
 			numNeighbors = 6;
@@ -335,8 +335,8 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 			rmap.WEST_OUT = null;
 		}
 	}
-	
-	
+
+
 	private void makeNoToroidalSections() {
 
 		myfield=new RegionDouble(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
@@ -385,10 +385,10 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 
 
 			else if(cellType.pos_j==columns-1){
-		 		numNeighbors = 1;
+				numNeighbors = 1;
 				rmap.WEST_OUT=new RegionDouble(own_x-AOI,own_y,own_x, own_y+my_height);
 			}
-			
+
 		}else 
 			if(rows>1 && columns == 1){ // Horizontal partitionig
 				numNeighbors =2;
@@ -481,8 +481,10 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		double shiftx=((DistributedState)sm).random.nextDouble();
 		double shifty=((DistributedState)sm).random.nextDouble();
 
-		double x= ((own_x+AOI)+((my_width-(2*AOI)))*shiftx);	
-		double y= ((own_y+AOI)+((my_height-(2*AOI)))*shifty);
+		//		double x= ((own_x+AOI)+((my_width-(2*AOI)))*shiftx);	
+		//		double y= ((own_y+AOI)+((my_height-(2*AOI)))*shifty);
+		double x= own_x+my_width*shiftx;	
+		double y= own_y+my_height*shifty;
 
 		return (new Double2D(x, y));
 	}
@@ -555,25 +557,25 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
+		if(this.getState().schedule.getSteps() !=0){
+			//CLEAR FIELD 
+			clear_ghost_regions();
+			//SAVE AGENTS IN THE GHOST SECTION
+			memorizeRegionOut();
 
-		//CLEAR FIELD 
-		clear_ghost_regions();
-		//SAVE AGENTS IN THE GHOST SECTION
-		memorizeRegionOut();
-
-		// Schedule agents in "myField" region
-		for(EntryAgent<Double2D> e : myfield.values())
-		{
-			RemotePositionedAgent<Double2D> rm=e.r;
-			Double2D loc=e.l;
-			rm.setPos(loc);
-			sm.schedule.scheduleOnce(rm);
-			((DistributedState<Double2D>)sm).addToField(rm,e.l);
-		}   
+			// Schedule agents in "myField" region
+			for(EntryAgent<Double2D> e : myfield.values())
+			{
+				RemotePositionedAgent<Double2D> rm=e.r;
+				Double2D loc=e.l;
+				rm.setPos(loc);
+				sm.schedule.scheduleOnce(rm);
+				((DistributedState<Double2D>)sm).addToField(rm,e.l);
+			}   
 
 
-         //ERROR GLOBAL PARAMETER
-	/*	ArrayList<String> actualVar=null;
+			//ERROR GLOBAL PARAMETER
+			/*	ArrayList<String> actualVar=null;
 		if(conn!=null)
 			actualVar=((DistributedState<?>)sm).upVar.getAllGlobalVarForStep(sm.schedule.getSteps());
 		//upVar.getAllGlobalVarForStep(sm.schedule.getSteps()-1);
@@ -598,7 +600,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 					globalsMethods);
 
 		}*/
-
+		}
 		// Publish the regions to correspondent topics for the neighbors
 		publishRegions(connWorker);
 
@@ -609,17 +611,19 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
 
-		// Update ZoomViewer (if any)
-		if(conn!=null &&
-				((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
-		{
-			try {
-				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
-				conn.publishToTopic(tmp_zoom,topicPrefix+"GRAPHICS"+cellType,name);
-				tmp_zoom=new ZoomArrayList<RemotePositionedAgent>();
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+		if(this.getState().schedule.getSteps() !=0){
+			// Update ZoomViewer (if any)
+			if(conn!=null &&
+					((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+			{
+				try {
+					tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
+					conn.publishToTopic(tmp_zoom,topicPrefix+"GRAPHICS"+cellType,name);
+					tmp_zoom=new ZoomArrayList<RemotePositionedAgent>();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		}
 		return true;

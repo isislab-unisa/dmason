@@ -15,7 +15,7 @@ public class DCircle extends RemoteCircle<Double2D> {
 	/**
 	 * The attractive damping term. Increasing this term will encourage agents to attract.
 	 */
-	double kAttr = 1;
+	double kAttr = 0;
 	/**
 	 * The repulsive damping term. Increasing this value will encourage agents to separate.
 	 */
@@ -43,17 +43,21 @@ public class DCircle extends RemoteCircle<Double2D> {
 		double x=0.0, y = 0.0;
 		// get last position
 		pos = st.circles.getObjectLocation(this);
-		//calculating neighbors from my position at distance 3R in toroidal field
-		Bag neighbors = st.circles.getNeighborsWithinDistance(pos, 3*RADIUS,true);
+		
+		//calculating neighbors from my position at distance 3R in toroidal field.
+		//Note: getNeighborsWithinDistance method for efficiency 
+		//		includes also extra agents which are not necessary in the specific range
+		Bag neighbors = st.circles.getNeighborsWithinDistance(pos, 3*RADIUS,st.circles.isToroidal());
 		//for all neighbors calculates forces exerted on me
 		for(Object b : neighbors){
 			DCircle other = (DCircle) b;
-			if(other.id.equalsIgnoreCase(id)) //getNeighborsWithinDistance include also me
+			if(other.id.equalsIgnoreCase(id)) //getNeighborsWithinDistance includes also me
 				continue;
-			//calculating ecuclidean discance from me to all neighbors
+			//calculating euclidean discance from me to all neighbors
 			distance = euclideanDistance(pos, other.pos);
 			
 			separation_distance = distance - (2*RADIUS);
+			//exclude
 			if(separation_distance < RADIUS){
 				
 				//in according to model, we set the appropriate force exerted (attractive or repulsive)  
@@ -61,17 +65,39 @@ public class DCircle extends RemoteCircle<Double2D> {
 					force = kRep;
 				else
 					force = kAttr;
+				// calculating the shift on x,y coordinates in according to model
+				x +=(distance==0)?0:(force * separation_distance * (other.pos.x - pos.x))/distance;
 
-				x +=(force * separation_distance * (other.pos.x - pos.x))/distance;
-
-				y +=(force * separation_distance * (other.pos.y - pos.y))/distance;
+				y +=(distance==0)?0:(force * separation_distance * (other.pos.y - pos.y))/distance;
+				if(Double.isNaN(x) || Double.isNaN(y))
+					System.err.println("ollooooooc");
 			}
 		}
 		Double2D oldpos = pos;
-		pos = new Double2D(st.circles.stx(pos.x + x), st.circles.sty(pos.y +y));
+		if(st.circles.isToroidal())
+			pos = new Double2D(st.circles.stx(pos.x + x), st.circles.sty(pos.y +y));
+		else{
+			
+				//Note: for non toroidal field
+				// 		if shift exceeds AOI it will be truncated
+				if(pos.x +x > st.circles.my_width+st.circles.own_x)
+					x =  (st.circles.my_width+st.circles.own_x) - pos.x-1;
+				
+				if(pos.y + y > st.circles.my_height+st.circles.own_y)
+					y=(st.circles.my_height+st.circles.own_y) - pos.y-1;
+				
+				if(pos.x +x < st.circles.own_x)
+					x= pos.x - st.circles.own_x;
+				
+				if(pos.y + y < st.circles.own_y)
+					y = pos.y - st.circles.own_y;
+				
+				pos = new Double2D(pos.x + x,pos.y +y);
+			}
 		try {
-			//set the agent at new position
+			//setting the agent at new position
 			if(!st.circles.setDistributedObjectLocation(pos,this, state))
+				//it's for debugging
 				System.out.println(x+" "+y+" mypos "+oldpos);
 		} catch (DMasonException e) {
 			// TODO Auto-generated catch block
@@ -81,7 +107,7 @@ public class DCircle extends RemoteCircle<Double2D> {
 
 	}
 
-	private double euclideanDistance(Double2D me_location, Double2D other_location){
+	public static double euclideanDistance(Double2D me_location, Double2D other_location){
 
 		return Math.sqrt(Math.pow((me_location.x - other_location.x),2) + Math.pow((me_location.y - other_location.y),2));
 	}

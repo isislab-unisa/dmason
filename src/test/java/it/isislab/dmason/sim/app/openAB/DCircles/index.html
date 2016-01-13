@@ -1,0 +1,81 @@
+<html><head></head><body>
+ <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="/assets/js/main.js"></script>
+
+
+<table border=0 cellspacing=0 cellpadding=6>
+<tr>
+<td valign=top><img src="icoRed.png" alt="DMASON" width="380" height="85"/><td valign=top>
+<h2>Circles</h2> 
+By IsisLab
+</table>
+
+<p>The circles benchmark model is a benchmark model originating from FLAME and FLAME GPU. It consists of a number of points which exert a repulsive and potentially attractive force over a limited range. Over a number of iterations the model will exhibit a force resolution which will ultimately result in a stable state. The model has origins in a number of biological systems and is analogous to that of cellular interactions of simple swarm systems.</p>
+
+<p>The model has been used for extensive benchmarking of the FLAME and FLAME GPU frameworks and is excellent for testing message acceleration structures for spatially distributed models.</p>
+
+<h1 id="model-description">Model Description</h1>
+
+<p>The position <script type="math/tex">x</script> of a circle agent <script type="math/tex">i</script> at a discrete time step <script type="math/tex">t - 1</script> is given by;</p>
+
+<script type="math/tex; mode=display">x_{i(t+1)} = x_{i(t)} + F_{i}</script>
+
+<p>where <script type="math/tex">F_{i}</script> denotes the force exerted on agent <script type="math/tex">i</script> calculated as;</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+F_{i} = \sum\limits_{i \neq j} F_{ij}^{rep}[d_{ij} - 2 < 0] + F_{ij}^{att}[d_{ij} - 2r > 0] %]]></script>
+
+<p>The parameter <script type="math/tex">r</script> is the homogeneous radius of the circle agent. The square Iverson bracket notation determines a condition for both the repulsive force <script type="math/tex">F_{ij}^{rep}</script> and attractive force <script type="math/tex">F_{ij}^{att}</script> between the agent <script type="math/tex">i</script> and a neighbouring agent <script type="math/tex">j</script>. When the condition evaluates to true it returns a value of <script type="math/tex">1</script> otherwise it is <script type="math/tex">0</script>. The value <script type="math/tex">d_{ij}</script> is the distance between agent positions <script type="math/tex">x_{i}</script> and <script type="math/tex">x_{j}</script> given by;</p>
+
+<script type="math/tex; mode=display"> d_{ij} = \sqrt{ (x_{j} - x_{i})^2 } </script>
+
+<p>The repulsive and attractive forces as defined as follows;</p>
+
+<script type="math/tex; mode=display"> F_{ij}^{rep} = \frac{k_{rep}(d_{ij} - 2r)(x_{j} - x_{i})} {d_{ij}} </script>
+
+<script type="math/tex; mode=display"> F_{ij}^{att} = \frac{k_{att}(d_{ij} - 2r)(x_{j} - x_{i})} {d_{ij}} </script>
+
+<p>The parameters <script type="math/tex">k_{rep}</script> and <script type="math/tex">k_{att}</script> are the repulsive and attractive damping terms respectively.</p>
+
+<h1 id="initial-conditions">Initial Conditions</h1>
+
+<p>The initial conditions of the circles model are a randomly positioned set of circle agents. The random distribution should be linear and the following parameters should be used to benchmark the model.</p>
+
+<p><script type="math/tex">W</script> The width and height of the environment in which agents are placed.<br />
+<script type="math/tex">\rho</script> The density of agents within the environment (this will dictate the fixed number of agents)</p>
+
+<h1 id="model-parameters">Model Parameters</h1>
+
+<table border="1">
+  <tbody>
+    <tr>
+      <td>Parameter</td>
+      <td>Description</td>
+    </tr>
+    <tr>
+      <td><script type="math/tex"> k_{rep} </script></td>
+      <td>The repulsive damping term. Increasing this value will encourage agents to separate.</td>
+    </tr>
+    <tr>
+      <td><script type="math/tex"> k_{att} </script></td>
+      <td>The attractive damping term. Increasing this term will encourage agents to attract.</td>
+    </tr>
+    <tr>
+      <td><script type="math/tex"> r </script></td>
+      <td>The interaction radius of the circle agents. Increasing this value will increase the communication between agents (assuming constant density)</td>
+    </tr>
+    <tr>
+      <td><script type="math/tex"> \rho </script></td>
+      <td>The density of agents within the environment. Increasing this value will increase the communication within the model.</td>
+    </tr>
+    <tr>
+      <td><script type="math/tex"> W </script></td>
+      <td>The width and height of the environment in which agents are placed. Increasing the environment size is equivalent to increasing the problem size <script type="math/tex"> N </script> (i.e. the number of agents) given a fixed <script type="math/tex">\rho</script>.</td>
+    </tr>
+  </tbody>
+</table>
+<h1 id="reference-implementation">Reference Implementation</h1>
+
+<p>A reference implementation is provided as part of the <a href="https://github.com/FLAMEGPU/FLAMEGPU/tree/master/examples/CirclesBruteForce_float/src/model">FLAME GPU SDK</a>.</p>
+</body></html>

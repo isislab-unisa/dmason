@@ -97,11 +97,13 @@ public class DCircles extends DistributedState<Double2D> {
 	public void start()
 	{
 		super.start();
-		
+		Double2D center = new Double2D(gridWidth/2, gridHeight/2);
+		double radius = (gridWidth < gridHeight)?gridWidth/2:gridHeight/2;
+		Double2D loc = null;
 		try 
 		{
 			circles = DContinuousGrid2DFactory.createDContinuous2D(8.0,gridWidth, gridHeight,this,
-					super.AOI,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,"circles", topicPrefix,true);
+					super.AOI,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,"circles", topicPrefix,false);
 			init_connection();
 		} catch (DMasonException e) { e.printStackTrace(); }
 		
@@ -109,7 +111,13 @@ public class DCircles extends DistributedState<Double2D> {
 
 		while(circles.size() != super.NUMAGENTS / super.NUMPEERS)
 		{
-			f.setPos(circles.getAvailableRandomLocation());
+			//circular positions distribution 
+			loc = circles.getAvailableRandomLocation();
+			//if the position is not within the radius, recalculate it
+			while(DCircle.euclideanDistance(center, loc) > radius)
+				loc = circles.getAvailableRandomLocation();
+			
+			f.setPos(loc);
 
 			if(circles.setObjectLocation(f, f.pos))
 			{
