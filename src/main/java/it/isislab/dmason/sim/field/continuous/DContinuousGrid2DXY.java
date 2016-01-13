@@ -222,7 +222,8 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		globals = new VisualizationUpdateMap<String, Object>();
 		globalsNames = new ArrayList<String>();
 		globalsMethods = new ArrayList<Method>();
-		GlobalParametersHelper.buildGlobalsList((DistributedState)sm, ((ConnectionJMS)((DistributedState)sm).getCommunicationVisualizationConnection()), topicPrefix, globalsNames, globalsMethods);
+		//ERROR GLOBAL PARAMETER
+		//GlobalParametersHelper.buildGlobalsList((DistributedState)sm, ((ConnectionJMS)((DistributedState)sm).getCommunicationVisualizationConnection()), topicPrefix, globalsNames, globalsMethods);
 	}
 	/**
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
@@ -575,8 +576,8 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		}   
 
 
-
-		ArrayList<String> actualVar=null;
+         //ERROR GLOBAL PARAMETER
+	/*	ArrayList<String> actualVar=null;
 		if(conn!=null)
 			actualVar=((DistributedState<?>)sm).upVar.getAllGlobalVarForStep(sm.schedule.getSteps());
 		//upVar.getAllGlobalVarForStep(sm.schedule.getSteps()-1);
@@ -600,7 +601,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 					actualVar,
 					globalsMethods);
 
-		}
+		}*/
 
 		// Publish the regions to correspondent topics for the neighbors
 		publishRegions(connWorker);
