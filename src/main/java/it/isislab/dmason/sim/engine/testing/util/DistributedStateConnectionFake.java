@@ -19,6 +19,7 @@ package it.isislab.dmason.sim.engine.testing.util;
 
 
 import it.isislab.dmason.annotation.AuthorAnnotation;
+import it.isislab.dmason.experimentals.util.management.globals.util.UpdateGlobalVarAtStep;
 import it.isislab.dmason.experimentals.util.trigger.Trigger;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
@@ -34,7 +35,6 @@ import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.connection.testconnection.VirtualConnectionNFieldsWithVirtualJMS;
 import it.isislab.dmason.util.connection.testconnection.VirtualMessageListener;
-import it.isislab.dmason.util.management.globals.util.UpdateGlobalVarAtStep;
 
 import java.util.ArrayList;
 import java.util.HashMap;

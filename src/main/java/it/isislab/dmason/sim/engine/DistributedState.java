@@ -19,6 +19,7 @@ package it.isislab.dmason.sim.engine;
 
 import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
+import it.isislab.dmason.experimentals.util.management.globals.util.UpdateGlobalVarAtStep;
 import it.isislab.dmason.experimentals.util.trigger.Trigger;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField;
@@ -26,7 +27,6 @@ import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.ConnectionType;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
-import it.isislab.dmason.util.management.globals.util.UpdateGlobalVarAtStep;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -29,7 +29,7 @@ import it.isislab.dmason.experimentals.tools.batch.data.ParamDistributionUniform
 import it.isislab.dmason.experimentals.tools.batch.data.ParamFixed;
 import it.isislab.dmason.experimentals.tools.batch.data.ParamList;
 import it.isislab.dmason.experimentals.tools.batch.data.ParamRange;
-import it.isislab.dmason.util.management.JarClassLoader;
+import it.isislab.dmason.experimentals.util.management.JarClassLoader;
 
 import java.awt.Color;
 import java.awt.Dimension;
