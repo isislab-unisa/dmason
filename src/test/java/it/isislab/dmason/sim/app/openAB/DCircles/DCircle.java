@@ -44,7 +44,7 @@ public class DCircle extends RemoteCircle<Double2D> {
 		// get last position
 		pos = st.circles.getObjectLocation(this);
 		
-		//calculating neighbors from my position at distance 3R in toroidal field.
+		//calculating neighbors from my position within distance 3R in toroidal field.
 		//Note: getNeighborsWithinDistance method for efficiency 
 		//		includes also extra agents which are not necessary in the specific range
 		Bag neighbors = st.circles.getNeighborsWithinDistance(pos, 3*RADIUS,st.circles.isToroidal());
