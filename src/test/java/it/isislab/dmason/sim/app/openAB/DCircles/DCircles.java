@@ -19,25 +19,38 @@ import sim.util.Double2D;
 public class DCircles extends DistributedState<Double2D> {
 
 	private static final long serialVersionUID = 1L;
-	/*public static final double XMIN = 0;
-	public static final double XMAX = 200;
-	public static final double YMIN = 0;
-	public static final double YMAX = 200;*/
 
+	/**
+	 * it's used for creating circle agents
+	 */
 	public static final double DIAMETER = 4;
 
 	public DContinuousGrid2D circles = null;
 
 	public static String topicPrefix = "";
 	
+	/**
+	 * field Width
+	 */
 	public double gridWidth ;
-	public double gridHeight ;   
+	/**
+	 * field Height
+	 */
+	public double gridHeight ;
+	
 	public int MODE;
 	
 	public ContinuousPortrayal2D p;
 	
+	/**
+	 * empty costructor for Serialize
+	 */
 	public DCircles() { super();}
 	
+	/**
+	 * Constructor 
+	 * @param params
+	 */
 	public DCircles(GeneralParam params) {
 		super(params, new DistributedMultiSchedule<Double2D>(),topicPrefix,params.getConnectionType());
 		this.MODE=params.getMode();
@@ -97,6 +110,12 @@ public class DCircles extends DistributedState<Double2D> {
 	public void start()
 	{
 		super.start();
+		/* For setting the agent in circular way, we have to make a invisible circle within the field.
+		   Next, we need to know what will be the circle center.
+		   For calculating the radius, basically we take the half of smaller side (in this case we don't worry about double values, because the filed supports double coordinates).
+		   During the casual position generation, the agent's location will be regenerate until it is within the circle area.
+		*/
+		
 		Double2D center = new Double2D(gridWidth/2, gridHeight/2);
 		double radius = (gridWidth < gridHeight)?gridWidth/2:gridHeight/2;
 		Double2D loc = null;
