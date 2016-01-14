@@ -156,9 +156,9 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 		this.updates_cache = new ArrayList<Region<Double,Double2D>>();
 		this.name = name;
 		this.topicPrefix = prefix;
-   
-		
-        if(checkReproducibility)
+
+
+		if(checkReproducibility)
 		{
 			try {
 				file = new FileOutputStream(name+"-"+cellType+".txt");
@@ -229,8 +229,8 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 
 		// Building the regions
 
-	myfield=new RegionDouble(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
-		
+		myfield=new RegionDouble(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
+		System.out.println(myCell.ID+" "+myfield);
 
 		//corner up left
 		rmap.NORTH_WEST_OUT=new RegionDouble((own_x-AOI + width)%width, (own_y-AOI+height)%height, 
@@ -260,18 +260,16 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 				(own_x+my_width+AOI+width)%width==0?width:(own_x+my_width+AOI+width)%width, (own_y+my_height+height)%height==0?height:(own_y+my_height+height)%height);
 		rmap.EAST_MINE=new RegionDouble(own_x + my_width - AOI,own_y,own_x +my_width , own_y+my_height);
 
-
 		rmap.NORTH_MINE=new RegionDouble(own_x ,own_y,own_x+my_width, own_y + AOI);
 
-
 		rmap.SOUTH_MINE=new RegionDouble(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
-		
+
 		rmap.NORTH_OUT=new RegionDouble((own_x+width)%width, (own_y - AOI+height)%height,
 				(own_x+ my_width +width)%width==0?width:(own_x+ my_width +width)%width,(own_y+height)%height==0?height:(own_y+height)%height);
 
 		rmap.SOUTH_OUT=new RegionDouble((own_x+width)%width,(own_y+my_height+height)%height,
 				(own_x+my_width+width)%width==0?width:(own_x+my_width+width)%width, (own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
-		
+
 
 
 		//		System.out.println(myCell.ID+" "+myfield);
@@ -331,7 +329,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 			else{throw new DMasonException("Cast Exception setDistributedObjectLocation					//, second input parameter RemotePositionedAgent<E>, E must be a Double2D");}
 		}
 		else{throw new DMasonException("Cast Exception setDistributedObjectLocation, second input parameter must be a RemotePositionedAgent<>");}
-	
+
 		if(setAgents(rm, location))
 		{
 			return true;
@@ -359,8 +357,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
 		// If there is any viewer, send a snap
-		if(conn!=null &&
-				((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
+		if(conn!=null &&((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
 			GlobalInspectorHelper.synchronizeInspector(
 					(DistributedState<?>)sm,
@@ -381,56 +378,22 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
 
-		// If there are global parameters, synchronize
-		/*if (globalsNames.size() > 0)
-		{
-			// Update and send global parameters
-			GlobalParametersHelper.sendGlobalParameters(
-					sm,
-					connection,
-					topicPrefix,
-					cellType,
-					currentTime,
-					globalsNames);
-			// Receive global parameters from previous step and update the model
-			GlobalParametersHelper.receiveAndUpdate(
-					this,
-					globalsNames,
-					globalsMethods);
-		}*/
-
-		// -------------------------------------------------------------------
-		// -------------------------------------------------------------------
-		// -------------------------------------------------------------------
-
-		// Remove agents in "OUT" sections
-		for(Region<Double, Double2D> region : updates_cache)
-		{
-			for(EntryAgent<Double2D> remote_agent : region.values())
-			{
-				this.remove(remote_agent.r);
-			}
-		}
+		//CLEAR FIELD 
+		clear_ghost_regions();
+		//SAVE AGENTS IN THE GHOST SECTION
+		memorizeRegionOut();
 
 		// Schedule agents in "myField" region
-		for(EntryAgent<Double2D> e: myfield.values())
+		for(EntryAgent<Double2D> e : myfield.values())
 		{
 			RemotePositionedAgent<Double2D> rm=e.r;
 			Double2D loc=e.l;
 			rm.setPos(loc);
-			this.remove(rm);
 			sm.schedule.scheduleOnce(rm);
-			setObjectLocation(rm,loc);
+			((DistributedState<Double2D>)sm).addToField(rm,e.l);
 		}   
 
-		// Update fields using reflection
-		updateFields();
 
-
-		updates_cache=new ArrayList<Region<Double,Double2D>>();
-
-		//
-		memorizeRegionOut();
 
 		ArrayList<String> actualVar=null;
 		if(conn!=null)
@@ -482,6 +445,20 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 			}
 		}
 		return true;
+	}
+	/**
+	 * This method removes the agents in the ghost regions; 
+	 * and removes all scheduled agents that in the last step was moved in the a ghost region.
+	 */
+	private void clear_ghost_regions() {
+		// Remove agents in "ghost" sections
+		for(Region<Double, Double2D> region : updates_cache)
+			for(EntryAgent<Double2D> e:region.values())
+				this.remove(e.r);
+
+		updateFields();
+		updates_cache=new ArrayList<Region<Double,Double2D>>();
+
 	}
 
 
@@ -578,6 +555,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 		}
 
 	}
+
 	protected void processUpdates()
 	{
 		// Take from UpdateMap the updates for current last terminated step and use 
@@ -594,12 +572,9 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 		} catch (InterruptedException e1) {e1.printStackTrace(); } catch (DMasonException e1) {e1.printStackTrace(); }
 
 		for(Region<Double, Double2D> region : updates_cache)
-			for(EntryAgent<Double2D> e_m: region.values())
-			{
+			for(EntryAgent<Double2D> e_m:region.values())
+				((DistributedState<Double2D>)sm).addToField(e_m.r,e_m.l);
 
-				RemotePositionedAgent<Double2D> rm=e_m.r;
-				((DistributedState<Double2D>)sm).addToField(rm,e_m.l);
-			}
 
 		this.reset();
 	}
@@ -651,8 +626,10 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 		Region<Double,Double2D> r_mine=box.out;
 		Region<Double,Double2D> r_out=box.mine;		
 
-		for(EntryAgent<Double2D> e_m: r_mine.values())
+
+		for(String agent_id : r_mine.keySet())
 		{
+			EntryAgent<Double2D> e_m = r_mine.get(agent_id);
 			if(verifyPosition(e_m.l))
 			{
 				RemotePositionedAgent<Double2D> rm=e_m.r;
@@ -663,11 +640,12 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 		}
 		Region<Double,Double2D> tomemorize=r_out.clone();
 		tomemorize.clear();
-		for(EntryAgent<Double2D> e_m: r_out.values())
+		for(String agent_id : r_out.keySet())
 		{
+			EntryAgent<Double2D> e_m = r_out.get(agent_id);
 			if(verifyOutPosition(e_m.l))
 			{
-				tomemorize.put(e_m.r.getId(),e_m);
+				tomemorize.put(e_m.r.getId(), e_m);
 			}
 		}
 		updates_cache.add(tomemorize);
@@ -700,9 +678,9 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 					if(name.contains("OUT"))
 					{
 
-						for(EntryAgent<Double2D> e: region.values())
+						for(String agent_id : region.keySet())
 						{ 
-						
+							EntryAgent<Double2D> e = region.get(agent_id);
 							RemotePositionedAgent<Double2D> rm=e.r;
 							rm.setPos(e.l);
 							this.remove(rm);
@@ -754,6 +732,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 			else
 				if(rmap.SOUTH_WEST_MINE!=null && rmap.SOUTH_WEST_MINE.isMine(location.x,location.y))
 				{
+					//System.exit(0);
 					if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 						tmp_zoom.add(rm);
 					if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
@@ -954,7 +933,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 		return globals;
 	}
 
-	
+
 
 	/**
 	 * Used by SociallyDamaginBehaviour because ...
@@ -1137,7 +1116,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 				||(rmap.EAST_OUT != null && rmap.EAST_OUT.isMine(pos.x,pos.y))
 				||(rmap.NORTH_OUT != null && rmap.NORTH_OUT.isMine(pos.x,pos.y))
 				||(rmap.SOUTH_OUT != null && rmap.SOUTH_OUT.isMine(pos.x,pos.y));
-				//||(myfield.isMine(pos.x,pos.y));
+		//||(myfield.isMine(pos.x,pos.y));
 
 
 	}
