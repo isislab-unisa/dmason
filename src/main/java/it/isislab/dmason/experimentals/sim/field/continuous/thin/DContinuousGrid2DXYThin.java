@@ -22,6 +22,7 @@ import it.isislab.dmason.experimentals.sim.field.support.globals.GlobalInspector
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.RemoteSnap;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.experimentals.util.visualization.zoomviewerapp.ZoomArrayList;
+import it.isislab.dmason.nonuniform.QuadTree;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
@@ -46,7 +47,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
+
 import sim.engine.SimState;
 import sim.util.Bag;
 import sim.util.Double2D;
@@ -197,16 +200,16 @@ public class DContinuousGrid2DXYThin extends DContinuousGrid2DThin implements Tr
 		this.topicPrefix = prefix;
 
 		
-		createRegion();		
+		createRegions();		
 	}
 
 	/**
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
 	 * @return true if all is ok
 	 */
-	private boolean createRegion()
+	public  boolean createRegions(QuadTree... cell)
 	{		
-
+		if(cell.length > 1 ) return false; 
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 

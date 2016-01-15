@@ -20,6 +20,7 @@ package it.isislab.dmason.experimentals.field.grid.numeric.thin;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.experimentals.util.visualization.zoomviewerapp.ZoomArrayList;
+import it.isislab.dmason.nonuniform.QuadTree;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
@@ -42,6 +43,7 @@ import java.util.HashMap;
 import java.util.PriorityQueue;
 
 import sim.engine.SimState;
+import sim.util.Bag;
 import sim.util.Int2D;
 
 
@@ -996,5 +998,17 @@ public class DDoubleGrid2DXYThin extends DDoubleGrid2DThin {
 		//we have to implement this
 		return false;
 
+	}
+
+	@Override
+	public Bag clear() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean createRegions(QuadTree... cell) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

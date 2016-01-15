@@ -152,7 +152,7 @@ public class DistributedStateConnectionMPI<E> {
 
 		init_MPI();
 	}
-
+	
 
 	private void init_MPI()
 	{

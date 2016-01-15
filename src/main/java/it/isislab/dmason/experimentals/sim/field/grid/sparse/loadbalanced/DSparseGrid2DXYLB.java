@@ -24,6 +24,7 @@ import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.LoadBalan
 import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellIntegerField;
 import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
+import it.isislab.dmason.nonuniform.QuadTree;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
@@ -5553,5 +5554,12 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 	public String getDistributedFieldID() {
 		// TODO Auto-generated method stub
 		return NAME;
+	}
+
+
+	@Override
+	public boolean createRegions(QuadTree... cell) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

@@ -18,12 +18,14 @@
 package it.isislab.dmason.sim.field;
 
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
+import it.isislab.dmason.nonuniform.QuadTree;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
+
+import sim.util.Bag;
 
 /**
  * An interface for all Distributed Fields 2D
@@ -69,5 +71,9 @@ public interface DistributedField<E> extends Serializable
 	 * @return
 	 */
 	public VisualizationUpdateMap<String, Object> getGlobals();
+	
+	public Bag clear();
+	
+	public  boolean createRegions(QuadTree... cell);
 	
 }

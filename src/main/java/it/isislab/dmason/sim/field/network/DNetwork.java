@@ -19,6 +19,7 @@ package it.isislab.dmason.sim.field.network;
 
 import it.isislab.dmason.annotation.AuthorAnnotation;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
+import it.isislab.dmason.nonuniform.QuadTree;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemoteUnpositionedAgent;
 import it.isislab.dmason.sim.field.CellType;
@@ -259,5 +260,11 @@ public class DNetwork extends Network implements DistributedFieldNetwork{
 	public UpdateMap getUpdates() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean createRegions(QuadTree... cell) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

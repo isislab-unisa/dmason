@@ -25,6 +25,7 @@ import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.LoadBalan
 import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellDoubleNumeric;
 import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
+import it.isislab.dmason.nonuniform.QuadTree;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
@@ -48,8 +49,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
+
 import org.junit.Ignore;
+
 import sim.engine.SimState;
+import sim.util.Bag;
 import sim.util.Int2D;
 
 
@@ -5542,6 +5546,18 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D implements DistributedField
 		//we have to implement this
 		return false;
 
+	}
+
+	@Override
+	public Bag clear() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean createRegions(QuadTree... cell) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

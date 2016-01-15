@@ -23,6 +23,7 @@ import it.isislab.dmason.experimentals.sim.field.support.globals.GlobalInspector
 import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.experimentals.util.visualization.zoomviewerapp.ZoomArrayList;
+import it.isislab.dmason.nonuniform.QuadTree;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
@@ -1140,6 +1141,12 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 		//we have to implement this
 		return false;
 
+	}
+
+	@Override
+	public boolean createRegions(QuadTree... cell) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

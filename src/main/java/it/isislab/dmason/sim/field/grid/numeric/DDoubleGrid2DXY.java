@@ -22,6 +22,7 @@ import it.isislab.dmason.experimentals.sim.field.support.globals.GlobalInspector
 import it.isislab.dmason.experimentals.sim.field.support.globals.GlobalParametersHelper;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.experimentals.util.visualization.zoomviewerapp.ZoomArrayList;
+import it.isislab.dmason.nonuniform.QuadTree;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
@@ -49,6 +50,7 @@ import java.util.PriorityQueue;
 import java.util.logging.Logger;
 
 import sim.engine.SimState;
+import sim.util.Bag;
 import sim.util.Double2D;
 import sim.util.Int2D;
 
@@ -226,7 +228,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 		this.topicPrefix = prefix;		
 
 		setToroidal(isToroidal);
-		createRegion();
+		createRegions();
 
 
 	}
@@ -235,8 +237,9 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
 	 * @return true if all is ok
 	 */
-	private boolean createRegion() {
-
+	public  boolean createRegions(QuadTree... cell)
+	{		
+		if(cell.length > 1 ) return false; 
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
@@ -1138,6 +1141,12 @@ private void makeToroidalSections() {
 				||(rmap.SOUTH_MINE != null && rmap.SOUTH_MINE.isMine(pos.x,pos.y))
 				||(myfield.isMine(pos.x,pos.y));
 
+	}
+
+	@Override
+	public Bag clear() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

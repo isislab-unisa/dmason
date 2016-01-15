@@ -23,6 +23,7 @@ import it.isislab.dmason.experimentals.sim.field.support.globals.GlobalInspector
 import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.experimentals.util.visualization.zoomviewerapp.ZoomArrayList;
+import it.isislab.dmason.nonuniform.QuadTree;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
@@ -48,6 +49,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.logging.Logger;
+
 import sim.engine.SimState;
 import sim.util.Double2D;
 
@@ -1015,6 +1017,12 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 		//we have to implement this
 		return false;
 
+	}
+
+	@Override
+	public boolean createRegions(QuadTree... cell) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	

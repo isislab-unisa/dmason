@@ -23,6 +23,7 @@ import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellInt
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.RemoteSnap;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.experimentals.util.visualization.zoomviewerapp.ZoomArrayList;
+import it.isislab.dmason.nonuniform.QuadTree;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
@@ -208,7 +209,7 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 		this.topicPrefix = prefix;
 		updates_cache=new ArrayList<Region<Integer,Int2D>>();
 		numAgents=0;
-		createRegion();	
+		createRegions();	
 	}
 
 
@@ -216,9 +217,9 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
 	 * @return true if all is ok
 	 */
-	private boolean createRegion()
-	{
-		
+	public  boolean createRegions(QuadTree... cell)
+	{		
+		if(cell.length > 1 ) return false; 
 
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
@@ -1441,6 +1442,9 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 		return false;
 
 	}
+
+
+
 
 
 

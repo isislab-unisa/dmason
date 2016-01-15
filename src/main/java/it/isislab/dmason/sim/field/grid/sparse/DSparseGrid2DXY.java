@@ -24,6 +24,7 @@ import it.isislab.dmason.experimentals.sim.field.support.globals.GlobalInspector
 import it.isislab.dmason.experimentals.sim.field.support.globals.GlobalParametersHelper;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.experimentals.util.visualization.zoomviewerapp.ZoomArrayList;
+import it.isislab.dmason.nonuniform.QuadTree;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
@@ -47,7 +48,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.logging.Logger;
+
 import javax.xml.ws.soap.MTOMFeature;
+
 import sim.engine.SimState;
 import sim.util.Int2D;
 
@@ -177,7 +180,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	// -----------------------------------------------------------------------
 	private ZoomArrayList<RemotePositionedAgent> tmp_zoom = new ZoomArrayList<RemotePositionedAgent>();
 
-
+	
 
 	/**
 	 * Constructor of class with paramaters:
@@ -208,7 +211,8 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 		this.topicPrefix = prefix;
 
 		setToroidal(isToroidal);
-		createRegion();
+		createRegions();
+		
 
 
 		// Initialize variables for GlobalInspector
@@ -235,8 +239,9 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
 	 * @return true if all is ok
 	 */
-	private boolean createRegion()
+	public  boolean createRegions(QuadTree... cell)
 	{		
+		if(cell.length > 1 ) return false; 	
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 

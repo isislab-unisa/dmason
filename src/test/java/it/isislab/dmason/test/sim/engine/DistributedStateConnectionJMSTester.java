@@ -4,13 +4,18 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import javax.jms.JMSException;
+
 import org.junit.Test;
+
 import sim.engine.SimState;
+import sim.util.Bag;
 import sim.util.Double2D;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
+import it.isislab.dmason.nonuniform.QuadTree;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.DistributedStateConnectionJMS;
@@ -299,6 +304,18 @@ public class DistributedStateConnectionJMSTester {
 
 		@Override
 		public boolean verifyPosition(Double2D pos) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public Bag clear() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public boolean createRegions(QuadTree... cell) {
 			// TODO Auto-generated method stub
 			return false;
 		}

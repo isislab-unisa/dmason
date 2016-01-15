@@ -202,9 +202,8 @@ public class DistributedMultiSchedule<E> extends Schedule
 			//PREPARAZIONE CAMPI
 			for(DistributedField2D<E> f : fields2D)
 			{
-				((DContinuousNonUniform)f).clear();
-
-				((DContinuousNonUniform)f).createRegions(myCell);
+				f.clear();
+				f.createRegions(myCell);
 
 			}
 

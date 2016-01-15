@@ -22,6 +22,7 @@ import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellInt
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.RemoteSnap;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.experimentals.util.visualization.zoomviewerapp.ZoomArrayList;
+import it.isislab.dmason.nonuniform.QuadTree;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
@@ -212,7 +213,7 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 		this.topicPrefix = prefix;
 
 		numAgents=0;
-		createRegion();
+		createRegions();
 		
 	}
 
@@ -220,8 +221,9 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
 	 * @return true if all is ok
 	 */
-	private boolean createRegion()
-	{
+	public  boolean createRegions(QuadTree... cell)
+	{		
+		if(cell.length > 1 ) return false; 
 
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))

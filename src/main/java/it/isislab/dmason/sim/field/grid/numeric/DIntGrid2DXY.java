@@ -20,6 +20,7 @@ package it.isislab.dmason.sim.field.grid.numeric;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.experimentals.util.visualization.zoomviewerapp.ZoomArrayList;
+import it.isislab.dmason.nonuniform.QuadTree;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
@@ -43,6 +44,7 @@ import java.util.PriorityQueue;
 import java.util.logging.Logger;
 
 import sim.engine.SimState;
+import sim.util.Bag;
 import sim.util.Int2D;
 
 
@@ -186,7 +188,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 		this.topicPrefix=prefix;		
 
 		setToroidal(isToroidal);		
-		createRegion();	
+		createRegions();	
 
 	}
 
@@ -195,7 +197,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
 	 * @return true if all is ok
 	 */
-	private boolean createRegion()
+	private boolean createRegions()
 	{
 		//upper left corner's coordinates
 				if(cellType.pos_j<(width%columns))
@@ -975,5 +977,19 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	public String getDistributedFieldID() {
 
 		return name;
+	}
+
+
+	@Override
+	public Bag clear() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public boolean createRegions(QuadTree... cell) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

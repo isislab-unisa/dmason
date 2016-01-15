@@ -25,6 +25,7 @@ import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.LoadBalan
 import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellDoubleField;
 import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
+import it.isislab.dmason.nonuniform.QuadTree;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
@@ -5507,6 +5508,12 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 	public String getDistributedFieldID() {
 		// TODO Auto-generated method stub
 		return name;
+	}
+
+	@Override
+	public boolean createRegions(QuadTree... cell) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

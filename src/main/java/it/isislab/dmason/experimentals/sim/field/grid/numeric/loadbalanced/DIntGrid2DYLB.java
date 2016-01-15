@@ -22,6 +22,7 @@ import it.isislab.dmason.experimentals.sim.field.support.field2D.loadbalanced.Di
 import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.experimentals.util.visualization.zoomviewerapp.ZoomArrayList;
+import it.isislab.dmason.nonuniform.QuadTree;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
@@ -42,7 +43,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
+
 import sim.engine.SimState;
+import sim.util.Bag;
 import sim.util.Int2D;
 
 
@@ -171,7 +174,7 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 		prevBalanceR=0;
 		leftMineSize=0;
 		rightMineSize=0;
-		createRegion();		
+		createRegions();		
 
 	}
 
@@ -180,8 +183,9 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
 	 * @return true if all is ok
 	 */
-	private boolean createRegion()
-	{
+	public  boolean createRegions(QuadTree... cell)
+	{		
+		if(cell.length > 1 ) return false; 
 		int jumpDistance=AOI;
 		//upper left corner's coordinates
 				if(cellType.pos_j<(width%columns))
@@ -1059,5 +1063,11 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 		//we have to implement this
 		return false;
 
+	}
+
+	@Override
+	public Bag clear() {
+		// TODO Auto-generated method stub
+		return this.clear();
 	}	
 }

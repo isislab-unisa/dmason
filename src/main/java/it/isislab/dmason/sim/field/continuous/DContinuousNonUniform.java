@@ -208,23 +208,23 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
 	 * @return true if all is ok
 	 */
-	public  boolean createRegions(QuadTree cell)
+	public  boolean createRegions(QuadTree... cell)
 	{		
-
-		myCell=cell;
-		for(ORIENTATION neighbors:cell.neighborhood.keySet())
+		if(cell.length > 1 ) return false; 
+		myCell=cell[0];
+		for(ORIENTATION neighbors:cell[0].neighborhood.keySet())
 		{
-			for(QuadTree neighbor:cell.neighborhood.get(neighbors))
+			for(QuadTree neighbor:cell[0].neighborhood.get(neighbors))
 			{
 				numNeighbors++;
 			}
 		}
 		System.out.println(myCell.ID+" created regions for "+numNeighbors+" messages");
-		own_x=cell.getX1();
-		own_y=cell.getY1();
+		own_x=cell[0].getX1();
+		own_y=cell[0].getY1();
 
-		my_width=cell.getX2()-cell.getX1();
-		my_height=cell.getY2()-cell.getY1();
+		my_width=cell[0].getX2()-cell[0].getX1();
+		my_height=cell[0].getY2()-cell[0].getY1();
 
 
 		// Building the regions
