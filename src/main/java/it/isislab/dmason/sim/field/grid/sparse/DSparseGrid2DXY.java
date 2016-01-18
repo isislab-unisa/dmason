@@ -569,50 +569,49 @@ private void makeToroidalSections() {
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
+		if(this.getState().schedule.getSteps() !=0){
+			//CLEAR FIELD 
+			clear_ghost_regions();
+			//SAVE AGENTS IN THE GHOST SECTION
+			memorizeRegionOut();
 
-		//CLEAR FIELD 
-		clear_ghost_regions();
-		//SAVE AGENTS IN THE GHOST SECTION
-		memorizeRegionOut();
-
-		// Schedule agents in "myField" region
-		for(EntryAgent<Int2D> e : myfield.values())
-		{
-			RemotePositionedAgent<Int2D> rm=e.r;
-			Int2D loc=e.l;
-			rm.setPos(loc);
-			sm.schedule.scheduleOnce(rm);
-			((DistributedState<Int2D>)sm).addToField(rm,e.l);
-		}   
+			// Schedule agents in "myField" region
+			for(EntryAgent<Int2D> e : myfield.values())
+			{
+				RemotePositionedAgent<Int2D> rm=e.r;
+				Int2D loc=e.l;
+				rm.setPos(loc);
+				sm.schedule.scheduleOnce(rm);
+				((DistributedState<Int2D>)sm).addToField(rm,e.l);
+			}   
 
 
+		/*	ArrayList<String> actualVar=null;
+			if(conn!=null)
+				actualVar=((DistributedState<?>)sm).upVar.getAllGlobalVarForStep(sm.schedule.getSteps());
+			//upVar.getAllGlobalVarForStep(sm.schedule.getSteps()-1);
+			if (conn!=null
+					&& actualVar != null)
+			{
 
-		ArrayList<String> actualVar=null;
-		if(conn!=null)
-			actualVar=((DistributedState<?>)sm).upVar.getAllGlobalVarForStep(sm.schedule.getSteps());
-		//upVar.getAllGlobalVarForStep(sm.schedule.getSteps()-1);
-		if (conn!=null
-				&& actualVar != null)
-		{
+				// Update and send global parameters
+				GlobalParametersHelper.sendGlobalParameters(
+						sm,
+						conn,
+						topicPrefix,
+						cellType,
+						currentTime,
+						actualVar
+						);
 
-			// Update and send global parameters
-			GlobalParametersHelper.sendGlobalParameters(
-					sm,
-					conn,
-					topicPrefix,
-					cellType,
-					currentTime,
-					actualVar
-					);
+				// Receive global parameters from previous step and update the model
+				GlobalParametersHelper.receiveAndUpdate(
+						this,
+						actualVar,
+						globalsMethods);
 
-			// Receive global parameters from previous step and update the model
-			GlobalParametersHelper.receiveAndUpdate(
-					this,
-					actualVar,
-					globalsMethods);
-
+			}*/
 		}
-
 		// Publish the regions to correspondent topics for the neighbors
 		publishRegions(connWorker);
 
@@ -623,17 +622,19 @@ private void makeToroidalSections() {
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
 
-		// Update ZoomViewer (if any)
-		if(conn!=null &&
-				((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
-		{
-			try {
-				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
-				conn.publishToTopic(tmp_zoom,topicPrefix+"GRAPHICS"+cellType,name);
-				tmp_zoom=new ZoomArrayList<RemotePositionedAgent>();
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+		if(this.getState().schedule.getSteps() !=0){
+			// Update ZoomViewer (if any)
+			if(conn!=null &&
+					((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+			{
+				try {
+					tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
+					conn.publishToTopic(tmp_zoom,topicPrefix+"GRAPHICS"+cellType,name);
+					tmp_zoom=new ZoomArrayList<RemotePositionedAgent>();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		}
 		return true;

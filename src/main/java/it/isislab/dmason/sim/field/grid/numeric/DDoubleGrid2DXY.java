@@ -355,76 +355,76 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 				}
 			}else{ //sqare partitioning 
 
-			/*
-			 * In this case we use a different approach: Firt we make all ghost sections, after that
-			 * we remove the useful ghost section
-			 * 
-			 * */
-			numNeighbors = 8;
-			//corner up left
-			rmap.NORTH_WEST_OUT=new RegionDoubleNumeric(own_x-AOI, own_y-AOI,own_x, own_y);
+				/*
+				 * In this case we use a different approach: Firt we make all ghost sections, after that
+				 * we remove the useful ghost section
+				 * 
+				 * */
+				numNeighbors = 8;
+				//corner up left
+				rmap.NORTH_WEST_OUT=new RegionDoubleNumeric(own_x-AOI, own_y-AOI,own_x, own_y);
 
 
-			//corner up right
-			rmap.NORTH_EAST_OUT = new RegionDoubleNumeric(own_x+my_width,own_y-AOI,own_x+my_width+AOI,own_y);
+				//corner up right
+				rmap.NORTH_EAST_OUT = new RegionDoubleNumeric(own_x+my_width,own_y-AOI,own_x+my_width+AOI,own_y);
 
 
-			//corner down left
-			rmap.SOUTH_WEST_OUT=new RegionDoubleNumeric(own_x-AOI, own_y+my_height,own_x,own_y+my_height+AOI);
+				//corner down left
+				rmap.SOUTH_WEST_OUT=new RegionDoubleNumeric(own_x-AOI, own_y+my_height,own_x,own_y+my_height+AOI);
 
-			rmap.NORTH_OUT=new RegionDoubleNumeric(own_x, own_y - AOI,	own_x+ my_width,own_y);
+				rmap.NORTH_OUT=new RegionDoubleNumeric(own_x, own_y - AOI,	own_x+ my_width,own_y);
 
-			//corner down right
-			rmap.SOUTH_EAST_OUT=new RegionDoubleNumeric(own_x+my_width, own_y+my_height,own_x+my_width+AOI,own_y+my_height+AOI);
+				//corner down right
+				rmap.SOUTH_EAST_OUT=new RegionDoubleNumeric(own_x+my_width, own_y+my_height,own_x+my_width+AOI,own_y+my_height+AOI);
 
-			rmap.SOUTH_OUT=new RegionDoubleNumeric(own_x,own_y+my_height,own_x+my_width, own_y+my_height+AOI);
+				rmap.SOUTH_OUT=new RegionDoubleNumeric(own_x,own_y+my_height,own_x+my_width, own_y+my_height+AOI);
 
-			rmap.WEST_OUT=new RegionDoubleNumeric(own_x-AOI,own_y,own_x, own_y+my_height);
+				rmap.WEST_OUT=new RegionDoubleNumeric(own_x-AOI,own_y,own_x, own_y+my_height);
 
 
-			rmap.EAST_OUT=new RegionDoubleNumeric(own_x+my_width,own_y,own_x+my_width+AOI,own_y+my_height);
+				rmap.EAST_OUT=new RegionDoubleNumeric(own_x+my_width,own_y,own_x+my_width+AOI,own_y+my_height);
 
-			if(cellType.pos_i==0 ){
-				numNeighbors = 5;
-				rmap.NORTH_OUT = null;
-				rmap.NORTH_WEST_OUT = null;
-				rmap.NORTH_EAST_OUT = null;
+				if(cellType.pos_i==0 ){
+					numNeighbors = 5;
+					rmap.NORTH_OUT = null;
+					rmap.NORTH_WEST_OUT = null;
+					rmap.NORTH_EAST_OUT = null;
+				}
+
+				if(cellType.pos_j == 0){
+					numNeighbors = 5;
+					rmap.SOUTH_WEST_OUT = null;
+					rmap.NORTH_WEST_OUT=null;
+					rmap.WEST_OUT = null;
+				}
+
+				if(cellType.pos_i == rows -1){
+					numNeighbors = 5;
+					rmap.SOUTH_WEST_OUT = null;
+					rmap.SOUTH_OUT = null;
+					rmap.SOUTH_EAST_OUT = null;
+				}
+
+				if(cellType.pos_j == columns -1){
+					numNeighbors = 5;
+					rmap.NORTH_EAST_OUT = null;
+					rmap.EAST_OUT = null;
+					rmap.SOUTH_EAST_OUT = null;
+				}
+
+				if((cellType.pos_i == 0 && cellType.pos_j == 0) || 
+						(cellType.pos_i == rows-1 && cellType.pos_j==0) || 
+						(cellType.pos_i == 0 && cellType.pos_j == columns -1) || 
+						(cellType.pos_i == rows-1 && cellType.pos_j == columns -1))
+					numNeighbors = 3;
 			}
-
-			if(cellType.pos_j == 0){
-				numNeighbors = 5;
-				rmap.SOUTH_WEST_OUT = null;
-				rmap.NORTH_WEST_OUT=null;
-				rmap.WEST_OUT = null;
-			}
-
-			if(cellType.pos_i == rows -1){
-				numNeighbors = 5;
-				rmap.SOUTH_WEST_OUT = null;
-				rmap.SOUTH_OUT = null;
-				rmap.SOUTH_EAST_OUT = null;
-			}
-
-			if(cellType.pos_j == columns -1){
-				numNeighbors = 5;
-				rmap.NORTH_EAST_OUT = null;
-				rmap.EAST_OUT = null;
-				rmap.SOUTH_EAST_OUT = null;
-			}
-
-			if((cellType.pos_i == 0 && cellType.pos_j == 0) || 
-					(cellType.pos_i == rows-1 && cellType.pos_j==0) || 
-					(cellType.pos_i == 0 && cellType.pos_j == columns -1) || 
-					(cellType.pos_i == rows-1 && cellType.pos_j == columns -1))
-				numNeighbors = 3;
-		}
 	}
 
-private void makeToroidalSections() {
-		
+	private void makeToroidalSections() {
+
 		numNeighbors = 8;
 		myfield=new RegionDoubleNumeric(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
-		
+
 
 		//corner up left
 		rmap.NORTH_WEST_OUT=new RegionDoubleNumeric((own_x-AOI + width)%width, (own_y-AOI+height)%height, 
@@ -459,13 +459,13 @@ private void makeToroidalSections() {
 
 
 		rmap.SOUTH_MINE=new RegionDoubleNumeric(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
-		
+
 		rmap.NORTH_OUT=new RegionDoubleNumeric((own_x+width)%width, (own_y - AOI+height)%height,
 				(own_x+ my_width +width)%width==0?width:(own_x+ my_width +width)%width,(own_y+height)%height==0?height:(own_y+height)%height);
 
 		rmap.SOUTH_OUT=new RegionDoubleNumeric((own_x+width)%width,(own_y+my_height+height)%height,
 				(own_x+my_width+width)%width==0?width:(own_x+my_width+width)%width, (own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
-		
+
 		//if square partitioning
 		if(rows==1 && columns >1){
 			numNeighbors = 6;
@@ -535,149 +535,73 @@ private void makeToroidalSections() {
 		}
 
 
-		clear_ghost_regions();
+		if(this.getState().schedule.getSteps() !=0){
+			clear_ghost_regions();
 
-		memorizeRegionOut();
+			memorizeRegionOut();
 
-		//every value in the myfield region is setted
-		for(EntryNum<Double, Int2D> e: myfield.values())
-		{			
-			Int2D loc=e.l;
-			double d = e.r;
-			this.field[loc.getX()][loc.getY()]=d;
+			//every value in the myfield region is setted
+			for(EntryNum<Double, Int2D> e: myfield.values())
+			{			
+				Int2D loc=e.l;
+				double d = e.r;
+				this.field[loc.getX()][loc.getY()]=d;
 
-			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
-				tmp_zoom.add(new EntryNum<Double, Int2D>(d, loc));
-		}     
+				if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+					tmp_zoom.add(new EntryNum<Double, Int2D>(d, loc));
+			}     
 
 
-		ArrayList<String> actualVar=null;
-		if(conn!=null)
-			actualVar=((DistributedState<?>)sm).upVar.getAllGlobalVarForStep(sm.schedule.getSteps());
-		//upVar.getAllGlobalVarForStep(sm.schedule.getSteps()-1);
-		if (conn!=null
-				&& actualVar != null)
-		{
+			/*ArrayList<String> actualVar=null;
+			if(conn!=null)
+				actualVar=((DistributedState<?>)sm).upVar.getAllGlobalVarForStep(sm.schedule.getSteps());
+			//upVar.getAllGlobalVarForStep(sm.schedule.getSteps()-1);
+			if (conn!=null
+					&& actualVar != null)
+			{
 
-			// Update and send global parameters
-			GlobalParametersHelper.sendGlobalParameters(
-					sm,
-					conn,
-					topicPrefix,
-					cellType,
-					currentTime,
-					actualVar
-					);
+				// Update and send global parameters
+				GlobalParametersHelper.sendGlobalParameters(
+						sm,
+						conn,
+						topicPrefix,
+						cellType,
+						currentTime,
+						actualVar
+						);
 
-			// Receive global parameters from previous step and update the model
-			GlobalParametersHelper.receiveAndUpdate(
-					this,
-					actualVar,
-					globalsMethods);
+				// Receive global parameters from previous step and update the model
+				GlobalParametersHelper.receiveAndUpdate(
+						this,
+						actualVar,
+						globalsMethods);
 
+			}*/
 		}
-
 
 		//--> publishing the regions to correspondent topics for the neighbors	
 		publishRegions(connWorker);
-
-
 		processUpdates();
 
-		// Update ZoomViewer (if any)
-		if(conn!=null &&
-				((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
-		{
+		if(this.getState().schedule.getSteps() !=0){
+			// Update ZoomViewer (if any)
+			if(conn!=null &&
+					((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+			{
 
 
-			try {
-				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
-				conn.publishToTopic(tmp_zoom,topicPrefix+"GRAPHICS"+cellType,name);
-				tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				try {
+					tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
+					conn.publishToTopic(tmp_zoom,topicPrefix+"GRAPHICS"+cellType,name);
+					tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		}
-
 		return true;
 
-		/*		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
-		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
-
-		//every value in the myfield region is setted
-		for(EntryNum<Double, Int2D> e: myfield.values())
-		{			
-			Int2D loc=e.l;
-			double d = e.r;
-			this.field[loc.getX()][loc.getY()]=d;
-
-			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
-				tmp_zoom.add(new EntryNum<Double, Int2D>(d, loc));
-		}     
-
-
-
-
-		if(conn!=null &&
-				((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
-		{
-			//			for (int y = myfield.upl_yy; y < myfield.down_yy; y++) {
-			//				for (int x = myfield.upl_xx; x < myfield.down_xx; x++) {
-			//					
-			//					double d = this.field[x][y];
-			//					tmp_zoom.add(new EntryNum<Double, Int2D>(d, new Int2D(x, y)));
-			//				}
-			//			}
-
-			try {
-				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
-				conn.publishToTopic(tmp_zoom,topicPrefix+"GRAPHICS"+cellType,name);
-				tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
-
-		updateFields(); //update fields with java reflect
-		updates_cache= new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
-
-		memorizeRegionOut();
-
-		//--> publishing the regions to correspondent topics for the neighbors	
-		publishRegions(connWorker);
-
-		PriorityQueue<Object> q;
-		try 
-		{
-			q = updates.getUpdates(sm.schedule.getSteps()-1, neighborhood.size());
-
-			while(!q.isEmpty())
-			{
-				DistributedRegionNumeric<Integer, EntryNum<Double,Int2D>> region=
-						(DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>)q.poll();
-
-				verifyUpdates(region);	
-			}			
-
-		}catch (InterruptedException e1) {
-			e1.printStackTrace(); 
-		} catch (DMasonException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		for(RegionNumeric<Integer,EntryNum<Double,Int2D>> region : updates_cache){
-			for(EntryNum<Double,Int2D> e_m: region.values())
-			{
-				Int2D i=new Int2D(e_m.l.getX(), e_m.l.getY());
-				field[i.getX()][i.getY()]=e_m.r;	
-			}
-		}	
-		this.reset();
-
-		return true;*/
 	}
 
 	private void clear_ghost_regions() {
@@ -829,12 +753,12 @@ private void makeToroidalSections() {
 	 */
 	private boolean setValue(double value, Int2D l){
 
-		
+
 		if(rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(l.x,l.y))
 		{
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
-			
+
 
 			rmap.NORTH_WEST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 			rmap.WEST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
@@ -846,7 +770,7 @@ private void makeToroidalSections() {
 			{
 				if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 					tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
-				
+
 				rmap.NORTH_EAST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 				rmap.EAST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 				myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
@@ -857,7 +781,7 @@ private void makeToroidalSections() {
 				{
 					if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 						tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
-					
+
 					rmap.SOUTH_WEST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 					rmap.WEST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 					myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
@@ -868,7 +792,7 @@ private void makeToroidalSections() {
 					{
 						if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 							tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
-						
+
 						rmap.SOUTH_EAST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 						rmap.EAST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 						myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
@@ -879,7 +803,7 @@ private void makeToroidalSections() {
 						{
 							if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 								tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
-							
+
 							myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 							return rmap.WEST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 						}
@@ -888,7 +812,7 @@ private void makeToroidalSections() {
 							{
 								if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 									tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
-								
+
 								myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 								return rmap.EAST_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 							}
@@ -897,7 +821,7 @@ private void makeToroidalSections() {
 								{
 									if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 										tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
-									
+
 									myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 									return rmap.NORTH_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 								}
@@ -906,7 +830,7 @@ private void makeToroidalSections() {
 									{
 										if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 											tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
-										
+
 										myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 										return rmap.SOUTH_MINE.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 									}
@@ -915,7 +839,7 @@ private void makeToroidalSections() {
 										{
 											if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 												tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
-											
+
 											return myfield.addEntryNum(new EntryNum<Double,Int2D>(value, l));
 										}
 										else
@@ -1110,15 +1034,11 @@ private void makeToroidalSections() {
 	@Override
 	public Int2D getAvailableRandomLocation() {
 
-		/*int x=(((DistributedState)sm).random.nextInt(width)%(my_width-1))+own_x;
-		if(x>(width-1)) x--;
-		int y=(((DistributedState)sm).random.nextInt(height)%(my_height-1))+own_y;
-		if(y>(height-1)) y--;*/
-		Integer shiftx=((DistributedState)sm).random.nextInt();
-		Integer shifty=((DistributedState)sm).random.nextInt();
+		double shiftx=((DistributedState)sm).random.nextDouble();
+		double shifty=((DistributedState)sm).random.nextDouble();
 
-		int x= ((own_x+AOI)+((my_width-(2*AOI)))*shiftx);	
-		int y= ((own_y+AOI)+((my_height-(2*AOI)))*shifty);
+		int x= (int)(own_x+my_width*shiftx);	
+		int y= (int)(own_y+my_height*shifty);
 
 
 		return (new Int2D(x, y));
