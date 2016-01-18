@@ -495,8 +495,8 @@ private void makeToroidalSections() {
 		double shiftx=((DistributedState)sm).random.nextDouble();
 		double shifty=((DistributedState)sm).random.nextDouble();
 
-		int x= (int)((own_x+AOI)+((my_width-(2*AOI)))*shiftx);	
-		int y= (int)((own_y+AOI)+((my_height-(2*AOI)))*shifty);
+		int x= (int)(own_x+my_width*shiftx);	
+		int y= (int)(own_y+my_height*shifty);  
 
 		return (new Int2D(x, y));
 	}
