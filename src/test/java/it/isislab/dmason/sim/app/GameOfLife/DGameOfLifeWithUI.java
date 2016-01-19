@@ -1,4 +1,4 @@
-package it.isislab.dmason.sim.app.openAB.DCircles;
+package it.isislab.dmason.sim.app.GameOfLife;
 
 import java.awt.Color;
 
@@ -9,10 +9,9 @@ import sim.display.Controller;
 import sim.display.Display2D;
 import sim.display.GUIState;
 import sim.engine.SimState;
-import sim.portrayal.continuous.ContinuousPortrayal2D;
+import sim.portrayal.grid.FastValueGridPortrayal2D;
 
-public class DCirclesWithUI extends GUIState {
-	
+public class DGameOfLifeWithUI extends GUIState {
 	public Display2D display;
 	public JFrame displayFrame;
 	public static String name;
@@ -22,12 +21,12 @@ public class DCirclesWithUI extends GUIState {
 	@Override
 	public Object getSimulationInspectedObject() { return state; }  // non-volatile
 
-	ContinuousPortrayal2D circlesPortrayal = new ContinuousPortrayal2D();
+    FastValueGridPortrayal2D gridPortrayal = new FastValueGridPortrayal2D();
 
 
-	public DCirclesWithUI(GeneralParam args) 
+	public DGameOfLifeWithUI(GeneralParam args) 
 	{ 
-		super(new DCircles(args));
+		super(new DGameOfLife(args));
 
 		name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
 	}
@@ -50,12 +49,14 @@ public class DCirclesWithUI extends GUIState {
 
 	public void setupPortrayals()
 	{
-		DCircles cr = (DCircles)state;
+		DGameOfLife gol = (DGameOfLife)state;
 
-		circlesPortrayal.setField(cr.circles);
-		display.setBackdrop(Color.white);
+		gridPortrayal.setField(gol.grid);
+		gridPortrayal.setMap(
+		            new sim.util.gui.SimpleColorMap(
+		                new Color[] {new Color(0,0,0,0), Color.blue}));
 
-		cr.p = circlesPortrayal;
+		gol.p = gridPortrayal;
 
 		display.reset();
 
@@ -67,17 +68,16 @@ public class DCirclesWithUI extends GUIState {
 	{
 		super.init(c);
 
-
 		// make the displayer
 		display = new Display2D(600,600,this);
-		display.setBackdrop(Color.white);
+		display.setBackdrop(Color.black);
 
 		displayFrame = display.createFrame();
-		displayFrame.setTitle("Circles");
+		displayFrame.setTitle("Game Of Life");
 		c.registerFrame(displayFrame);   // register the frame so it appears in the "Display" list
 		displayFrame.setVisible(true);
 
-		display.attach( circlesPortrayal, "Agents" );
+		display.attach( gridPortrayal, "Life" );
 	}
 
 	@Override
