@@ -1,0 +1,28 @@
+{
+  "name": "master",
+  "homepage": "https://github.com/isislab-unisa/dmason",
+  "authors": [
+    "Flavio Serrapica <flavio.serrapica@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.2.0",
+    "iron-elements": "PolymerElements/iron-elements#~1.0.7",
+    "paper-elements": "PolymerElements/paper-elements#~1.0.7",
+    "gold-elements": "PolymerElements/gold-elements#~1.0.1",
+    "neon-elements": "PolymerElements/neon-elements#~1.0.0",
+    "google-map": "GoogleWebComponents/google-map#~1.1.8",
+    "elements": "*"
+  }
+}
