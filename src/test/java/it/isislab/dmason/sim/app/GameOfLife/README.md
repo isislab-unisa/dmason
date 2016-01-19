@@ -69,4 +69,4 @@ By construction the glider assumes the same shape each four steps, but moves of 
 
 ## Reference Implementation
 
-A reference implementation is provided as part of the [FLAME GPU SDK](https://github.com/FLAMEGPU/FLAMEGPU/tree/master/examples/CirclesBruteForce_float/src/model).
+A reference implementation is provided as part of the [DMASON](https://github.com/isislab-unisa/dmason/tree/master/src/test/java/it/isislab/dmason/sim/app/GameOfLife).
