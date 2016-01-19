@@ -27,13 +27,10 @@ import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.sim.field.support.field2D.region.RegionMap;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import sim.engine.SimState;
 import sim.field.grid.SparseGrid2D;
-import sim.portrayal.grid.SparseGridPortrayal2D;
 import sim.util.Int2D;
 
 /**
@@ -84,11 +81,13 @@ public abstract class DSparseGrid2D extends SparseGrid2D implements DistributedF
 	public RegionInteger myfield;
 	public RegionMap<Integer,Int2D> rmap=new RegionMap<Integer,Int2D>();
 	public ArrayList<Region<Integer, Int2D>> updates_cache;
+	
+	//load balancing 
 	public HashMap<Integer,HashMap<CellType, MyCellInterface>> listGrid;
 	public ArrayList<ArrayList<Region<Integer, Int2D>>> updates_cacheLB;
 	public UpdateCell<Integer,MyCellIntegerField> updateCell = new UpdateCell<Integer, MyCellIntegerField>();
     protected VisualizationUpdateMap<String, Object> globals= new VisualizationUpdateMap<String, Object>();
-	
+	/***/
 	
 	public CellType cellType;
 	public UpdateMap<Integer,Int2D> updates=new UpdateMap<Integer,Int2D>();
