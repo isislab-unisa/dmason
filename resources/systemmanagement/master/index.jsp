@@ -24,6 +24,9 @@
     .spacer {
       @apply(--layout-flex);
     }
+    paper-scroll-header-panel {
+ 		 height: 100%;
+	}
   </style>
 <body unresolved>
 
@@ -31,23 +34,23 @@
 
     <div drawer>
         <app-sidebar drawer>
-            <paper-menu>
-		<paper-item onclick="">1</paper-item>
-		<paper-item onclick="">1</paper-item>
-		             
-		<paper-item onclick="">1</paper-item>
-		             
-		<paper-item onclick="">1</paper-item>
-		             
-		<paper-item onclick="">1</paper-item>
-
-	</paper-menu>
+	        <paper-menu>
+				<paper-item onclick="">1</paper-item>
+				<paper-item onclick="">1</paper-item>
+				             
+				<paper-item onclick="">1</paper-item>
+				             
+				<paper-item onclick="">1</paper-item>
+				             
+				<paper-item onclick="">1</paper-item>
+	
+			</paper-menu>
         </app-sidebar>
     </div>
 
     <div main class="fullbleed layout vertical">
 
-        <paper-toolbar class="toolbar-main">
+        <paper-toolbar>
             <paper-icon-button paper-drawer-toggle icon="menu" on-tap="menuAction"></paper-icon-button>
             
             <div class="clearfix">
@@ -57,10 +60,10 @@
         </paper-toolbar>
 
         <paper-scroll-header-panel class="flex" fixed>
-           
+           <div class ="content">
 		  <%
 		    double num = Math.random();
-		    if (num > 0.95) {
+		    if (num > 0.75) {
 		  %>
 		      <h2>You'll have a luck day!</h2><p>(<%= num %>)</p>
 		  <%
@@ -70,9 +73,8 @@
 		  <%
 		    }
 		  %>
-  		<a href="<%= request.getRequestURI() %>"><h3>Try Again</h3></a>
+  		<a href="<%= request.getRequestURI() %>"><h3>Try Again</h3></a></div>
         </paper-scroll-header-panel>
-
     </div>
 
 </paper-drawer-panel>
