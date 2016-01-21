@@ -8,3 +8,5 @@
 /logs
 /resources/app/test-network
 *~
+*/.idea
+*.bower.json
