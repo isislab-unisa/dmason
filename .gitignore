@@ -8,5 +8,5 @@
 /logs
 /resources/app/test-network
 *~
-*/.idea
+/resourcessystemmanagement/.idea
 *.bower.json
