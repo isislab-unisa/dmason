@@ -37,6 +37,7 @@
 <link rel="import" href="bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="bower_components/iron-image/iron-image.html">
+<link rel="import" href="/master/bower_components/iron-icons/image-icons.html">
 
 </head>
 <body unresolved>
@@ -50,14 +51,11 @@
 			<div class="content content-side-bar">
                 <hr>
 				<app-sidebar >
-					<paper-menu >
-						<paper-item onclick="">1</paper-item>
-						<paper-item onclick="">1</paper-item>
-						<paper-item onclick="">1</paper-item>
-						<paper-item onclick="">1</paper-item>
-						<paper-item onclick="">1</paper-item>
-                        <paper-item onclick="">1</paper-item>
-                        <paper-item onclick="">1</paper-item>
+					<paper-menu selected="0">
+						<paper-item ><iron-icon icon="icons:flip-to-front"></iron-icon><span class="span-icon">Monitoring</span></paper-item>
+						<paper-item ><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></paper-item>
+						<paper-item ><iron-icon icon="create"></iron-icon><span class="span-icon">Examples</span></paper-item>
+						<paper-item ><iron-icon icon="settings"></iron-icon><span class="span-icon">Settings</span></paper-item>
                     </paper-menu>
 				</app-sidebar>
 			</div>
@@ -72,14 +70,14 @@
 
              <div class="content content-main">
                 <div class="grid" id="workers">
-                    <!--div class="grid-sizer"></div-->
+
                     <script>
-        var grid=document.getElementById("workers");
-        var tiles="<div class=\"grid-sizer\"></div>";
-        for (i = 0; i < 200; i++) {
-             tiles+="<div class=\"grid-item\">10</div>";
-        }
-        grid.innerHTML=tiles;
+                        var grid=document.getElementById("workers");
+                        var tiles="<div class=\"grid-sizer\"></div>";
+                        for (i = 0; i < 24; i++) {
+                             tiles+="<div class=\"grid-item\" >1</div>";
+                        }
+                        grid.innerHTML=tiles;
                     </script>
                 </div>
                 <paper-fab id="add-simulation-to-worker-buttom" icon="add" ></paper-fab>

@@ -34,3 +34,15 @@
     vertical-align: middle;
     line-height: 100px;
 }
+
+.span-icon{
+    margin-left:10px;
+}
+
+.grid-item:hover{
+    background-color: grey;
+}
+
+.grid-item-selected{
+    background-color: grey;
+}
