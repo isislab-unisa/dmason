@@ -23,6 +23,7 @@
     "gold-elements": "PolymerElements/gold-elements#~1.0.1",
     "neon-elements": "PolymerElements/neon-elements#~1.0.0",
     "google-map": "GoogleWebComponents/google-map#~1.1.8",
-    "elements": "*"
+    "elements": "*",
+    "masonry": "~4.0.0"
   }
 }
