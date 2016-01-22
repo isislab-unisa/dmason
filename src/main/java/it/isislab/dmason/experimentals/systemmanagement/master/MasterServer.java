@@ -21,6 +21,7 @@ public class MasterServer{
     	BrokerService broker=null;
 		broker = new BrokerService();
 		String address="tcp://"+IP+":"+PORT;
+		//se remoto altrimente local:61616
 		
 		try {
 			broker.addConnector(address);
