@@ -5,7 +5,7 @@
 
 	<groupId>it.isislab</groupId>
 	<artifactId>DMASON</artifactId>
-	<version>3.0.1</version>
+	<version>3.1</version>
 	<name>DMASON</name>
 	<url>http://www.dmason.org/</url>
 	<description>DMASON is a parallel version of the MASON library for writing and running simulations of Agent based simulation models.</description>
