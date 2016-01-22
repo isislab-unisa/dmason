@@ -118,13 +118,15 @@
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-all</artifactId>
-			<version>5.5.1</version>
+			<version>5.7.0</version>
 		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.14</version>
-		</dependency>
+
+
+
+		<!-- old conf > <groupId>org.apache.activemq</groupId> <artifactId>activemq-all</artifactId> 
+			<version>5.5.1</version> </dependency> <dependency> <groupId>log4j</groupId> 
+			<artifactId>log4j</artifactId> <version>1.2.14</version> </dependency -->
+
 		<dependency>
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht-core</artifactId>
@@ -140,11 +142,12 @@
 			<artifactId>ftp4j</artifactId>
 			<version>1.7.2</version>
 		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.12</version>
-		</dependency>
+
+
+		<!-- old conf  dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-log4j12</artifactId> 
+			<version>1.5.6</version> </dependency -->
+
+
 
 		<dependency>
 			<groupId>cglib</groupId>
