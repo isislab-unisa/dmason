@@ -191,7 +191,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 			}
 		}
 		//NON UNIFORM DISTRIBUTION MODE
-		if(getSteps()==0 && tree_partitioning!=null){
+		if(getSteps()==0 && tree_partitioning!=null && state.MODE== DistributedField2D.NON_UNIFORM_PARTITIONING_MODE){
 
 			tree_partitioning.partition(state.P, tree_partitioning, true);
 
