@@ -310,239 +310,239 @@ public class DistributedStateConnectionJMS<E> {
 
 				//one columns and N rows
 				if(rows > 1 && columns == 1){
-					connectionJMS.createTopic(topicPrefix+TYPE + "U",
+					connectionJMS.createTopic(topicPrefix+TYPE + "N",
 							schedule.fields2D
 							.size());
-					connectionJMS.createTopic(topicPrefix+TYPE + "D",
+					connectionJMS.createTopic(topicPrefix+TYPE + "S",
 							schedule.fields2D
 							.size());
-					connectionJMS.createTopic(topicPrefix+TYPE + "CUDL",
+					connectionJMS.createTopic(topicPrefix+TYPE + "NW",
 							schedule.fields2D
 							.size());
-					connectionJMS.createTopic(topicPrefix+TYPE + "CUDR",
+					connectionJMS.createTopic(topicPrefix+TYPE + "NE",
 							schedule.fields2D
 							.size());
-					connectionJMS.createTopic(topicPrefix+TYPE + "CDDL",
+					connectionJMS.createTopic(topicPrefix+TYPE + "SW",
 							schedule.fields2D
 							.size());
-					connectionJMS.createTopic(topicPrefix+TYPE + "CDDR",
+					connectionJMS.createTopic(topicPrefix+TYPE + "SE",
 							schedule.fields2D
 							.size());
 					
 					connectionJMS.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j + columns) % columns) + "U");
+							+ ((j + columns) % columns) + "N");
 					connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j + columns) % columns) + "D");
+							+ ((j + columns) % columns) + "S");
 					
 					connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CDDR");
+							+ ((j - 1 + columns) % columns) + "SE");
 					connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CDDL");
+							+ ((j + 1 + columns) % columns) + "SW");
 					connectionJMS.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CUDR");
+							+ ((j - 1 + columns) % columns) + "NE");
 					connectionJMS.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CUDL");
+							+ ((j + 1 + columns) % columns) + "NW");
 					
 					u3 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i + 1 + rows) % rows) + "-"
-									+ ((j + columns) % columns) + "U",
+									+ ((j + columns) % columns) + "N",
 									schedule.fields2D, listeners);
 					u3.start();
 
 					u4 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i - 1 + rows) % rows) + "-"
-									+ ((j + columns) % columns) + "D",
+									+ ((j + columns) % columns) + "S",
 									schedule.fields2D, listeners);
 					u4.start();
 
 					u5 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i - 1 + rows) % rows) + "-"
-									+ ((j - 1 + columns) % columns) + "CDDR",
+									+ ((j - 1 + columns) % columns) + "SE",
 									schedule.fields2D, listeners);
 					u5.start();
 
 					u6 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i - 1 + rows) % rows) + "-"
-									+ ((j + 1 + columns) % columns) + "CDDL",
+									+ ((j + 1 + columns) % columns) + "SW",
 									schedule.fields2D, listeners);
 					u6.start();
 
 					u7 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i + 1 + rows) % rows) + "-"
-									+ ((j - 1 + columns) % columns) + "CUDR",
+									+ ((j - 1 + columns) % columns) + "NE",
 									schedule.fields2D, listeners);
 					u7.start();
 
 					u8 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i + 1 + rows) % rows) + "-"
-									+ ((j + 1 + columns) % columns) + "CUDL",
+									+ ((j + 1 + columns) % columns) + "NW",
 									schedule.fields2D, listeners);
 					u8.start();
 				}
 				//one rows and N columns
 				else if(rows==1 && columns>1){
-					connectionJMS.createTopic(topicPrefix+TYPE + "L",
+					connectionJMS.createTopic(topicPrefix+TYPE + "W",
 							schedule.fields2D
 							.size());
-					connectionJMS.createTopic(topicPrefix+TYPE + "R",
+					connectionJMS.createTopic(topicPrefix+TYPE + "E",
 							schedule.fields2D
 							.size());
 
-					connectionJMS.createTopic(topicPrefix+TYPE + "CUDL",
+					connectionJMS.createTopic(topicPrefix+TYPE + "NW",
 							schedule.fields2D
 							.size());
-					connectionJMS.createTopic(topicPrefix+TYPE + "CUDR",
+					connectionJMS.createTopic(topicPrefix+TYPE + "NE",
 							schedule.fields2D
 							.size());
-					connectionJMS.createTopic(topicPrefix+TYPE + "CDDL",
+					connectionJMS.createTopic(topicPrefix+TYPE + "SW",
 							schedule.fields2D
 							.size());
-					connectionJMS.createTopic(topicPrefix+TYPE + "CDDR",
+					connectionJMS.createTopic(topicPrefix+TYPE + "SE",
 							schedule.fields2D
 							.size());
 
 					
 
 					connectionJMS.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "L");
+							+ ((j + 1 + columns) % columns) + "W");
 					connectionJMS.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "R");
+							+ ((j - 1 + columns) % columns) + "E");
 
 					connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CDDR");
+							+ ((j - 1 + columns) % columns) + "SE");
 					connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CDDL");
+							+ ((j + 1 + columns) % columns) + "SW");
 					connectionJMS.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CUDR");
+							+ ((j - 1 + columns) % columns) + "NE");
 					connectionJMS.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CUDL");
+							+ ((j + 1 + columns) % columns) + "NW");
 
 					u1 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i + rows) % rows) + "-"
-									+ ((j + 1 + columns) % columns) + "L",
+									+ ((j + 1 + columns) % columns) + "W",
 									schedule.fields2D, listeners);
 					u1.start();
 
 					u2 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i + rows) % rows) + "-"
-									+ ((j - 1 + columns) % columns) + "R",
+									+ ((j - 1 + columns) % columns) + "E",
 									schedule.fields2D, listeners);
 					u2.start();
 
 
 					u5 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i - 1 + rows) % rows) + "-"
-									+ ((j - 1 + columns) % columns) + "CDDR",
+									+ ((j - 1 + columns) % columns) + "SE",
 									schedule.fields2D, listeners);
 					u5.start();
 
 					u6 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i - 1 + rows) % rows) + "-"
-									+ ((j + 1 + columns) % columns) + "CDDL",
+									+ ((j + 1 + columns) % columns) + "SW",
 									schedule.fields2D, listeners);
 					u6.start();
 
 					u7 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i + 1 + rows) % rows) + "-"
-									+ ((j - 1 + columns) % columns) + "CUDR",
+									+ ((j - 1 + columns) % columns) + "NE",
 									schedule.fields2D, listeners);
 					u7.start();
 
 					u8 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i + 1 + rows) % rows) + "-"
-									+ ((j + 1 + columns) % columns) + "CUDL",
+									+ ((j + 1 + columns) % columns) + "NW",
 									schedule.fields2D, listeners);
 					u8.start();
 				}else{
 					// N rows and N columns
-					connectionJMS.createTopic(topicPrefix+TYPE + "L",
+					connectionJMS.createTopic(topicPrefix+TYPE + "W",
 							schedule.fields2D
 							.size());
-					connectionJMS.createTopic(topicPrefix+TYPE + "R",
+					connectionJMS.createTopic(topicPrefix+TYPE + "E",
 							schedule.fields2D
 							.size());
-					connectionJMS.createTopic(topicPrefix+TYPE + "D",
+					connectionJMS.createTopic(topicPrefix+TYPE + "S",
 							schedule.fields2D
 							.size());
-					connectionJMS.createTopic(topicPrefix+TYPE + "U",
+					connectionJMS.createTopic(topicPrefix+TYPE + "N",
 							schedule.fields2D
 							.size());
-					connectionJMS.createTopic(topicPrefix+TYPE + "CUDL",
+					connectionJMS.createTopic(topicPrefix+TYPE + "NW",
 							schedule.fields2D
 							.size());
-					connectionJMS.createTopic(topicPrefix+TYPE + "CUDR",
+					connectionJMS.createTopic(topicPrefix+TYPE + "NE",
 							schedule.fields2D
 							.size());
-					connectionJMS.createTopic(topicPrefix+TYPE + "CDDL",
+					connectionJMS.createTopic(topicPrefix+TYPE + "SW",
 							schedule.fields2D
 							.size());
-					connectionJMS.createTopic(topicPrefix+TYPE + "CDDR",
+					connectionJMS.createTopic(topicPrefix+TYPE + "SE",
 							schedule.fields2D
 							.size());
 					
 
 					connectionJMS.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "L");
+							+ ((j + 1 + columns) % columns) + "W");
 					connectionJMS.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "R");
+							+ ((j - 1 + columns) % columns) + "E");
 					connectionJMS.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j + columns) % columns) + "U");
+							+ ((j + columns) % columns) + "N");
 					connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j + columns) % columns) + "D");
+							+ ((j + columns) % columns) + "S");
 					connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CDDR");
+							+ ((j - 1 + columns) % columns) + "SE");
 					connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CDDL");
+							+ ((j + 1 + columns) % columns) + "SW");
 					connectionJMS.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CUDR");
+							+ ((j - 1 + columns) % columns) + "NE");
 					connectionJMS.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CUDL");
+							+ ((j + 1 + columns) % columns) + "NW");
 
 					u1 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i + rows) % rows) + "-"
-									+ ((j + 1 + columns) % columns) + "L",
+									+ ((j + 1 + columns) % columns) + "W",
 									schedule.fields2D, listeners);
 					u1.start();
 
 					u2 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i + rows) % rows) + "-"
-									+ ((j - 1 + columns) % columns) + "R",
+									+ ((j - 1 + columns) % columns) + "E",
 									schedule.fields2D, listeners);
 					u2.start();
 
 					u3 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i + 1 + rows) % rows) + "-"
-									+ ((j + columns) % columns) + "U",
+									+ ((j + columns) % columns) + "N",
 									schedule.fields2D, listeners);
 					u3.start();
 
 					u4 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i - 1 + rows) % rows) + "-"
-									+ ((j + columns) % columns) + "D",
+									+ ((j + columns) % columns) + "S",
 									schedule.fields2D, listeners);
 					u4.start();
 
 					u5 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i - 1 + rows) % rows) + "-"
-									+ ((j - 1 + columns) % columns) + "CDDR",
+									+ ((j - 1 + columns) % columns) + "SE",
 									schedule.fields2D, listeners);
 					u5.start();
 
 					u6 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i - 1 + rows) % rows) + "-"
-									+ ((j + 1 + columns) % columns) + "CDDL",
+									+ ((j + 1 + columns) % columns) + "SW",
 									schedule.fields2D, listeners);
 					u6.start();
 
 					u7 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i + 1 + rows) % rows) + "-"
-									+ ((j - 1 + columns) % columns) + "CUDR",
+									+ ((j - 1 + columns) % columns) + "NE",
 									schedule.fields2D, listeners);
 					u7.start();
 
 					u8 = new UpdaterThreadForListener(
 							connectionJMS, topicPrefix+((i + 1 + rows) % rows) + "-"
-									+ ((j + 1 + columns) % columns) + "CUDL",
+									+ ((j + 1 + columns) % columns) + "NW",
 									schedule.fields2D, listeners);
 					u8.start();
 				}
@@ -553,76 +553,76 @@ public class DistributedStateConnectionJMS<E> {
 		}else if(MODE == DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE){
 			int i = TYPE.pos_i, j = TYPE.pos_j;
 			try{
-			connectionJMS.createTopic(topicPrefix+TYPE + "L",
+			connectionJMS.createTopic(topicPrefix+TYPE + "W",
 					schedule.fields2D
 					.size());
-			connectionJMS.createTopic(topicPrefix+TYPE + "R",
+			connectionJMS.createTopic(topicPrefix+TYPE + "E",
 					schedule.fields2D
 					.size());
 
-			connectionJMS.createTopic(topicPrefix+TYPE + "CUDL",
+			connectionJMS.createTopic(topicPrefix+TYPE + "NW",
 					schedule.fields2D
 					.size());
-			connectionJMS.createTopic(topicPrefix+TYPE + "CUDR",
+			connectionJMS.createTopic(topicPrefix+TYPE + "NE",
 					schedule.fields2D
 					.size());
-			connectionJMS.createTopic(topicPrefix+TYPE + "CDDL",
+			connectionJMS.createTopic(topicPrefix+TYPE + "SW",
 					schedule.fields2D
 					.size());
-			connectionJMS.createTopic(topicPrefix+TYPE + "CDDR",
+			connectionJMS.createTopic(topicPrefix+TYPE + "SE",
 					schedule.fields2D
 					.size());
 
 			
 
 			connectionJMS.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
-					+ ((j + 1 + columns) % columns) + "L");
+					+ ((j + 1 + columns) % columns) + "W");
 			connectionJMS.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
-					+ ((j - 1 + columns) % columns) + "R");
+					+ ((j - 1 + columns) % columns) + "E");
 
 			connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-					+ ((j - 1 + columns) % columns) + "CDDR");
+					+ ((j - 1 + columns) % columns) + "SE");
 			connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-					+ ((j + 1 + columns) % columns) + "CDDL");
+					+ ((j + 1 + columns) % columns) + "SW");
 			connectionJMS.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-					+ ((j - 1 + columns) % columns) + "CUDR");
+					+ ((j - 1 + columns) % columns) + "NE");
 			connectionJMS.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-					+ ((j + 1 + columns) % columns) + "CUDL");
+					+ ((j + 1 + columns) % columns) + "NW");
 
 			u1 = new UpdaterThreadForListener(
 					connectionJMS, topicPrefix+((i + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "L",
+							+ ((j + 1 + columns) % columns) + "W",
 							schedule.fields2D, listeners);
 			u1.start();
 
 			u2 = new UpdaterThreadForListener(
 					connectionJMS, topicPrefix+((i + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "R",
+							+ ((j - 1 + columns) % columns) + "E",
 							schedule.fields2D, listeners);
 			u2.start();
 
 
 			u5 = new UpdaterThreadForListener(
 					connectionJMS, topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CDDR",
+							+ ((j - 1 + columns) % columns) + "SE",
 							schedule.fields2D, listeners);
 			u5.start();
 
 			u6 = new UpdaterThreadForListener(
 					connectionJMS, topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CDDL",
+							+ ((j + 1 + columns) % columns) + "SW",
 							schedule.fields2D, listeners);
 			u6.start();
 
 			u7 = new UpdaterThreadForListener(
 					connectionJMS, topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CUDR",
+							+ ((j - 1 + columns) % columns) + "NE",
 							schedule.fields2D, listeners);
 			u7.start();
 
 			u8 = new UpdaterThreadForListener(
 					connectionJMS, topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CUDL",
+							+ ((j + 1 + columns) % columns) + "NW",
 							schedule.fields2D, listeners);
 			u8.start();
 			}catch(Exception e){
@@ -632,49 +632,49 @@ public class DistributedStateConnectionJMS<E> {
 
 			try {
 
-				connectionJMS.createTopic(topicPrefix+TYPE+"L",((DistributedMultiSchedule)schedule).fields2D.size());
-				connectionJMS.createTopic(topicPrefix+TYPE+"R",((DistributedMultiSchedule)schedule).fields2D.size());
-				connectionJMS.createTopic(topicPrefix+TYPE+"D",((DistributedMultiSchedule)schedule).fields2D.size());
-				connectionJMS.createTopic(topicPrefix+TYPE+"U",((DistributedMultiSchedule)schedule).fields2D.size());
-				connectionJMS.createTopic(topicPrefix+TYPE+"CUDL",((DistributedMultiSchedule)schedule).fields2D.size());
-				connectionJMS.createTopic(topicPrefix+TYPE+"CUDR",((DistributedMultiSchedule)schedule).fields2D.size());
-				connectionJMS.createTopic(topicPrefix+TYPE+"CDDL",((DistributedMultiSchedule)schedule).fields2D.size());
-				connectionJMS.createTopic(topicPrefix+TYPE+"CDDR",((DistributedMultiSchedule)schedule).fields2D.size());
+				connectionJMS.createTopic(topicPrefix+TYPE+"W",((DistributedMultiSchedule)schedule).fields2D.size());
+				connectionJMS.createTopic(topicPrefix+TYPE+"E",((DistributedMultiSchedule)schedule).fields2D.size());
+				connectionJMS.createTopic(topicPrefix+TYPE+"S",((DistributedMultiSchedule)schedule).fields2D.size());
+				connectionJMS.createTopic(topicPrefix+TYPE+"N",((DistributedMultiSchedule)schedule).fields2D.size());
+				connectionJMS.createTopic(topicPrefix+TYPE+"NW",((DistributedMultiSchedule)schedule).fields2D.size());
+				connectionJMS.createTopic(topicPrefix+TYPE+"NE",((DistributedMultiSchedule)schedule).fields2D.size());
+				connectionJMS.createTopic(topicPrefix+TYPE+"SW",((DistributedMultiSchedule)schedule).fields2D.size());
+				connectionJMS.createTopic(topicPrefix+TYPE+"SE",((DistributedMultiSchedule)schedule).fields2D.size());
 
 				int i=TYPE.pos_i,j=TYPE.pos_j;
 				int sqrt=(int)Math.sqrt(NUMPEERS);
 
-				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L");
-				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R");
-				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U");
-				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D");
-				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR");
-				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL");
-				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR");
-				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL");
+				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"W");
+				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"E");
+				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"N");
+				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"S");
+				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"SE");
+				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"SW");
+				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"NE");
+				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"NW");
 
-				u1 = new UpdaterThreadForListener(connectionJMS,topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				u1 = new UpdaterThreadForListener(connectionJMS,topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"W",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				u1.start();
 
-				u2 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				u2 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"E",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				u2.start();
 
-				u3 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				u3 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"N",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				u3.start();
 
-				u4 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				u4 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"S",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				u4.start();
 
-				u5 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				u5 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"SE",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				u5.start();
 
-				u6 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				u6 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"SW",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				u6.start();	
 
-				u7 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				u7 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"NE",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				u7.start();		
 
-				u8 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				u8 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"NW",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				u8.start();
 
 			}catch (Exception e) {
@@ -687,76 +687,76 @@ public class DistributedStateConnectionJMS<E> {
 			//N columns and one row
 			try{
 			
-			connectionJMS.createTopic(topicPrefix+TYPE + "L",
+			connectionJMS.createTopic(topicPrefix+TYPE + "W",
 					schedule.fields2D
 					.size());
-			connectionJMS.createTopic(topicPrefix+TYPE + "R",
+			connectionJMS.createTopic(topicPrefix+TYPE + "E",
 					schedule.fields2D
 					.size());
 
-			connectionJMS.createTopic(topicPrefix+TYPE + "CUDL",
+			connectionJMS.createTopic(topicPrefix+TYPE + "NW",
 					schedule.fields2D
 					.size());
-			connectionJMS.createTopic(topicPrefix+TYPE + "CUDR",
+			connectionJMS.createTopic(topicPrefix+TYPE + "NE",
 					schedule.fields2D
 					.size());
-			connectionJMS.createTopic(topicPrefix+TYPE + "CDDL",
+			connectionJMS.createTopic(topicPrefix+TYPE + "SW",
 					schedule.fields2D
 					.size());
-			connectionJMS.createTopic(topicPrefix+TYPE + "CDDR",
+			connectionJMS.createTopic(topicPrefix+TYPE + "SE",
 					schedule.fields2D
 					.size());
 
 			
 
 			connectionJMS.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
-					+ ((j + 1 + columns) % columns) + "L");
+					+ ((j + 1 + columns) % columns) + "W");
 			connectionJMS.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
-					+ ((j - 1 + columns) % columns) + "R");
+					+ ((j - 1 + columns) % columns) + "E");
 
 			connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-					+ ((j - 1 + columns) % columns) + "CDDR");
+					+ ((j - 1 + columns) % columns) + "SE");
 			connectionJMS.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-					+ ((j + 1 + columns) % columns) + "CDDL");
+					+ ((j + 1 + columns) % columns) + "SW");
 			connectionJMS.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-					+ ((j - 1 + columns) % columns) + "CUDR");
+					+ ((j - 1 + columns) % columns) + "NE");
 			connectionJMS.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-					+ ((j + 1 + columns) % columns) + "CUDL");
+					+ ((j + 1 + columns) % columns) + "NW");
 
 			u1 = new UpdaterThreadForListener(
 					connectionJMS, topicPrefix+((i + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "L",
+							+ ((j + 1 + columns) % columns) + "W",
 							schedule.fields2D, listeners);
 			u1.start();
 
 			u2 = new UpdaterThreadForListener(
 					connectionJMS, topicPrefix+((i + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "R",
+							+ ((j - 1 + columns) % columns) + "E",
 							schedule.fields2D, listeners);
 			u2.start();
 
 
 			u5 = new UpdaterThreadForListener(
 					connectionJMS, topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CDDR",
+							+ ((j - 1 + columns) % columns) + "SE",
 							schedule.fields2D, listeners);
 			u5.start();
 
 			u6 = new UpdaterThreadForListener(
 					connectionJMS, topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CDDL",
+							+ ((j + 1 + columns) % columns) + "SW",
 							schedule.fields2D, listeners);
 			u6.start();
 
 			u7 = new UpdaterThreadForListener(
 					connectionJMS, topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CUDR",
+							+ ((j - 1 + columns) % columns) + "NE",
 							schedule.fields2D, listeners);
 			u7.start();
 
 			u8 = new UpdaterThreadForListener(
 					connectionJMS, topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CUDL",
+							+ ((j + 1 + columns) % columns) + "NW",
 							schedule.fields2D, listeners);
 			u8.start();
 			}catch (Exception e) {
@@ -768,49 +768,49 @@ public class DistributedStateConnectionJMS<E> {
 
 			try {
 				System.out.println("Non Uniform Partitioning.");
-				//				connectionJMS.createTopic(topicPrefix+TYPE+"L",((DistributedMultiSchedule)schedule).fields2D.size());
-				//				connectionJMS.createTopic(topicPrefix+TYPE+"R",((DistributedMultiSchedule)schedule).fields2D.size());
-				//				connectionJMS.createTopic(topicPrefix+TYPE+"D",((DistributedMultiSchedule)schedule).fields2D.size());
-				//				connectionJMS.createTopic(topicPrefix+TYPE+"U",((DistributedMultiSchedule)schedule).fields2D.size());
-				//				connectionJMS.createTopic(topicPrefix+TYPE+"CUDL",((DistributedMultiSchedule)schedule).fields2D.size());
-				//				connectionJMS.createTopic(topicPrefix+TYPE+"CUDR",((DistributedMultiSchedule)schedule).fields2D.size());
-				//				connectionJMS.createTopic(topicPrefix+TYPE+"CDDL",((DistributedMultiSchedule)schedule).fields2D.size());
-				//				connectionJMS.createTopic(topicPrefix+TYPE+"CDDR",((DistributedMultiSchedule)schedule).fields2D.size());
+				//				connectionJMS.createTopic(topicPrefix+TYPE+"W",((DistributedMultiSchedule)schedule).fields2D.size());
+				//				connectionJMS.createTopic(topicPrefix+TYPE+"E",((DistributedMultiSchedule)schedule).fields2D.size());
+				//				connectionJMS.createTopic(topicPrefix+TYPE+"S",((DistributedMultiSchedule)schedule).fields2D.size());
+				//				connectionJMS.createTopic(topicPrefix+TYPE+"N",((DistributedMultiSchedule)schedule).fields2D.size());
+				//				connectionJMS.createTopic(topicPrefix+TYPE+"NW",((DistributedMultiSchedule)schedule).fields2D.size());
+				//				connectionJMS.createTopic(topicPrefix+TYPE+"NE",((DistributedMultiSchedule)schedule).fields2D.size());
+				//				connectionJMS.createTopic(topicPrefix+TYPE+"SW",((DistributedMultiSchedule)schedule).fields2D.size());
+				//				connectionJMS.createTopic(topicPrefix+TYPE+"SE",((DistributedMultiSchedule)schedule).fields2D.size());
 				//
 				//				int i=TYPE.pos_i,j=TYPE.pos_j;
 				//				int sqrt=(int)Math.sqrt(NUMPEERS);
 				//
-				//				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L");
-				//				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R");
-				//				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U");
-				//				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D");
-				//				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR");
-				//				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL");
-				//				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR");
-				//				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL");
+				//				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"W");
+				//				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"E");
+				//				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"N");
+				//				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"S");
+				//				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"SE");
+				//				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"SW");
+				//				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"NE");
+				//				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"NW");
 				//
-				//				u1 = new UpdaterThreadForListener(connectionJMS,topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				//				u1 = new UpdaterThreadForListener(connectionJMS,topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"W",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				//				u1.start();
 				//
-				//				u2 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				//				u2 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"E",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				//				u2.start();
 				//
-				//				u3 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				//				u3 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"N",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				//				u3.start();
 				//
-				//				u4 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				//				u4 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"S",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				//				u4.start();
 				//
-				//				u5 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				//				u5 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"SE",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				//				u5.start();
 				//
-				//				u6 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				//				u6 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"SW",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				//				u6.start();	
 				//
-				//				u7 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				//				u7 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"NE",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				//				u7.start();		
 				//
-				//				u8 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				//				u8 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"NW",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				//				u8.start();
 
 			}catch (Exception e) {
@@ -831,42 +831,42 @@ public class DistributedStateConnectionJMS<E> {
 				if(rows>1 && columns==1){
 					if(TYPE.pos_i==0){
 						//crea sotto e sottomettiti a i+1-spra
-						connectionJMS.createTopic(topicPrefix+TYPE + "D",
+						connectionJMS.createTopic(topicPrefix+TYPE + "S",
 								schedule.fields2D
 								.size());
-						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourDown() + "U");
+						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourDown() + "N");
 						UpdaterThreadForListener u1 = new UpdaterThreadForListener(
-								connectionJMS, topicPrefix+TYPE.getNeighbourDown() + "U",
+								connectionJMS, topicPrefix+TYPE.getNeighbourDown() + "N",
 								schedule.fields2D, listeners);
 						u1.start();
 					}
 					else if(TYPE.pos_i == rows-1){
 						//crea sopra e sottomettiti a i-1-sotto
-						connectionJMS.createTopic(topicPrefix+TYPE + "U",
+						connectionJMS.createTopic(topicPrefix+TYPE + "N",
 								schedule.fields2D
 								.size());
-						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourUp() + "D");
+						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourUp() + "S");
 						UpdaterThreadForListener u1 = new UpdaterThreadForListener(
-								connectionJMS, topicPrefix+TYPE.getNeighbourUp() + "D",
+								connectionJMS, topicPrefix+TYPE.getNeighbourUp() + "S",
 								schedule.fields2D, listeners);
 						u1.start();
 					}
 					else{
-						connectionJMS.createTopic(topicPrefix+TYPE + "D",
+						connectionJMS.createTopic(topicPrefix+TYPE + "S",
 								schedule.fields2D
 								.size());
-						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourDown() + "U");
+						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourDown() + "N");
 						UpdaterThreadForListener u1 = new UpdaterThreadForListener(
-								connectionJMS, topicPrefix+TYPE.getNeighbourDown() + "U",
+								connectionJMS, topicPrefix+TYPE.getNeighbourDown() + "N",
 								schedule.fields2D, listeners);
 						u1.start();
 
-						connectionJMS.createTopic(topicPrefix+TYPE + "U",
+						connectionJMS.createTopic(topicPrefix+TYPE + "N",
 								schedule.fields2D
 								.size());
-						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourUp() + "D");
+						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourUp() + "S");
 						UpdaterThreadForListener u2 = new UpdaterThreadForListener(
-								connectionJMS, topicPrefix+TYPE.getNeighbourUp() + "D",
+								connectionJMS, topicPrefix+TYPE.getNeighbourUp() + "S",
 								schedule.fields2D, listeners);
 						u2.start();
 					}	
@@ -877,121 +877,121 @@ public class DistributedStateConnectionJMS<E> {
 
 
 					if(TYPE.pos_j < columns){
-						connectionJMS.createTopic(topicPrefix+TYPE + "R",
+						connectionJMS.createTopic(topicPrefix+TYPE + "E",
 								schedule.fields2D
 								.size());
 
-						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "L");
+						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "W");
 						UpdaterThreadForListener u2 = new UpdaterThreadForListener(
-								connectionJMS, topicPrefix+TYPE.getNeighbourRight() + "L",
+								connectionJMS, topicPrefix+TYPE.getNeighbourRight() + "W",
 								schedule.fields2D, listeners);
 						u2.start();
 
 					}
 					if(TYPE.pos_j > 0){
-						connectionJMS.createTopic(topicPrefix+TYPE + "L",
+						connectionJMS.createTopic(topicPrefix+TYPE + "W",
 								schedule.fields2D
 								.size());
 
-						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "R");
+						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "E");
 						UpdaterThreadForListener u1 = new UpdaterThreadForListener(
-								connectionJMS, topicPrefix+TYPE.getNeighbourLeft() + "R",
+								connectionJMS, topicPrefix+TYPE.getNeighbourLeft() + "E",
 								schedule.fields2D, listeners);
 						u1.start();
 					}
 				}else{
 					//N rows and N columns
 					if(TYPE.pos_j > 0)					
-						connectionJMS.createTopic(topicPrefix+TYPE + "L",
+						connectionJMS.createTopic(topicPrefix+TYPE + "W",
 								schedule.fields2D
 								.size());
 					if(TYPE.pos_j < columns)
-						connectionJMS.createTopic(topicPrefix+TYPE + "R",
+						connectionJMS.createTopic(topicPrefix+TYPE + "E",
 								schedule.fields2D
 								.size());
 					if(TYPE.pos_i > 0)
-						connectionJMS.createTopic(topicPrefix+TYPE + "U",
+						connectionJMS.createTopic(topicPrefix+TYPE + "N",
 								schedule.fields2D
 								.size());
 					if(TYPE.pos_i < rows)
-						connectionJMS.createTopic(topicPrefix+TYPE + "D",
+						connectionJMS.createTopic(topicPrefix+TYPE + "S",
 								schedule.fields2D
 								.size());
 					if(TYPE.pos_i < rows && TYPE.pos_j < columns)
-						connectionJMS.createTopic(topicPrefix+TYPE + "CDDR",
+						connectionJMS.createTopic(topicPrefix+TYPE + "SE",
 								schedule.fields2D
 								.size());
 					if(TYPE.pos_i > 0 && TYPE.pos_j < columns)
-						connectionJMS.createTopic(topicPrefix+TYPE + "CUDR",
+						connectionJMS.createTopic(topicPrefix+TYPE + "NE",
 								schedule.fields2D
 								.size());
 					if(TYPE.pos_i < rows && TYPE.pos_j > 0)
-						connectionJMS.createTopic(topicPrefix+TYPE + "CDDL",
+						connectionJMS.createTopic(topicPrefix+TYPE + "SW",
 								schedule.fields2D
 								.size());
 					if(TYPE.pos_i > 0 && TYPE.pos_j > 0)
-						connectionJMS.createTopic(topicPrefix+TYPE + "CUDL",
+						connectionJMS.createTopic(topicPrefix+TYPE + "NW",
 								schedule.fields2D
 								.size());
 
 					if(TYPE.pos_i > 0 && TYPE.pos_j > 0){
 						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagLeftUp()
-						+ "CDDR");
+						+ "SE");
 						UpdaterThreadForListener u1 = new UpdaterThreadForListener(
-								connectionJMS, topicPrefix+TYPE.getNeighbourDiagLeftUp() + "CDDR",
+								connectionJMS, topicPrefix+TYPE.getNeighbourDiagLeftUp() + "SE",
 								schedule.fields2D, listeners);
 						u1.start();
 					}
 					if(TYPE.pos_i > 0 && TYPE.pos_j < columns){
 						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagRightUp()
-						+ "CDDL");
+						+ "SW");
 						UpdaterThreadForListener u2 = new UpdaterThreadForListener(
-								connectionJMS, topicPrefix+TYPE.getNeighbourDiagRightUp() + "CDDL",
+								connectionJMS, topicPrefix+TYPE.getNeighbourDiagRightUp() + "SW",
 								schedule.fields2D, listeners);
 						u2.start();
 					}
 
 					if(TYPE.pos_i < rows && TYPE.pos_j > 0){
 						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagLeftDown()
-						+ "CUDR");
+						+ "NE");
 						UpdaterThreadForListener u3 = new UpdaterThreadForListener(
-								connectionJMS, topicPrefix+TYPE.getNeighbourDiagLeftDown() + "CUDR",
+								connectionJMS, topicPrefix+TYPE.getNeighbourDiagLeftDown() + "NE",
 								schedule.fields2D, listeners);
 						u3.start();
 					}
 					if(TYPE.pos_i < rows && TYPE.pos_j < columns){
 						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagRightDown()
-						+ "CUDL");
+						+ "NW");
 						UpdaterThreadForListener u4 = new UpdaterThreadForListener(
-								connectionJMS, topicPrefix+TYPE.getNeighbourDiagRightDown() + "CUDL",
+								connectionJMS, topicPrefix+TYPE.getNeighbourDiagRightDown() + "NW",
 								schedule.fields2D, listeners);
 						u4.start();
 					}
 					if(TYPE.pos_j > 0){
-						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "R");
+						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "E");
 						UpdaterThreadForListener u5 = new UpdaterThreadForListener(
-								connectionJMS, topicPrefix+TYPE.getNeighbourLeft() + "R",
+								connectionJMS, topicPrefix+TYPE.getNeighbourLeft() + "E",
 								schedule.fields2D, listeners);
 						u5.start();
 					}
 					if(TYPE.pos_j < columns){
-						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "L");
+						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "W");
 						UpdaterThreadForListener u6 = new UpdaterThreadForListener(
-								connectionJMS, topicPrefix+TYPE.getNeighbourRight() + "L",
+								connectionJMS, topicPrefix+TYPE.getNeighbourRight() + "W",
 								schedule.fields2D, listeners);
 						u6.start();
 					}
 					if(TYPE.pos_i > 0){	
-						connectionJMS.subscribeToTopic(topicPrefix+(TYPE.getNeighbourUp() + "D"));
+						connectionJMS.subscribeToTopic(topicPrefix+(TYPE.getNeighbourUp() + "S"));
 						UpdaterThreadForListener u7 = new UpdaterThreadForListener(
-								connectionJMS, topicPrefix+TYPE.getNeighbourUp() + "D",
+								connectionJMS, topicPrefix+TYPE.getNeighbourUp() + "S",
 								schedule.fields2D, listeners);
 						u7.start();
 					}
 					if(TYPE.pos_i < rows){
-						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourDown() + "U");
+						connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourDown() + "N");
 						UpdaterThreadForListener u8 = new UpdaterThreadForListener(
-								connectionJMS, topicPrefix+TYPE.getNeighbourDown() + "U",
+								connectionJMS, topicPrefix+TYPE.getNeighbourDown() + "N",
 								schedule.fields2D, listeners);
 						u8.start();
 					}
@@ -1006,25 +1006,25 @@ public class DistributedStateConnectionJMS<E> {
 			// one row and N columns
 			try{
 			if(TYPE.pos_j < columns){
-				connectionJMS.createTopic(topicPrefix+TYPE + "R",
+				connectionJMS.createTopic(topicPrefix+TYPE + "E",
 						schedule.fields2D
 						.size());
 
-				connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "L");
+				connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "W");
 				UpdaterThreadForListener u2 = new UpdaterThreadForListener(
-						connectionJMS, topicPrefix+TYPE.getNeighbourRight() + "L",
+						connectionJMS, topicPrefix+TYPE.getNeighbourRight() + "W",
 						schedule.fields2D, listeners);
 				u2.start();
 
 			}
 			if(TYPE.pos_j > 0){
-				connectionJMS.createTopic(topicPrefix+TYPE + "L",
+				connectionJMS.createTopic(topicPrefix+TYPE + "W",
 						schedule.fields2D
 						.size());
 
-				connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "R");
+				connectionJMS.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "E");
 				UpdaterThreadForListener u1 = new UpdaterThreadForListener(
-						connectionJMS, topicPrefix+TYPE.getNeighbourLeft() + "R",
+						connectionJMS, topicPrefix+TYPE.getNeighbourLeft() + "E",
 						schedule.fields2D, listeners);
 				u1.start();
 			}
@@ -1036,49 +1036,49 @@ public class DistributedStateConnectionJMS<E> {
 
 			try {
 
-				connectionJMS.createTopic(topicPrefix+TYPE+"L",((DistributedMultiSchedule)schedule).fields2D.size());
-				connectionJMS.createTopic(topicPrefix+TYPE+"R",((DistributedMultiSchedule)schedule).fields2D.size());
-				connectionJMS.createTopic(topicPrefix+TYPE+"D",((DistributedMultiSchedule)schedule).fields2D.size());
-				connectionJMS.createTopic(topicPrefix+TYPE+"U",((DistributedMultiSchedule)schedule).fields2D.size());
-				connectionJMS.createTopic(topicPrefix+TYPE+"CUDL",((DistributedMultiSchedule)schedule).fields2D.size());
-				connectionJMS.createTopic(topicPrefix+TYPE+"CUDR",((DistributedMultiSchedule)schedule).fields2D.size());
-				connectionJMS.createTopic(topicPrefix+TYPE+"CDDL",((DistributedMultiSchedule)schedule).fields2D.size());
-				connectionJMS.createTopic(topicPrefix+TYPE+"CDDR",((DistributedMultiSchedule)schedule).fields2D.size());
+				connectionJMS.createTopic(topicPrefix+TYPE+"W",((DistributedMultiSchedule)schedule).fields2D.size());
+				connectionJMS.createTopic(topicPrefix+TYPE+"E",((DistributedMultiSchedule)schedule).fields2D.size());
+				connectionJMS.createTopic(topicPrefix+TYPE+"S",((DistributedMultiSchedule)schedule).fields2D.size());
+				connectionJMS.createTopic(topicPrefix+TYPE+"N",((DistributedMultiSchedule)schedule).fields2D.size());
+				connectionJMS.createTopic(topicPrefix+TYPE+"NW",((DistributedMultiSchedule)schedule).fields2D.size());
+				connectionJMS.createTopic(topicPrefix+TYPE+"NE",((DistributedMultiSchedule)schedule).fields2D.size());
+				connectionJMS.createTopic(topicPrefix+TYPE+"SW",((DistributedMultiSchedule)schedule).fields2D.size());
+				connectionJMS.createTopic(topicPrefix+TYPE+"SE",((DistributedMultiSchedule)schedule).fields2D.size());
 
 				int i=TYPE.pos_i,j=TYPE.pos_j;
 				int sqrt=(int)Math.sqrt(NUMPEERS);
 
-				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L");
-				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R");
-				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U");
-				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D");
-				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR");
-				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL");
-				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR");
-				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL");
+				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"W");
+				connectionJMS.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"E");
+				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"N");
+				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"S");
+				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"SE");
+				connectionJMS.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"SW");
+				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"NE");
+				connectionJMS.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"NW");
 
-				u1 = new UpdaterThreadForListener(connectionJMS,topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				u1 = new UpdaterThreadForListener(connectionJMS,topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"W",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				u1.start();
 
-				u2 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				u2 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"E",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				u2.start();
 
-				u3 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				u3 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"N",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				u3.start();
 
-				u4 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				u4 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"S",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				u4.start();
 
-				u5 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				u5 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"SE",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				u5.start();
 
-				u6 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				u6 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"SW",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				u6.start();	
 
-				u7 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				u7 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"NE",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				u7.start();		
 
-				u8 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL",((DistributedMultiSchedule)schedule).fields2D,listeners);
+				u8 = new UpdaterThreadForListener(connectionJMS, topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"NW",((DistributedMultiSchedule)schedule).fields2D,listeners);
 				u8.start();
 
 			}catch (Exception e) {

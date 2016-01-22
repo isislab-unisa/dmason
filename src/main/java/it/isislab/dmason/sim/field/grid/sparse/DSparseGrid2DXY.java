@@ -686,7 +686,7 @@ private void makeToroidalSections() {
 				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.WEST_MINE,rmap.WEST_OUT,
 						(sm.schedule.getSteps()-1),cellType,DistributedRegion.WEST);
 
-				connWorker.publishToTopic(dr,topicPrefix+cellType+"L",name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType+"W",name);
 
 			} catch (Exception e1) { e1.printStackTrace();}
 		}
@@ -697,7 +697,7 @@ private void makeToroidalSections() {
 				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.EAST_MINE,rmap.EAST_OUT,
 						(sm.schedule.getSteps()-1),cellType,DistributedRegion.EAST);				
 
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"R",name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"E",name);
 
 			} catch (Exception e1) {e1.printStackTrace(); }
 		}
@@ -708,7 +708,7 @@ private void makeToroidalSections() {
 				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.NORTH_MINE,rmap.NORTH_OUT,
 						(sm.schedule.getSteps()-1),cellType,DistributedRegion.NORTH);
 
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"U",name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"N",name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -720,7 +720,7 @@ private void makeToroidalSections() {
 				DistributedRegion<Integer,Int2D> dr=new DistributedRegion<Integer,Int2D>(rmap.SOUTH_MINE,rmap.SOUTH_OUT,
 						(sm.schedule.getSteps()-1),cellType,DistributedRegion.SOUTH);
 
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"D",name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"S",name);
 
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
@@ -732,7 +732,7 @@ private void makeToroidalSections() {
 					(sm.schedule.getSteps()-1),cellType,DistributedRegion.NORTH_WEST);
 			try 
 			{
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDL",name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"NW",name);
 
 			} catch (Exception e1) { e1.printStackTrace();}
 
@@ -745,7 +745,7 @@ private void makeToroidalSections() {
 			try 
 			{
 
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDR",name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"NE",name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -755,7 +755,7 @@ private void makeToroidalSections() {
 					rmap.SOUTH_WEST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegion.SOUTH_WEST);
 			try 
 			{
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDL",name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"SW",name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -767,7 +767,7 @@ private void makeToroidalSections() {
 			try 
 			{				
 
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDR",name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"SE",name);
 
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}

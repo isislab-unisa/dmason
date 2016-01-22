@@ -529,7 +529,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 					cellType,DistributedRegionNumeric.WEST);
 			try 
 			{				
-				connWorker.publishToTopic(dr,topicPrefix+cellType+"L", name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType+"W", name);
 
 			} catch (Exception e1) { e1.printStackTrace();}
 		}
@@ -542,7 +542,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 					cellType,DistributedRegionNumeric.EAST);	
 			try 
 			{				
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"R", name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"E", name);
 
 			} catch (Exception e1) {e1.printStackTrace(); }
 		}
@@ -554,7 +554,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 					cellType,DistributedRegionNumeric.NORTH);
 			try 
 			{
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"U", name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"N", name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -568,7 +568,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 
 			try 
 			{				
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"D", name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"S", name);
 
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
@@ -582,7 +582,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 
 			try 
 			{
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDL", name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"NW", name);
 
 			} catch (Exception e1) { e1.printStackTrace();}
 		}
@@ -594,7 +594,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.NORTH_EAST);
 			try 
 			{
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CUDR", name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"NE", name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -606,7 +606,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.SOUTH_WEST);
 			try 
 			{
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDL", name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"SW", name);
 
 			} catch (Exception e1) {e1.printStackTrace();}
 		}
@@ -618,7 +618,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 					(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.SOUTH_EAST);
 			try 
 			{
-				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"CDDR", name);
+				connWorker.publishToTopic(dr,topicPrefix+cellType.toString()+"SE", name);
 
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}	
