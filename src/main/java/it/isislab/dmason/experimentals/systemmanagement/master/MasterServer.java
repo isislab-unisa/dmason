@@ -1,12 +1,12 @@
 package it.isislab.dmason.experimentals.systemmanagement.master;
 
-
-import it.isislab.dmason.experimentals.util.management.master.MasterDaemonStarter;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 
-import javax.jms.Connection;
-import javax.jms.JMSException;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 import org.apache.activemq.broker.BrokerService;
 import org.eclipse.jetty.server.Server;
@@ -14,36 +14,76 @@ import org.eclipse.jetty.webapp.WebAppContext;
 
 public class MasterServer{
 
+	private static String IP;
+	private static String PORT;
+
+    private static void startActivemq(){
+    	BrokerService broker=null;
+		broker = new BrokerService();
+		String address="tcp://"+IP+":"+PORT;
+		
+		try {
+			broker.addConnector(address);
+			System.out.println("Starting activemq "+address);
+			broker.start();
+			
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+    }
+	private static void loadProperties(){
+
+
+		Properties prop = new Properties();
+		String filePropPath="config.properties";
+		InputStream input=null;
+
+		//load params from properties file 
+		try {
+			input=new FileInputStream(filePropPath);	
+			prop.load(input);
+			IP=prop.getProperty("ipmaster");
+			PORT=prop.getProperty("portmaster");
+			
+		} catch (IOException e2) {
+			System.err.println(e2.getMessage());
+		}finally{try {
+			input.close();
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+
+		}}
+	}
+
+
+	private static boolean createConnection(){
+	
+		ConnectionNFieldsWithActiveMQAPI conn=new ConnectionNFieldsWithActiveMQAPI();
+		Address address=new Address(IP, PORT);
+		System.out.println("Creating connection to server "+address);
+		return conn.setupConnection(address);
+		
+	}
 
 	public static void main(String[] args) {
 
 
-		//Start activemq connection		
-		BrokerService broker = new BrokerService();
-		//broker.setBrokerName(brokerName);
+		loadProperties();
+		startActivemq();
+		createConnection();
+		
+		
 	
-		// configure the broker
-		try {
-			broker.addConnector("tcp://localhost:61616");
-			broker.setBrokerName("pepp");
-			broker.start();
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
 
-		
-		
-		
+
+
+
 
 		// 1. Creating the server on port 8080
 		Server server = new Server(8080);
-		//server.setHandler(handler);
-		
-		ConnectionNFieldsWithActiveMQAPI conn=new ConnectionNFieldsWithActiveMQAPI();
-		Address address=new Address("localhost", "61616");
-        conn.setupConnection(address);	
-		MasterDaemonStarter n =new MasterDaemonStarter(conn, null);
-		
+		//server.setHandler(handler);	
+
+
 
 		// 2. Creating the WebAppContext for the created content
 		WebAppContext ctx = new WebAppContext();
