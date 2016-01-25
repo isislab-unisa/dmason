@@ -9,34 +9,43 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.apache.activemq.broker.BrokerService;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.webapp.WebAppContext;
 
 public class MasterServer{
 
-	private static String IP;
-	private static String PORT;
-
-    private static void startActivemq(){
-    	BrokerService broker=null;
-		broker = new BrokerService();
-		String address="tcp://"+IP+":"+PORT;
-		//se remoto altrimente local:61616
+	private static String IP="localhost";
+	private static String PORT="61616";
+	private BrokerService broker=null;
+	private Properties prop = null;
+	private ConnectionNFieldsWithActiveMQAPI conn=null;
+	
+	public MasterServer(){
+		 prop = new Properties();
+		 broker = new BrokerService();
+		 conn=new ConnectionNFieldsWithActiveMQAPI();
+	}
+	
+	
+	
+	protected void startActivemq(){
 		
+		
+		String address="tcp://"+IP+":"+PORT;
+
 		try {
 			broker.addConnector(address);
 			System.out.println("Starting activemq "+address);
 			broker.start();
-			
+
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-    }
-	private static void loadProperties(){
+	}
+	protected void loadProperties(){
 
 
-		Properties prop = new Properties();
-		String filePropPath="config.properties";
+		
+		//default 127.0.0.1:61616 else you have to change config.properties file
+		String filePropPath="resources/systemmanagement/master/conf/config.properties";
 		InputStream input=null;
 
 		//load params from properties file 
@@ -45,7 +54,7 @@ public class MasterServer{
 			prop.load(input);
 			IP=prop.getProperty("ipmaster");
 			PORT=prop.getProperty("portmaster");
-			
+
 		} catch (IOException e2) {
 			System.err.println(e2.getMessage());
 		}finally{try {
@@ -57,58 +66,74 @@ public class MasterServer{
 	}
 
 
-	private static boolean createConnection(){
-	
-		ConnectionNFieldsWithActiveMQAPI conn=new ConnectionNFieldsWithActiveMQAPI();
+	protected boolean createConnection(){
+	   
 		Address address=new Address(IP, PORT);
 		System.out.println("Creating connection to server "+address);
 		return conn.setupConnection(address);
-		
+
 	}
 
-	public static void main(String[] args) {
 
 
-		loadProperties();
-		startActivemq();
-		createConnection();
+
+
+	protected  void createInitialTopic(String topic){
+
 		
-		
-	
-
-
-
-
-
-		// 1. Creating the server on port 8080
-		Server server = new Server(8080);
-		//server.setHandler(handler);	
-
-
-
-		// 2. Creating the WebAppContext for the created content
-		WebAppContext ctx = new WebAppContext();
-		ctx.setResourceBase("resources/systemmanagement/master");
-		ctx.setContextPath("/master");
-
-
-		//3. Including the JSTL jars for the webapp.
-		ctx.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",".*/[^/]*jstl.*\\.jar$");
-
-		//4. Enabling the Annotation based configuration
-		org.eclipse.jetty.webapp.Configuration.ClassList classlist = org.eclipse.jetty.webapp.Configuration.ClassList.setServerDefault(server);
-		classlist.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration", "org.eclipse.jetty.plus.webapp.PlusConfiguration");
-		classlist.addBefore("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration");
-
-		//5. Setting the handler and starting the Server
-		server.setHandler(ctx);
 		try {
-			server.start();
-			server.join();
+			conn.createTopic(topic, 1);
+			conn.subscribeToTopic(topic);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
+
+//
+//	public static void main(String[] args) {
+//
+//
+//		loadProperties();
+//		startActivemq();
+//		createConnection();
+//		createStartTopic("Master");
+//
+//
+//
+//
+//
+//
+//
+//
+//		// 1. Creating the server on port 8080
+//		Server server = new Server(8080);
+//		//server.setHandler(handler);	
+//
+//
+//
+//		// 2. Creating the WebAppContext for the created content
+//		WebAppContext ctx = new WebAppContext();
+//		ctx.setResourceBase("resources/systemmanagement/master");
+//		ctx.setContextPath("/master");
+//
+//
+//		//3. Including the JSTL jars for the webapp.
+//		ctx.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",".*/[^/]*jstl.*\\.jar$");
+//
+//		//4. Enabling the Annotation based configuration
+//		org.eclipse.jetty.webapp.Configuration.ClassList classlist = org.eclipse.jetty.webapp.Configuration.ClassList.setServerDefault(server);
+//		classlist.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration", "org.eclipse.jetty.plus.webapp.PlusConfiguration");
+//		classlist.addBefore("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration");
+//
+//		//5. Setting the handler and starting the Server
+//		server.setHandler(ctx);
+//		try {
+//			server.start();
+//			server.join();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//	}
 }
