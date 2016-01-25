@@ -45,8 +45,8 @@ function setting_new_simulation(){
         }
     }
 
-var progress;
-var repeat, maxRepeat = 5, animating = false;
+var progress,repeat,maxRepeat,animating;
+
 
 function nextProgress() {
     animating = true;
@@ -63,9 +63,24 @@ function nextProgress() {
 }
 function startProgress() {
     repeat = 0;
-    progress.value = progress.min;
+    maxRepeat = 5, animating = false;
+
     progress = document.querySelector('paper-progress');
+    progress.value = progress.min;
     if (!animating) {
+        progress.style.display="block";
         nextProgress();
     }
 }
+
+
+function submitHandler(event) {
+    Polymer.dom(event).localTarget.parentElement.submit();
+}
+function resetHandler(event) {
+    Polymer.dom(event).localTarget.parentElement.reset();
+}
+
+$(document).load(setTimeout(function(){
+    setting_new_simulation();
+}, 2000));
