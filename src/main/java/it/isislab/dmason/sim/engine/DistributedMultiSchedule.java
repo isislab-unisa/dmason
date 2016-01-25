@@ -408,14 +408,14 @@ public class DistributedMultiSchedule<E> extends Schedule
 					&& split)
 			{
 				field.prepareForBalance(true);
-				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreBalance(true);			
-				hashUpdatesPosition.get(MyCellInterface.UP).setPreBalance(true);
-				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreBalance(true);
-				hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreBalance(true);
-				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreBalance(true);
-				hashUpdatesPosition.get(MyCellInterface.DOWN).setPreBalance(true);
-				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreBalance(true);
-				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreBalance(true);
+				hashUpdatesPosition.get(MyCellInterface.NORTH_WEST).setPreBalance(true);			
+				hashUpdatesPosition.get(MyCellInterface.NORTH).setPreBalance(true);
+				hashUpdatesPosition.get(MyCellInterface.NORTH_EAST).setPreBalance(true);
+				hashUpdatesPosition.get(MyCellInterface.EAST).setPreBalance(true);
+				hashUpdatesPosition.get(MyCellInterface.SOUTH_EAST).setPreBalance(true);
+				hashUpdatesPosition.get(MyCellInterface.SOUTH).setPreBalance(true);
+				hashUpdatesPosition.get(MyCellInterface.SOUTH_WEST).setPreBalance(true);
+				hashUpdatesPosition.get(MyCellInterface.WEST).setPreBalance(true);
 
 
 			}
@@ -425,56 +425,56 @@ public class DistributedMultiSchedule<E> extends Schedule
 				{
 					field.setIsSplitted(true);		
 					field.prepareForBalance(false);
-					MyCellInterface m0 = h.get(MyCellInterface.CORNER_DIAG_UP_LEFT);
+					MyCellInterface m0 = h.get(MyCellInterface.NORTH_WEST);
 					m0.setPosition(balance.calculatePositionForBalance(m0.getPosition()));
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setMyCell(m0);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreBalance(true);
+					hashUpdatesPosition.get(MyCellInterface.NORTH_WEST).setMyCell(m0);
+					hashUpdatesPosition.get(MyCellInterface.NORTH_WEST).setPreBalance(true);
 
-					MyCellInterface m1 = h.get(MyCellInterface.UP);
+					MyCellInterface m1 = h.get(MyCellInterface.NORTH);
 					m1.setPosition(balance.calculatePositionForBalance(m1.getPosition()));
-					hashUpdatesPosition.get(MyCellInterface.UP).setMyCell(m1);
-					hashUpdatesPosition.get(MyCellInterface.UP).setPreBalance(true);
+					hashUpdatesPosition.get(MyCellInterface.NORTH).setMyCell(m1);
+					hashUpdatesPosition.get(MyCellInterface.NORTH).setPreBalance(true);
 
-					MyCellInterface m2 = h.get(MyCellInterface.CORNER_DIAG_UP_RIGHT);
+					MyCellInterface m2 = h.get(MyCellInterface.NORTH_EAST);
 					m2.setPosition(balance.calculatePositionForBalance(m2.getPosition()));
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setMyCell(m2);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreBalance(true);
+					hashUpdatesPosition.get(MyCellInterface.NORTH_EAST).setMyCell(m2);
+					hashUpdatesPosition.get(MyCellInterface.NORTH_EAST).setPreBalance(true);
 
-					MyCellInterface m3 = h.get(MyCellInterface.RIGHT);
+					MyCellInterface m3 = h.get(MyCellInterface.EAST);
 					m3.setPosition(balance.calculatePositionForBalance(m3.getPosition()));
-					hashUpdatesPosition.get(MyCellInterface.RIGHT).setMyCell(m3);
-					hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreBalance(true);
+					hashUpdatesPosition.get(MyCellInterface.EAST).setMyCell(m3);
+					hashUpdatesPosition.get(MyCellInterface.EAST).setPreBalance(true);
 
-					MyCellInterface m4 = h.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT);
+					MyCellInterface m4 = h.get(MyCellInterface.SOUTH_EAST);
 					m4.setPosition(balance.calculatePositionForBalance(m4.getPosition()));
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setMyCell(m4);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreBalance(true);
+					hashUpdatesPosition.get(MyCellInterface.SOUTH_EAST).setMyCell(m4);
+					hashUpdatesPosition.get(MyCellInterface.SOUTH_EAST).setPreBalance(true);
 
-					MyCellInterface m5 = h.get(MyCellInterface.DOWN);
+					MyCellInterface m5 = h.get(MyCellInterface.SOUTH);
 					m5.setPosition(balance.calculatePositionForBalance(m5.getPosition()));
-					hashUpdatesPosition.get(MyCellInterface.DOWN).setMyCell(m5);
-					hashUpdatesPosition.get(MyCellInterface.DOWN).setPreBalance(true);
+					hashUpdatesPosition.get(MyCellInterface.SOUTH).setMyCell(m5);
+					hashUpdatesPosition.get(MyCellInterface.SOUTH).setPreBalance(true);
 
-					MyCellInterface m6 = h.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT);
+					MyCellInterface m6 = h.get(MyCellInterface.SOUTH_WEST);
 					m6.setPosition(balance.calculatePositionForBalance(m6.getPosition()));
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setMyCell(m6);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreBalance(true);
+					hashUpdatesPosition.get(MyCellInterface.SOUTH_WEST).setMyCell(m6);
+					hashUpdatesPosition.get(MyCellInterface.SOUTH_WEST).setPreBalance(true);
 
-					MyCellInterface m7 = h.get(MyCellInterface.LEFT);
+					MyCellInterface m7 = h.get(MyCellInterface.WEST);
 					m7.setPosition(balance.calculatePositionForBalance(m7.getPosition()));
-					hashUpdatesPosition.get(MyCellInterface.LEFT).setMyCell(m7);
-					hashUpdatesPosition.get(MyCellInterface.LEFT).setPreBalance(true);
+					hashUpdatesPosition.get(MyCellInterface.WEST).setMyCell(m7);
+					hashUpdatesPosition.get(MyCellInterface.WEST).setPreBalance(true);
 				}
 				else
 				{
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreBalance(false);			
-					hashUpdatesPosition.get(MyCellInterface.UP).setPreBalance(false);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreBalance(false);
-					hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreBalance(false);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreBalance(false);
-					hashUpdatesPosition.get(MyCellInterface.DOWN).setPreBalance(false);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreBalance(false);
-					hashUpdatesPosition.get(MyCellInterface.LEFT).setPreBalance(false);
+					hashUpdatesPosition.get(MyCellInterface.NORTH_WEST).setPreBalance(false);			
+					hashUpdatesPosition.get(MyCellInterface.NORTH).setPreBalance(false);
+					hashUpdatesPosition.get(MyCellInterface.NORTH_EAST).setPreBalance(false);
+					hashUpdatesPosition.get(MyCellInterface.EAST).setPreBalance(false);
+					hashUpdatesPosition.get(MyCellInterface.SOUTH_EAST).setPreBalance(false);
+					hashUpdatesPosition.get(MyCellInterface.SOUTH).setPreBalance(false);
+					hashUpdatesPosition.get(MyCellInterface.SOUTH_WEST).setPreBalance(false);
+					hashUpdatesPosition.get(MyCellInterface.WEST).setPreBalance(false);
 				}
 
 		}
@@ -488,14 +488,14 @@ public class DistributedMultiSchedule<E> extends Schedule
 					&& merge)
 			{
 				field.prepareForUnion(true);
-				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreUnion(true);			
-				hashUpdatesPosition.get(MyCellInterface.UP).setPreUnion(true);
-				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreUnion(true);
-				hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreUnion(true);
-				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreUnion(true);
-				hashUpdatesPosition.get(MyCellInterface.DOWN).setPreUnion(true);
-				hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(true);
-				hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.NORTH_WEST).setPreUnion(true);			
+				hashUpdatesPosition.get(MyCellInterface.NORTH).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.NORTH_EAST).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.EAST).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.SOUTH_EAST).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.SOUTH).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.SOUTH_WEST).setPreUnion(true);
+				hashUpdatesPosition.get(MyCellInterface.WEST).setPreUnion(true);
 
 
 				numExt = 0;
@@ -506,25 +506,25 @@ public class DistributedMultiSchedule<E> extends Schedule
 						&& !field.isSplitted())
 				{
 					field.prepareForUnion(true);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreUnion(false);			
-					hashUpdatesPosition.get(MyCellInterface.UP).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.DOWN).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.NORTH_WEST).setPreUnion(false);			
+					hashUpdatesPosition.get(MyCellInterface.NORTH).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.NORTH_EAST).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.EAST).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.SOUTH_EAST).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.SOUTH).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.SOUTH_WEST).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.WEST).setPreUnion(false);
 				}
 				else
 				{
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_LEFT).setPreUnion(false);			
-					hashUpdatesPosition.get(MyCellInterface.UP).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_UP_RIGHT).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.RIGHT).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_RIGHT).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.DOWN).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.CORNER_DIAG_DOWN_LEFT).setPreUnion(false);
-					hashUpdatesPosition.get(MyCellInterface.LEFT).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.NORTH_WEST).setPreUnion(false);			
+					hashUpdatesPosition.get(MyCellInterface.NORTH).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.NORTH_EAST).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.EAST).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.SOUTH_EAST).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.SOUTH).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.SOUTH_WEST).setPreUnion(false);
+					hashUpdatesPosition.get(MyCellInterface.WEST).setPreUnion(false);
 				}
 
 			HashMap<Integer, MyCellInterface> cellToSend = field.getToSendForUnion();

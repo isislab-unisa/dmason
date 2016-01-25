@@ -51,21 +51,24 @@ import java.util.HashMap;
 public interface MyCellInterface {
 	
 	public static int CORNER_DIAG_UP_LEFT_LEFT=9;
-	public static int CORNER_DIAG_UP_LEFT=0;
 	public static int CORNER_DIAG_UP_LEFT_UP=10;
-	public static int UP=1;
 	public static int CORNER_DIAG_UP_RIGHT_UP=11;
-	public static int CORNER_DIAG_UP_RIGHT=2;
 	public static int CORNER_DIAG_UP_RIGHT_RIGHT=12;
-	public static int RIGHT=3;
 	public static int CORNER_DIAG_DOWN_RIGHT_RIGHT=13;
-	public static int CORNER_DIAG_DOWN_RIGHT=4;
 	public static int CORNER_DIAG_DOWN_RIGHT_DOWN=14;
-	public static int DOWN=5;
 	public static int CORNER_DIAG_DOWN_LEFT_DOWN=15;
-	public static int CORNER_DIAG_DOWN_LEFT=6;
 	public static int CORNER_DIAG_DOWN_LEFT_LEFT=16;
-	public static int LEFT=7;
+	
+	
+	
+	public static int NORTH_WEST=0;
+	public static int NORTH=1;
+	public static int NORTH_EAST=2; 
+	public static int EAST=3;
+	public static int SOUTH_EAST=4;
+	public static int SOUTH=5;
+	public static int SOUTH_WEST=6;
+	public static int WEST=7;
 	public static int CENTER=8;
 
 	/**
