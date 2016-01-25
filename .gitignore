@@ -9,4 +9,4 @@
 /resources/app/test-network
 *~
 /resources/systemmanagement/.idea
-*.bower.json
+/activemq-data
