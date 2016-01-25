@@ -15,6 +15,7 @@
    limitations under the License.
  */
 package it.isislab.dmason.sim.app.DFlockers;
+import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 /*
  * THIS CLASS HAS BEEN USED FOR TESTING PURPOSES IN THE BEGINNINGS,
@@ -41,7 +42,7 @@ import sim.display.Console;
 public class TestStart {
 
 	private static boolean graphicsOn=false; //with or without graphics?
-	private static int numSteps = 30500; //only graphicsOn=false
+	private static int numSteps = 300; //only graphicsOn=false
 	private static int rows = 2; //number of rows
 	private static int columns = 1; //number of columns
 	private static int AOI=10; //max distance
@@ -85,14 +86,17 @@ public class TestStart {
 				genParam.setJ(j);
 				genParam.setIp(ip);
 				genParam.setPort(port);
+				ArrayList<EntryParam<String, Object>> pippo=new ArrayList<EntryParam<String,Object>>();
 				if(graphicsOn  || i==0 && j==0)
 				{
-					DFlockersWithUI sim =new DFlockersWithUI(genParam);
+						
+					DFlockersWithUI sim =new DFlockersWithUI(genParam,pippo,"hesh");
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
-					DFlockers sim = new DFlockers(genParam); 
+				    
+					DFlockers sim = new DFlockers(genParam, pippo, "hesh");
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}

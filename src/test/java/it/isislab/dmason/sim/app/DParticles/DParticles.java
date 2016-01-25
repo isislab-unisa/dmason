@@ -17,6 +17,7 @@
 package it.isislab.dmason.sim.app.DParticles;
 
 import it.isislab.dmason.exception.DMasonException;
+import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
@@ -28,6 +29,9 @@ import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2D;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -72,6 +76,17 @@ public class DParticles extends DistributedState<Int2D> {
     	gridHeight=params.getHeight();
     
     } 
+    
+    public DParticles(GeneralParam params,List<EntryParam<String,Object>>list,String prefix)
+    {    	
+    	super(params,new DistributedMultiSchedule<Int2D>(),prefix,params.getConnectionType());
+    	this.MODE=params.getMode();
+    	gridWidth=params.getWidth();
+    	gridHeight=params.getHeight();
+    	topicPrefix=prefix;
+    
+    }
+    
     
 
     @Override

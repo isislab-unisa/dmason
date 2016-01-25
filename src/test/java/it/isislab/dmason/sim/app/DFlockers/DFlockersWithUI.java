@@ -16,10 +16,12 @@
  */
 package it.isislab.dmason.sim.app.DFlockers;
 
+import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedState;
 
 import java.awt.Color;
+import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -51,7 +53,6 @@ public class DFlockersWithUI extends GUIState
     public JFrame displayFrame;
     public static String name;
     
-    public static String topicPrefix = "";
 
     @Override
 	public Object getSimulationInspectedObject() { return state; }  // non-volatile
@@ -71,7 +72,12 @@ public class DFlockersWithUI extends GUIState
     public DFlockersWithUI(GeneralParam args) 
     { 
     	super(new DFlockers(args));
+    	name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
+    }
     
+    public DFlockersWithUI(GeneralParam args,List<EntryParam<String, Object>> simParams,String topicPrefix) 
+    { 
+    	super(new DFlockers(args,simParams,topicPrefix));
     	name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
     }
   

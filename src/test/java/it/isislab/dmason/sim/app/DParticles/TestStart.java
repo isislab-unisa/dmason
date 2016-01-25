@@ -15,6 +15,7 @@
    limitations under the License.
  */
 package it.isislab.dmason.sim.app.DParticles;
+import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 /*
  * THIS CLASS HAS BEEN USED FOR TESTING PURPOSES IN THE BEGINNINGS,
@@ -84,14 +85,15 @@ public class TestStart {
 				genParam.setJ(j);
 				genParam.setIp(ip);
 				genParam.setPort(port);
+				ArrayList<EntryParam<String, Object>> pippo=new ArrayList<EntryParam<String, Object>>();
 				if(graphicsOn || (i==0 && j==0))
 				{
-					DParticlesWithUI sim =new DParticlesWithUI(genParam);
+					DParticlesWithUI sim =new DParticlesWithUI(genParam,pippo,"formica");
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
-					DParticles sim = new DParticles(genParam); 
+					DParticles sim = new DParticles(genParam,pippo,"formica"); 
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}

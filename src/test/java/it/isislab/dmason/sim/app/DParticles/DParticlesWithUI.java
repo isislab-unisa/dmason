@@ -17,9 +17,12 @@
 package it.isislab.dmason.sim.app.DParticles;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 
+import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import sim.display.Controller;
 import sim.display.Display2D;
@@ -52,9 +55,9 @@ public class DParticlesWithUI extends GUIState
     	name=String.valueOf(args[7])+""+(String.valueOf(args[8]));
     }*/
     
-    public DParticlesWithUI(GeneralParam args) 
+    public DParticlesWithUI(GeneralParam args,List<EntryParam<String, Object>>list,String prefix) 
     { 
-    	super(new DParticles(args));
+    	super(new DParticles(args,list,prefix));
     	name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
     }
     
