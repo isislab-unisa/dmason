@@ -1,9 +1,11 @@
 package it.isislab.dmason.sim.app.DCircles;
 
 import java.awt.Color;
+import java.util.List;
 
 import javax.swing.JFrame;
 
+import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import sim.display.Controller;
 import sim.display.Display2D;
@@ -17,20 +19,26 @@ public class DCirclesWithUI extends GUIState {
 	public JFrame displayFrame;
 	public static String name;
 
-	public static String topicPrefix = "";
-
 	@Override
 	public Object getSimulationInspectedObject() { return state; }  // non-volatile
 
 	ContinuousPortrayal2D circlesPortrayal = new ContinuousPortrayal2D();
 
 
-	public DCirclesWithUI(GeneralParam args) 
+	public DCirclesWithUI(GeneralParam args,List<EntryParam<String, Object>> simParams,String topicPrefix) 
 	{ 
-		super(new DCircles(args));
+		super(new DCircles(args,simParams,topicPrefix));
 
 		name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
 	}
+	
+	public DCirclesWithUI(GeneralParam args,String topicPrefix) 
+	{ 
+		super(new DCircles(args,topicPrefix));
+
+		name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
+	}
+	
 
 	public static String getName() { return "Peer: <"+name+">"; }
 

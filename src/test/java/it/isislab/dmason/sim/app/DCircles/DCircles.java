@@ -25,9 +25,9 @@ public class DCircles extends DistributedState<Double2D> {
 	 */
 	public static final double DIAMETER = 4;
 
-	public DContinuousGrid2D circles = null;
+	protected DContinuousGrid2D circles = null;
 
-	public static String topicPrefix = "";
+	private String topicPrefix = "";
 	
 	/**
 	 * field Width
@@ -51,20 +51,22 @@ public class DCircles extends DistributedState<Double2D> {
 	 * Constructor 
 	 * @param params
 	 */
-	public DCircles(GeneralParam params) {
-		super(params, new DistributedMultiSchedule<Double2D>(),topicPrefix,params.getConnectionType());
+	public DCircles(GeneralParam params,String prefix) {
+		super(params, new DistributedMultiSchedule<Double2D>(),prefix,params.getConnectionType());
 		this.MODE=params.getMode();
+		this.topicPrefix=prefix;
 		gridWidth=params.getWidth();
 		gridHeight=params.getHeight();
 	}
 
-	public DCircles(GeneralParam params,List<EntryParam<String, Object>> simParams, String prefix)
+	public DCircles(GeneralParam params,List<EntryParam<String, Object>> simParams,String prefix)
 	{
 		super(params,new DistributedMultiSchedule<Double2D>(), prefix,params.getConnectionType());
 		this.MODE=params.getMode();
+		this.topicPrefix = prefix;
 		gridWidth=params.getWidth();
 		gridHeight=params.getHeight();
-		topicPrefix = prefix; 
+		 
 		for (EntryParam<String, Object> entryParam : simParams) {
 
 			try {
