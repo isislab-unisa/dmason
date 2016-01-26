@@ -20,6 +20,7 @@ import sim.portrayal.simple.AdjustablePortrayal2D;
 import sim.portrayal.simple.MovablePortrayal2D;
 import sim.portrayal.simple.OrientedPortrayal2D;
 import sim.util.Double2D;
+
 public class DFlockers extends DistributedState<Double2D>
 {
 
