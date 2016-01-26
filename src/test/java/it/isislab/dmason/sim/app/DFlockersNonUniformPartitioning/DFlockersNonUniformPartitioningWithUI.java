@@ -17,9 +17,11 @@
 package it.isislab.dmason.sim.app.DFlockersNonUniformPartitioning;
 
 import java.awt.Color;
+import java.util.List;
 
 import javax.swing.JFrame;
 
+import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedState;
 import sim.display.Controller;
@@ -50,17 +52,23 @@ public class DFlockersNonUniformPartitioningWithUI extends GUIState
 	public JFrame displayFrame;
 	public static String name;
 
-	public static String topicPrefix = "";
-
 	@Override
 	public Object getSimulationInspectedObject() { return state; }  // non-volatile
 
 	ContinuousPortrayal2D flockersPortrayal = new ContinuousPortrayal2D();
 
-
-	public DFlockersNonUniformPartitioningWithUI(GeneralParam args) 
+	
+	
+	public DFlockersNonUniformPartitioningWithUI(GeneralParam args,List<EntryParam<String, Object>> simParams, String prefix) 
 	{ 
-		super(new DFlockersNonUniformPartitioning(args));
+		super(new DFlockersNonUniformPartitioning(args,simParams,prefix));
+
+		name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
+	}
+
+	public DFlockersNonUniformPartitioningWithUI(GeneralParam args, String prefix) 
+	{ 
+		super(new DFlockersNonUniformPartitioning(args,prefix));
 
 		name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
 	}

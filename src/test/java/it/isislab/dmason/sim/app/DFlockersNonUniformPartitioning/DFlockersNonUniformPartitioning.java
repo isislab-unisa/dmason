@@ -53,7 +53,7 @@ import sim.util.Double2D;
  */
 public class DFlockersNonUniformPartitioning extends DistributedState<Double2D>
 {
-	ContinuousPortrayal2D p;
+	protected ContinuousPortrayal2D p;
 	public DFlockersNonUniformPartitioning()
 	{
 		super();
@@ -66,8 +66,8 @@ public class DFlockersNonUniformPartitioning extends DistributedState<Double2D>
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public DContinuousGrid2D flockers;
-	private static boolean isToroidal=true;
+	protected DContinuousGrid2D flockers;
+	
 
 	@BatchAnnotation(
 			domain = "100-300",
@@ -120,7 +120,7 @@ public class DFlockersNonUniformPartitioning extends DistributedState<Double2D>
 	public double gridHeight ;   
 	public int MODE;
 
-	public static String topicPrefix = "";
+	private String topicPrefix = "";
 
 	// -----------------------------------------------------------------------
 	// DEBUG -----------------------------------------------------------------
@@ -143,9 +143,10 @@ public class DFlockersNonUniformPartitioning extends DistributedState<Double2D>
 	//    } 
 
 	private int P;
-	public DFlockersNonUniformPartitioning(GeneralParam params)
+	public DFlockersNonUniformPartitioning(GeneralParam params, String prefix)
 	{    	
-		super(params,new DistributedMultiSchedule<Double2D>(params.getNumAgents(),params.getP(),params.getWidth(),params.getHeight(),params.getAoi()), "",params.getConnectionType());
+		super(params,new DistributedMultiSchedule<Double2D>(params.getNumAgents(),params.getP(),params.getWidth(),params.getHeight(),params.getAoi()), prefix,params.getConnectionType());
+		this.topicPrefix=prefix;
 		this.MODE=params.getMode();
 		gridWidth=params.getWidth();
 		gridHeight=params.getHeight();
@@ -168,7 +169,7 @@ public class DFlockersNonUniformPartitioning extends DistributedState<Double2D>
 		this.MODE=params.getMode();
 		gridWidth=params.getWidth();
 		gridHeight=params.getHeight();
-		topicPrefix = prefix; 
+		this.topicPrefix = prefix; 
 		P=params.getP();
 		for (EntryParam<String, Object> entryParam : simParams) {
 

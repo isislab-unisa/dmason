@@ -17,6 +17,7 @@
 package it.isislab.dmason.sim.app.DFlockersNonUniformPartitioning;
 import java.util.ArrayList;
 
+import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 /*
  * THIS CLASS HAS BEEN USED FOR TESTING PURPOSES IN THE BEGINNINGS,
@@ -37,7 +38,7 @@ import sim.display.Console;
  * @author Carmine Spagnuolo
  *
  */
-public class TestStartDFlockersNonUniformPartitioning {
+public class TestDFlockersNonUniformPartitioning {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = Integer.MAX_VALUE; //only graphicsOn=false
@@ -48,6 +49,7 @@ public class TestStartDFlockersNonUniformPartitioning {
 	private static int HEIGHT=600; //field height
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
+	private static String topicPrefix="flocknoun"; //unique string to identify topics for this simulation
 	
 	//don't modify this...
 
@@ -83,15 +85,15 @@ public class TestStartDFlockersNonUniformPartitioning {
 				genParam.setJ(i);
 				genParam.setIp(ip);
 				genParam.setPort(port);
-		
+				ArrayList<EntryParam<String, Object>> simParams=new ArrayList<EntryParam<String, Object>>();
 				if(graphicsOn || i==0)
 				{
-					DFlockersNonUniformPartitioningWithUI sim =new DFlockersNonUniformPartitioningWithUI(genParam);
+					DFlockersNonUniformPartitioningWithUI sim =new DFlockersNonUniformPartitioningWithUI(genParam,simParams,topicPrefix);
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
-					DFlockersNonUniformPartitioning sim = new DFlockersNonUniformPartitioning(genParam); 
+					DFlockersNonUniformPartitioning sim = new DFlockersNonUniformPartitioning(genParam,simParams,topicPrefix); 
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}
