@@ -87,17 +87,17 @@ public class TestDFlockers {
 				genParam.setJ(j);
 				genParam.setIp(ip);
 				genParam.setPort(port);
-				ArrayList<EntryParam<String, Object>> pippo=new ArrayList<EntryParam<String,Object>>();
+				ArrayList<EntryParam<String, Object>> simParams=new ArrayList<EntryParam<String,Object>>();
 				if(graphicsOn  || i==0 && j==0)
 				{
 						
-					DFlockersWithUI sim =new DFlockersWithUI(genParam,pippo,topicPrefix);
+					DFlockersWithUI sim =new DFlockersWithUI(genParam,simParams,topicPrefix);
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
 				    
-					DFlockers sim = new DFlockers(genParam, pippo,topicPrefix);
+					DFlockers sim = new DFlockers(genParam, simParams,topicPrefix);
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}
