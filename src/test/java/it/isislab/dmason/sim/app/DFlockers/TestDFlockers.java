@@ -71,10 +71,12 @@ public class TestDFlockers {
 				int i=0;
 				while(i!=numSteps)
 				{
-					//System.out.println(i);
+					if(!graphicsOn){System.out.println(i);}
+					
 					ds.schedule.step(ds);
 					i++;
 				}
+				System.exit(0);
 			}
 		}
 
