@@ -16,7 +16,10 @@
  */
 package it.isislab.dmason.sim.app.DAntsForage;
 
+import java.util.List;
+
 import it.isislab.dmason.exception.DMasonException;
+import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
@@ -68,22 +71,22 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 	private int FXMAX;
 	private	int FYMAX;
 
-	public static final int NO_OBSTACLES = 0;
-	public static final int ONE_OBSTACLE = 1;
-	public static final int TWO_OBSTACLES = 2;
-	public static final int ONE_LONG_OBSTACLE = 3;
+	private static final int NO_OBSTACLES = 0;
+	private static final int ONE_OBSTACLE = 1;
+	private static final int TWO_OBSTACLES = 2;
+	private static final int ONE_LONG_OBSTACLE = 3;
 
-	public static final int OBSTACLES = TWO_OBSTACLES;
+	protected static final int OBSTACLES = TWO_OBSTACLES;
 
-	public static final int ALGORITHM_VALUE_ITERATION = 1;
-	public static final int ALGORITHM_TEMPORAL_DIFERENCE = 2;
-	public static final int ALGORITHM = ALGORITHM_VALUE_ITERATION;
+	protected static final int ALGORITHM_VALUE_ITERATION = 1;
+	protected static final int ALGORITHM_TEMPORAL_DIFERENCE = 2;
+	protected static final int ALGORITHM = ALGORITHM_VALUE_ITERATION;
 
-	public static final double IMPOSSIBLY_BAD_PHEROMONE = -1;
-	public static final double LIKELY_MAX_PHEROMONE = 3;
+	protected static final double IMPOSSIBLY_BAD_PHEROMONE = -1;
+	protected static final double LIKELY_MAX_PHEROMONE = 3;
 
-	public static final int HOME = 1;
-	public static final int FOOD = 2;
+	protected static final int HOME = 1;
+	protected static final int FOOD = 2;
 
 
 	public int numAnts;// = 1000;
@@ -95,7 +98,7 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 	public double momentumProbability = 0.8;
 	public double randomActionProbability = 0.1;
 
-	public static String topicPrefix = "";
+	public String topicPrefix = "";
 
 	// some properties
 	public int getNumAnts() { return numAnts; }
@@ -134,41 +137,23 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 
 
 
-	/* public DAntsForage(Object[] params)
-        { 
-    	super((Integer)params[2],(Integer)params[3],(Integer)params[4],(Integer)params[7],
-    			(Integer)params[8],(String)params[0],(String)params[1],(Integer)params[9], 
-    			isToroidal,new DistributedMultiSchedule<Int2D>());
-    	numAnts = (Integer)params[4];
-    	ip = params[0]+"";
-    	port = params[1]+"";
-
-    	//trigger = new Trigger(ip, port);
-
-    	this.MODE=(Integer)params[9];
-    	GRID_WIDTH = (Integer)params[5];
-    	GRID_HEIGHT = (Integer)params[6];
-
-    	FXMIN = (FOOD_XMIN * GRID_WIDTH)/100;
-    	FYMIN = (FOOD_YMIN * GRID_HEIGHT)/100;
-    	FXMAX = (FOOD_XMAX * GRID_WIDTH)/100;
-    	FYMAX = (FOOD_YMAX * GRID_HEIGHT)/100;
-
-    	HXMIN = (HOME_XMIN * GRID_WIDTH)/100;
-    	HYMIN = (HOME_YMIN * GRID_HEIGHT)/100;
-    	HXMAX = (HOME_XMAX * GRID_WIDTH)/100;
-    	HYMAX = (HOME_YMAX * GRID_HEIGHT)/100;
-
-        }*/
 
 
 	public DAntsForage(){
 		super();
 	}
 
-	public DAntsForage(GeneralParam params)
+	/**
+	 * AntsForage
+	 * 
+	 * @param params general in order to build a distributed field
+	 * @param list   list parameters for this simulation 
+	 * @param prefix a string added to topic to generate an unique topic for this simulation 
+	 */
+	public DAntsForage(GeneralParam params,List<EntryParam<String, Object>>list,String prefix)
 	{ 
-		super(params,new DistributedMultiSchedule<Int2D>(),topicPrefix,params.getConnectionType());
+		super(params,new DistributedMultiSchedule<Int2D>(),prefix,params.getConnectionType());
+		this.topicPrefix=prefix;
 		this.MODE=params.getMode();
 		GRID_WIDTH=params.getWidth();
 		GRID_HEIGHT=params.getHeight();

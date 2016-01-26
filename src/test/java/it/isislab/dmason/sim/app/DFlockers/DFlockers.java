@@ -29,9 +29,11 @@ import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 
 import java.awt.Color;
 import java.util.List;
+
 import sim.engine.SimState;
 import sim.portrayal.SimplePortrayal2D;
 import sim.portrayal.continuous.ContinuousPortrayal2D;
+import sim.portrayal.grid.SparseGridPortrayal2D;
 import sim.portrayal.simple.AdjustablePortrayal2D;
 import sim.portrayal.simple.MovablePortrayal2D;
 import sim.portrayal.simple.OrientedPortrayal2D;
@@ -111,9 +113,8 @@ public class DFlockers extends DistributedState<Double2D>
 	public double gridHeight ;   
 	public int MODE;
 
-	public static String topicPrefix = "";
-	
-	public ContinuousPortrayal2D p;
+	private String topicPrefix = "";
+	protected ContinuousPortrayal2D p;
 
 /**
  * DA ELIMINARE
@@ -121,14 +122,22 @@ public class DFlockers extends DistributedState<Double2D>
  * @param simParams
  * @param prefix
  */
-	public DFlockers(GeneralParam params)
+	public DFlockers(GeneralParam params,String prefix)
 	{    	
-		super(params,new DistributedMultiSchedule<Double2D>(),topicPrefix,params.getConnectionType());
+		super(params,new DistributedMultiSchedule<Double2D>(),prefix,params.getConnectionType());
+		this.topicPrefix=prefix;
 		this.MODE=params.getMode();
 		this.gridWidth=params.getWidth();
 		this.gridHeight=params.getHeight();
 	}
 
+	/**
+	 * DFlockers
+	 * 
+	 * @param params general in order to build a distributed field
+	 * @param list   list parameters for this simulation 
+	 * @param prefix a string added to topic to generate an unique topic for this simulation 
+	 */
 	public DFlockers(GeneralParam params,List<EntryParam<String, Object>> simParams, String prefix)
 	{    	
 		super(params,new DistributedMultiSchedule<Double2D>(), prefix,params.getConnectionType());

@@ -52,15 +52,17 @@ import sim.util.Int2D;
 public class DParticles extends DistributedState<Int2D> {
     
 	
-    public DSparseGrid2D particles;
-    public DDoubleGrid2D trails;
-
+    protected DSparseGrid2D particles;
+    protected DDoubleGrid2D trails;
+    protected SparseGridPortrayal2D p;
+    
+    
     public int gridWidth ;
     public int gridHeight ;   
     public int MODE;
-	public SparseGridPortrayal2D p;
+	
    
-    public static String topicPrefix = "";
+    private String topicPrefix = "";
     
 
     public DParticles() {
@@ -68,15 +70,23 @@ public class DParticles extends DistributedState<Int2D> {
 	
 	}
     
-    public DParticles(GeneralParam params)
+    public DParticles(GeneralParam params, String prefix)
     {    	
-    	super(params,new DistributedMultiSchedule<Int2D>(),topicPrefix,params.getConnectionType());
+    	super(params,new DistributedMultiSchedule<Int2D>(),prefix,params.getConnectionType());
     	this.MODE=params.getMode();
+    	this.topicPrefix=prefix;
     	gridWidth=params.getWidth();
     	gridHeight=params.getHeight();
     
     } 
     
+    /**
+	 * DParticles
+	 * 
+	 * @param params general in order to build a distributed field
+	 * @param list   list parameters for this simulation 
+	 * @param prefix a string added to topic to generate an unique topic for this simulation 
+	 */
     public DParticles(GeneralParam params,List<EntryParam<String,Object>>list,String prefix)
     {    	
     	super(params,new DistributedMultiSchedule<Int2D>(),prefix,params.getConnectionType());

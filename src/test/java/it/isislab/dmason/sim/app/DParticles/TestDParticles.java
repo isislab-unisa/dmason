@@ -39,7 +39,7 @@ import sim.display.Console;
  * @author Carmine Spagnuolo
  *
  */
-public class TestStart {
+public class TestDParticles {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 3000; //only graphicsOn=false
@@ -51,7 +51,7 @@ public class TestStart {
 	private static int HEIGHT=400; //field height
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
-	
+	private static String topicPrefix="particle"; //unique string to identify topics for this simulation 
 	//don't modify this...
 	private static int MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;
 	
@@ -88,12 +88,12 @@ public class TestStart {
 				ArrayList<EntryParam<String, Object>> pippo=new ArrayList<EntryParam<String, Object>>();
 				if(graphicsOn || (i==0 && j==0))
 				{
-					DParticlesWithUI sim =new DParticlesWithUI(genParam,pippo,"flock");
+					DParticlesWithUI sim =new DParticlesWithUI(genParam,pippo,topicPrefix);
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
-					DParticles sim = new DParticles(genParam,pippo,"flock"); 
+					DParticles sim = new DParticles(genParam,pippo,topicPrefix); 
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}

@@ -39,7 +39,7 @@ import sim.display.Console;
  * @author Carmine Spagnuolo
  *
  */
-public class TestStart {
+public class TestDFlockers {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 3000; //only graphicsOn=false
@@ -51,6 +51,7 @@ public class TestStart {
 	private static int HEIGHT=633; //field height
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
+	private static String topicPrefix="flock"; //unique string to identify topics for this simulation
 	
 	 
 	private static int MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;
@@ -90,13 +91,13 @@ public class TestStart {
 				if(graphicsOn  || i==0 && j==0)
 				{
 						
-					DFlockersWithUI sim =new DFlockersWithUI(genParam,pippo,"hesh");
+					DFlockersWithUI sim =new DFlockersWithUI(genParam,pippo,topicPrefix);
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
 				    
-					DFlockers sim = new DFlockers(genParam, pippo, "hesh");
+					DFlockers sim = new DFlockers(genParam, pippo,topicPrefix);
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}

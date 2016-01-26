@@ -97,7 +97,7 @@ public class MPIWorker {
 //		}
 //		else
 		{
-			state=new DFlockers(genParam);
+			state=new DFlockers(genParam,"");
 			
 		}
 		

@@ -16,6 +16,7 @@
  */
 package it.isislab.dmason.sim.app.DAntsForage;
 
+import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 /*
  * THIS CLASS HAS BEEN USED FOR TESTING PURPOSES IN THE BEGINNINGS,
@@ -39,7 +40,7 @@ import sim.display.Console;
  * @author Carmine Spagnuolo
  *
  */
-public class TestStart {
+public class TestDAntsForage {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 3000; //only graphicsOn=false
@@ -51,6 +52,8 @@ public class TestStart {
 	private static int HEIGHT=200; //field height
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
+	private static String topicPrefix="ants"; //unique string to identify topics for this simulation 
+	
 	
 	private static int MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE; 
 	
@@ -84,14 +87,15 @@ public class TestStart {
 				genParam.setJ(j);
 				genParam.setIp(ip);
 				genParam.setPort(port);
+				ArrayList<EntryParam<String, Object>> simParams=new ArrayList<EntryParam<String, Object>>();
 				if(graphicsOn || (i==1 && j == 1))
 				{
-					DAntsForageWithUI sim =new DAntsForageWithUI(genParam);
+					DAntsForageWithUI sim =new DAntsForageWithUI(genParam,simParams,topicPrefix);
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
-					DAntsForage sim = new DAntsForage(genParam); 
+					DAntsForage sim = new DAntsForage(genParam,simParams,topicPrefix); 
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}
