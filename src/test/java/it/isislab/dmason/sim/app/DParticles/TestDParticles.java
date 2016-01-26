@@ -85,15 +85,15 @@ public class TestDParticles {
 				genParam.setJ(j);
 				genParam.setIp(ip);
 				genParam.setPort(port);
-				ArrayList<EntryParam<String, Object>> pippo=new ArrayList<EntryParam<String, Object>>();
+				ArrayList<EntryParam<String, Object>> simParams=new ArrayList<EntryParam<String, Object>>();
 				if(graphicsOn || (i==0 && j==0))
 				{
-					DParticlesWithUI sim =new DParticlesWithUI(genParam,pippo,topicPrefix);
+					DParticlesWithUI sim =new DParticlesWithUI(genParam,simParams,topicPrefix);
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
-					DParticles sim = new DParticles(genParam,pippo,topicPrefix); 
+					DParticles sim = new DParticles(genParam,simParams,topicPrefix); 
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}
