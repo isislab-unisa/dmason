@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package it.isislab.dmason.sim.app.DParticlesThin;
+package it.isislab.dmason.experimentals.sim.app.DParticlesThin;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 /*
  * THIS CLASS HAS BEEN USED FOR TESTING PURPOSES IN THE BEGINNINGS,
@@ -87,12 +87,12 @@ public class TestStart {
 				genParam.setPort(port);
 				if(graphicsOn)
 				{
-					it.isislab.dmason.sim.app.DParticlesThin.DParticlesWithUI sim =new it.isislab.dmason.sim.app.DParticlesThin.DParticlesWithUI(genParam);
+					it.isislab.dmason.experimentals.sim.app.DParticlesThin.DParticlesWithUI sim =new it.isislab.dmason.experimentals.sim.app.DParticlesThin.DParticlesWithUI(genParam);
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
-					it.isislab.dmason.sim.app.DParticlesThin.DParticles sim = new it.isislab.dmason.sim.app.DParticlesThin.DParticles(genParam); 
+					it.isislab.dmason.experimentals.sim.app.DParticlesThin.DParticles sim = new it.isislab.dmason.experimentals.sim.app.DParticlesThin.DParticles(genParam); 
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}

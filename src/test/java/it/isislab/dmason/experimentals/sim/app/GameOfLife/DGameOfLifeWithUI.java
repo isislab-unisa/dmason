@@ -1,9 +1,9 @@
-package it.isislab.dmason.sim.app.GameOfLife;
+package it.isislab.dmason.experimentals.sim.app.GameOfLife;
 
 import java.awt.Color;
-
+import java.util.List;
 import javax.swing.JFrame;
-
+import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import sim.display.Controller;
 import sim.display.Display2D;
@@ -16,17 +16,23 @@ public class DGameOfLifeWithUI extends GUIState {
 	public JFrame displayFrame;
 	public static String name;
 
-	public static String topicPrefix = "";
-
 	@Override
 	public Object getSimulationInspectedObject() { return state; }  // non-volatile
 
     FastValueGridPortrayal2D gridPortrayal = new FastValueGridPortrayal2D();
 
 
-	public DGameOfLifeWithUI(GeneralParam args) 
+	public DGameOfLifeWithUI(GeneralParam args,List<EntryParam<String, Object>> simParams,String prefix) 
 	{ 
-		super(new DGameOfLife(args));
+		super(new DGameOfLife(args,simParams, prefix));
+
+		name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
+	}
+	
+	
+	public DGameOfLifeWithUI(GeneralParam args, String prefix) 
+	{ 
+		super(new DGameOfLife(args, prefix));
 
 		name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
 	}

@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package it.isislab.dmason.sim.app.DFlockersThin;
+package it.isislab.dmason.experimentals.sim.app.DFlockersThin;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 /*
  * THIS CLASS HAS BEEN USED FOR TESTING PURPOSES IN THE BEGINNINGS,
@@ -87,12 +87,12 @@ public class TestStart {
 				genParam.setPort(port);
 				if(graphicsOn)
 				{
-					it.isislab.dmason.sim.app.DFlockersThin.DFlockersWithUI sim =new it.isislab.dmason.sim.app.DFlockersThin.DFlockersWithUI(genParam);
+					it.isislab.dmason.experimentals.sim.app.DFlockersThin.DFlockersWithUI sim =new it.isislab.dmason.experimentals.sim.app.DFlockersThin.DFlockersWithUI(genParam);
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
-					it.isislab.dmason.sim.app.DFlockersThin.DFlockers sim = new it.isislab.dmason.sim.app.DFlockersThin.DFlockers(genParam); 
+					it.isislab.dmason.experimentals.sim.app.DFlockersThin.DFlockers sim = new it.isislab.dmason.experimentals.sim.app.DFlockersThin.DFlockers(genParam); 
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}

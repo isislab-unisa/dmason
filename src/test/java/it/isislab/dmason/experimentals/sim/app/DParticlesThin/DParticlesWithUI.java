@@ -15,7 +15,7 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.sim.app.DParticlesThin;
+package it.isislab.dmason.experimentals.sim.app.DParticlesThin;
 
 import java.awt.Color;
 

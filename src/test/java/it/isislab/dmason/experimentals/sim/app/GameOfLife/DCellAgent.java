@@ -1,4 +1,4 @@
-package it.isislab.dmason.sim.app.GameOfLife;
+package it.isislab.dmason.experimentals.sim.app.GameOfLife;
 
 import it.isislab.dmason.sim.engine.DistributedState;
 import sim.engine.SimState;
@@ -30,7 +30,7 @@ public class DCellAgent extends RemoteCellAgent<Int2D> {
 		{
 			for(int x=tut.grid.own_x; x<width; x++)
 			{
-				System.out.println("giroooo!");
+				//System.out.println("step executed!");
 				count = 0;
 				// count the number of neighbors around the cell,
 				// and for good measure include the cell itself

@@ -15,7 +15,7 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.sim.app.DFlockersThin;
+package it.isislab.dmason.experimentals.sim.app.DFlockersThin;
 
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedState;

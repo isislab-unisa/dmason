@@ -15,7 +15,7 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.sim.app.DParticlesThin;
+package it.isislab.dmason.experimentals.sim.app.DParticlesThin;
 
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;

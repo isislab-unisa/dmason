@@ -1,4 +1,4 @@
-package it.isislab.dmason.sim.app.GameOfLife;
+package it.isislab.dmason.experimentals.sim.app.GameOfLife;
 
 import java.awt.Color;
 import java.util.List;
@@ -28,9 +28,9 @@ public class DGameOfLife extends DistributedState<Int2D> {
 
 	public DIntGrid2D grid = null;
 	
-	public FastValueGridPortrayal2D p;
+	protected FastValueGridPortrayal2D p;
 
-	public static String topicPrefix = "";
+	private String topicPrefix = "";
 	
 	/**
 	 * field Width
@@ -59,8 +59,8 @@ public class DGameOfLife extends DistributedState<Int2D> {
 	 * Constructor 
 	 * @param params
 	 */
-	public DGameOfLife(GeneralParam params) {
-		super(params, new DistributedMultiSchedule<Int2D>(),topicPrefix,params.getConnectionType());
+	public DGameOfLife(GeneralParam params, String prefix) {
+		super(params, new DistributedMultiSchedule<Int2D>(), prefix, params.getConnectionType());
 		this.MODE=params.getMode();
 		gridWidth=params.getWidth();
 		gridHeight=params.getHeight();
@@ -69,10 +69,11 @@ public class DGameOfLife extends DistributedState<Int2D> {
 	public DGameOfLife(GeneralParam params,List<EntryParam<String, Object>> simParams, String prefix)
 	{
 		super(params,new DistributedMultiSchedule<Int2D>(), prefix,params.getConnectionType());
+		this.topicPrefix = prefix; 
 		this.MODE=params.getMode();
 		gridWidth=params.getWidth();
 		gridHeight=params.getHeight();
-		topicPrefix = prefix; 
+		
 		for (EntryParam<String, Object> entryParam : simParams) {
 
 			try {
