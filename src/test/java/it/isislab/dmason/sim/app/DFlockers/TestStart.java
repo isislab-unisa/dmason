@@ -42,7 +42,7 @@ import sim.display.Console;
 public class TestStart {
 
 	private static boolean graphicsOn=false; //with or without graphics?
-	private static int numSteps = 300; //only graphicsOn=false
+	private static int numSteps = 3000; //only graphicsOn=false
 	private static int rows = 2; //number of rows
 	private static int columns = 1; //number of columns
 	private static int AOI=10; //max distance
