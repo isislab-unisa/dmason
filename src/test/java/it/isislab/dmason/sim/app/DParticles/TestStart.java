@@ -88,12 +88,12 @@ public class TestStart {
 				ArrayList<EntryParam<String, Object>> pippo=new ArrayList<EntryParam<String, Object>>();
 				if(graphicsOn || (i==0 && j==0))
 				{
-					DParticlesWithUI sim =new DParticlesWithUI(genParam,pippo,"formica");
+					DParticlesWithUI sim =new DParticlesWithUI(genParam,pippo,"flock");
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
-					DParticles sim = new DParticles(genParam,pippo,"formica"); 
+					DParticles sim = new DParticles(genParam,pippo,"flock"); 
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}
