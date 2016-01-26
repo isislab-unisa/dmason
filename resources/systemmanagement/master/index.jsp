@@ -38,6 +38,11 @@
 <link rel="import" href="bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">"
 
 
 <link rel="import" href="bower_components/iron-icons/iron-icons.html">
@@ -95,51 +100,44 @@
                 <paper-toast id="miss-worker-selection">You should select some workers before to assign them a partitioning</paper-toast>
                 <paper-dialog id="animated-paper-dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
                     <h2>Simulation Settings</h2>
+                    <paper-dialog-scrollable>
+                        <div class="horizontal-section">
+                            <form is="iron-form" id="formGet" method="get" action="/">
+                                <input type="file" id="simulation-jar-chooser" name="sim-exe" accept="" onchange="startProgress()"><br>
+                                <paper-progress></paper-progress>
+                                <br>
+                                <table>
+                                    <tr>
+                                        <td colspan="3" style="text-align:center; text-transform: uppercase;"><span>Partitioning</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" style="text-align:center">
+                                            <paper-radio-group>
+                                                <paper-radio-button name="uniform" checked>Uniform</paper-radio-button>
+                                                <paper-radio-button name="non-uniform">Non-Uniform</paper-radio-button>
+                                            </paper-radio-group>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><paper-input class="submit_work_form" label="Rows" allowed-pattern="[0-9]"></paper-input></td>
+                                        <td><paper-input class="submit_work_form" label="Columns" allowed-pattern="[0-9]"></paper-input></td>
+                                        <td><paper-input class="submit_work_form" label="Area of interest" allowed-pattern="[0-9]"></paper-input></td>
+                                    </tr>
+                                    <tr>
+                                        <td><paper-input class="submit_work_form" label="Width" allowed-pattern="[0-9]"></paper-input></td>
+                                        <td><paper-input class="submit_work_form" label="Heigth" allowed-pattern="[0-9]"></paper-input></td>
+                                        <td><paper-input class="submit_work_form" label="Number of Agents" allowed-pattern="[0-9]"></paper-input></td>
+                                    </tr>
+                                </table>
+                                <br><br>
 
-                    <div class="horizontal-section">
-                        <form is="iron-form" id="formGet" method="get" action="/">
-                            <input type="file" id="simulation-jar-chooser"name="pic" accept="" onchange="startProgress()"><br>
-                            <paper-progress></paper-progress>
-                            <br>
-                            <span>Partitioning</span>
-                            <hr>
-                            <paper-input name="name" label="Name" required></paper-input>
-                            <paper-input name="animal" label="Favourite animal" required></paper-input>
-                            <br>
-
-                            <input type="checkbox" name="food" value="donuts" checked> I like donuts<br>
-                            <input type="checkbox" name="food" value="pizza" required> I like pizza<br>
-                            <paper-checkbox name="food" value="cheese" required>I like cheese</paper-checkbox><br>
-
-                            <paper-dropdown-menu label="Cars" name="cars" required>
-                                <paper-menu class="dropdown-content">
-                                    <paper-item>Volvo</paper-item>
-                                    <paper-item>Saab</paper-item>
-                                    <paper-item>Fiat</paper-item>
-                                    <paper-item>Audi</paper-item>
-                                </paper-menu>
-                            </paper-dropdown-menu>
-
-                            <p>
-                            Sample custom element, not required: <br>
-                            <simple-element name="custom-one"></simple-element>
-                            </p>
-
-                            <p>
-                            <?php phpinfo();>
-                            Sample custom element, required: (look, styling!)<br>
-                            <simple-element required name="custom-two"></simple-element><br>
-                            </p>
-
-                            <br><br>
-
-                            <paper-button raised
-                            onclick="submitHandler(event)">Submit</paper-button>
-                            <paper-button raised
-                            onclick="resetHandler(event)">Reset</paper-button>
-                        </form>
-                    </div>
-
+                                <paper-button raised
+                                onclick="submitHandler(event)">Submit</paper-button>
+                                <paper-button raised
+                                onclick="resetHandler(event)">Reset</paper-button>
+                            </form>
+                        </div>
+                    </paper-dialog-scrollable>
                 </paper-dialog>
             </div>
 
