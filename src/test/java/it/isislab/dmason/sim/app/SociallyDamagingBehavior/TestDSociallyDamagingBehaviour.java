@@ -14,7 +14,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package it.isislab.dmason.sim.app.DAntsForageThin;
+package it.isislab.dmason.sim.app.SociallyDamagingBehavior;
+import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 /*
  * THIS CLASS HAS BEEN USED FOR TESTING PURPOSES IN THE BEGINNINGS,
@@ -38,21 +39,22 @@ import sim.display.Console;
  * @author Carmine Spagnuolo
  *
  */
-public class TestStart {
+public class TestDSociallyDamagingBehaviour {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 3000; //only graphicsOn=false
-	private static int rows = 2; //number of rows
+	private static int rows = 1; //number of rows
 	private static int columns = 2; //number of columns
-	private static int AOI=50; //max distance
-	private static int NUM_AGENTS=1000; //number of agents
-	private static int WIDTH=400; //field width
-	private static int HEIGHT=400; //field height
+	private static int AOI=1; //max distance
+	private static int NUM_AGENTS=50; //number of agents
+	private static int WIDTH=100; //field width
+	private static int HEIGHT=100; //field height
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
+	private static String topicPrefix="human"; //unique string to identify topics for this simulation
 	
-	//don't modify this...
-	private static int MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;  
+	
+	private static int MODE =DistributedField2D.UNIFORM_PARTITIONING_MODE;
 	
 	public static void main(String[] args) 
 	{		
@@ -61,14 +63,15 @@ public class TestStart {
 			private DistributedState ds;
 			public worker(DistributedState ds) {
 				this.ds=ds;
-				ds.start();
+				
 			}
 			@Override
 			public void run() {
+				ds.start();
 				int i=0;
 				while(i!=numSteps)
 				{
-					System.out.println(i);
+					//System.out.println(i);
 					ds.schedule.step(ds);
 					i++;
 				}
@@ -84,14 +87,15 @@ public class TestStart {
 				genParam.setJ(j);
 				genParam.setIp(ip);
 				genParam.setPort(port);
-				if(graphicsOn)
+				ArrayList<EntryParam<String, Object>> simParams=new ArrayList<EntryParam<String, Object>>();
+				if(/*graphicsOn*/i==0 && j==0)
 				{
-					it.isislab.dmason.sim.app.DAntsForageThin.DAntsForageWithUI sim =new it.isislab.dmason.sim.app.DAntsForageThin.DAntsForageWithUI(genParam);
+					DSociallyDamagingBehaviorWithUI sim =new DSociallyDamagingBehaviorWithUI(genParam,simParams,topicPrefix);
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
-					it.isislab.dmason.sim.app.DAntsForageThin.DAntsForage sim = new it.isislab.dmason.sim.app.DAntsForageThin.DAntsForage(genParam); 
+					DSociallyDamagingBehavior sim = new DSociallyDamagingBehavior(genParam,simParams,topicPrefix); 
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}

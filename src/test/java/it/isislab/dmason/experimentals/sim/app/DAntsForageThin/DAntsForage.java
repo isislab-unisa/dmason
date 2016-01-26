@@ -15,7 +15,7 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.sim.app.DAntsForageThin;
+package it.isislab.dmason.experimentals.sim.app.DAntsForageThin;
 
 import it.isislab.dmason.annotation.ThinAnnotation;
 import it.isislab.dmason.exception.DMasonException;
