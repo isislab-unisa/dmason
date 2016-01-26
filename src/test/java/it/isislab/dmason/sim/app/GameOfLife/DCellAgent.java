@@ -1,4 +1,4 @@
-package it.isislab.dmason.experimentals.sim.app.GameOfLife;
+package it.isislab.dmason.sim.app.GameOfLife;
 
 import it.isislab.dmason.sim.engine.DistributedState;
 import sim.engine.SimState;
