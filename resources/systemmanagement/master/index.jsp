@@ -55,7 +55,7 @@
 
 <link rel="import" href="bower_components/neon-animation/neon-animations.html">
 </head>
-<body unresolved>
+<body unresolved onload="load_tiles_monitoring()">
 
 	<paper-drawer-panel force-narrow >
 		<paper-scroll-header-panel drawer id="side-header-panel" fixed fill>
@@ -66,13 +66,11 @@
 			<div class="content content-side-bar">
                 <hr>
 				<app-sidebar>
-					<paper-menu selected="0">
-						<paper-item ><iron-icon icon="icons:flip-to-front"></iron-icon><span class="span-icon">Monitoring</span></paper-item>
-						<paper-item ><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></paper-item>
-						<paper-item ><iron-icon icon="create"></iron-icon><span class="span-icon">Examples</span></paper-item>
-						<paper-item ><iron-icon icon="history"></iron-icon><span class="span-icon">History</span></paper-item>
-                        <paper-item ><iron-icon icon="settings"></iron-icon><span class="span-icon">Settings</span></paper-item>
-                    </paper-menu>
+                        <a style="text-decoration:none;" href="index.jsp"><paper-item class="selected"> <iron-icon icon="icons:flip-to-front"></iron-icon><span class="span-icon">Monitoring</span></paper-item></a>
+                        <a style="text-decoration:none;" href="simulations.jsp"><paper-item ><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></paper-item></a>
+                        <a style="text-decoration:none;" href="examples.jsp"><paper-item onclick="open_dialog('examples')"><iron-icon icon="create"></iron-icon><span class="span-icon">Examples</span></paper-item></a>
+                        <a style="text-decoration:none;" href="history.jsp"><paper-item onclick="open_dialog('history')"><iron-icon icon="history"></iron-icon><span class="span-icon">History</span></paper-item></a>
+                        <a style="text-decoration:none;" href="settings.jsp"><paper-item onclick="open_dialog('settings')"><iron-icon icon="settings"></iron-icon><span class="span-icon">Settings</span></paper-item></a>
 				</app-sidebar>
 			</div>
 		</paper-scroll-header-panel>
@@ -81,24 +79,24 @@
 			<paper-toolbar flex id="mainToolBar">
 				<paper-icon-button icon="menu" paper-drawer-toggle ></paper-icon-button>
                 <span>DMASON Master</span>
-				<!--img src="images/icoRed.png"/-->
 		    </paper-toolbar>
 
              <div class="content content-main">
-                <div class="grid" id="workers">
+                <div class="grid-monitoring" id="workers">
 
                     <script>
                         var grid=document.getElementById("workers");
-                        var tiles="<div class=\"grid-sizer\"></div>";
+                        var tiles="<div class=\"grid-sizer-monitoring\"></div>";
                         for (i = 0; i < 24; i++) {
-                             tiles+="<div class=\"grid-item\" >1</div>";
+                             tiles+="<div class=\"grid-item-monitoring\" >0</div>";
+                             
                         }
                         grid.innerHTML=tiles;
                     </script>
                 </div>
                 <paper-fab id="add-simulation-to-worker-buttom" icon="add" onclick="open_dialog_setting_new_simulation()"></paper-fab>
                 <paper-toast id="miss-worker-selection">You should select some workers before to assign them a partitioning</paper-toast>
-                <paper-dialog id="animated-paper-dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+                <paper-dialog id="add-simulation-paper-dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
                     <h2>Simulation Settings</h2>
                     <paper-dialog-scrollable>
                         <div class="horizontal-section">
@@ -113,7 +111,7 @@
                                     <tr>
                                         <td colspan="3" style="text-align:center">
                                             <paper-radio-group>
-                                                <paper-radio-button name="uniform" checked>Uniform</paper-radio-button>
+                                                <paper-radio-button name="uniform" >Uniform</paper-radio-button>
                                                 <paper-radio-button name="non-uniform">Non-Uniform</paper-radio-button>
                                             </paper-radio-group>
                                         </td>
@@ -138,8 +136,6 @@
                             </form>
                         </div>
                     </paper-dialog-scrollable>
-                </paper-dialog>
-            </div>
 
 		</paper-scroll-header-panel>
 

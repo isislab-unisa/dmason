@@ -1,15 +1,24 @@
-$(document).ready(function(){
-    $('.grid').masonry({
-                itemSelector: '.grid-item',
-                columnWidth: '.grid-sizer',
-                percentPosition: true
-                }
-            );
+
+function load_tiles_monitoring(){
+    $('.grid-monitoring').masonry({
+            itemSelector: '.grid-item-monitoring',
+            columnWidth: '.grid-sizer-monitoring',
+            percentPosition: true
         }
     );
+}
+
+function load_tiles_simulations(){
+    $('.grid-simulations').masonry({
+            itemSelector: '.grid-item-simulations',
+            columnWidth: '.grid-sizer-simulations',
+            percentPosition: true
+        }
+    );
+}
 
 $(function(){
-    $('.grid-item').click(function(){
+    $('.grid-item-monitoring').click(function(){
         if($(this).hasClass("grid-item-selected"))
             $(this).removeClass("grid-item-selected");
         else
@@ -33,13 +42,14 @@ function open_dialog_setting_new_simulation(){
         return;
     }
 
-    setting_new_simulation();
+    open_dialog("add-simulation-paper-dialog");
 
 }
-function setting_new_simulation(){
+
+function open_dialog(id_paper_dialog){
 
 
-        var dialog = document.getElementById("animated-paper-dialog");
+        var dialog = document.getElementById(id_paper_dialog);
         if (dialog) {
             dialog.open();
         }
@@ -81,6 +91,7 @@ function resetHandler(event) {
     Polymer.dom(event).localTarget.parentElement.reset();
 }
 
+/*
 $(document).load(setTimeout(function(){
     setting_new_simulation();
-}, 2000));
+}, 2000)); */
