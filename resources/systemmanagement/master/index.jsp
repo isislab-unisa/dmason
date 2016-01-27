@@ -49,7 +49,6 @@
 <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="bower_components/iron-image/iron-image.html">
 <link rel="import" href="bower_components/iron-icons/image-icons.html">
-<link rel="import" href="bower_components/iron-form/image-form.html">
 
 
 
@@ -101,10 +100,19 @@
                     <paper-dialog-scrollable>
                         <div class="horizontal-section">
                             <form is="iron-form" id="formGet" method="get" action="/">
-                                <input type="file" id="simulation-jar-chooser" name="sim-exe" accept="" onchange="startProgress()"><br>
-                                <paper-progress></paper-progress>
-                                <br>
                                 <table>
+                                    <tr>
+                                        <td>
+                                            <span>Select an external simulation</span><br>
+                                            <input type="file" id="simulation-jar-chooser" name="sim-exe" accept="" onchange="startProgress()">
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <span>Select an example simulation</span><br>
+                                            <paper-button raised>Choose</paper-button>
+                                        </td>
+                                    </tr>
+                                    <tr><td colspan="3"><paper-progress></paper-progress></td></tr>
                                     <tr>
                                         <td colspan="3" style="text-align:center; text-transform: uppercase;"><span>Partitioning</span></td>
                                     </tr>
@@ -126,14 +134,15 @@
                                         <td><paper-input class="submit_work_form" label="Heigth" allowed-pattern="[0-9]"></paper-input></td>
                                         <td><paper-input class="submit_work_form" label="Number of Agents" allowed-pattern="[0-9]"></paper-input></td>
                                     </tr>
-                                </table>
-                                <br><br>
 
-                                <paper-button raised
-                                onclick="submitHandler(event)">Submit</paper-button>
-                                <paper-button raised
+                                <tr><td></td>
+                                <td colspan='2' style="text-align:right; padding-top:50px;"><paper-button raised
                                 onclick="resetHandler(event)">Reset</paper-button>
+                                <paper-button raised
+                                onclick="submitHandler(event)">Submit</paper-button></td></tr>
+                                </table>
                             </form>
+                            <paper-dialog></paper-dialog>
                         </div>
                     </paper-dialog-scrollable>
 

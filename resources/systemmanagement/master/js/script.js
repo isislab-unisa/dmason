@@ -17,6 +17,15 @@ function load_tiles_simulations(){
     );
 }
 
+function load_tiles_settings(){
+    $('.grid-settings').masonry({
+            itemSelector: '.grid-item-settings',
+            columnWidth: '.grid-sizer-settings',
+            percentPosition: true
+        }
+    );
+}
+
 $(function(){
     $('.grid-item-monitoring').click(function(){
         if($(this).hasClass("grid-item-selected"))
