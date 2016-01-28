@@ -446,7 +446,7 @@ public class Worker extends Observable
 			return cl.getInstance(name, args_gen, data.getSimParam(), data.getTopicPrefix());
 		}
 		else
-			return cl.getInstance(name, args_gen);
+			return cl.getInstance(name, args_gen,"");
 
 
 
