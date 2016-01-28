@@ -24,6 +24,7 @@
     "neon-elements": "PolymerElements/neon-elements#~1.0.0",
     "google-map": "GoogleWebComponents/google-map#~1.1.8",
     "elements": "*",
-    "masonry": "~4.0.0"
+    "masonry": "~4.0.0",
+    "neon-animation": "PolymerElements/neon-animation#~1.1.0"
   }
 }

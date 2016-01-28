@@ -58,14 +58,19 @@
     position:relative;
 }
 
-/* center text */
+/* center text
 .grid-item-monitoring{
     text-align: center;
     vertical-align: middle;
     line-height: 200px;
-}
+}*/
+
 .span-icon{
     margin-left:10px;
+}
+
+input#simulation-jar-chooser{
+    display: none;
 }
 
 .grid-item-monitoring:hover{
@@ -84,4 +89,33 @@
 
 .grid-item-simulations:hover{
     border-color: white;
+}
+
+.grid-item-simulations{
+    position: absolute;
+}
+
+.fullsize{
+    width: 100%;
+    height: 100%;
+    top:0;
+    left: 0;
+    background-color: grey;
+    opacity: 0.5;
+    z-index: 3;
+    display: none;
+    position: fixed;
+}
+
+.inner-fullsize{
+    width: 90%;
+    height: 80%;
+    top:0;
+    left: 0;
+    margin:5%;
+
+    background-color: yellow;
+    z-index: 10;
+    position: fixed;
+    display: none;
 }
