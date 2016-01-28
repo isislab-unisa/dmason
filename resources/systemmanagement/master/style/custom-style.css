@@ -3,14 +3,14 @@
 
 
 
-.grid-monitoring, .grid-simulations {
+.grid-monitoring, .grid-simulations, .grid-settings {
     background: transparent;
     max-width: 100%;
 }
 
 
 /* clearfix */
-.grid-monitoring:after, .grid-simulations:after {
+.grid-monitoring:after, .grid-simulations:after, .grid-settings:after {
     content: '';
     display: block;
     clear: both;
@@ -21,9 +21,29 @@
 .grid-sizer-monitoring,
 .grid-item-monitoring,
 .grid-sizer-simulations,
-.grid-item-simulations{
+.grid-item-simulations
+{
     width: 200px;
     heigth:200px;
+}
+
+.grid-sizer-settings,
+.grid-item-settings
+{
+    width: 300px;
+    heigth:300px;
+}
+
+.grid-item-settings{
+    width:300px;
+    height:300px;
+    float: left;
+    background-color: #3f4242;
+    border: 2px solid #0c3308;
+    border-color: hsla(0, 0%, 0%, 0.5);
+    border-radius: 5px;
+    font-size: large;
+    position:relative;
 }
 
 .grid-item-monitoring, .grid-item-simulations {
