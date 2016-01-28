@@ -43,7 +43,7 @@
         <link rel="import" href="bower_components/paper-input/paper-input.html">
         <link rel="import" href="bower_components/paper-progress/paper-progress.html">
         <link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">"
-
+        <link rel="import" href="bower_components/paper-card/paper-card.html">
 
         <link rel="import" href="bower_components/iron-icons/iron-icons.html">
         <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
@@ -51,8 +51,10 @@
         <link rel="import" href="bower_components/iron-icons/image-icons.html">
 
 
+
+        <link rel="import" href="bower_components/neon-animation/neon-animations.html">
         </head>
-        <body unresolved onload="load_tiles_simulations()">
+        <body unresolved onload="load_tiles_settings()">
 
         <paper-drawer-panel force-narrow >
         <paper-scroll-header-panel drawer id="side-header-panel" fixed fill>
@@ -65,9 +67,9 @@
         <app-sidebar>
 
         <a href="index.jsp" style="text-decoration:none;"> <paper-item ><iron-icon icon="icons:flip-to-front"></iron-icon><span class="span-icon">Monitoring</span></paper-item></a>
-        <a href="simulations.jsp" style="text-decoration:none;"><paper-item class="selected"><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></paper-item></a>
-        <a href="history.jsp" style="text-decoration:none;"><paper-item onclick="open_dialog('history')"><iron-icon icon="history"></iron-icon><span class="span-icon">History</span></paper-item></a>
-        <a href="settings.jsp" style="text-decoration:none;"><paper-item onclick="open_dialog('settings')"><iron-icon icon="settings"></iron-icon><span class="span-icon">Settings</span></paper-item></a>
+        <a href="simulations.jsp" style="text-decoration:none;"><paper-item ><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></paper-item></a>
+        <a href="history.jsp" style="text-decoration:none;"><paper-item ><iron-icon icon="history"></iron-icon><span class="span-icon">History</span></paper-item></a>
+        <a href="settings.jsp" style="text-decoration:none;"><paper-item class="selected"><iron-icon icon="settings"></iron-icon><span class="span-icon">Settings</span></paper-item></a>
 
         </app-sidebar>
         </div>
@@ -80,25 +82,28 @@
         </paper-toolbar>
 
         <div class="content content-main">
-                <div class="grid-simulations" id="workers">
-                    <script>
-                    var grid=document.getElementById("workers");
-                    var tiles="<div class=\"grid-sizer-simulations\"></div>";
-                    for (i = 0; i < 14; i++) {
-                    tiles+="<div class=\"grid-item-simulations\" onclick=\"show_simulation_info(this)\">"
-                            +'<span>Simulation '+i+'</span>'
-                            +"</div>";
-                    }
-                    grid.innerHTML=tiles;
-                    </script>
-                </div>
+        <div class="grid-settings" id="workers">
+            <script>
+                var grid=document.getElementById("workers");
+                var tiles="<div class=\"grid-sizer-settings\"></div>";
+                for (i = 0; i < 5; i++) {
+                tiles+="<div class=\"grid-item-settings\">"
+                + "<paper-card image=\"images/Apache-activemq-logo.png\">"
+                +"<div class=\"card-content\" >"
+                +"<paper-input label=\"192.168.0.1\" auto-validate pattern=\"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$\" error-message=\"Wrong IP format!\"></paper-input>"
+                +"<paper-input label=\"80\" auto-validate pattern=\"^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$\" error-message=\"Wrong port range!\"></paper-input>"
+                +"</div>"
+                +"<div class=\"card-actions\" style='border-style: none'>"
+                +"<paper-button style=\"float:right\" disabled><iron-icon icon=\"check\"></iron-icon>Set</paper-button>"
+                +"</div>"
+                +"</paper-card>"
 
-                <div class="fullsize" onclick="hide_simulation_info()">
-                    <div class="inner-fullsize">
 
-                    </div>
-                </div>
-                </template>
+        +"</div>";
+                }
+                grid.innerHTML=tiles;
+            </script>
+        </div>
         </div>
         </paper-scroll-header-panel>
 

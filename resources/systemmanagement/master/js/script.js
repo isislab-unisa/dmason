@@ -66,6 +66,9 @@ function open_dialog(id_paper_dialog){
 
 var progress,repeat,maxRepeat,animating;
 
+function opne_file_chooser(){
+    $('#simulation-jar-chooser').click();
+}
 
 function nextProgress() {
     animating = true;
@@ -100,7 +103,19 @@ function resetHandler(event) {
     Polymer.dom(event).localTarget.parentElement.reset();
 }
 
+function show_simulation_info(element){
+      $('.fullsize').show("slow");
+      $('.inner-fullsize').show("slow");
+}
+
+
+function hide_simulation_info(){
+    $('.fullsize').hide("slow");
+    $('.inner-fullsize').hide("fast");
+}
+
 /*
 $(document).load(setTimeout(function(){
     setting_new_simulation();
 }, 2000)); */
+

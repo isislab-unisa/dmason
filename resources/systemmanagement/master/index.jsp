@@ -9,7 +9,7 @@
 <link rel="import" href="style/dark-side/dark-side.html">
 
 <!-- Custom Polymer CSS -->
-<link rel="import" href="style/styles-polymer.html">
+<link rel="import" href="style/polymer/styles-polymer.html">
 
 <!-- Custom CSS -->
 <link href="style/custom-style.css" rel="stylesheet" type="text/css">
@@ -67,7 +67,6 @@
 				<app-sidebar>
                         <a style="text-decoration:none;" href="index.jsp"><paper-item class="selected"> <iron-icon icon="icons:flip-to-front"></iron-icon><span class="span-icon">Monitoring</span></paper-item></a>
                         <a style="text-decoration:none;" href="simulations.jsp"><paper-item ><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></paper-item></a>
-                        <a style="text-decoration:none;" href="examples.jsp"><paper-item onclick="open_dialog('examples')"><iron-icon icon="create"></iron-icon><span class="span-icon">Examples</span></paper-item></a>
                         <a style="text-decoration:none;" href="history.jsp"><paper-item onclick="open_dialog('history')"><iron-icon icon="history"></iron-icon><span class="span-icon">History</span></paper-item></a>
                         <a style="text-decoration:none;" href="settings.jsp"><paper-item onclick="open_dialog('settings')"><iron-icon icon="settings"></iron-icon><span class="span-icon">Settings</span></paper-item></a>
 				</app-sidebar>
@@ -87,8 +86,13 @@
                         var grid=document.getElementById("workers");
                         var tiles="<div class=\"grid-sizer-monitoring\"></div>";
                         for (i = 0; i < 24; i++) {
-                             tiles+="<div class=\"grid-item-monitoring\" >0</div>";
-                             
+                            tiles+="<div class=\"grid-item-monitoring\" onclick=\"open_dialog('worker-paper-dialog')\">"
+                            +"<div class=\"worker-system-info\"><span id=\"worker-id\">Worker ID: "+(i+1)+"</span></div>"
+                            +"<div class=\"worker-system-info\"><span>CPU: %</span></div>"
+                            +"<div class=\"worker-system-info\"><span>Memory: Free  % Usage  %</span></div>"
+                            +"<div class=\"worker-system-info\"><span>IP: </span></div>"
+                            +"<div class=\"worker-system-info\"><span>#Simulations</span></div>"
+                            +"</div>";
                         }
                         grid.innerHTML=tiles;
                     </script>
@@ -104,12 +108,13 @@
                                     <tr>
                                         <td>
                                             <span>Select an external simulation</span><br>
+                                            <paper-button raised class="custom" onclick='opne_file_chooser()'>Choose</paper-button>
                                             <input type="file" id="simulation-jar-chooser" name="sim-exe" accept="" onchange="startProgress()">
                                         </td>
                                         <td></td>
                                         <td>
                                             <span>Select an example simulation</span><br>
-                                            <paper-button raised>Choose</paper-button>
+                                            <paper-button raised class="custom">Choose</paper-button>
                                         </td>
                                     </tr>
                                     <tr><td colspan="3"><paper-progress></paper-progress></td></tr>
