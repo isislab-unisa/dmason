@@ -65,6 +65,7 @@ public class JarClassLoader extends URLClassLoader
 			Method method = urlClass.getDeclaredMethod("addURL", new Class[]{URL.class});
 			method.setAccessible(true);
 			method.invoke(urlClassLoader, new Object[]{url});
+			
 	}
 	 
 	public void invokeClass(String name, Object[] args)
@@ -89,11 +90,11 @@ public class JarClassLoader extends URLClassLoader
 		    }
 		}
 	
-	public Object getInstance(String className, GeneralParam args_sim) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+	public Object getInstance(String className, GeneralParam args_sim,String prefix) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
 	{
 		 Class simClass = loadClass(className);
-		 Constructor constr = simClass.getConstructor(new Class[]{ args_sim.getClass() });
-		 Object obj = constr.newInstance(new Object[]{ args_sim });
+		 Constructor constr = simClass.getConstructor(new Class[]{ args_sim.getClass() ,prefix.getClass()});
+		 Object obj = constr.newInstance(new Object[]{ args_sim ,prefix});
 		
 		 return obj;
 	}
@@ -101,9 +102,6 @@ public class JarClassLoader extends URLClassLoader
 	public Object getInstance(String className, GeneralParam args_gen, List<EntryParam<String, Object>> simParam, String topicPrefix) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException 
 	{
 		Class simClass = loadClass(className);
-
-
-
 		Constructor constr = simClass.getConstructor(new Class[]{ args_gen.getClass(),List.class, String.class});
 		Object obj = constr.newInstance(new Object[]{ args_gen ,simParam, topicPrefix});
 
