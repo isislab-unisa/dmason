@@ -28,7 +28,14 @@ import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 
 import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.util.List;
+
+import org.apache.commons.io.IOUtils;
 
 import sim.engine.SimState;
 import sim.portrayal.SimplePortrayal2D;
@@ -192,6 +199,23 @@ public class DFlockers extends DistributedState<Double2D>
 	public void start()
 	{
 
+		
+	/*	java.net.URL url = this.getClass().getResource("file.txt");
+		try{
+		 InputStream reader =url.openStream();
+		 StringWriter writer=new StringWriter();
+		 IOUtils.copy(reader, writer);
+		 System.out.println(writer.toString());
+		 reader.close();
+		 writer.close();
+		 
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+	     */
+	     
+		
+		
 		super.start();
 
 		// set up the flockers field.  It looks like a discretization
