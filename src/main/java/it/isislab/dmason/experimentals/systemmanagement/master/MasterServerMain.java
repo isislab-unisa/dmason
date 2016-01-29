@@ -2,8 +2,6 @@ package it.isislab.dmason.experimentals.systemmanagement.master;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 public class MasterServerMain {
@@ -48,9 +46,6 @@ public class MasterServerMain {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-
-		//master.excuteSimulationByJar("/home/miccar/Scrivania/flockers.jar");
 
 
 
