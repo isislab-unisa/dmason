@@ -105,7 +105,7 @@ public class Worker extends Observable
 		logger.info("Received simulation parameters: " + data.getParam());
 		logger.info("Number of steps: " + totSteps);
 		
-		state = this.makeState(data.getDef(), data.getParam());
+		state = this.makeState(data.getDef(), data.getParam(),data.getTopicPrefix());
 		
 		// If this worker must publish to the "step" topic
 		if (step)
@@ -342,7 +342,7 @@ public class Worker extends Observable
 	 * @param args_mason Parameters to be passed to MASON engine.
 	 * @return
 	 */
-	public DistributedState makeState(Class simClass, GeneralParam args_gen)
+	public DistributedState makeState(Class simClass, GeneralParam args_gen,String topicPrefix)
 	{
 		Object obj = null;
 		if(simClass != null) //hardcoded simulation
@@ -383,7 +383,7 @@ public class Worker extends Observable
 			{
 
 				URL url = Updater.getSimulationJar(data);
-				obj = getSimulationInstance(args_gen, url,gui);
+				obj = getSimulationInstance(args_gen, url,gui,topicPrefix);
 
 			} catch (Exception e) {
 				throw new RuntimeException("Exception occurred while trying to construct the simulation " + simClass + "\n" + e);			
@@ -415,7 +415,7 @@ public class Worker extends Observable
 		return null;
 	}
 
-	private Object getSimulationInstance(GeneralParam args_gen, URL url, boolean isGui)
+	private Object getSimulationInstance(GeneralParam args_gen, URL url, boolean isGui,String topicPrefix)
 			throws NoSuchMethodException, IllegalAccessException,
 			InvocationTargetException, ClassNotFoundException,
 			InstantiationException 
@@ -446,7 +446,7 @@ public class Worker extends Observable
 			return cl.getInstance(name, args_gen, data.getSimParam(), data.getTopicPrefix());
 		}
 		else
-			return cl.getInstance(name, args_gen,"");
+			return cl.getInstance(name, args_gen,topicPrefix);
 
 
 
