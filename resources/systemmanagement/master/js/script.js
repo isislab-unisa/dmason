@@ -40,9 +40,9 @@ $(function(){
 function open_dialog_setting_new_simulation(){
     if($('.grid-item-selected').length){
         $('.grid-item-selected').each(function(){
-            var numsim = parseInt($(this).text());
+           /* var numsim = parseInt($(this).text());
             numsim++;
-            $(this).text(numsim);
+            $(this).text(numsim);*/
             $(this).removeClass("grid-item-selected");
 
         });

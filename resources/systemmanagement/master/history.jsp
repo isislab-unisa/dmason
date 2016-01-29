@@ -51,12 +51,6 @@
         <link rel="import" href="bower_components/iron-icons/image-icons.html">
 
 
-
-        <link rel="import" href="bower_components/neon-animation/neon-animated-pages.html">
-        <link rel="import" href="bower_components/neon-animation/neon-animations.html">
-        <link rel="import" href="style/polymer/animated-grid.html">
-        <link rel="import" href="style/polymer/fullsize-page-with-card.html">
-
         </head>
         <body unresolved onload="load_tiles_simulations()">
 
@@ -71,8 +65,8 @@
         <app-sidebar>
 
         <a href="index.jsp" style="text-decoration:none;"> <paper-item ><iron-icon icon="icons:flip-to-front"></iron-icon><span class="span-icon">Monitoring</span></paper-item></a>
-        <a href="simulations.jsp" style="text-decoration:none;"><paper-item class="selected"><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></paper-item></a>
-        <a href="history.jsp" style="text-decoration:none;"><paper-item ><iron-icon icon="history"></iron-icon><span class="span-icon">History</span></paper-item></a>
+        <a href="simulations.jsp" style="text-decoration:none;"><paper-item ><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></paper-item></a>
+        <a href="history.jsp" style="text-decoration:none;"><paper-item class="selected"><iron-icon icon="history"></iron-icon><span class="span-icon">History</span></paper-item></a>
         <a href="settings.jsp" style="text-decoration:none;"><paper-item ><iron-icon icon="settings"></iron-icon><span class="span-icon">Settings</span></paper-item></a>
 
         </app-sidebar>
@@ -86,50 +80,29 @@
         </paper-toolbar>
 
         <div class="content content-main">
+                <div class="grid-simulations" id="workers">
+                    <script>/*
+                        var grid=document.getElementById("workers");
+                        var tiles="<div class=\"grid-sizer-simulations\"></div>";
+                        for (i = 0; i < 14; i++) {
+                        tiles+="<div class=\"grid-item-simulations\" onclick=\"show_simulation_info(this)\">"
+                                +'<span>Simulation '+i+'</span>'
+                                +"</div>";
+                        }
+                        grid.innerHTML=tiles;*/
+                    </script>
+                </div>
 
+                <div class="fullsize" onclick="hide_simulation_info()">
+                    <div class="inner-fullsize">
 
-            <template is="dom-bind" id="simulations">
-                <neon-animated-pages selected="0" style="position:relative">
-                        <div class="grid-simulations" id="workers">
-                            <script>
-                                var grid=document.getElementById("workers");
-                                var tiles="<div class=\"grid-sizer-simulations\"></div>";
-                                for (i = 0; i < 20; i++) {
-                                    tiles+="<div class=\"grid-item-simulations\" onclick=\"show_simulation_info(this)\">"
-                                    +'<span>Simulation '+i+'</span>'
-                                    +"</div>";
-                                }
-                                grid.innerHTML=tiles;
-                            </script>
-                        </div>
-                </neon-animated-pages>
-            </template>
-
-<script>
-
-        var scope = document.querySelector('template[is="dom-bind"]');
-        scope._onTileClick = function(event) {
-        //this.$['fullsize-card'].color = event.detail.data.color;
-        this.$.pages.selected = 1;
-        };
-        scope._onFullsizeClick = function(event) {
-        this.$.pages.selected = 0;
-        };
-        </script>
-
+                    </div>
+                </div>
+                </template>
         </div>
         </paper-scroll-header-panel>
 
         </paper-drawer-panel>
-        <script>
-        var scope = document.querySelector('template[is="dom-bind"]');
-        scope._onTileClick = function(event) {
-        this.$['fullsize-card'].color = event.detail.data.color;
-        this.$.pages.selected = 1;
-        };
-        scope._onFullsizeClick = function(event) {
-        this.$.pages.selected = 0;
-        };
-        </script>
+
         </body>
         </html>
