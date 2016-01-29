@@ -312,7 +312,7 @@ public class Reducer extends Thread
 			//name += "WithUI";
 		}
 		
-		return cl.getInstance(name, args_gen,"topicprefix");
+		return cl.getInstance(name, args_gen,topicPrefix);
 	}
 
 
