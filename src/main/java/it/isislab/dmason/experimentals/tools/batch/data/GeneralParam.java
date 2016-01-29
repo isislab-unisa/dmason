@@ -38,7 +38,27 @@ public class GeneralParam implements Serializable
 	private boolean isBatch;
 	private int connectionType;
 	
-private int P;
+
+	private int P;
+
+
+
+
+	
+	public GeneralParam(int width, int height, int aoi,
+			int P, int numAgents, int mode, long maxStep , int connectionType) {
+		super();
+		this.Width = width;
+		this.Height = height;
+		this.Aoi = aoi;
+		this.P=P;
+		this.NumAgents = numAgents;
+		this.Mode = mode;
+		this.isBatch = false;
+		this.connectionType=connectionType;
+		this.MaxStep=maxStep;
+	}
+	
 	
 	public GeneralParam(int width, int height, int aoi,
 			int P, int numAgents, int mode, int connectionType) {
@@ -52,7 +72,7 @@ private int P;
 		this.isBatch = false;
 		this.connectionType=connectionType;
 	}
-	
+
 	public int getP() {
 		return P;
 	}
@@ -75,7 +95,7 @@ private int P;
 		this.isBatch = false;
 		this.connectionType=connectionType;
 	}
-	
+
 	public GeneralParam(int width, int height, int aoi,
 			int rows, int columns, int numAgents, int mode,long MaxStep, int connectionType) {
 		super();
@@ -91,7 +111,7 @@ private int P;
 		this.isBatch = true;
 		this.connectionType=connectionType;
 	}
-	
+
 	public GeneralParam(int width, int height, int aoi,
 			int rows, int columns, int numAgents, int mode, 
 			HashMap<String, Object> model_params,long MaxStep ,int connectionType) {
@@ -221,7 +241,7 @@ private int P;
 	{
 		return connectionType;
 	}
-	
+
 	public long getMaxStep() {
 		return MaxStep;
 	}
@@ -239,9 +259,6 @@ private int P;
 				+ ", i=" + i + ", j=" + j + ", isBatch=" + isBatch + "]";
 	}
 
-	
-	
-	
-	
+
 
 }
