@@ -1,3 +1,19 @@
+/**
+ * Copyright 2012 Universita' degli Studi di Salerno
+
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
@@ -8,35 +24,74 @@ import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiv
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
-import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.apache.commons.net.ftp.FTPClient;
 
 
+/**
+ * 
+ * @author Michele Carillo
+ * @author Carmine Spagnuolo
+ * @author Flavio Serrapica
+ *
+ */
 public class Worker {
 
 	private String IP="";
 	private String PORT="";
+	private String TOPICPREFIX="";
+
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 
 	public Worker() {}
 
-
-
-	public Worker(String ipMaster,String portMaster) {
+    /**
+     * 
+     * @param ipMaster
+     * @param portMaster
+     * @param topicPrefix
+     */
+	public Worker(String ipMaster,String portMaster,String topicPrefix) {
 		this.IP=ipMaster;
-		this.PORT=portMaster;		
+		this.PORT=portMaster;
+		this.TOPICPREFIX=topicPrefix;
 		this.conn=new ConnectionNFieldsWithActiveMQAPI();
 
 	}
+	
+	/**
+	 * 
+	 * @param path_jar_file
+	 * @param params
+	 * @param prefix
+	 * @return
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
+	
+	
+	
+	
+	protected void downloadJar(Address address){
+		
+				
+	}
+	
+	
 	protected DistributedState makeSimulation(String path_jar_file, GeneralParam params,String prefix) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
 	{
 
@@ -134,6 +189,8 @@ public class Worker {
 	public void setIP(String iP) {IP = iP;}
 	public String getPORT() {return PORT;}
 	public void setPORT(String port) {PORT = port;}
+	public String getTopicPrefix() {return TOPICPREFIX;}
+	public void setTopicPrefix(String topicPrefix) {TOPICPREFIX = topicPrefix;}
 
 
 
