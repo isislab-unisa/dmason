@@ -26,7 +26,6 @@ import it.isislab.dmason.util.connection.ConnectionType;
 
 import java.util.ArrayList;
 
-import org.apache.commons.logging.impl.Log4jFactory;
 
 import sim.display.Console;
 
