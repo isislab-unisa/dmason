@@ -21,7 +21,7 @@ public class WorkerMain {
 		//worker.createConnection();
 		GeneralParam p=new GeneralParam(400, 400, 10, 2, 2, 2222, DistributedField2D.UNIFORM_PARTITIONING_MODE, 2, ConnectionType.pureActiveMQ);
 		try {
-			DistributedState d=worker.makeSimulation("/home/miccar/Scrivania/flocksim.jar",p,"");
+			DistributedState d=worker.makeSimulation("/home/miccar/Scrivania/flocksim2.jar",p,"");
 			d.start();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

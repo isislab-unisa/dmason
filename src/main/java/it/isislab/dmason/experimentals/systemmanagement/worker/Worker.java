@@ -23,60 +23,64 @@ import java.util.jar.JarFile;
 
 public class Worker {
 
-	private static String IP="localhost";
-	private static String PORT="61616";
-	private Properties prop;
+	private String IP="";
+	private String PORT="";
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 
-	public Worker() {
-		conn=new ConnectionNFieldsWithActiveMQAPI();
-		prop = new Properties();
+	public Worker() {}
+
+
+
+	public Worker(String ipMaster,String portMaster) {
+		this.IP=ipMaster;
+		this.PORT=portMaster;		
+		this.conn=new ConnectionNFieldsWithActiveMQAPI();
 
 	}
 	protected DistributedState makeSimulation(String path_jar_file, GeneralParam params,String prefix) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
 	{
 
-		
+
 		JarFile jar=new JarFile(new File(path_jar_file));
 		Enumeration e=jar.entries();
-		
+
 		File file  = new File(path_jar_file);
 
 		URL url = file.toURL(); 
 		URL[] urls = new URL[]{url};
-        ClassLoader cl = new URLClassLoader(urls);
-         
-        Class distributedState=null;
+		ClassLoader cl = new URLClassLoader(urls);
+
+		Class distributedState=null;
 		while(e.hasMoreElements()){
-			
+
 			JarEntry je=(JarEntry)e.nextElement();
 			String classPath = je.getName();
 			if(!je.getName().contains(".class")) continue;
-			
-		    String[] nameclass = classPath.split("/");
-		    nameclass[0]=((nameclass[nameclass.length-1]).split(".class"))[0];
-		    
-		    byte[] classBytes = new byte[(int) je.getSize()];
-            InputStream input = jar.getInputStream(je);
-            BufferedInputStream readInput=new BufferedInputStream(input);
-           
-            Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
-            
-            if(c.getSuperclass().equals(DistributedState.class))
-            	distributedState=c;
-            
+
+			String[] nameclass = classPath.split("/");
+			nameclass[0]=((nameclass[nameclass.length-1]).split(".class"))[0];
+
+			byte[] classBytes = new byte[(int) je.getSize()];
+			InputStream input = jar.getInputStream(je);
+			BufferedInputStream readInput=new BufferedInputStream(input);
+
+			Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
+
+			if(c.getSuperclass().equals(DistributedState.class))
+				distributedState=c;
+
 		}
 		if(distributedState==null) return null;
 		JarClassLoader cload = new JarClassLoader(new URL("jar:file://"+path_jar_file+"!/"));
 
 		cload.addToClassPath();
 		return (DistributedState) cload.getInstance(distributedState.getName(), params,prefix);
-//		Constructor constr = distributedState.getConstructor(new Class[]{ params.getClass() });
-//		return (DistributedState) constr.newInstance(new Object[]{ params });
-		
+		//		Constructor constr = distributedState.getConstructor(new Class[]{ params.getClass() });
+		//		return (DistributedState) constr.newInstance(new Object[]{ params });
+
 	}
 
-	protected void loadProperties(){
+	/*protected void loadProperties(){
 
 
 
@@ -99,20 +103,19 @@ public class Worker {
 			System.err.println(e.getMessage());
 
 		}}
-	}
+	}*/
 
 
 
 	protected boolean createConnection(){
-
-		Address address=new Address(IP, PORT);
+		Address address=new Address(this.getIP(), this.getPORT());
 		System.out.println("connection to server "+address);
 		return conn.setupConnection(address);
 
 	}
 
 
-	public void subToInitialTopic(String initTopic){
+	protected void subToInitialTopic(String initTopic){
 		try {
 			conn.subscribeToTopic(initTopic);
 			conn.asynchronousReceive("iniz");
@@ -123,5 +126,15 @@ public class Worker {
 			e.printStackTrace();
 		}
 	} 	
+
+
+
+	//getters and setters
+	public String getIP() {return IP;}
+	public void setIP(String iP) {IP = iP;}
+	public String getPORT() {return PORT;}
+	public void setPORT(String port) {PORT = port;}
+
+
 
 }
