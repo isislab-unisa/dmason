@@ -16,6 +16,7 @@
  */
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
+import it.isislab.dmason.experimentals.systemmanagement.master.MyFileSystem;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
 import it.isislab.dmason.sim.engine.DistributedState;
@@ -53,7 +54,9 @@ public class Worker {
 	private String IP_ACTIVEMQ="";
 	private String PORT_ACTIVEMQ="";
 	private String TOPICPREFIX="";
-
+	private static String prova="/home/miccar/Scrivania";
+	private static final String simulationsDirectories=prova+"/worker"+File.separator+"simulations";
+	
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 
 	public Worker() {}
@@ -69,8 +72,28 @@ public class Worker {
 		this.PORT_ACTIVEMQ=portMaster;
 		this.TOPICPREFIX=topicPrefix;
 		this.conn=new ConnectionNFieldsWithActiveMQAPI();
-
+        MyFileSystem.make(simulationsDirectories);
 	}
+	
+  
+	
+	
+	protected void createSimulationDirectoryByID(String simID){
+		String path=simulationsDirectories+File.separator+simID+File.separator+"runs";
+	    MyFileSystem.make(path);
+	}
+
+	protected void deleteSimulationDirectoryByID(String simID){
+		String path=simulationsDirectories+File.separator+simID;
+		File c=new File(path);
+		MyFileSystem.delete(c);
+	}
+	
+	
+	protected void getSytemWorkerInfo(){
+		
+	}
+	
 
 	/**
 	 * 

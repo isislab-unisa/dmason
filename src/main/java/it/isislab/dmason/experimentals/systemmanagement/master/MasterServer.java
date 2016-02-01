@@ -16,6 +16,7 @@ import java.net.Socket;
 import java.util.Properties;
 
 import org.apache.activemq.broker.BrokerService;
+import org.apache.commons.io.IOUtils;
 
 public class MasterServer{
 
@@ -26,34 +27,40 @@ public class MasterServer{
 	private Properties prop = null;
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 	static String prova="/home/miccar/Scrivania";
-	private static final String simulationsDirectories=prova+File.separator   +"master"+File.separator+"simulations"+File.separator+"jobs";
+	private static final String simulationsDirectories=prova+File.separator+"master"+File.separator+"simulations";
 
 
 	public MasterServer(){
 		prop = new Properties();
 		broker = new BrokerService();
 		conn=new ConnectionNFieldsWithActiveMQAPI();
-		this.createMasterDirectory();
-
+		MyFileSystem.make(simulationsDirectories+File.separator+"jobs");
 
 	}
 
-	private boolean createMasterDirectory(){
-		//modify 
-		File c=new File(simulationsDirectories);
-		if(!c.exists())
-			return c.mkdirs();
-		else return false;
+	
+	
+	protected void createSimulationDirectoryByID(String simID){
+		String path=simulationsDirectories+File.separator+simID+File.separator+"runs";
+	    MyFileSystem.make(path);
 	}
 
+	protected void deleteSimulationDirectoryByID(String simID){
+		String path=simulationsDirectories+File.separator+simID;
+		File c=new File(path);
+		MyFileSystem.delete(c);
+	}
+	
+	
 
-	protected boolean createSimulationDirectory(String simName){
-		String path=simulationsDirectories+File.separator+simName.toLowerCase();
+/*	protected boolean createSimulationDirectory(String simName){
+		//create  sim1/runs under simulations 
+		String path=simulationsDirectories+File.separator+simName.toLowerCase()+File.separator+"runs";
 		File c=new File(path);
 		if(!c.exists())
 			return c.mkdirs();
 		else return false;
-	}
+	}*/
 
 	protected void startCopyServer(final String fileToSend){
 
