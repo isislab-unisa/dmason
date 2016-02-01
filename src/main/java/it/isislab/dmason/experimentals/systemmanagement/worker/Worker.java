@@ -23,10 +23,15 @@ import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
@@ -45,28 +50,28 @@ import org.apache.commons.net.ftp.FTPClient;
  */
 public class Worker {
 
-	private String IP="";
-	private String PORT="";
+	private String IP_ACTIVEMQ="";
+	private String PORT_ACTIVEMQ="";
 	private String TOPICPREFIX="";
 
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 
 	public Worker() {}
 
-    /**
-     * 
-     * @param ipMaster
-     * @param portMaster
-     * @param topicPrefix
-     */
+	/**
+	 * 
+	 * @param ipMaster
+	 * @param portMaster
+	 * @param topicPrefix
+	 */
 	public Worker(String ipMaster,String portMaster,String topicPrefix) {
-		this.IP=ipMaster;
-		this.PORT=portMaster;
+		this.IP_ACTIVEMQ=ipMaster;
+		this.PORT_ACTIVEMQ=portMaster;
 		this.TOPICPREFIX=topicPrefix;
 		this.conn=new ConnectionNFieldsWithActiveMQAPI();
 
 	}
-	
+
 	/**
 	 * 
 	 * @param path_jar_file
@@ -82,88 +87,125 @@ public class Worker {
 	 * @throws IllegalArgumentException
 	 * @throws InvocationTargetException
 	 */
-	
-	
-	
-	
-	protected void downloadJar(Address address){
-		
-				
+
+
+
+
+	protected void downloadFile(String server, String port){
+
+		//mi servono ip e port del serversocket
+		System.out.println("setta");
+		String serverSocketIP = "127.0.0.1";//da togliere
+		int serverSocketPort = 1414;//da togliere
+		String localJarFilePath = "/home/miccar/Scrivania/out.jar";//da scegliere 
+
+
+		this.TOPICPREFIX=""+localJarFilePath.hashCode();
+
+
+		byte[] aByte = new byte[1];
+		int bytesRead;
+		Socket clientSocket = null;
+		InputStream is = null;
+
+		try {
+			clientSocket = new Socket( serverSocketIP , serverSocketPort );
+			is = clientSocket.getInputStream();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+		if (is != null) {
+
+			FileOutputStream fos = null;
+			BufferedOutputStream bos = null;
+			try {
+				System.out.println("Creating file...");
+
+				File v=new File(localJarFilePath);
+				if(v.exists()){
+					v.delete();
+					v=new File(localJarFilePath);
+				} 
+				v.setWritable(true);
+				v.setExecutable(true);
+				fos = new FileOutputStream( v );
+				bos = new BufferedOutputStream(fos);
+				bytesRead = is.read(aByte, 0, aByte.length);
+
+				System.out.println("Writing on file...");
+				do {
+					baos.write(aByte);
+					bytesRead = is.read(aByte);
+				} while (bytesRead != -1);
+
+				bos.write(baos.toByteArray());
+				bos.flush();
+				bos.close();
+				System.out.println("End writing...");
+				clientSocket.close();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}	
 	}
-	
-	
-	protected DistributedState makeSimulation(String path_jar_file, GeneralParam params,String prefix) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+
+
+	protected DistributedState makeSimulation(String path_jar_file, GeneralParam params,String prefix)
 	{
 
 
-		JarFile jar=new JarFile(new File(path_jar_file));
-		Enumeration e=jar.entries();
+		try{
+			JarFile jar=new JarFile(new File(path_jar_file));
+			Enumeration e=jar.entries();
+			File file  = new File(path_jar_file);
+			URL url = file.toURL(); 
+			URL[] urls = new URL[]{url};
+			ClassLoader cl = new URLClassLoader(urls);
+			Class distributedState=null;
 
-		File file  = new File(path_jar_file);
+			while(e.hasMoreElements()){
 
-		URL url = file.toURL(); 
-		URL[] urls = new URL[]{url};
-		ClassLoader cl = new URLClassLoader(urls);
+				JarEntry je=(JarEntry)e.nextElement();
+				String classPath = je.getName();
+				if(!je.getName().contains(".class")) continue;
 
-		Class distributedState=null;
-		while(e.hasMoreElements()){
+				String[] nameclass = classPath.split("/");
+				nameclass[0]=((nameclass[nameclass.length-1]).split(".class"))[0];
 
-			JarEntry je=(JarEntry)e.nextElement();
-			String classPath = je.getName();
-			if(!je.getName().contains(".class")) continue;
+				byte[] classBytes = new byte[(int) je.getSize()];
+				InputStream input = jar.getInputStream(je);
+				BufferedInputStream readInput=new BufferedInputStream(input);
 
-			String[] nameclass = classPath.split("/");
-			nameclass[0]=((nameclass[nameclass.length-1]).split(".class"))[0];
+				Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
 
-			byte[] classBytes = new byte[(int) je.getSize()];
-			InputStream input = jar.getInputStream(je);
-			BufferedInputStream readInput=new BufferedInputStream(input);
+				if(c.getSuperclass().equals(DistributedState.class))
+					distributedState=c;
 
-			Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
+			}
+			if(distributedState==null) return null;
+			JarClassLoader cload = new JarClassLoader(new URL("jar:file://"+path_jar_file+"!/"));
 
-			if(c.getSuperclass().equals(DistributedState.class))
-				distributedState=c;
-
+			cload.addToClassPath();
+			return (DistributedState) cload.getInstance(distributedState.getName(), params,prefix);
+		} catch (Exception e){
+			e.printStackTrace();
 		}
-		if(distributedState==null) return null;
-		JarClassLoader cload = new JarClassLoader(new URL("jar:file://"+path_jar_file+"!/"));
+		return null;
 
-		cload.addToClassPath();
-		return (DistributedState) cload.getInstance(distributedState.getName(), params,prefix);
+
 		//		Constructor constr = distributedState.getConstructor(new Class[]{ params.getClass() });
 		//		return (DistributedState) constr.newInstance(new Object[]{ params });
 
 	}
 
-	/*protected void loadProperties(){
-
-
-
-		//default 127.0.0.1:61616 else you have to change config.properties file
-		String filePropPath="resources/systemmanagement/master/conf/config.properties";
-		InputStream input=null;
-
-		//load params from properties file 
-		try {
-			input=new FileInputStream(filePropPath);	
-			prop.load(input);
-			IP=prop.getProperty("ipmaster");
-			PORT=prop.getProperty("portmaster");
-
-		} catch (IOException e2) {
-			System.err.println(e2.getMessage());
-		}finally{try {
-			input.close();
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-
-		}}
-	}*/
 
 
 
 	protected boolean createConnection(){
-		Address address=new Address(this.getIP(), this.getPORT());
+		Address address=new Address(this.getIpActivemq(), this.getPortActivemq());
 		System.out.println("connection to server "+address);
 		return conn.setupConnection(address);
 
@@ -185,10 +227,10 @@ public class Worker {
 
 
 	//getters and setters
-	public String getIP() {return IP;}
-	public void setIP(String iP) {IP = iP;}
-	public String getPORT() {return PORT;}
-	public void setPORT(String port) {PORT = port;}
+	public String getIpActivemq() {return IP_ACTIVEMQ;}
+	public void setIpActivemq(String iP) {IP_ACTIVEMQ = iP;}
+	public String getPortActivemq() {return PORT_ACTIVEMQ;}
+	public void setPortActivemq(String port) {PORT_ACTIVEMQ = port;}
 	public String getTopicPrefix() {return TOPICPREFIX;}
 	public void setTopicPrefix(String topicPrefix) {TOPICPREFIX = topicPrefix;}
 

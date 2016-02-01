@@ -3,31 +3,116 @@ package it.isislab.dmason.experimentals.systemmanagement.master;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Properties;
 
 import org.apache.activemq.broker.BrokerService;
 
 public class MasterServer{
 
-	private  String IP="";
-	private  String PORT="";
-
+	private  String IP_ACTIVEMQ="";
+	private  String PORT_ACTIVEMQ="";
+	private int PORT_COPY_SERVER=1414;
 	private BrokerService broker=null;
 	private Properties prop = null;
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
+	static String prova="/home/miccar/Scrivania";
+	private static final String simulationsDirectories=prova+File.separator   +"master"+File.separator+"simulations"+File.separator+"jobs";
+
 
 	public MasterServer(){
 		prop = new Properties();
 		broker = new BrokerService();
 		conn=new ConnectionNFieldsWithActiveMQAPI();
+		this.createMasterDirectory();
+
+
+	}
+
+	private boolean createMasterDirectory(){
+		//modify 
+		File c=new File(simulationsDirectories);
+		if(!c.exists())
+			return c.mkdirs();
+		else return false;
 	}
 
 
-	protected void sendJar(){
+	protected boolean createSimulationDirectory(String simName){
+		String path=simulationsDirectories+File.separator+simName.toLowerCase();
+		File c=new File(path);
+		if(!c.exists())
+			return c.mkdirs();
+		else return false;
+	}
 
+	protected void startCopyServer(final String fileToSend){
+
+		(new Thread() {
+			
+			@Override
+			public void run() {
+				
+				ServerSocket welcomeSocket = null;
+				Socket connectionSocket = null;
+				BufferedOutputStream outToClient = null;
+				InetAddress address=null;
+				while (true) {
+					try {
+						address=InetAddress.getByName("127.0.0.1");
+						welcomeSocket = new ServerSocket(PORT_COPY_SERVER,1000,address);
+						
+						connectionSocket = welcomeSocket.accept();
+						System.out.println("listening for a connection...");
+						outToClient = new BufferedOutputStream(connectionSocket.getOutputStream());
+					} catch (IOException ex) {
+						ex.printStackTrace();
+					}
+
+					if (outToClient != null) {
+						File myFile = new File(fileToSend);
+						myFile.setReadable(true);
+						byte[] mybytearray = new byte[(int) myFile.length()];
+
+						FileInputStream fis = null;
+
+						try {
+							fis = new FileInputStream(myFile);
+						} catch (FileNotFoundException ex) {
+							ex.printStackTrace();
+						}
+						BufferedInputStream bis = new BufferedInputStream(fis);
+
+						try {
+							bis.read(mybytearray, 0, mybytearray.length);
+							outToClient.write(mybytearray, 0, mybytearray.length);
+							outToClient.flush();
+							outToClient.close();
+							connectionSocket.close();
+
+							System.out.println("File sended");   
+
+						} catch (IOException ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
+
+				
+			}
+		}).start();
+		
+		
+		
 	}
 
 
@@ -36,7 +121,7 @@ public class MasterServer{
 	protected void startActivemq(){
 
 
-		String address="tcp://"+IP+":"+PORT;
+		String address="tcp://"+IP_ACTIVEMQ+":"+PORT_ACTIVEMQ;
 
 		try {
 			broker.addConnector(address);
@@ -49,8 +134,6 @@ public class MasterServer{
 	}
 	protected void loadProperties(){
 
-
-
 		//default 127.0.0.1:61616 else you have to change config.properties file
 		String filePropPath="resources/systemmanagement/master/conf/config.properties";
 		InputStream input=null;
@@ -59,8 +142,8 @@ public class MasterServer{
 		try {
 			input=new FileInputStream(filePropPath);	
 			prop.load(input);
-			this.setIP(prop.getProperty("ipmaster"));
-			this.setPORT(prop.getProperty("portmaster"));
+			this.setIpActivemq(prop.getProperty("ipmaster"));
+			this.setPortActivemq(prop.getProperty("portmaster"));
 
 		} catch (IOException e2) {
 			System.err.println(e2.getMessage());
@@ -75,7 +158,7 @@ public class MasterServer{
 
 	protected boolean createConnection(){
 
-		Address address=new Address(IP, PORT);
+		Address address=new Address(IP_ACTIVEMQ, PORT_ACTIVEMQ);
 		System.out.println("Creating connection to server "+address);
 		return conn.setupConnection(address);
 
@@ -96,58 +179,12 @@ public class MasterServer{
 		}
 	}
 
-	//
-	//	public static void main(String[] args) {
-	//
-	//
-	//		loadProperties();
-	//		startActivemq();
-	//		createConnection();
-	//		createStartTopic("Master");
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//		// 1. Creating the server on port 8080
-	//		Server server = new Server(8080);
-	//		//server.setHandler(handler);	
-	//
-	//
-	//
-	//		// 2. Creating the WebAppContext for the created content
-	//		WebAppContext ctx = new WebAppContext();
-	//		ctx.setResourceBase("resources/systemmanagement/master");
-	//		ctx.setContextPath("/master");
-	//
-	//
-	//		//3. Including the JSTL jars for the webapp.
-	//		ctx.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",".*/[^/]*jstl.*\\.jar$");
-	//
-	//		//4. Enabling the Annotation based configuration
-	//		org.eclipse.jetty.webapp.Configuration.ClassList classlist = org.eclipse.jetty.webapp.Configuration.ClassList.setServerDefault(server);
-	//		classlist.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration", "org.eclipse.jetty.plus.webapp.PlusConfiguration");
-	//		classlist.addBefore("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration");
-	//
-	//		//5. Setting the handler and starting the Server
-	//		server.setHandler(ctx);
-	//		try {
-	//			server.start();
-	//			server.join();
-	//		} catch (Exception e) {
-	//			// TODO Auto-generated catch block
-	//			e.printStackTrace();
-	//		}
-	//
-	//	}
+
 
 
 	//getters and setters
-	public String getIP() {return IP;}
-	public void setIP(String iP) {IP = iP;}
-	public String getPORT() {return PORT;}
-	public void setPORT(String port) {PORT = port;}
+	public String getIpActivemq() {return IP_ACTIVEMQ;}
+	public void setIpActivemq(String iP) {IP_ACTIVEMQ = iP;}
+	public String getPortActivemq() {return PORT_ACTIVEMQ;}
+	public void setPortActivemq(String port) {PORT_ACTIVEMQ = port;}
 }
