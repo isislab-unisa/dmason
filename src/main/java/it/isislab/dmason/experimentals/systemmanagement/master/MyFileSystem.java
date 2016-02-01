@@ -7,9 +7,13 @@ public class MyFileSystem {
 	public static void make(String path){
 		//modify 
 		File c=new File(path);
-		if(!c.exists())	c.mkdirs();
-
-		System.out.println("Directory is created : "+ c.getAbsolutePath());
+		if(!c.exists()){	
+			c.mkdirs();
+			System.out.println("Directory is created : "+ c.getAbsolutePath());
+		 }else {
+			 System.out.println("Directory already exists : "+ c.getAbsolutePath());
+		}
+		
 
 	}
 
