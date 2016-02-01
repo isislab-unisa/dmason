@@ -16,7 +16,6 @@ import java.net.Socket;
 import java.util.Properties;
 
 import org.apache.activemq.broker.BrokerService;
-import org.apache.commons.io.IOUtils;
 
 public class MasterServer{
 
@@ -37,6 +36,10 @@ public class MasterServer{
 		prop = new Properties();
 		broker = new BrokerService();
 		conn=new ConnectionNFieldsWithActiveMQAPI();
+		loadProperties();
+		startActivemq();
+		createConnection();
+		
 		MyFileSystem.make(masterDirectory);// master
 		MyFileSystem.make(masterTemporary);
 		MyFileSystem.make(masterHistory); //master/history

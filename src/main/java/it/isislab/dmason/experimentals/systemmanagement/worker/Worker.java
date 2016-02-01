@@ -180,7 +180,7 @@ public class Worker {
 	}
 
 
-	protected DistributedState makeSimulation(String path_jar_file, GeneralParam params,String prefix)
+	protected DistributedState makeSimulation(String path_jar_file, GeneralParam params, String prefix)
 	{
 
 
