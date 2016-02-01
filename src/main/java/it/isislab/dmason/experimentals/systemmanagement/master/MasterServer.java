@@ -26,15 +26,22 @@ public class MasterServer{
 	private BrokerService broker=null;
 	private Properties prop = null;
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
-	static String prova="/home/miccar/Scrivania";
-	private static final String simulationsDirectories=prova+File.separator+"master"+File.separator+"simulations";
+	static String prova="/home/miccar/Scrivania/";
+	private static final String masterDirectory=prova+"master";
+	private static final String masterTemporary=masterDirectory+File.separator+"temporay";
+	private static final String masterHistory=masterDirectory+File.separator+"history";
+	private static final String simulationsDirectories=masterDirectory+File.separator+"simulations";
 
 
 	public MasterServer(){
 		prop = new Properties();
 		broker = new BrokerService();
 		conn=new ConnectionNFieldsWithActiveMQAPI();
-		MyFileSystem.make(simulationsDirectories+File.separator+"jobs");
+		MyFileSystem.make(masterDirectory);// master
+		MyFileSystem.make(masterTemporary);
+		MyFileSystem.make(masterHistory); //master/history
+		MyFileSystem.make(simulationsDirectories+File.separator+"jobs"); //master/simulations/jobs
+		
 
 	}
 

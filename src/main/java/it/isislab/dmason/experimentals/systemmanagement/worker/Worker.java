@@ -54,9 +54,12 @@ public class Worker {
 	private String IP_ACTIVEMQ="";
 	private String PORT_ACTIVEMQ="";
 	private String TOPICPREFIX="";
-	private static String prova="/home/miccar/Scrivania";
-	private static final String simulationsDirectories=prova+"/worker"+File.separator+"simulations";
-	
+	private String PORT_COPY_SERVER="";
+	private static String prova="/home/miccar/Scrivania/";
+	private static final String workerDirectory=prova+"worker";
+	private static final String workerTemporary=workerDirectory+File.separator+"temporary";
+	private static final String simulationsDirectories=workerDirectory+File.separator+"simulations";
+
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 
 	public Worker() {}
@@ -72,15 +75,16 @@ public class Worker {
 		this.PORT_ACTIVEMQ=portMaster;
 		this.TOPICPREFIX=topicPrefix;
 		this.conn=new ConnectionNFieldsWithActiveMQAPI();
-        MyFileSystem.make(simulationsDirectories);
+		MyFileSystem.make(workerTemporary);
+		MyFileSystem.make(simulationsDirectories);
 	}
-	
-  
-	
-	
+
+
+
+
 	protected void createSimulationDirectoryByID(String simID){
 		String path=simulationsDirectories+File.separator+simID+File.separator+"runs";
-	    MyFileSystem.make(path);
+		MyFileSystem.make(path);
 	}
 
 	protected void deleteSimulationDirectoryByID(String simID){
@@ -88,12 +92,12 @@ public class Worker {
 		File c=new File(path);
 		MyFileSystem.delete(c);
 	}
-	
-	
+
+
 	protected void getSytemWorkerInfo(){
-		
+
 	}
-	
+
 
 	/**
 	 * 
