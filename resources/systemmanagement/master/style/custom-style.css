@@ -3,14 +3,14 @@
 
 
 
-.grid-monitoring, .grid-simulations, .grid-settings {
+.grid-monitoring, .grid-settings {
     background: transparent;
     max-width: 100%;
 }
 
 
 /* clearfix */
-.grid-monitoring:after, .grid-simulations:after, .grid-settings:after {
+.grid-monitoring:after,.grid-settings:after {
     content: '';
     display: block;
     clear: both;
@@ -19,9 +19,7 @@
 /* ---- grid-item ---- */
 
 .grid-sizer-monitoring,
-.grid-item-monitoring,
-.grid-sizer-simulations,
-.grid-item-simulations
+.grid-item-monitoring
 {
     width: 200px;
     heigth:200px;
@@ -46,7 +44,7 @@
     position:relative;
 }
 
-.grid-item-monitoring, .grid-item-simulations {
+.grid-item-monitoring {
     width:200px;
     height:200px;
     float: left;
@@ -85,8 +83,4 @@ input#simulation-jar-chooser{
     width:auto;
     overflow: hidden;
 
-}
-
-.grid-item-simulations:hover{
-    border-color: white;
 }

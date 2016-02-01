@@ -58,7 +58,8 @@
         <link rel="import" href="style/polymer/fullsize-page-with-card.html">
 
         </head>
-        <body unresolved onload="load_tiles_simulations()">
+        <!--body unresolved onload="load_tiles_simulations()"-->
+        <body unresolved>
 
         <paper-drawer-panel force-narrow >
         <paper-scroll-header-panel drawer id="side-header-panel" fixed fill>
@@ -86,30 +87,20 @@
         </paper-toolbar>
 
         <div class="content content-main">
-
-
             <template is="dom-bind" id="simulations">
-                <neon-animated-pages selected="0" style="position:relative">
-                        <div class="grid-simulations" id="workers">
-                            <script>
-                                var grid=document.getElementById("workers");
-                                var tiles="<div class=\"grid-sizer-simulations\"></div>";
-                                for (i = 0; i < 20; i++) {
-                                    tiles+="<div class=\"grid-item-simulations\" onclick=\"show_simulation_info(this)\">"
-                                    +'<span>Simulation '+i+'</span>'
-                                    +"</div>";
-                                }
-                                grid.innerHTML=tiles;
-                            </script>
-                        </div>
+                <neon-animated-pages id="pages" selected="0">
+                        <animated-grid on-tile-click="_onTileClick"></animated-grid>
+                        <fullsize-page-with-card id="fullsize-card" on-click="_onFullsizeClick">
+                        </fullsize-page-with-card>
                 </neon-animated-pages>
             </template>
 
-<script>
+        <script>
 
         var scope = document.querySelector('template[is="dom-bind"]');
+
         scope._onTileClick = function(event) {
-        //this.$['fullsize-card'].color = event.detail.data.color;
+        this.$['fullsize-card'].simID = event.detail.data;
         this.$.pages.selected = 1;
         };
         scope._onFullsizeClick = function(event) {
@@ -121,15 +112,6 @@
         </paper-scroll-header-panel>
 
         </paper-drawer-panel>
-        <script>
-        var scope = document.querySelector('template[is="dom-bind"]');
-        scope._onTileClick = function(event) {
-        this.$['fullsize-card'].color = event.detail.data.color;
-        this.$.pages.selected = 1;
-        };
-        scope._onFullsizeClick = function(event) {
-        this.$.pages.selected = 0;
-        };
-        </script>
+
         </body>
         </html>

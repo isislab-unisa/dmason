@@ -10,32 +10,63 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
 <link rel="import" href="../../bower_components/neon-animation/demo/shared-styles.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/ripple-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/hero-animation.html">
 
 <dom-module id="animated-grid">
     <template>
         <style include="shared-styles"></style>
         <style>
-            :host{
+            :host {
                 display: block;
             }
-            .tile {
-                display: inline-block;
+
+            .grid-item-simulations:hover{
+                border-color: white;
+            }
+
+            .grid-sizer-simulations,
+            .grid-item-simulations
+            {
+                width: 200px;
+                heigth:200px;
+            }
+
+
+            .grid-simulations:after {
+                content: '';
+                display: block;
+                clear: both;
+            }
+
+            .grid-simulations {
+                background: transparent;
+                max-width: 100%;
+            }
+
+            .grid-item-simulations {
+                width:200px;
+                height:200px;
                 float: left;
-                vertical-align: top;
-                width: calc(100% / 6);
-                height: calc(100% / 3);
-            @apply(--paper-font-title);
-            @apply(--layout-vertical);
-            @apply(--layout-center-center);
+                background-color: #3f4242;
+                border: 2px solid #0c3308;
+                border-color: hsla(0, 0%, 0%, 0.5);
+                border-radius: 5px;
+                font-size: large;
+                position:relative;
             }
 
         </style>
 
 
-            <div class="grid-item-simulations">
-                <span>Simulation </span>
-            </div>
-
+        <div class="grid-simulations">
+            <div class="grid-sizer-simulations"></div>
+            <template is="dom-repeat" items="{{listItem}}">
+                <div class="grid-item-simulations" id="sim-{{index}}">
+                   <span>simulation {{index}}</span>
+                </div>
+            </template>
+        </div>
     </template>
 </dom-module>
 
@@ -46,6 +77,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             Polymer.NeonSharedElementAnimatableBehavior
         ],
         properties: {
+            listItem:{
+                type:Array
+            },
             animationConfig: {
                 type: Object,
                 value: function() {
@@ -64,16 +98,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
         },
+        ready: function(){
+/*
+            this.data = [];
+            for(i=0; i< 20; i++)
+                this.push('data', {});*/
+        },
+        attached:
+            function(){
+                $('.grid-simulations').masonry({
+                            itemSelector: '.grid-item-simulations',
+                            columnWidth: '.grid-sizer-simulations',
+                            percentPosition: true
+                        }
+                );
+            }
+        ,
         listeners: {
             click: '_onClick'
         },
 
         _onClick: function(event) {
-            alert('Patriziaaa');
+
             var target = event.target;
-            while (target !== this && !target._templateInstance) {
-                target = target.parentNode;
-            }
+            while(target.classList[0] != "grid-item-simulations")
+                target = target.parentElement;
+            alert(target.className);
             // configure the page animation
             this.sharedElements = {
                 'hero': target,
@@ -84,7 +134,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 y: event.y || event.pageY
             };
             this.fire('tile-click', {
-                data: target._templateInstance.item
+                tile: target,
+                data : target.id
+                //data: target._templateInstance.item
             });
         }
     });

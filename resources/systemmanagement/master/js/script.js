@@ -8,15 +8,6 @@ function load_tiles_monitoring(){
     );
 }
 
-function load_tiles_simulations(){
-    $('.grid-simulations').masonry({
-            itemSelector: '.grid-item-simulations',
-            columnWidth: '.grid-sizer-simulations',
-            percentPosition: true
-        }
-    );
-}
-
 function load_tiles_settings(){
     $('.grid-settings').masonry({
             itemSelector: '.grid-item-settings',
@@ -103,16 +94,10 @@ function resetHandler(event) {
     Polymer.dom(event).localTarget.parentElement.reset();
 }
 
-function show_simulation_info(element){
-      $('.fullsize').show("slow");
-      $('.inner-fullsize').show("slow");
-}
 
-
-function hide_simulation_info(){
-    $('.fullsize').hide("slow");
-    $('.inner-fullsize').hide("fast");
-}
+$(document).ready(function(){
+    $('animated-grid').listItem={"sim-1":{"id":1,"name":"flockers"},"sim2":{"id":2,"name":"Ants"}};
+});
 
 /*
 $(document).load(setTimeout(function(){

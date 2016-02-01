@@ -9,28 +9,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
 <link rel="import" href="../../bower_components/paper-styles/color.html">
 <link rel="import" href="../../bower_components/neon-animation/demo/shared-styles.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/ripple-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/hero-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/transform-animation.html">
 
 <dom-module id="fullsize-page-with-card">
     <template>
         <style include="shared-styles"></style>
         <style>
 
+            :host {
+                display: block;
+                background-color: #00838f;
+                color:black;
+            }
             .fixed {
                 position: fixed;
                 top: 0;
                 left: 0;
-                height: 100vh;
-                width: 100vw;
+                width: 100%;
             }
             .card {
                 position: relative;
-                margin: 200px 100px 0;
-                height: 700px;
+                margin: 5%;
+                width: 90%;
+                height: 80%;
+                background-color: yellow;
             }
         </style>
 
         <div id="fixed" class=fixed"></div>
-        <div id="card" class="card"></div>
+        <div id="card" class="card"><span>{{simID}}</span></div>
 
     </template>
 
@@ -43,6 +53,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             Polymer.NeonSharedElementAnimatableBehavior
         ],
         properties: {
+            simID:{
+                type: String
+            },
             sharedElements: {
                 type: Object,
                 value: function() {
