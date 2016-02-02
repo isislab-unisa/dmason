@@ -65,7 +65,7 @@ public class CopyMultiThreadServer implements Runnable {
 		int port =1414;
 		InetAddress address=InetAddress.getByName("127.0.0.1");
 
-		ServerSocket welcomeSocket = new ServerSocket(port,1000,address);    
+		ServerSocket welcomeSocket = new ServerSocket(port,1,address);    
 
 
 

@@ -1,12 +1,5 @@
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
-import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
-import it.isislab.dmason.sim.engine.DistributedState;
-import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.util.connection.ConnectionType;
-
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 
 
 
@@ -16,7 +9,12 @@ public class WorkerMain {
 
 	public static void main(String[] args) {
 
-		Worker worker=new Worker();
+		System.out.println(args[0]);
+		String ip =args[0];
+		String port=args[1];
+		Worker worker=new Worker(ip, port);
+		worker.subToInitialTopic("MASTER");
+		
 		//worker.createConnection();
 		//GeneralParam p=new GeneralParam(400, 400, 10, 2, 2, 2222, DistributedField2D.UNIFORM_PARTITIONING_MODE, 2, ConnectionType.pureActiveMQ);
 		

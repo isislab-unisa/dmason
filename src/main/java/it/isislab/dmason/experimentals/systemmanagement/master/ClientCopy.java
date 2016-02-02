@@ -15,7 +15,7 @@ public class ClientCopy {
 
 		String serverSocketIP = "127.0.0.1";
 		int serverSocketPort = 1414;
-		String fileOutput = "/home/miccar/Scrivania/"+System.currentTimeMillis()+ "out.jar";
+		String fileOutput = "/home/miccar/Scrivania/"+System.currentTimeMillis()+ ".jar";
 		byte[] aByte = new byte[1];
 		int bytesRead;
 

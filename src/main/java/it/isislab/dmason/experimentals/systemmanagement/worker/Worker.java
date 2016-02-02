@@ -51,8 +51,8 @@ import org.apache.commons.net.ftp.FTPClient;
  */
 public class Worker {
 
-	private String IP_ACTIVEMQ="";
-	private String PORT_ACTIVEMQ="";
+	private String IP_ACTIVEMQ="127.0.0.1";
+	private String PORT_ACTIVEMQ="61616";
 	private String TOPICPREFIX="";
 	private String PORT_COPY_SERVER="";
 	private static String prova="/home/miccar/Scrivania/";
@@ -62,7 +62,18 @@ public class Worker {
 
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 
-	public Worker() {}
+	/**
+	 * Localhost connection for activemq tcp://127.0.0.1:61616
+	 */
+	public Worker() {
+		MyFileSystem.make(workerTemporary);
+		MyFileSystem.make(simulationsDirectories);
+		this.setIpActivemq(IP_ACTIVEMQ);
+		this.setPortActivemq(PORT_ACTIVEMQ);
+		this.conn=new ConnectionNFieldsWithActiveMQAPI();
+		this.createConnection();
+		
+	}
 
 	/**
 	 * 
@@ -70,13 +81,14 @@ public class Worker {
 	 * @param portMaster
 	 * @param topicPrefix
 	 */
-	public Worker(String ipMaster,String portMaster,String topicPrefix) {
-		this.IP_ACTIVEMQ=ipMaster;
-		this.PORT_ACTIVEMQ=portMaster;
-		this.TOPICPREFIX=topicPrefix;
-		this.conn=new ConnectionNFieldsWithActiveMQAPI();
+	public Worker(String ipMaster,String portMaster) {
 		MyFileSystem.make(workerTemporary);
 		MyFileSystem.make(simulationsDirectories);
+		this.IP_ACTIVEMQ=ipMaster;
+		this.PORT_ACTIVEMQ=portMaster;
+		this.conn=new ConnectionNFieldsWithActiveMQAPI();
+		this.createConnection();
+
 	}
 
 
@@ -94,9 +106,6 @@ public class Worker {
 	}
 
 
-	protected void getSytemWorkerInfo(){
-
-	}
 
 
 	/**
@@ -242,7 +251,7 @@ public class Worker {
 	protected void subToInitialTopic(String initTopic){
 		try {
 			conn.subscribeToTopic(initTopic);
-			conn.asynchronousReceive("iniz");
+			conn.asynchronousReceive("MASTER");
 			for (String x : conn.getTopicList()) {
 				System.out.println(x);	
 			}
@@ -251,7 +260,9 @@ public class Worker {
 		}
 	} 	
 
-
+   
+	
+	
 
 	//getters and setters
 	public String getIpActivemq() {return IP_ACTIVEMQ;}

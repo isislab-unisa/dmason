@@ -19,6 +19,7 @@ import org.apache.activemq.broker.BrokerService;
 
 public class MasterServer{
 
+	private static final String MASTER_TOPIC="MASTER";
 	private  String IP_ACTIVEMQ="";
 	private  String PORT_ACTIVEMQ="";
 	private int PORT_COPY_SERVER=1414;
@@ -36,23 +37,22 @@ public class MasterServer{
 		prop = new Properties();
 		broker = new BrokerService();
 		conn=new ConnectionNFieldsWithActiveMQAPI();
-		loadProperties();
-		startActivemq();
-		createConnection();
-		
 		MyFileSystem.make(masterDirectory);// master
 		MyFileSystem.make(masterTemporary);
 		MyFileSystem.make(masterHistory); //master/history
 		MyFileSystem.make(simulationsDirectories+File.separator+"jobs"); //master/simulations/jobs
-		
+		this.loadProperties();
+		this.startActivemq();
+		this.createConnection();
+		this.createInitialTopic(MASTER_TOPIC);
 
 	}
 
-	
-	
+
+
 	protected void createSimulationDirectoryByID(String simID){
 		String path=simulationsDirectories+File.separator+simID+File.separator+"runs";
-	    MyFileSystem.make(path);
+		MyFileSystem.make(path);
 	}
 
 	protected void deleteSimulationDirectoryByID(String simID){
@@ -60,25 +60,16 @@ public class MasterServer{
 		File c=new File(path);
 		MyFileSystem.delete(c);
 	}
-	
-	
 
-/*	protected boolean createSimulationDirectory(String simName){
-		//create  sim1/runs under simulations 
-		String path=simulationsDirectories+File.separator+simName.toLowerCase()+File.separator+"runs";
-		File c=new File(path);
-		if(!c.exists())
-			return c.mkdirs();
-		else return false;
-	}*/
+
 
 	protected void startCopyServer(final String fileToSend){
 
 		(new Thread() {
-			
+
 			@Override
 			public void run() {
-				
+
 				ServerSocket welcomeSocket = null;
 				Socket connectionSocket = null;
 				BufferedOutputStream outToClient = null;
@@ -87,7 +78,7 @@ public class MasterServer{
 					try {
 						address=InetAddress.getByName("127.0.0.1");
 						welcomeSocket = new ServerSocket(PORT_COPY_SERVER,1000,address);
-						
+
 						connectionSocket = welcomeSocket.accept();
 						System.out.println("listening for a connection...");
 						outToClient = new BufferedOutputStream(connectionSocket.getOutputStream());
@@ -123,69 +114,46 @@ public class MasterServer{
 						}
 					}
 				}
-
-				
 			}
 		}).start();
-		
-		
-		
 	}
 
 
 
+	//Start methods to open a connection and a topic for initial communication 
 
-	protected void startActivemq(){
-
-
+	private void startActivemq(){
 		String address="tcp://"+IP_ACTIVEMQ+":"+PORT_ACTIVEMQ;
-
 		try {
 			broker.addConnector(address);
 			System.out.println("Starting activemq "+address);
 			broker.start();
-
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
+		} catch (Exception e1) {e1.printStackTrace();}
 	}
-	protected void loadProperties(){
 
+	private void loadProperties(){
 		//default 127.0.0.1:61616 else you have to change config.properties file
 		String filePropPath="resources/systemmanagement/master/conf/config.properties";
 		InputStream input=null;
-
 		//load params from properties file 
 		try {
 			input=new FileInputStream(filePropPath);	
 			prop.load(input);
 			this.setIpActivemq(prop.getProperty("ipmaster"));
 			this.setPortActivemq(prop.getProperty("portmaster"));
-
 		} catch (IOException e2) {
 			System.err.println(e2.getMessage());
-		}finally{try {
-			input.close();
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-
-		}}
+		}finally{try {input.close();} catch (IOException e) {System.err.println(e.getMessage());}}
 	}
 
-
-	protected boolean createConnection(){
-
+	private boolean createConnection(){
 		Address address=new Address(IP_ACTIVEMQ, PORT_ACTIVEMQ);
 		System.out.println("Creating connection to server "+address);
 		return conn.setupConnection(address);
 
 	}
 
-
-
-
-
-	protected  void createInitialTopic(String topic){
+	private void createInitialTopic(String topic){
 
 
 		try {
