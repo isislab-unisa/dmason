@@ -8,8 +8,9 @@ public class MyFileSystem {
 		//modify 
 		File c=new File(path);
 		if(!c.exists()){	
-			c.mkdirs();
+			if(c.mkdirs())
 			System.out.println("Directory is created : "+ c.getAbsolutePath());
+			else System.out.println("Directory not created : "+ c.getAbsolutePath());;
 		 }else {
 			 System.out.println("Directory already exists : "+ c.getAbsolutePath());
 		}
