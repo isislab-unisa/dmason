@@ -76,7 +76,7 @@ public class MasterServer{
 				InetAddress address=null;
 				while (true) {
 					try {
-						address=InetAddress.getByName("127.0.0.1");
+						address=InetAddress.getByName(IP_ACTIVEMQ);//ip of master 
 						welcomeSocket = new ServerSocket(PORT_COPY_SERVER,1000,address);
 
 						connectionSocket = welcomeSocket.accept();
