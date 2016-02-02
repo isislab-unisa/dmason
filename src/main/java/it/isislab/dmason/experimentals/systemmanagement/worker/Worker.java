@@ -1,5 +1,5 @@
 /**
- * Copyright 2012 Universita' degli Studi di Salerno
+ * Copyright 2016 Universita' degli Studi di Salerno
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@ package it.isislab.dmason.experimentals.systemmanagement.worker;
 import it.isislab.dmason.experimentals.systemmanagement.master.MyFileSystem;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
+import it.isislab.dmason.experimentals.util.management.worker.PeerStatusInfo;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
@@ -35,11 +36,13 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.UnknownHostException;
+import java.rmi.server.UID;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.apache.commons.net.ftp.FTPClient;
+import org.apache.hadoop.net.NetUtils;
 
 
 /**
@@ -61,20 +64,26 @@ public class Worker {
 	private static final String workerTemporary=workerDirectory+File.separator+"temporary";
 	private static final String simulationsDirectories=workerDirectory+File.separator+"simulations";
 
+	private String TOPIC_WORKER_ID="";
+	
+	
+	
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 
 	/**
 	 * Localhost connection for activemq tcp://127.0.0.1:61616
 	 */
 	public Worker() {
+		
 		MyFileSystem.make(workerTemporary);
 		MyFileSystem.make(simulationsDirectories);
 		this.setIpActivemq(IP_ACTIVEMQ);
 		this.setPortActivemq(PORT_ACTIVEMQ);
 		this.conn=new ConnectionNFieldsWithActiveMQAPI();
 		this.createConnection();
-		this.subToInitialTopic(MASTER_TOPIC);
-		
+		this.subToInitialTopic(MASTER_TOPIC);	
+		try {
+		this.TOPIC_WORKER_ID=InetAddress.getLocalHost().getHostAddress()+"-"+new UID();} catch (UnknownHostException e) {e.printStackTrace();}
 	}
 
 	/**
@@ -91,11 +100,19 @@ public class Worker {
 		this.conn=new ConnectionNFieldsWithActiveMQAPI();
 		this.createConnection();
 		this.subToInitialTopic(MASTER_TOPIC);
+		try {
+			this.TOPIC_WORKER_ID=InetAddress.getLocalHost().getHostAddress()+"-"+new UID();} catch (UnknownHostException e) {e.printStackTrace();}
 
 	}
 
 
-
+    protected void sendIdentifyTopic(){
+    	try{	
+    	conn.createTopic(this.TOPIC_WORKER_ID, 1);
+		conn.subscribeToTopic(this.TOPIC_WORKER_ID);
+		conn.publishToTopic("", this.TOPIC_WORKER_ID, "ciao");
+    	} catch(Exception e){e.printStackTrace();}
+    }
 
 	protected void createSimulationDirectoryByID(String simID){
 		String path=simulationsDirectories+File.separator+simID+File.separator+"runs";
@@ -255,15 +272,22 @@ public class Worker {
 		try {
 			conn.subscribeToTopic(initTopic);
 			conn.asynchronousReceive("MASTER");
-			for (String x : conn.getTopicList()) {
+			/*for (String x : conn.getTopicList()) {
 				System.out.println(x);	
-			}
+			}*/
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	} 	
 
-   
+	/**
+	 * Reestituisce info al master
+	 */
+	public void info() 
+	{
+	
+		//connection.publishToTopic(info, masterTopic, "info");
+	}
 	
 	
 
@@ -274,6 +298,7 @@ public class Worker {
 	public void setPortActivemq(String port) {PORT_ACTIVEMQ = port;}
 	public String getTopicPrefix() {return TOPICPREFIX;}
 	public void setTopicPrefix(String topicPrefix) {TOPICPREFIX = topicPrefix;}
+	public ConnectionNFieldsWithActiveMQAPI getConnection() {return conn;}
 
 
 

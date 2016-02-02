@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -33,6 +34,9 @@ public class MasterServer{
 	private static final String simulationsDirectories=masterDirectory+File.separator+"simulations";
 
 
+	/**
+	 * start activemq, initialize master connection, create directories and create initial topic for workers
+	 */
 	public MasterServer(){
 		prop = new Properties();
 		broker = new BrokerService();
@@ -45,16 +49,24 @@ public class MasterServer{
 		this.startActivemq();
 		this.createConnection();
 		this.createInitialTopic(MASTER_TOPIC);
+	     
 
 	}
 
 
-
+    /**
+     * Create directory for a simulation 
+     * @param simID name of directory to create
+     */
 	protected void createSimulationDirectoryByID(String simID){
 		String path=simulationsDirectories+File.separator+simID+File.separator+"runs";
 		MyFileSystem.make(path);
 	}
 
+	/**
+	 * Delete a directory for a simulation
+	 * @param simID name of a directory to delete
+	 */
 	protected void deleteSimulationDirectoryByID(String simID){
 		String path=simulationsDirectories+File.separator+simID;
 		File c=new File(path);
@@ -63,7 +75,7 @@ public class MasterServer{
 
 
 
-	protected void startCopyServer(final String fileToSend){
+	private void startCopyServer(final String fileToSend){
 
 		(new Thread() {
 
@@ -153,12 +165,18 @@ public class MasterServer{
 
 	}
 
+	
+	private void sendAck(Serializable object,String key){
+		conn.publishToTopic(object, "MASTER", key);
+	}
+	
 	private void createInitialTopic(String topic){
 
 
 		try {
 			conn.createTopic(topic, 1);
 			conn.subscribeToTopic(topic);
+			//conn.subscribeToTopic("READY");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -172,4 +190,7 @@ public class MasterServer{
 	public void setIpActivemq(String iP) {IP_ACTIVEMQ = iP;}
 	public String getPortActivemq() {return PORT_ACTIVEMQ;}
 	public void setPortActivemq(String port) {PORT_ACTIVEMQ = port;}
+	public ConnectionNFieldsWithActiveMQAPI getConnection(){return conn;}
+	public int getCopyPort(){return PORT_COPY_SERVER;}
+	public void setCopyPort(int port){ this.PORT_COPY_SERVER=port;}
 }
