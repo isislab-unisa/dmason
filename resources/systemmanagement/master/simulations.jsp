@@ -102,7 +102,8 @@
                 this.$['list-simulations'].listItem = [{id:1, name:"flockers"},{id:2, name:"Ants"}];
             });
         scope._onTileClick = function(event) {
-        this.$['fullsize-card'].simID = event.detail.data;
+        console.log(event.detail.data);
+        this.$['fullsize-card'].sim = event.detail.data;
         this.$.pages.selected = 1;
         };
         scope._onFullsizeClick = function(event) {

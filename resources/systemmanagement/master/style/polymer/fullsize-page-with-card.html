@@ -13,7 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/neon-animation/animations/transform-animation.html">
 
 <dom-module id="fullsize-page-with-card">
-    <template>
+    <template is="dom-bind">
         <style>
 
             :host {
@@ -37,7 +37,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </style>
 
         <div id="fixed" class=fixed"></div>
-        <div id="card" class="card"><span>{{simID}}</span></div>
+        <div id="card" class="card">
+            
+            <span>{{sim.id}}</span><br><span>{{sim.name}}</span>
+        </div>
 
     </template>
 
@@ -50,8 +53,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             Polymer.NeonSharedElementAnimatableBehavior
         ],
         properties: {
-            simID:{
-                type: String
+            sim:{
+                type: Object
             },
             sharedElements: {
                 type: Object,
