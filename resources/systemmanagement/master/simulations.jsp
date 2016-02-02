@@ -89,7 +89,7 @@
         <div class="content content-main">
             <template is="dom-bind" id="simulations">
                 <neon-animated-pages id="pages" selected="0">
-                        <animated-grid on-tile-click="_onTileClick"></animated-grid>
+                        <animated-grid id="list-simulations" on-tile-click="_onTileClick"></animated-grid>
                         <fullsize-page-with-card id="fullsize-card" on-click="_onFullsizeClick">
                         </fullsize-page-with-card>
                 </neon-animated-pages>
@@ -98,7 +98,9 @@
         <script>
 
         var scope = document.querySelector('template[is="dom-bind"]');
-
+            scope.addEventListener('dom-change',function(event){
+                this.$['list-simulations'].listItem = [{id:1, name:"flockers"},{id:2, name:"Ants"}];
+            });
         scope._onTileClick = function(event) {
         this.$['fullsize-card'].simID = event.detail.data;
         this.$.pages.selected = 1;

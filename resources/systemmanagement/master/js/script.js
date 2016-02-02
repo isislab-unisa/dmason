@@ -95,10 +95,6 @@ function resetHandler(event) {
 }
 
 
-$(document).ready(function(){
-    $('animated-grid').listItem={"sim-1":{"id":1,"name":"flockers"},"sim2":{"id":2,"name":"Ants"}};
-});
-
 /*
 $(document).load(setTimeout(function(){
     setting_new_simulation();

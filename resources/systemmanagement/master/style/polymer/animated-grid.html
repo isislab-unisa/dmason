@@ -9,13 +9,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
-<link rel="import" href="../../bower_components/neon-animation/demo/shared-styles.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/ripple-animation.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/hero-animation.html">
 
 <dom-module id="animated-grid">
     <template>
-        <style include="shared-styles"></style>
         <style>
             :host {
                 display: block;
@@ -61,9 +59,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <div class="grid-simulations">
             <div class="grid-sizer-simulations"></div>
-            <template is="dom-repeat" items="{{listItem}}">
+            <template is="dom-repeat" items="{{listItem}}" as="sim">
                 <div class="grid-item-simulations" id="sim-{{index}}">
-                   <span>simulation {{index}}</span>
+                    <span>ID: {{sim.id}}</span><br>
+                    <span>Name: {{sim.name}}</span>
                 </div>
             </template>
         </div>
