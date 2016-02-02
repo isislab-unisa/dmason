@@ -55,6 +55,7 @@ public class Worker {
 	private String PORT_ACTIVEMQ="61616";
 	private String TOPICPREFIX="";
 	private String PORT_COPY_SERVER="";
+	private static final String MASTER_TOPIC="MASTER";
 	private static String prova="/home/miccar/Scrivania/";
 	private static final String workerDirectory=prova+"worker";
 	private static final String workerTemporary=workerDirectory+File.separator+"temporary";
@@ -72,6 +73,7 @@ public class Worker {
 		this.setPortActivemq(PORT_ACTIVEMQ);
 		this.conn=new ConnectionNFieldsWithActiveMQAPI();
 		this.createConnection();
+		this.subToInitialTopic(MASTER_TOPIC);
 		
 	}
 
@@ -88,6 +90,7 @@ public class Worker {
 		this.PORT_ACTIVEMQ=portMaster;
 		this.conn=new ConnectionNFieldsWithActiveMQAPI();
 		this.createConnection();
+		this.subToInitialTopic(MASTER_TOPIC);
 
 	}
 
