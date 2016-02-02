@@ -96,15 +96,21 @@
             </template>
 
         <script>
-
+        <%@ page import="java.lang.System" %>
         var scope = document.querySelector('template[is="dom-bind"]');
+           var list_sim =[];
+            for(i=0; i<40; i++)
+                    list_sim[i]={id:i, name:"flockers",start:<%=System.currentTimeMillis() %>,step:0,num_cell:(i%6)+1,num_worker:(i%5)+1,partitioning:(i%2==0)?'uniform':'non-uniform'};
+
             scope.addEventListener('dom-change',function(event){
-                this.$['list-simulations'].listItem = [{id:1, name:"flockers"},{id:2, name:"Ants"}];
+                //this.$['list-simulations'].listItem = [{id:1, name:"flockers"},{id:2, name:"Ants"}];
+                this.$['list-simulations'].listItem = list_sim;
             });
+
+
         scope._onTileClick = function(event) {
-        console.log(event.detail.data);
-        this.$['fullsize-card'].sim = event.detail.data;
-        this.$.pages.selected = 1;
+            this.$['fullsize-card'].sim = event.detail.data;
+            this.$.pages.selected = 1;
         };
         scope._onFullsizeClick = function(event) {
         this.$.pages.selected = 0;

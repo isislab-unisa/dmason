@@ -11,6 +11,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/ripple-animation.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/hero-animation.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-icons/av-icons.html">
 
 <dom-module id="animated-grid">
     <template>
@@ -20,14 +22,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             .grid-item-simulations:hover{
+                /*background-color: grey;*/
                 border-color: white;
             }
 
             .grid-sizer-simulations,
             .grid-item-simulations
             {
-                width: 200px;
-                heigth:200px;
+                width: 300px;
+                heigth:300px;
             }
 
 
@@ -43,15 +46,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             .grid-item-simulations {
-                width:200px;
-                height:200px;
+                width:300px;
+                height:300px;
                 float: left;
                 background-color: #3f4242;
                 border: 2px solid #0c3308;
                 border-color: hsla(0, 0%, 0%, 0.5);
                 border-radius: 5px;
                 font-size: large;
+                padding:10px;
                 position:relative;
+            }
+
+            paper-button{
+                width: 20px;
+                margin:0;
             }
 
         </style>
@@ -61,8 +70,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div class="grid-sizer-simulations"></div>
             <template is="dom-repeat" items="{{listItem}}" as="sim">
                 <div class="grid-item-simulations" id="sim-{{index}}">
-                    <span>ID: {{sim.id}}</span><br>
+                    <table>
+                        <tr><td><span>ID:</span></td><td><span>{{sim.id}}</span></td></tr>
+                        <tr><td><span>Name:</span></td><td><span>{{sim.name}}</span></td></tr>
+                        <tr><td><span>Partitioning:</span></td><td><span>{{sim.partitioning}}</span></td></tr>
+                        <tr><td><span>Num. of Cells:</span></td><td><span>{{sim.num_cell}}</span></td></tr>
+                        <tr><td><span>Num. of Worker:</span></td><td><span>{{sim.num_worker}}</span></td></tr>
+                        <tr><td><span>Time:</span></td><td><span id="time">{{getSimTime(sim.start)}}</span></td></tr>
+                        <tr><td><span>Steps:</span></td><td><span id="step">{{getNumStep(sim.step)}}</span></td></tr>
+                        <tr><td colspan="2">
+                                <paper-button raised disabled><iron-icon icon="av:play-circle-filled"></iron-icon>Resume</paper-button>
+                                <paper-button raised><iron-icon icon="av:pause-circle-outline"></iron-icon>Pause</paper-button>
+                                <paper-button raised><iron-icon icon="av:stop"></iron-icon>Stop</paper-button>
+                            </td></tr>
+                    </table>
+                    <!--span>ID: {{sim.id}}</span><br>
                     <span>Name: {{sim.name}}</span>
+                    <span>Start: {{sim.start}}</span-->
                 </div>
             </template>
         </div>
@@ -75,6 +99,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         behaviors: [
             Polymer.NeonSharedElementAnimatableBehavior
         ],
+        getNumStep: function(step){
+            setInterval(function(step){ return step+1 }, 1000);
+        },
+
+        getSimTime: function(start){
+            setInterval(function(start){ return start+1 }, 1);
+        },
         properties: {
             listItem:{
                 type:Array
@@ -97,32 +128,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
         },
-        ready: function(){
-/*
-            this.data = [];
-            for(i=0; i< 20; i++)
-                this.push('data', {});*/
-        },
-        attached:
-            function(){
+        attached: function(){
+            this.async(function(){
                 $('.grid-simulations').masonry({
                             itemSelector: '.grid-item-simulations',
                             columnWidth: '.grid-sizer-simulations',
                             percentPosition: true
                         }
                 );
-            }
-        ,
+            });
+        },
         listeners: {
             click: '_onClick'
         },
+
 
         _onClick: function(event) {
 
             var target = event.target;
             while(target.classList[0] != "grid-item-simulations")
                 target = target.parentElement;
-            alert(target.className);
+
             // configure the page animation
             this.sharedElements = {
                 'hero': target,

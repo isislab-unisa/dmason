@@ -13,13 +13,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/neon-animation/animations/transform-animation.html">
 
 <dom-module id="fullsize-page-with-card">
-    <template is="dom-bind">
+    <template>
         <style>
 
             :host {
                 display: block;
-                background-color: #00838f;
-                color:black;
+                background-color: #646767;
+                color:#bdced7;
             }
             .fixed {
                 position: fixed;
@@ -32,13 +32,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 margin: 5%;
                 width: 90%;
                 height: 80%;
-                background-color: yellow;
+                background-color: #3f4242;
             }
         </style>
 
         <div id="fixed" class=fixed"></div>
         <div id="card" class="card">
-            
+
             <span>{{sim.id}}</span><br><span>{{sim.name}}</span>
         </div>
 
