@@ -366,7 +366,7 @@ public class VirtualConnectionNFieldsWithVirtualJMS extends Observable
 		notifyObservers();
 	}
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		try {
 
 			ArrayList<String> fakefieldone = new ArrayList<String>();
@@ -414,6 +414,6 @@ public class VirtualConnectionNFieldsWithVirtualJMS extends Observable
 			e.printStackTrace();
 		}
 
-	}
+	}*/
 
 }
