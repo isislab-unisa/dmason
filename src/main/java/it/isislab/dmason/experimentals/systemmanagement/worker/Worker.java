@@ -99,8 +99,8 @@ public class Worker {
 	 * @param topicPrefix
 	 */
 	public Worker(String ipMaster,String portMaster) {
-		//MyFileSystem.make(workerTemporary);
-		//MyFileSystem.make(simulationsDirectories);
+		MyFileSystem.make(workerTemporary);
+		MyFileSystem.make(simulationsDirectories);
 		this.IP_ACTIVEMQ=ipMaster;
 		this.PORT_ACTIVEMQ=portMaster;
 		this.conn=new ConnectionNFieldsWithActiveMQAPI();

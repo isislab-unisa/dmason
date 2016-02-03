@@ -1,14 +1,5 @@
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
-import java.net.InetAddress;
-import java.rmi.server.UID;
-import java.util.UUID;
-
-import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
-import it.isislab.dmason.sim.engine.DistributedState;
-import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.util.connection.Address;
-import it.isislab.dmason.util.connection.ConnectionType;
 
 
 
@@ -19,7 +10,7 @@ public class WorkerMain {
 
 	public static void main(String[] args) throws Exception {
 		
-		System.out.println(InetAddress.getLocalHost().getHostAddress()+"-"+new UID());
+
 
 		String ip =args[0];
 		String port=args[1];
