@@ -60,8 +60,8 @@ import org.apache.hadoop.net.NetUtils;
  */
 public class Worker {
 
-	private String IP_ACTIVEMQ="127.0.0.1";
-	private String PORT_ACTIVEMQ="61616";
+	private String IP_ACTIVEMQ="";
+	private String PORT_ACTIVEMQ="";
 	private String TOPICPREFIX="";
 	private String PORT_COPY_SERVER="";
 	private static final String MASTER_TOPIC="MASTER";
@@ -161,7 +161,7 @@ public class Worker {
 
 		//mi servono ip e port del serversocket
 		System.out.println("setta");
-		String serverSocketIP = "127.0.0.1";//da togliere
+		String serverSocketIP = this.IP_ACTIVEMQ;//da togliere
 		
 		
 		String localJarFilePath = "/home/miccar/Scrivania/"+TOPIC_WORKER_ID+"out.jar";//da scegliere 
@@ -302,7 +302,7 @@ public class Worker {
 		                    	Address add=(Address)map.get("jar");
 		                      	System.out.println("scarica da porta "+add.getPort());
 		                        worker.downloadFile(worker.IP_ACTIVEMQ, Integer.parseInt(add.getPort()), "");
-		                        worker.getConnection().publishToTopic("", "READY", "downloaded");
+		                        worker.getConnection().publishToTopic(worker.TOPIC_WORKER_ID, "READY", "downloaded");
 		                    }
 						    						
 						
