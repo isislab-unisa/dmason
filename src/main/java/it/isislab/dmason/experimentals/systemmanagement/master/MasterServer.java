@@ -1,7 +1,9 @@
 package it.isislab.dmason.experimentals.systemmanagement.master;
 
 import it.isislab.dmason.util.connection.Address;
+import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
+import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -17,6 +19,10 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.Map.Entry;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
 
 import org.apache.activemq.broker.BrokerService;
 
@@ -56,7 +62,46 @@ public class MasterServer{
 
 	}
 
+	public MasterServer getMasterServer(){
+		return this;
+	}
 
+	protected void listenonREADY(){
+
+		final MasterServer master=this.getMasterServer();
+	
+		
+		//while(true)for(String x:master.getConnection().getTopicList())System.out.println(x);
+		
+		master.getConnection().asynchronousReceive("READY", new MyMessageListener() {
+			
+			@Override
+			public void onMessage(Message msg) {
+		        Object o;
+				try {
+					o=parseMessage(msg);
+					MyHashMap mh = (MyHashMap)o;
+					
+					for ( Entry<String, Object> string : mh.entrySet()) {
+						
+						System.out.println(string.getKey()+"|"+string.getValue());
+						if(mh.containsKey("sottoscrizione")){
+						     master.worker.add(""+string.getValue());
+						     try {
+								master.getConnection().subscribeToTopic(""+string.getValue());
+							} catch (Exception e) {e.printStackTrace();}
+						}
+						
+						if(mh.containsKey("downloaded")){
+							System.out.println("tappò"+mh.get("downloaded"));
+						}
+					}
+						
+				} catch (JMSException e) {e.printStackTrace();}	
+			}
+		});
+	}
+	
     /**
      * Create directory for a simulation 
      * @param simID name of directory to create
@@ -100,8 +145,6 @@ public class MasterServer{
 			e.printStackTrace();
 		}
 
-		
-	
 	}
 
 
