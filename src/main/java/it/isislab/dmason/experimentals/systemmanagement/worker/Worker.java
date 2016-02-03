@@ -69,7 +69,6 @@ public class Worker {
 	private static final String workerDirectory=prova+"worker";
 	private static final String workerTemporary=workerDirectory+File.separator+"temporary";
 	private static final String simulationsDirectories=workerDirectory+File.separator+"simulations";
-
 	private String TOPIC_WORKER_ID="";
 	
 	
