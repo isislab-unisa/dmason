@@ -4,7 +4,11 @@ import java.net.InetAddress;
 import java.rmi.server.UID;
 import java.util.UUID;
 
+import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
+import it.isislab.dmason.sim.engine.DistributedState;
+import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.util.connection.Address;
+import it.isislab.dmason.util.connection.ConnectionType;
 
 
 
@@ -28,7 +32,6 @@ public class WorkerMain {
 		*/
 		//worker.createConnection();
 		//GeneralParam p=new GeneralParam(400, 400, 10, 2, 2, 2222, DistributedField2D.UNIFORM_PARTITIONING_MODE, 2, ConnectionType.pureActiveMQ);
-		
 			//DistributedState d=worker.makeSimulation("/home/miccar/Scrivania/flocksim2.jar",p,"");
 			//d.start();
 		

@@ -21,8 +21,11 @@ import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
 import it.isislab.dmason.experimentals.util.management.worker.PeerStatusInfo;
 import it.isislab.dmason.sim.engine.DistributedState;
+import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.util.connection.Address;
+import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
+import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -41,6 +44,9 @@ import java.rmi.server.UID;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
 
 import org.apache.hadoop.net.NetUtils;
 
@@ -101,16 +107,20 @@ public class Worker {
 		this.createConnection();
 		this.subToInitialTopic(MASTER_TOPIC);
 		try {
-			this.TOPIC_WORKER_ID=InetAddress.getLocalHost().getHostAddress()+"-"+new UID();} catch (UnknownHostException e) {e.printStackTrace();}
+			this.TOPIC_WORKER_ID="WORKER-"+InetAddress.getLocalHost().getHostAddress()+"-"+new UID();} catch (UnknownHostException e) {e.printStackTrace();}
 
 	}
 
 
     protected void sendIdentifyTopic(){
     	try{	
-    	conn.createTopic(this.TOPIC_WORKER_ID, 1);
-		conn.subscribeToTopic(this.TOPIC_WORKER_ID);
-		conn.publishToTopic("", this.TOPIC_WORKER_ID, "ciao");
+    	conn.createTopic("READY", 1);
+		conn.subscribeToTopic("READY");
+		conn.publishToTopic(this.TOPIC_WORKER_ID,"READY" ,"iscrizione");
+		
+		//topic per fornire info al master 
+		conn.createTopic(this.TOPIC_WORKER_ID, 1);
+		conn.subscribeToTopic(TOPIC_WORKER_ID);
     	} catch(Exception e){e.printStackTrace();}
     }
 
@@ -147,13 +157,14 @@ public class Worker {
 
 
 
-	protected void downloadFile(String server, String port){
+	protected void downloadFile(String server, int serverSocketPort, String path){
 
 		//mi servono ip e port del serversocket
 		System.out.println("setta");
 		String serverSocketIP = "127.0.0.1";//da togliere
-		int serverSocketPort = 1414;//da togliere
-		String localJarFilePath = "/home/miccar/Scrivania/out.jar";//da scegliere 
+		
+		
+		String localJarFilePath = "/home/miccar/Scrivania/"+TOPIC_WORKER_ID+"out.jar";//da scegliere 
 
 
 		this.TOPICPREFIX=""+localJarFilePath.hashCode();
@@ -268,16 +279,43 @@ public class Worker {
 	}
 
 
-	protected void subToInitialTopic(String initTopic){
-		try {
-			conn.subscribeToTopic(initTopic);
-			conn.asynchronousReceive("MASTER");
-			/*for (String x : conn.getTopicList()) {
-				System.out.println(x);	
-			}*/
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	protected void subToInitialTopic(String initTopic) {
+	        final Worker worker=this;
+		
+			try {conn.subscribeToTopic(initTopic);} 
+			catch (Exception e1) {e1.printStackTrace();}
+			
+			conn.asynchronousReceive(initTopic, new MyMessageListener() {
+				
+				@Override
+				public void onMessage(Message msg) {
+					
+					Object o;
+					try {
+						o=parseMessage(msg);
+						MyHashMap map=(MyHashMap) o;
+		
+						
+							if(map.containsKey("jar"))
+		                    {
+		                    	System.out.println("entro");
+		                    	Address add=(Address)map.get("jar");
+		                      	System.out.println("scarica da porta "+add.getPort());
+		                        worker.downloadFile(worker.IP_ACTIVEMQ, Integer.parseInt(add.getPort()), "");
+		                        worker.getConnection().publishToTopic("", "READY", "downloaded");
+		                    }
+						    						
+						
+					} catch (JMSException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+			});
+			
+			
+	
 	} 	
 
 	/**
@@ -285,8 +323,11 @@ public class Worker {
 	 */
 	public void info() 
 	{
+	 WorkerResourceInfo info=new WorkerResourceInfo();
+	    info.getAvailableHeapGb();
+	    info.getBusyHeapGb();
+	    info.getCPULoad();
 	
-		//connection.publishToTopic(info, masterTopic, "info");
 	}
 	
 	

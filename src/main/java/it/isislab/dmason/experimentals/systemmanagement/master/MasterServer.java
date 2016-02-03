@@ -14,6 +14,8 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import org.apache.activemq.broker.BrokerService;
@@ -32,7 +34,7 @@ public class MasterServer{
 	private static final String masterTemporary=masterDirectory+File.separator+"temporay";
 	private static final String masterHistory=masterDirectory+File.separator+"history";
 	private static final String simulationsDirectories=masterDirectory+File.separator+"simulations";
-
+    public ArrayList<String> worker;
 
 	/**
 	 * start activemq, initialize master connection, create directories and create initial topic for workers
@@ -49,6 +51,7 @@ public class MasterServer{
 		this.startActivemq();
 		this.createConnection();
 		this.createInitialTopic(MASTER_TOPIC);
+		worker=new ArrayList<String>();
 	     
 
 	}
@@ -74,60 +77,31 @@ public class MasterServer{
 	}
 
 
+	protected void sumbit(){
+		
+	}
+	
 
-	private void startCopyServer(final String fileToSend){
-
-		(new Thread() {
-
-			@Override
-			public void run() {
-
-				ServerSocket welcomeSocket = null;
-				Socket connectionSocket = null;
-				BufferedOutputStream outToClient = null;
-				InetAddress address=null;
-				while (true) {
-					try {
-						address=InetAddress.getByName(IP_ACTIVEMQ);//ip of master 
-						welcomeSocket = new ServerSocket(PORT_COPY_SERVER,1000,address);
-
-						connectionSocket = welcomeSocket.accept();
-						System.out.println("listening for a connection...");
-						outToClient = new BufferedOutputStream(connectionSocket.getOutputStream());
-					} catch (IOException ex) {
-						ex.printStackTrace();
-					}
-
-					if (outToClient != null) {
-						File myFile = new File(fileToSend);
-						myFile.setReadable(true);
-						byte[] mybytearray = new byte[(int) myFile.length()];
-
-						FileInputStream fis = null;
-
-						try {
-							fis = new FileInputStream(myFile);
-						} catch (FileNotFoundException ex) {
-							ex.printStackTrace();
-						}
-						BufferedInputStream bis = new BufferedInputStream(fis);
-
-						try {
-							bis.read(mybytearray, 0, mybytearray.length);
-							outToClient.write(mybytearray, 0, mybytearray.length);
-							outToClient.flush();
-							outToClient.close();
-							connectionSocket.close();
-
-							System.out.println("File sended");   
-
-						} catch (IOException ex) {
-							ex.printStackTrace();
-						}
-					}
-				}
+	protected void startCopyServer(int port){
+		InetAddress address;
+		ServerSocket welcomeSocket=null;
+		try {
+			address = InetAddress.getByName(this.IP_ACTIVEMQ);
+			welcomeSocket = new ServerSocket(port,1,address);
+			System.out.println("Listening");
+			while (true) {
+				Socket sock = welcomeSocket.accept();
+				System.out.println("Connected");
+				new Thread(new CopyMultiThreadServer(sock)).start();
 			}
-		}).start();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		
+	
 	}
 
 
@@ -176,7 +150,7 @@ public class MasterServer{
 		try {
 			conn.createTopic(topic, 1);
 			conn.subscribeToTopic(topic);
-			//conn.subscribeToTopic("READY");
+			conn.subscribeToTopic("READY");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
