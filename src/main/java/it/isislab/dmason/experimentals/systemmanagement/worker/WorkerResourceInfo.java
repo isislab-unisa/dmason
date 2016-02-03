@@ -5,7 +5,7 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
 
-public class WorkResourceInfo {
+public class WorkerResourceInfo {
 
 	private OperatingSystemMXBean  os=null;
 	private MemoryMXBean memory=null;
@@ -16,7 +16,7 @@ public class WorkResourceInfo {
 	private static final double byte_mega=1048576;
 
 	
-	public WorkResourceInfo() {
+	public WorkerResourceInfo() {
 		os = ManagementFactory.getOperatingSystemMXBean();
 		memory = ManagementFactory.getMemoryMXBean();
 	}
