@@ -1,5 +1,6 @@
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
+import java.io.Serializable;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
@@ -14,6 +15,7 @@ public class WorkerResourceInfo {
 	private double cpuLoad=0.0;
 	private static final double byte_giga=1073741824;
 	private static final double byte_mega=1048576;
+	
 
 	
 	public WorkerResourceInfo() {
@@ -45,8 +47,35 @@ public class WorkerResourceInfo {
 	public double getCPULoad(){this.setCpuLoad();return cpuLoad;}
 
 	
-	
-	
+	//se vogliamo inviare l'oggetto
+	class WorkerInfo implements Serializable{
+		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private String cpuLoad;
+		private String availableheapmemory;
+		private String busyheapmemory;
+		
+		public WorkerInfo() {}
+		
+		
+		public WorkerInfo(String cpuLoad, String availableheapmemory,
+				String busyheapmemory){
+			this.cpuLoad = cpuLoad;
+			this.availableheapmemory = availableheapmemory;
+			this.busyheapmemory = busyheapmemory;
+		}
+
+
+		public void setCpuLoad(double x){this.cpuLoad=""+x;}
+		public void setAvailableHeap(double x){this.availableheapmemory=""+x;}
+		public void setBusyHeap(double x){this.busyheapmemory=""+x;}
+		public String getCpuLoad(){return cpuLoad;}
+		public String availableHeapMemory(){return availableheapmemory;}
+		public String busyHeapMemory(){return busyheapmemory;}
+	}
 	
 	/*
 	public static void main(String[] args) throws MalformedObjectNameException, InstanceNotFoundException, NullPointerException, ReflectionException {
