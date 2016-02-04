@@ -66,13 +66,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 margin-top:30px;
             }
 
+           .onHover:hover{
+               cursor: pointer;
+           }
+
         </style>
 
         <div class="grid-simulations">
             <div class="grid-sizer-simulations"></div>
             <template is="dom-repeat" items="{{listItem}}" as="sim">
                 <div class="grid-item-simulations" id="sim-{{sim.id}}">
-                        <simulation-info sim={{sim}} id="sim-info"></simulation-info>
+                        <simulation-info class="onHover" sim={{sim}} id="sim-info"></simulation-info>
                         <control-simulation-buttons></control-simulation-buttons>
                 </div>
             </template>
