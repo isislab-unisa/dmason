@@ -15,6 +15,7 @@ public class WorkerMain {
 		String ip =args[0];
 		String port=args[1];
 		Worker worker=new Worker(ip, port);
+		worker.createSimulationDirectoryByID("1");
 		worker.sendIdentifyTopic();
 		
 	/*	worker.getConnection().createTopic("READY", 1);

@@ -25,6 +25,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 
 import org.apache.activemq.broker.BrokerService;
+import org.mortbay.servlet.WelcomeFilter;
 
 public class MasterServer{
 
@@ -41,6 +42,9 @@ public class MasterServer{
 	private static final String masterHistory=masterDirectory+File.separator+"history";
 	private static final String simulationsDirectories=masterDirectory+File.separator+"simulations";
     public ArrayList<String> worker;
+    Socket sock=null;
+    ServerSocket welcomeSocket;
+  
 
 	/**
 	 * start activemq, initialize master connection, create directories and create initial topic for workers
@@ -94,10 +98,22 @@ public class MasterServer{
 						
 						if(mh.containsKey("downloaded")){
 							System.out.println("tappò"+mh.get("downloaded"));
+							
+							welcomeSocket.close();
+							
+							try {
+								sock.close();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 					}
 						
-				} catch (JMSException e) {e.printStackTrace();}	
+				} catch (JMSException e) {e.printStackTrace();} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}	
 			}
 		});
 	}
@@ -129,25 +145,36 @@ public class MasterServer{
 
 	protected void startCopyServer(int port){
 		InetAddress address;
-		ServerSocket welcomeSocket=null;
+		 welcomeSocket=null;
 		try {
 			address = InetAddress.getByName(this.IP_ACTIVEMQ);
 			welcomeSocket = new ServerSocket(port,1,address);
 			System.out.println("Listening");
 			while (true) {
-				Socket sock = welcomeSocket.accept();
+				 sock = welcomeSocket.accept();
 				System.out.println("Connected");
 				new Thread(new CopyMultiThreadServer(sock)).start();
 			}
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (welcomeSocket != null && !welcomeSocket.isClosed()) {
+		        try {
+		        	welcomeSocket.close();
+		        } catch (IOException exx)
+		        {
+		            exx.printStackTrace(System.err);
+		        }
+		    }
 		}
 
 	}
+	
 
-
+	public String getTopicPrefix(String path){
+		//
+		return ""+path.hashCode();
+	}
 
 	//Start methods to open a connection and a topic for initial communication 
 

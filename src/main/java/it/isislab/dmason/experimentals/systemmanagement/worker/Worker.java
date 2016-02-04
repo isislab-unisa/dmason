@@ -21,8 +21,10 @@ import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
 import it.isislab.dmason.experimentals.util.management.worker.PeerStatusInfo;
 import it.isislab.dmason.sim.engine.DistributedState;
+import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.util.connection.Address;
+import it.isislab.dmason.util.connection.ConnectionType;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
@@ -34,6 +36,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -42,6 +45,7 @@ import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.rmi.server.UID;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -49,6 +53,8 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 
 import org.apache.hadoop.net.NetUtils;
+
+import sim.engine.SimState;
 
 
 /**
@@ -104,7 +110,6 @@ public class Worker {
 		this.PORT_ACTIVEMQ=portMaster;
 		this.conn=new ConnectionNFieldsWithActiveMQAPI();
 		boolean f=this.createConnection();
-		System.out.println("result connection"+f);
 		this.subToInitialTopic(MASTER_TOPIC);
 		try {
 			this.TOPIC_WORKER_ID="WORKER-"+InetAddress.getLocalHost().getHostAddress()+"-"+new UID();} catch (UnknownHostException e) {e.printStackTrace();}
@@ -112,18 +117,71 @@ public class Worker {
 	}
 
 
-    protected void sendIdentifyTopic(){
-    	try{	
-    	conn.createTopic("READY", 1);
-		conn.subscribeToTopic("READY");
-		conn.publishToTopic(this.TOPIC_WORKER_ID,"READY" ,"iscrizione");
+	
+	protected void subToInitialTopic(String initTopic) {
+        final Worker worker=this;
+	
+		try {conn.subscribeToTopic(initTopic);} 
+		catch (Exception e1) {e1.printStackTrace();}
 		
-		//topic per fornire info al master 
-		conn.createTopic(this.TOPIC_WORKER_ID, 1);
-		conn.subscribeToTopic(TOPIC_WORKER_ID);
-    	} catch(Exception e){e.printStackTrace();}
-    }
+		conn.asynchronousReceive(initTopic, new MyMessageListener() {
+			
+			@Override
+			public void onMessage(Message msg) {
+				
+				Object o;
+				try {
+					o=parseMessage(msg);
+					MyHashMap map=(MyHashMap) o;
+	
+					
+						if(map.containsKey("jar"))
+	                    {
+	                    	Address add=(Address)map.get("jar");
+	                      	System.out.println("scarica da porta "+add.getPort());
+	                        worker.downloadFile(Integer.parseInt(add.getPort()));
+	                       // worker.getConnection().publishToTopic(worker.TOPIC_WORKER_ID, "READY", "downloaded");
+	                    }
+						
+						if (map.containsKey("esegui")){
+							System.out.println("eseguo la sim");
+							GeneralParam params=new GeneralParam(200, 200, 5,
+									1, 2, 100,DistributedField2D.UNIFORM_PARTITIONING_MODE, ConnectionType.pureActiveMQ);
+							DistributedState dis=worker.makeSimulation( params, "");
+							//dis.start();
+							dis.schedule.step(dis.getState());
+							int i=0;
+							while(i!=dis.columns)
+							{
+								
+								
+										System.out.println("endsim with prefixID"+dis.schedule.getSteps());
+								
 
+								dis.schedule.step(dis);
+								i++;
+							}
+						
+							
+							
+
+												
+							
+						}
+					    						
+					
+				} catch (JMSException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		});
+		
+		
+
+} 	
+	
 	protected void createSimulationDirectoryByID(String simID){
 		String path=simulationsDirectories+File.separator+simID+File.separator+"runs";
 		MyFileSystem.make(path);
@@ -157,18 +215,12 @@ public class Worker {
 
 
 
-	protected void downloadFile(String server, int serverSocketPort, String path){
+	protected void downloadFile(int serverSocketPort){
 
-		//mi servono ip e port del serversocket
-		System.out.println("setta");
-		String serverSocketIP = this.IP_ACTIVEMQ;//da togliere
 		
 		
-		String localJarFilePath = "/home/miccar/Scrivania/"+TOPIC_WORKER_ID+"out.jar";//da scegliere 
-
-
-		this.TOPICPREFIX=""+localJarFilePath.hashCode();
-
+		
+		String localJarFilePath =this.simulationsDirectories+File.separator+"1"+File.separator+"out.jar"; ;//simulationsDirectories+File.separator+TOPIC_WORKER_ID+"out.jar";//da scegliere 
 
 		byte[] aByte = new byte[1];
 		int bytesRead;
@@ -176,7 +228,7 @@ public class Worker {
 		InputStream is = null;
 
 		try {
-			clientSocket = new Socket( serverSocketIP , serverSocketPort );
+			clientSocket = new Socket( this.IP_ACTIVEMQ , serverSocketPort );
 			is = clientSocket.getInputStream();
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -213,16 +265,21 @@ public class Worker {
 				bos.close();
 				System.out.println("End writing...");
 				clientSocket.close();
+				 
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
 		}	
+		getConnection().publishToTopic(TOPIC_WORKER_ID, "READY", "downloaded");
 	}
 
 
-	protected DistributedState makeSimulation(String path_jar_file, GeneralParam params, String prefix)
+	protected DistributedState makeSimulation(GeneralParam params, String prefix)
 	{
 
+		 this.TOPICPREFIX="";
+		 String path_jar_file=simulationsDirectories+File.separator+"1"+File.separator+"out.jar";
+		 System.out.println("execute"+path_jar_file);
 
 		try{
 			JarFile jar=new JarFile(new File(path_jar_file));
@@ -246,7 +303,7 @@ public class Worker {
 				InputStream input = jar.getInputStream(je);
 				BufferedInputStream readInput=new BufferedInputStream(input);
 
-				Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
+				 Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
 
 				if(c.getSuperclass().equals(DistributedState.class))
 					distributedState=c;
@@ -256,6 +313,9 @@ public class Worker {
 			JarClassLoader cload = new JarClassLoader(new URL("jar:file://"+path_jar_file+"!/"));
 
 			cload.addToClassPath();
+			System.out.println("ds"+distributedState.getName());
+
+			
 			return (DistributedState) cload.getInstance(distributedState.getName(), params,prefix);
 		} catch (Exception e){
 			e.printStackTrace();
@@ -269,55 +329,6 @@ public class Worker {
 	}
 
 
-
-
-	protected boolean createConnection(){
-		Address address=new Address(this.getIpActivemq(), this.getPortActivemq());
-		System.out.println("connection to server "+address);
-		return conn.setupConnection(address);
-
-	}
-
-
-	protected void subToInitialTopic(String initTopic) {
-	        final Worker worker=this;
-		
-			try {conn.subscribeToTopic(initTopic);} 
-			catch (Exception e1) {e1.printStackTrace();}
-			
-			conn.asynchronousReceive(initTopic, new MyMessageListener() {
-				
-				@Override
-				public void onMessage(Message msg) {
-					
-					Object o;
-					try {
-						o=parseMessage(msg);
-						MyHashMap map=(MyHashMap) o;
-		
-						
-							if(map.containsKey("jar"))
-		                    {
-		                    	System.out.println("entro");
-		                    	Address add=(Address)map.get("jar");
-		                      	System.out.println("scarica da porta "+add.getPort());
-		                        worker.downloadFile(worker.IP_ACTIVEMQ, Integer.parseInt(add.getPort()), "");
-		                        worker.getConnection().publishToTopic(worker.TOPIC_WORKER_ID, "READY", "downloaded");
-		                    }
-						    						
-						
-					} catch (JMSException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-				}
-			});
-			
-			
-	
-	} 	
-
 	/**
 	 * Reestituisce info al master
 	 */
@@ -329,6 +340,35 @@ public class Worker {
 	    info.getCPULoad();
 	
 	}
+	//method for topic 
+
+
+	protected boolean createConnection(){
+		Address address=new Address(this.getIpActivemq(), this.getPortActivemq());
+		System.out.println("connection to server "+address);
+		return conn.setupConnection(address);
+
+	}
+
+
+	
+
+    protected void sendIdentifyTopic(){
+    	try{	
+    	conn.createTopic("READY", 1);
+		conn.subscribeToTopic("READY");
+		conn.publishToTopic(this.TOPIC_WORKER_ID,"READY" ,"iscrizione");
+		
+		//topic per fornire info al master 
+		conn.createTopic(this.TOPIC_WORKER_ID, 1);
+		conn.subscribeToTopic(TOPIC_WORKER_ID);
+    	} catch(Exception e){e.printStackTrace();}
+    }
+
+	
+	
+	
+
 	
 	
 
