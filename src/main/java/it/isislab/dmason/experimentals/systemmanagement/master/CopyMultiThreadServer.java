@@ -14,7 +14,7 @@ import java.net.Socket;
 public class CopyMultiThreadServer implements Runnable {
 	Socket csocket=null;
 
-	public CopyMultiThreadServer(Socket c) {
+	public CopyMultiThreadServer(Socket c/*, String jarPath*/) {
 		csocket=c;
 	}
 
