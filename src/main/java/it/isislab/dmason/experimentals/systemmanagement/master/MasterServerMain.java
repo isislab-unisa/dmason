@@ -26,18 +26,17 @@ public class MasterServerMain {
 		MasterServer master =new MasterServer();
 		/*master.listenonREADY();
 		try {
-			Thread.sleep(10000);	
+			Thread.sleep(5000);	
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
 		System.out.println("pubblico");
 		master.getConnection().publishToTopic(new Address("172.16.15.75", "1414"), "MASTER","jar");
-		master.startCopyServer(1414);*/
-	
-		
-
+		master.startCopyServer(1414);		
+		master.getConnection().publishToTopic("", "MASTER", "esegui");
+	*/
 				
-//		// 1. Creating the server on port 8080
+		// 1. Creating the server on port 8080
 		Server server = new Server(8080);
 		ServletContextHandler handler =new ServletContextHandler(server,"resources/systemmanagement/master");	
 		server.setHandler(handler);	
