@@ -90,7 +90,8 @@
             <template is="dom-bind" id="simulations">
                 <neon-animated-pages id="pages" selected="0">
                         <animated-grid id="list-simulations" on-tile-click="_onTileClick"></animated-grid>
-                        <fullsize-page-with-card id="fullsize-card" on-click="_onFullsizeClick">
+                        <!--fullsize-page-with-card id="fullsize-card" on-click="_onFullsizeClick"-->
+                        <fullsize-page-with-card id="fullsize-card" on-go-back="_onFullsizeClick">
                         </fullsize-page-with-card>
                 </neon-animated-pages>
             </template>
@@ -110,6 +111,11 @@
 
         scope._onTileClick = function(event) {
             this.$['fullsize-card'].sim = event.detail.data;
+        var lf=[];
+        for(i=0; i<10;i++)
+            lf[i]={name:'file'+i,time:"22/01/2016"};
+
+            this.$['fullsize-card'].listFile =lf;
             this.$.pages.selected = 1;
         };
         scope._onFullsizeClick = function(event) {

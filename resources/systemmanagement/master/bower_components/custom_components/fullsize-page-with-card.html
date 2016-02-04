@@ -6,12 +6,21 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../neon-animation/neon-shared-element-animatable-behavior.html">
 <link rel="import" href="../neon-animation/animations/ripple-animation.html">
 <link rel="import" href="../neon-animation/animations/hero-animation.html">
 <link rel="import" href="../neon-animation/animations/fade-out-animation.html">
 <link rel="import" href="../neon-animation/animations/transform-animation.html">
 <link rel="inport" href="simulation-info.html">
+
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-item/paper-item-body.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../paper-card/paper-card.html">
+
+
 
 <dom-module id="fullsize-page-with-card">
     <template>
@@ -21,12 +30,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 display: block;
                 background-color: #646767;
                 color:#bdced7;
+                font-size: medium;
             }
             .fixed {
                 position: fixed;
                 top: 0;
                 left: 0;
                 width: 100%;
+                height: 100%;
             }
             .card {
                 position: relative;
@@ -35,13 +46,61 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 height: 80%;
                 background-color: #3f4242;
             }
+
+            .info{
+                cursor: help;
+            }
+
+            #back_button{
+                float: left;
+                margin: 80px auto  auto 10px;
+
+            }
+
+            .card-actions,{
+                overflow: scroll !important;
+            }
+
+            paper-card {
+                --paper-card-header-color: #bdced7;
+                background-color: transparent;
+            }
+
+            paper-card#sim_info{
+                width: 26%;
+                height: 50%;
+            }
+
+            paper-card#list_file {
+                width: 26%;
+                height: 50%;
+
+            }
+
         </style>
 
-        <div id="fixed" class=fixed"></div>
+        <div id="fixed" class="fixed"><paper-button id="back_button" on-click="go_back"><iron-icon icon="arrow-back"></iron-icon> BACK</paper-button></div>
         <div id="card" class="card">
-            <table>
-            <tr><td><simulation-info sim="{{sim}}"></simulation-info></td></tr>
-            </table>
+                    <paper-card id="sim_info" heading="Simulation Info">
+                        <div class="card-content">
+                            <simulation-info sim="{{sim}}"></simulation-info>
+                        </div>
+                    </paper-card>
+
+                <paper-card id="list_file" heading="Log file list">
+                    <div class="card-actions">
+                        <template is="dom-repeat" items="{{listFile}}" as="file">
+                            <paper-item>
+                                <paper-item-body two-line id>
+                                    <div>{{file.name}}</div>
+                                    <div secondary>{{file.time}}</div>
+                                </paper-item-body>
+                                <iron-icon class="info" title="Click for more info"icon="info"></iron-icon>
+                            </paper-item>
+                        </template>
+                    </div>
+                </paper-card>
+
         </div>
 
     </template>
@@ -58,7 +117,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             sim:{
                 type: Object
             },
-
+            listFile:{
+                type:Array
+            },
             sharedElements: {
                 type: Object,
                 value: function() {
@@ -96,6 +157,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     }
                 }
             }
+        },
+        go_back:function(){
+            this.fire('go-back',function(){});
         }
     });
 </script>
