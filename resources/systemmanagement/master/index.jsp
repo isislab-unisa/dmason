@@ -89,7 +89,7 @@
                             tiles+="<div class=\"grid-item-monitoring\" onclick=\"open_dialog('worker-paper-dialog')\">"
                             +"<div class=\"worker-system-info\"><span id=\"worker-id\">Worker ID: "+(i+1)+"</span></div>"
                             +"<div class=\"worker-system-info\"><span>CPU: %</span></div>"
-                            +"<div class=\"worker-system-info\"><span>Memory: Free  % Usage  %</span></div>"
+                            +"<div class=\"worker-system-info\"><span>Memory: Free  MB Usage  MB</span></div>"
                             +"<div class=\"worker-system-info\"><span>IP: </span></div>"
                             +"<div class=\"worker-system-info\"><span>#Simulations</span></div>"
                             +"</div>";
