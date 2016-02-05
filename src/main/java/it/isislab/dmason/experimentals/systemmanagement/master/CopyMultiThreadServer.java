@@ -10,12 +10,21 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-
+/**
+ * Class that simulates a copy server with tcp
+ * 
+ * @author Michele Carillo
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
+ *
+ */
 public class CopyMultiThreadServer implements Runnable {
-	Socket csocket=null;
+	private Socket csocket=null;
+	private String jarPathToSend;
 
-	public CopyMultiThreadServer(Socket c/*, String jarPath*/) {
-		csocket=c;
+	public CopyMultiThreadServer(Socket c, String jarPath) {
+		this.csocket=c;
+		this.jarPathToSend=jarPath;
 	}
 
 
@@ -31,7 +40,8 @@ public class CopyMultiThreadServer implements Runnable {
 		}
 
 		if (outToClient != null) {
-			File myFile = new File("/home/miccar/Scrivania/flockers.jar");
+			
+			File myFile = new File(jarPathToSend);
 			myFile.setReadable(true);
 			byte[] mybytearray = new byte[(int) myFile.length()];
 
@@ -66,14 +76,14 @@ public class CopyMultiThreadServer implements Runnable {
 		InetAddress address=InetAddress.getByName("127.0.0.1");
 
 		ServerSocket welcomeSocket = new ServerSocket(port,1,address);    
-
+        String path="/home/miccar/Scrivania/flockers.jar";
 
 
 		System.out.println("Listening");
 		while (true) {
 			Socket sock = welcomeSocket.accept();
 			System.out.println("Connected");
-			new Thread(new CopyMultiThreadServer(sock)).start();
+			new Thread(new CopyMultiThreadServer(sock,path)).start();
 		}
 	}
 

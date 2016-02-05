@@ -1,4 +1,4 @@
-package it.isislab.dmason.experimentals.systemmanagement.master;
+package it.isislab.dmason.experimentals.systemmanagement.utils;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 
-public class ClientCopy {
+public class ClientCopyExample {
 
 	public static void main(String[] args) {
 

@@ -1,18 +1,14 @@
 package it.isislab.dmason.experimentals.systemmanagement.master;
 
+import it.isislab.dmason.experimentals.systemmanagement.utils.MyFileSystem;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,31 +16,45 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Map.Entry;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
-
 import org.apache.activemq.broker.BrokerService;
-import org.mortbay.servlet.WelcomeFilter;
+
 
 public class MasterServer{
 
+	
+	//default 127.0.0.1:61616 else you have to change config.properties file
+	private static final String PROPERTIES_FILE_PATH="resources/systemmanagement/master/conf/config.properties";
+	
+	//connection and topic
 	private static final String MASTER_TOPIC="MASTER";
 	private  String IP_ACTIVEMQ="";
 	private  String PORT_ACTIVEMQ="";
-	private int PORT_COPY_SERVER=1414;
+    private int DEFAULT_PORT_COPY_SERVER=1414;
 	private BrokerService broker=null;
 	private Properties prop = null;
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
+	
+	//path directories 
 	static String prova="/home/miccar/Scrivania/";
 	private static final String masterDirectory=prova+"master";
 	private static final String masterTemporary=masterDirectory+File.separator+"temporay";
 	private static final String masterHistory=masterDirectory+File.separator+"history";
 	private static final String simulationsDirectories=masterDirectory+File.separator+"simulations";
-    public ArrayList<String> worker;
+    
+	
+ 
+	//copyserver
     Socket sock=null;
     ServerSocket welcomeSocket;
   
+    //info 
+    public ArrayList<String> worker;
+    
+    
+    
+    
 
 	/**
 	 * start activemq, initialize master connection, create directories and create initial topic for workers
@@ -53,10 +63,12 @@ public class MasterServer{
 		prop = new Properties();
 		broker = new BrokerService();
 		conn=new ConnectionNFieldsWithActiveMQAPI();
+		
 		MyFileSystem.make(masterDirectory);// master
-		MyFileSystem.make(masterTemporary);
+		MyFileSystem.make(masterTemporary);//temp folder
 		MyFileSystem.make(masterHistory); //master/history
 		MyFileSystem.make(simulationsDirectories+File.separator+"jobs"); //master/simulations/jobs
+		
 		this.loadProperties();
 		this.startActivemq();
 		this.createConnection();
@@ -66,8 +78,8 @@ public class MasterServer{
 
 	}
 
-	public MasterServer getMasterServer(){
-		return this;
+protected void sumbit(){
+		
 	}
 
 	protected void listenonREADY(){
@@ -75,7 +87,6 @@ public class MasterServer{
 		final MasterServer master=this.getMasterServer();
 	
 		
-		//while(true)for(String x:master.getConnection().getTopicList())System.out.println(x);
 		
 		master.getConnection().asynchronousReceive("READY", new MyMessageListener() {
 			
@@ -138,12 +149,10 @@ public class MasterServer{
 	}
 
 
-	protected void sumbit(){
-		
-	}
+	
 	
 
-	protected void startCopyServer(int port){
+	protected void invokeCopyServer(int port,String jarFile){
 		InetAddress address;
 		 welcomeSocket=null;
 		try {
@@ -153,7 +162,7 @@ public class MasterServer{
 			while (true) {
 				 sock = welcomeSocket.accept();
 				System.out.println("Connected");
-				new Thread(new CopyMultiThreadServer(sock)).start();
+				new Thread(new CopyMultiThreadServer(sock,jarFile)).start();
 			}
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -188,12 +197,11 @@ public class MasterServer{
 	}
 
 	private void loadProperties(){
-		//default 127.0.0.1:61616 else you have to change config.properties file
-		String filePropPath="resources/systemmanagement/master/conf/config.properties";
+	
 		InputStream input=null;
 		//load params from properties file 
 		try {
-			input=new FileInputStream(filePropPath);	
+			input=new FileInputStream(PROPERTIES_FILE_PATH);	
 			prop.load(input);
 			this.setIpActivemq(prop.getProperty("ipmaster"));
 			this.setPortActivemq(prop.getProperty("portmaster"));
@@ -210,9 +218,6 @@ public class MasterServer{
 	}
 
 	
-	private void sendAck(Serializable object,String key){
-		conn.publishToTopic(object, "MASTER", key);
-	}
 	
 	private void createInitialTopic(String topic){
 
@@ -229,12 +234,14 @@ public class MasterServer{
 
 
 
+	public MasterServer getMasterServer(){return this;}
+	
 	//getters and setters
 	public String getIpActivemq() {return IP_ACTIVEMQ;}
 	public void setIpActivemq(String iP) {IP_ACTIVEMQ = iP;}
 	public String getPortActivemq() {return PORT_ACTIVEMQ;}
 	public void setPortActivemq(String port) {PORT_ACTIVEMQ = port;}
 	public ConnectionNFieldsWithActiveMQAPI getConnection(){return conn;}
-	public int getCopyPort(){return PORT_COPY_SERVER;}
-	public void setCopyPort(int port){ this.PORT_COPY_SERVER=port;}
+	public int getCopyServerPort(){return DEFAULT_PORT_COPY_SERVER;}
+	public void setCopyServerPort(int port){ this.DEFAULT_PORT_COPY_SERVER=port;}
 }

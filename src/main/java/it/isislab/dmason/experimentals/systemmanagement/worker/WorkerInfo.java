@@ -12,18 +12,14 @@ import java.io.Serializable;
 		private String cpuLoad;
 		private String availableheapmemory;
 		private String busyheapmemory;
-		private String numStep;
+		/*private String numStep;
 		private String mode;
-		private String numberOfCells;
+		private String numberOfCells;*/
 		
 		
 		
 		public WorkerInfo() {}
 		
-		
-		
-
-
 		public void setCpuLoad(double x){this.cpuLoad=""+x;}
 		public void setAvailableHeap(double x){this.availableheapmemory=""+x;}
 		public void setBusyHeap(double x){this.busyheapmemory=""+x;}

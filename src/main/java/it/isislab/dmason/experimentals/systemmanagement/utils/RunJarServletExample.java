@@ -1,4 +1,4 @@
-package it.isislab.dmason.experimentals.systemmanagement.master;
+package it.isislab.dmason.experimentals.systemmanagement.utils;
 
 
 import java.io.File;
@@ -11,15 +11,15 @@ import javax.servlet.http.HttpServletResponse;
 
 
 
-public class RunJarServlet extends HttpServlet{
+public class RunJarServletExample extends HttpServlet{
 
 
 	private static final long serialVersionUID = 1L;
 	private String pathJar="";
 
 
-	public RunJarServlet() {}
-	public RunJarServlet(String path) {
+	public RunJarServletExample() {}
+	public RunJarServletExample(String path) {
 		this.pathJar=path;
 	}
 

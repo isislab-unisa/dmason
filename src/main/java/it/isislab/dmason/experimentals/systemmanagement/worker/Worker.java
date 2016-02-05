@@ -16,7 +16,7 @@
  */
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
-import it.isislab.dmason.experimentals.systemmanagement.master.MyFileSystem;
+import it.isislab.dmason.experimentals.systemmanagement.utils.MyFileSystem;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
 import it.isislab.dmason.experimentals.util.management.worker.PeerStatusInfo;
@@ -69,7 +69,6 @@ public class Worker {
 	private String IP_ACTIVEMQ="";
 	private String PORT_ACTIVEMQ="";
 	private String TOPICPREFIX="";
-	private String PORT_COPY_SERVER="";
 	private static final String MASTER_TOPIC="MASTER";
 	private static String prova="/home/miccar/Scrivania/";
 	private static final String workerDirectory=prova+"worker";
@@ -83,8 +82,9 @@ public class Worker {
 
 	/**
 	 * Localhost connection for activemq tcp://127.0.0.1:61616
+	 * non dovrebbe servire
 	 */
-	public Worker() {
+	/*public Worker() {
 		
 		MyFileSystem.make(workerTemporary);
 		MyFileSystem.make(simulationsDirectories);
@@ -95,7 +95,7 @@ public class Worker {
 		this.subToInitialTopic(MASTER_TOPIC);	
 		try {
 		this.TOPIC_WORKER_ID=InetAddress.getLocalHost().getHostAddress()+"-"+new UID();} catch (UnknownHostException e) {e.printStackTrace();}
-	}
+	}*/
 
 	/**
 	 * 
@@ -109,10 +109,11 @@ public class Worker {
 		this.IP_ACTIVEMQ=ipMaster;
 		this.PORT_ACTIVEMQ=portMaster;
 		this.conn=new ConnectionNFieldsWithActiveMQAPI();
-		boolean f=this.createConnection();
+		this.createConnection();
 		this.subToInitialTopic(MASTER_TOPIC);
 		try {
-			this.TOPIC_WORKER_ID="WORKER-"+InetAddress.getLocalHost().getHostAddress()+"-"+new UID();} catch (UnknownHostException e) {e.printStackTrace();}
+			String workerID="WORKER-"+InetAddress.getLocalHost().getHostAddress()+"-"+new UID();
+			this.TOPIC_WORKER_ID=workerID;} catch (UnknownHostException e) {e.printStackTrace();}
 
 	}
 
@@ -220,7 +221,7 @@ public class Worker {
 		
 		
 		
-		String localJarFilePath =this.simulationsDirectories+File.separator+"1"+File.separator+"out.jar"; ;//simulationsDirectories+File.separator+TOPIC_WORKER_ID+"out.jar";//da scegliere 
+		String localJarFilePath =this.getSimulationsDirectories()+File.separator+"1"+File.separator+"out.jar"; ;//simulationsDirectories+File.separator+TOPIC_WORKER_ID+"out.jar";//da scegliere 
 
 		byte[] aByte = new byte[1];
 		int bytesRead;
@@ -380,6 +381,7 @@ public class Worker {
 	public String getTopicPrefix() {return TOPICPREFIX;}
 	public void setTopicPrefix(String topicPrefix) {TOPICPREFIX = topicPrefix;}
 	public ConnectionNFieldsWithActiveMQAPI getConnection() {return conn;}
+	public String getSimulationsDirectories() {return simulationsDirectories;}
 
 
 
