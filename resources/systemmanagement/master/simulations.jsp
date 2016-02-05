@@ -113,7 +113,7 @@
             this.$['fullsize-card'].sim = event.detail.data;
         var lf=[];
         for(i=0; i<10;i++)
-            lf[i]={name:'file'+i,time:"22/01/2016"};
+            lf[i]={fileName:'file'+i,modifiedDate:"22/01/2016"};
 
             this.$['fullsize-card'].listFile =lf;
             this.$.pages.selected = 1;
