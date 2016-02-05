@@ -30,9 +30,14 @@
                 --paper-toolbar-height : 50px;
                 background: transparent;
             }
+
+            paper-item:hover{
+                cursor: pointer;
+            }
         </style>
 
         <paper-toolbar >
+            <h3 id="title">Log file list</h3>
             <!--paper-icon-button id="button" icon="arrow-back"></paper-icon-button-->
         </paper-toolbar>
 
@@ -57,7 +62,7 @@
         behaviors: [
             Polymer.NeonAnimatableBehavior
         ],
-      
+
         properties: {
             list_log: {
                 type: Array
@@ -68,11 +73,11 @@
                     return {
                         'entry': [{
                             name: 'fade-in-animation',
-                            node: this.$.button
+                            node: this.$.title
                         }],
                         'exit': [{
                             name: 'fade-out-animation',
-                            node: this.$.button
+                            node: this.$.title
                         }, {
                             name: 'hero-animation',
                             id: 'hero',
