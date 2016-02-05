@@ -5,6 +5,7 @@ import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,47 +15,50 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Properties;
 import java.util.Map.Entry;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
+
 import org.apache.activemq.broker.BrokerService;
 
 
 public class MasterServer{
 
-	
+
 	//default 127.0.0.1:61616 else you have to change config.properties file
 	private static final String PROPERTIES_FILE_PATH="resources/systemmanagement/master/conf/config.properties";
-	
+
 	//connection and topic
 	private static final String MASTER_TOPIC="MASTER";
 	private  String IP_ACTIVEMQ="";
 	private  String PORT_ACTIVEMQ="";
-    private int DEFAULT_PORT_COPY_SERVER=1414;
+	private int DEFAULT_PORT_COPY_SERVER=1414;
 	private BrokerService broker=null;
 	private Properties prop = null;
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
-	
+
 	//path directories 
 	static String prova="/home/miccar/Scrivania/";
 	private static final String masterDirectory=prova+"master";
 	private static final String masterTemporary=masterDirectory+File.separator+"temporay";
 	private static final String masterHistory=masterDirectory+File.separator+"history";
 	private static final String simulationsDirectories=masterDirectory+File.separator+"simulations";
-    
-	
- 
+
+
+
 	//copyserver
-    Socket sock=null;
-    ServerSocket welcomeSocket;
-  
-    //info 
-    public ArrayList<String> worker;
-    
-    
-    
-    
+	Socket sock=null;
+	ServerSocket welcomeSocket;
+
+	//info 
+	protected HashMap<String/*IDprefixOfWorker*/,String/*MyIDTopicprefixOfWorker*/> topicIdWorkers;
+	protected ArrayList<String> topicIdWorkersForSimulation;
+	protected HashMap<String,String> infoWorkers;
+
+
 
 	/**
 	 * start activemq, initialize master connection, create directories and create initial topic for workers
@@ -63,55 +67,130 @@ public class MasterServer{
 		prop = new Properties();
 		broker = new BrokerService();
 		conn=new ConnectionNFieldsWithActiveMQAPI();
-		
+
 		MyFileSystem.make(masterDirectory);// master
 		MyFileSystem.make(masterTemporary);//temp folder
 		MyFileSystem.make(masterHistory); //master/history
 		MyFileSystem.make(simulationsDirectories+File.separator+"jobs"); //master/simulations/jobs
-		
+
 		this.loadProperties();
 		this.startActivemq();
 		this.createConnection();
 		this.createInitialTopic(MASTER_TOPIC);
-		worker=new ArrayList<String>();
-	     
+
+		//topicPrefix of connected workers  
+		this.topicIdWorkers=new HashMap<String,String>();
+		this.topicIdWorkersForSimulation=new ArrayList<String>();
+		this.infoWorkers=new HashMap<String,String>();
+
 
 	}
 
-protected void sumbit(){
-		
+
+	protected void checkWorker(String topicWorker){
+
+
+		getConnection().publishToTopic("", getTopicIdWorkers().get(topicWorker), "check");
+
+		/*getConnection().asynchronousReceive(topicWorker, new MyMessageListener() {
+
+			@Override
+			public void onMessage(Message msg) {
+			 try {
+				Object o;
+				o=parseMessage(msg);
+				MyHashMap map=(MyHashMap) o;
+
+			} catch (JMSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			}
+		});*/
+
 	}
+
+
+
+
+
+	protected void sumbit(){
+
+		infoWorkers=new HashMap<String,String>();
+
+		for(String x: /*this.getTopicIdForSimulation()*/ this.getTopicIdWorkers().keySet()){
+
+			checkWorker(x);
+
+			//invio richiesta di invio jar
+		}
+
+		//riscontro richiesta dell ack con conatore finchè non li ho ricevuti tutti 
+
+		//avvio copyserver e invio notifica ai worker per inviare
+
+		//mi metto in attesa con un contatore per corretta ricezione di tutti i riscontri di avvenuta ricezione 
+
+		//termino copyserver
+
+	}
+
+
+
+
+
+	//
+	protected void start(){
+		for(String x: /*this.getTopicIdForSimulation()*/ this.getTopicIdWorkers().keySet()){
+			//invio la richiesta di esecuzione della simulazione con le cellette da simulare
+
+		}
+
+		//mi metto in attesa del riscontro da parte dei worker
+
+		for(String x: /*this.getTopicIdForSimulation()*/ this.getTopicIdWorkers().keySet()){
+			//invio ai worker la richiesta di start
+
+		}
+
+
+
+	}
+
 
 	protected void listenonREADY(){
 
 		final MasterServer master=this.getMasterServer();
-	
-		
-		
+
 		master.getConnection().asynchronousReceive("READY", new MyMessageListener() {
-			
+
 			@Override
 			public void onMessage(Message msg) {
-		        Object o;
+				Object o;
 				try {
 					o=parseMessage(msg);
 					MyHashMap mh = (MyHashMap)o;
-					
+
 					for ( Entry<String, Object> string : mh.entrySet()) {
-						
+
 						System.out.println(string.getKey()+"|"+string.getValue());
-						if(mh.containsKey("sottoscrizione")){
-						     master.worker.add(""+string.getValue());
-						     try {
-								master.getConnection().subscribeToTopic(""+string.getValue());
-							} catch (Exception e) {e.printStackTrace();}
+
+						//se ricevo una richiesta di sottoscrizione salvo e mi sottoscrivo al topic del worker
+						if(mh.containsKey("signrequest")){
+
+							String topicOfWorker=string.getValue().toString(); 
+							master.signRequest(topicOfWorker);
+
 						}
-						
+
+
+						//se il worker ha terminato lo scaricamento jar
 						if(mh.containsKey("downloaded")){
 							System.out.println("tappò"+mh.get("downloaded"));
-							
+
 							welcomeSocket.close();
-							
+
 							try {
 								sock.close();
 							} catch (IOException e) {
@@ -120,7 +199,7 @@ protected void sumbit(){
 							}
 						}
 					}
-						
+
 				} catch (JMSException e) {e.printStackTrace();} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -128,11 +207,63 @@ protected void sumbit(){
 			}
 		});
 	}
-	
-    /**
-     * Create directory for a simulation 
-     * @param simID name of directory to create
-     */
+
+
+	private void signRequest(String topicOfWorker){
+
+		final String topic=topicOfWorker;
+
+		try {
+			//mi sottoscrivo al worker
+			getConnection().subscribeToTopic(topicOfWorker);
+
+			//creo prefix univoco per comunicazione da master a worker 1-1 e creo topic
+			String myTopicForWorker=String.valueOf(topicOfWorker.hashCode());
+			getTopicIdWorkers().put(topicOfWorker,myTopicForWorker);
+			getConnection().createTopic(myTopicForWorker, 1);
+			getConnection().subscribeToTopic(myTopicForWorker);
+            System.out.println(topicOfWorker+"_____------"+myTopicForWorker);
+			//mando al worker il mioID univoco per esso di comunicazione
+			getConnection().publishToTopic(myTopicForWorker, "MASTER", topicOfWorker);
+			
+			getConnection().asynchronousReceive(topicOfWorker, new MyMessageListener() {
+				           
+				@Override
+				public void onMessage(Message msg) {
+
+					Object o;
+					try {
+						o=parseMessage(msg);
+						MyHashMap map=(MyHashMap) o;
+
+						for (Entry<String, Object> string : map.entrySet()) {
+							System.out.println(string.getKey()+"|"+string.getValue());
+							if(map.containsKey("info")){
+								System.out.println("Key"+string.getKey()+"Value"+string.getValue());
+								infoWorkers.put(topic,""+ map.get("info"));
+
+							}
+
+						}
+
+					} catch (JMSException e) {
+						e.printStackTrace();
+					}
+
+				}
+			});
+
+		} 
+		catch (Exception e){e.printStackTrace();}
+
+	}
+
+
+
+	/**
+	 * Create directory for a simulation 
+	 * @param simID name of directory to create
+	 */
 	protected void createSimulationDirectoryByID(String simID){
 		String path=simulationsDirectories+File.separator+simID+File.separator+"runs";
 		MyFileSystem.make(path);
@@ -149,18 +280,18 @@ protected void sumbit(){
 	}
 
 
-	
-	
+
+
 
 	protected void invokeCopyServer(int port,String jarFile){
 		InetAddress address;
-		 welcomeSocket=null;
+		welcomeSocket=null;
 		try {
 			address = InetAddress.getByName(this.IP_ACTIVEMQ);
 			welcomeSocket = new ServerSocket(port,1,address);
 			System.out.println("Listening");
 			while (true) {
-				 sock = welcomeSocket.accept();
+				sock = welcomeSocket.accept();
 				System.out.println("Connected");
 				new Thread(new CopyMultiThreadServer(sock,jarFile)).start();
 			}
@@ -168,17 +299,17 @@ protected void sumbit(){
 			e.printStackTrace();
 		} catch (IOException e) {
 			if (welcomeSocket != null && !welcomeSocket.isClosed()) {
-		        try {
-		        	welcomeSocket.close();
-		        } catch (IOException exx)
-		        {
-		            exx.printStackTrace(System.err);
-		        }
-		    }
+				try {
+					welcomeSocket.close();
+				} catch (IOException exx)
+				{
+					exx.printStackTrace(System.err);
+				}
+			}
 		}
 
 	}
-	
+
 
 	public String getTopicPrefix(String path){
 		//
@@ -197,7 +328,7 @@ protected void sumbit(){
 	}
 
 	private void loadProperties(){
-	
+
 		InputStream input=null;
 		//load params from properties file 
 		try {
@@ -217,8 +348,8 @@ protected void sumbit(){
 
 	}
 
-	
-	
+
+
 	private void createInitialTopic(String topic){
 
 
@@ -234,8 +365,11 @@ protected void sumbit(){
 
 
 
+
+
+
 	public MasterServer getMasterServer(){return this;}
-	
+
 	//getters and setters
 	public String getIpActivemq() {return IP_ACTIVEMQ;}
 	public void setIpActivemq(String iP) {IP_ACTIVEMQ = iP;}
@@ -244,4 +378,6 @@ protected void sumbit(){
 	public ConnectionNFieldsWithActiveMQAPI getConnection(){return conn;}
 	public int getCopyServerPort(){return DEFAULT_PORT_COPY_SERVER;}
 	public void setCopyServerPort(int port){ this.DEFAULT_PORT_COPY_SERVER=port;}
+	public HashMap<String,String> getTopicIdWorkers(){return topicIdWorkers;}
+	public ArrayList<String> getTopicIdForSimulation(){return topicIdWorkersForSimulation;}
 }

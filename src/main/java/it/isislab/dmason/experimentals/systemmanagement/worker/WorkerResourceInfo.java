@@ -8,6 +8,10 @@ import java.lang.management.OperatingSystemMXBean;
 
 public class WorkerResourceInfo {
 
+	/**
+	 * 
+	 */
+	
 	private OperatingSystemMXBean  os=null;
 	private MemoryMXBean memory=null;
 	private MemoryUsage available=null;

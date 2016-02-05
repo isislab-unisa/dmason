@@ -75,9 +75,10 @@ public class Worker {
 	private static final String workerTemporary=workerDirectory+File.separator+"temporary";
 	private static final String simulationsDirectories=workerDirectory+File.separator+"simulations";
 	private String TOPIC_WORKER_ID="";
-	
-	
-	
+	private String TOPIC_WORKER_ID_MASTER="";
+
+
+
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 
 	/**
@@ -85,7 +86,7 @@ public class Worker {
 	 * non dovrebbe servire
 	 */
 	/*public Worker() {
-		
+
 		MyFileSystem.make(workerTemporary);
 		MyFileSystem.make(simulationsDirectories);
 		this.setIpActivemq(IP_ACTIVEMQ);
@@ -110,7 +111,7 @@ public class Worker {
 		this.PORT_ACTIVEMQ=portMaster;
 		this.conn=new ConnectionNFieldsWithActiveMQAPI();
 		this.createConnection();
-		this.subToInitialTopic(MASTER_TOPIC);
+		this.startMasterComunication();
 		try {
 			String workerID="WORKER-"+InetAddress.getLocalHost().getHostAddress()+"-"+new UID();
 			this.TOPIC_WORKER_ID=workerID;} catch (UnknownHostException e) {e.printStackTrace();}
@@ -118,71 +119,118 @@ public class Worker {
 	}
 
 
-	
-	protected void subToInitialTopic(String initTopic) {
-        final Worker worker=this;
-	
-		try {conn.subscribeToTopic(initTopic);} 
+
+	protected void startMasterComunication() {
+		final Worker worker=this;
+
+		try {conn.subscribeToTopic(MASTER_TOPIC);} 
 		catch (Exception e1) {e1.printStackTrace();}
-		
-		conn.asynchronousReceive(initTopic, new MyMessageListener() {
-			
+
+		conn.asynchronousReceive(MASTER_TOPIC, new MyMessageListener() {
+
 			@Override
 			public void onMessage(Message msg) {
-				
+
 				Object o;
 				try {
 					o=parseMessage(msg);
 					MyHashMap map=(MyHashMap) o;
-	
-					
-						if(map.containsKey("jar"))
-	                    {
-	                    	Address add=(Address)map.get("jar");
-	                      	System.out.println("scarica da porta "+add.getPort());
-	                        worker.downloadFile(Integer.parseInt(add.getPort()));
-	                       // worker.getConnection().publishToTopic(worker.TOPIC_WORKER_ID, "READY", "downloaded");
-	                    }
-						
-						if (map.containsKey("esegui")){
-							System.out.println("eseguo la sim");
-							GeneralParam params=new GeneralParam(200, 200, 5,
-									1, 2, 100,DistributedField2D.UNIFORM_PARTITIONING_MODE, ConnectionType.pureActiveMQ);
-							DistributedState dis=worker.makeSimulation( params, "");
-							//dis.start();
-							dis.schedule.step(dis.getState());
-							int i=0;
-							while(i!=dis.columns)
-							{
-								
-								
-										System.out.println("endsim with prefixID"+dis.schedule.getSteps());
-								
 
-								dis.schedule.step(dis);
-								i++;
-							}
-						
-							
-							
 
-												
-							
+					if(map.containsKey(worker.TOPIC_WORKER_ID)){
+						TOPIC_WORKER_ID_MASTER=map.get(TOPIC_WORKER_ID).toString();
+						listenerForMasterComunication();
+
+
+					} 
+
+
+
+					if (map.containsKey("esegui")){
+						System.out.println("eseguo la sim");
+						GeneralParam params=new GeneralParam(200, 200, 5,
+								1, 2, 100,DistributedField2D.UNIFORM_PARTITIONING_MODE, ConnectionType.pureActiveMQ);
+						DistributedState dis=worker.makeSimulation( params, "");
+						//dis.start();
+						dis.schedule.step(dis.getState());
+						int i=0;
+						while(i!=dis.columns)
+						{
+
+
+							System.out.println("endsim with prefixID"+dis.schedule.getSteps());
+
+
+							dis.schedule.step(dis);
+							i++;
 						}
-					    						
-					
+
+
+
+
+
+
+					}
+
+
 				} catch (JMSException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			}
 		});
-		
-		
 
-} 	
-	
+
+
+	} 	
+
+
+	private void listenerForMasterComunication(){
+		System.out.println("Ricevuto ack iscrzione");
+		//mi sottoscrivo e mi metto in ricezione sul tale topic per comuncazioni del master
+		try{
+			getConnection().subscribeToTopic(TOPIC_WORKER_ID_MASTER);
+			//mi metto in attesa sul canale 
+		}catch(Exception e){ e.printStackTrace();}
+
+
+		getConnection().asynchronousReceive(TOPIC_WORKER_ID_MASTER, new MyMessageListener() {
+
+			@Override
+			public void onMessage(Message msg) {
+
+				Object o;
+				try {
+					o=parseMessage(msg);
+					MyHashMap map=(MyHashMap) o;
+
+					if(map.containsKey("check")){
+					WorkerInfo info=new WorkerInfo();
+					   System.out.println("scrivo  su"+TOPIC_WORKER_ID);
+                      getConnection().publishToTopic(info.toString(), TOPIC_WORKER_ID, "info");
+                      System.out.println("invisto");
+					}
+
+					/*if(map.containsKey("jar"))
+                    {
+                    	Address add=(Address)map.get("jar");
+                      	System.out.println("scarica da porta "+add.getPort());
+                        downloadFile(Integer.parseInt(add.getPort()));
+                       // worker.getConnection().publishToTopic(worker.TOPIC_WORKER_ID, "READY", "downloaded");
+                    }*/
+
+
+
+
+
+				} catch (JMSException e) {e.printStackTrace();}
+
+
+			}
+		});
+	}
+
 	protected void createSimulationDirectoryByID(String simID){
 		String path=simulationsDirectories+File.separator+simID+File.separator+"runs";
 		MyFileSystem.make(path);
@@ -218,9 +266,9 @@ public class Worker {
 
 	protected void downloadFile(int serverSocketPort){
 
-		
-		
-		
+
+
+
 		String localJarFilePath =this.getSimulationsDirectories()+File.separator+"1"+File.separator+"out.jar"; ;//simulationsDirectories+File.separator+TOPIC_WORKER_ID+"out.jar";//da scegliere 
 
 		byte[] aByte = new byte[1];
@@ -266,7 +314,7 @@ public class Worker {
 				bos.close();
 				System.out.println("End writing...");
 				clientSocket.close();
-				 
+
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
@@ -278,9 +326,9 @@ public class Worker {
 	protected DistributedState makeSimulation(GeneralParam params, String prefix)
 	{
 
-		 this.TOPICPREFIX="";
-		 String path_jar_file=simulationsDirectories+File.separator+"1"+File.separator+"out.jar";
-		 System.out.println("execute"+path_jar_file);
+		this.TOPICPREFIX="";
+		String path_jar_file=simulationsDirectories+File.separator+"1"+File.separator+"out.jar";
+		System.out.println("execute"+path_jar_file);
 
 		try{
 			JarFile jar=new JarFile(new File(path_jar_file));
@@ -304,7 +352,7 @@ public class Worker {
 				InputStream input = jar.getInputStream(je);
 				BufferedInputStream readInput=new BufferedInputStream(input);
 
-				 Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
+				Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
 
 				if(c.getSuperclass().equals(DistributedState.class))
 					distributedState=c;
@@ -316,7 +364,7 @@ public class Worker {
 			cload.addToClassPath();
 			System.out.println("ds"+distributedState.getName());
 
-			
+
 			return (DistributedState) cload.getInstance(distributedState.getName(), params,prefix);
 		} catch (Exception e){
 			e.printStackTrace();
@@ -335,11 +383,11 @@ public class Worker {
 	 */
 	public void info() 
 	{
-	 WorkerResourceInfo info=new WorkerResourceInfo();
-	    info.getAvailableHeapGb();
-	    info.getBusyHeapGb();
-	    info.getCPULoad();
-	
+		WorkerResourceInfo info=new WorkerResourceInfo();
+		info.getAvailableHeapGb();
+		info.getBusyHeapGb();
+		info.getCPULoad();
+
 	}
 	//method for topic 
 
@@ -352,26 +400,26 @@ public class Worker {
 	}
 
 
-	
 
-    protected void sendIdentifyTopic(){
-    	try{	
-    	conn.createTopic("READY", 1);
-		conn.subscribeToTopic("READY");
-		conn.publishToTopic(this.TOPIC_WORKER_ID,"READY" ,"iscrizione");
-		
-		//topic per fornire info al master 
-		conn.createTopic(this.TOPIC_WORKER_ID, 1);
-		conn.subscribeToTopic(TOPIC_WORKER_ID);
-    	} catch(Exception e){e.printStackTrace();}
-    }
 
-	
-	
-	
+	protected void sendIdentifyTopic(){
+		try{	
+			conn.createTopic("READY", 1);
+			conn.subscribeToTopic("READY");
+			conn.publishToTopic(this.TOPIC_WORKER_ID,"READY" ,"signrequest");
 
-	
-	
+			//topic per fornire info al master 
+			conn.createTopic(this.TOPIC_WORKER_ID, 1);
+			conn.subscribeToTopic(TOPIC_WORKER_ID);
+		} catch(Exception e){e.printStackTrace();}
+	}
+
+
+
+
+
+
+
 
 	//getters and setters
 	public String getIpActivemq() {return IP_ACTIVEMQ;}
