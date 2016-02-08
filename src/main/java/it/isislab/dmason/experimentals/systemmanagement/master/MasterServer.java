@@ -23,6 +23,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 
 import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.command.ActiveMQDestination;
 
 
 public class MasterServer{
@@ -85,6 +86,8 @@ public class MasterServer{
 
 
 	}
+	
+	
 
     //
 	/**
@@ -97,6 +100,7 @@ public class MasterServer{
 	protected void checkWorker(String topicWorker){
 
 		getConnection().publishToTopic("", getTopicIdWorkers().get(topicWorker), "check");
+		
 
 	}
 
