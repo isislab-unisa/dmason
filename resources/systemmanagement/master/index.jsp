@@ -89,7 +89,7 @@
                             tiles+="<div class=\"grid-item-monitoring\" onclick=\"open_dialog('worker-paper-dialog')\">"
                             +"<div class=\"worker-system-info\"><span id=\"worker-id\">Worker ID: "+(i+1)+"</span></div>"
                             +"<div class=\"worker-system-info\"><span>CPU: %</span></div>"
-                            +"<div class=\"worker-system-info\"><span>Memory: Free  % Usage  %</span></div>"
+                            +"<div class=\"worker-system-info\"><span>Memory: Free  MB Usage  MB</span></div>"
                             +"<div class=\"worker-system-info\"><span>IP: </span></div>"
                             +"<div class=\"worker-system-info\"><span>#Simulations</span></div>"
                             +"</div>";
@@ -108,13 +108,13 @@
                                     <tr>
                                         <td>
                                             <span>Select an external simulation</span><br>
-                                            <paper-button raised class="custom" onclick='opne_file_chooser()'>Choose</paper-button>
+                                            <paper-button raised class="custom" onclick='opne_file_chooser()'>Upload<iron-icon icon="file-upload"></iron-icon></paper-button>
                                             <input type="file" id="simulation-jar-chooser" name="sim-exe" accept="" onchange="startProgress()">
                                         </td>
                                         <td></td>
                                         <td>
                                             <span>Select an example simulation</span><br>
-                                            <paper-button raised class="custom">Choose</paper-button>
+                                            <paper-button raised class="custom">Upload<iron-icon icon="file-upload"></iron-icon></paper-button>
                                         </td>
                                     </tr>
                                     <tr><td colspan="3"><paper-progress></paper-progress></td></tr>

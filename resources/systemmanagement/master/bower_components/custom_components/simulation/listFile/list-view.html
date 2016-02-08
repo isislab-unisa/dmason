@@ -1,0 +1,104 @@
+<link rel="import" href="../../../iron-icons/iron-icons.html">
+<link rel="import" href="../../../iron-icon/iron-icon.html">
+<link rel="import" href="../../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../paper-item/paper-item.html">
+<link rel="import" href="../../../paper-item/paper-item-body.html">
+<link rel="import" href="../../../paper-styles/color.html">
+<link rel="import" href="../../../neon-animation/neon-animatable-behavior.html">
+<link rel="import" href="../../../neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../../neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../../neon-animation/animations/hero-animation.html">
+
+<dom-module id="list-view">
+    <template>
+
+        <style>
+            :host {
+            @apply(--layout-vertical);
+            }
+            .main {
+            @apply(--layout-flex);
+            @apply(--layout-scroll);
+                height: 500px;
+            }
+
+            iron-icon {
+                color: var(--google-grey-500);
+            }
+            paper-toolbar{
+                --paper-toolbar-height : 50px;
+                background: transparent;
+            }
+
+            paper-item:hover{
+                cursor: pointer;
+            }
+        </style>
+
+        <paper-toolbar >
+            <h3 id="title">Log file list</h3>
+            <!--paper-icon-button id="button" icon="arrow-back"></paper-icon-button-->
+        </paper-toolbar>
+
+        <div class="main">
+            <template is="dom-repeat" items="{{list_log}}" as="file">
+                <paper-item on-click="_onClick">
+                    <paper-item-body two-line>
+                        <div>{{file.fileName}}</div>
+                        <div secondary>{{file.modifiedDate}}</div>
+                    </paper-item-body>
+                    <iron-icon icon="info"></iron-icon>
+                </paper-item>
+            </template>
+        </div>
+    </template>
+
+</dom-module>
+
+<script>
+    Polymer({
+        is: 'list-view',
+        behaviors: [
+            Polymer.NeonAnimatableBehavior
+        ],
+
+        properties: {
+            list_log: {
+                type: Array
+            },
+            animationConfig: {
+                type: Object,
+                value: function() {
+                    return {
+                        'entry': [{
+                            name: 'fade-in-animation',
+                            node: this.$.title
+                        }],
+                        'exit': [{
+                            name: 'fade-out-animation',
+                            node: this.$.title
+                        }, {
+                            name: 'hero-animation',
+                            id: 'hero',
+                            fromPage: this
+                        }]
+                    };
+                }
+            }
+        },
+        _onClick: function(event) {
+            var target = event.target;
+            while (target !== this && !target._templateInstance) {
+                target = target.parentNode;
+            }
+            // configure the page animation
+            this.sharedElements = {
+                'hero': target,
+            };
+            this.fire('item-click', {
+                item: target,
+            });
+        }
+    });
+</script>

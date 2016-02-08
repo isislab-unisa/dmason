@@ -6,21 +6,25 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
-<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../neon-animation/neon-shared-element-animatable-behavior.html">
-<link rel="import" href="../neon-animation/animations/ripple-animation.html">
-<link rel="import" href="../neon-animation/animations/hero-animation.html">
-<link rel="import" href="../neon-animation/animations/fade-out-animation.html">
-<link rel="import" href="../neon-animation/animations/transform-animation.html">
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../neon-animation/neon-shared-element-animatable-behavior.html">
+<link rel="import" href="../../neon-animation/animations/ripple-animation.html">
+<link rel="import" href="../../neon-animation/animations/hero-animation.html">
+<link rel="import" href="../../neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../neon-animation/animations/transform-animation.html">
 <link rel="inport" href="simulation-info.html">
 
-<link rel="import" href="../paper-item/paper-item.html">
-<link rel="import" href="../paper-item/paper-item-body.html">
-<link rel="import" href="../paper-button/paper-button.html">
-<link rel="import" href="../iron-icons/iron-icons.html">
-<link rel="import" href="../paper-card/paper-card.html">
+<link rel="import" href="../../paper-item/paper-item.html">
+<link rel="import" href="../../paper-item/paper-item-body.html">
+<link rel="import" href="../../paper-button/paper-button.html">
+<link rel="import" href="../../iron-icons/iron-icons.html">
+<link rel="import" href="../../paper-card/paper-card.html">
 
 
+<link rel="import" href="../../neon-animation/neon-animated-pages.html">
+<link rel="import" href="../../neon-animation/neon-animations.html">
+<link rel="import" href="listFile/list-view.html">
+<link rel="import" href="listFile/full-log-view.html">
 
 <dom-module id="fullsize-page-with-card">
     <template>
@@ -28,37 +32,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             :host {
                 display: block;
-                background-color: #646767;
                 color:#bdced7;
                 font-size: medium;
             }
             .fixed {
-                position: fixed;
+                background-color: #646767;
+                position: absolute;
                 top: 0;
                 left: 0;
+                margin:10px;
                 width: 100%;
                 height: 100%;
+                overflow-x: visible;
             }
             .card {
                 position: relative;
-                margin: 5%;
-                width: 90%;
-                height: 80%;
+                margin: 50px auto auto 120px;
+                width: 780px;
+                height: 580px;
                 background-color: #3f4242;
+                @apply(--layout-horizontal);
             }
 
-            .info{
-                cursor: help;
+            .simulation-container{
+                width: 350px;
+                height: 560px;
+                @apply(--layout-vertical);
             }
+
 
             #back_button{
                 float: left;
-                margin: 80px auto  auto 10px;
 
-            }
-
-            .card-actions,{
-                overflow: scroll !important;
             }
 
             paper-card {
@@ -66,41 +71,46 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 background-color: transparent;
             }
 
-            paper-card#sim_info{
-                width: 26%;
-                height: 50%;
-            }
-
-            paper-card#list_file {
-                width: 26%;
-                height: 50%;
+            div.animation-log-container{
+                width: 600px;
+                margin-left: 30px;
 
             }
+            neon-animated-pages {
+                height: 550px;
+            }
+            paper-button[raised]{
+                width: 150px;
+                border-radius: 50px;
+            }
+
+            .download-button-container{
+                height:400px;
+                @apply(--layout-horizontal);
+                @apply(--layout-end);
+            }
+
 
         </style>
 
         <div id="fixed" class="fixed"><paper-button id="back_button" on-click="go_back"><iron-icon icon="arrow-back"></iron-icon> BACK</paper-button></div>
         <div id="card" class="card">
-                    <paper-card id="sim_info" heading="Simulation Info">
-                        <div class="card-content">
-                            <simulation-info sim="{{sim}}"></simulation-info>
-                        </div>
-                    </paper-card>
-
-                <paper-card id="list_file" heading="Log file list">
-                    <div class="card-actions">
-                        <template is="dom-repeat" items="{{listFile}}" as="file">
-                            <paper-item>
-                                <paper-item-body two-line id>
-                                    <div>{{file.name}}</div>
-                                    <div secondary>{{file.time}}</div>
-                                </paper-item-body>
-                                <iron-icon class="info" title="Click for more info"icon="info"></iron-icon>
-                            </paper-item>
-                        </template>
+            <div class="simulation-container">
+                <paper-card id="sim_info" heading="Simulation Info">
+                    <div class="card-content">
+                        <simulation-info sim="{{sim}}"></simulation-info>
                     </div>
                 </paper-card>
-
+                <div class="download-button-container">
+                <paper-button raised>Download Logs <iron-icon icon="file-download"></iron-icon></paper-button>
+                </div>
+            </div>
+            <div class="animation-log-container">
+                <neon-animated-pages id="log_files" selected="0">
+                    <list-view list_log="{{listFile}}" on-item-click="_onItemClick"></list-view>
+                    <full-log-view on-close="_onClose"></full-log-view>
+                </neon-animated-pages>
+            </div>
         </div>
 
     </template>
@@ -159,7 +169,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
         },
         go_back:function(){
-            this.fire('go-back',function(){});
+            this.fire('go-back');
+        },
+        _onItemClick: function() {
+            this.$.log_files.selected = 1;
+        },
+        _onClose: function() {
+            this.$.log_files.selected = 0;
         }
     });
+
+
 </script>

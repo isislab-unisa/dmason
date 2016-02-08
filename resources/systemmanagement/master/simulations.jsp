@@ -54,8 +54,8 @@
 
         <link rel="import" href="bower_components/neon-animation/neon-animated-pages.html">
         <link rel="import" href="bower_components/neon-animation/neon-animations.html">
-        <link rel="import" href="bower_components/custom_components/animated-grid.html">
-        <link rel="import" href="bower_components/custom_components/fullsize-page-with-card.html">
+        <link rel="import" href="bower_components/custom_components/simulation/animated-grid.html">
+        <link rel="import" href="bower_components/custom_components/simulation/fullsize-page-with-card.html">
 
         </head>
         <!--body unresolved onload="load_tiles_simulations()"-->
@@ -113,7 +113,7 @@
             this.$['fullsize-card'].sim = event.detail.data;
         var lf=[];
         for(i=0; i<10;i++)
-            lf[i]={name:'file'+i,time:"22/01/2016"};
+            lf[i]={fileName:'file'+i,modifiedDate:"22/01/2016"};
 
             this.$['fullsize-card'].listFile =lf;
             this.$.pages.selected = 1;
