@@ -104,6 +104,7 @@ public class MasterServer{
 	 * Check if all workers connected is on 
 	 */
 	protected void checkAllConnectedWorkers(){
+		
 		for (String topic : topicIdWorkers.keySet()) {
 			checkWorker(topic);
 		}
@@ -122,6 +123,7 @@ public class MasterServer{
 
 	protected void sumbit(){
 
+		
 		/*infoWorkers=new HashMap<String,String>();
 
 		for(String x: this.getTopicIdForSimulation() this.getTopicIdWorkers().keySet()){
