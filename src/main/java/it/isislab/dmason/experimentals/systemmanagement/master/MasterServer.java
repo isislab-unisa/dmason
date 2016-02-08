@@ -112,7 +112,11 @@ public class MasterServer{
 	/**
 	 * Check if all workers for this simulation
 	 */
-	protected void checkSimulationWorkers(String id){} 
+	protected void checkSimulationWorkers(String id){
+		for (String topic : topicIdWorkersForSimulation) {
+			checkWorker(topic);
+		}
+	} 
 
 
 
@@ -175,7 +179,6 @@ public class MasterServer{
 
 					for ( Entry<String, Object> string : mh.entrySet()) {
 
-						System.out.println(string.getKey()+"|"+string.getValue());
 
 						//se ricevo una richiesta di sottoscrizione salvo e mi sottoscrivo al topic del worker
 						if(mh.containsKey("signrequest")){

@@ -31,19 +31,26 @@ import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.NetworkInterface;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.rmi.server.UID;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -76,6 +83,7 @@ public class Worker {
 	private static final String simulationsDirectories=workerDirectory+File.separator+"simulations";
 	private String TOPIC_WORKER_ID="";
 	private String TOPIC_WORKER_ID_MASTER="";
+	private static String WORKER_IP="127.0.0.1";
 
 
 
@@ -110,14 +118,42 @@ public class Worker {
 		this.IP_ACTIVEMQ=ipMaster;
 		this.PORT_ACTIVEMQ=portMaster;
 		this.conn=new ConnectionNFieldsWithActiveMQAPI();
+		WORKER_IP=getIP();
 		this.createConnection();
 		this.startMasterComunication();
-		try {
-			String workerID="WORKER-"+InetAddress.getLocalHost().getHostAddress()+"-"+new UID();
-			this.TOPIC_WORKER_ID=workerID;} catch (UnknownHostException e) {e.printStackTrace();}
+		String workerID="WORKER-"+WORKER_IP+"-"+new UID();
+		this.TOPIC_WORKER_ID=workerID;
+
+
+
 
 	}
 
+
+	private static String getIP() {
+
+		try {
+            String c=InetAddress.getLocalHost().getHostAddress();
+			Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
+			for (; n.hasMoreElements();)
+			{
+				NetworkInterface e = n.nextElement();
+				Enumeration<InetAddress> a = e.getInetAddresses();
+				for (; a.hasMoreElements();){
+					InetAddress addr = a.nextElement();
+					String p=addr.getHostAddress();
+					if(p.contains(".") && p.compareTo(c)!=0)
+						return p;
+				}
+			}
+		} 
+		catch (SocketException e1) {
+			e1.printStackTrace();
+		} catch (UnknownHostException e1) {
+			e1.printStackTrace();
+		}
+		return WORKER_IP;
+	} 
 
 
 	protected void startMasterComunication() {
@@ -206,10 +242,11 @@ public class Worker {
 					MyHashMap map=(MyHashMap) o;
 
 					if(map.containsKey("check")){
-					WorkerInfo info=new WorkerInfo();
-					   System.out.println("scrivo  su"+TOPIC_WORKER_ID);
-                      getConnection().publishToTopic(info.toString(), TOPIC_WORKER_ID, "info");
-                      System.out.println("invisto");
+						WorkerInfo info=new WorkerInfo();
+						info.setIP(WORKER_IP);
+						System.out.println("scrivo  su"+TOPIC_WORKER_ID);
+						getConnection().publishToTopic(info.toString(), TOPIC_WORKER_ID, "info");
+						System.out.println("invisto");
 					}
 
 					/*if(map.containsKey("jar"))
@@ -431,6 +468,7 @@ public class Worker {
 	public ConnectionNFieldsWithActiveMQAPI getConnection() {return conn;}
 	public String getSimulationsDirectories() {return simulationsDirectories;}
 
-
-
+	 
 }
+
+
