@@ -114,7 +114,7 @@
                                         <td></td>
                                         <td>
                                             <span>Select an example simulation</span><br>
-                                            <paper-button raised class="custom">Upload<iron-icon icon="file-upload"></iron-icon></paper-button>
+                                            <paper-button raised class="custom">Choose<iron-icon icon="file-upload"></iron-icon></paper-button>
                                         </td>
                                     </tr>
                                     <tr><td colspan="3"><paper-progress></paper-progress></td></tr>
@@ -124,8 +124,8 @@
                                     <tr>
                                         <td colspan="3" style="text-align:center">
                                             <paper-radio-group>
-                                                <paper-radio-button name="uniform" >Uniform</paper-radio-button>
-                                                <paper-radio-button name="non-uniform">Non-Uniform</paper-radio-button>
+                                                <paper-radio-button name="uniform" >Uniform <iron-icon icon="view-module"></iron-icon></paper-radio-button>
+                                                <paper-radio-button name="non-uniform">Non-Uniform<iron-icon icon="view-quiltcl"></iron-icon></paper-radio-button>
                                             </paper-radio-group>
                                         </td>
                                     </tr>
