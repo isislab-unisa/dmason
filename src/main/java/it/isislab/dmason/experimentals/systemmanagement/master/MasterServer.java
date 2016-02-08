@@ -86,45 +86,46 @@ public class MasterServer{
 
 	}
 
-
+    //
+	/**
+	 *send a check message to worker on <topic topicworker>
+	 *If worker is sctive, it responds on his topic with key "info" 
+	 * with a info message of worker 
+	 * 
+	 * @param topicWorker
+	 */
 	protected void checkWorker(String topicWorker){
-
 
 		getConnection().publishToTopic("", getTopicIdWorkers().get(topicWorker), "check");
 
-		/*getConnection().asynchronousReceive(topicWorker, new MyMessageListener() {
-
-			@Override
-			public void onMessage(Message msg) {
-			 try {
-				Object o;
-				o=parseMessage(msg);
-				MyHashMap map=(MyHashMap) o;
-
-			} catch (JMSException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			}
-		});*/
-
 	}
 
-
+	/**
+	 * Check if all workers connected is on 
+	 */
+	protected void checkAllConnectedWorkers(){
+		for (String topic : topicIdWorkers.keySet()) {
+			checkWorker(topic);
+		}
+	}
+    
+	/**
+	 * Check if all workers for this simulation
+	 */
+	protected void checkSimulationWorkers(String id){} 
 
 
 
 	protected void sumbit(){
 
-		infoWorkers=new HashMap<String,String>();
+		/*infoWorkers=new HashMap<String,String>();
 
-		for(String x: /*this.getTopicIdForSimulation()*/ this.getTopicIdWorkers().keySet()){
+		for(String x: this.getTopicIdForSimulation() this.getTopicIdWorkers().keySet()){
 
 			checkWorker(x);
 
 			//invio richiesta di invio jar
-		}
+		}*/
 
 		//riscontro richiesta dell ack con conatore finchè non li ho ricevuti tutti 
 

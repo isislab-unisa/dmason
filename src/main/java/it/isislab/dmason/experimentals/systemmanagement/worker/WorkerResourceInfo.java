@@ -1,10 +1,10 @@
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
-import java.io.Serializable;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
+import java.text.DecimalFormat;
 
 public class WorkerResourceInfo {
 
@@ -29,18 +29,52 @@ public class WorkerResourceInfo {
 
 
 	public double getAvailableHeapGb(){	this.setAvailableHeapMemory();
-	return available.getMax()/byte_giga;
+	double toReturn=available.getMax()/byte_giga; 
+	DecimalFormat format=new DecimalFormat("#.##");
+	String dx=format.format(toReturn);
+	toReturn=Double.valueOf(dx);
+	return toReturn;		/*getConnection().asynchronousReceive(topicWorker, new MyMessageListener() {
+
+	@Override
+	public void onMessage(Message msg) {
+	 try {
+		Object o;
+		o=parseMessage(msg);
+		MyHashMap map=(MyHashMap) o;
+
+	} catch (JMSException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+
+	}
+});*/
 	}
 
 	public double getAvailableHeapMb(){this.setAvailableHeapMemory();
-	return available.getMax()/byte_mega;
+	
+	double toReturn=available.getMax()/byte_mega; 
+	DecimalFormat format=new DecimalFormat("#,##");
+	String dx=format.format(toReturn);
+	toReturn=Double.valueOf(dx);
+	return toReturn;
 	}
 
 	public double getBusyHeapGb(){this.setUsedHeapMemory();
-	return busy.getUsed()/byte_giga;
+	double toReturn=busy.getUsed()/byte_giga; 
+	DecimalFormat format=new DecimalFormat("#,##");
+	String dx=format.format(toReturn);
+	toReturn=Double.valueOf(dx);
+	return toReturn;
+	
+	
 	}
 	public double getBusyHeapMb(){this.setUsedHeapMemory();
-	return busy.getUsed()/byte_mega;
+	double toReturn=busy.getUsed()/byte_mega; 
+	DecimalFormat format=new DecimalFormat("#,##");
+	String dx=format.format(toReturn);
+	toReturn=Double.valueOf(dx);
+	return toReturn;
 	}
 
 	

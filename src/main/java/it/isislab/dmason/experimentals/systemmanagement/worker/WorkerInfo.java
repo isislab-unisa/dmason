@@ -18,7 +18,7 @@ import java.io.Serializable;
 		  private String mode;
 		  private String numberOfCells;
 		*/
-		WorkerResourceInfo info;
+		WorkerResourceInfo info=null;
 		
 		
 		
