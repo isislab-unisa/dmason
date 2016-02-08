@@ -1,20 +1,8 @@
 package it.isislab.dmason.experimentals.systemmanagement.master;
 
-import java.util.Map.Entry;
-
-
 import org.eclipse.jetty.server.Server;
-
-
-import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
-import it.isislab.dmason.util.connection.Address;
-import it.isislab.dmason.util.connection.MyHashMap;
-import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.management.JMException;
 
 public class MasterServerMain {
 
@@ -24,7 +12,7 @@ public class MasterServerMain {
 	public static void main(String[] args){
 
 		MasterServer master =new MasterServer();
-		/*master.listenonREADY();
+	/*	master.listenonREADY();
 		try {
 			Thread.sleep(10000);	
 		} catch (Exception e) {
