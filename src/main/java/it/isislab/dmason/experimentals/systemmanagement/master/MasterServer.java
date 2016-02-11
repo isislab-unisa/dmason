@@ -284,6 +284,7 @@ public class MasterServer implements MultiServerInterface{
 
 
 	/**
+	 * Sevlet
 	 * Create directory for a simulation 
 	 * @param simID name of directory to create
 	 */
@@ -293,6 +294,7 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 	/**
+	 * Sevlet
 	 * Delete a directory for a simulation
 	 * @param simID name of a directory to delete
 	 */
