@@ -43,10 +43,10 @@ public class MasterServer{
 
 	//path directories 
 	static String prova="/home/miccar/Scrivania/";
-	private static final String masterDirectory=prova+"master";
-	private static final String masterTemporary=masterDirectory+File.separator+"temporay";
-	private static final String masterHistory=masterDirectory+File.separator+"history";
-	private static final String simulationsDirectories=masterDirectory+File.separator+"simulations";
+	private static final String masterDirectoryFolder=prova+"master";
+	private static final String masterTemporaryFolder=masterDirectoryFolder+File.separator+"temporay";
+	private static final String masterHistoryFolder=masterDirectoryFolder+File.separator+"history";
+	private static final String simulationsDirectoriesFolder=masterDirectoryFolder+File.separator+"simulations";
 
 
 
@@ -69,10 +69,10 @@ public class MasterServer{
 		broker = new BrokerService();
 		conn=new ConnectionNFieldsWithActiveMQAPI();
 
-		MyFileSystem.make(masterDirectory);// master
-		MyFileSystem.make(masterTemporary);//temp folder
-		MyFileSystem.make(masterHistory); //master/history
-		MyFileSystem.make(simulationsDirectories+File.separator+"jobs"); //master/simulations/jobs
+		MyFileSystem.make(masterDirectoryFolder);// master
+		MyFileSystem.make(masterTemporaryFolder);//temp folder
+		MyFileSystem.make(masterHistoryFolder); //master/history
+		MyFileSystem.make(simulationsDirectoriesFolder+File.separator+"jobs"); //master/simulations/jobs
 
 		this.loadProperties();
 		this.startActivemq();
@@ -150,8 +150,6 @@ public class MasterServer{
 
 
 
-
-	//
 	protected void start(){
 		for(String x: /*this.getTopicIdForSimulation()*/ this.getTopicIdWorkers().keySet()){
 			//invio la richiesta di esecuzione della simulazione con le cellette da simulare
@@ -190,7 +188,7 @@ public class MasterServer{
 						if(mh.containsKey("signrequest")){
 
 							String topicOfWorker=string.getValue().toString(); 
-							master.signRequest(topicOfWorker);
+							master.processSignRequest(topicOfWorker);
 
 						}
 
@@ -218,8 +216,8 @@ public class MasterServer{
 		});
 	}
 
-
-	private void signRequest(String topicOfWorker){
+    
+	private void processSignRequest(String topicOfWorker){
 
 		final String topic=topicOfWorker;
 
@@ -275,7 +273,7 @@ public class MasterServer{
 	 * @param simID name of directory to create
 	 */
 	protected void createSimulationDirectoryByID(String simID){
-		String path=simulationsDirectories+File.separator+simID+File.separator+"runs";
+		String path=simulationsDirectoriesFolder+File.separator+simID+File.separator+"runs";
 		MyFileSystem.make(path);
 	}
 
@@ -284,7 +282,7 @@ public class MasterServer{
 	 * @param simID name of a directory to delete
 	 */
 	protected void deleteSimulationDirectoryByID(String simID){
-		String path=simulationsDirectories+File.separator+simID;
+		String path=simulationsDirectoriesFolder+File.separator+simID;
 		File c=new File(path);
 		MyFileSystem.delete(c);
 	}
@@ -321,8 +319,7 @@ public class MasterServer{
 	}
 
 
-	public String getTopicPrefix(String path){
-		//
+	protected String getTopicPrefix(String path){
 		return ""+path.hashCode();
 	}
 
@@ -375,19 +372,26 @@ public class MasterServer{
 
 
 
-
-
-
-	public MasterServer getMasterServer(){return this;}
-
 	//getters and setters
+	public MasterServer getMasterServer(){return this;}
+	public HashMap<String,String> getTopicIdWorkers(){return topicIdWorkers;}	//all connected workers 
+	public ArrayList<String> getTopicIdForSimulation(){return topicIdWorkersForSimulation;} //all workers for a simulation from id of their topix
+    
+	//activemq address port connection
 	public String getIpActivemq() {return IP_ACTIVEMQ;}
 	public void setIpActivemq(String iP) {IP_ACTIVEMQ = iP;}
 	public String getPortActivemq() {return PORT_ACTIVEMQ;}
 	public void setPortActivemq(String port) {PORT_ACTIVEMQ = port;}
-	public ConnectionNFieldsWithActiveMQAPI getConnection(){return conn;}
+	public ConnectionNFieldsWithActiveMQAPI getConnection(){return conn;}	
+	
+	// copy server info
 	public int getCopyServerPort(){return DEFAULT_PORT_COPY_SERVER;}
 	public void setCopyServerPort(int port){ this.DEFAULT_PORT_COPY_SERVER=port;}
-	public HashMap<String,String> getTopicIdWorkers(){return topicIdWorkers;}
-	public ArrayList<String> getTopicIdForSimulation(){return topicIdWorkersForSimulation;}
+	
+	//folder for master
+	protected static String getMasterdirectoryfolder(){return masterDirectoryFolder;}
+	protected static String getMasterTemporaryFolder() {return masterTemporaryFolder;}
+	protected static String getMasterHistory() {return masterHistoryFolder;}
+	protected static String getSimulationsDirectories() {return simulationsDirectoriesFolder;}
+	
 }
