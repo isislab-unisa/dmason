@@ -21,12 +21,13 @@ import java.util.Map.Entry;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.management.loading.MLetMBean;
 
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.command.ActiveMQDestination;
 
 
-public class MasterServer{
+public class MasterServer implements MultiServerInterface{
 
 
 	//default 127.0.0.1:61616 else you have to change config.properties file
@@ -107,7 +108,7 @@ public class MasterServer{
 	/**
 	 * Check if all workers connected is on 
 	 */
-	protected void checkAllConnectedWorkers(){
+	public void checkAllConnectedWorkers(){
 		
 		for (String topic : topicIdWorkers.keySet()) {
 			checkWorker(topic);
@@ -125,7 +126,7 @@ public class MasterServer{
 
 
 
-	protected void sumbit(){
+	public void sumbit(){
 
 		
 		/*infoWorkers=new HashMap<String,String>();
@@ -150,7 +151,7 @@ public class MasterServer{
 
 
 
-	protected void start(){
+	public void start(){
 		for(String x: /*this.getTopicIdForSimulation()*/ this.getTopicIdWorkers().keySet()){
 			//invio la richiesta di esecuzione della simulazione con le cellette da simulare
 
