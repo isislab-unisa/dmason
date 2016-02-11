@@ -58,7 +58,21 @@ public class MasterServer implements MultiServerInterface{
 	//info 
 	protected HashMap<String/*IDprefixOfWorker*/,String/*MyIDTopicprefixOfWorker*/> topicIdWorkers;
 	protected ArrayList<String> topicIdWorkersForSimulation;
-	protected HashMap<String,String> infoWorkers;
+	public HashMap<String,String> infoWorkers;
+
+
+
+	
+	
+
+
+
+	/**
+	 * @param infoWorkers the infoWorkers to set
+	 */
+	protected void setInfoWorkers(HashMap<String, String> infoWorkers) {
+		this.infoWorkers = infoWorkers;
+	}
 
 
 
@@ -394,5 +408,5 @@ public class MasterServer implements MultiServerInterface{
 	protected static String getMasterTemporaryFolder() {return masterTemporaryFolder;}
 	protected static String getMasterHistory() {return masterHistoryFolder;}
 	protected static String getSimulationsDirectories() {return simulationsDirectoriesFolder;}
-	
+	public HashMap<String, String> getInfoWorkers() {return infoWorkers;}
 }

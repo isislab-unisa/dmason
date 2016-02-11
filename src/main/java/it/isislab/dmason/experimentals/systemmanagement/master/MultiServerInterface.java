@@ -1,5 +1,7 @@
 package it.isislab.dmason.experimentals.systemmanagement.master;
 
+import java.util.HashMap;
+
 public interface MultiServerInterface {
 
 	
