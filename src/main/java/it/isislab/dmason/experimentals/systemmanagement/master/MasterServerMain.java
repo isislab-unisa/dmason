@@ -23,7 +23,7 @@ public class MasterServerMain {
 		}
 		System.out.println("pubblico");
 		
-		master.checkAllConnectedWorkers();
+		//master.checkAllConnectedWorkers();
 		
 		
 			
@@ -45,7 +45,7 @@ public class MasterServerMain {
 		classlist.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration", "org.eclipse.jetty.plus.webapp.PlusConfiguration");
 		classlist.addBefore("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration");
 		
-		ctx.addServlet(new ServletHolder(new GetConnectedWorkersServlet(master)),"/getWorkers");
+		ctx.addServlet(new ServletHolder(new GetConnectedWorkersServlet(master)),"/getWorkers");//?name=michele
 
 		//5. Setting the handler and starting the Server
 		server.setHandler(ctx);

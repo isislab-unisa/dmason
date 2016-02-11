@@ -32,6 +32,9 @@ public class GetConnectedWorkersServlet extends HttpServlet {
 		  for(String info : myServer.getInfoWorkers().values()){
 			  out.println(info);
 		  }
+		  
+		  String name=req.getParameter("name");
+		  System.out.println(name);
 			  
 			  
 	}
