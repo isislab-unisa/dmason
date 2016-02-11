@@ -130,7 +130,10 @@ public class Worker {
 	}
 
 
-
+   /**
+    * Explores NetworkInterface and finds IP Address 
+    * @return ip of Worker
+    */
 	private static String getIP() {
 
 		try {
