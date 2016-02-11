@@ -5,6 +5,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 
+import it.isislab.dmason.experimentals.systemmanagement.master.web.utils.CreateSimulationFolderServlet;
 import it.isislab.dmason.experimentals.systemmanagement.master.web.utils.GetConnectedWorkersServlet;
 
 public class MasterServerMain {
@@ -46,7 +47,7 @@ public class MasterServerMain {
 		classlist.addBefore("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration");
 		
 		ctx.addServlet(new ServletHolder(new GetConnectedWorkersServlet(master)),"/getWorkers");//?name=michele
-
+        ctx.addServlet(new ServletHolder(new CreateSimulationFolderServlet(master)), "/createSim");
 		//5. Setting the handler and starting the Server
 		server.setHandler(ctx);
 		try {

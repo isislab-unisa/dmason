@@ -287,7 +287,7 @@ public class MasterServer implements MultiServerInterface{
 	 * Create directory for a simulation 
 	 * @param simID name of directory to create
 	 */
-	protected void createSimulationDirectoryByID(String simID){
+	public void createSimulationDirectoryByID(String simID){
 		String path=simulationsDirectoriesFolder+File.separator+simID+File.separator+"runs";
 		MyFileSystem.make(path);
 	}
@@ -297,7 +297,7 @@ public class MasterServer implements MultiServerInterface{
 	 * Delete a directory for a simulation
 	 * @param simID name of a directory to delete
 	 */
-	protected void deleteSimulationDirectoryByID(String simID){
+	public void deleteSimulationDirectoryByID(String simID){
 		String path=simulationsDirectoriesFolder+File.separator+simID;
 		File c=new File(path);
 		MyFileSystem.delete(c);
@@ -307,7 +307,7 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-	protected void invokeCopyServer(int port,String jarFile){
+	public void invokeCopyServer(int port,String jarFile){
 		InetAddress address;
 		welcomeSocket=null;
 		try {
