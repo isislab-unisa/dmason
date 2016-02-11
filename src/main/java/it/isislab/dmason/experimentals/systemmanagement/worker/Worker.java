@@ -133,7 +133,7 @@ public class Worker {
 	private static String getIP() {
 
 		try {
-            String c=InetAddress.getLocalHost().getHostAddress();
+            String c=InetAddress.getLocalHost().getHostAddress();//non funziona su windows, su windows estituisce l'ip su linux 127.0.0.1            
 			Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
 			for (; n.hasMoreElements();)
 			{
