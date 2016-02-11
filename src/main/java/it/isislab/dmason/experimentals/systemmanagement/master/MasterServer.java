@@ -18,13 +18,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Map.Entry;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.management.loading.MLetMBean;
-
 import org.apache.activemq.broker.BrokerService;
-import org.apache.activemq.command.ActiveMQDestination;
 
 
 public class MasterServer implements MultiServerInterface{
