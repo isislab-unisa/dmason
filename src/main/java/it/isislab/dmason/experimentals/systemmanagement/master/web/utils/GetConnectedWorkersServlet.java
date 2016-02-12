@@ -12,32 +12,28 @@ import it.isislab.dmason.experimentals.systemmanagement.master.MultiServerInterf
 public class GetConnectedWorkersServlet extends HttpServlet {
 
 	MultiServerInterface myServer =null;
-	
+
 	public GetConnectedWorkersServlet(MultiServerInterface server){
 		myServer = server;
 	}
-	
-		
+
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		  resp.setContentType("application/json");
-		  PrintWriter out = resp.getWriter();
-		  myServer.checkAllConnectedWorkers();
-		  try{
-			  Thread.sleep(5000);
-		  }catch(Exception e){
-			  e.printStackTrace();
-		  }
-		  for(String info : myServer.getInfoWorkers().values()){
-			  out.println(info);
-		  }
-		  
-		  String name=req.getParameter("name");
-		  System.out.println(name);
-			  
-			  
+		resp.setContentType("application/json");
+		PrintWriter out = resp.getWriter();
+		myServer.checkAllConnectedWorkers();
+		try{
+			Thread.sleep(5000);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		for(String info : myServer.getInfoWorkers().values()){
+			out.println(info);
+		}
+		resp.setStatus(HttpServletResponse.SC_OK);  
 	}
-	
+
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// TODO Auto-generated method stub

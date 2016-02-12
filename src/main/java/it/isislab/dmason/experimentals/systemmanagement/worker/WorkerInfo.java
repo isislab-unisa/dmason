@@ -13,6 +13,7 @@ import java.io.Serializable;
 		private String availableheapmemory;
 		private String busyheapmemory;
 		private String ip="";
+		private String workerID="";
 		
 		/*private String numStep;
 		  private String mode;
@@ -28,17 +29,20 @@ import java.io.Serializable;
 			setAvailableHeap(info.getAvailableHeapMb());
 			setBusyHeap(info.getBusyHeapMb());
 			setCpuLoad(info.getCPULoad());
-			setIP("davedere");
+			
 		}
 		
 		public void setIP(String ip){this.ip=ip;};
 		public void setCpuLoad(double x){this.cpuLoad=""+x;}
 		public void setAvailableHeap(double x){this.availableheapmemory=""+x;}
 		public void setBusyHeap(double x){this.busyheapmemory=""+x;}
+		public void getWorkerID(String idworker){this.workerID=idworker;}
 		public String getCpuLoad(){return cpuLoad;}
 		public String getAvailableHeapMemory(){return availableheapmemory;}
 		public String getBusyHeapMemory(){return busyheapmemory;}
         public String getIP(){return ip;}
+        public String getWorkerID(){return workerID;}
+         
 
 		/* (non-Javadoc)
 		 * @see java.lang.Object#toString()
@@ -48,7 +52,7 @@ import java.io.Serializable;
 			return "[{cpuLoad:" + cpuLoad +"},"+
 					"{availableheapmemory:"+availableheapmemory +"},"+ 
 					"{busyheapmemory:"+ busyheapmemory +"},"+ 
-					"{ip:"+ ip +"}]";
+					"{ip:"+ ip +"}"+"{workerID:"+workerID+"}+]";
 		}		
 	}
 	
