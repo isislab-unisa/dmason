@@ -309,8 +309,9 @@ public class MasterServer implements MultiServerInterface{
 	/*   for(String topic: topicIdWorkersForSimulation){
 		  this.getConnection().publishToTopic(idfolder,topic, "simulation");
 		  this.getConnection().asynchronousReceive(key)
-		  
+		  //invio porta per jar al worker
 		  this.getConnection().publishToTopic(object, topicName, key)}*/
+	      //se tutti downloaded  
    }
 
     
