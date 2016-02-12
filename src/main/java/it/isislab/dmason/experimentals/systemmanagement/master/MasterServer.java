@@ -43,7 +43,7 @@ public class MasterServer implements MultiServerInterface{
 	private static String winzozz=System.getProperty("user.home")+File.separator+"Desktop"+File.separator;//togliere
 	private static String linux=System.getProperty("user.home")+File.separator+"Scrivania"+File.separator;//toliere
 	
-	private static final String masterDirectoryFolder=winzozz+"master";
+	private static final String masterDirectoryFolder=linux+"master";
 	private static final String masterTemporaryFolder=masterDirectoryFolder+File.separator+"temporay";
 	private static final String masterHistoryFolder=masterDirectoryFolder+File.separator+"history";
 	private static final String simulationsDirectoriesFolder=masterDirectoryFolder+File.separator+"simulations";
