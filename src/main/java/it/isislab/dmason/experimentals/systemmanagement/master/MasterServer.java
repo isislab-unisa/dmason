@@ -306,7 +306,7 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-
+    
 	public void invokeCopyServer(int port,String jarFile){
 		InetAddress address;
 		welcomeSocket=null;
@@ -405,9 +405,9 @@ public class MasterServer implements MultiServerInterface{
 	public void setCopyServerPort(int port){ this.DEFAULT_PORT_COPY_SERVER=port;}
 	
 	//folder for master
-	protected static String getMasterdirectoryfolder(){return masterDirectoryFolder;}
-	protected static String getMasterTemporaryFolder() {return masterTemporaryFolder;}
-	protected static String getMasterHistory() {return masterHistoryFolder;}
-	protected static String getSimulationsDirectories() {return simulationsDirectoriesFolder;}
+	public static String getMasterdirectoryfolder(){return masterDirectoryFolder;}
+	public static String getMasterTemporaryFolder() {return masterTemporaryFolder;}
+	public static String getMasterHistory() {return masterHistoryFolder;}
+	public static String getSimulationsDirectories() {return simulationsDirectoriesFolder;}
 	public HashMap<String, String> getInfoWorkers() {return infoWorkers;}
 }
