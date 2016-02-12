@@ -17,12 +17,7 @@ public class MasterServerMain {
 
 		MasterServer master =new MasterServer();
 		master.listenonREADY();
-		try {
-			Thread.sleep(10000);	
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		System.out.println("pubblico");
+		
 		
 		//master.checkAllConnectedWorkers();
 		

@@ -231,10 +231,10 @@ public class Worker {
 					MyHashMap map=(MyHashMap) o;
 
 					if(map.containsKey("check")){
-						WorkerInfo info=new WorkerInfo();
-						info.setIP(WORKER_IP);
+						String info=getInfoWorker();
+						
 						System.out.println("scrivo  su"+TOPIC_WORKER_ID);
-						getConnection().publishToTopic(info.toString(), TOPIC_WORKER_ID, "info");
+						getConnection().publishToTopic(info, TOPIC_WORKER_ID, "info");
 						System.out.println("invisto");
 					}
 
@@ -407,13 +407,13 @@ public class Worker {
 	/**
 	 * Reestituisce info al master
 	 */
-	public void info() 
+	private String getInfoWorker() 
 	{
-		WorkerResourceInfo info=new WorkerResourceInfo();
-		info.getAvailableHeapGb();
-		info.getBusyHeapGb();
-		info.getCPULoad();
-
+		WorkerInfo info=new WorkerInfo();
+		info.setIP(WORKER_IP);
+		info.setWorkerID(TOPIC_WORKER_ID);
+		return info.toString();
+		
 	}
 	//method for topic 
 

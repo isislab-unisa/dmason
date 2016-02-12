@@ -36,7 +36,7 @@ import java.io.Serializable;
 		public void setCpuLoad(double x){this.cpuLoad=""+x;}
 		public void setAvailableHeap(double x){this.availableheapmemory=""+x;}
 		public void setBusyHeap(double x){this.busyheapmemory=""+x;}
-		public void getWorkerID(String idworker){this.workerID=idworker;}
+		public void setWorkerID(String idworker){this.workerID=idworker;}
 		public String getCpuLoad(){return cpuLoad;}
 		public String getAvailableHeapMemory(){return availableheapmemory;}
 		public String getBusyHeapMemory(){return busyheapmemory;}
