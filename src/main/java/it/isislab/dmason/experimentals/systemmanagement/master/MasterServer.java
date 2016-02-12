@@ -304,7 +304,14 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-
+   public void sendSimulationProcess(String idfolder){
+	   //c è da riempire l array dei topic dei worker che partecipano
+	/*   for(String topic: topicIdWorkersForSimulation){
+		  this.getConnection().publishToTopic(idfolder,topic, "simulation");
+		  this.getConnection().asynchronousReceive(key)
+		  
+		  this.getConnection().publishToTopic(object, topicName, key)}*/
+   }
 
     
 	public void invokeCopyServer(int port,String jarFile){
