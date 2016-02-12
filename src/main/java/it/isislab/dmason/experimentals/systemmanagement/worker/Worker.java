@@ -411,7 +411,7 @@ public class Worker {
 	{
 		WorkerInfo info=new WorkerInfo();
 		info.setIP(WORKER_IP);
-		info.setWorkerID(TOPIC_WORKER_ID);
+		info.setWorkerID(this.TOPIC_WORKER_ID_MASTER);
 		return info.toString();
 		
 	}
