@@ -49,10 +49,10 @@ import java.io.Serializable;
 		 */
 		@Override
 		public String toString() {
-			return "[{cpuLoad:" + cpuLoad +"},"+
-					"{availableheapmemory:"+availableheapmemory +"},"+ 
-					"{busyheapmemory:"+ busyheapmemory +"},"+ 
-					"{ip:"+ ip +"}"+"{workerID:"+workerID+"}]";
+			return "{\"cpuLoad\":" + cpuLoad +","+
+					"\"availableheapmemory\":"+availableheapmemory +","+ 
+					"\"busyheapmemory\":"+ busyheapmemory +","+ 
+					"\"ip\":\""+ ip +"\","+"\"workerID\":\""+workerID+"\"}";
 		}		
 	}
 	
