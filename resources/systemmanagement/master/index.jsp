@@ -85,9 +85,18 @@
                     <script>
                         var grid=document.getElementById("workers");
                         var tiles="<div class=\"grid-sizer-monitoring\"></div>";
-                        for (i = 0; i < 24; i++) {
+                        var message ='<%=request.getAttribute("message").toString()%>';
+
+                        console.log(message);
+                            if(message.length==0)
+                                alert('No worker avaiable');
+                        var obj = JSON.parse(message);
+                        var w;
+                        console.log(obj);
+                        for (i = 0; i < obj.workers.length; i++) {
+                                    w = obj.workers[i];
                             tiles+="<div class=\"grid-item-monitoring\" onclick=\"open_dialog('worker-paper-dialog')\">"
-                            +"<div class=\"worker-system-info\"><span id=\"worker-id\">Worker ID: "+(i+1)+"</span></div>"
+                            +"<div class=\"worker-system-info\"><span id="+w.workerID+">Worker ID: "+i+"</span></div>"
                             +"<div class=\"worker-system-info\"><span>CPU: %</span></div>"
                             +"<div class=\"worker-system-info\"><span>Memory: Free  MB Usage  MB</span></div>"
                             +"<div class=\"worker-system-info\"><span>IP: </span></div>"

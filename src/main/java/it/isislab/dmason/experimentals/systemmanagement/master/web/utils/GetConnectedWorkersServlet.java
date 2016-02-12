@@ -20,18 +20,24 @@ public class GetConnectedWorkersServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.setContentType("application/json");
-		PrintWriter out = resp.getWriter();
+		resp.setContentType("text/plain;charset=UTF-8");
+		String message = "{\"workers\":[";
 		myServer.checkAllConnectedWorkers();
-		try{
-			Thread.sleep(5000);
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+		int startMessageSize = message.length();
+		
 		for(String info : myServer.getInfoWorkers().values()){
-			out.println(info);
+			message+=info+",";
 		}
-		resp.setStatus(HttpServletResponse.SC_OK);  
+		if(message.length() > startMessageSize)
+			message=message.substring(0, message.length()-1)+"]}";
+		else
+			message="";
+		//resp.getWriter().println(message);
+		resp.getWriter().close();
+		req.setAttribute("message", message);
+        req.getRequestDispatcher("/index.jsp").forward(req, resp);
+		
+	
 	}
 
 	@Override
