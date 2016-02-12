@@ -52,7 +52,7 @@ import java.io.Serializable;
 			return "[{cpuLoad:" + cpuLoad +"},"+
 					"{availableheapmemory:"+availableheapmemory +"},"+ 
 					"{busyheapmemory:"+ busyheapmemory +"},"+ 
-					"{ip:"+ ip +"}"+"{workerID:"+workerID+"}+]";
+					"{ip:"+ ip +"}"+"{workerID:"+workerID+"}]";
 		}		
 	}
 	
