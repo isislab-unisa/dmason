@@ -405,9 +405,9 @@ public class MasterServer implements MultiServerInterface{
 	public void setCopyServerPort(int port){ this.DEFAULT_PORT_COPY_SERVER=port;}
 	
 	//folder for master
-	public static String getMasterdirectoryfolder(){return masterDirectoryFolder;}
-	public static String getMasterTemporaryFolder() {return masterTemporaryFolder;}
-	public static String getMasterHistory() {return masterHistoryFolder;}
-	public static String getSimulationsDirectories() {return simulationsDirectoriesFolder;}
+	public String getMasterdirectoryfolder(){return masterDirectoryFolder;}
+	public String getMasterTemporaryFolder() {return masterTemporaryFolder;}
+	public String getMasterHistory() {return masterHistoryFolder;}
+	public String getSimulationsDirectories() {return simulationsDirectoriesFolder;}
 	public HashMap<String, String> getInfoWorkers() {return infoWorkers;}
 }
