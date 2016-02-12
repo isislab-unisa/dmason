@@ -89,22 +89,6 @@ public class Worker {
 
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 
-	/**
-	 * Localhost connection for activemq tcp://127.0.0.1:61616
-	 * non dovrebbe servire
-	 */
-	/*public Worker() {
-
-		MyFileSystem.make(workerTemporary);
-		MyFileSystem.make(simulationsDirectories);
-		this.setIpActivemq(IP_ACTIVEMQ);
-		this.setPortActivemq(PORT_ACTIVEMQ);
-		this.conn=new ConnectionNFieldsWithActiveMQAPI();
-		this.createConnection();
-		this.subToInitialTopic(MASTER_TOPIC);	
-		try {
-		this.TOPIC_WORKER_ID=InetAddress.getLocalHost().getHostAddress()+"-"+new UID();} catch (UnknownHostException e) {e.printStackTrace();}
-	}*/
 
 	/**
 	 * 
@@ -137,8 +121,8 @@ public class Worker {
 	private static String getIP() {
 
 		try {
-            //String c=InetAddress.getLocalHost().getHostAddress();//non funziona su windows, su windows estituisce l'ip su linux 127.0.0.1            
-			String c=InetAddress.getByName("localhost").getHostAddress();//funziona su winzozz provare su linux
+            //String c=InetAddress.getLocalHost().getHostAddress();//doesn't work on windows            
+			String c=InetAddress.getByName("localhost").getHostAddress();
 			Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
 			for (; n.hasMoreElements();)
 			{
