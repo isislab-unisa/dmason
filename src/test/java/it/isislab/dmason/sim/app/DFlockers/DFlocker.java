@@ -17,11 +17,8 @@
 package it.isislab.dmason.sim.app.DFlockers;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
-import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
-
 import java.awt.Color;
-
 import sim.engine.SimState;
 import sim.field.continuous.Continuous2D;
 import sim.portrayal.Orientable2D;

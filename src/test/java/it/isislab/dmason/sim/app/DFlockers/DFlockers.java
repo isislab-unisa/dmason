@@ -16,7 +16,6 @@
  */
 package it.isislab.dmason.sim.app.DFlockers;
 
-import it.isislab.dmason.annotation.BatchAnnotation;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
@@ -26,21 +25,11 @@ import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
-
 import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.util.List;
-
-import org.apache.commons.io.IOUtils;
-
 import sim.engine.SimState;
 import sim.portrayal.SimplePortrayal2D;
 import sim.portrayal.continuous.ContinuousPortrayal2D;
-import sim.portrayal.grid.SparseGridPortrayal2D;
 import sim.portrayal.simple.AdjustablePortrayal2D;
 import sim.portrayal.simple.MovablePortrayal2D;
 import sim.portrayal.simple.OrientedPortrayal2D;
@@ -68,67 +57,31 @@ public class DFlockers extends DistributedState<Double2D>
 	 */
 	private static final long serialVersionUID = 1L;
 	public DContinuousGrid2D flockers;
-	
-	@BatchAnnotation(
-			domain = "100-300",
-			suggestedValue = "250"
-			)
-	public double width = 150;
-	@BatchAnnotation
-	public double height = 150;
-	@BatchAnnotation
-	public int numFlockers = 20;
-	@BatchAnnotation
-	public double cohesion = 1.0;
-	@BatchAnnotation
-	public double avoidance = 1.0;
-	@BatchAnnotation
-	public double randomness = 1.0;
-	@BatchAnnotation
-	public double consistency = 1.0;
-	@BatchAnnotation
-	public double momentum = 1.0;
-	@BatchAnnotation
-	public double deadFlockerProbability = 0.1;
-	@BatchAnnotation
-	public double neighborhood = 10;
 
+
+	public int numFlockers = 20;
+	public double cohesion = 1.0;
+	public double avoidance = 1.0;
+	public double randomness = 1.0;
+	public double consistency = 1.0;
+	public double momentum = 1.0;
+	public double deadFlockerProbability = 0.1;
+	public double neighborhood = 10;
 	public double jump = 0.7;  // how far do we move in a timestep?
 
-	public double getCohesion() { return cohesion; }
-	public void setCohesion(double val) { if (val >= 0.0) cohesion = val; }
-	public double getAvoidance() { return avoidance; }
-	public void setAvoidance(double val) { if (val >= 0.0) avoidance = val; }
-	public double getRandomness() { return randomness; }
-	public void setRandomness(double val) { if (val >= 0.0) randomness = val; }
-	public double getConsistency() { return consistency; }
-	public void setConsistency(double val) { if (val >= 0.0) consistency = val; }
-	public double getMomentum() { return momentum; }
-	public void setMomentum(double val) { if (val >= 0.0) momentum = val; }
-	public int getNumFlockers() { return numFlockers; }
-	public void setNumFlockers(int val) { if (val >= 1) numFlockers = val; }
-	public double getWidth() { return width; }
-	public void setWidth(double val) { if (val > 0) width = val; }
-	public double getHeight() { return height; }
-	public void setHeight(double val) { if (val > 0) height = val; }
-	public double getNeighborhood() { return neighborhood; }
-	public void setNeighborhood(double val) { if (val > 0) neighborhood = val; }
-	public double getDeadFlockerProbability() { return deadFlockerProbability; }
-	public void setDeadFlockerProbability(double val) { if (val >= 0.0 && val <= 1.0) deadFlockerProbability = val; }
 
 	public double gridWidth ;
 	public double gridHeight ;   
 	public int MODE;
 
-	private String topicPrefix = "";
 	protected ContinuousPortrayal2D p;
 
-/**
- * DA ELIMINARE
- * @param params
- * @param simParams
- * @param prefix
- */
+	/**
+	 * 
+	 * @param params in order to build a distributed field
+	 * @param simParams parameters for this simulation
+	 * @param prefix a string added to topic to generate an unique topic for this simulation
+	 */
 	public DFlockers(GeneralParam params,String prefix)
 	{    	
 		super(params,new DistributedMultiSchedule<Double2D>(),prefix,params.getConnectionType());
@@ -141,8 +94,8 @@ public class DFlockers extends DistributedState<Double2D>
 	/**
 	 * DFlockers
 	 * 
-	 * @param params general in order to build a distributed field
-	 * @param list   list parameters for this simulation 
+	 * @param params in order to build a distributed field
+	 * @param list   parameters for this simulation 
 	 * @param prefix a string added to topic to generate an unique topic for this simulation 
 	 */
 	public DFlockers(GeneralParam params,List<EntryParam<String, Object>> simParams, String prefix)
@@ -157,16 +110,16 @@ public class DFlockers extends DistributedState<Double2D>
 			try {
 				this.getClass().getDeclaredField(entryParam.getParamName()).set(this, entryParam.getParamValue());
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
+
 				e.printStackTrace();
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
+
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
+
 				e.printStackTrace();
 			} catch (NoSuchFieldException e) {
-				// TODO Auto-generated catch block
+
 				e.printStackTrace();
 			}
 
@@ -177,16 +130,12 @@ public class DFlockers extends DistributedState<Double2D>
 			try {
 				System.out.println(this.getClass().getDeclaredField(entryParam.getParamName()).get(this));
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoSuchFieldException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -199,23 +148,17 @@ public class DFlockers extends DistributedState<Double2D>
 	public void start()
 	{
 
-		
-	/*	java.net.URL url = this.getClass().getResource("file.txt");
-		try{
+		/*	TEST java.net.URL url = this.getClass().getResource("file.txt");
 		 InputStream reader =url.openStream();
 		 StringWriter writer=new StringWriter();
 		 IOUtils.copy(reader, writer);
 		 System.out.println(writer.toString());
 		 reader.close();
 		 writer.close();
-		 
-		} catch(Exception e){
-			e.printStackTrace();
-		}
-	     */
-	     
-		
-		
+		 */
+
+
+
 		super.start();
 
 		// set up the flockers field.  It looks like a discretization
