@@ -259,9 +259,8 @@ public class MasterServer implements MultiServerInterface{
 						MyHashMap map=(MyHashMap) o;
 
 						for (Entry<String, Object> string : map.entrySet()) {
-							System.out.println(string.getKey()+"|"+string.getValue());
 							if(map.containsKey("info")){
-								System.out.println("Key"+string.getKey()+"Value"+string.getValue());
+								System.out.println("PRINT FOR LOGGER_INFO RECEIVED FROM MASTER<Key"+string.getKey()+"><Value"+string.getValue()+">");
 								infoWorkers.put(topic,""+ map.get("info"));
 
 							}
