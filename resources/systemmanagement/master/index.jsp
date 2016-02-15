@@ -74,9 +74,10 @@
 		</paper-scroll-header-panel>
 
 		<paper-scroll-header-panel main fixed>
-			<paper-toolbar flex id="mainToolBar">
-				<paper-icon-button icon="menu" paper-drawer-toggle ></paper-icon-button>
-                <span>DMASON Master</span>
+			<paper-toolbar flex id="mainToolBar" class="horizontal">
+				<div><paper-icon-button icon="menu" paper-drawer-toggle ></paper-icon-button></div>
+                <div class="flex"><span>DMASON Master</span></div>
+                <div><paper-icon-button icon="refresh" onclick="loadWorkers()"></paper-icon-button></div>
 		    </paper-toolbar>
 
              <div class="content content-main">
@@ -85,24 +86,23 @@
                     <script>
                         var grid=document.getElementById("workers");
                         var tiles="<div class=\"grid-sizer-monitoring\"></div>";
-                        var message ='<%=request.getAttribute("message").toString()%>';
-
+                        var message ='<% if(request.getAttribute("message")!=null) out.write(request.getAttribute("message").toString());%>';
+                        var obj =[];
                         console.log(message);
-                            if(message.length==0)
-                                alert('No worker avaiable');
-                        var obj = JSON.parse(message);
+                            if(message.length>0)
+                                obj = JSON.parse(message);
                         var w;
-                        console.log(obj);
-                        for (i = 0; i < obj.workers.length; i++) {
-                                    w = obj.workers[i];
-                            tiles+="<div class=\"grid-item-monitoring\" onclick=\"open_dialog('worker-paper-dialog')\">"
-                            +"<div class=\"worker-system-info\"><span id="+w.workerID+">Worker ID: "+i+"</span></div>"
-                            +"<div class=\"worker-system-info\"><span>CPU: %</span></div>"
-                            +"<div class=\"worker-system-info\"><span>Memory: Free  MB Usage  MB</span></div>"
-                            +"<div class=\"worker-system-info\"><span>IP: </span></div>"
-                            +"<div class=\"worker-system-info\"><span>#Simulations</span></div>"
-                            +"</div>";
-                        }
+                        if(obj.hasOwnProperty('workers'))
+                            for (i = 0; i < obj.workers.length; i++) {
+                                        w = obj.workers[i];
+                                tiles+="<div class=\"grid-item-monitoring\" onclick=\"open_dialog('worker-paper-dialog')\">"
+                                +"<div class=\"worker-system-info\"><span id="+w.workerID+">Worker ID: "+i+"</span></div>"
+                                +"<div class=\"worker-system-info\"><span>CPU:"+w.cpuLoad+" %</span></div>"
+                                +"<div class=\"worker-system-info\"><span>RAM: Free "+w.availableheapmemory+"  MB Used "+w.busyheapmemory+"  MB</span></div>"
+                                +"<div class=\"worker-system-info\"><span>IP: "+w.ip+"</span></div>"
+                                +"<div class=\"worker-system-info\"><span>#Simulations</span></div>"
+                                +"</div>";
+                            }
                         grid.innerHTML=tiles;
                     </script>
                 </div>

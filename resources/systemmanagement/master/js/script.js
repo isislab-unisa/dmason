@@ -94,6 +94,9 @@ function resetHandler(event) {
     Polymer.dom(event).localTarget.parentElement.reset();
 }
 
+function loadWorkers(){
+    window.location.replace("./getWorkers");
+}
 
 /*
 $(document).load(setTimeout(function(){

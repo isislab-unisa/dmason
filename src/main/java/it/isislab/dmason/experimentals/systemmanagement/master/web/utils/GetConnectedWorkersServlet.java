@@ -23,6 +23,7 @@ public class GetConnectedWorkersServlet extends HttpServlet {
 		resp.setContentType("text/plain;charset=UTF-8");
 		String message = "{\"workers\":[";
 		myServer.checkAllConnectedWorkers();
+		
 		int startMessageSize = message.length();
 		
 		for(String info : myServer.getInfoWorkers().values()){
@@ -32,11 +33,13 @@ public class GetConnectedWorkersServlet extends HttpServlet {
 			message=message.substring(0, message.length()-1)+"]}";
 		else
 			message="";
-		//resp.getWriter().println(message);
-		resp.getWriter().close();
+
+	
 		req.setAttribute("message", message);
-        req.getRequestDispatcher("/index.jsp").forward(req, resp);
 		
+
+        req.getRequestDispatcher("/index.jsp").forward(req, resp);
+
 	
 	}
 
