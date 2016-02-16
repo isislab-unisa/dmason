@@ -240,7 +240,8 @@ public class MasterServer implements MultiServerInterface{
 			getConnection().subscribeToTopic(topicOfWorker);
 
 			//creo prefix univoco per comunicazione da master a worker 1-1 e creo topic
-			String myTopicForWorker=String.valueOf(topicOfWorker.hashCode());
+			String myTopicForWorker=""+topicOfWorker.hashCode();
+			
 			getTopicIdWorkers().put(topicOfWorker,myTopicForWorker);
 			getConnection().createTopic(myTopicForWorker, 1);
 			getConnection().subscribeToTopic(myTopicForWorker);
@@ -291,6 +292,11 @@ public class MasterServer implements MultiServerInterface{
 		MyFileSystem.make(path);
 	}
 
+	public void createNewSimulation(){
+		
+	}
+	
+	
 	/**
 	 * Sevlet
 	 * Delete a directory for a simulation
@@ -416,5 +422,5 @@ public class MasterServer implements MultiServerInterface{
 	public String getMasterTemporaryFolder() {return masterTemporaryFolder;}
 	public String getMasterHistory() {return masterHistoryFolder;}
 	public String getSimulationsDirectories() {return simulationsDirectoriesFolder;}
-	public HashMap<String, String> getInfoWorkers() {return infoWorkers;}
+	public HashMap<String, String> getInfoWorkers() { HashMap<String, String> toReturn=infoWorkers; infoWorkers=new HashMap<>();  return toReturn;}
 }

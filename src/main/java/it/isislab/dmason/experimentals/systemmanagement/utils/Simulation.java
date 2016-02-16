@@ -7,37 +7,57 @@ public class Simulation {
 	
 	private String simName;
 	private String simID;
-	private String simPath;
-	//rows,columns,aoi,width,height,numagent,mode,
-    private GeneralParam parameters;
+	private String simulationFolder;
 	
-   
-    /**
-     * Wrapper for simulation 
-     * @param name
-     * @param id
-     * @param mainPath
-     * @param params
-     */
-	public Simulation(String name, String id, String mainPath,GeneralParam params) {
-		simName=name;
-		simID=id;
-		simPath=mainPath;
-		parameters=params;
-		
+	private int rows;
+	private int columns;
+	private int aoi;
+	private int width;
+	private int height;
+	private int numAgents;
+	private int mode;
+	private int connectionType;
+	private GeneralParam parameters;
+	
+	
+	public Simulation() {}
+
+
+	/**
+	 * @param simName
+	 * @param simID
+	 * @param simulationFolder
+	 * @param rows
+	 * @param columns
+	 * @param aoi
+	 * @param width
+	 * @param height
+	 * @param numAgent
+	 * @param mode
+	 * @param parameters
+	 */
+	public Simulation(String simName, String simID, String simulationFolder,
+			String rows, String columns, String aoi, String width,
+			String height, String numAgent, String mode, String connection) {
+		this.simName = simName;
+		this.simID = simID;
+		this.simulationFolder = simulationFolder;
+		this.rows = Integer.parseInt(rows);
+		this.columns = Integer.parseInt(columns);
+		this.aoi = Integer.parseInt(aoi);
+		this.width = Integer.parseInt(width);
+		this.height = Integer.parseInt(height);
+		this.numAgents = Integer.parseInt(numAgent);
+		this.mode = Integer.parseInt(mode);
+		this.connectionType=Integer.parseInt(connection);
+		this.parameters=new GeneralParam(this.width,this.height,this.aoi,this.rows,this.columns,numAgents,this.mode,connectionType);
 	}
 	
-
 	
-	//getter and setter
-	protected String getSimName() {return simName;}
-	protected void setSimName(String simName) {this.simName = simName;}
-	protected String getSimID() {return simID;}
-	protected void setSimID(String simID) {this.simID = simID;}
-	protected String getSimPath() {return simPath;}
-	protected void setSimPath(String simPath) {this.simPath = simPath;}
-	protected GeneralParam getSimParameters() {return parameters;}
-	protected void setSimParams(GeneralParam params) {this.parameters = params;}
 	
+	
+	
+    
+   
 	
 }
