@@ -182,7 +182,7 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-	protected void listenonREADY(){
+	public void listenonREADY(){
 
 		final MasterServer master=this.getMasterServer();
 
