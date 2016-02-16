@@ -271,17 +271,17 @@ public class MasterServer implements MultiServerInterface{
 						o=parseMessage(msg);
 						MyHashMap map=(MyHashMap) o;
 
-						if(map.containsKey("info")){
-							System.out.println("PRINT FOR LOGGER_INFO RECEIVED FROM MASTER<Key info"+"><Value"+map.get("info")+">");
+						//if(map.containsKey("info")){
+							//System.out.println("PRINT FOR LOGGER_INFO RECEIVED FROM MASTER<Key info"+"><Value"+map.get("info")+">");
+						//}
+						for (Entry<String, Object> string : map.entrySet()) {
+							if(map.containsKey("info")){
+								System.out.println("PRINT FOR LOGGER_INFO RECEIVED FROM MASTER<Key"+string.getKey()+"><Value"+string.getValue()+">");
+								infoWorkers.put(topic,""+ map.get("info"));
+
+							}
+
 						}
-//						for (Entry<String, Object> string : map.entrySet()) {
-//							if(map.containsKey("info")){
-//								System.out.println("PRINT FOR LOGGER_INFO RECEIVED FROM MASTER<Key"+string.getKey()+"><Value"+string.getValue()+">");
-//								infoWorkers.put(topic,""+ map.get("info"));
-//
-//							}
-//
-//						}
 
 					} catch (JMSException e) {
 						e.printStackTrace();
