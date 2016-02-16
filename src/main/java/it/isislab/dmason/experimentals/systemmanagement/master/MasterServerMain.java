@@ -41,7 +41,7 @@ public class MasterServerMain {
 		classlist.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration", "org.eclipse.jetty.plus.webapp.PlusConfiguration");
 		classlist.addBefore("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration");
 		
-		ctx.addServlet("it.isislab.dmason.experimentals.systemmanagement.master.web.utils.GetConnectedWorkersServlet", "/getWorkers");
+	//	ctx.addServlet("it.isislab.dmason.experimentals.systemmanagement.master.web.utils.GetConnectedWorkersServlet", "/getWorkers");
 //		ctx.addServlet(new ServletHolder(new GetConnectedWorkersServlet(master)),"/getWorkers");//?name=michele
 //      ctx.addServlet(new ServletHolder(new CreateSimulationFolderServlet(master)), "/createSim"); 
 //      ctx.addBean(master);

@@ -84,7 +84,7 @@
 
              <div class="content content-main">
                 <div class="grid-monitoring" id="workers">
-
+                        <!-- tail -->
                 </div>
                 <paper-fab id="add-simulation-to-worker-buttom" icon="add" onclick="open_dialog_setting_new_simulation()"></paper-fab>
                 <paper-toast id="miss-worker-selection">You should select some workers before to assign them a partitioning</paper-toast>

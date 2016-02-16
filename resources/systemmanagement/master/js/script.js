@@ -91,8 +91,17 @@ function loadWorkers(){
             _loadWorkers(result);
         }});
 }
-
+//var history="";
 function _loadWorkers(_message){
+    /*    var message="";
+var tmp = hash(_message);
+    if(history != tmp){
+        history=tmp;
+        message=_message;
+    }else
+        return;
+*/
+
     var message=_message;
     var grid=document.getElementById("workers");
     var tiles="<div class=\"grid-sizer-monitoring\"></div>";
@@ -102,11 +111,12 @@ function _loadWorkers(_message){
     console.log(message);
     if(message.length>0)
         obj = JSON.parse(message);
+
     var w;
     if(obj.hasOwnProperty('workers'))
         for (i = 0; i < obj.workers.length; i++) {
             w = obj.workers[i];
-            tiles+="<div class=\"grid-item-monitoring\" onclick=\"open_dialog('worker-paper-dialog')\">"
+            tiles+="<div class=\"grid-item-monitoring\" onclick=\"selectItem(this)\">"
                 +"<div class=\"worker-system-info\"><span id="+w.workerID+">Worker ID: "+i+"</span></div>"
                 +"<div class=\"worker-system-info\"><span>CPU:"+w.cpuLoad+" %</span></div>"
                 +"<div class=\"worker-system-info\"><span>RAM: Free "+w.availableheapmemory+"  MB Used "+w.busyheapmemory+"  MB</span></div>"
@@ -117,18 +127,28 @@ function _loadWorkers(_message){
     grid.innerHTML=tiles;
 }
 
-$(function(){ loadWorkers(); setInterval(function(){loadWorkers()},3000);});
+//$(function(){ loadWorkers(); setInterval(function(){loadWorkers()},10000);});
 
-$(function(){
-    $('.grid-item-monitoring').click(function(){
-        if($(this).hasClass("grid-item-selected"))
-            $(this).removeClass("grid-item-selected");
+function selectItem(element){
+        if($(element).hasClass("grid-item-selected"))
+            $(element).removeClass("grid-item-selected");
         else
-            $(this).addClass("grid-item-selected");
+            $(element).addClass("grid-item-selected");
+
+}
+
+function hash(value){
+    var hash = 0;
+    if (value.length == 0) return hash;
+    for (i = 0; i < value.length; i++) {
+        char = value.charCodeAt(i);
+        hash = ((hash<<5)-hash)+char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+}
 
 
-    });
-});
 /*
 $(document).load(setTimeout(function(){
     setting_new_simulation();

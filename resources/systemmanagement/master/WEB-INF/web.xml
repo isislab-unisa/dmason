@@ -32,4 +32,13 @@
 		<url-pattern>*.JSPX</url-pattern>
 		<url-pattern>*.XSP</url-pattern>
 	</servlet-mapping>
+
+    <servlet id="getWorkers">
+        <servlet-name>GetConnectedWorkersServlet</servlet-name>
+        <servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.GetConnectedWorkersServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetConnectedWorkersServlet</servlet-name>
+        <url-pattern>/getWorkers</url-pattern>
+    </servlet-mapping>
 </web-app>
