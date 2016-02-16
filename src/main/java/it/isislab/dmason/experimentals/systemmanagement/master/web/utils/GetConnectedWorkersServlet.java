@@ -13,16 +13,16 @@ public class GetConnectedWorkersServlet extends HttpServlet {
 
 	MultiServerInterface myServer =null;
 
-	public GetConnectedWorkersServlet(MultiServerInterface server){
-		myServer = server;
-	}
-
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/plain;charset=UTF-8");
+		if(req.getSession().getAttribute("masterServer")==null)
+			return;
+		myServer = (MultiServerInterface) req.getSession().getAttribute("masterServer");
 		String message = "{\"workers\":[";
 		myServer.checkAllConnectedWorkers();
+		PrintWriter p = resp.getWriter();
 		
 		int startMessageSize = message.length();
 		
@@ -34,12 +34,11 @@ public class GetConnectedWorkersServlet extends HttpServlet {
 		else
 			message="";
 
-	
-		req.setAttribute("message", message);
-		
+		p.print(message);
+//		req.setAttribute("message", message);
+//        req.getRequestDispatcher("/index.jsp").forward(req, resp);
 
-        req.getRequestDispatcher("/index.jsp").forward(req, resp);
-
+        p.close();
 	
 	}
 

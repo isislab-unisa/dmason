@@ -42,7 +42,9 @@
 <link rel="import" href="bower_components/paper-radio-group/paper-radio-group.html">
 <link rel="import" href="bower_components/paper-input/paper-input.html">
 <link rel="import" href="bower_components/paper-progress/paper-progress.html">
-<link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">"
+<link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 
 
 <link rel="import" href="bower_components/iron-icons/iron-icons.html">
@@ -72,7 +74,7 @@
 				</app-sidebar>
 			</div>
 		</paper-scroll-header-panel>
-
+    <jsp:useBean id="masterServer" class="it.isislab.dmason.experimentals.systemmanagement.master.MasterServer" scope="session"></jsp:useBean>
 		<paper-scroll-header-panel main fixed>
 			<paper-toolbar flex id="mainToolBar" class="horizontal">
 				<div><paper-icon-button icon="menu" paper-drawer-toggle ></paper-icon-button></div>
@@ -83,28 +85,6 @@
              <div class="content content-main">
                 <div class="grid-monitoring" id="workers">
 
-                    <script>
-                        var grid=document.getElementById("workers");
-                        var tiles="<div class=\"grid-sizer-monitoring\"></div>";
-                        var message ='<% if(request.getAttribute("message")!=null) out.write(request.getAttribute("message").toString());%>';
-                        var obj =[];
-                        console.log(message);
-                            if(message.length>0)
-                                obj = JSON.parse(message);
-                        var w;
-                        if(obj.hasOwnProperty('workers'))
-                            for (i = 0; i < obj.workers.length; i++) {
-                                        w = obj.workers[i];
-                                tiles+="<div class=\"grid-item-monitoring\" onclick=\"open_dialog('worker-paper-dialog')\">"
-                                +"<div class=\"worker-system-info\"><span id="+w.workerID+">Worker ID: "+i+"</span></div>"
-                                +"<div class=\"worker-system-info\"><span>CPU:"+w.cpuLoad+" %</span></div>"
-                                +"<div class=\"worker-system-info\"><span>RAM: Free "+w.availableheapmemory+"  MB Used "+w.busyheapmemory+"  MB</span></div>"
-                                +"<div class=\"worker-system-info\"><span>IP: "+w.ip+"</span></div>"
-                                +"<div class=\"worker-system-info\"><span>#Simulations</span></div>"
-                                +"</div>";
-                            }
-                        grid.innerHTML=tiles;
-                    </script>
                 </div>
                 <paper-fab id="add-simulation-to-worker-buttom" icon="add" onclick="open_dialog_setting_new_simulation()"></paper-fab>
                 <paper-toast id="miss-worker-selection">You should select some workers before to assign them a partitioning</paper-toast>
@@ -123,7 +103,15 @@
                                         <td></td>
                                         <td>
                                             <span>Select an example simulation</span><br>
-                                            <paper-button raised class="custom">Choose<iron-icon icon="file-upload"></iron-icon></paper-button>
+                                                <paper-dropdown-menu label="Select">
+                                                    <paper-listbox class="dropdown-content">
+                                                        <paper-item>allosaurus</paper-item>
+                                                        <paper-item>brontosaurus</paper-item>
+                                                        <paper-item>carcharodontosaurus</paper-item>
+                                                        <paper-item>diplodocus</paper-item>
+                                                    </paper-listbox>
+                                                </paper-dropdown-menu>
+                                            <!--paper-button raised class="custom">Select<iron-icon icon="receipt"></iron-icon></paper-button-->
                                         </td>
                                     </tr>
                                     <tr><td colspan="3"><paper-progress></paper-progress></td></tr>
@@ -134,7 +122,7 @@
                                         <td colspan="3" style="text-align:center">
                                             <paper-radio-group>
                                                 <paper-radio-button name="uniform" >Uniform <iron-icon icon="view-module"></iron-icon></paper-radio-button>
-                                                <paper-radio-button name="non-uniform">Non-Uniform<iron-icon icon="view-quiltcl"></iron-icon></paper-radio-button>
+                                                <paper-radio-button name="non-uniform">Non-Uniform<iron-icon icon="view-quilt"></iron-icon></paper-radio-button>
                                             </paper-radio-group>
                                         </td>
                                     </tr>

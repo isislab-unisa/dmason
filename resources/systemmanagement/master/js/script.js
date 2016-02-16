@@ -17,16 +17,7 @@ function load_tiles_settings(){
     );
 }
 
-$(function(){
-    $('.grid-item-monitoring').click(function(){
-        if($(this).hasClass("grid-item-selected"))
-            $(this).removeClass("grid-item-selected");
-        else
-            $(this).addClass("grid-item-selected");
 
-
-        });
-});
 
 function open_dialog_setting_new_simulation(){
     if($('.grid-item-selected').length){
@@ -95,9 +86,49 @@ function resetHandler(event) {
 }
 
 function loadWorkers(){
-    window.location.replace("./getWorkers");
+    $.ajax({url:"getWorkers",
+        success: function(result){
+            _loadWorkers(result);
+        }});
 }
 
+function _loadWorkers(_message){
+    var message=_message;
+    var grid=document.getElementById("workers");
+    var tiles="<div class=\"grid-sizer-monitoring\"></div>";
+
+    var obj =[];
+
+    console.log(message);
+    if(message.length>0)
+        obj = JSON.parse(message);
+    var w;
+    if(obj.hasOwnProperty('workers'))
+        for (i = 0; i < obj.workers.length; i++) {
+            w = obj.workers[i];
+            tiles+="<div class=\"grid-item-monitoring\" onclick=\"open_dialog('worker-paper-dialog')\">"
+                +"<div class=\"worker-system-info\"><span id="+w.workerID+">Worker ID: "+i+"</span></div>"
+                +"<div class=\"worker-system-info\"><span>CPU:"+w.cpuLoad+" %</span></div>"
+                +"<div class=\"worker-system-info\"><span>RAM: Free "+w.availableheapmemory+"  MB Used "+w.busyheapmemory+"  MB</span></div>"
+                +"<div class=\"worker-system-info\"><span>IP: "+w.ip+"</span></div>"
+                +"<div class=\"worker-system-info\"><span>#Simulations</span></div>"
+                +"</div>";
+        }
+    grid.innerHTML=tiles;
+}
+
+$(function(){ loadWorkers(); setInterval(function(){loadWorkers()},3000);});
+
+$(function(){
+    $('.grid-item-monitoring').click(function(){
+        if($(this).hasClass("grid-item-selected"))
+            $(this).removeClass("grid-item-selected");
+        else
+            $(this).addClass("grid-item-selected");
+
+
+    });
+});
 /*
 $(document).load(setTimeout(function(){
     setting_new_simulation();

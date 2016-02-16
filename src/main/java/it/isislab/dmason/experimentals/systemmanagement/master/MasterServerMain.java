@@ -15,8 +15,8 @@ public class MasterServerMain {
 
 	public static void main(String[] args){
 
-		MasterServer master =new MasterServer();
-		master.listenonREADY();
+	/*	MasterServer master =new MasterServer();
+		master.listenonREADY();*/
 		
 		
 		//master.checkAllConnectedWorkers();
@@ -41,8 +41,11 @@ public class MasterServerMain {
 		classlist.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration", "org.eclipse.jetty.plus.webapp.PlusConfiguration");
 		classlist.addBefore("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration");
 		
-		ctx.addServlet(new ServletHolder(new GetConnectedWorkersServlet(master)),"/getWorkers");//?name=michele
-        ctx.addServlet(new ServletHolder(new CreateSimulationFolderServlet(master)), "/createSim"); 
+		ctx.addServlet("it.isislab.dmason.experimentals.systemmanagement.master.web.utils.GetConnectedWorkersServlet", "/getWorkers");
+//		ctx.addServlet(new ServletHolder(new GetConnectedWorkersServlet(master)),"/getWorkers");//?name=michele
+//      ctx.addServlet(new ServletHolder(new CreateSimulationFolderServlet(master)), "/createSim"); 
+//      ctx.addBean(master);
+        
 		//5. Setting the handler and starting the Server
 		server.setHandler(ctx);
 		try {

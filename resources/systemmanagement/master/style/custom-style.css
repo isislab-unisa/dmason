@@ -80,7 +80,7 @@ input#simulation-jar-chooser{
     background-color: grey;
 }
 
-.worker-system-info, {
+.worker-system-info {
     width:auto;
     overflow: hidden;
 
