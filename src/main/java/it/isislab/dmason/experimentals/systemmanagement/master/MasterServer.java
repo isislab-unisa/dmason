@@ -247,7 +247,7 @@ public class MasterServer implements MultiServerInterface{
             System.out.println(topicOfWorker+"_____------"+myTopicForWorker);
 			//mando al worker il mioID univoco per esso di comunicazione
 			getConnection().publishToTopic(myTopicForWorker, "MASTER", topicOfWorker);
-			
+			//mi metto in ricezione sul topic del worker
 			getConnection().asynchronousReceive(topicOfWorker, new MyMessageListener() {
 				           
 				@Override

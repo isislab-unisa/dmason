@@ -107,10 +107,6 @@ public class Worker {
 		this.startMasterComunication();
 		String workerID="WORKER-"+WORKER_IP+"-"+new UID();
 		this.TOPIC_WORKER_ID=workerID;
-
-
-
-
 	}
 
 
@@ -144,7 +140,7 @@ public class Worker {
 		return WORKER_IP;
 	} 
 
-
+    //mi metto in ricezione sul master
 	protected void startMasterComunication() {
 		final Worker worker=this;
 
@@ -161,7 +157,7 @@ public class Worker {
 					o=parseMessage(msg);
 					MyHashMap map=(MyHashMap) o;
 
-
+                     //se + diretta a me il master mi invia il topic univoco comunicazione master-me
 					if(map.containsKey(worker.TOPIC_WORKER_ID)){
 						TOPIC_WORKER_ID_MASTER=map.get(TOPIC_WORKER_ID).toString();
 						listenerForMasterComunication();
@@ -210,7 +206,7 @@ public class Worker {
 
 	} 	
 
-
+    //mi mettto in ascolto sui messaggi che il master mi invia(1-1)
 	private void listenerForMasterComunication(){
 		System.out.println("Ricevuto ack iscrzione");
 		//mi sottoscrivo e mi metto in ricezione sul tale topic per comuncazioni del master
@@ -427,8 +423,9 @@ public class Worker {
 
 
 
-
-	protected void sendIdentifyTopic(){
+    //invio richiesta di iscrizione e comunico il topic sul quale
+	//invierò informazioni
+	protected void signRequestToMaster(){
 		try{	
 			conn.createTopic("READY", 1);
 			conn.subscribeToTopic("READY");
