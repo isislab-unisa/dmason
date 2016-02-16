@@ -77,14 +77,6 @@ function startProgress() {
     }
 }
 
-
-function submitHandler(event) {
-    Polymer.dom(event).localTarget.parentElement.submit();
-}
-function resetHandler(event) {
-    Polymer.dom(event).localTarget.parentElement.reset();
-}
-
 function loadWorkers(){
     $.ajax({url:"getWorkers",
         success: function(result){
@@ -148,9 +140,21 @@ function hash(value){
     return hash;
 }
 
+function getSelectedWorker(){
 
-/*
-$(document).load(setTimeout(function(){
-    setting_new_simulation();
-}, 2000)); */
+    $(".grid-item-selected").each();
+}
 
+function submitHandler(event) {
+    var form = document.getElementById("sendSimulationForm");
+
+
+   // form.appendChild("");
+    alert("ole");
+    form.submit();
+}
+
+
+function resetHandler(event) {
+    document.getElementById("sendSimulationForm").reset();
+}

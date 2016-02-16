@@ -74,7 +74,7 @@
 				</app-sidebar>
 			</div>
 		</paper-scroll-header-panel>
-    <jsp:useBean id="masterServer" class="it.isislab.dmason.experimentals.systemmanagement.master.MasterServer" scope="session"></jsp:useBean>
+    <jsp:useBean id="masterServer" class="it.isislab.dmason.experimentals.systemmanagement.master.MasterServer" scope="application"></jsp:useBean>
 		<paper-scroll-header-panel main fixed>
 			<paper-toolbar flex id="mainToolBar" class="horizontal">
 				<div><paper-icon-button icon="menu" paper-drawer-toggle ></paper-icon-button></div>
@@ -84,7 +84,7 @@
 
              <div class="content content-main">
                 <div class="grid-monitoring" id="workers">
-                        <!-- tail -->
+                        <!-- tails -->
                 </div>
                 <paper-fab id="add-simulation-to-worker-buttom" icon="add" onclick="open_dialog_setting_new_simulation()"></paper-fab>
                 <paper-toast id="miss-worker-selection">You should select some workers before to assign them a partitioning</paper-toast>
@@ -92,7 +92,7 @@
                     <h2>Simulation Settings</h2>
                     <paper-dialog-scrollable>
                         <div class="horizontal-section">
-                            <form is="iron-form" id="formGet" method="get" action="/">
+                            <form is="iron-form" id="sendSimulationForm" method="get">
                                 <table>
                                     <tr>
                                         <td>
