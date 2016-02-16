@@ -97,6 +97,8 @@ public class MasterServer implements MultiServerInterface{
 		this.topicIdWorkers=new HashMap<String,String>();
 		this.topicIdWorkersForSimulation=new ArrayList<String>();
 		this.infoWorkers=new HashMap<String,String>();
+		
+		this.listenForSignRequest();
 
 
 	}
@@ -182,7 +184,7 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-	public void listenonREADY(){
+	public void listenForSignRequest(){
 
 		final MasterServer master=this.getMasterServer();
 
