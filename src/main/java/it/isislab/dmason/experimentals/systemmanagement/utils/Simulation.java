@@ -8,6 +8,7 @@ public class Simulation {
 	private String simName;
 	private String simID;
 	private String simPath;
+	//rows,columns,aoi,width,height,numagent,mode,
     private GeneralParam parameters;
 	
    
