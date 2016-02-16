@@ -17,6 +17,7 @@
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
 import it.isislab.dmason.experimentals.systemmanagement.utils.MyFileSystem;
+import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
 import it.isislab.dmason.experimentals.util.management.worker.PeerStatusInfo;
@@ -105,11 +106,13 @@ public class Worker {
 		WORKER_IP=getIP();
 		this.createConnection();
 		this.startMasterComunication();
-		String workerID="WORKER-"+WORKER_IP+"-"+new UID();
-		this.TOPIC_WORKER_ID=workerID;
+		this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
 	}
 
 
+	
+	
+	
    /**
     * Explores NetworkInterface and finds IP Address 
     * @return ip of Worker
@@ -233,6 +236,11 @@ public class Worker {
 						getConnection().publishToTopic(info, TOPIC_WORKER_ID, "info");
 						System.out.println("invisto");
 					}
+					
+					if(map.containsKey("newsim")){
+						Simulation sim=(Simulation)map.get("newsim");
+						createNewSimulationProcess(sim);
+					}
 
 					/*if(map.containsKey("jar"))
                     {
@@ -253,6 +261,11 @@ public class Worker {
 		});
 	}
 
+	private void createNewSimulationProcess(Simulation sim){
+		this.createSimulationDirectoryByID(sim.getSimName());
+		this.getConnection().publishToTopic("", this.TOPIC_WORKER_ID, "simrcv");
+		
+	}
 	protected void createSimulationDirectoryByID(String simID){
 		String path=simulationsDirectories+File.separator+simID+File.separator+"runs";
 		MyFileSystem.make(path);
@@ -401,7 +414,7 @@ public class Worker {
 
 
 	/**
-	 * Reestituisce info al master
+	 * Reestituisce info al master del worker
 	 */
 	private String getInfoWorker() 
 	{

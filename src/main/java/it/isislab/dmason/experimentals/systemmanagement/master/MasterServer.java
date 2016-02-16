@@ -1,6 +1,7 @@
 package it.isislab.dmason.experimentals.systemmanagement.master;
 
 import it.isislab.dmason.experimentals.systemmanagement.utils.MyFileSystem;
+import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
@@ -18,8 +19,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
+
 import org.apache.activemq.broker.BrokerService;
 
 
@@ -58,13 +62,15 @@ public class MasterServer implements MultiServerInterface{
 	protected HashMap<String/*IDprefixOfWorker*/,String/*MyIDTopicprefixOfWorker*/> topicIdWorkers;
 	protected ArrayList<String> topicIdWorkersForSimulation;
 	public HashMap<String,String> infoWorkers;
+    private HashMap<Integer,Simulation> simulationsList;
+    private AtomicInteger indexHash;
 
+    
+    public void addSim(Simulation sim){
+    	simulationsList.put(indexHash.getAndIncrement(), sim);
+    }
 
-
-	
-	
-
-
+    
 
 	/**
 	 * @param infoWorkers the infoWorkers to set
@@ -97,9 +103,10 @@ public class MasterServer implements MultiServerInterface{
 		this.topicIdWorkers=new HashMap<String,String>();
 		this.topicIdWorkersForSimulation=new ArrayList<String>();
 		this.infoWorkers=new HashMap<String,String>();
-		
+	    //waiting for workers connecetion	
 		this.listenForSignRequest();
 
+		this.indexHash=new AtomicInteger(0);
 
 	}
 	
@@ -184,6 +191,9 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
+	/**
+	 * Listen for new Worker connection
+	 */
 	public void listenForSignRequest(){
 
 		final MasterServer master=this.getMasterServer();
@@ -198,7 +208,6 @@ public class MasterServer implements MultiServerInterface{
 					MyHashMap mh = (MyHashMap)o;
 
 					for ( Entry<String, Object> string : mh.entrySet()) {
-
 
 						//se ricevo una richiesta di sottoscrizione salvo e mi sottoscrivo al topic del worker
 						if(mh.containsKey("signrequest")){
@@ -241,13 +250,14 @@ public class MasterServer implements MultiServerInterface{
 			//mi sottoscrivo al worker
 			getConnection().subscribeToTopic(topicOfWorker);
 
+			
 			//creo prefix univoco per comunicazione da master a worker 1-1 e creo topic
 			String myTopicForWorker=""+topicOfWorker.hashCode();
 			
 			getTopicIdWorkers().put(topicOfWorker,myTopicForWorker);
 			getConnection().createTopic(myTopicForWorker, 1);
 			getConnection().subscribeToTopic(myTopicForWorker);
-            System.out.println(topicOfWorker+"_____------"+myTopicForWorker);
+            
 			//mando al worker il mioID univoco per esso di comunicazione
 			getConnection().publishToTopic(myTopicForWorker, "MASTER", topicOfWorker);
 			//mi metto in ricezione sul topic del worker
@@ -261,14 +271,17 @@ public class MasterServer implements MultiServerInterface{
 						o=parseMessage(msg);
 						MyHashMap map=(MyHashMap) o;
 
-						for (Entry<String, Object> string : map.entrySet()) {
-							if(map.containsKey("info")){
-								System.out.println("PRINT FOR LOGGER_INFO RECEIVED FROM MASTER<Key"+string.getKey()+"><Value"+string.getValue()+">");
-								infoWorkers.put(topic,""+ map.get("info"));
-
-							}
-
+						if(map.containsKey("info")){
+							System.out.println("PRINT FOR LOGGER_INFO RECEIVED FROM MASTER<Key info"+"><Value"+map.get("info")+">");
 						}
+//						for (Entry<String, Object> string : map.entrySet()) {
+//							if(map.containsKey("info")){
+//								System.out.println("PRINT FOR LOGGER_INFO RECEIVED FROM MASTER<Key"+string.getKey()+"><Value"+string.getValue()+">");
+//								infoWorkers.put(topic,""+ map.get("info"));
+//
+//							}
+//
+//						}
 
 					} catch (JMSException e) {
 						e.printStackTrace();
@@ -424,5 +437,8 @@ public class MasterServer implements MultiServerInterface{
 	public String getMasterTemporaryFolder() {return masterTemporaryFolder;}
 	public String getMasterHistory() {return masterHistoryFolder;}
 	public String getSimulationsDirectories() {return simulationsDirectoriesFolder;}
+	
+	
 	public HashMap<String, String> getInfoWorkers() { HashMap<String, String> toReturn=infoWorkers; infoWorkers=new HashMap<>();  return toReturn;}
+	public HashMap<Integer,Simulation> getSimsList(){return simulationsList;}
 }
