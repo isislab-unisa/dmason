@@ -17,9 +17,10 @@ public class GetConnectedWorkersServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/plain;charset=UTF-8");
-		if(req.getSession().getAttribute("masterServer")==null)
+		if(req.getServletContext().getAttribute("masterServer")==null)
 			return;
-		myServer = (MultiServerInterface) req.getSession().getAttribute("masterServer");
+		
+		myServer = (MultiServerInterface) req.getServletContext().getAttribute("masterServer");
 		String message = "{\"workers\":[";
 		myServer.checkAllConnectedWorkers();
 		PrintWriter p = resp.getWriter();
