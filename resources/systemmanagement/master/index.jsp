@@ -98,7 +98,7 @@
                                         <td>
                                             <span>Select an external simulation</span><br>
                                             <paper-button raised class="custom" onclick='opne_file_chooser()'>Upload<iron-icon icon="file-upload"></iron-icon></paper-button>
-                                            <input type="file" id="simulation-jar-chooser" name="sim-exe" accept="" onchange="startProgress()">
+                                            <input type="file" class="hidden" id="simulation-jar-chooser" name="sim-exe" accept="" onchange="startProgress()">
                                         </td>
                                         <td></td>
                                         <td>
@@ -124,6 +124,23 @@
                                                 <paper-radio-button required name="uniform" >Uniform <iron-icon icon="view-module"></iron-icon></paper-radio-button>
                                                 <paper-radio-button required name="non-uniform">Non-Uniform<iron-icon icon="view-quilt"></iron-icon></paper-radio-button>
                                             </paper-radio-group>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" style="text-align:center; text-transform: uppercase;"><span>parameters</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <paper-input name="simName" label="Simulation name" allowed-pattern="[a-zA-Z0-9]"></paper-input>
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <paper-dropdown-menu name="connectionType" label="Select connection">
+                                                <paper-listbox class="dropdown-content">
+                                                    <paper-item>ActiveMQ</paper-item>
+                                                    <paper-item>MPI</paper-item>
+                                                </paper-listbox>
+                                            </paper-dropdown-menu>
                                         </td>
                                     </tr>
                                     <tr>

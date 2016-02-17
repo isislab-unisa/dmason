@@ -68,7 +68,7 @@
     margin-left:10px;
 }
 
-input#simulation-jar-chooser{
+.hidden{
     display: none;
 }
 
