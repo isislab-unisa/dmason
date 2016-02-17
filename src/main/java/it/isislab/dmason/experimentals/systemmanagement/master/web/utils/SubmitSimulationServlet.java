@@ -41,7 +41,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 		String	mode=	(String)((req.getParameter("uniform")==null)?req.getParameter("non-uniform"):req.getParameter("uniform"));
 		String	connection=	(String)req.getParameter("connectionType");
 		
-    	
+    	///i topic 
 		
 		String simPath=server.getSimulationsDirectories()+File.separator+simName+"_";
 		server.createSimulationDirectoryByID(simPath);
