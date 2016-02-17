@@ -8,6 +8,10 @@ import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 public class Simulation implements Serializable{
 
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String simName;
 	private int simID;
 	private String simulationFolder;
@@ -200,6 +204,21 @@ public class Simulation implements Serializable{
 
 	public void setNumCells(int numCells) {
 		this.numCells = numCells;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Simulation [simName=" + simName + ", simID=" + simID
+				+ ", simulationFolder=" + simulationFolder + ", rows=" + rows
+				+ ", columns=" + columns + ", aoi=" + aoi + ", width=" + width
+				+ ", height=" + height + ", numAgents=" + numAgents + ", mode="
+				+ mode + ", connectionType=" + connectionType + ", numCells="
+				+ numCells + ", parameters=" + parameters + ", topicList="
+				+ topicList + "]";
 	}
 	
 		

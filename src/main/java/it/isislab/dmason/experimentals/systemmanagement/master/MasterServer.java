@@ -107,6 +107,7 @@ public class MasterServer implements MultiServerInterface{
 		this.listenForSignRequest();
 
 		this.keySimulation=new AtomicInteger(0);
+		simulationsList=new HashMap<>();
 
 	}
 
@@ -222,7 +223,7 @@ public class MasterServer implements MultiServerInterface{
 
 	private void processSignRequest(String topicOfWorker){
 
-		final String topic=topicOfWorker;
+		//final String topic=topicOfWorker;
 
 		try {
 			//mi sottoscrivo al worker
@@ -230,7 +231,7 @@ public class MasterServer implements MultiServerInterface{
 
 
 			//creo prefix univoco per comunicazione da master a worker 1-1 e creo topic
-			String myTopicForWorker=""+topicOfWorker.hashCode();
+			final String myTopicForWorker=""+topicOfWorker.hashCode();
 
 			getTopicIdWorkers().put(topicOfWorker,myTopicForWorker);
 			getConnection().createTopic(myTopicForWorker, 1);
@@ -250,7 +251,7 @@ public class MasterServer implements MultiServerInterface{
 						MyHashMap map=(MyHashMap) o;
 
 						if(map.containsKey("info")){
-							infoWorkers.put(topic,""+ map.get("info"));
+							infoWorkers.put(myTopicForWorker,""+ map.get("info"));
 							System.out.println("PRINT FOR LOGGER_INFO RECEIVED FROM MASTER<Key info"+"><Value"+map.get("info")+">");
 						}
 						//				      
@@ -420,11 +421,12 @@ public class MasterServer implements MultiServerInterface{
 
 	public void submitSimulation(Simulation sim) {
 		final Simulation simul=sim;
-		simulationsList.put(sim.getSimID(), sim);
-		this.topicIdWorkersForSimulation.put(sim.getSimID(), sim.getTopicList());
-		for(String topicName: sim.getTopicList())
-			getConnection().publishToTopic(sim, topicName, "newsim");
-		for(String topicName: sim.getTopicList()){
+		System.out.println(simul.toString()+""+simul.getSimID());
+		simulationsList.put(simul.getSimID(), simul);
+		this.topicIdWorkersForSimulation.put(simul.getSimID(), simul.getTopicList());
+		for(String topicName: simul.getTopicList())
+			getConnection().publishToTopic(simul, topicName, "newsim");
+		for(String topicName: simul.getTopicList()){
 			getConnection().asynchronousReceive(topicName, new MyMessageListener() {
 
 				@Override
@@ -435,10 +437,13 @@ public class MasterServer implements MultiServerInterface{
 						o=parseMessage(msg);
 						MyHashMap map=(MyHashMap) o;
 						if(map.containsKey("rcv")){
-							num++;
-							if(num==topicIdWorkersForSimulation.get(simul.getSimID()).size())
-								invokeCopyServer(DEFAULT_PORT_COPY_SERVER,
-										simulationsDirectoriesFolder+File.separator+simul.getSimulationFolder()+File.separator+"");
+							//num++;
+							///if(num==topicIdWorkersForSimulation.get(simul.getSimID()).size()){
+							System.out.println("invoco copyserver "+simulationsDirectoriesFolder+File.separator+simul.getSimulationFolder()+File.separator+"flockers.jar");	
+							for(String topicName: simul.getTopicList())
+								getConnection().publishToTopic(simul, topicName, "jar");
+							invokeCopyServer(DEFAULT_PORT_COPY_SERVER,
+										simulationsDirectoriesFolder+File.separator+simul.getSimulationFolder()+File.separator+"flockers.jar");
 						}
 						
 						//se il worker ha terminato lo scaricamento jar

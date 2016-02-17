@@ -109,6 +109,9 @@ public class Worker {
 		this.createConnection();
 		this.startMasterComunication();
 		this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
+		
+		
+		simulationList=new HashMap<>();
 	}
 
 
@@ -240,7 +243,9 @@ public class Worker {
 					}
 
 					if(map.containsKey("newsim")){
+						System.out.println("ho ricevuto la simulazione");
 						Simulation sim=(Simulation)map.get("newsim");
+						System.out.println("stampo sim"+sim.toString());
 						simulationList.put(sim.getSimID(), sim); 
 						createNewSimulationProcess(sim);
 					}
