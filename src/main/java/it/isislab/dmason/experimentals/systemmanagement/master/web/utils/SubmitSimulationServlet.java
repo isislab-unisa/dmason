@@ -31,16 +31,16 @@ public class SubmitSimulationServlet extends HttpServlet {
 
 
 		//RECEIVE PARAMETER FROM CLIENT
-		String simName=	(String) req.getAttribute("name");
-		String rows=(String)	req.getAttribute("rows");
-		String columns=(String)	req.getAttribute("cols");
+		String simName=	(String) req.getParameter("name");
+		String rows=(String)	req.getParameter("rows");
+		String columns=(String)	req.getParameter("cols");
 		
-		String aoi=	(String) req.getAttribute("aoi");
-		String	width=	(String)req.getAttribute("width");
-		String	height=	(String)req.getAttribute("height");
-		String	numAgent=	(String)req.getAttribute("numag");
-		String	mode=	(String)req.getAttribute("mode");;
-		String	connection=	(String)req.getAttribute("type");
+		String aoi=	(String) req.getParameter("aoi");
+		String	width=	(String)req.getParameter("width");
+		String	height=	(String)req.getParameter("height");
+		String	numAgent=	(String)req.getParameter("numAgents");
+		String	mode=	(String)((req.getParameter("uniform")==null)?req.getParameter("non-uniform"):req.getParameter("uniform"));
+		String	connection=	(String)req.getParameter("type");
 		//topic
     	
 		
@@ -50,11 +50,9 @@ public class SubmitSimulationServlet extends HttpServlet {
 		Simulation sim =new Simulation(simName, simPath, rows, columns, aoi, width, height, numAgent, mode, connection) ;
         ArrayList< String> topicList=new ArrayList<>();
 		sim.setTopicList(topicList);
-		server.addSim(sim);
+		sim.setSimID(server.getKeySim().incrementAndGet());
+		server.submitSimulation(sim);
 		
-		//send a tutti i worker la simulazione 
-		for(String topicName: sim.getTopicList())
-		server.getConnection().publishToTopic(sim, topicName, "newsim");
 		
 			
 	}

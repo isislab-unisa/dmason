@@ -43,10 +43,10 @@ public class MasterServer implements MultiServerInterface{
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 
 	//path directories 
-	
+
 	private static String winzozz=System.getProperty("user.home")+File.separator+"Desktop"+File.separator;//togliere
 	private static String linux=System.getProperty("user.home")+File.separator+"Scrivania"+File.separator;//toliere
-	
+
 	private static final String masterDirectoryFolder=linux+"master";
 	private static final String masterTemporaryFolder=masterDirectoryFolder+File.separator+"temporay";
 	private static final String masterHistoryFolder=masterDirectoryFolder+File.separator+"history";
@@ -60,17 +60,17 @@ public class MasterServer implements MultiServerInterface{
 
 	//info 
 	protected HashMap<String/*IDprefixOfWorker*/,String/*MyIDTopicprefixOfWorker*/> topicIdWorkers;
-	protected ArrayList<String> topicIdWorkersForSimulation;
+	protected HashMap<Integer,ArrayList<String>> topicIdWorkersForSimulation;
 	public HashMap<String,String> infoWorkers;
-    private HashMap<Integer,Simulation> simulationsList;
-    private AtomicInteger indexHash;
+	private HashMap<Integer,Simulation> simulationsList;
+	private AtomicInteger keySimulation;
+	
 
-    
-    public void addSim(Simulation sim){
-    	simulationsList.put(indexHash.getAndIncrement(), sim);
-    }
+	
+   public AtomicInteger getKeySim(){
+	   return keySimulation;
+   }
 
-    
 
 	/**
 	 * @param infoWorkers the infoWorkers to set
@@ -101,18 +101,18 @@ public class MasterServer implements MultiServerInterface{
 
 		//topicPrefix of connected workers  
 		this.topicIdWorkers=new HashMap<String,String>();
-		this.topicIdWorkersForSimulation=new ArrayList<String>();
+		this.topicIdWorkersForSimulation=new HashMap<>();
 		this.infoWorkers=new HashMap<String,String>();
-	    //waiting for workers connecetion	
+		//waiting for workers connecetion	
 		this.listenForSignRequest();
 
-		this.indexHash=new AtomicInteger(0);
+		this.keySimulation=new AtomicInteger(0);
 
 	}
-	
-	
 
-    //
+
+
+	//
 	/**
 	 *send a check message to worker on <topic topicworker>
 	 *If worker is sctive, it responds on his topic with key "info" 
@@ -123,7 +123,7 @@ public class MasterServer implements MultiServerInterface{
 	protected void checkWorker(String topicWorker){
 
 		getConnection().publishToTopic("", getTopicIdWorkers().get(topicWorker), "check");
-		
+
 
 	}
 
@@ -131,26 +131,19 @@ public class MasterServer implements MultiServerInterface{
 	 * Check if all workers connected is on 
 	 */
 	public void checkAllConnectedWorkers(){
-		
+
 		for (String topic : topicIdWorkers.keySet()) {
 			checkWorker(topic);
 		}
 	}
-    
-	/**
-	 * Check if all workers for this simulation
-	 */
-	protected void checkSimulationWorkers(String id){
-		for (String topic : topicIdWorkersForSimulation) {
-			checkWorker(topic);
-		}
-	} 
+
+
 
 
 
 	public void sumbit(){
 
-		
+
 		/*infoWorkers=new HashMap<String,String>();
 
 		for(String x: this.getTopicIdForSimulation() this.getTopicIdWorkers().keySet()){
@@ -241,7 +234,7 @@ public class MasterServer implements MultiServerInterface{
 		});
 	}
 
-    
+
 	private void processSignRequest(String topicOfWorker){
 
 		final String topic=topicOfWorker;
@@ -250,19 +243,19 @@ public class MasterServer implements MultiServerInterface{
 			//mi sottoscrivo al worker
 			getConnection().subscribeToTopic(topicOfWorker);
 
-			
+
 			//creo prefix univoco per comunicazione da master a worker 1-1 e creo topic
 			String myTopicForWorker=""+topicOfWorker.hashCode();
-			
+
 			getTopicIdWorkers().put(topicOfWorker,myTopicForWorker);
 			getConnection().createTopic(myTopicForWorker, 1);
 			getConnection().subscribeToTopic(myTopicForWorker);
-            
+
 			//mando al worker il mioID univoco per esso di comunicazione
 			getConnection().publishToTopic(myTopicForWorker, "MASTER", topicOfWorker);
 			//mi metto in ricezione sul topic del worker
 			getConnection().asynchronousReceive(topicOfWorker, new MyMessageListener() {
-				           
+
 				@Override
 				public void onMessage(Message msg) {
 
@@ -271,16 +264,13 @@ public class MasterServer implements MultiServerInterface{
 						o=parseMessage(msg);
 						MyHashMap map=(MyHashMap) o;
 
-						//if(map.containsKey("info")){
-							//System.out.println("PRINT FOR LOGGER_INFO RECEIVED FROM MASTER<Key info"+"><Value"+map.get("info")+">");
-						//}
-						for (Entry<String, Object> string : map.entrySet()) {
-							if(map.containsKey("info")){
-								System.out.println("PRINT FOR LOGGER_INFO RECEIVED FROM MASTER<Key"+string.getKey()+"><Value"+string.getValue()+">");
-								infoWorkers.put(topic,""+ map.get("info"));
-
-							}
-
+						if(map.containsKey("info")){
+							infoWorkers.put(topic,""+ map.get("info"));
+							System.out.println("PRINT FOR LOGGER_INFO RECEIVED FROM MASTER<Key info"+"><Value"+map.get("info")+">");
+						}
+				      
+						if(map.containsKey("simrcv")){
+							
 						}
 
 					} catch (JMSException e) {
@@ -308,10 +298,10 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 	public void createNewSimulation(){
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Sevlet
 	 * Delete a directory for a simulation
@@ -324,17 +314,17 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-   public void sendSimulationProcess(String idfolder){
-	   //c è da riempire l array dei topic dei worker che partecipano
-	/*   for(String topic: topicIdWorkersForSimulation){
+	public void sendSimulationProcess(String idfolder){
+		//c è da riempire l array dei topic dei worker che partecipano
+		/*   for(String topic: topicIdWorkersForSimulation){
 		  this.getConnection().publishToTopic(idfolder,topic, "simulation");
 		  this.getConnection().asynchronousReceive(key)
 		  //invio porta per jar al worker
 		  this.getConnection().publishToTopic(object, topicName, key)}*/
-	      //se tutti downloaded  
-   }
+		//se tutti downloaded  
+	}
 
-    
+
 	public void invokeCopyServer(int port,String jarFile){
 		InetAddress address;
 		welcomeSocket=null;
@@ -419,26 +409,37 @@ public class MasterServer implements MultiServerInterface{
 	//getters and setters
 	public MasterServer getMasterServer(){return this;}
 	public HashMap<String,String> getTopicIdWorkers(){return topicIdWorkers;}	//all connected workers 
-	public ArrayList<String> getTopicIdForSimulation(){return topicIdWorkersForSimulation;} //all workers for a simulation from id of their topix
-    
+	public HashMap getTopicIdForSimulation(){return topicIdWorkersForSimulation;} //all workers for a simulation from id of their topix
+
 	//activemq address port connection
 	public String getIpActivemq() {return IP_ACTIVEMQ;}
 	public void setIpActivemq(String iP) {IP_ACTIVEMQ = iP;}
 	public String getPortActivemq() {return PORT_ACTIVEMQ;}
 	public void setPortActivemq(String port) {PORT_ACTIVEMQ = port;}
 	public ConnectionNFieldsWithActiveMQAPI getConnection(){return conn;}	
-	
+
 	// copy server info
 	public int getCopyServerPort(){return DEFAULT_PORT_COPY_SERVER;}
 	public void setCopyServerPort(int port){ this.DEFAULT_PORT_COPY_SERVER=port;}
-	
+
 	//folder for master
 	public String getMasterdirectoryfolder(){return masterDirectoryFolder;}
 	public String getMasterTemporaryFolder() {return masterTemporaryFolder;}
 	public String getMasterHistory() {return masterHistoryFolder;}
 	public String getSimulationsDirectories() {return simulationsDirectoriesFolder;}
-	
-	
+
+
 	public HashMap<String, String> getInfoWorkers() { HashMap<String, String> toReturn=infoWorkers; infoWorkers=new HashMap<>();  return toReturn;}
 	public HashMap<Integer,Simulation> getSimsList(){return simulationsList;}
+
+
+
+	public void submitSimulation(Simulation sim) {
+		
+		simulationsList.put(sim.getSimID(), sim);
+		this.topicIdWorkersForSimulation.put(sim.getSimID(), sim.getTopicList());
+		for(String topicName: sim.getTopicList())
+	    getConnection().publishToTopic(sim, topicName, "newsim");
+	
+	}
 }

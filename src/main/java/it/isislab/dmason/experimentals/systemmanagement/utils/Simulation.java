@@ -9,7 +9,7 @@ public class Simulation implements Serializable{
 
 	
 	private String simName;
-	private String simID;
+	private int simID;
 	private String simulationFolder;
 	private int rows;
 	private int columns;
@@ -78,12 +78,12 @@ public class Simulation implements Serializable{
 	}
 
 
-	public String getSimID() {
+	public int getSimID() {
 		return simID;
 	}
 
 
-	public void setSimID(String simID) {
+	public void setSimID(int simID) {
 		this.simID = simID;
 	}
 
