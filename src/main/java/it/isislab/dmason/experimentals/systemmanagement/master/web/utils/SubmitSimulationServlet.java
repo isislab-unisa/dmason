@@ -36,45 +36,45 @@ public class SubmitSimulationServlet extends HttpServlet {
 
 
 		//RECEIVE PARAMETER FROM CLIENT
-//		String simName=	(String) req.getParameter("simName");
-//		String rows=(String)	req.getParameter("rows");
-//		String columns=(String)	req.getParameter("cols");
-//		String aoi=	(String) req.getParameter("aoi");
-//		String	width=	(String)req.getParameter("width");
-//		String	height=	(String)req.getParameter("height");
-//		String	numAgent=	(String)req.getParameter("numAgents");
-//		String	mode=	(String)((req.getParameter("uniform")==null)?req.getParameter("non-uniform"):req.getParameter("uniform"));
-//		
-//		//connction
-//		String	conType=	(String)req.getParameter("connectionType");
-//		int connection=0;
-//		if(conType.equalsIgnoreCase(ACTIVEMQ))
-//		  connection=ConnectionType.pureActiveMQ;
-//
-//		//topics
-//		String topics[] =req.getParameterValues("topics[]");
-//		ArrayList< String> topicList=new ArrayList<>();
-//		
-//		for(String x: topics ) 
-//			topicList.add(x);
+		String simName=	(String) req.getParameter("simName");
+		String rows=(String)	req.getParameter("rows");
+		String columns=(String)	req.getParameter("cols");
+		String aoi=	(String) req.getParameter("aoi");
+		String	width=	(String)req.getParameter("width");
+		String	height=	(String)req.getParameter("height");
+		String	numAgent=	(String)req.getParameter("numAgents");
+		String	mode=	(String)((req.getParameter("uniform")==null)?req.getParameter("non-uniform"):req.getParameter("uniform"));
+		
+		//connction
+		String	conType=	(String)req.getParameter("connectionType");
+		int connection=0;
+		if(conType.equalsIgnoreCase(ACTIVEMQ))
+		  connection=ConnectionType.pureActiveMQ;
+
+		//topics
+		String topics[] =req.getParameterValues("workers");
+		ArrayList< String> topicList=new ArrayList<>();
+		
+		for(String x: topics ) 
+			topicList.add(x);
         	
 		
 		//// prova
-		String simName=	"flockers";
-		String rows="1";
-		String columns="2";
-		String aoi="1";
-		String	width=	"200";
-		String	height=	"200";
-		String	numAgent="190";
-		String	mode= "0";
-
-		ArrayList<String> topicList=new ArrayList<>();
-		for(String x :server.infoWorkers.keySet()){
-			topicList.add(x);
-		}
-		
-		int connection=0;
+//		String simName=	"flockers";
+//		String rows="1";
+//		String columns="2";
+//		String aoi="1";
+//		String	width=	"200";
+//		String	height=	"200";
+//		String	numAgent="190";
+//		String	mode= "0";
+//
+//		ArrayList<String> topicList=new ArrayList<>();
+//		for(String x :server.infoWorkers.keySet()){
+//			topicList.add(x);
+//		}
+//		
+//		int connection=0;
 		/////
 		
 		String simPath=server.getSimulationsDirectories()+File.separator+simName;
