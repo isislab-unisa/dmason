@@ -20,14 +20,20 @@ function load_tiles_settings(){
 
 
 function open_dialog_setting_new_simulation(){
+    var workerID=[];
     if($('.grid-item-selected').length){
-        $('.grid-item-selected').each(function(){
-           /* var numsim = parseInt($(this).text());
-            numsim++;
-            $(this).text(numsim);*/
+        $('.grid-item-selected').each(function(index){
+            workerID[index] = $(this).attr("id");
             $(this).removeClass("grid-item-selected");
 
         });
+        //passing worker selected
+        var node = document.createElement("input");
+        node.setAttribute("id","workerList");
+        node.setAttribute("name","workers");
+        node.setAttribute("value",workerID);
+        node.style.display = "none";
+        $("#sendSimulationForm").append(node);
     }else{
         document.querySelector('#miss-worker-selection').open();
         return;
@@ -108,7 +114,7 @@ var tmp = hash(_message);
     if(obj.hasOwnProperty('workers'))
         for (i = 0; i < obj.workers.length; i++) {
             w = obj.workers[i];
-            tiles+="<div class=\"grid-item-monitoring\" onclick=\"selectItem(this)\">"
+            tiles+="<div id="+w.workerID+" class=\"grid-item-monitoring\" onclick=\"selectItem(this)\">"
                 +"<div class=\"worker-system-info\"><span id="+w.workerID+">Worker ID: "+i+"</span></div>"
                 +"<div class=\"worker-system-info\"><span>CPU:"+w.cpuLoad+" %</span></div>"
                 +"<div class=\"worker-system-info\"><span>RAM: Free "+w.availableheapmemory+"  MB Used "+w.busyheapmemory+"  MB</span></div>"
@@ -140,20 +146,20 @@ function hash(value){
     return hash;
 }
 
-function getSelectedWorker(){
-
-    $(".grid-item-selected").each();
-}
 
 function submitHandler(event) {
     var form = document.getElementById("sendSimulationForm");
 
-console.log(form.serialize());
-   // form.appendChild("");
-    form.submit();
-    var dialog = document.getElementById("add-simulation-paper-dialog");
-    dialog.close();
-    resetHandler(event);
+console.log($("#sendSimulationForm").serialize());
+
+    $.ajax({url:"/submitSimulation",
+        success: function(result){
+            var dialog = document.getElementById("add-simulation-paper-dialog");
+            //remove input added previusly
+            $("#workerList").remove();
+            dialog.close();
+            resetHandler(event);
+        }});
 }
 
 
