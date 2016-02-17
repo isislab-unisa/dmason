@@ -103,7 +103,7 @@
                                         <td></td>
                                         <td>
                                             <span>Select an example simulation</span><br>
-                                                <paper-dropdown-menu name="exampleSimulation" label="Select">
+                                                <paper-dropdown-menu name="exampleSimulation" value="" label="Select">
                                                     <paper-listbox class="dropdown-content">
                                                         <paper-item>allosaurus</paper-item>
                                                         <paper-item>brontosaurus</paper-item>
@@ -135,7 +135,7 @@
                                         </td>
                                         <td></td>
                                         <td>
-                                            <paper-dropdown-menu name="connectionType" label="Select connection">
+                                            <paper-dropdown-menu name="connectionType" value="" label="Select connection">
                                                 <paper-listbox class="dropdown-content">
                                                     <paper-item>ActiveMQ</paper-item>
                                                     <paper-item>MPI</paper-item>

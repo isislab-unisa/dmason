@@ -150,16 +150,18 @@ function hash(value){
 function submitHandler(event) {
     var form = document.getElementById("sendSimulationForm");
 
-console.log($("#sendSimulationForm").serialize());
+console.log(form.serialize());
 
-    $.ajax({url:"/submitSimulation",
+    $.ajax({url:"submitSimulation",
+        data:form.serialize(),
         success: function(result){
-            var dialog = document.getElementById("add-simulation-paper-dialog");
-            //remove input added previusly
-            $("#workerList").remove();
-            dialog.close();
-            resetHandler(event);
+
         }});
+    $("#workerList").remove();
+    var dialog = document.getElementById("add-simulation-paper-dialog");
+    //remove input added previusly
+    dialog.close();
+    resetHandler(event);
 }
 
 
