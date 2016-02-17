@@ -278,14 +278,12 @@ public class MasterServer implements MultiServerInterface{
 	 * Create directory for a simulation 
 	 * @param simID name of directory to create
 	 */
-	public void createSimulationDirectoryByID(String simID){
-		String path=simulationsDirectoriesFolder+File.separator+simID+File.separator+"runs";
+	public void createSimulationDirectoryByID(String simName){
+		String path=simulationsDirectoriesFolder+File.separator+simName+File.separator+"runs";
 		MyFileSystem.make(path);
 	}
 
-	public void createNewSimulation(){
 
-	}
 
 
 	/**

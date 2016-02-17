@@ -41,4 +41,13 @@
         <servlet-name>GetConnectedWorkersServlet</servlet-name>
         <url-pattern>/getWorkers</url-pattern>
     </servlet-mapping>
+    
+      <servlet id="submitSimulation">
+        <servlet-name>SubmitSimulationServlet</servlet-name>
+        <servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.SubmitSimulationServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SubmitSimulationServlet</servlet-name>
+        <url-pattern>/submitSimulation</url-pattern>
+    </servlet-mapping>
 </web-app>

@@ -244,20 +244,7 @@ public class Worker {
 						simulationList.put(sim.getSimID(), sim); 
 						createNewSimulationProcess(sim);
 					}
-					//
-					//					if(map.containsKey("jar"))
-					//                    {
-					//                    	Address add=(Address)map.get("jar");
-					//                      	System.out.println("scarica da porta "+add.getPort());
-					//                       
-					//                      	downloadFile(Integer.parseInt(add.getPort()), "");
-					//                        getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
-					//                    }
-
-
-
-
-
+				
 				} catch (JMSException e) {e.printStackTrace();}
 
 
