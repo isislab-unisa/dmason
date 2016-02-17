@@ -14,6 +14,7 @@ import com.google.common.io.Files;
 import it.isislab.dmason.experimentals.systemmanagement.master.MasterServer;
 import it.isislab.dmason.experimentals.systemmanagement.master.MultiServerInterface;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
+import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.util.connection.ConnectionType;
 
 
@@ -41,10 +42,13 @@ public class SubmitSimulationServlet extends HttpServlet {
 		String columns=(String)	req.getParameter("cols");
 		String aoi=	(String) req.getParameter("aoi");
 		String	width=	(String)req.getParameter("width");
-		String	height=	(String)req.getParameter("height");
+		String	height=	(String)req.getParameter("heigth");
 		String	numAgent=	(String)req.getParameter("numAgents");
-		String	mode=	(String)((req.getParameter("uniform")==null)?req.getParameter("non-uniform"):req.getParameter("uniform"));
-		
+		int mode = DistributedField2D.UNIFORM_PARTITIONING_MODE;
+		if(req.getParameter("non-uniform")!=null)
+		   mode= DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
+			
+					   
 		//connction
 		String	conType=	(String)req.getParameter("connectionType");
 		int connection=0;
@@ -79,7 +83,8 @@ public class SubmitSimulationServlet extends HttpServlet {
 		
 		String simPath=server.getSimulationsDirectories()+File.separator+simName;
 		server.createSimulationDirectoryByID(simPath);
-	     	
+	    
+		System.out.println(simName);System.out.println(simPath);
 		Simulation sim =new Simulation(simName, simPath, rows, columns, aoi, width, height, numAgent, mode, connection) ;
        
 		sim.setTopicList(topicList);
@@ -87,7 +92,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 		
 		
 	    //upload jar in sim.getSimulationFolder() 
-	    System.out.println("invoko");
+	 
 		server.submitSimulation(sim);
 		
 		

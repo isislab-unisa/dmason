@@ -25,6 +25,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 
 import org.apache.activemq.broker.BrokerService;
+import org.apache.commons.collections.bag.SynchronizedSortedBag;
 
 
 public class MasterServer implements MultiServerInterface{
@@ -254,11 +255,40 @@ public class MasterServer implements MultiServerInterface{
 							infoWorkers.put(myTopicForWorker,""+ map.get("info"));
 							System.out.println("PRINT FOR LOGGER_INFO RECEIVED FROM MASTER<Key info"+"><Value"+map.get("info")+">");
 						}
-						//				      
-						//						if(map.containsKey("simrcv")){
-						//							
-						//							invokeCopyServer(C, jarFile);
-						//						}
+
+
+
+
+						if(map.containsKey("simrcv")){
+							int id=(int) map.get("simrcv");
+							Simulation simul=simulationsList.get(id);
+							System.out.println(simul.toString());
+							System.out.println("invoco copyserver "+simulationsDirectoriesFolder+File.separator+simul.getSimulationFolder()+File.separator+"flockers.jar");	
+							for(String topicName: simul.getTopicList())
+								getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, topicName, "jar");
+							invokeCopyServer(DEFAULT_PORT_COPY_SERVER, simul.getSimulationFolder()+File.separator+"flockers.jar");
+							System.out.println("arrivo qua");
+						}
+
+						//se il worker ha terminato lo scaricamento jar
+						if(map.containsKey("downloaded")){
+							System.out.println("tappò"+map.get("downloaded"));
+
+							try {
+								welcomeSocket.close();
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+
+							try {
+								sock.close();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}						
+
 
 					} catch (JMSException e) {
 						e.printStackTrace();
@@ -321,6 +351,7 @@ public class MasterServer implements MultiServerInterface{
 				sock = welcomeSocket.accept();
 				System.out.println("Connected");
 				new Thread(new CopyMultiThreadServer(sock,jarFile)).start();
+				System.out.println("avviato");
 			}
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -426,56 +457,6 @@ public class MasterServer implements MultiServerInterface{
 		this.topicIdWorkersForSimulation.put(simul.getSimID(), simul.getTopicList());
 		for(String topicName: simul.getTopicList())
 			getConnection().publishToTopic(simul, topicName, "newsim");
-		for(String topicName: simul.getTopicList()){
-			getConnection().asynchronousReceive(topicName, new MyMessageListener() {
 
-				@Override
-				public void onMessage(Message msg) {
-					Object o;
-					int num=0;
-					try {
-						o=parseMessage(msg);
-						MyHashMap map=(MyHashMap) o;
-						if(map.containsKey("rcv")){
-							//num++;
-							///if(num==topicIdWorkersForSimulation.get(simul.getSimID()).size()){
-							System.out.println("invoco copyserver "+simulationsDirectoriesFolder+File.separator+simul.getSimulationFolder()+File.separator+"flockers.jar");	
-							for(String topicName: simul.getTopicList())
-								getConnection().publishToTopic(simul, topicName, "jar");
-							invokeCopyServer(DEFAULT_PORT_COPY_SERVER,
-										simulationsDirectoriesFolder+File.separator+simul.getSimulationFolder()+File.separator+"flockers.jar");
-						}
-						
-						//se il worker ha terminato lo scaricamento jar
-						if(map.containsKey("downloaded")){
-							System.out.println("tappò"+map.get("downloaded"));
-                            
-							try {
-								welcomeSocket.close();
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-
-							try {
-								sock.close();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-
-
-					}
-
-
-					catch (JMSException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-				}
-			});
-		}
 	}
 }

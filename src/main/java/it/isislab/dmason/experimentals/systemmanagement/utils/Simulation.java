@@ -55,7 +55,7 @@ public class Simulation implements Serializable{
 	 */
 	public Simulation(String simName, String simulationFolder,
 			String rows, String columns, String aoi, String width,
-			String height, String numAgent, String mode, int connection) {
+			String height, String numAgent, int mode, int connection) {
 		this.simName = simName;
 		this.simulationFolder = simulationFolder;
 		this.rows = Integer.parseInt(rows);
@@ -64,7 +64,7 @@ public class Simulation implements Serializable{
 		this.width = Integer.parseInt(width);
 		this.height = Integer.parseInt(height);
 		this.numAgents = Integer.parseInt(numAgent);
-		this.mode = Integer.parseInt(mode);
+		this.mode = mode;
 		this.numCells= getRows()*getColumns();
 		this.connectionType=connection;
 		this.topicList=new ArrayList<>();

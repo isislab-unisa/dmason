@@ -259,9 +259,12 @@ public class Worker {
 
 	//create folder for the sim
 	private void createNewSimulationProcess(Simulation sim){
-		final Simulation sim1=sim;
-		this.createSimulationDirectoryByID(sim.getSimName());
-		this.getConnection().publishToTopic("", this.TOPIC_WORKER_ID, "simrcv");
+		final Simulation simulation=sim;
+		this.createSimulationDirectoryByID(simulation.getSimName());
+		simulation.setSimulationFolder(simulationsDirectories+File.separator+simulation.getSimName());
+		System.out.println("sto per pubblicare al master");
+		this.getConnection().publishToTopic(simulation.getSimID(), this.TOPIC_WORKER_ID, "simrcv");
+		
 		this.getConnection().asynchronousReceive(TOPIC_WORKER_ID_MASTER,new MyMessageListener() {
 
 			@Override
@@ -274,10 +277,11 @@ public class Worker {
 
 					if(map.containsKey("jar"))
 					{
-						Address add=(Address)map.get("jar");
-						System.out.println("scarica da porta "+add.getPort());
+						int port=(int)map.get("jar");
+						System.out.println("scarica da porta "+port);
 
-						downloadFile(Integer.parseInt(add.getPort()), sim1.getSimulationFolder());
+						downloadFile(port, simulation.getSimulationFolder()+File.separator+"out.jar");
+						System.out.println("invio downloaded al master");
 						getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
 					}
 				} catch (JMSException e) {
@@ -352,7 +356,7 @@ public class Worker {
 			BufferedOutputStream bos = null;
 			try {
 				System.out.println("Creating file...");
-
+                  
 				File v=new File(localJarFilePath);
 				if(v.exists()){
 					v.delete();
