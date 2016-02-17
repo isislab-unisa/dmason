@@ -51,7 +51,7 @@
 <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="bower_components/iron-image/iron-image.html">
 <link rel="import" href="bower_components/iron-icons/image-icons.html">
-
+<link rel="import" href="bower_components/iron-form/iron-form.html">
 
 
 <link rel="import" href="bower_components/neon-animation/neon-animations.html">
@@ -92,7 +92,7 @@
                     <h2>Simulation Settings</h2>
                     <paper-dialog-scrollable>
                         <div class="horizontal-section">
-                            <form is="iron-form" id="sendSimulationForm" method="get">
+                            <form is="iron-form" id="sendSimulationForm" method="get" action="/getQualcosa">
                                 <table>
                                     <tr>
                                         <td>
@@ -103,7 +103,7 @@
                                         <td></td>
                                         <td>
                                             <span>Select an example simulation</span><br>
-                                                <paper-dropdown-menu label="Select">
+                                                <paper-dropdown-menu name="exampleSimulation" label="Select">
                                                     <paper-listbox class="dropdown-content">
                                                         <paper-item>allosaurus</paper-item>
                                                         <paper-item>brontosaurus</paper-item>
@@ -120,21 +120,21 @@
                                     </tr>
                                     <tr>
                                         <td colspan="3" style="text-align:center">
-                                            <paper-radio-group>
-                                                <paper-radio-button name="uniform" >Uniform <iron-icon icon="view-module"></iron-icon></paper-radio-button>
-                                                <paper-radio-button name="non-uniform">Non-Uniform<iron-icon icon="view-quilt"></iron-icon></paper-radio-button>
+                                            <paper-radio-group >
+                                                <paper-radio-button required name="uniform" >Uniform <iron-icon icon="view-module"></iron-icon></paper-radio-button>
+                                                <paper-radio-button required name="non-uniform">Non-Uniform<iron-icon icon="view-quilt"></iron-icon></paper-radio-button>
                                             </paper-radio-group>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><paper-input class="submit_work_form" label="Rows" allowed-pattern="[0-9]"></paper-input></td>
-                                        <td><paper-input class="submit_work_form" label="Columns" allowed-pattern="[0-9]"></paper-input></td>
-                                        <td><paper-input class="submit_work_form" label="Area of interest" allowed-pattern="[0-9]"></paper-input></td>
+                                        <td><paper-input class="submit_work_form" name="rows" label="Rows" allowed-pattern="[0-9]"></paper-input></td>
+                                        <td><paper-input class="submit_work_form" name="cols" label="Columns" allowed-pattern="[0-9]"></paper-input></td>
+                                        <td><paper-input class="submit_work_form" name="aoi" label="Area of interest" allowed-pattern="[0-9]"></paper-input></td>
                                     </tr>
                                     <tr>
-                                        <td><paper-input class="submit_work_form" label="Width" allowed-pattern="[0-9]"></paper-input></td>
-                                        <td><paper-input class="submit_work_form" label="Heigth" allowed-pattern="[0-9]"></paper-input></td>
-                                        <td><paper-input class="submit_work_form" label="Number of Agents" allowed-pattern="[0-9]"></paper-input></td>
+                                        <td><paper-input class="submit_work_form" name="width" label="Width" allowed-pattern="[0-9]"></paper-input></td>
+                                        <td><paper-input class="submit_work_form" name="heigth" label="Heigth" allowed-pattern="[0-9]"></paper-input></td>
+                                        <td><paper-input class="submit_work_form" name="numAgents" label="Number of Agents" allowed-pattern="[0-9]"></paper-input></td>
                                     </tr>
 
                                 <tr><td></td>

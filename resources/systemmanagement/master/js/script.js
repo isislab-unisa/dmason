@@ -148,10 +148,12 @@ function getSelectedWorker(){
 function submitHandler(event) {
     var form = document.getElementById("sendSimulationForm");
 
-
+console.log(form.serialize());
    // form.appendChild("");
-    alert("ole");
     form.submit();
+    var dialog = document.getElementById("add-simulation-paper-dialog");
+    dialog.close();
+    resetHandler(event);
 }
 
 
