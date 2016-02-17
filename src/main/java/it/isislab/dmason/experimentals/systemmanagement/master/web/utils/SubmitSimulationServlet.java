@@ -34,7 +34,6 @@ public class SubmitSimulationServlet extends HttpServlet {
 		String simName=	(String) req.getParameter("name");
 		String rows=(String)	req.getParameter("rows");
 		String columns=(String)	req.getParameter("cols");
-		
 		String aoi=	(String) req.getParameter("aoi");
 		String	width=	(String)req.getParameter("width");
 		String	height=	(String)req.getParameter("height");
