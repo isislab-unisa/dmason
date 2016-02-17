@@ -53,6 +53,7 @@ import java.net.UnknownHostException;
 import java.rmi.server.UID;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -86,6 +87,7 @@ public class Worker {
 	private String TOPIC_WORKER_ID_MASTER="";
 	private static String WORKER_IP="127.0.0.1";
 
+	private HashMap< Integer, Simulation> simulationList;
 
 
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
@@ -110,17 +112,17 @@ public class Worker {
 	}
 
 
-	
-	
-	
-   /**
-    * Explores NetworkInterface and finds IP Address 
-    * @return ip of Worker
-    */
+
+
+
+	/**
+	 * Explores NetworkInterface and finds IP Address 
+	 * @return ip of Worker
+	 */
 	private static String getIP() {
 
 		try {
-            //String c=InetAddress.getLocalHost().getHostAddress();//doesn't work on windows            
+			//String c=InetAddress.getLocalHost().getHostAddress();//doesn't work on windows            
 			String c=InetAddress.getByName("localhost").getHostAddress();
 			Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
 			for (; n.hasMoreElements();)
@@ -143,7 +145,7 @@ public class Worker {
 		return WORKER_IP;
 	} 
 
-    //mi metto in ricezione sul master
+	//mi metto in ricezione sul master
 	protected void startMasterComunication() {
 		final Worker worker=this;
 
@@ -160,7 +162,7 @@ public class Worker {
 					o=parseMessage(msg);
 					MyHashMap map=(MyHashMap) o;
 
-                     //se + diretta a me il master mi invia il topic univoco comunicazione master-me
+					//se + diretta a me il master mi invia il topic univoco comunicazione master-me
 					if(map.containsKey(worker.TOPIC_WORKER_ID)){
 						TOPIC_WORKER_ID_MASTER=map.get(TOPIC_WORKER_ID).toString();
 						listenerForMasterComunication();
@@ -209,7 +211,7 @@ public class Worker {
 
 	} 	
 
-    //mi mettto in ascolto sui messaggi che il master mi invia(1-1)
+	//mi mettto in ascolto sui messaggi che il master mi invia(1-1)
 	private void listenerForMasterComunication(){
 		System.out.println("Ricevuto ack iscrzione");
 		//mi sottoscrivo e mi metto in ricezione sul tale topic per comuncazioni del master
@@ -231,24 +233,26 @@ public class Worker {
 
 					if(map.containsKey("check")){
 						String info=getInfoWorker();
-						
+
 						System.out.println("scrivo  su"+TOPIC_WORKER_ID);
 						getConnection().publishToTopic(info, TOPIC_WORKER_ID, "info");
 						System.out.println("invisto");
 					}
-					
+
 					if(map.containsKey("newsim")){
 						Simulation sim=(Simulation)map.get("newsim");
+						simulationList.put(sim.getSimID(), sim); 
 						createNewSimulationProcess(sim);
 					}
-
-					/*if(map.containsKey("jar"))
-                    {
-                    	Address add=(Address)map.get("jar");
-                      	System.out.println("scarica da porta "+add.getPort());
-                        downloadFile(Integer.parseInt(add.getPort()));
-                       // worker.getConnection().publishToTopic(worker.TOPIC_WORKER_ID, "READY", "downloaded");
-                    }*/
+					//
+					//					if(map.containsKey("jar"))
+					//                    {
+					//                    	Address add=(Address)map.get("jar");
+					//                      	System.out.println("scarica da porta "+add.getPort());
+					//                       
+					//                      	downloadFile(Integer.parseInt(add.getPort()), "");
+					//                        getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
+					//                    }
 
 
 
@@ -261,10 +265,40 @@ public class Worker {
 		});
 	}
 
+	//create folder for the sim
 	private void createNewSimulationProcess(Simulation sim){
+		final Simulation sim1=sim;
 		this.createSimulationDirectoryByID(sim.getSimName());
 		this.getConnection().publishToTopic("", this.TOPIC_WORKER_ID, "simrcv");
-		
+		this.getConnection().asynchronousReceive(TOPIC_WORKER_ID_MASTER,new MyMessageListener() {
+
+			@Override
+			public void onMessage(Message msg) {
+				Object o;
+				try {
+					o=parseMessage(msg);
+					MyHashMap map=(MyHashMap)o;
+
+
+					if(map.containsKey("jar"))
+					{
+						Address add=(Address)map.get("jar");
+						System.out.println("scarica da porta "+add.getPort());
+
+						downloadFile(Integer.parseInt(add.getPort()), sim1.getSimulationFolder());
+						getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
+					}
+				} catch (JMSException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+
+
+
+			}
+		});
+
 	}
 	protected void createSimulationDirectoryByID(String simID){
 		String path=simulationsDirectories+File.separator+simID+File.separator+"runs";
@@ -299,12 +333,12 @@ public class Worker {
 
 
 
-	protected void downloadFile(int serverSocketPort){
+	protected void downloadFile(int serverSocketPort,String localJarFilePath){
 
 
 
 
-		String localJarFilePath =this.getSimulationsDirectories()+File.separator+"1"+File.separator+"out.jar"; ;//simulationsDirectories+File.separator+TOPIC_WORKER_ID+"out.jar";//da scegliere 
+		//String localJarFilePath =this.getSimulationsDirectories()+File.separator+"1"+File.separator+"out.jar"; ;//simulationsDirectories+File.separator+TOPIC_WORKER_ID+"out.jar";//da scegliere 
 
 		byte[] aByte = new byte[1];
 		int bytesRead;
@@ -422,7 +456,7 @@ public class Worker {
 		info.setIP(WORKER_IP);
 		info.setWorkerID(this.TOPIC_WORKER_ID_MASTER);
 		return info.toString();
-		
+
 	}
 	//method for topic 
 
@@ -436,7 +470,7 @@ public class Worker {
 
 
 
-    //invio richiesta di iscrizione e comunico il topic sul quale
+	//invio richiesta di iscrizione e comunico il topic sul quale
 	//invierò informazioni
 	protected void signRequestToMaster(){
 		try{	
@@ -467,7 +501,7 @@ public class Worker {
 	public ConnectionNFieldsWithActiveMQAPI getConnection() {return conn;}
 	public String getSimulationsDirectories() {return simulationsDirectories;}
 
-	 
+
 }
 
 

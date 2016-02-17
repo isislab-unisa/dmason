@@ -64,12 +64,12 @@ public class MasterServer implements MultiServerInterface{
 	public HashMap<String,String> infoWorkers;
 	private HashMap<Integer,Simulation> simulationsList;
 	private AtomicInteger keySimulation;
-	
 
-	
-   public AtomicInteger getKeySim(){
-	   return keySimulation;
-   }
+
+
+	public AtomicInteger getKeySim(){
+		return keySimulation;
+	}
 
 
 	/**
@@ -211,25 +211,10 @@ public class MasterServer implements MultiServerInterface{
 						}
 
 
-						//se il worker ha terminato lo scaricamento jar
-						if(mh.containsKey("downloaded")){
-							System.out.println("tappò"+mh.get("downloaded"));
 
-							welcomeSocket.close();
-
-							try {
-								sock.close();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
 					}
 
-				} catch (JMSException e) {e.printStackTrace();} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}	
+				} catch (JMSException e) {e.printStackTrace();} 
 			}
 		});
 	}
@@ -268,10 +253,11 @@ public class MasterServer implements MultiServerInterface{
 							infoWorkers.put(topic,""+ map.get("info"));
 							System.out.println("PRINT FOR LOGGER_INFO RECEIVED FROM MASTER<Key info"+"><Value"+map.get("info")+">");
 						}
-				      
-						if(map.containsKey("simrcv")){
-							
-						}
+						//				      
+						//						if(map.containsKey("simrcv")){
+						//							
+						//							invokeCopyServer(C, jarFile);
+						//						}
 
 					} catch (JMSException e) {
 						e.printStackTrace();
@@ -435,11 +421,58 @@ public class MasterServer implements MultiServerInterface{
 
 
 	public void submitSimulation(Simulation sim) {
-		
+		final Simulation simul=sim;
 		simulationsList.put(sim.getSimID(), sim);
 		this.topicIdWorkersForSimulation.put(sim.getSimID(), sim.getTopicList());
 		for(String topicName: sim.getTopicList())
-	    getConnection().publishToTopic(sim, topicName, "newsim");
-	
+			getConnection().publishToTopic(sim, topicName, "newsim");
+		for(String topicName: sim.getTopicList()){
+			getConnection().asynchronousReceive(topicName, new MyMessageListener() {
+
+				@Override
+				public void onMessage(Message msg) {
+					Object o;
+					int num=0;
+					try {
+						o=parseMessage(msg);
+						MyHashMap map=(MyHashMap) o;
+						if(map.containsKey("rcv")){
+							num++;
+							if(num==topicIdWorkersForSimulation.get(simul.getSimID()).size())
+								invokeCopyServer(DEFAULT_PORT_COPY_SERVER,
+										simulationsDirectoriesFolder+File.separator+simul.getSimulationFolder()+File.separator+"");
+						}
+						
+						//se il worker ha terminato lo scaricamento jar
+						if(map.containsKey("downloaded")){
+							System.out.println("tappò"+map.get("downloaded"));
+                            
+							try {
+								welcomeSocket.close();
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+
+							try {
+								sock.close();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+
+
+					}
+
+
+					catch (JMSException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}
+			});
+		}
 	}
 }

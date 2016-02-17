@@ -31,7 +31,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 
 
 		//RECEIVE PARAMETER FROM CLIENT
-		String simName=	(String) req.getParameter("name");
+		String simName=	(String) req.getParameter("simName");
 		String rows=(String)	req.getParameter("rows");
 		String columns=(String)	req.getParameter("cols");
 		String aoi=	(String) req.getParameter("aoi");
@@ -39,8 +39,8 @@ public class SubmitSimulationServlet extends HttpServlet {
 		String	height=	(String)req.getParameter("height");
 		String	numAgent=	(String)req.getParameter("numAgents");
 		String	mode=	(String)((req.getParameter("uniform")==null)?req.getParameter("non-uniform"):req.getParameter("uniform"));
-		String	connection=	(String)req.getParameter("type");
-		//topic
+		String	connection=	(String)req.getParameter("connectionType");
+		
     	
 		
 		String simPath=server.getSimulationsDirectories()+File.separator+simName+"_";
