@@ -49,7 +49,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 		   mode= DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
 			
 					   
-		//connction
+		///connction
 		String	conType=	(String)req.getParameter("connectionType");
 		int connection=0;
 		if(conType.equalsIgnoreCase(ACTIVEMQ))
