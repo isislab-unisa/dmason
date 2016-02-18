@@ -261,7 +261,7 @@ public class MasterServer implements MultiServerInterface{
 
 						if(map.containsKey("simrcv")){
 							int id=(int) map.get("simrcv");
-							simReceivedProcess(id);
+							simReceivedProcess(id,(String)map.get("simrcv"));
 
 							//							Simulation simul=simulationsList.get(id);
 							//							System.out.println(simul.toString());
@@ -279,18 +279,18 @@ public class MasterServer implements MultiServerInterface{
 						if(map.containsKey("downloaded")){
 							System.out.println("staje senza pensier"+map.get("downloaded"));
 
-							try {
-								System.out.println("spengo il copyserver");
-								welcomeSocket.close();
-							} catch (IOException e1) {
-								e1.printStackTrace();
-							}
-
-							try {
-								sock.close();
-							} catch (IOException e) {	
-								e.printStackTrace();
-							}
+//							try {
+//								System.out.println("spengo il copyserver");
+//								welcomeSocket.close();
+//							} catch (IOException e1) {
+//								e1.printStackTrace();
+//							}
+//
+//							try {
+//								sock.close();
+//							} catch (IOException e) {	
+//								e.printStackTrace();
+//							}
 						}						
 
 
@@ -311,9 +311,9 @@ public class MasterServer implements MultiServerInterface{
 		Simulation simul=simulationsList.get(id);
 		System.out.println(simul.toString());
 		System.out.println("invoco copyserver "+simulationsDirectoriesFolder+File.separator+simul.getSimulationFolder()+File.separator+"flockers.jar");	
-		for(String topicName: simul.getTopicList())
+		
 			getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, topicName, "jar");
-		System.out.println("param"+simul.getTopicList().size());
+		
 		invokeCopyServer(DEFAULT_PORT_COPY_SERVER, simul.getSimulationFolder()+File.separator+"flockers.jar",simul.getTopicList().size());
 	}
 
@@ -476,6 +476,7 @@ public class MasterServer implements MultiServerInterface{
 		System.out.println(simul.toString()+""+simul.getSimID());
 		simulationsList.put(simul.getSimID(), simul);
 		this.topicIdWorkersForSimulation.put(simul.getSimID(), simul.getTopicList());
+		
 		for(String topicName: simul.getTopicList())
 			getConnection().publishToTopic(simul, topicName, "newsim");
 
