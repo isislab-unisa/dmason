@@ -261,30 +261,34 @@ public class MasterServer implements MultiServerInterface{
 
 						if(map.containsKey("simrcv")){
 							int id=(int) map.get("simrcv");
-							Simulation simul=simulationsList.get(id);
-							System.out.println(simul.toString());
-							System.out.println("invoco copyserver "+simulationsDirectoriesFolder+File.separator+simul.getSimulationFolder()+File.separator+"flockers.jar");	
-							for(String topicName: simul.getTopicList())
-								getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, topicName, "jar");
-							invokeCopyServer(DEFAULT_PORT_COPY_SERVER, simul.getSimulationFolder()+File.separator+"flockers.jar");
-							System.out.println("arrivo qua");
+							simReceivedProcess(id);
+
+							//							Simulation simul=simulationsList.get(id);
+							//							System.out.println(simul.toString());
+							//							System.out.println("invoco copyserver "+simulationsDirectoriesFolder+File.separator+simul.getSimulationFolder()+File.separator+"flockers.jar");	
+							//							for(String topicName: simul.getTopicList())
+							//								getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, topicName, "jar");
+							//							System.out.println("param"+simul.getTopicList().size());
+							//							invokeCopyServer(DEFAULT_PORT_COPY_SERVER, simul.getSimulationFolder()+File.separator+"flockers.jar",simul.getTopicList().size());
+							//							System.out.println("arrivo qua");
+
+
 						}
 
 						//se il worker ha terminato lo scaricamento jar
 						if(map.containsKey("downloaded")){
-							System.out.println("tappò"+map.get("downloaded"));
+							System.out.println("staje senza pensier"+map.get("downloaded"));
 
 							try {
+								System.out.println("spengo il copyserver");
 								welcomeSocket.close();
 							} catch (IOException e1) {
-								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							}
 
 							try {
 								sock.close();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
+							} catch (IOException e) {	
 								e.printStackTrace();
 							}
 						}						
@@ -301,6 +305,19 @@ public class MasterServer implements MultiServerInterface{
 		catch (Exception e){e.printStackTrace();}
 
 	}
+
+
+	private void simReceivedProcess(int id){
+		Simulation simul=simulationsList.get(id);
+		System.out.println(simul.toString());
+		System.out.println("invoco copyserver "+simulationsDirectoriesFolder+File.separator+simul.getSimulationFolder()+File.separator+"flockers.jar");	
+		for(String topicName: simul.getTopicList())
+			getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, topicName, "jar");
+		System.out.println("param"+simul.getTopicList().size());
+		invokeCopyServer(DEFAULT_PORT_COPY_SERVER, simul.getSimulationFolder()+File.separator+"flockers.jar",simul.getTopicList().size());
+	}
+
+
 
 
 
@@ -340,29 +357,33 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-	public void invokeCopyServer(int port,String jarFile){
+	/**
+	 * 
+	 * @param port
+	 * @param jarFile
+	 * @param stopParam
+	 */
+	private void invokeCopyServer(int port,String jarFile,int stopParam){
+
+		int checkControl=stopParam;
 		InetAddress address;
 		welcomeSocket=null;
+		int counter=0;
 		try {
 			address = InetAddress.getByName(this.IP_ACTIVEMQ);
 			welcomeSocket = new ServerSocket(port,1,address);
 			System.out.println("Listening");
-			while (true) {
+			while (counter<checkControl) {
 				sock = welcomeSocket.accept();
 				System.out.println("Connected");
+				counter++;
 				new Thread(new CopyMultiThreadServer(sock,jarFile)).start();
-				System.out.println("avviato");
 			}
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} 
+		catch (UnknownHostException e) {e.printStackTrace();} catch (IOException e) {
 			if (welcomeSocket != null && !welcomeSocket.isClosed()) {
-				try {
-					welcomeSocket.close();
-				} catch (IOException exx)
-				{
-					exx.printStackTrace(System.err);
-				}
+				try {welcomeSocket.close();} 
+				catch (IOException exx){exx.printStackTrace(System.err);}
 			}
 		}
 

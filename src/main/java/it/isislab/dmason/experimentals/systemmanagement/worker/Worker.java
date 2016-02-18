@@ -279,13 +279,12 @@ public class Worker {
 					{
 						int port=(int)map.get("jar");
 						System.out.println("scarica da porta "+port);
-
 						downloadFile(port, simulation.getSimulationFolder()+File.separator+"out.jar");
 						System.out.println("invio downloaded al master");
 						getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
 					}
 				} catch (JMSException e) {
-					// TODO Auto-generated catch block
+				
 					e.printStackTrace();
 				}
 
@@ -329,12 +328,7 @@ public class Worker {
 
 
 
-	protected void downloadFile(int serverSocketPort,String localJarFilePath){
-
-
-
-
-		//String localJarFilePath =this.getSimulationsDirectories()+File.separator+"1"+File.separator+"out.jar"; ;//simulationsDirectories+File.separator+TOPIC_WORKER_ID+"out.jar";//da scegliere 
+	protected void downloadFile(int serverSocketPort,String localJarFilePath){ 
 
 		byte[] aByte = new byte[1];
 		int bytesRead;
@@ -384,7 +378,7 @@ public class Worker {
 				ex.printStackTrace();
 			}
 		}	
-		getConnection().publishToTopic(TOPIC_WORKER_ID, "READY", "downloaded");
+		getConnection().publishToTopic(TOPIC_WORKER_ID, "READY", "downloaded");//togli
 	}
 
 
