@@ -261,7 +261,7 @@ public class MasterServer implements MultiServerInterface{
 
 						if(map.containsKey("simrcv")){
 							int id=(int) map.get("simrcv");
-							simReceivedProcess(id,(String)map.get("simrcv"));
+							simReceivedProcess(id/*,(String)map.get("simrcv")*/);
 
 							//							Simulation simul=simulationsList.get(id);
 							//							System.out.println(simul.toString());
@@ -312,7 +312,7 @@ public class MasterServer implements MultiServerInterface{
 		System.out.println(simul.toString());
 		System.out.println("invoco copyserver "+simulationsDirectoriesFolder+File.separator+simul.getSimulationFolder()+File.separator+"flockers.jar");	
 		
-			getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, topicName, "jar");
+			getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, "mikele"/*topicName*/, "jar");
 		
 		invokeCopyServer(DEFAULT_PORT_COPY_SERVER, simul.getSimulationFolder()+File.separator+"flockers.jar",simul.getTopicList().size());
 	}
