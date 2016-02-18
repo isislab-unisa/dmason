@@ -1,4 +1,3 @@
-
 function load_tiles_monitoring(){
     $('.grid-monitoring').masonry({
             itemSelector: '.grid-item-monitoring',
@@ -60,6 +59,18 @@ function close_dialog(id_paper_dialog){
         dialog.close();
     }
 }
+
+$(
+    function(){
+        setTimeout(function(){
+                load_tails_workers();
+                close_dialog("load_workers_dialog");
+                load_tiles_monitoring();
+        },3000);
+
+    }
+);
+
 var progress,repeat,maxRepeat,animating;
 
 function opne_file_chooser(){

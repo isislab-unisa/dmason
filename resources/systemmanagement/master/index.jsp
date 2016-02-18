@@ -45,7 +45,7 @@
 <link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-
+<link rel="import" href="bower_components/paper-spinner/paper-spinner.html">
 
 <link rel="import" href="bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
@@ -56,7 +56,7 @@
 
 <link rel="import" href="bower_components/neon-animation/neon-animations.html">
 </head>
-<body unresolved onload="load_tails_workers()">
+<body unresolved>
 
 	<paper-drawer-panel force-narrow >
 		<paper-scroll-header-panel drawer id="side-header-panel" fixed fill>
@@ -83,31 +83,35 @@
 		    </paper-toolbar>
 
              <div class="content content-main">
-                <paper-dialog id="load_workers_dialog" class="layout horizontal center-justified" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
-                        <paper-spinner active alt="Loading workers list"></paper-spinner>
-                        <span>Loading workers list.....</span>
+
+                <paper-dialog opened id="load_workers_dialog"  entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal>
+                        <% masterServer.checkAllConnectedWorkers();%>
+                        <div class="layout horizontal center">
+                            <paper-spinner class="multi" active alt="Loading workers list"></paper-spinner>
+                            <span>Loading workers list.....</span>
+                        </div>
+
                 </paper-dialog>
                 <div class="grid-monitoring" id="workers">
                     <script>
                         function load_tails_workers(){
-                            open_dialog("load_workers_dialog");
-                            <% masterServer.checkAllConnectedWorkers();
-                                String message = "{\"workers\":[";
-                                int startMessageSize = message.length();
+                                <%
+                                    String message = "{\"workers\":[";
+                                    int startMessageSize = message.length();
 
-                                for(String info : masterServer.getInfoWorkers().values()){
-                                    message+=info+",";
-                                }
-                                if(message.length() > startMessageSize)
-                                    message=message.substring(0, message.length()-1)+"]}";
-                                else
-                                    message="";
-                            %>
+                                    for(String info : masterServer.getInfoWorkers().values()){
+                                        message+=info+",";
+                                    }
+                                    if(message.length() > startMessageSize)
+                                        message=message.substring(0, message.length()-1)+"]}";
+                                    else
+                                        message="";
+                                %>
                                 <!-- tails -->
-                             _loadWorkers('<%=message %>');
-                             load_tiles_monitoring();
-                             close_dialog("load_workers_dialog");
+                            _loadWorkers('<%=message %>');
+
                         }
+
                     </script>
                 </div>
                 <paper-fab id="add-simulation-to-worker-buttom" icon="add" onclick="open_dialog_setting_new_simulation()"></paper-fab>
