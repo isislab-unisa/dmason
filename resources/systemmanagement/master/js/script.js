@@ -20,7 +20,7 @@ function load_tiles_settings(){
 
 
 function open_dialog_setting_new_simulation(){
-    var workerID=[];
+    var workerID= new Array();
     if($('.grid-item-selected').length){
         $('.grid-item-selected').each(function(index){
             workerID[index] = $(this).attr("id");
@@ -52,6 +52,14 @@ function open_dialog(id_paper_dialog){
         }
     }
 
+function close_dialog(id_paper_dialog){
+
+
+    var dialog = document.getElementById(id_paper_dialog);
+    if (dialog) {
+        dialog.close();
+    }
+}
 var progress,repeat,maxRepeat,animating;
 
 function opne_file_chooser(){
@@ -147,7 +155,7 @@ function hash(value){
 }
 
 
-function submitHandler(event) {
+function submitSimulation(event) {
     var form = document.getElementById("sendSimulationForm");
 
 console.log(form.serialize());
@@ -161,10 +169,10 @@ console.log(form.serialize());
     var dialog = document.getElementById("add-simulation-paper-dialog");
     //remove input added previusly
     dialog.close();
-    resetHandler(event);
+    resetForm(event);
 }
 
 
-function resetHandler(event) {
+function resetForm(event) {
     document.getElementById("sendSimulationForm").reset();
 }

@@ -56,7 +56,7 @@
 
 <link rel="import" href="bower_components/neon-animation/neon-animations.html">
 </head>
-<body unresolved onload="load_tiles_monitoring()">
+<body unresolved onload="load_tails_workers()">
 
 	<paper-drawer-panel force-narrow >
 		<paper-scroll-header-panel drawer id="side-header-panel" fixed fill>
@@ -74,7 +74,7 @@
 				</app-sidebar>
 			</div>
 		</paper-scroll-header-panel>
-    <jsp:useBean id="masterServer" class="it.isislab.dmason.experimentals.systemmanagement.master.MasterServer" scope="application"></jsp:useBean>
+    <jsp:useBean id="masterServer" class="it.isislab.dmason.experimentals.systemmanagement.master.MasterServer" scope="application"/>
 		<paper-scroll-header-panel main fixed>
 			<paper-toolbar flex id="mainToolBar" class="horizontal">
 				<div><paper-icon-button icon="menu" paper-drawer-toggle ></paper-icon-button></div>
@@ -83,8 +83,32 @@
 		    </paper-toolbar>
 
              <div class="content content-main">
+                <paper-dialog id="load_workers_dialog" class="layout horizontal center-justified" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+                        <paper-spinner active alt="Loading workers list"></paper-spinner>
+                        <span>Loading workers list.....</span>
+                </paper-dialog>
                 <div class="grid-monitoring" id="workers">
-                        <!-- tails -->
+                    <script>
+                        function load_tails_workers(){
+                            open_dialog("load_workers_dialog");
+                            <% masterServer.checkAllConnectedWorkers();
+                                String message = "{\"workers\":[";
+                                int startMessageSize = message.length();
+
+                                for(String info : masterServer.getInfoWorkers().values()){
+                                    message+=info+",";
+                                }
+                                if(message.length() > startMessageSize)
+                                    message=message.substring(0, message.length()-1)+"]}";
+                                else
+                                    message="";
+                            %>
+                                <!-- tails -->
+                             _loadWorkers('<%=message %>');
+                             load_tiles_monitoring();
+                             close_dialog("load_workers_dialog");
+                        }
+                    </script>
                 </div>
                 <paper-fab id="add-simulation-to-worker-buttom" icon="add" onclick="open_dialog_setting_new_simulation()"></paper-fab>
                 <paper-toast id="miss-worker-selection">You should select some workers before to assign them a partitioning</paper-toast>
@@ -92,13 +116,13 @@
                     <h2>Simulation Settings</h2>
                     <paper-dialog-scrollable>
                         <div class="horizontal-section">
-                            <form is="iron-form" id="sendSimulationForm" method="get" action="/getQualcosa">
+                            <form is="iron-form" id="sendSimulationForm" method="get">
                                 <table>
                                     <tr>
                                         <td>
                                             <span>Select an external simulation</span><br>
                                             <paper-button raised class="custom" onclick='opne_file_chooser()'>Upload<iron-icon icon="file-upload"></iron-icon></paper-button>
-                                            <input type="file" class="hidden" id="simulation-jar-chooser" name="sim-exe" accept="" onchange="startProgress()">
+                                            <input type="file" class="hidden" id="simulation-jar-chooser" name="sim-exe" accept="*.jar" onchange="startProgress()">
                                         </td>
                                         <td></td>
                                         <td>
@@ -156,15 +180,15 @@
 
                                 <tr><td></td>
                                 <td colspan='2' style="text-align:right; padding-top:50px;"><paper-button raised
-                                onclick="resetHandler(event)">Reset</paper-button>
+                                onclick="resetForm(event)">Reset</paper-button>
                                 <paper-button raised
-                                onclick="submitHandler(event)">Submit</paper-button></td></tr>
+                                onclick="submitSimulation(event)">Submit</paper-button></td></tr>
                                 </table>
                             </form>
-                            <paper-dialog></paper-dialog>
                         </div>
                     </paper-dialog-scrollable>
-
+                </paper-dialog>
+            </div>
 		</paper-scroll-header-panel>
 
 	</paper-drawer-panel>
