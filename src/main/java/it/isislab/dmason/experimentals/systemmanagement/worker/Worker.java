@@ -79,7 +79,7 @@ public class Worker {
 	private String PORT_ACTIVEMQ="";
 	private String TOPICPREFIX="";
 	private static final String MASTER_TOPIC="MASTER";
-	private static String prova="/home/miccar/Scrivania/";
+	private static String prova=System.getProperty("user.home")+File.separator+"Scrivania"+File.separator;
 	private static final String workerDirectory=prova+"worker";
 	private static final String workerTemporary=workerDirectory+File.separator+"temporary";
 	private static final String simulationsDirectories=workerDirectory+File.separator+"simulations";
