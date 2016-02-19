@@ -6,7 +6,6 @@ import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,14 +19,15 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
-
 import org.apache.activemq.broker.BrokerService;
-import org.apache.commons.collections.bag.SynchronizedSortedBag;
 
-
+/**
+ * 
+ * 
+ *
+ */
 public class MasterServer implements MultiServerInterface{
 
 
