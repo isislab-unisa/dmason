@@ -43,13 +43,13 @@ import sim.display.Console;
 public class TestDFlockers {
 
 	private static boolean graphicsOn=false; //with or without graphics?
-	private static int numSteps = 300; //only graphicsOn=false
-	private static int rows = 2; //number of rows
-	private static int columns = 1; //number of columns
+	private static int numSteps = 30000; //number of step 
+	private static int rows = 3; //number of rows
+	private static int columns = 3; //number of columns
 	private static int AOI=10; //max distance
-	private static int NUM_AGENTS=10000; //number of agents
-	private static int WIDTH=921; //field width
-	private static int HEIGHT=633; //field height
+	private static int NUM_AGENTS=1000; //number of agents
+	private static int WIDTH=400; //field width
+	private static int HEIGHT=400; //field height
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
 	private static String topicPrefix=""; //unique string to identify topics for this simulation
@@ -79,10 +79,10 @@ public class TestDFlockers {
 				int i=0;
 				while(i!=numSteps)
 				{
-					if(!graphicsOn){
-						if(i==numSteps-1)
-							System.out.println("endsim with prefixID"+topicPrefix);
-					}
+//					if(!graphicsOn){
+//						if(i==numSteps-1)
+//						System.out.println("simulation finished");	
+//					}
 
 					ds.schedule.step(ds);
 					i++;
@@ -101,7 +101,7 @@ public class TestDFlockers {
 				genParam.setIp(ip);
 				genParam.setPort(port);
 				ArrayList<EntryParam<String, Object>> simParams=new ArrayList<EntryParam<String,Object>>();
-				if(graphicsOn  /*|| i==0 && j==0 //to watch 0-0 celltype*/)
+				if(graphicsOn  || i==0 && j==0 /*to watch 0-0 celltype*/)
 				{
 
 					DFlockersWithUI sim =new DFlockersWithUI(genParam,simParams,topicPrefix);

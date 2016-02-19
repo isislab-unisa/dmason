@@ -148,17 +148,6 @@ public class DFlockers extends DistributedState<Double2D>
 	public void start()
 	{
 
-		/*	TEST java.net.URL url = this.getClass().getResource("file.txt");
-		 InputStream reader =url.openStream();
-		 StringWriter writer=new StringWriter();
-		 IOUtils.copy(reader, writer);
-		 System.out.println(writer.toString());
-		 reader.close();
-		 writer.close();
-		 */
-
-
-
 		super.start();
 
 		// set up the flockers field.  It looks like a discretization

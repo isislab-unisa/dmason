@@ -26,6 +26,7 @@ import sim.util.Bag;
 import sim.util.Double2D;
 import ec.util.MersenneTwisterFast;
 /**
+ * Distributed version of Flocker-Mason simulation    
  * 
  * @author Michele Carillo
  * @author Ada Mancuso
@@ -51,7 +52,8 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
     
     public Bag getNeighbors(DistributedState<Double2D> sm)
     {
-        return ((DContinuousGrid2D)sm.getField()).getObjectsExactlyWithinDistance(pos, ((DFlockers)sm).neighborhood, true);
+        //return ((DContinuousGrid2D)sm.getField()).getObjectsExactlyWithinDistance(pos, ((DFlockers)sm).neighborhood, true);
+    	return ((DContinuousGrid2D)sm.getField()).getNeighborsExactlyWithinDistance(pos, ((DFlockers)sm).neighborhood, true);
     }
     
     public double getOrientation() { return orientation2D(); }
@@ -193,7 +195,6 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
 		try {
 			flock.flockers.setDistributedObjectLocation(pos, this, state);
 		} catch (DMasonException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
 	}
