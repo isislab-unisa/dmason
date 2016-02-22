@@ -41,11 +41,11 @@ import sim.display.Console;
 public class TestStart {
 
 	private static boolean graphicsOn=false; //with or without graphics?
-	private static int numSteps = 1000; 
+	private static int numSteps = 10000; 
 	private static int rows = 1; //number of rows
 	private static int columns = 2; //number of columns
 	private static int AOI=10; //max distance
-	private static int NUM_AGENTS=10000; //number of agents
+	private static int NUM_AGENTS=1000; //number of agents
 	private static int WIDTH=400; //field width
 	private static int HEIGHT=400; //field height
 	private static String ip="127.0.0.1"; //ip of activemq
