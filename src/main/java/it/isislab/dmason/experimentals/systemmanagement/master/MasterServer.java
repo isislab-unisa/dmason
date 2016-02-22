@@ -260,8 +260,8 @@ public class MasterServer implements MultiServerInterface{
 
 
 						if(map.containsKey("simrcv")){
-							int id=(int) map.get("simrcv");
-							simReceivedProcess(id/*,(String)map.get("simrcv")*/);
+							String topic=(String) map.get("simrcv");
+							simReceivedProcess(topic/*,(String)map.get("simrcv")*/);
 
 							//							Simulation simul=simulationsList.get(id);
 							//							System.out.println(simul.toString());
@@ -307,14 +307,14 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-	private void simReceivedProcess(int id){
-		Simulation simul=simulationsList.get(id);
-		System.out.println(simul.toString());
-		System.out.println("invoco copyserver "+simulationsDirectoriesFolder+File.separator+simul.getSimulationFolder()+File.separator+"flockers.jar");	
+	private void simReceivedProcess(String topic){
+	
+
+		//System.out.println("invoco copyserver "+simulationsDirectoriesFolder+File.separator+simul.getSimulationFolder()+File.separator+"flockers.jar");	
 		
-			getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, "mikele"/*topicName*/, "jar");
+			getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, topic, "jar");
 		
-		invokeCopyServer(DEFAULT_PORT_COPY_SERVER, simul.getSimulationFolder()+File.separator+"flockers.jar",simul.getTopicList().size());
+		//invokeCopyServer(DEFAULT_PORT_COPY_SERVER, simul.getSimulationFolder()+File.separator+"flockers.jar",simul.getTopicList().size());
 	}
 
 
@@ -346,15 +346,6 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-	public void sendSimulationProcess(String idfolder){
-		//c è da riempire l array dei topic dei worker che partecipano
-		/*   for(String topic: topicIdWorkersForSimulation){
-		  this.getConnection().publishToTopic(idfolder,topic, "simulation");
-		  this.getConnection().asynchronousReceive(key)
-		  //invio porta per jar al worker
-		  this.getConnection().publishToTopic(object, topicName, key)}*/
-		//se tutti downloaded  
-	}
 
 
 	/**
@@ -473,12 +464,16 @@ public class MasterServer implements MultiServerInterface{
 
 	public void submitSimulation(Simulation sim) {
 		final Simulation simul=sim;
-		System.out.println(simul.toString()+""+simul.getSimID());
+		
 		simulationsList.put(simul.getSimID(), simul);
 		this.topicIdWorkersForSimulation.put(simul.getSimID(), simul.getTopicList());
-		
+		System.out.println(simul);
+		System.out.println(simul.getTopicList().size());
 		for(String topicName: simul.getTopicList())
 			getConnection().publishToTopic(simul, topicName, "newsim");
 
-	}
+		this.invokeCopyServer(DEFAULT_PORT_COPY_SERVER, simul.getSimulationFolder()+File.separator+"flockers.jar",simul.getTopicList().size());
+	}  
+	
+	
 }

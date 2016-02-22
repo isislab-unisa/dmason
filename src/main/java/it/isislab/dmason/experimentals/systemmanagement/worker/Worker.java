@@ -263,7 +263,7 @@ public class Worker {
 		this.createSimulationDirectoryByID(simulation.getSimName());
 		simulation.setSimulationFolder(simulationsDirectories+File.separator+simulation.getSimName());
 		System.out.println("sto per pubblicare al master");
-		this.getConnection().publishToTopic(simulation.getSimID(), this.TOPIC_WORKER_ID, "simrcv");
+		this.getConnection().publishToTopic(TOPIC_WORKER_ID_MASTER, this.TOPIC_WORKER_ID, "simrcv");
 		
 		this.getConnection().asynchronousReceive(TOPIC_WORKER_ID_MASTER,new MyMessageListener() {
 
