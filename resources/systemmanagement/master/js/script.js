@@ -172,10 +172,8 @@ function submitSimulation(event) {
 console.log(form.serialize());
 
     $.ajax({url:"submitSimulation",
-        data:form.serialize(),
-        success: function(result){
+        data:form.serialize()});
 
-        }});
     $("#workerList").remove();
     var dialog = document.getElementById("add-simulation-paper-dialog");
     //remove input added previusly

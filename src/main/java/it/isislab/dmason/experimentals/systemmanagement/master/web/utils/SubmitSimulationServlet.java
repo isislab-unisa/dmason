@@ -3,11 +3,18 @@ package it.isislab.dmason.experimentals.systemmanagement.master.web.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.google.common.io.Files;
 
@@ -88,7 +95,31 @@ public class SubmitSimulationServlet extends HttpServlet {
 		/////
 
 		String simPath=server.getSimulationsDirectories()+File.separator+simName;
-		server.createSimulationDirectoryByID(simPath);
+		//server.createSimulationDirectoryByID(simPath);
+		server.createSimulationDirectoryByID(simName);
+		
+		if(ServletFileUpload.isMultipartContent(req)){
+			System.out.println("nothing to do");
+		}
+		else{
+			FileItemFactory itemFact = new DiskFileItemFactory();
+			ServletFileUpload upload = new ServletFileUpload(itemFact);
+			try{
+				List<FileItem> items = upload.parseRequest(req);
+				for(FileItem item : items){
+					File dir = new File(simPath);
+					File file = File.createTempFile("SIM", ".jar", dir);
+					item.write(file);
+				}
+			}catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+			
+		
+		
 
 		Simulation sim =new Simulation(simName, simPath, rows, columns, aoi, width, height, numAgent, mode, connection) ;
 

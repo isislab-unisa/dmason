@@ -98,7 +98,7 @@
                                 <%
                                     String message = "{\"workers\":[";
                                     int startMessageSize = message.length();
-
+                                    Thread.sleep(1000);
                                     for(String info : masterServer.getInfoWorkers().values()){
                                         message+=info+",";
                                     }
@@ -120,7 +120,7 @@
                     <h2>Simulation Settings</h2>
                     <paper-dialog-scrollable>
                         <div class="horizontal-section">
-                            <form is="iron-form" id="sendSimulationForm" method="get">
+                            <form is="iron-form" id="sendSimulationForm" method="get" enctype="multipart/form-data">
                                 <table>
                                     <tr>
                                         <td>
