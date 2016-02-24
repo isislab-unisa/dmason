@@ -62,18 +62,19 @@ function close_dialog(id_paper_dialog){
 
 $(
     function(){
-        setTimeout(function(){
-                load_tails_workers();
-                close_dialog("load_workers_dialog");
+        setInterval(function(){
+
+                loadWorkers();
+                if($('#load_workers_dialog').prop("opened"))close_dialog("load_workers_dialog");
                 load_tiles_monitoring();
-        },3000);
+        },2000);
 
     }
 );
 
 var progress,repeat,maxRepeat,animating;
 
-function opne_file_chooser(){
+function open_file_chooser(){
     $('#simulation-jar-chooser').click();
 }
 
@@ -121,7 +122,7 @@ var tmp = hash(_message);
 
     var message=_message;
     var grid=document.getElementById("workers");
-    var tiles="<div class=\"grid-sizer-monitoring\"></div>";
+   // var tiles="<div class=\"grid-sizer-monitoring\"></div>";
 
     var obj =[];
 
@@ -130,18 +131,53 @@ var tmp = hash(_message);
         obj = JSON.parse(message);
 
     var w;
-    if(obj.hasOwnProperty('workers'))
+    old_list = [];
+    $(grid).children('div').each(function(){
+        if($(this).attr("id")){
+            console.log("aggiungo "+$(this).attr("id"));
+            old_list[$(this).attr("id")] = $(this);
+        }
+    });
+
+    if(obj.hasOwnProperty('workers')){
+
         for (i = 0; i < obj.workers.length; i++) {
             w = obj.workers[i];
+            var curNode = document.getElementById(w.workerID);
+            if(!curNode){
+               node = $("<div id="+w.workerID+" class=\"grid-item-monitoring\" onclick=\"selectItem(this)\"></div>");
+               // node.append($("<div class=\"worker-system-info\"><span>Worker ID: "+ w.workerID+"</span></div>"));
+                node.append($("<div class=\"worker-system-info\"><span>CPU:"+w.cpuLoad+" %</span></div>"));
+                node.append($("<div class=\"worker-system-info\"><span>JVM RAM:</span></div>"));
+                node.append($("<div class=\"worker-system-info\"><span class=\"tab\">Free "+w.availableheapmemory+" MB</span></div>"));
+                node.append($("<div class=\"worker-system-info\"><span class=\"tab\">Used "+w.busyheapmemory+" MB</span></div>"));
+                node.append($("<div class=\"worker-system-info\"><span>IP: "+w.ip+"</span></div>"));
+                node.append($("<div class=\"worker-system-info\"><span>#Simulations</span></div>"));
+
+                $(grid).append(node);
+
+            }else
+                delete old_list[w.workerID];
+
+            /*
             tiles+="<div id="+w.workerID+" class=\"grid-item-monitoring\" onclick=\"selectItem(this)\">"
-                +"<div class=\"worker-system-info\"><span id="+w.workerID+">Worker ID: "+i+"</span></div>"
+                +"<div class=\"worker-system-info\"><span>Worker ID: "+i+"</span></div>"
                 +"<div class=\"worker-system-info\"><span>CPU:"+w.cpuLoad+" %</span></div>"
-                +"<div class=\"worker-system-info\"><span>RAM: Free "+w.availableheapmemory+"  MB Used "+w.busyheapmemory+"  MB</span></div>"
+                +"<div class=\"worker-system-info\"><span>JVM RAM: Free "+w.availableheapmemory+"  MB Used "+w.busyheapmemory+"  MB</span></div>"
                 +"<div class=\"worker-system-info\"><span>IP: "+w.ip+"</span></div>"
                 +"<div class=\"worker-system-info\"><span>#Simulations</span></div>"
-                +"</div>";
+                +"</div>";*/
         }
-    grid.innerHTML=tiles;
+    }
+    if(old_list.length > 0)
+        for(id in old_list){
+            console.log("rimuovo "+id);
+            $(old_list[id]).remove();
+        }
+
+   // grid.innerHTML=tiles;
+   // console.log(old_list);
+    load_tiles_monitoring();
 }
 
 //$(function(){ loadWorkers(); setInterval(function(){loadWorkers()},10000);});
