@@ -93,12 +93,12 @@
 
                 </paper-dialog>
                 <div class="grid-monitoring" id="workers">
+                    <div class=\"grid-sizer-monitoring\"></div>
                     <script>
                         function load_tails_workers(){
                                 <%
                                     String message = "{\"workers\":[";
                                     int startMessageSize = message.length();
-                                    Thread.sleep(1000);
                                     for(String info : masterServer.getInfoWorkers().values()){
                                         message+=info+",";
                                     }
@@ -125,7 +125,7 @@
                                     <tr>
                                         <td>
                                             <span>Select an external simulation</span><br>
-                                            <paper-button raised class="custom" onclick='opne_file_chooser()'>Upload<iron-icon icon="file-upload"></iron-icon></paper-button>
+                                            <paper-button raised class="custom" onclick='open_file_chooser()'>Upload<iron-icon icon="file-upload"></iron-icon></paper-button>
                                             <input type="file" class="hidden" id="simulation-jar-chooser" name="simExe" onchange="startProgress()">
                                         </td>
                                         <td></td>

@@ -72,6 +72,9 @@
     display: none;
 }
 
+.tab{
+    margin-left:1em;
+}
 .grid-item-monitoring:hover{
     background-color: grey;
 }
