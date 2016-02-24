@@ -11,7 +11,7 @@
 	<description>DMASON is a parallel version of the MASON library for writing and running simulations of Agent based simulation models.</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jdk.version>1.7</jdk.version>
+		<jdk.version>1.8</jdk.version>
 	</properties>
 	<licenses>
 		<license>
