@@ -120,13 +120,13 @@
                     <h2>Simulation Settings</h2>
                     <paper-dialog-scrollable>
                         <div class="horizontal-section">
-                            <form is="iron-form" id="sendSimulationForm" method="get" enctype="multipart/form-data">
+                            <form is="iron-form" id="sendSimulationForm" enctype="multipart/form-data">
                                 <table>
                                     <tr>
                                         <td>
                                             <span>Select an external simulation</span><br>
                                             <paper-button raised class="custom" onclick='opne_file_chooser()'>Upload<iron-icon icon="file-upload"></iron-icon></paper-button>
-                                            <input type="file" class="hidden" id="simulation-jar-chooser" name="sim-exe" accept="*.jar" onchange="startProgress()">
+                                            <input type="file" class="hidden" id="simulation-jar-chooser" name="simExe" onchange="startProgress()">
                                         </td>
                                         <td></td>
                                         <td>
@@ -183,10 +183,11 @@
                                     </tr>
 
                                 <tr><td></td>
-                                <td colspan='2' style="text-align:right; padding-top:50px;"><paper-button raised
-                                onclick="resetForm(event)">Reset</paper-button>
-                                <paper-button raised
-                                onclick="submitSimulation(event)">Submit</paper-button></td></tr>
+                                    <td colspan='2' style="text-align:right; padding-top:50px;">
+                                        <paper-button raised onclick="resetForm(event)">Reset</paper-button>
+                                        <paper-button raised onclick="submitForm()">Submit</paper-button>
+                                    </td>
+                                </tr>
                                 </table>
                             </form>
                         </div>
