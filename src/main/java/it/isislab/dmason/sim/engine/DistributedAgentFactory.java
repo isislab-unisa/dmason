@@ -33,6 +33,7 @@ public class DistributedAgentFactory implements MethodInterceptor, Serializable{
 				else 
 					if(m.getName().contains("set"))
 					 methods_write.add(m.getName());
+			
 			}
 
 	}
