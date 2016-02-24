@@ -55,6 +55,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -109,8 +110,8 @@ public class Worker {
 		this.createConnection();
 		this.startMasterComunication();
 		this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
-		
-		
+
+
 		simulationList=new HashMap<>();
 	}
 
@@ -185,23 +186,11 @@ public class Worker {
 						int i=0;
 						while(i!=dis.columns)
 						{
-
-
 							System.out.println("endsim with prefixID"+dis.schedule.getSteps());
-
-
 							dis.schedule.step(dis);
 							i++;
 						}
-
-
-
-
-
-
 					}
-
-
 				} catch (JMSException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -232,7 +221,26 @@ public class Worker {
 				Object o;
 				try {
 					o=parseMessage(msg);
-					MyHashMap map=(MyHashMap) o;
+				final	MyHashMap map=(MyHashMap) o;
+
+					if(map.containsKey("jar"))
+					{
+
+						new Thread(new Runnable() {
+
+							@Override
+							public void run() {
+								int port=(int) map.get("jar");
+								System.out.println("scarica da porta "+port);
+								downloadFile(port, "/home/flaser/Scrivania/worker/simulations/simname/"+"out.jar");
+								System.out.println("invio downloaded al master");
+
+							}
+						}).start(); 
+						//getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
+					}
+
+
 
 					if(map.containsKey("check")){
 						String info=getInfoWorker();
@@ -249,7 +257,7 @@ public class Worker {
 						simulationList.put(sim.getSimID(), sim); 
 						createNewSimulationProcess(sim);
 					}
-				
+
 				} catch (JMSException e) {e.printStackTrace();}
 
 
@@ -264,35 +272,39 @@ public class Worker {
 		simulation.setSimulationFolder(simulationsDirectories+File.separator+simulation.getSimName());
 		System.out.println("sto per pubblicare al master");
 		this.getConnection().publishToTopic(TOPIC_WORKER_ID_MASTER, this.TOPIC_WORKER_ID, "simrcv");
-		
-		this.getConnection().asynchronousReceive(TOPIC_WORKER_ID_MASTER,new MyMessageListener() {
 
-			@Override
-			public void onMessage(Message msg) {
-				Object o;
-				try {
-					o=parseMessage(msg);
-					MyHashMap map=(MyHashMap)o;
-
-
-					if(map.containsKey("jar"))
-					{
-						int port=(int)map.get("jar");
-						System.out.println("scarica da porta "+port);
-						downloadFile(port, simulation.getSimulationFolder()+File.separator+"out.jar");
-						System.out.println("invio downloaded al master");
-						getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
-					}
-				} catch (JMSException e) {
-				
-					e.printStackTrace();
-				}
-
-
-
-
-			}
-		});
+		//		this.getConnection().asynchronousReceive(TOPIC_WORKER_ID_MASTER,new MyMessageListener() {
+		//
+		//			@Override
+		//			public void onMessage(Message msg) {
+		//				Object o;
+		//				try {
+		//					o=parseMessage(msg);
+		//					final MyHashMap map=(MyHashMap)o;
+		//
+		//					if(map.containsKey("jar"))
+		//					{
+		//					
+		//						new Thread(new Runnable() {
+		//							
+		//							@Override
+		//							public void run() {
+		//								int port=(int) map.get("jar");
+		//								System.out.println("scarica da porta "+port);
+		//								downloadFile(port, simulation.getSimulationFolder()+File.separator+System.currentTimeMillis()+"out.jar");
+		//								System.out.println("invio downloaded al master");
+		//								
+		//							}
+		//						}).start(); 
+		//						//getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
+		//					}
+		//				} catch (JMSException e) {
+		//				
+		//					e.printStackTrace();
+		//				}
+		//
+		//			}
+		//		});
 
 	}
 	protected void createSimulationDirectoryByID(String simID){
@@ -334,12 +346,17 @@ public class Worker {
 		int bytesRead;
 		Socket clientSocket = null;
 		InputStream is = null;
-
+		Random rnd = new Random();
 		try {
 			clientSocket = new Socket( this.IP_ACTIVEMQ , serverSocketPort );
 			is = clientSocket.getInputStream();
+
+			Thread.sleep(1000+rnd.nextInt(500));
 		} catch (IOException ex) {
 			ex.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -350,7 +367,7 @@ public class Worker {
 			BufferedOutputStream bos = null;
 			try {
 				System.out.println("Creating file...");
-                  
+
 				File v=new File(localJarFilePath);
 				if(v.exists()){
 					v.delete();
@@ -378,7 +395,7 @@ public class Worker {
 				ex.printStackTrace();
 			}
 		}	
-		getConnection().publishToTopic(TOPIC_WORKER_ID, "READY", "downloaded");//togli
+		//getConnection().publishToTopic(TOPIC_WORKER_ID, "READY", "downloaded");//togli
 	}
 
 

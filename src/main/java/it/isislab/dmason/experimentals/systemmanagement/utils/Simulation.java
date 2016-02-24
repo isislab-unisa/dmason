@@ -24,6 +24,7 @@ public class Simulation implements Serializable{
 	private int mode;
 	private int connectionType;
     private int numCells;
+    private String execFileName;
 
 
 
@@ -53,7 +54,7 @@ public class Simulation implements Serializable{
 	 * @param mode
 	 * @param parameters
 	 */
-	public Simulation(String simName, String simulationFolder,
+	public Simulation(String simName, String simulationFolder,String execSimNAme,
 			String rows, String columns, String aoi, String width,
 			String height, String numAgent, int mode, int connection) {
 		this.simName = simName;
@@ -69,9 +70,20 @@ public class Simulation implements Serializable{
 		this.connectionType=connection;
 		this.topicList=new ArrayList<>();
 		this.parameters=new GeneralParam(this.width,this.height,this.aoi,this.rows,this.columns,numAgents,this.mode,connectionType);
+	    this.execFileName=execSimNAme;
 	}
 
 
+	public String getJarName() {
+		return execFileName;
+	}
+
+
+	public void setJarName(String simName) {
+		this.execFileName = simName;
+	}
+	
+	
 	public String getSimName() {
 		return simName;
 	}

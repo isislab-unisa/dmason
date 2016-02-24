@@ -98,7 +98,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 
 		//topics
 
-		String topics[] =((String)req.getParameter("workers")).split(",");
+		String topics[] =listParams.get("workers").split(",");
 		ArrayList< String> topicList=new ArrayList<String>();
 		for(String x: topics) 
 			topicList.add(x);
@@ -114,7 +114,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 
-		Simulation sim =new Simulation(simName, simPath, rows, columns, aoi, width, height, numAgent, mode, connection) ;
+		Simulation sim =new Simulation(simName, simPath,jarSim.getName() ,rows, columns, aoi, width, height, numAgent, mode, connection) ;
 
 		sim.setTopicList(topicList);
 		sim.setSimID(server.getKeySim().incrementAndGet());

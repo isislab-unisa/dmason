@@ -228,7 +228,6 @@ function _OnsubmitSimulation(event) {
         cache: false,
         contentType: false,
         processData: false
-
     });
 
     //remove input added previusly

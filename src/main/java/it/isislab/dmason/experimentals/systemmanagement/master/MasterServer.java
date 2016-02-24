@@ -109,7 +109,15 @@ public class MasterServer implements MultiServerInterface{
 
 		this.keySimulation=new AtomicInteger(0);
 		simulationsList=new HashMap<>();
-
+		try {
+			welcomeSocket = new ServerSocket(DEFAULT_PORT_COPY_SERVER,1000,InetAddress.getByName(this.IP_ACTIVEMQ));
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 
@@ -308,10 +316,7 @@ public class MasterServer implements MultiServerInterface{
 
 
 	private void simReceivedProcess(String topic){
-	
-
-		//System.out.println("invoco copyserver "+simulationsDirectoriesFolder+File.separator+simul.getSimulationFolder()+File.separator+"flockers.jar");	
-		
+	     		
 			getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, topic, "jar");
 		
 		//invokeCopyServer(DEFAULT_PORT_COPY_SERVER, simul.getSimulationFolder()+File.separator+"flockers.jar",simul.getTopicList().size());
@@ -354,16 +359,15 @@ public class MasterServer implements MultiServerInterface{
 	 * @param jarFile
 	 * @param stopParam
 	 */
-	private void invokeCopyServer(int port,String jarFile,int stopParam){
+	private void invokeCopyServer(String jarFile,int stopParam){
 
 		int checkControl=stopParam;
-		InetAddress address;
-		welcomeSocket=null;
+		
 		int counter=0;
 		try {
-			address = InetAddress.getByName(this.IP_ACTIVEMQ);
-			welcomeSocket = new ServerSocket(port,1,address);
+		
 			System.out.println("Listening");
+			
 			while (counter<checkControl) {
 				sock = welcomeSocket.accept();
 				System.out.println("Connected");
@@ -472,7 +476,9 @@ public class MasterServer implements MultiServerInterface{
 		for(String topicName: simul.getTopicList())
 			getConnection().publishToTopic(simul, topicName, "newsim");
 
-		this.invokeCopyServer(DEFAULT_PORT_COPY_SERVER, simul.getSimulationFolder()+File.separator+sim.getSimName(),simul.getTopicList().size());
+		
+		String pathJar=simul.getSimulationFolder()+File.separator+sim.getJarName();
+		this.invokeCopyServer(pathJar ,simul.getTopicList().size());
 	}  
 	
 	

@@ -70,22 +70,22 @@ public class CopyMultiThreadServer implements Runnable {
 	}
 
 	
-	
-	public static void main(String[] args) throws IOException {
-		int port =1414;
-		InetAddress address=InetAddress.getByName("127.0.0.1");
-
-		ServerSocket welcomeSocket = new ServerSocket(port,1,address);    
-        String path="/home/miccar/Scrivania/flockers.jar";
-
-
-		System.out.println("Listening");
-		while (true) {
-			Socket sock = welcomeSocket.accept();
-			System.out.println("Connected");
-			new Thread(new CopyMultiThreadServer(sock,path)).start();
-		}
-	}
+//	Testing
+//	public static void main(String[] args) throws IOException {
+//		int port =1414;
+//		InetAddress address=InetAddress.getByName("127.0.0.1");
+//
+//		ServerSocket welcomeSocket = new ServerSocket(port,1,address);    
+//        String path="/home/miccar/Scrivania/flockers.jar";
+//
+//
+//		System.out.println("Listening");
+//		while (true) {
+//			Socket sock = welcomeSocket.accept();
+//			System.out.println("Connected");
+//			new Thread(new CopyMultiThreadServer(sock,path)).start();
+//		}
+//	}
 
 
 
