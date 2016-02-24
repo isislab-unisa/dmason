@@ -20,8 +20,6 @@ import it.isislab.dmason.experimentals.util.management.inspection.DistributedIns
 import it.isislab.dmason.experimentals.util.management.inspection.InspectableSchedule;
 import it.isislab.dmason.experimentals.util.management.inspection.InspectableState;
 import it.isislab.dmason.experimentals.util.visualization.zoomviewerapp.ConsoleZoom;
-import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 import it.isislab.dmason.util.DistributedProperties;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 
@@ -574,63 +572,63 @@ public class Display extends GUIState
 							"Select Option", JOptionPane.YES_NO_CANCEL_OPTION, 
 							JOptionPane.QUESTION_MESSAGE, icon);
 
-					if(i==JOptionPane.YES_OPTION)
-					{
-						connection.publishToTopic("EXIT", "GRAPHICS", "GRAPHICS");
-						
-						RunnerZoom rZ = null;
-						System.out.println(simulation);
-						if(simulation.equals("it.isislab.dmason.util.visualization.sim.app.DFlockers.FlockersWithUIView"))
-						{
-							it.isislab.dmason.experimentals.util.visualization.sim.app.DFlockers.FlockersWithUIView simulazione=new it.isislab.dmason.experimentals.util.visualization.sim.app.DFlockers.FlockersWithUIView(new Object[]{connection,cp.id,true,numCells,width,height,fieldMode} );
-							rZ=new RunnerZoom(simulazione, connection, cp.id, true,this,fieldMode,numCells,width,height,absolutePath,simulation);
-						}
-						else
-							if(simulation.equals("it.isislab.dmason.util.visualization.sim.app.DAntsForage.AntsForageWithUIZoom"))
-							{
-								it.isislab.dmason.experimentals.util.visualization.sim.app.DAntsForage.AntsForageWithUIZoom simulazione=new it.isislab.dmason.experimentals.util.visualization.sim.app.DAntsForage.AntsForageWithUIZoom(new Object[]{connection,cp.id,true,numCells,width,height,fieldMode} );
-								rZ=new RunnerZoom(simulazione, connection, cp.id, true,this,fieldMode,numCells,width,height,absolutePath,simulation);
-							}
-							else
-								if(simulation.equals("it.isislab.dmason.util.visualization.sim.app.DParticles.Tutorial3ViewWithUI"))
-								{
-									it.isislab.dmason.experimentals.util.visualization.sim.app.DParticles.Tutorial3ViewWithUI simulazione=new it.isislab.dmason.experimentals.util.visualization.sim.app.DParticles.Tutorial3ViewWithUI(new Object[]{connection,cp.id,true,numCells,width,height,fieldMode} );
-									rZ=new RunnerZoom(simulazione, connection, cp.id, true,this,fieldMode,numCells,width,height,absolutePath,simulation);
-								}
-						
-						rZ.start();
-						this.close();
-		
-						
-					}
-					else
-						if(i==JOptionPane.NO_OPTION)
-						{
-							connection.publishToTopic("EXIT", "GRAPHICS", "GRAPHICS");
-							
-							RunnerZoom rZ = null;
-							
-							if(simulation.equals("it.isislab.dmason.util.visualization.sim.app.DFlockers.FlockersWithUIView"))
-							{
-								it.isislab.dmason.experimentals.util.visualization.sim.app.DFlockers.FlockersWithUIView simulazione=new it.isislab.dmason.experimentals.util.visualization.sim.app.DFlockers.FlockersWithUIView(new Object[]{connection,cp.id,false,numCells,width,height,fieldMode} );
-								rZ=new RunnerZoom(simulazione, connection, cp.id, false,this,fieldMode,numCells,width,height,absolutePath,simulation);
-							}
-							else
-								if(simulation.equals("it.isislab.dmason.util.visualization.sim.app.DAntsForage.AntsForageWithUIZoom"))
-								{
-									it.isislab.dmason.experimentals.util.visualization.sim.app.DAntsForage.AntsForageWithUIZoom simulazione=new it.isislab.dmason.experimentals.util.visualization.sim.app.DAntsForage.AntsForageWithUIZoom(new Object[]{connection,cp.id,false,numCells,width,height,fieldMode} );
-									rZ=new RunnerZoom(simulazione, connection, cp.id, false,this,fieldMode,numCells,width,height,absolutePath,simulation);
-								}
-								else
-									if(simulation.equals("it.isislab.dmason.util.visualization.sim.app.DParticles.Tutorial3ViewWithUI"))
-									{
-										it.isislab.dmason.experimentals.util.visualization.sim.app.DParticles.Tutorial3ViewWithUI simulazione=new it.isislab.dmason.experimentals.util.visualization.sim.app.DParticles.Tutorial3ViewWithUI(new Object[]{connection,cp.id,false,numCells,width,height,fieldMode} );
-										rZ=new RunnerZoom(simulazione, connection, cp.id, false,this,fieldMode,numCells,width,height,absolutePath,simulation);
-									}
-							
-							rZ.start();
-							this.close();
-						}
+//					if(i==JOptionPane.YES_OPTION)
+//					{
+//						connection.publishToTopic("EXIT", "GRAPHICS", "GRAPHICS");
+//						
+//						RunnerZoom rZ = null;
+//						System.out.println(simulation);
+//						if(simulation.equals("it.isislab.dmason.util.visualization.sim.app.DFlockers.FlockersWithUIView"))
+//						{
+//							it.isislab.dmason.experimentals.util.visualization.sim.app.DFlockers.FlockersWithUIView simulazione=new it.isislab.dmason.experimentals.util.visualization.sim.app.DFlockers.FlockersWithUIView(new Object[]{connection,cp.id,true,numCells,width,height,fieldMode} );
+//							rZ=new RunnerZoom(simulazione, connection, cp.id, true,this,fieldMode,numCells,width,height,absolutePath,simulation);
+//						}
+//						else
+//							if(simulation.equals("it.isislab.dmason.util.visualization.sim.app.DAntsForage.AntsForageWithUIZoom"))
+//							{
+//								it.isislab.dmason.experimentals.util.visualization.sim.app.DAntsForage.AntsForageWithUIZoom simulazione=new it.isislab.dmason.experimentals.util.visualization.sim.app.DAntsForage.AntsForageWithUIZoom(new Object[]{connection,cp.id,true,numCells,width,height,fieldMode} );
+//								rZ=new RunnerZoom(simulazione, connection, cp.id, true,this,fieldMode,numCells,width,height,absolutePath,simulation);
+//							}
+//							else
+//								if(simulation.equals("it.isislab.dmason.util.visualization.sim.app.DParticles.Tutorial3ViewWithUI"))
+//								{
+//									it.isislab.dmason.experimentals.util.visualization.sim.app.DParticles.Tutorial3ViewWithUI simulazione=new it.isislab.dmason.experimentals.util.visualization.sim.app.DParticles.Tutorial3ViewWithUI(new Object[]{connection,cp.id,true,numCells,width,height,fieldMode} );
+//									rZ=new RunnerZoom(simulazione, connection, cp.id, true,this,fieldMode,numCells,width,height,absolutePath,simulation);
+//								}
+//						
+//						rZ.start();
+//						this.close();
+//		
+//						
+//					}
+//					else
+//						if(i==JOptionPane.NO_OPTION)
+//						{
+//							connection.publishToTopic("EXIT", "GRAPHICS", "GRAPHICS");
+//							
+//							RunnerZoom rZ = null;
+//							
+//							if(simulation.equals("it.isislab.dmason.util.visualization.sim.app.DFlockers.FlockersWithUIView"))
+//							{
+//								it.isislab.dmason.experimentals.util.visualization.sim.app.DFlockers.FlockersWithUIView simulazione=new it.isislab.dmason.experimentals.util.visualization.sim.app.DFlockers.FlockersWithUIView(new Object[]{connection,cp.id,false,numCells,width,height,fieldMode} );
+//								rZ=new RunnerZoom(simulazione, connection, cp.id, false,this,fieldMode,numCells,width,height,absolutePath,simulation);
+//							}
+//							else
+//								if(simulation.equals("it.isislab.dmason.util.visualization.sim.app.DAntsForage.AntsForageWithUIZoom"))
+//								{
+//									it.isislab.dmason.experimentals.util.visualization.sim.app.DAntsForage.AntsForageWithUIZoom simulazione=new it.isislab.dmason.experimentals.util.visualization.sim.app.DAntsForage.AntsForageWithUIZoom(new Object[]{connection,cp.id,false,numCells,width,height,fieldMode} );
+//									rZ=new RunnerZoom(simulazione, connection, cp.id, false,this,fieldMode,numCells,width,height,absolutePath,simulation);
+//								}
+//								else
+//									if(simulation.equals("it.isislab.dmason.util.visualization.sim.app.DParticles.Tutorial3ViewWithUI"))
+//									{
+//										it.isislab.dmason.experimentals.util.visualization.sim.app.DParticles.Tutorial3ViewWithUI simulazione=new it.isislab.dmason.experimentals.util.visualization.sim.app.DParticles.Tutorial3ViewWithUI(new Object[]{connection,cp.id,false,numCells,width,height,fieldMode} );
+//										rZ=new RunnerZoom(simulazione, connection, cp.id, false,this,fieldMode,numCells,width,height,absolutePath,simulation);
+//									}
+//							
+//							rZ.start();
+//							this.close();
+//						}
 					
 					break;
 					} catch (Exception e1) {

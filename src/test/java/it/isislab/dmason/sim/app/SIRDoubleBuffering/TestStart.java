@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Universita' degli Studi di Salerno
+ * Copyright 2012 Universita' degli Studi di Salerno
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package it.isislab.dmason.sim.app.SIRState;
+package it.isislab.dmason.sim.app.SIRDoubleBuffering;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 /*
  * THIS CLASS HAS BEEN USED FOR TESTING PURPOSES IN THE BEGINNINGS,
@@ -45,7 +45,7 @@ public class TestStart {
 	private static int rows = 1; //number of rows
 	private static int columns = 2; //number of columns
 	private static int AOI=10; //max distance
-	private static int NUM_AGENTS=1000; //number of agents
+	private static int NUM_AGENTS=10; //number of agents
 	private static int WIDTH=400; //field width
 	private static int HEIGHT=400; //field height
 	private static String ip="127.0.0.1"; //ip of activemq

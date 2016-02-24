@@ -1,15 +1,13 @@
-package it.isislab.dmason.sim.app.SIRState;
+package it.isislab.dmason.sim.app.SIRStateWithLookup;
 
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemoteAgentStateMethodHandler;
-import it.isislab.dmason.sim.engine.StateVariable;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import sim.engine.SimState;
 import sim.portrayal.DrawInfo2D;
@@ -17,8 +15,6 @@ import sim.util.Bag;
 import sim.util.Double2D;
 
 public class DHuman  extends RemoteHuman<Double2D> {
-
-
 
 	//Wandering
 	public Double2D targetLocation = null;
@@ -36,13 +32,8 @@ public class DHuman  extends RemoteHuman<Double2D> {
 	private int timer =0;
 
 	//CONSISTENCY MANAGER
-	static ArrayList<StateVariable> statevariables=new ArrayList<StateVariable>();
-
-	static{
-		
-		statevariables.add(new StateVariable("IsInfected",boolean.class));
-	}
-     final static RemoteAgentStateMethodHandler memory=new RemoteAgentStateMethodHandler(DHuman.class,statevariables);
+	
+	final static RemoteAgentStateMethodHandler memory=new RemoteAgentStateMethodHandler(DHuman.class,null);
 
 	public boolean IsInfected =false;
 	public boolean isResistent =false;
@@ -147,13 +138,13 @@ public class DHuman  extends RemoteHuman<Double2D> {
 			for(Object o: neighbors){
 				DHuman p = (DHuman)o;
 				Boolean _isInfected=(Boolean)
-						memory.getState((DistributedMultiSchedule)st.schedule, p, "IsInfected");
+						memory.getStateWithLookup((DistributedMultiSchedule)st.schedule, p, "IsInfected",boolean.class);
 				if(_isInfected
 						&&
 						!isResistent ){
 					if(st.random.nextInt(100) < VIRUS_SPREAD_CHANCE){
 						//agentColor = INFECTED;
-						memory.setState((DistributedMultiSchedule)st.schedule,this, "IsInfected", true);
+						memory.setStateWithLookup((DistributedMultiSchedule)st.schedule,this, "IsInfected", true, boolean.class);
 						break;
 					}
 				}
@@ -170,7 +161,7 @@ public class DHuman  extends RemoteHuman<Double2D> {
 		try{
 			if(IsInfected && timer==0){
 				if(st.random.nextInt(100) < RECOVERY_CHANCE){
-					memory.setState((DistributedMultiSchedule)st.schedule,this, "IsInfected",false);
+					memory.setStateWithLookup((DistributedMultiSchedule)st.schedule,this, "IsInfected",false,boolean.class);
 					if(st.random.nextInt(100) < GAIN_RESISTANCE_CHANCE){
 						isResistent=true;
 						//agentColor = RESISTENT;

@@ -1,4 +1,4 @@
-package it.isislab.dmason.sim.app.SIRState;
+package it.isislab.dmason.sim.app.SIRStateReflection;
 
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.RemoteAgentState;

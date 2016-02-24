@@ -1,10 +1,10 @@
-package it.isislab.dmason.sim.app.SIRState;
-
-import it.isislab.dmason.sim.engine.DistributedState;
-import it.isislab.dmason.sim.engine.RemotePositionedAgent;
+package it.isislab.dmason.sim.app.SIRDoubleBuffering;
 
 import java.io.Serializable;
 
+import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
+import it.isislab.dmason.sim.engine.DistributedState;
+import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import sim.portrayal.simple.OvalPortrayal2D;
 
 public abstract class RemoteHuman<E> extends OvalPortrayal2D implements Serializable, RemotePositionedAgent<E> {
@@ -33,7 +33,7 @@ public abstract class RemoteHuman<E> extends OvalPortrayal2D implements Serializ
 	public void setPos(E pos) {
 		this.pos = pos;
 	}
- 
+
 	public String getId() {
 		return id;
 	}

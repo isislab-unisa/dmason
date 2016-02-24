@@ -1,24 +1,20 @@
-package it.isislab.dmason.sim.app.SIRState;
+package it.isislab.dmason.sim.app.SIRStateReflection;
 
-import it.isislab.dmason.exception.DMasonException;
-import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
-import it.isislab.dmason.sim.engine.DistributedState;
-import it.isislab.dmason.sim.engine.RemoteAgentStateMethodHandler;
-import it.isislab.dmason.sim.engine.StateVariable;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.IOException;
-import java.util.ArrayList;
-
+import java.io.ObjectStreamException;
+import it.isislab.dmason.exception.DMasonException;
+import it.isislab.dmason.sim.engine.DistributedAgentFactory;
+import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
+import it.isislab.dmason.sim.engine.DistributedState;
 import sim.engine.SimState;
 import sim.portrayal.DrawInfo2D;
 import sim.util.Bag;
 import sim.util.Double2D;
 
-public class DHuman  extends RemoteHuman<Double2D> {
-
-
+public class DHuman extends RemoteHuman<Double2D> {
 
 	//Wandering
 	public Double2D targetLocation = null;
@@ -34,18 +30,8 @@ public class DHuman  extends RemoteHuman<Double2D> {
 	//End Wandering
 
 	private int timer =0;
-
-	//CONSISTENCY MANAGER
-	static ArrayList<StateVariable> statevariables=new ArrayList<StateVariable>();
-
-	static{
-		
-		statevariables.add(new StateVariable("IsInfected",boolean.class));
-	}
-     final static RemoteAgentStateMethodHandler memory=new RemoteAgentStateMethodHandler(DHuman.class,statevariables);
-
-	public boolean IsInfected =false;
-	public boolean isResistent =false;
+	private boolean isInfected =false;
+	private boolean isResistent =false;
 
 	private static int AOI= 10;
 
@@ -66,23 +52,21 @@ public class DHuman  extends RemoteHuman<Double2D> {
 
 	public DHuman() {}
 
-	public DHuman(SimState sm,Double2D location, Boolean isInfected){ 
+	public DHuman(SimState sm,Double2D location, Boolean isInfected) throws IOException{ 
 		super((DistributedState)sm);
 		pos = location;
-		this.IsInfected=isInfected;
-		
+		this.isInfected=isInfected;
 
 	}
 
-	public DHuman(String idAgent, Double2D location, Boolean isInfected,Integer next_decision,Double2D lastpos, Double2D targpos) throws IOException{ 
+	public DHuman(String idAgent, Double2D location, Boolean isInfected, Boolean isResistent,Integer next_decision,Double2D lastpos, Double2D targpos) throws IOException{ 
 		this.id=idAgent;
 		pos = location;
-		this.IsInfected=isInfected;
-		this.isResistent = false;
+		this.isInfected=isInfected;
+		this.isResistent = isResistent;
 		this.next_decision = next_decision;
 		this.lastp=lastpos;
 		this.targetLocation = targpos;
-		
 	}
 
 
@@ -141,49 +125,38 @@ public class DHuman  extends RemoteHuman<Double2D> {
 
 	private void spreadVirus(DPeople st) {
 
-		try{
-			Bag neighbors = st.environment.getNeighborsWithinDistance(pos, AOI);
+		Bag neighbors = st.environment.getNeighborsWithinDistance(pos, AOI);
 
-			for(Object o: neighbors){
-				DHuman p = (DHuman)o;
-				Boolean _isInfected=(Boolean)
-						memory.getState((DistributedMultiSchedule)st.schedule, p, "IsInfected");
-				if(_isInfected
-						&&
-						!isResistent ){
-					if(st.random.nextInt(100) < VIRUS_SPREAD_CHANCE){
-						//agentColor = INFECTED;
-						memory.setState((DistributedMultiSchedule)st.schedule,this, "IsInfected", true);
-						break;
-					}
+		for(Object o: neighbors){
+			DHuman p = (DHuman)o;
+			if(p.getIsInfected(((DistributedMultiSchedule)st.schedule)) && ! getIsResistent(((DistributedMultiSchedule)st.schedule)) ){
+				if(st.random.nextInt(100) < VIRUS_SPREAD_CHANCE){
+					//agentColor = INFECTED;
+					setIsInfected(((DistributedMultiSchedule)st.schedule), true);
+					break;
 				}
-			} 
-		}catch ( Throwable e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
+			}
+		} 
 
 
 	}
 
 	private void doVirusCheck(DPeople st) {
-		try{
-			if(IsInfected && timer==0){
-				if(st.random.nextInt(100) < RECOVERY_CHANCE){
-					memory.setState((DistributedMultiSchedule)st.schedule,this, "IsInfected",false);
-					if(st.random.nextInt(100) < GAIN_RESISTANCE_CHANCE){
-						isResistent=true;
-						//agentColor = RESISTENT;
-					}
+		if(getIsInfected(((DistributedMultiSchedule)st.schedule)) && timer==0){
+			if(st.random.nextInt(100) < RECOVERY_CHANCE){
+				setIsInfected(((DistributedMultiSchedule)st.schedule), false);
+				if(st.random.nextInt(100) < GAIN_RESISTANCE_CHANCE){
+					setIsResistent(((DistributedMultiSchedule)st.schedule), true);  
 
+					//agentColor = RESISTENT;
+					System.out.println("Resistent!!");
 				}
 
-
 			}
-		}catch(Throwable e)
-		{
-			e.printStackTrace();
+
+
 		}
+
 	}
 
 	private Double2D seek(Double2D target, Double2D agent) {
@@ -248,39 +221,50 @@ public class DHuman  extends RemoteHuman<Double2D> {
 		double diamx = info.draw.width*8;
 		double diamy = info.draw.height*8;
 
-		if (IsInfected) graphics.setColor( INFECTED );
+		if (isInfected) graphics.setColor( INFECTED );
 		else if(isResistent) graphics.setColor ( RESISTENT );
 		else graphics.setColor ( SUSCEPTIBLE );
 		graphics.fillOval((int)(info.draw.x-diamx/2),(int)(info.draw.y-diamy/2),(int)(diamx),(int)(diamy));
 	}
 
 
-	public boolean getIsInfected() {
-		return IsInfected;
+	
+	public boolean getIsInfected(DistributedMultiSchedule schedule) {
+		return isInfected;
 	}
-	public void setIsInfected(boolean val) {
-		IsInfected=val;
+	
+	public void setIsInfected(DistributedMultiSchedule schedule, boolean val) {
+		isInfected=val;
+
+	}
+	@Override
+	public boolean getIsResistent(DistributedMultiSchedule schedule) {
+
+		return isResistent;
+	}
+	
+	public void setIsResistent(DistributedMultiSchedule schedule, boolean val) {
+		isResistent=val;
 
 	}
 
+	public Object writeReplace() throws ObjectStreamException{
 
-//	public Object writeReplace() throws ObjectStreamException{
-//
-//		try {
-//			return new DHuman(id,pos,isInfected,next_decision,lastp,targetLocation);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}return null;
-//
-//	}
-//	public Object readResolve() throws ObjectStreamException{
-//
-//		return DistributedAgentFactory.newIstance(
-//				DHuman.class,
-//				new Class[]{String.class,Double2D.class,Boolean.class,Integer.class,Double2D.class,Double2D.class},
-//				new Object[]{id,pos,isInfected,next_decision,lastp,targetLocation},
-//				DHumanState.class);
-//	}
+		try {
+			return new DHuman(id,pos,isInfected,isResistent,next_decision,lastp,targetLocation);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}return null;
+
+	}
+	public Object readResolve() throws ObjectStreamException{
+
+		return DistributedAgentFactory.newIstance(
+				DHuman.class,
+				new Class[]{String.class,Double2D.class,Boolean.class,Boolean.class,Integer.class,Double2D.class,Double2D.class},
+				new Object[]{id,pos,isInfected,isResistent,next_decision,lastp,targetLocation},
+				DHumanState.class);
+	}
 
 }

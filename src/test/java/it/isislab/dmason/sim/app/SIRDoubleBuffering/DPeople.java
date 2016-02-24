@@ -1,4 +1,4 @@
-package it.isislab.dmason.sim.app.SIRState;
+package it.isislab.dmason.sim.app.SIRDoubleBuffering;
 
 import java.util.List;
 
@@ -107,8 +107,12 @@ public class DPeople extends DistributedState<Double2D> {
 		
 		boolean isInfected = (random.nextDouble()<=0.3); 
 
-		DHuman f=  new DHuman(this, new Double2D(0,0), (random.nextDouble()<=0.3));
-		
+		/*DHuman f= (DHuman) DistributedAgentFactory.newIstance(
+				DHuman.class,
+				new Class[]{SimState.class,Double2D.class,Boolean.class},
+				new Object[]{this,new Double2D(0,0),isInfected},
+				DHumanState.class);*/
+		DHuman f = new DHuman(this, new Double2D(0,0),isInfected);
 		
 		while(environment.size() != super.NUMAGENTS / super.NUMPEERS)
 		{
@@ -117,11 +121,11 @@ public class DPeople extends DistributedState<Double2D> {
 			if(environment.setObjectLocation(f, f.pos))
 			{
 				schedule.scheduleOnce(f);
-//				f= (DHuman) DistributedAgentFactory.newIstance(
-//						DHuman.class,
-//						new Class[]{SimState.class,Double2D.class,Boolean.class},
-//						new Object[]{this,new Double2D(0,0),(random.nextDouble()<=0.3)},
-//						DHumanState.class);
+				/*f= (DHuman) DistributedAgentFactory.newIstance(
+						DHuman.class,
+						new Class[]{SimState.class,Double2D.class,Boolean.class},
+						new Object[]{this,f.getPos(),isInfected},
+						DHumanState.class);*/
 				f= new DHuman(this, new Double2D(0,0), (random.nextDouble()<=0.3));
 			}
 

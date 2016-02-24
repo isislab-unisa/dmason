@@ -91,9 +91,11 @@ public class DHuman extends RemoteHuman<Double2D> {
 		if(state.schedule.getSteps()==next_decision){
 			/*targetLocation = new Double2D(st.random.nextDouble()*st.environment.getWidth(),
 					st.random.nextDouble()*st.environment.getHeight());*/
-			targetLocation = st.environment.getAvailableRandomLocation();
-			next_decision += (int) Math.floor((state.random.nextDouble()*10)+100);
+			//targetLocation = st.environment.getAvailableRandomLocation();
+			targetLocation = new Double2D(st.random.nextDouble() *st.environment.getWidth(),st.random.nextDouble()*st.environment.getHeight());  
+			next_decision = (int) state.schedule.getSteps() + (int) Math.floor((state.random.nextDouble()*10)+100);
 		}
+
 
 		//tmp= subVector(targetLocation,agentLocation);
 		//normVect =normalize(tmp);
@@ -110,7 +112,7 @@ public class DHuman extends RemoteHuman<Double2D> {
 		velocity = truncate (tmp , MAX_VELOCITY);
 
 		pos = new Double2D(pos.x + velocity.x, pos.y +velocity.y);
-		pos = truncate(pos, st.environment.my_width+st.environment.own_x-1,st.environment.my_height+st.environment.own_y-1);
+		pos = truncate(pos, st.environment.getWidth()-1,st.environment.getHeight()-1);
 		try {
 			st.environment.setDistributedObjectLocation(pos,this,state);
 		} catch (DMasonException e) {

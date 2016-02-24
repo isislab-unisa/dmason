@@ -1,4 +1,4 @@
-package it.isislab.dmason.sim.app.SIRState;
+package it.isislab.dmason.sim.app.SIRStateWithLookup;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package it.isislab.dmason.sim.app.SIRState;
+package it.isislab.dmason.sim.app.SIRStateReflection;
 
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 import sim.portrayal.simple.OvalPortrayal2D;
 
-public abstract class RemoteHuman<E> extends OvalPortrayal2D implements Serializable, RemotePositionedAgent<E> {
+public abstract class RemoteHuman<E> extends OvalPortrayal2D implements DHumanState, Serializable, RemotePositionedAgent<E> {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -33,7 +33,7 @@ public abstract class RemoteHuman<E> extends OvalPortrayal2D implements Serializ
 	public void setPos(E pos) {
 		this.pos = pos;
 	}
- 
+
 	public String getId() {
 		return id;
 	}

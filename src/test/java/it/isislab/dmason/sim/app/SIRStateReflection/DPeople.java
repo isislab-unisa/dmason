@@ -1,19 +1,20 @@
-package it.isislab.dmason.sim.app.SIRState;
+package it.isislab.dmason.sim.app.SIRStateReflection;
 
 import java.util.List;
 
+import sim.engine.SimState;
+import sim.portrayal.continuous.ContinuousPortrayal2D;
+import sim.util.Double2D;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
+import it.isislab.dmason.sim.engine.DistributedAgentFactory;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
-import sim.engine.SimState;
-import sim.portrayal.continuous.ContinuousPortrayal2D;
-import sim.util.Double2D;
 
 public class DPeople extends DistributedState<Double2D> {
 
@@ -107,7 +108,11 @@ public class DPeople extends DistributedState<Double2D> {
 		
 		boolean isInfected = (random.nextDouble()<=0.3); 
 
-		DHuman f=  new DHuman(this, new Double2D(0,0), (random.nextDouble()<=0.3));
+		DHuman f= (DHuman) DistributedAgentFactory.newIstance(
+				DHuman.class,
+				new Class[]{SimState.class,Double2D.class,Boolean.class},
+				new Object[]{this,new Double2D(0,0),isInfected},
+				DHumanState.class);
 		
 		
 		while(environment.size() != super.NUMAGENTS / super.NUMPEERS)
@@ -117,12 +122,11 @@ public class DPeople extends DistributedState<Double2D> {
 			if(environment.setObjectLocation(f, f.pos))
 			{
 				schedule.scheduleOnce(f);
-//				f= (DHuman) DistributedAgentFactory.newIstance(
-//						DHuman.class,
-//						new Class[]{SimState.class,Double2D.class,Boolean.class},
-//						new Object[]{this,new Double2D(0,0),(random.nextDouble()<=0.3)},
-//						DHumanState.class);
-				f= new DHuman(this, new Double2D(0,0), (random.nextDouble()<=0.3));
+				f= (DHuman) DistributedAgentFactory.newIstance(
+						DHuman.class,
+						new Class[]{SimState.class,Double2D.class,Boolean.class},
+						new Object[]{this,f.getPos(),(random.nextDouble()<=0.3)},
+						DHumanState.class);
 			}
 
 		}
