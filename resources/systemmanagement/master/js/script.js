@@ -166,21 +166,43 @@ function hash(value){
 }
 
 
-function submitSimulation(event) {
+function submitForm(){
     var form = document.getElementById("sendSimulationForm");
-
-console.log(form.serialize());
-
-    $.ajax({url:"submitSimulation",
-        data:form.serialize()});
-
-    $("#workerList").remove();
-    var dialog = document.getElementById("add-simulation-paper-dialog");
-    //remove input added previusly
-    dialog.close();
-    resetForm(event);
+    $(form).unbind('submit').bind("submit",_OnsubmitSimulation);
+    form.submit();
 }
 
+function _OnsubmitSimulation(event) {
+
+    var form = document.getElementById("sendSimulationForm");
+
+    var formData = new FormData(form);
+
+    var listParams = form.serialize();
+    for(key in listParams) {
+        console.log(key + " "+ listParams[key]);
+        if(!formData.get(key))
+            formData.append(key + "", listParams[key]);
+    }
+
+    $.ajax({
+        url:"submitSimulation",
+        type:'POST',
+        data:formData,
+        cache: false,
+        contentType: false,
+        processData: false
+
+    });
+
+    //remove input added previusly
+    $("#workerList").remove();
+    var dialog = document.getElementById("add-simulation-paper-dialog");
+
+    resetForm(event);
+    dialog.close();
+
+}
 
 function resetForm(event) {
     document.getElementById("sendSimulationForm").reset();

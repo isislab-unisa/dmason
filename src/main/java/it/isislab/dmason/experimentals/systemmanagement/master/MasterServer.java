@@ -472,7 +472,7 @@ public class MasterServer implements MultiServerInterface{
 		for(String topicName: simul.getTopicList())
 			getConnection().publishToTopic(simul, topicName, "newsim");
 
-		this.invokeCopyServer(DEFAULT_PORT_COPY_SERVER, simul.getSimulationFolder()+File.separator+"flockers.jar",simul.getTopicList().size());
+		this.invokeCopyServer(DEFAULT_PORT_COPY_SERVER, simul.getSimulationFolder()+File.separator+sim.getSimName(),simul.getTopicList().size());
 	}  
 	
 	
