@@ -442,6 +442,20 @@ public class MasterServer implements MultiServerInterface{
 		
 		String pathJar=simul.getSimulationFolder()+File.separator+sim.getJarName();
 		this.invokeCopyServer(pathJar ,simul.getTopicList().size());
+	}
+
+
+	@Override
+	public void stop(int idSimulation) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void pause(int idSimulation) {
+		// TODO Auto-generated method stub
+		
 	}  
 	
 	
