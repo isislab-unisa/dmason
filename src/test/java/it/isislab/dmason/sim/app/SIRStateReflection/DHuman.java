@@ -149,7 +149,7 @@ public class DHuman extends RemoteHuman<Double2D> {
 					setIsResistent(((DistributedMultiSchedule)st.schedule), true);  
 
 					//agentColor = RESISTENT;
-					System.out.println("Resistent!!");
+					
 				}
 
 			}
