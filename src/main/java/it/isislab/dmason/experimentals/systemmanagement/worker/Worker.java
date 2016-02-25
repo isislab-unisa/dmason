@@ -87,10 +87,10 @@ public class Worker {
 	 * @param topicPrefix
 	 */
 	public Worker(String ipMaster,String portMaster, int slots) {
-	
+
 		MyFileSystem.make(workerTemporary);
 		MyFileSystem.make(simulationsDirectories);
-	
+
 		this.IP_ACTIVEMQ=ipMaster;
 		this.PORT_ACTIVEMQ=portMaster;
 		this.conn=new ConnectionNFieldsWithActiveMQAPI();
@@ -163,7 +163,7 @@ public class Worker {
 
 
 
-					if (map.containsKey("esegui")){
+					/*if (map.containsKey("esegui")){
 						System.out.println("eseguo la sim");
 						GeneralParam params=new GeneralParam(200, 200, 5,
 								1, 2, 100,DistributedField2D.UNIFORM_PARTITIONING_MODE, ConnectionType.pureActiveMQ);
@@ -177,7 +177,7 @@ public class Worker {
 							dis.schedule.step(dis);
 							i++;
 						}
-					}
+					}*/
 				} catch (JMSException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -208,22 +208,22 @@ public class Worker {
 				Object o;
 				try {
 					o=parseMessage(msg);
-				final	MyHashMap map=(MyHashMap) o;
+					final	MyHashMap map=(MyHashMap) o;
 
 					if(map.containsKey("jar"))
 					{
 
 						simulation = simulationList.remove();
-							new Thread(new Runnable() {
-		
-								@Override
-								public void run() {
-									int port=(int) map.get("jar");
-									System.out.println("scarica da porta "+port);
-									downloadFile(port, simulation.getSimulationFolder()+File.separator+System.currentTimeMillis()+"out.jar");
-									System.out.println("invio downloaded al master");
-								}
-							}).start(); 
+						new Thread(new Runnable() {
+
+							@Override
+							public void run() {
+								int port=(int) map.get("jar");
+								System.out.println("scarica da porta "+port);
+								downloadFile(port, simulation.getSimulationFolder()+File.separator+System.currentTimeMillis()+"out.jar");
+								System.out.println("invio downloaded al master");
+							}
+						}).start(); 
 						getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
 					}
 
@@ -242,14 +242,37 @@ public class Worker {
 						simulationList.add(sim);
 						createNewSimulationProcess(sim);
 					}
-					
-					
-					
+
+
+
 					if (map.containsKey("start")){
-						
+
 						System.out.println("Ho ricev start command per sim id "+map.get("start"));
+
+						/*System.out.println("eseguo la sim");
+						int id = (int)map.get("start");
+ 						Simulation simul=System.dammiLasimulazione();
+ 						
+ 						
+ 						simul.getAoi()
+ 						simul.getColumns()
+ 						simu
+ 						GeneralParam params=new GeneralParam(
+								200, 200, 5,
+								1, 2, 100,DistributedField2D.UNIFORM_PARTITIONING_MODE, ConnectionType.pureActiveMQ);
+						DistributedState dis=worker.makeSimulation( params, "");
+						//dis.start();
+						dis.schedule.step(dis.getState());
+						int i=0;
+						while(i!=dis.columns)
+						{
+							System.out.println("endsim with prefixID"+dis.schedule.getSteps());
+							dis.schedule.step(dis);
+							i++;
+						}*/
+
 					}
-					
+
 
 				} catch (JMSException e) {e.printStackTrace();}
 
