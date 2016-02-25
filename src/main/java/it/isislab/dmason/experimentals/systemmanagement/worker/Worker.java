@@ -63,6 +63,7 @@ public class Worker {
 	private String IP_ACTIVEMQ="";
 	private String PORT_ACTIVEMQ="";
 	private String TOPICPREFIX="";
+	private int slotsNumber=0;
 	private static final String MASTER_TOPIC="MASTER";
 	private static String prova=System.getProperty("user.home")+File.separator+"Scrivania"+File.separator;
 	private static final String workerDirectory=prova+"worker";
@@ -85,9 +86,11 @@ public class Worker {
 	 * @param portMaster
 	 * @param topicPrefix
 	 */
-	public Worker(String ipMaster,String portMaster) {
+	public Worker(String ipMaster,String portMaster, int slots) {
+	
 		MyFileSystem.make(workerTemporary);
 		MyFileSystem.make(simulationsDirectories);
+	
 		this.IP_ACTIVEMQ=ipMaster;
 		this.PORT_ACTIVEMQ=portMaster;
 		this.conn=new ConnectionNFieldsWithActiveMQAPI();
@@ -96,6 +99,7 @@ public class Worker {
 		this.startMasterComunication();
 		this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
 		simulationList=new LinkedList<>();
+		this.slotsNumber=slots;
 	}
 
 
@@ -410,6 +414,7 @@ public class Worker {
 		WorkerInfo info=new WorkerInfo();
 		info.setIP(WORKER_IP);
 		info.setWorkerID(this.TOPIC_WORKER_ID_MASTER);
+		info.setNumSlots(this.getSlotsNumber());
 		return info.toString();
 
 	}
@@ -427,7 +432,7 @@ public class Worker {
 
 	//invio richiesta di iscrizione e comunico il topic sul quale
 	//invierò informazioni
-	protected void signRequestToMaster(){
+	public void signRequestToMaster(){
 		try{	
 			conn.createTopic("READY", 1);
 			conn.subscribeToTopic("READY");
@@ -455,6 +460,8 @@ public class Worker {
 	public void setTopicPrefix(String topicPrefix) {TOPICPREFIX = topicPrefix;}
 	public ConnectionNFieldsWithActiveMQAPI getConnection() {return conn;}
 	public String getSimulationsDirectories() {return simulationsDirectories;}
+	public int getSlotsNumber(){return slotsNumber;}
+	public int setSlotsNumuber(int slots){return this.slotsNumber=slots;}
 
 
 }
