@@ -3,35 +3,61 @@ package it.isislab.dmason.experimentals.systemmanagement;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.systemmanagement.worker.Worker;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
+
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+
 public class Manager {
+	private static final String dmason="DMASON-3.1.jar";
 	@Option(name="-m", aliases = { "--mode" },usage="master or worker")
 	private String mode = "worker";
 
-	@Option(name="-ip", aliases = { "--ipbroker" },usage="ip address of JMS broker (default is localhost)")
+	@Option(name="-ip", aliases = { "--ipjms" },usage="ip address of JMS broker (default is localhost)")
 	private String ip = "127.0.0.1";
 
-	@Option(name="-port", aliases = { "--portbroker" },usage="port of the JMS broker (default is 61616)")
+	@Option(name="-p", aliases = { "--portjms" },usage="port of the JMS broker (default is 61616)")
 	private String port = "61616";
 
 	@Option(name="-ns", aliases = { "--numberofslots" },usage="number of simulation slot for this worker (defaults is 1)")
 	private int ns = 1;
 
+	@Option(name="-h", aliases = { "--hostslist" },usage="start worker on list og hosts (-h host1 host2 host3))")
+	private boolean hosts = false;
+
+	@Argument
+	private List<String> arguments = new ArrayList<String>();
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		try {
-		
+
 			new Manager().doMain(args);
-		
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -40,13 +66,94 @@ public class Manager {
 			System.err.println("Problem in this installation of DMASON.");
 		}
 	}
+
+	class WorkerThread extends Thread{
+
+		ChannelExec channel;
+		Session session;
+		BufferedReader in;
+		boolean running = true;
+		String host;
+		public WorkerThread(String host) throws IOException, JSchException {
+			this.host=host;
+			JSch jsch=new JSch();
+			session=jsch.getSession(System.getProperty("user.name"), host, 22);
+			jsch.addIdentity(System.getProperty("user.home")+File.separator+".ssh"+File.separator+"id_rsa");
+			Properties config = new Properties();
+			config.put("StrictHostKeyChecking", "no");
+			session.setConfig(config);
+			session.connect();
+			channel=(ChannelExec) session.openChannel("exec");
+		    in=new BufferedReader(new InputStreamReader(channel.getInputStream()));
+		    //System.out.println("./"+dmason+" -m worker -ip "+ip+" -port "+port+" -ns "+ns+";");
+		 
+			channel.setCommand("java -jar "+dmason+" -m worker -ip "+ip+" -port "+port+" -ns "+ns+";");
+			
+		}
+		@Override
+		public void run() {
+			
+			try {
+				channel.connect();
+				System.out.println("Connected to remote machine.");
+				String msg=null;
+				while(running && (msg=in.readLine())!=null){
+				  System.out.println(msg);
+				}
+
+				channel.disconnect();
+				session.disconnect();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (JSchException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		public void stopThread() throws Exception{
+			running=false;
+			System.out.println("Stopping worker "+host+".");
+			
+			ChannelExec channel2=(ChannelExec) session.openChannel("exec");
+			channel2.setCommand("killall java");
+			channel2.connect();
+			channel2.disconnect();
+			channel.disconnect();
+			session.disconnect();
+			in.close();
+		}
+	}
+	private List<WorkerThread> workers=new ArrayList<WorkerThread>();
+	private boolean waitThread=true;
+	final Lock lock = new ReentrantLock();
+	final Condition workersWork  = lock.newCondition();
+	
+	private void signalWorkers()
+	{
+		lock.lock();
+		try {
+			waitThread=false;
+			for(WorkerThread w: workers) w.stopThread();
+			
+			workersWork.signalAll();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			lock.unlock();
+		}
+	}
+
 	public void doMain(String[] args) throws IOException, DMasonException {
 		CmdLineParser parser = new CmdLineParser(this);
 		try {
 
 			// parse the arguments.
 			parser.parseArgument(args);
-
+			
 			if(mode.equals("master"))
 			{
 				System.out.println("Starting DMASON in Master mode ...");
@@ -54,11 +161,78 @@ public class Manager {
 			}
 			else if(mode.equals("worker"))
 			{	
-				System.out.println("Starting DMASON in Worker mode ...");
-				System.out.println("\tJMS broker IP: "+ip);
-				System.out.println("\tJMS broker PORT: "+port);
-				System.out.println("\tNumber of simulations slots: "+ns);
-				startWorker();
+				if(hosts)
+				{
+					System.out.println("Starting workers...");
+					if(arguments.isEmpty())
+						throw new CmdLineException("Please specify the list of hosts, where start the workes.");
+					
+					WorkerThread w;
+
+					for(String host:arguments)
+					{
+						System.out.print("Start worker on "+host+" ");
+						w=new WorkerThread(host);
+						workers.add(w);
+						w.start();
+					}
+
+					try {
+
+						Signal.handle(new Signal("TERM"), new SignalHandler() {
+
+							@Override
+							public void handle(Signal arg0) {
+								// Signal handler method for CTRL-C and simple kill command.
+								System.out.println("Kill jobs ...");
+								signalWorkers();
+
+							}
+						});
+						Signal.handle(new Signal("INT"), new SignalHandler() {
+
+							@Override
+							public void handle(Signal arg0) {
+								// Signal handler method for CTRL-C and simple kill command.
+								System.out.println("Kill jobs ...");
+								signalWorkers();
+
+							}
+						});
+						Signal.handle(new Signal("HUP"), new SignalHandler() {
+
+							@Override
+							public void handle(Signal arg0) {
+								// Signal handler method for CTRL-C and simple kill command.
+								System.out.println("Kill jobs ...");
+								signalWorkers();
+
+							}
+						});
+					}
+					catch (final IllegalArgumentException e) {
+						e.printStackTrace();
+					}
+
+					lock.lock();
+					try {
+						while(waitThread)
+							workersWork.await();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} finally {
+						lock.unlock();
+					}
+
+				}else{
+					System.out.println("Starting DMASON in Worker mode ...");
+					System.out.println("\tJMS broker IP: "+ip);
+					System.out.println("\tJMS broker PORT: "+port);
+					System.out.println("\tNumber of simulations slots: "+ns);
+					startWorker();
+				}
+
 			}else
 			{
 				throw new CmdLineException("No correct mode given, master or worker is allowed.");
@@ -79,6 +253,9 @@ public class Manager {
 			System.err.println("  Example: java -jar dmason.jar --mode master");
 
 			return;
+		} catch (JSchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}
@@ -89,7 +266,7 @@ public class Manager {
 	}
 	public void startMaster() throws DMasonException
 	{
-		
+
 		File dataresources=new File("resources");
 		if(!dataresources.exists() || !dataresources.isDirectory())
 			throw new DMasonException("Problems in resources check your data.");
