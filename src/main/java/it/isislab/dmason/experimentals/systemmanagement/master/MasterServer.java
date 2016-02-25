@@ -160,25 +160,6 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-	public void start(int idSimulation){
-		
-		
-		for(String x: /*this.getTopicIdForSimulation()*/ this.getTopicIdWorkers().keySet()){
-			//invio la richiesta di esecuzione della simulazione con le cellette da simulare
-
-		}
-
-		//mi metto in attesa del riscontro da parte dei worker
-
-		for(String x: /*this.getTopicIdForSimulation()*/ this.getTopicIdWorkers().keySet()){
-			//invio ai worker la richiesta di start
-
-		}
-
-
-
-	}
-
 
 	/**
 	 * Listen for new Worker connection
@@ -280,9 +261,9 @@ public class MasterServer implements MultiServerInterface{
 
 
 	private void simReceivedProcess(String topic){
-	     		
-			getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, topic, "jar");
-	
+
+		getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, topic, "jar");
+
 	}
 
 
@@ -325,12 +306,12 @@ public class MasterServer implements MultiServerInterface{
 	private void invokeCopyServer(String jarFile,int stopParam){
 
 		int checkControl=stopParam;
-		
+
 		int counter=0;
 		try {
-		
+
 			System.out.println("Listening");
-			
+
 			while (counter<checkControl) {
 				sock = welcomeSocket.accept();
 				System.out.println("Connected");
@@ -401,6 +382,83 @@ public class MasterServer implements MultiServerInterface{
 
 
 
+
+
+
+	public void submitSimulation(Simulation sim) {
+		final Simulation simul=sim;
+
+		simulationsList.put(simul.getSimID(), simul);
+		this.topicIdWorkersForSimulation.put(simul.getSimID(), simul.getTopicList());
+		System.out.println(simul);
+		System.out.println(simul.getTopicList().size());
+		for(String topicName: simul.getTopicList())
+			getConnection().publishToTopic(simul, topicName, "newsim");
+
+
+		String pathJar=simul.getSimulationFolder()+File.separator+sim.getJarName();
+		this.invokeCopyServer(pathJar ,simul.getTopicList().size());
+	}
+
+
+	///////////methods  START STOP PAUSE	
+
+	/**
+	 * @Override
+	 */
+	public void start(int idSimulation){
+
+
+		Simulation simulationToExec=getSimulationsList().get(idSimulation);
+		int iDSimToExec=simulationToExec.getSimID();
+
+		for(String workerTopic : simulationToExec.getTopicList()){
+
+			this.getConnection().publishToTopic(iDSimToExec, workerTopic, "start");
+		}
+
+
+	}
+
+
+
+	/**
+	 * @Override
+	 */
+	public void stop(int idSimulation) {
+		Simulation simulationToStop=getSimulationsList().get(idSimulation);
+		int iDSimToStop=simulationToStop.getSimID();
+
+		for(String workerTopic : simulationToStop.getTopicList()){
+
+			this.getConnection().publishToTopic(iDSimToStop, workerTopic, "stop");
+		}
+
+	}
+
+
+	/**
+	 * @Override
+	 */
+	public void pause(int idSimulation) {
+		Simulation simulationToPause=getSimulationsList().get(idSimulation);
+		int iDSimToPause=simulationToPause.getSimID();
+
+		for(String workerTopic : simulationToPause.getTopicList()){
+
+			this.getConnection().publishToTopic(iDSimToPause, workerTopic, "pause");
+		}
+
+	}  
+
+
+	///////////end  START STOP PAUSE
+
+
+
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	//getters and setters
 	public MasterServer getMasterServer(){return this;}
 	public HashMap<String,String> getTopicIdWorkers(){return topicIdWorkers;}	//all connected workers 
@@ -425,38 +483,7 @@ public class MasterServer implements MultiServerInterface{
 
 
 	public HashMap<String, String> getInfoWorkers() { HashMap<String, String> toReturn=infoWorkers; infoWorkers=new HashMap<>();  return toReturn;}
-	public HashMap<Integer,Simulation> getSimsList(){return simulationsList;}
+	public HashMap<Integer,Simulation> getSimulationsList(){return simulationsList;}
 
 
-
-	public void submitSimulation(Simulation sim) {
-		final Simulation simul=sim;
-		
-		simulationsList.put(simul.getSimID(), simul);
-		this.topicIdWorkersForSimulation.put(simul.getSimID(), simul.getTopicList());
-		System.out.println(simul);
-		System.out.println(simul.getTopicList().size());
-		for(String topicName: simul.getTopicList())
-			getConnection().publishToTopic(simul, topicName, "newsim");
-
-		
-		String pathJar=simul.getSimulationFolder()+File.separator+sim.getJarName();
-		this.invokeCopyServer(pathJar ,simul.getTopicList().size());
-	}
-
-
-	@Override
-	public void stop(int idSimulation) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void pause(int idSimulation) {
-		// TODO Auto-generated method stub
-		
-	}  
-	
-	
 }

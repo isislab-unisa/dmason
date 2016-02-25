@@ -3,9 +3,14 @@ package it.isislab.dmason.experimentals.systemmanagement.utils;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * 
+ * @author miccar
+ *
+ */
 public class Simulation implements Serializable{
 
-	
+
 	/**
 	 * 
 	 */
@@ -21,16 +26,16 @@ public class Simulation implements Serializable{
 	private int numAgents;
 	private int mode;
 	private int connectionType;
-    private int numCells;
-    private String execFileName;
+	private int numCells;
+	private String execFileName;
 
 
 
 	//private GeneralParam parameters;
 	private ArrayList<String> topicList;
-	
-	
-	
+
+
+
 
 
 	public Simulation() {}
@@ -63,17 +68,10 @@ public class Simulation implements Serializable{
 		this.width = Integer.parseInt(width);
 		this.height = Integer.parseInt(height);
 		this.numAgents = Integer.parseInt(numAgent);
-		
 		this.numCells= getRows()*getColumns();
 		this.connectionType=connection;
 		this.topicList=new ArrayList<>();
-		this.mode = mode;
-		
-	//	if(this.mode==0 )
-		//this.parameters=new GeneralParam(this.width,this.height,this.aoi,this.rows,this.columns,numAgents,DistributedField2D.UNIFORM_PARTITIONING_MODE,connectionType);
-		//else 	// 1
-		//this.parameters=new GeneralParam(this.width,this.height,this.aoi,this.rows,this.columns,numAgents,DistributedField2D.NON_UNIFORM_PARTITIONING_MODE,connectionType);
-		
+		this.mode = mode;		
 		this.execFileName=execSimNAme;
 	}
 
@@ -86,8 +84,8 @@ public class Simulation implements Serializable{
 	public void setJarName(String simName) {
 		this.execFileName = simName;
 	}
-	
-	
+
+
 	public String getSimName() {
 		return simName;
 	}
@@ -196,14 +194,6 @@ public class Simulation implements Serializable{
 	public void setConnectionType(int connectionType) {
 		this.connectionType = connectionType;}
 
-//
-//	public GeneralParam getParameters() {return parameters;
-//	}
-//
-//
-//	public void setParameters(GeneralParam parameters) {this.parameters = parameters;}
-
-	
 	public ArrayList<String> getTopicList() {
 		return topicList;
 	}
@@ -212,7 +202,7 @@ public class Simulation implements Serializable{
 	public void setTopicList(ArrayList<String> topicList) {
 		this.topicList = topicList;
 	}
-	
+
 	public int getNumCells() {
 		return numCells;
 	}
@@ -226,7 +216,7 @@ public class Simulation implements Serializable{
 		if(i==0) return "uniform";
 		else return "non-uniform";
 	}
-	
+
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -241,6 +231,6 @@ public class Simulation implements Serializable{
 				+ numCells + "\", num_worker:\""
 				+ topicList.size() + "\"}";
 	}
-	
-		
+
+
 }
