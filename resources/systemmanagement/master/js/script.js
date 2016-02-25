@@ -126,7 +126,7 @@ var tmp = hash(_message);
 
     var obj =[];
 
-    console.log(message);
+    //console.log(message);
     if(message.length>0)
         obj = JSON.parse(message);
 
@@ -134,7 +134,7 @@ var tmp = hash(_message);
     old_list = [];
     $(grid).children('div').each(function(){
         if($(this).attr("id")){
-            console.log("aggiungo "+$(this).attr("id"));
+           // console.log("aggiungo "+$(this).attr("id"));
             old_list[$(this).attr("id")] = $(this);
         }
     });
@@ -152,7 +152,7 @@ var tmp = hash(_message);
                 node.append($("<div class=\"worker-system-info\"><span class=\"tab\">Free "+w.availableheapmemory+" MB</span></div>"));
                 node.append($("<div class=\"worker-system-info\"><span class=\"tab\">Used "+w.busyheapmemory+" MB</span></div>"));
                 node.append($("<div class=\"worker-system-info\"><span>IP: "+w.ip+"</span></div>"));
-                node.append($("<div class=\"worker-system-info\"><span>Slots: "+ w.cores+"</span></div>"));
+                node.append($("<div class=\"worker-system-info\"><span>Slots: "+ w.slots+"</span></div>"));
 
                 $(grid).append(node);
 
@@ -171,12 +171,11 @@ var tmp = hash(_message);
     }
     if(old_list.length > 0)
         for(id in old_list){
-            console.log("rimuovo "+id);
+
             $(old_list[id]).remove();
         }
 
    // grid.innerHTML=tiles;
-   // console.log(old_list);
     load_tiles_monitoring();
 }
 
@@ -216,11 +215,19 @@ function _OnsubmitSimulation(event) {
 
     //formData don't catch (i don't know why) some elements
     var listParams = form.serialize();
-    for(key in listParams) {
-        console.log(key + " "+ listParams[key]);
+
+    /*for(key in listParams) {
+        //console.log(key + " "+ listParams[key]);
         if(!formData.get(key))
             formData.append(key + "", listParams[key]);
-    }
+    }*/
+    /*exampleSimulation undefined
+    uniform on
+    connectionType ActiveMQ*/
+    formData.append("exampleSimulation",listParams["exampleSimulation"]);
+    formData.append("uniform",listParams["uniform"]);
+    formData.append("connectionType",listParams["connectionType"]);
+
 
     $.ajax({
         url:"submitSimulation",

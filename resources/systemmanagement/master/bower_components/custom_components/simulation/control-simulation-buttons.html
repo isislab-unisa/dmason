@@ -20,10 +20,10 @@
             }
 
         </style>
-        <div class="horizontal layout-justified">
-            <paper-button raised disabled ><iron-icon icon="av:play-circle-filled"></iron-icon>Resume</paper-button>
-            <paper-button raised ><iron-icon icon="av:pause-circle-outline"></iron-icon>Pause</paper-button>
-            <paper-button raised ><iron-icon icon="av:stop"></iron-icon>Stop</paper-button>
+        <div class="layout horizontal center">
+            <paper-button raised id="play" on-click="showButton"><iron-icon icon="av:play-circle-filled"></iron-icon> Play</paper-button>
+            <paper-button raised disabled id="pause" on-click="showButton"><iron-icon icon="av:pause-circle-outline"></iron-icon>Pause</paper-button>
+            <paper-button raised disabled id="stop" on-click="showButton"><iron-icon icon="av:stop"></iron-icon>Stop</paper-button>
         </div>
     </template>
 </dom-module>
@@ -39,6 +39,31 @@
             simID:{
                 type:String
             }
+        },
+
+        showButton: function (event){
+                var buttons = event.target.parentElement.querySelectorAll('paper-button');
+                Array.prototype.forEach.call(buttons, function(button) {
+
+                        if(event.target.id == "pause") {
+                            if (button.id != "stop") {
+                                button.disabled = !button.disabled;
+                            }
+                        }else{
+                            if(event.target.id == "stop") {
+                                    if (button.id != "pause") {
+                                        button.disabled = !button.disabled;
+                                    }
+                            }
+                            else{
+                                 button.disabled = !button.disabled;
+                            }
+                        }
+                    });
+            this.fire('submit-sim', {
+                tile: event.target.parentElement,
+                data: ""+event.target.id
+            });
         }
     });
 </script>

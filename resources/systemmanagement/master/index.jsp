@@ -120,7 +120,7 @@
                     <h2>Simulation Settings</h2>
                     <paper-dialog-scrollable>
                         <div class="horizontal-section">
-                            <form is="iron-form" id="sendSimulationForm" enctype="multipart/form-data">
+                            <form is="iron-form" id="sendSimulationForm" >
                                 <table>
                                     <tr>
                                         <td>

@@ -50,4 +50,13 @@
         <servlet-name>SubmitSimulationServlet</servlet-name>
         <url-pattern>/submitSimulation</url-pattern>
     </servlet-mapping>
+   
+    <servlet id="controller">
+        <servlet-name>SimulationControllerServlet</servlet-name>
+        <servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.SimulationControllerServlet</servlet-class>
+	  </servlet>
+    <servlet-mapping>
+        <servlet-name>SimulationControllerServlet</servlet-name>
+        <url-pattern>/simulationController</url-pattern>
+    </servlet-mapping>
 </web-app>

@@ -89,7 +89,7 @@
         <div class="content content-main">
             <template is="dom-bind" id="simulations">
                 <neon-animated-pages id="pages" selected="0">
-                        <animated-grid id="list-simulations" on-tile-click="_onTileClick"></animated-grid>
+                        <animated-grid id="list-simulations" on-tile-click="_onTileClick" on-submit-sim="_onSubmitSim"></animated-grid>
                         <!--fullsize-page-with-card id="fullsize-card" on-click="_onFullsizeClick"-->
                         <fullsize-page-with-card id="fullsize-card" on-go-back="_onFullsizeClick">
                         </fullsize-page-with-card>
@@ -97,18 +97,17 @@
             </template>
 
         <script>
-        <%@ page import="java.lang.System,it.isislab.dmason.experimentals.systemmanagement.utils.Simulation,it.isislab.dmason.experimentals.systemmanagement.master.MasterServer" %>
+        <%@ page import="it.isislab.dmason.experimentals.systemmanagement.utils.Simulation,it.isislab.dmason.experimentals.systemmanagement.master.MasterServer" %>
         var scope = document.querySelector('template[is="dom-bind"]');
            var list_sim =[];
 
-
-
             <%
-
                 String message = "[";
                 int startMessageSize = message.length();
                 MasterServer masterServer =(MasterServer) request.getServletContext().getAttribute("masterServer");
-                for(Simulation s : masterServer.getSimsList().values())
+                if(masterServer==null)
+                    return;
+                for(Simulation s : masterServer.getSimulationsList().values())
                         message+=s+",";
 
                 if(message.length() > startMessageSize)
@@ -117,7 +116,7 @@
                     message="[]";
             %>
             list_sim = <%=message %>;
-            console.log(list_sim);
+
             scope.addEventListener('dom-change',function(event){
                 //this.$['list-simulations'].listItem = [{id:1, name:"flockers"},{id:2, name:"Ants"}];
                 this.$['list-simulations'].listItem = list_sim;
@@ -133,8 +132,20 @@
             this.$['fullsize-card'].listFile =lf;
             this.$.pages.selected = 1;
         };
-        scope._onFullsizeClick = function(event) {
-        this.$.pages.selected = 0;
+        scope._onFullsizeClick = function(event){
+             this.$.pages.selected = 0;
+        };
+
+        scope._onSubmitSim = function(event){
+             var id = event.target.parentElement.id;
+             var op = event.detail.data;
+             id=id.substring(id.indexOf("-")+1,id.length);
+
+            $.ajax({
+                url:"simulationController",
+                data:"id="+id+"&op="+op
+            });
+
         };
         </script>
 

@@ -224,7 +224,7 @@ public class Worker {
 									System.out.println("invio downloaded al master");
 								}
 							}).start(); 
-						//getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
+						getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
 					}
 
 
@@ -242,6 +242,14 @@ public class Worker {
 						simulationList.add(sim);
 						createNewSimulationProcess(sim);
 					}
+					
+					
+					
+					if (map.containsKey("start")){
+						
+						System.out.println("Ho ricev start command per sim id "+map.get("start"));
+					}
+					
 
 				} catch (JMSException e) {e.printStackTrace();}
 
