@@ -227,7 +227,7 @@ public class MasterServer implements MultiServerInterface{
 
 						if(map.containsKey("info")){
 							infoWorkers.put(myTopicForWorker,""+ map.get("info"));
-							System.out.println("PRINT FOR LOGGER_INFO RECEIVED FROM MASTER<Key info"+"><Value"+map.get("info")+">");
+							//System.out.println("PRINT FOR LOGGER_INFO RECEIVED FROM MASTER<Key info"+"><Value"+map.get("info")+">");
 						}
 
 
@@ -408,10 +408,10 @@ public class MasterServer implements MultiServerInterface{
 	 */
 	public void start(int idSimulation){
 
-
+		System.out.println("ci entroooo");
 		Simulation simulationToExec=getSimulationsList().get(idSimulation);
 		int iDSimToExec=simulationToExec.getSimID();
-
+		
 		for(String workerTopic : simulationToExec.getTopicList()){
 
 			this.getConnection().publishToTopic(iDSimToExec, workerTopic, "start");

@@ -14,7 +14,7 @@ public class WorkerMain {
 		String port=args[1];
 		
 		
-		Worker worker=new Worker(ip, port,Integer.parseInt(args[3]));
+		Worker worker=new Worker(ip, port,Integer.parseInt(args[2]));
 		worker.signRequestToMaster();
 
 
