@@ -3,9 +3,6 @@ package it.isislab.dmason.experimentals.systemmanagement.utils;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
-import it.isislab.dmason.sim.field.DistributedField2D;
-
 public class Simulation implements Serializable{
 
 	
@@ -29,7 +26,7 @@ public class Simulation implements Serializable{
 
 
 
-	private GeneralParam parameters;
+	//private GeneralParam parameters;
 	private ArrayList<String> topicList;
 	
 	
@@ -72,10 +69,10 @@ public class Simulation implements Serializable{
 		this.topicList=new ArrayList<>();
 		this.mode = mode;
 		
-		if(this.mode==0 )
-		this.parameters=new GeneralParam(this.width,this.height,this.aoi,this.rows,this.columns,numAgents,DistributedField2D.UNIFORM_PARTITIONING_MODE,connectionType);
-		else 	// 1
-		this.parameters=new GeneralParam(this.width,this.height,this.aoi,this.rows,this.columns,numAgents,DistributedField2D.NON_UNIFORM_PARTITIONING_MODE,connectionType);
+	//	if(this.mode==0 )
+		//this.parameters=new GeneralParam(this.width,this.height,this.aoi,this.rows,this.columns,numAgents,DistributedField2D.UNIFORM_PARTITIONING_MODE,connectionType);
+		//else 	// 1
+		//this.parameters=new GeneralParam(this.width,this.height,this.aoi,this.rows,this.columns,numAgents,DistributedField2D.NON_UNIFORM_PARTITIONING_MODE,connectionType);
 		
 		this.execFileName=execSimNAme;
 	}
@@ -199,12 +196,12 @@ public class Simulation implements Serializable{
 	public void setConnectionType(int connectionType) {
 		this.connectionType = connectionType;}
 
-
-	public GeneralParam getParameters() {return parameters;
-	}
-
-
-	public void setParameters(GeneralParam parameters) {this.parameters = parameters;}
+//
+//	public GeneralParam getParameters() {return parameters;
+//	}
+//
+//
+//	public void setParameters(GeneralParam parameters) {this.parameters = parameters;}
 
 	
 	public ArrayList<String> getTopicList() {
