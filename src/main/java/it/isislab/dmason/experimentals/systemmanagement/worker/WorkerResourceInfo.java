@@ -17,6 +17,7 @@ public class WorkerResourceInfo {
 	private MemoryUsage available=null;
 	private MemoryUsage busy=null;
 	private double cpuLoad=0.0;
+	private int cores=0;
 	private static final double byte_giga=1073741824;
 	private static final double byte_mega=1048576;
 	
@@ -25,6 +26,7 @@ public class WorkerResourceInfo {
 	public WorkerResourceInfo() {
 		os = ManagementFactory.getOperatingSystemMXBean();
 		memory = ManagementFactory.getMemoryMXBean();
+		cores = Runtime.getRuntime().availableProcessors();
 	}
 
 
@@ -51,6 +53,8 @@ public class WorkerResourceInfo {
 });*/
 	}
 
+	public int getNumCores(){return cores;};
+	
 	public double getAvailableHeapMb(){this.setAvailableHeapMemory();
 	
 	double toReturn=available.getMax()/byte_mega; 

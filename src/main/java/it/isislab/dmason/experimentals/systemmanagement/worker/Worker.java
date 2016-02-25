@@ -54,6 +54,7 @@ import java.rmi.server.UID;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.jar.JarEntry;
@@ -88,8 +89,9 @@ public class Worker {
 	private String TOPIC_WORKER_ID_MASTER="";
 	private static String WORKER_IP="127.0.0.1";
 
-	private HashMap< Integer, Simulation> simulationList;
-
+	//private HashMap< Integer, Simulation> simulationList;
+	private LinkedList<Simulation> simulationList;
+	private Simulation simulation=null;
 
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 
@@ -110,9 +112,7 @@ public class Worker {
 		this.createConnection();
 		this.startMasterComunication();
 		this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
-
-
-		simulationList=new HashMap<>();
+		simulationList=new LinkedList<>();
 	}
 
 
@@ -226,17 +226,17 @@ public class Worker {
 					if(map.containsKey("jar"))
 					{
 
-						new Thread(new Runnable() {
-
-							@Override
-							public void run() {
-								int port=(int) map.get("jar");
-								System.out.println("scarica da porta "+port);
-								downloadFile(port, "/home/flaser/Scrivania/worker/simulations/simname/"+"out.jar");
-								System.out.println("invio downloaded al master");
-
-							}
-						}).start(); 
+						simulation = simulationList.remove();
+							new Thread(new Runnable() {
+		
+								@Override
+								public void run() {
+									int port=(int) map.get("jar");
+									System.out.println("scarica da porta "+port);
+									downloadFile(port, simulation.getSimulationFolder()+File.separator+System.currentTimeMillis()+"out.jar");
+									System.out.println("invio downloaded al master");
+								}
+							}).start(); 
 						//getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
 					}
 
@@ -245,16 +245,14 @@ public class Worker {
 					if(map.containsKey("check")){
 						String info=getInfoWorker();
 
-						System.out.println("scrivo  su"+TOPIC_WORKER_ID);
 						getConnection().publishToTopic(info, TOPIC_WORKER_ID, "info");
-						System.out.println("invisto");
 					}
 
 					if(map.containsKey("newsim")){
 						System.out.println("ho ricevuto la simulazione");
 						Simulation sim=(Simulation)map.get("newsim");
 						System.out.println("stampo sim"+sim.toString());
-						simulationList.put(sim.getSimID(), sim); 
+						simulationList.add(sim);
 						createNewSimulationProcess(sim);
 					}
 
@@ -267,9 +265,8 @@ public class Worker {
 
 	//create folder for the sim
 	private void createNewSimulationProcess(Simulation sim){
-		final Simulation simulation=sim;
-		this.createSimulationDirectoryByID(simulation.getSimName());
-		simulation.setSimulationFolder(simulationsDirectories+File.separator+simulation.getSimName());
+		this.createSimulationDirectoryByID(sim.getSimName());
+		sim.setSimulationFolder(simulationsDirectories+File.separator+sim.getSimName());
 		System.out.println("sto per pubblicare al master");
 		this.getConnection().publishToTopic(TOPIC_WORKER_ID_MASTER, this.TOPIC_WORKER_ID, "simrcv");
 

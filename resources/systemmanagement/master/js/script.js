@@ -152,7 +152,7 @@ var tmp = hash(_message);
                 node.append($("<div class=\"worker-system-info\"><span class=\"tab\">Free "+w.availableheapmemory+" MB</span></div>"));
                 node.append($("<div class=\"worker-system-info\"><span class=\"tab\">Used "+w.busyheapmemory+" MB</span></div>"));
                 node.append($("<div class=\"worker-system-info\"><span>IP: "+w.ip+"</span></div>"));
-                node.append($("<div class=\"worker-system-info\"><span>#Simulations</span></div>"));
+                node.append($("<div class=\"worker-system-info\"><span>Slots: "+ w.cores+"</span></div>"));
 
                 $(grid).append(node);
 
@@ -214,6 +214,7 @@ function _OnsubmitSimulation(event) {
 
     var formData = new FormData(form);
 
+    //formData don't catch (i don't know why) some elements
     var listParams = form.serialize();
     for(key in listParams) {
         console.log(key + " "+ listParams[key]);

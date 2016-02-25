@@ -10,6 +10,7 @@ import java.io.Serializable;
 		 */
 		private static final long serialVersionUID = 1L;
 		private String cpuLoad;
+		private int cores;
 		private String availableheapmemory;
 		private String busyheapmemory;
 		private String ip="";
@@ -26,6 +27,7 @@ import java.io.Serializable;
 		
 		public WorkerInfo() {
 			info=new WorkerResourceInfo();
+			setNumCores(info.getNumCores());
 			setAvailableHeap(info.getAvailableHeapMb());
 			setBusyHeap(info.getBusyHeapMb());
 			setCpuLoad(info.getCPULoad());
@@ -37,19 +39,22 @@ import java.io.Serializable;
 		public void setAvailableHeap(double x){this.availableheapmemory=""+x;}
 		public void setBusyHeap(double x){this.busyheapmemory=""+x;}
 		public void setWorkerID(String idworker){this.workerID=idworker;}
+		public void setNumCores(int num){cores = num;};
+		public int getNumCores(){return cores;}
 		public String getCpuLoad(){return cpuLoad;}
 		public String getAvailableHeapMemory(){return availableheapmemory;}
 		public String getBusyHeapMemory(){return busyheapmemory;}
         public String getIP(){return ip;}
         public String getWorkerID(){return workerID;}
-         
+        
 
 		/* (non-Javadoc)
 		 * @see java.lang.Object#toString()
 		 */
 		@Override
 		public String toString() {
-			return "{\"cpuLoad\":" + cpuLoad +","+
+			return "{\"cores\":"+ cores+","+
+					"\"cpuLoad\":" + cpuLoad +","+
 					"\"availableheapmemory\":"+availableheapmemory +","+ 
 					"\"busyheapmemory\":"+ busyheapmemory +","+ 
 					"\"ip\":\""+ ip +"\","+"\"workerID\":\""+workerID+"\"}";
