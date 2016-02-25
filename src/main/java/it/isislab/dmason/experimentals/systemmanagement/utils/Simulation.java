@@ -236,13 +236,13 @@ public class Simulation implements Serializable{
 	 */
 	@Override
 	public String toString() {
-		return "{name:" + simName + ", id:" + simID
-				+ ", simulationFolder:" + simulationFolder + ", rows:" + rows
-				+ ", columns:" + columns + ", aoi:" + aoi + ", width:" + width
-				+ ", height:" + height + ", numAgents:" + numAgents + ", partitioning:"
-				+ getModeForToString(this.mode) + ", connectionType:" + connectionType + ", num_cell:"
-				+ numCells + ", parameters:" + parameters + ", num_worker:"
-				+ topicList.size() + "}";
+		return "{name:\"" + simName + "\", id:\"" + simID
+				+ "\", simulationFolder:\"" + simulationFolder + "\", rows:\"" + rows
+				+ "\", columns:\"" + columns + "\",aoi:\"" + aoi + "\", width:\"" + width
+				+ "\", height:\"" + height + "\",numAgents:\"" + numAgents + "\",partitioning:\""
+				+ getModeForToString(this.mode) + "\", connectionType:\"" + connectionType + "\", num_cell:\""
+				+ numCells + "\", num_worker:\""
+				+ topicList.size() + "\"}";
 	}
 	
 		

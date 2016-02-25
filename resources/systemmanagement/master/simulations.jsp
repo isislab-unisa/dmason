@@ -97,12 +97,27 @@
             </template>
 
         <script>
-        <%@ page import="java.lang.System" %>
+        <%@ page import="java.lang.System,it.isislab.dmason.experimentals.systemmanagement.utils.Simulation,it.isislab.dmason.experimentals.systemmanagement.master.MasterServer" %>
         var scope = document.querySelector('template[is="dom-bind"]');
            var list_sim =[];
-            for(i=0; i<40; i++)
-                    list_sim[i]={id:i, name:"flockers",start:<%=System.currentTimeMillis() %>,step:0,num_cell:(i%6)+1,num_worker:(i%5)+1,partitioning:(i%2==0)?'uniform':'non-uniform'};
 
+
+
+            <%
+
+                String message = "[";
+                int startMessageSize = message.length();
+                MasterServer masterServer =(MasterServer) request.getServletContext().getAttribute("masterServer");
+                for(Simulation s : masterServer.getSimsList().values())
+                        message+=s+",";
+
+                if(message.length() > startMessageSize)
+                    message=message.substring(0, message.length()-1)+"]";
+                else
+                    message="[]";
+            %>
+            list_sim = <%=message %>;
+            console.log(list_sim);
             scope.addEventListener('dom-change',function(event){
                 //this.$['list-simulations'].listItem = [{id:1, name:"flockers"},{id:2, name:"Ants"}];
                 this.$['list-simulations'].listItem = list_sim;
