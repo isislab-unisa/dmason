@@ -20,53 +20,36 @@ import it.isislab.dmason.experimentals.systemmanagement.utils.MyFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
-import it.isislab.dmason.experimentals.util.management.worker.PeerStatusInfo;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.ConnectionType;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.rmi.server.UID;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
-
-import org.apache.hadoop.net.NetUtils;
-
-import sim.engine.SimState;
-
 
 /**
  * 
@@ -270,38 +253,6 @@ public class Worker {
 		System.out.println("sto per pubblicare al master");
 		this.getConnection().publishToTopic(TOPIC_WORKER_ID_MASTER, this.TOPIC_WORKER_ID, "simrcv");
 
-		//		this.getConnection().asynchronousReceive(TOPIC_WORKER_ID_MASTER,new MyMessageListener() {
-		//
-		//			@Override
-		//			public void onMessage(Message msg) {
-		//				Object o;
-		//				try {
-		//					o=parseMessage(msg);
-		//					final MyHashMap map=(MyHashMap)o;
-		//
-		//					if(map.containsKey("jar"))
-		//					{
-		//					
-		//						new Thread(new Runnable() {
-		//							
-		//							@Override
-		//							public void run() {
-		//								int port=(int) map.get("jar");
-		//								System.out.println("scarica da porta "+port);
-		//								downloadFile(port, simulation.getSimulationFolder()+File.separator+System.currentTimeMillis()+"out.jar");
-		//								System.out.println("invio downloaded al master");
-		//								
-		//							}
-		//						}).start(); 
-		//						//getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
-		//					}
-		//				} catch (JMSException e) {
-		//				
-		//					e.printStackTrace();
-		//				}
-		//
-		//			}
-		//		});
 
 	}
 	protected void createSimulationDirectoryByID(String simID){

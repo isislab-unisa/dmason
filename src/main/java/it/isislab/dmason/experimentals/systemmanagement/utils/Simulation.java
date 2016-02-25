@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
+import it.isislab.dmason.sim.field.DistributedField2D;
 
 public class Simulation implements Serializable{
 
@@ -51,7 +52,7 @@ public class Simulation implements Serializable{
 	 * @param width
 	 * @param height
 	 * @param numAgent
-	 * @param mode
+	 * @param mode  if 0 uniform, else if 1 non-uniform
 	 * @param parameters
 	 */
 	public Simulation(String simName, String simulationFolder,String execSimNAme,
@@ -65,12 +66,18 @@ public class Simulation implements Serializable{
 		this.width = Integer.parseInt(width);
 		this.height = Integer.parseInt(height);
 		this.numAgents = Integer.parseInt(numAgent);
-		this.mode = mode;
+		
 		this.numCells= getRows()*getColumns();
 		this.connectionType=connection;
 		this.topicList=new ArrayList<>();
-		this.parameters=new GeneralParam(this.width,this.height,this.aoi,this.rows,this.columns,numAgents,this.mode,connectionType);
-	    this.execFileName=execSimNAme;
+		this.mode = mode;
+		
+		if(this.mode==0 )
+		this.parameters=new GeneralParam(this.width,this.height,this.aoi,this.rows,this.columns,numAgents,DistributedField2D.UNIFORM_PARTITIONING_MODE,connectionType);
+		else 	// 1
+		this.parameters=new GeneralParam(this.width,this.height,this.aoi,this.rows,this.columns,numAgents,DistributedField2D.NON_UNIFORM_PARTITIONING_MODE,connectionType);
+		
+		this.execFileName=execSimNAme;
 	}
 
 
@@ -218,19 +225,24 @@ public class Simulation implements Serializable{
 		this.numCells = numCells;
 	}
 
+	private String getModeForToString(int i){
+		if(i==0) return "uniform";
+		else return "non-uniform";
+	}
+	
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "Simulation [simName=" + simName + ", simID=" + simID
-				+ ", simulationFolder=" + simulationFolder + ", rows=" + rows
-				+ ", columns=" + columns + ", aoi=" + aoi + ", width=" + width
-				+ ", height=" + height + ", numAgents=" + numAgents + ", mode="
-				+ mode + ", connectionType=" + connectionType + ", numCells="
-				+ numCells + ", parameters=" + parameters + ", topicList="
-				+ topicList + "]";
+		return "{name:" + simName + ", id:" + simID
+				+ ", simulationFolder:" + simulationFolder + ", rows:" + rows
+				+ ", columns:" + columns + ", aoi:" + aoi + ", width:" + width
+				+ ", height:" + height + ", numAgents:" + numAgents + ", partitioning:"
+				+ getModeForToString(this.mode) + ", connectionType:" + connectionType + ", num_cell:"
+				+ numCells + ", parameters:" + parameters + ", num_worker:"
+				+ topicList.size() + "}";
 	}
 	
 		

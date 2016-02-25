@@ -63,7 +63,7 @@ public class MasterServer implements MultiServerInterface{
 	protected HashMap<String/*IDprefixOfWorker*/,String/*MyIDTopicprefixOfWorker*/> topicIdWorkers;
 	protected HashMap<Integer,ArrayList<String>> topicIdWorkersForSimulation;
 	public HashMap<String,String> infoWorkers;
-	private HashMap<Integer,Simulation> simulationsList;
+	private HashMap<Integer,Simulation> simulationsList; //list simulation 
 	private AtomicInteger keySimulation;
 
 
@@ -154,29 +154,15 @@ public class MasterServer implements MultiServerInterface{
 	public void sumbit(){
 
 
-		/*infoWorkers=new HashMap<String,String>();
-
-		for(String x: this.getTopicIdForSimulation() this.getTopicIdWorkers().keySet()){
-
-			checkWorker(x);
-
-			//invio richiesta di invio jar
-		}*/
-
-		//riscontro richiesta dell ack con conatore finchè non li ho ricevuti tutti 
-
-		//avvio copyserver e invio notifica ai worker per inviare
-
-		//mi metto in attesa con un contatore per corretta ricezione di tutti i riscontri di avvenuta ricezione 
-
-		//termino copyserver
 
 	}
 
 
 
 
-	public void start(){
+	public void start(int idSimulation){
+		
+		
 		for(String x: /*this.getTopicIdForSimulation()*/ this.getTopicIdWorkers().keySet()){
 			//invio la richiesta di esecuzione della simulazione con le cellette da simulare
 
@@ -232,7 +218,6 @@ public class MasterServer implements MultiServerInterface{
 
 	private void processSignRequest(String topicOfWorker){
 
-		//final String topic=topicOfWorker;
 
 		try {
 			//mi sottoscrivo al worker
@@ -271,14 +256,6 @@ public class MasterServer implements MultiServerInterface{
 							String topic=(String) map.get("simrcv");
 							simReceivedProcess(topic/*,(String)map.get("simrcv")*/);
 
-							//							Simulation simul=simulationsList.get(id);
-							//							System.out.println(simul.toString());
-							//							System.out.println("invoco copyserver "+simulationsDirectoriesFolder+File.separator+simul.getSimulationFolder()+File.separator+"flockers.jar");	
-							//							for(String topicName: simul.getTopicList())
-							//								getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, topicName, "jar");
-							//							System.out.println("param"+simul.getTopicList().size());
-							//							invokeCopyServer(DEFAULT_PORT_COPY_SERVER, simul.getSimulationFolder()+File.separator+"flockers.jar",simul.getTopicList().size());
-							//							System.out.println("arrivo qua");
 
 
 						}
@@ -286,19 +263,6 @@ public class MasterServer implements MultiServerInterface{
 						//se il worker ha terminato lo scaricamento jar
 						if(map.containsKey("downloaded")){
 							System.out.println("staje senza pensier"+map.get("downloaded"));
-
-//							try {
-//								System.out.println("spengo il copyserver");
-//								welcomeSocket.close();
-//							} catch (IOException e1) {
-//								e1.printStackTrace();
-//							}
-//
-//							try {
-//								sock.close();
-//							} catch (IOException e) {	
-//								e.printStackTrace();
-//							}
 						}						
 
 
@@ -318,8 +282,7 @@ public class MasterServer implements MultiServerInterface{
 	private void simReceivedProcess(String topic){
 	     		
 			getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, topic, "jar");
-		
-		//invokeCopyServer(DEFAULT_PORT_COPY_SERVER, simul.getSimulationFolder()+File.separator+"flockers.jar",simul.getTopicList().size());
+	
 	}
 
 
