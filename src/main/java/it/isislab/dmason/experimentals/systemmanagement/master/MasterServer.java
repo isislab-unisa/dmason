@@ -23,9 +23,9 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import org.apache.activemq.broker.BrokerService;
 
-/**                                                                         
+/**
  * 
- * 
+ * @author miccar
  *
  */
 public class MasterServer implements MultiServerInterface{
@@ -408,7 +408,8 @@ public class MasterServer implements MultiServerInterface{
 	 */
 	public void start(int idSimulation){
 
-		System.out.println("ci entroooo");
+		System.out.println("launch start command for simiD "+idSimulation);
+		
 		Simulation simulationToExec=getSimulationsList().get(idSimulation);
 		int iDSimToExec=simulationToExec.getSimID();
 		

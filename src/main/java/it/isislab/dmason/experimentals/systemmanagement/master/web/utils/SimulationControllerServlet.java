@@ -38,7 +38,7 @@ protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws Se
                 if(op.equals("stop"))
                    masterServer.pause(i);
     }else
-    	System.out.println("te fa ngul");
+    	System.out.println("non sono entrato");
 		
 }
 
