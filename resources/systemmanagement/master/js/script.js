@@ -209,24 +209,31 @@ function submitForm(){
 
 function _OnsubmitSimulation(event) {
 
-    var form = document.getElementById("sendSimulationForm");
+    var form = document.querySelector('form[is="iron-form"]');
 
     var formData = new FormData(form);
 
-    //formData don't catch (i don't know why) some elements
-    var listParams = form.serialize();
+    var myPaperRadioGroup = document.getElementById('partitioning');
+    if (!myPaperRadioGroup.selected) {
+        formData.append(myPaperRadioGroup.id, "");
+    } else {
+        formData.append(myPaperRadioGroup.id, myPaperRadioGroup.selected);
+    }
 
-    /*for(key in listParams) {
-        //console.log(key + " "+ listParams[key]);
-        if(!formData.get(key))
-            formData.append(key + "", listParams[key]);
-    }*/
-    /*exampleSimulation undefined
-    uniform on
-    connectionType ActiveMQ*/
-    formData.append("exampleSimulation",listParams["exampleSimulation"]);
-    formData.append("uniform",listParams["uniform"]);
-    formData.append("connectionType",listParams["connectionType"]);
+    //Workaround by https://github.com/rnicholus/ajax-form/issues/63
+    var myDropDownMenuSampleSim = document.getElementById('exampleSimulation');
+    if (!myDropDownMenuSampleSim.selectedItem) {
+        formData.append(myDropDownMenuSampleSim.id, "");
+    } else {
+        formData.append(myDropDownMenuSampleSim.id, myDropDownMenuSampleSim.selectedItemLabel);
+    }
+
+    var myDropDownMenuConnection = document.getElementById('connectionType');
+    if (!myDropDownMenuConnection.selectedItem) {
+        formData.append(myDropDownMenuConnection.id, "");
+    } else {
+        formData.append(myDropDownMenuConnection.id, myDropDownMenuConnection.selectedItemLabel);
+    }
 
 
     $.ajax({

@@ -131,12 +131,12 @@
                                         <td></td>
                                         <td>
                                             <span>Select an example simulation</span><br>
-                                                <paper-dropdown-menu name="exampleSimulation" value="" label="Select">
+                                                <paper-dropdown-menu id="exampleSimulation" label="Select">
                                                     <paper-listbox class="dropdown-content">
-                                                        <paper-item>allosaurus</paper-item>
-                                                        <paper-item>brontosaurus</paper-item>
-                                                        <paper-item>carcharodontosaurus</paper-item>
-                                                        <paper-item>diplodocus</paper-item>
+                                                        <paper-item label="allosaurus">allosaurus</paper-item>
+                                                        <paper-item label="brontosaurus">brontosaurus</paper-item>
+                                                        <paper-item label="carcharodontosaurus">carcharodontosaurus</paper-item>
+                                                        <paper-item label="diplodocus">diplodocus</paper-item>
                                                     </paper-listbox>
                                                 </paper-dropdown-menu>
                                             <!--paper-button raised class="custom">Select<iron-icon icon="receipt"></iron-icon></paper-button-->
@@ -148,9 +148,9 @@
                                     </tr>
                                     <tr>
                                         <td colspan="3" style="text-align:center">
-                                            <paper-radio-group >
-                                                <paper-radio-button required name="uniform" >Uniform <iron-icon icon="view-module"></iron-icon></paper-radio-button>
-                                                <paper-radio-button required name="non-uniform">Non-Uniform<iron-icon icon="view-quilt"></iron-icon></paper-radio-button>
+                                            <paper-radio-group id="partitioning">
+                                                <paper-radio-button required name="uniform" ><span>Uniform  <iron-icon icon="view-module"></iron-icon></span></paper-radio-button>
+                                                <paper-radio-button required name="non-uniform"> <span>Non-Uniform <iron-icon icon="view-quilt"></iron-icon></span></paper-radio-button>
                                             </paper-radio-group>
                                         </td>
                                     </tr>
@@ -163,10 +163,10 @@
                                         </td>
                                         <td></td>
                                         <td>
-                                            <paper-dropdown-menu name="connectionType" value="" label="Select connection">
+                                            <paper-dropdown-menu id="connectionType" label="Select connection">
                                                 <paper-listbox class="dropdown-content">
-                                                    <paper-item>ActiveMQ</paper-item>
-                                                    <paper-item>MPI</paper-item>
+                                                    <paper-item label="ActiveMQ">ActiveMQ</paper-item>
+                                                    <paper-item label="MPI">MPI</paper-item>
                                                 </paper-listbox>
                                             </paper-dropdown-menu>
                                         </td>
