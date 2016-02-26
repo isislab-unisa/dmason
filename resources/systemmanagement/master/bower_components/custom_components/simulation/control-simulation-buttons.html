@@ -42,24 +42,22 @@
         },
 
         showButton: function (event){
-                var buttons = event.target.parentElement.querySelectorAll('paper-button');
-                Array.prototype.forEach.call(buttons, function(button) {
 
-                        if(event.target.id == "pause") {
-                            if (button.id != "stop") {
-                                button.disabled = !button.disabled;
-                            }
-                        }else{
-                            if(event.target.id == "stop") {
-                                    if (button.id != "pause") {
-                                        button.disabled = !button.disabled;
-                                    }
-                            }
-                            else{
-                                 button.disabled = !button.disabled;
-                            }
-                        }
-                    });
+                if(event.target.id == "pause"){
+                   this.$.play.disabled = false;
+                    this.$.stop.disabled = false;
+                    this.$.pause.disabled = true;
+                }else
+                    if(event.target.id == "stop"){
+                        this.$.play.disabled = false;
+                        this.$.stop.disabled = true;
+                        this.$.pause.disabled = true;
+                    }else
+                    if(event.target.id == "play"){
+                        this.$.play.disabled = true;
+                        this.$.stop.disabled = false;
+                        this.$.pause.disabled = false;
+                    }
             this.fire('submit-sim', {
                 tile: event.target.parentElement,
                 data: ""+event.target.id
