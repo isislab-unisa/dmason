@@ -27,6 +27,7 @@ import it.isislab.dmason.util.connection.ConnectionType;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -48,8 +49,12 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
+
+import org.apache.pig.parser.AliasMasker.load_clause_return;
+import org.jets3t.service.multithread.GetObjectHeadsEvent;
 
 /**
  * 
@@ -220,7 +225,10 @@ public class Worker {
 							public void run() {
 								int port=(int) map.get("jar");
 								System.out.println("scarica da porta "+port);
-								downloadFile(port, simulation.getSimulationFolder()+File.separator+System.currentTimeMillis()+"out.jar");
+								String local=System.currentTimeMillis()+"out.jar";
+								simulation.setJarName(local);
+								downloadFile(port, simulation.getSimulationFolder()+File.separator+local);
+								
 								System.out.println("invio downloaded al master");
 							}
 						}).start(); 
@@ -239,8 +247,8 @@ public class Worker {
 						System.out.println("ho ricevuto la simulazione");
 						Simulation sim=(Simulation)map.get("newsim");
 						System.out.println("stampo sim"+sim.toString());
-						simulationList.add(sim);
 						createNewSimulationProcess(sim);
+						simulationList.add(sim);
 					}
 
 
@@ -248,7 +256,46 @@ public class Worker {
 					if (map.containsKey("start")){
 
 						System.out.println("Ho ricev start command per sim id "+map.get("start"));
-
+						
+						
+						int id = (int)map.get("start");
+						
+						GeneralParam params = null;
+						String prefix=null;
+						for (Simulation simulation : simulationList) {
+                            if(id==simulation.getSimID()){ 
+                            
+                            int aoi=simulation.getAoi();
+    						int height= simulation.getHeight();
+    						int width= simulation.getWidth();
+    						int cols=simulation.getColumns();
+    						int rows=simulation.getRows();
+    						int agents=simulation.getNumAgents();
+    						int mode=simulation.getMode();
+    						int typeConn=simulation.getConnectionType();
+    						prefix= simulation.getTopicPrefix();
+    						params=new GeneralParam(
+    								width, height, aoi,
+    								rows, cols, agents,mode, ConnectionType.pureActiveMQ); 	
+    						
+    						params.setIp(IP_ACTIVEMQ);
+    						params.setPort("61616");
+                            }
+						}
+						
+						
+						
+						
+						
+						DistributedState dis=makeSimulation( params, prefix,getSimulationsDirectories()+File.separator+simulation.getSimName()+File.separator+simulation.getJarName());
+						dis.schedule.step(dis.getState());
+						int i=0;
+						while(i!=dis.columns)
+						{
+							System.out.println("endsim with prefixID"+dis.schedule.getSteps());
+							dis.schedule.step(dis);
+							i++;
+						}
 						/*System.out.println("eseguo la sim");
 						int id = (int)map.get("start");
  						Simulation simul=System.dammiLasimulazione();
@@ -382,12 +429,11 @@ public class Worker {
 	}
 
 
-	protected DistributedState makeSimulation(GeneralParam params, String prefix)
+	protected DistributedState makeSimulation(GeneralParam params, String prefix,String pathJar)
 	{
 
-		this.TOPICPREFIX="";
-		String path_jar_file=simulationsDirectories+File.separator+File.separator+System.currentTimeMillis()+"out.jar";
-		System.out.println("execute"+path_jar_file);
+		
+		String path_jar_file=pathJar;
 
 		try{
 			JarFile jar=new JarFile(new File(path_jar_file));
@@ -421,7 +467,7 @@ public class Worker {
 			JarClassLoader cload = new JarClassLoader(new URL("jar:file://"+path_jar_file+"!/"));
 
 			cload.addToClassPath();
-			System.out.println("ds"+distributedState.getName());
+			System.out.println(""+distributedState.getName());
 
 
 			return (DistributedState) cload.getInstance(distributedState.getName(), params,prefix);

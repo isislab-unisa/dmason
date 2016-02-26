@@ -28,6 +28,7 @@ public class Simulation implements Serializable{
 	private int connectionType;
 	private int numCells;
 	private String execFileName;
+	private String topicPrefix;
 
 
 
@@ -73,6 +74,7 @@ public class Simulation implements Serializable{
 		this.topicList=new ArrayList<>();
 		this.mode = mode;		
 		this.execFileName=execSimNAme;
+		
 	}
 
 
@@ -101,6 +103,13 @@ public class Simulation implements Serializable{
 	}
 
 
+	public void setTopicPrefix(String pref){
+		topicPrefix=pref;
+	}
+	
+	public String getTopicPrefix(){
+		return topicPrefix;
+	}
 	public void setSimID(int simID) {
 		this.simID = simID;
 	}
