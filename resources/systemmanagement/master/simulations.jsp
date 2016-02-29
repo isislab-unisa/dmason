@@ -89,7 +89,7 @@
         <div class="content content-main">
             <template is="dom-bind" id="simulations">
                 <neon-animated-pages id="pages" selected="0">
-                        <animated-grid id="list-simulations" on-tile-click="_onTileClick" on-submit-sim="_onSubmitSim"></animated-grid>
+                        <animated-grid id="list-simulations" on-tile-click="_onTileClick" ></animated-grid>
                         <!--fullsize-page-with-card id="fullsize-card" on-click="_onFullsizeClick"-->
                         <fullsize-page-with-card id="fullsize-card" on-go-back="_onFullsizeClick">
                         </fullsize-page-with-card>
@@ -136,6 +136,7 @@
              this.$.pages.selected = 0;
         };
 
+        /*
         scope._onSubmitSim = function(event){
              var id = event.target.parentElement.id;
              var op = event.detail.data;
@@ -146,7 +147,7 @@
                 data:"id="+id+"&op="+op
             });
 
-        };
+        };*/
         </script>
 
         </div>

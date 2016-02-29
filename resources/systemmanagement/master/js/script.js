@@ -62,13 +62,14 @@ function close_dialog(id_paper_dialog){
 
 $(
     function(){
-        setInterval(function(){
+        console.log(window.location.pathname)
+        if(window.location.pathname=="/" || window.location.pathname=="/index.jsp")
+            setInterval(function(){
 
-                loadWorkers();
-                if($('#load_workers_dialog').prop("opened"))close_dialog("load_workers_dialog");
-                load_tiles_monitoring();
-        },2000);
-
+                    loadWorkers();
+                    if($('#load_workers_dialog').prop("opened"))close_dialog("load_workers_dialog");
+                    load_tiles_monitoring();
+            },10000);
     }
 );
 

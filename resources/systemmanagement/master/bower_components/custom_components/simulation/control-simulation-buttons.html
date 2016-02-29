@@ -21,9 +21,9 @@
 
         </style>
         <div class="layout horizontal center">
-            <paper-button raised id="play" on-click="showButton"><iron-icon icon="av:play-circle-filled"></iron-icon> Play</paper-button>
-            <paper-button raised disabled id="pause" on-click="showButton"><iron-icon icon="av:pause-circle-outline"></iron-icon>Pause</paper-button>
-            <paper-button raised disabled id="stop" on-click="showButton"><iron-icon icon="av:stop"></iron-icon>Stop</paper-button>
+            <paper-button raised id="play" on-tap="showButton"><iron-icon icon="av:play-circle-filled"></iron-icon> Play</paper-button>
+            <paper-button raised disabled id="pause" on-tap="showButton"><iron-icon icon="av:pause-circle-outline"></iron-icon>Pause</paper-button>
+            <paper-button raised disabled id="stop" on-tap="showButton"><iron-icon icon="av:stop"></iron-icon>Stop</paper-button>
         </div>
     </template>
 </dom-module>
@@ -42,26 +42,35 @@
         },
 
         showButton: function (event){
-
-                if(event.target.id == "pause"){
-                   this.$.play.disabled = false;
+             id = event.target.id;
+             prev = event.target.parentElement;
+            switch (id){
+                case "pause":
+                    this.$.play.disabled = false;
                     this.$.stop.disabled = false;
+                    console.log("Done!");
+                    break;
+                case "stop":
+                    this.$.play.disabled = false;
                     this.$.pause.disabled = true;
-                }else
-                    if(event.target.id == "stop"){
-                        this.$.play.disabled = false;
-                        this.$.stop.disabled = true;
-                        this.$.pause.disabled = true;
-                    }else
-                    if(event.target.id == "play"){
-                        this.$.play.disabled = true;
-                        this.$.stop.disabled = false;
-                        this.$.pause.disabled = false;
-                    }
-            this.fire('submit-sim', {
-                tile: event.target.parentElement,
-                data: ""+event.target.id
-            });
+                    console.log("Done!");
+                    break;
+                case "play":
+                    this.$.stop.disabled = false;
+                    this.$.pause.disabled = false;
+                    console.log("Done!");
+                    break;
+            }
+            if(id){
+                this.$$("#"+id).disabled = true;
+                this.fire('submit-sim', {
+                 tile: prev,
+                 data: ""+id
+                 });
+            }
+
+
+
         }
     });
 </script>

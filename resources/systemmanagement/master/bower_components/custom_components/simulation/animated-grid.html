@@ -77,7 +77,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <template is="dom-repeat" items="{{listItem}}" as="sim">
                 <div class="grid-item-simulations" id="sim-{{sim.id}}">
                         <simulation-info class="onHover" sim={{sim}} id="sim-info"></simulation-info>
-                        <control-simulation-buttons></control-simulation-buttons>
+                        <control-simulation-buttons on-submit-sim="_onSubmitSim"></control-simulation-buttons>
                 </div>
             </template>
         </div>
@@ -96,6 +96,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
         },
 
+
         attached: function(){
             this.async(function(){
                 $('.grid-simulations').masonry({
@@ -104,6 +105,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             percentPosition: true
                         }
                 );
+            });
+        },
+        _onSubmitSim: function(event){
+            var id = event.target.parentElement.id;
+            var op = event.detail.data;
+            id=id.substring(id.indexOf("-")+1,id.length);
+
+            $.ajax({
+                url:"simulationController",
+                data:"id="+id+"&op="+op
             });
         }
 

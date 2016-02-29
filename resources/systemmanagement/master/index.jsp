@@ -161,7 +161,9 @@
                                         <td>
                                             <paper-input name="simName" label="Simulation name" allowed-pattern="[a-zA-Z0-9]"></paper-input>
                                         </td>
-                                        <td></td>
+                                        <td>
+                                            <paper-input class="submit_work_form" name="step" label="Number of step" allowed-pattern="[0-9]"></paper-input>
+                                        </td>
                                         <td>
                                             <paper-dropdown-menu id="connectionType" label="Select connection">
                                                 <paper-listbox class="dropdown-content">
