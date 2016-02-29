@@ -24,7 +24,7 @@ public class MasterServerMain {
 		// 2. Creating the WebAppContext for the created content
 		WebAppContext ctx = new WebAppContext();
 		ctx.setResourceBase("resources/systemmanagement/master");
-		ctx.setContextPath("/master");
+		ctx.setContextPath("/");
 
 		//3. Including the JSTL jars for the webapp.
 		ctx.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",".*/[^/]*jstl.*\\.jar$");

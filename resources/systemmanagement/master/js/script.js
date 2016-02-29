@@ -218,6 +218,9 @@ function _OnsubmitSimulation(event) {
 
     var formData = new FormData(form);
 
+
+    //Workaround by https://github.com/rnicholus/ajax-form/issues/63
+
     var myPaperRadioGroup = document.getElementById('partitioning');
     if (!myPaperRadioGroup.selected) {
         formData.append(myPaperRadioGroup.id, "");
@@ -225,7 +228,7 @@ function _OnsubmitSimulation(event) {
         formData.append(myPaperRadioGroup.id, myPaperRadioGroup.selected);
     }
 
-    //Workaround by https://github.com/rnicholus/ajax-form/issues/63
+
     var myDropDownMenuSampleSim = document.getElementById('exampleSimulation');
     if (!myDropDownMenuSampleSim.selectedItem) {
         formData.append(myDropDownMenuSampleSim.id, "");
@@ -250,7 +253,7 @@ function _OnsubmitSimulation(event) {
         processData: false
     });
 
-    //remove input added previusly
+    //remove input tag added previusly
     $("#workerList").remove();
     var dialog = document.getElementById("add-simulation-paper-dialog");
 
