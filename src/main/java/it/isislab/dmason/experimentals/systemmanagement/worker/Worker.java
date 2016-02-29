@@ -301,7 +301,7 @@ public class Worker {
 						DistributedState dis=makeSimulation( params, prefix,getSimulationsDirectories()+File.separator+simulation.getSimName()+File.separator+simulation.getJarName());
 						dis.schedule.step(dis.getState());
 						int i=0;
-						while(i!=dis.schedule.getSteps())
+						while(i!=step)
 						{
 							System.out.println("endsim with prefixID"+dis.schedule.getSteps());
 							dis.schedule.step(dis);
