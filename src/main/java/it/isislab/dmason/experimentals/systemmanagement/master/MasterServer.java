@@ -214,6 +214,8 @@ public class MasterServer implements MultiServerInterface{
 
 			//mando al worker il mioID univoco per esso di comunicazione
 			getConnection().publishToTopic(myTopicForWorker, "MASTER", topicOfWorker);
+			
+			this.getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, "MASTER", "port");
 			//mi metto in ricezione sul topic del worker
 			getConnection().asynchronousReceive(topicOfWorker, new MyMessageListener() {
 
@@ -233,13 +235,13 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-						if(map.containsKey("simrcv")){
-							String topic=(String) map.get("simrcv");
-							simReceivedProcess(topic/*,(String)map.get("simrcv")*/);
-
-
-
-						}
+//						if(map.containsKey("simrcv")){
+//							String topic=(String) map.get("simrcv");
+//							simReceivedProcess(topic/*,(String)map.get("simrcv")*/);
+//
+//
+//
+//						}
 
 						//se il worker ha terminato lo scaricamento jar
 						if(map.containsKey("downloaded")){
@@ -260,11 +262,11 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-	private void simReceivedProcess(String topic){
+	//private void simReceivedProcess(String topic){
 
-		getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, topic, "jar");
+		//getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, topic, "jar");
 
-	}
+	//}
 
 
 
@@ -394,7 +396,6 @@ public class MasterServer implements MultiServerInterface{
 		System.out.println(simul.getTopicList().size());
 		for(String topicName: simul.getTopicList())
 			getConnection().publishToTopic(simul, topicName, "newsim");
-
 
 		String pathJar=simul.getSimulationFolder()+File.separator+sim.getJarName();
 		this.invokeCopyServer(pathJar ,simul.getTopicList().size());

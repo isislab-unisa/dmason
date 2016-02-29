@@ -45,6 +45,7 @@ import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.rmi.server.UID;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.jar.JarEntry;
@@ -77,10 +78,13 @@ public class Worker {
 	private String TOPIC_WORKER_ID="";
 	private String TOPIC_WORKER_ID_MASTER="";
 	private static String WORKER_IP="127.0.0.1";
+	private int DEFAULT_COPY_SERVER_PORT=0;
 
-	//private HashMap< Integer, Simulation> simulationList;
-	private LinkedList<Simulation> simulationList;
-	private Simulation simulation=null;
+	private HashMap< Integer, Simulation> simulationList;
+
+	//private LinkedList<Simulation> simulationList;
+	
+
 
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 
@@ -103,7 +107,7 @@ public class Worker {
 		this.createConnection();
 		this.startMasterComunication();
 		this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
-		simulationList=new LinkedList<>();
+		simulationList=new HashMap< Integer, Simulation>();
 		this.slotsNumber=slots;
 	}
 
@@ -162,27 +166,16 @@ public class Worker {
 					if(map.containsKey(worker.TOPIC_WORKER_ID)){
 						TOPIC_WORKER_ID_MASTER=map.get(TOPIC_WORKER_ID).toString();
 						listenerForMasterComunication();
-
-
 					} 
+					
+					if(map.containsKey("port")){
+						int port=(int) map.get("port");
+						
+						DEFAULT_COPY_SERVER_PORT=port;
+					}
 
 
 
-					/*if (map.containsKey("esegui")){
-						System.out.println("eseguo la sim");
-						GeneralParam params=new GeneralParam(200, 200, 5,
-								1, 2, 100,DistributedField2D.UNIFORM_PARTITIONING_MODE, ConnectionType.pureActiveMQ);
-						DistributedState dis=worker.makeSimulation( params, "");
-						//dis.start();
-						dis.schedule.step(dis.getState());
-						int i=0;
-						while(i!=dis.columns)
-						{
-							System.out.println("endsim with prefixID"+dis.schedule.getSteps());
-							dis.schedule.step(dis);
-							i++;
-						}
-					}*/
 				} catch (JMSException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -215,25 +208,25 @@ public class Worker {
 					o=parseMessage(msg);
 					final	MyHashMap map=(MyHashMap) o;
 
-					if(map.containsKey("jar"))
-					{
-
-						simulation = simulationList.remove();
-						new Thread(new Runnable() {
-
-							@Override
-							public void run() {
-								int port=(int) map.get("jar");
-								System.out.println("scarica da porta "+port);
-								String local=System.currentTimeMillis()+"out.jar";
-								simulation.setJarName(local);
-								downloadFile(port, simulation.getSimulationFolder()+File.separator+local);
-								
-								System.out.println("invio downloaded al master");
-							}
-						}).start(); 
-						getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
-					}
+//					if(map.containsKey("jar"))
+//					{
+//
+//						
+//						new Thread(new Runnable() {
+//
+//							@Override
+//							public void run() {
+//								int port=(int) map.get("jar");
+//								System.out.println("scarica da porta "+port);
+//								String local=System.currentTimeMillis()+"out.jar";
+//								simulation.setJarName(local);
+//								downloadFile(port, simulation.getSimulationFolder()+File.separator+local);
+//
+//								System.out.println("invio downloaded al master");
+//							}
+//						}).start(); 
+//						getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
+//					}
 
 
 
@@ -248,7 +241,25 @@ public class Worker {
 						Simulation sim=(Simulation)map.get("newsim");
 						System.out.println("stampo sim"+sim.toString());
 						createNewSimulationProcess(sim);
-						simulationList.add(sim);
+						
+						new Thread(new Runnable() {
+
+							
+
+							@Override
+							public void run() {
+								
+								
+								String local=System.currentTimeMillis()+"out.jar";
+								sim.setJarName(local);
+								
+								downloadFile(DEFAULT_COPY_SERVER_PORT, sim.getSimulationFolder()+File.separator+local);
+
+								System.out.println("invio downloaded al master");
+							}
+						}).start(); 
+						getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
+						
 					}
 
 
@@ -256,67 +267,47 @@ public class Worker {
 					if (map.containsKey("start")){
 
 						System.out.println("Ho ricev start command per sim id "+map.get("start"));
-						
-						
+
+
 						int id = (int)map.get("start");
-						
+
 						GeneralParam params = null;
 						String prefix=null;
-						for (Simulation simulation : simulationList) {
-                            if(id==simulation.getSimID()){ 
-                            
-                            int aoi=simulation.getAoi();
-    						int height= simulation.getHeight();
-    						int width= simulation.getWidth();
-    						int cols=simulation.getColumns();
-    						int rows=simulation.getRows();
-    						int agents=simulation.getNumAgents();
-    						int mode=simulation.getMode();
-    						int typeConn=simulation.getConnectionType();
-    						prefix= simulation.getTopicPrefix();
-    						params=new GeneralParam(
-    								width, height, aoi,
-    								rows, cols, agents,mode, ConnectionType.pureActiveMQ); 	
-    						
-    						params.setIp(IP_ACTIVEMQ);
-    						params.setPort("61616");
-                            }
-						}
+						System.out.println("worker simulazin "+getSimulationList().size());
+						Simulation simulation=getSimulationList().get(id);
 						
+								int aoi=simulation.getAoi();
+								int height= simulation.getHeight();
+								int width= simulation.getWidth();
+								int cols=simulation.getColumns();
+								int rows=simulation.getRows();
+								int agents=simulation.getNumAgents();
+								int mode=simulation.getMode();
+								int typeConn=simulation.getConnectionType();
+								prefix= simulation.getTopicPrefix();
+								System.out.println(width+" "+height+" "+aoi+" "+rows+" "+cols+" "+agents+" "+mode+"|val="+" "+DistributedField2D.UNIFORM_PARTITIONING_MODE+" "+ConnectionType.pureActiveMQ);
+								
+								params=new GeneralParam(
+										width, height, aoi,
+										rows, cols, agents,mode,ConnectionType.pureActiveMQ); 	
+
+								params.setIp(IP_ACTIVEMQ);
+								params.setPort(PORT_ACTIVEMQ);
 						
-						
-						
-						
+
+
+
+
 						DistributedState dis=makeSimulation( params, prefix,getSimulationsDirectories()+File.separator+simulation.getSimName()+File.separator+simulation.getJarName());
 						dis.schedule.step(dis.getState());
 						int i=0;
-						while(i!=dis.columns)
+						while(i!=dis.schedule.getSteps())
 						{
 							System.out.println("endsim with prefixID"+dis.schedule.getSteps());
 							dis.schedule.step(dis);
 							i++;
 						}
-						/*System.out.println("eseguo la sim");
-						int id = (int)map.get("start");
- 						Simulation simul=System.dammiLasimulazione();
- 						
- 						
- 						simul.getAoi()
- 						simul.getColumns()
- 						simu
- 						GeneralParam params=new GeneralParam(
-								200, 200, 5,
-								1, 2, 100,DistributedField2D.UNIFORM_PARTITIONING_MODE, ConnectionType.pureActiveMQ);
-						DistributedState dis=worker.makeSimulation( params, "");
-						//dis.start();
-						dis.schedule.step(dis.getState());
-						int i=0;
-						while(i!=dis.columns)
-						{
-							System.out.println("endsim with prefixID"+dis.schedule.getSteps());
-							dis.schedule.step(dis);
-							i++;
-						}*/
+				
 
 					}
 
@@ -332,6 +323,7 @@ public class Worker {
 	private void createNewSimulationProcess(Simulation sim){
 		this.createSimulationDirectoryByID(sim.getSimName());
 		sim.setSimulationFolder(simulationsDirectories+File.separator+sim.getSimName());
+		getSimulationList().put(sim.getSimID(),sim);
 		System.out.println("sto per pubblicare al master");
 		this.getConnection().publishToTopic(TOPIC_WORKER_ID_MASTER, this.TOPIC_WORKER_ID, "simrcv");
 
@@ -432,7 +424,7 @@ public class Worker {
 	protected DistributedState makeSimulation(GeneralParam params, String prefix,String pathJar)
 	{
 
-		
+
 		String path_jar_file=pathJar;
 
 		try{
@@ -539,6 +531,8 @@ public class Worker {
 	public String getSimulationsDirectories() {return simulationsDirectories;}
 	public int getSlotsNumber(){return slotsNumber;}
 	public int setSlotsNumuber(int slots){return this.slotsNumber=slots;}
+	public HashMap<Integer, Simulation> getSimulationList(){return simulationList;}
+
 
 
 }
