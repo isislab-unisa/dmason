@@ -3,30 +3,19 @@ package it.isislab.dmason.experimentals.systemmanagement.master.web.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
-
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.hadoop.fs.FileUtil;
-import org.apache.hadoop.io.file.tfile.Utils;
-
-import com.lowagie.text.Utilities;
-
 import it.isislab.dmason.experimentals.systemmanagement.master.MasterServer;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.util.Util;
 import it.isislab.dmason.util.connection.ConnectionType;
 
 public class SubmitSimulationServlet extends HttpServlet {
@@ -47,9 +36,9 @@ public class SubmitSimulationServlet extends HttpServlet {
 
 		server =(MasterServer)  req.getServletContext().getAttribute("masterServer");
 		listParams = new HashMap<>();
-		
+
 		FileItem jarSim = null;
-		
+
 		if(!ServletFileUpload.isMultipartContent(req)){
 			System.out.println("nothing to do");
 			return;
@@ -59,7 +48,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 			ServletFileUpload upload = new ServletFileUpload(itemFact);
 			try{
 				List<FileItem> items = upload.parseRequest(req);
-			
+
 				for(FileItem item : items) {
 					if(!item.isFormField()){
 						System.out.println("visto "+item.getName());
@@ -76,7 +65,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 			}
 
 		}
-		
+
 		//RECEIVE PARAMETER FROM CLIENT		
 		String simName= listParams.get("simName");
 		String rows=	listParams.get("rows");
@@ -85,12 +74,13 @@ public class SubmitSimulationServlet extends HttpServlet {
 		String width=	listParams.get("width");
 		String height=	listParams.get("heigth");
 		String numAgent=listParams.get("numAgents");
+		String numStep=listParams.get("step");
 		String conType= listParams.get("connectionType");
 		String modeType = listParams.get("partitioning");
 		int mode = (modeType.equals("uniform"))?DistributedField2D.UNIFORM_PARTITIONING_MODE: DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
-		
+
 		//connection
-		
+
 		int connection=0;
 		if(conType.equalsIgnoreCase(ACTIVEMQ))
 			connection=ConnectionType.pureActiveMQ;
@@ -113,13 +103,13 @@ public class SubmitSimulationServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 
-		Simulation sim =new Simulation(simName, simPath,jarSim.getName() ,rows, columns, aoi, width, height, numAgent, mode, connection) ;
+		Simulation sim =new Simulation(simName, simPath,jarSim.getName() ,rows, columns, aoi, width, height, numAgent, numStep, mode, connection) ;
 
 		sim.setTopicList(topicList);
 		int simId=server.getKeySim().incrementAndGet();
 		sim.setSimID(simId);
 		sim.setTopicPrefix(simName+"-"+simId);
-		
+
 
 		//upload jar in sim.getSimulationFolder() 
 

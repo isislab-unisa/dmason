@@ -25,6 +25,7 @@ public class Simulation implements Serializable{
 	private int height;
 	private int numAgents;
 	private int mode;
+	private long numStep;
 	private int connectionType;
 	private int numCells;
 	private String execFileName;
@@ -60,7 +61,7 @@ public class Simulation implements Serializable{
 	 */
 	public Simulation(String simName, String simulationFolder,String execSimNAme,
 			String rows, String columns, String aoi, String width,
-			String height, String numAgent, int mode, int connection) {
+			String height, String numAgent, String stepsnumber, int mode, int connection) {
 		this.simName = simName;
 		this.simulationFolder = simulationFolder;
 		this.rows = Integer.parseInt(rows);
@@ -73,11 +74,19 @@ public class Simulation implements Serializable{
 		this.connectionType=connection;
 		this.topicList=new ArrayList<>();
 		this.mode = mode;		
+		this.numStep=Long.parseLong(stepsnumber);
 		this.execFileName=execSimNAme;
-		
+
 	}
 
 
+	public long getNumberStep(){ 
+		return numStep;
+	}
+
+	public void getNumberStep(long step){ 
+		numStep=step;
+	}
 	public String getJarName() {
 		return execFileName;
 	}
@@ -106,7 +115,7 @@ public class Simulation implements Serializable{
 	public void setTopicPrefix(String pref){
 		topicPrefix=pref;
 	}
-	
+
 	public String getTopicPrefix(){
 		return topicPrefix;
 	}

@@ -284,15 +284,15 @@ public class Worker {
 								int agents=simulation.getNumAgents();
 								int mode=simulation.getMode();
 								int typeConn=simulation.getConnectionType();
+								long step=simulation.getNumberStep();
 								prefix= simulation.getTopicPrefix();
-								System.out.println(width+" "+height+" "+aoi+" "+rows+" "+cols+" "+agents+" "+mode+"|val="+" "+DistributedField2D.UNIFORM_PARTITIONING_MODE+" "+ConnectionType.pureActiveMQ);
+								System.out.println(width+" "+height+" "+aoi+" "+rows+" "+cols+" "+agents+" "
+										+ ""+mode+"|val="+" "+ step+" "  +DistributedField2D.UNIFORM_PARTITIONING_MODE+" "+ConnectionType.pureActiveMQ);
+							
 								
-								params=new GeneralParam(
-										width, height, aoi,
-										rows, cols, agents,mode,ConnectionType.pureActiveMQ); 	
-
-								params.setIp(IP_ACTIVEMQ);
-								params.setPort(PORT_ACTIVEMQ);
+								params=new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ); 	
+								//params.setIp(IP_ACTIVEMQ);
+								//params.setPort(PORT_ACTIVEMQ);
 						
 
 
