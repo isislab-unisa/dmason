@@ -515,7 +515,9 @@ public class Worker {
 
 
 
-
+   public void getLogBySimID(int simID){
+	   Simulation sim=getSimulationList().get(simID);
+   }
 
 
 
