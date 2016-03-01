@@ -149,9 +149,10 @@ var tmp = hash(_message);
                node = $("<div id="+w.workerID+" class=\"grid-item-monitoring\" onclick=\"selectItem(this)\"></div>");
                // node.append($("<div class=\"worker-system-info\"><span>Worker ID: "+ w.workerID+"</span></div>"));
                 node.append($("<div class=\"worker-system-info\"><span id=\"w-cpu-"+w.workerID+"\">CPU:"+w.cpuLoad+" %</span></div>"));
-                node.append($("<div class=\"worker-system-info\"><span>JVM RAM:</span></div>"));
-                node.append($("<div class=\"worker-system-info\"><span id=\"w-ram-avaiable-"+w.workerID+"\" class=\"tab\">Free "+w.availableheapmemory+" MB</span></div>"));
-                node.append($("<div class=\"worker-system-info\"><span id=\"w-ram-used-"+w.workerID+"\" class=\"tab\">Used "+w.busyheapmemory+" MB</span></div>"));
+                node.append($("<div class=\"worker-system-info\"><span>Heap:</span></div>"));
+                node.append($("<div class=\"worker-system-info\"><span id=\"w-max-heap-"+w.workerID+"\" class=\"tab\">Max "+w.maxHeap+" MB</span></div>"));
+                node.append($("<div class=\"worker-system-info\"><span id=\"w-heap-avaiable-"+w.workerID+"\" class=\"tab\">Free "+w.availableheapmemory+" MB</span></div>"));
+                node.append($("<div class=\"worker-system-info\"><span id=\"w-heap-used-"+w.workerID+"\" class=\"tab\">Used "+w.busyheapmemory+" MB</span></div>"));
                 node.append($("<div class=\"worker-system-info\"><span id=\"w-ip-"+w.workerID+"\">IP: "+w.ip+"</span></div>"));
                 node.append($("<div class=\"worker-system-info\"><span id=\"w-slots-"+w.workerID+"\">Slots: "+ w.slots+"</span></div>"));
 
@@ -160,8 +161,9 @@ var tmp = hash(_message);
             }else{
                 delete old_list[w.workerID];
                 $("#w-cpu-"+w.workerID).text("CPU:"+w.cpuLoad+" %");
-                $("#w-ram-avaiable-"+w.workerID).text("Free "+w.availableheapmemory+" MB");
-                $("#w-ram-use-"+w.workerID).text("Used "+w.busyheapmemory+" MB");
+                $("w-max-heap-"+w.workerID).text("Max "+w.maxHeap+" MB</span></div>");
+                $("#w-heap-avaiable-"+w.workerID).text("Free "+w.availableheapmemory+" MB");
+                $("#w-heap-use-"+w.workerID).text("Used "+w.busyheapmemory+" MB");
                 $("#w-slots-"+w.workerID).text("Slots: "+ w.slots);
             }
 

@@ -291,8 +291,10 @@ public class Worker {
 							
 								
 								params=new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ); 	
-								//params.setIp(IP_ACTIVEMQ);
-								//params.setPort(PORT_ACTIVEMQ);
+								params.setIp(IP_ACTIVEMQ);
+								params.setPort(PORT_ACTIVEMQ);
+								params.setI(1);
+								params.setJ(0);
 						
 
 
