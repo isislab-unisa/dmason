@@ -149,9 +149,9 @@
                                     </tr>
                                     <tr>
                                         <td colspan="3" style="text-align:center">
-                                            <paper-radio-group id="partitioning">
-                                                <paper-radio-button required name="uniform" ><span>Uniform  <iron-icon icon="view-module"></iron-icon></span></paper-radio-button>
-                                                <paper-radio-button required name="non-uniform"> <span>Non-Uniform <iron-icon icon="view-quilt"></iron-icon></span></paper-radio-button>
+                                            <paper-radio-group id="partitioning" selected="uniform">
+                                                <paper-radio-button required name="uniform" onclick=""><span>Uniform  <iron-icon icon="view-module"></iron-icon></span></paper-radio-button>
+                                                <paper-radio-button required name="non-uniform" onclick=""> <span>Non-Uniform <iron-icon icon="view-quilt"></iron-icon></span></paper-radio-button>
                                             </paper-radio-group>
                                         </td>
                                     </tr>
@@ -167,7 +167,7 @@
                                         </td>
                                         <td>
                                             <paper-dropdown-menu id="connectionType" label="Select connection" class="submit_work_form">
-                                                <paper-menu class="dropdown-content">
+                                                <paper-menu class="dropdown-content" selected="0">
                                                     <paper-item label="ActiveMQ">ActiveMQ</paper-item>
                                                     <paper-item label="MPI">MPI</paper-item>
                                                 </paper-menu>

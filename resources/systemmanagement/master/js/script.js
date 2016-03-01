@@ -123,14 +123,6 @@ function loadWorkers(){
 }
 //var history="";
 function _loadWorkers(_message){
-    /*    var message="";
-var tmp = hash(_message);
-    if(history != tmp){
-        history=tmp;
-        message=_message;
-    }else
-        return;
-*/
 
     var message=_message;
     var grid=document.getElementById("workers");
@@ -198,7 +190,6 @@ var tmp = hash(_message);
     load_tiles_monitoring();
 }
 
-//$(function(){ loadWorkers(); setInterval(function(){loadWorkers()},10000);});
 
 function selectItem(element){
         if($(element).hasClass("grid-item-selected"))
@@ -206,17 +197,6 @@ function selectItem(element){
         else
             $(element).addClass("grid-item-selected");
 
-}
-
-function hash(value){
-    var hash = 0;
-    if (value.length == 0) return hash;
-    for (i = 0; i < value.length; i++) {
-        char = value.charCodeAt(i);
-        hash = ((hash<<5)-hash)+char;
-        hash = hash & hash; // Convert to 32bit integer
-    }
-    return hash;
 }
 
 
@@ -270,11 +250,10 @@ function _OnsubmitSimulation(event) {
             //remove input tag added previusly
             $("#workerList").remove();
             var dialog = document.getElementById("add-simulation-paper-dialog");
-
+            maxRepeat =0;
             resetForm(event);
-            progress = document.querySelector('paper-progress');
-            progress.style.display = "none";
             dialog.close();
+            window.location="simulations.jsp";
         }
     });
 
@@ -283,5 +262,10 @@ function _OnsubmitSimulation(event) {
 }
 
 function resetForm(event) {
+    progress = document.querySelector('paper-progress');
+    progress.style.display = "none";
     document.getElementById("sendSimulationForm").reset();
 }
+
+
+
