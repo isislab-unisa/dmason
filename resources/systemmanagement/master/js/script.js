@@ -20,12 +20,23 @@ function load_tiles_settings(){
 
 function open_dialog_setting_new_simulation(){
     var workerID= new Array();
-    if($('.grid-item-selected').length){
+    var num_slots = 0;
+    var num_workers = $('.grid-item-selected').length;
+    var id="";
+    if(num_workers){
         $('.grid-item-selected').each(function(index){
-            workerID[index] = $(this).attr("id");
-            $(this).removeClass("grid-item-selected");
+            id =  $(this).attr("id");
+            //console.log(id);
 
+            workerID[index] = id;
+            $(this).removeClass("grid-item-selected");
+            slot = $("#w-slots-"+id).text();
+            slot = slot.substring(slot.indexOf(":")+1,slot.length);
+            num_slots += parseInt(slot.trim());
         });
+
+        $("#head_sel_works").text(num_workers);
+        $("#head_num_slots").text(num_slots);
         //passing worker selected
         var node = document.createElement("input");
         node.setAttribute("id","workerList");
@@ -62,14 +73,14 @@ function close_dialog(id_paper_dialog){
 
 $(
     function(){
-        console.log(window.location.pathname)
+        //console.log(window.location.pathname)
         if(window.location.pathname=="/" || window.location.pathname=="/index.jsp")
             setInterval(function(){
 
                     loadWorkers();
                     if($('#load_workers_dialog').prop("opened"))close_dialog("load_workers_dialog");
                     load_tiles_monitoring();
-            },10000);
+            },1000);
     }
 );
 
@@ -94,7 +105,7 @@ function nextProgress() {
 }
 function startProgress() {
     repeat = 0;
-    maxRepeat = 5, animating = false;
+    maxRepeat = 20, animating = false;
 
     progress = document.querySelector('paper-progress');
     progress.value = progress.min;
@@ -210,6 +221,7 @@ function hash(value){
 
 
 function submitForm(){
+    startProgress();
     var form = document.getElementById("sendSimulationForm");
     $(form).unbind('submit').bind("submit",_OnsubmitSimulation);
     form.submit();
@@ -253,15 +265,20 @@ function _OnsubmitSimulation(event) {
         data:formData,
         cache: false,
         contentType: false,
-        processData: false
+        processData: false,
+        success: function(result){
+            //remove input tag added previusly
+            $("#workerList").remove();
+            var dialog = document.getElementById("add-simulation-paper-dialog");
+
+            resetForm(event);
+            progress = document.querySelector('paper-progress');
+            progress.style.display = "none";
+            dialog.close();
+        }
     });
 
-    //remove input tag added previusly
-    $("#workerList").remove();
-    var dialog = document.getElementById("add-simulation-paper-dialog");
 
-    resetForm(event);
-    dialog.close();
 
 }
 
