@@ -83,7 +83,7 @@ public class Worker {
 	private HashMap< Integer, Simulation> simulationList;
 
 	//private LinkedList<Simulation> simulationList;
-	
+
 
 
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
@@ -167,10 +167,10 @@ public class Worker {
 						TOPIC_WORKER_ID_MASTER=map.get(TOPIC_WORKER_ID).toString();
 						listenerForMasterComunication();
 					} 
-					
+
 					if(map.containsKey("port")){
 						int port=(int) map.get("port");
-						
+
 						DEFAULT_COPY_SERVER_PORT=port;
 					}
 
@@ -208,25 +208,25 @@ public class Worker {
 					o=parseMessage(msg);
 					final	MyHashMap map=(MyHashMap) o;
 
-//					if(map.containsKey("jar"))
-//					{
-//
-//						
-//						new Thread(new Runnable() {
-//
-//							@Override
-//							public void run() {
-//								int port=(int) map.get("jar");
-//								System.out.println("scarica da porta "+port);
-//								String local=System.currentTimeMillis()+"out.jar";
-//								simulation.setJarName(local);
-//								downloadFile(port, simulation.getSimulationFolder()+File.separator+local);
-//
-//								System.out.println("invio downloaded al master");
-//							}
-//						}).start(); 
-//						getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
-//					}
+					//					if(map.containsKey("jar"))
+					//					{
+					//
+					//						
+					//						new Thread(new Runnable() {
+					//
+					//							@Override
+					//							public void run() {
+					//								int port=(int) map.get("jar");
+					//								System.out.println("scarica da porta "+port);
+					//								String local=System.currentTimeMillis()+"out.jar";
+					//								simulation.setJarName(local);
+					//								downloadFile(port, simulation.getSimulationFolder()+File.separator+local);
+					//
+					//								System.out.println("invio downloaded al master");
+					//							}
+					//						}).start(); 
+					//						getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
+					//					}
 
 
 
@@ -241,25 +241,25 @@ public class Worker {
 						Simulation sim=(Simulation)map.get("newsim");
 						System.out.println("stampo sim"+sim.toString());
 						createNewSimulationProcess(sim);
-						
+
 						new Thread(new Runnable() {
 
-							
+
 
 							@Override
 							public void run() {
-								
-								
-								String local=System.currentTimeMillis()+"out.jar";
+
+
+								String local=System.currentTimeMillis()+sim.getJarName();
 								sim.setJarName(local);
-								
+
 								downloadFile(DEFAULT_COPY_SERVER_PORT, sim.getSimulationFolder()+File.separator+local);
 
 								System.out.println("invio downloaded al master");
 							}
 						}).start(); 
 						getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
-						
+
 					}
 
 
@@ -275,27 +275,27 @@ public class Worker {
 						String prefix=null;
 						System.out.println("worker simulazin "+getSimulationList().size());
 						Simulation simulation=getSimulationList().get(id);
-						
-								int aoi=simulation.getAoi();
-								int height= simulation.getHeight();
-								int width= simulation.getWidth();
-								int cols=simulation.getColumns();
-								int rows=simulation.getRows();
-								int agents=simulation.getNumAgents();
-								int mode=simulation.getMode();
-								int typeConn=simulation.getConnectionType();
-								long step=simulation.getNumberStep();
-								prefix= simulation.getTopicPrefix();
-								System.out.println(width+" "+height+" "+aoi+" "+rows+" "+cols+" "+agents+" "
-										+ ""+mode+"|val="+" "+ step+" "  +DistributedField2D.UNIFORM_PARTITIONING_MODE+" "+ConnectionType.pureActiveMQ);
-							
-								
-								params=new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ); 	
-								params.setIp(IP_ACTIVEMQ);
-								params.setPort(PORT_ACTIVEMQ);
-								params.setI(1);
-								params.setJ(0);
-						
+
+						int aoi=simulation.getAoi();
+						int height= simulation.getHeight();
+						int width= simulation.getWidth();
+						int cols=simulation.getColumns();
+						int rows=simulation.getRows();
+						int agents=simulation.getNumAgents();
+						int mode=simulation.getMode();
+						int typeConn=simulation.getConnectionType();
+						long step=simulation.getNumberStep();
+						prefix= simulation.getTopicPrefix();
+						System.out.println(width+" "+height+" "+aoi+" "+rows+" "+cols+" "+agents+" "
+								+ ""+mode+"|val="+" "+ step+" "  +DistributedField2D.UNIFORM_PARTITIONING_MODE+" "+ConnectionType.pureActiveMQ);
+
+
+						params=new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ); 	
+						params.setIp(IP_ACTIVEMQ);
+						params.setPort(PORT_ACTIVEMQ);
+						params.setI(1);
+						params.setJ(0);
+
 
 
 
@@ -309,7 +309,7 @@ public class Worker {
 							dis.schedule.step(dis);
 							i++;
 						}
-				
+
 
 					}
 
@@ -370,18 +370,14 @@ public class Worker {
 		int bytesRead;
 		Socket clientSocket = null;
 		InputStream is = null;
-		Random rnd = new Random();
 		try {
 			clientSocket = new Socket( this.IP_ACTIVEMQ , serverSocketPort );
 			is = clientSocket.getInputStream();
 
-			Thread.sleep(1000+rnd.nextInt(500));
+
 		} catch (IOException ex) {
 			ex.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -517,9 +513,9 @@ public class Worker {
 
 
 
-   public void getLogBySimID(int simID){
-	   Simulation sim=getSimulationList().get(simID);
-   }
+	public void getLogBySimID(int simID){
+		Simulation sim=getSimulationList().get(simID);
+	}
 
 
 

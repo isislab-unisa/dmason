@@ -6,6 +6,7 @@ import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,8 +20,10 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
+
 import org.apache.activemq.broker.BrokerService;
 
 /**
@@ -296,7 +299,7 @@ public class MasterServer implements MultiServerInterface{
 	 * @param jarFile
 	 * @param stopParam
 	 */
-	private void invokeCopyServer(String jarFile,int stopParam){
+	private boolean invokeCopyServer(String jarFile,int stopParam){
 
 		int checkControl=stopParam;
 
@@ -304,21 +307,35 @@ public class MasterServer implements MultiServerInterface{
 		try {
 
 			System.out.println("Listening");
-
+            ArrayList<Thread> threads=new ArrayList<Thread>();
+			Thread t=null;
 			while (counter<checkControl) {
 				sock = welcomeSocket.accept();
 				System.out.println("Connected");
 				counter++;
-				new Thread(new CopyMultiThreadServer(sock,jarFile)).start();
+				t=new Thread(new CopyMultiThreadServer(sock,jarFile));
+				t.start();
+				threads.add(t);
 			}
+			for(Thread a: threads){
+				a.join();
+			}
+			return true;
+			
 		} 
 		catch (UnknownHostException e) {e.printStackTrace();} catch (IOException e) {
 			if (welcomeSocket != null && !welcomeSocket.isClosed()) {
 				try {welcomeSocket.close();} 
-				catch (IOException exx){exx.printStackTrace(System.err);}
+				catch (IOException exx){exx.printStackTrace(System.err); return false;}
 			}
-		}
+		} catch (InterruptedException e) {
+			e.printStackTrace(System.err);
+			if (welcomeSocket != null && !welcomeSocket.isClosed()) {
+				try {welcomeSocket.close();} 
+				catch (IOException exx){exx.printStackTrace(System.err); return false;}
+		}}
 
+		return false;
 	}
 
 
@@ -378,7 +395,7 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-	public void submitSimulation(Simulation sim) {
+	public synchronized boolean submitSimulation(Simulation sim) {
 		final Simulation simul=sim;
 
 		simulationsList.put(simul.getSimID(), simul);
@@ -389,7 +406,7 @@ public class MasterServer implements MultiServerInterface{
 			getConnection().publishToTopic(simul, topicName, "newsim");
 
 		String pathJar=simul.getSimulationFolder()+File.separator+sim.getJarName();
-		this.invokeCopyServer(pathJar ,simul.getTopicList().size());
+		return this.invokeCopyServer(pathJar ,simul.getTopicList().size());
 	}
 
 
