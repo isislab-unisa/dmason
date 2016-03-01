@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 
 //se vogliamo inviare l'oggetto
-class WorkerInfo implements Serializable{
+public class WorkerInfo implements Serializable{
 
 	/**
 	 * 
