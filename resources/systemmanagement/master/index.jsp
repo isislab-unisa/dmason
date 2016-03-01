@@ -43,7 +43,7 @@
 <link rel="import" href="bower_components/paper-input/paper-input.html">
 <link rel="import" href="bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
-<link rel="import" href="bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="bower_components/paper-spinner/paper-spinner.html">
 
@@ -118,6 +118,7 @@
                 <paper-toast id="miss-worker-selection">You should select some workers before to assign them a partitioning</paper-toast>
                 <paper-dialog id="add-simulation-paper-dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
                     <h2>Simulation Settings</h2>
+                    <h4>Worker(s) selected: <span id="head_sel_works"></span> Available slot(s): <span id="head_num_slots"></span></h4>
                     <paper-dialog-scrollable>
                         <div class="horizontal-section">
                             <form is="iron-form" id="sendSimulationForm" >
@@ -126,18 +127,18 @@
                                         <td>
                                             <span>Select an external simulation</span><br>
                                             <paper-button raised class="custom" onclick='open_file_chooser()'>Upload<iron-icon icon="file-upload"></iron-icon></paper-button>
-                                            <input type="file" class="hidden" id="simulation-jar-chooser" name="simExe" onchange="startProgress()">
+                                            <input type="file" class="hidden" id="simulation-jar-chooser" name="simExe">
                                         </td>
                                         <td></td>
                                         <td>
                                             <span>Select an example simulation</span><br>
                                                 <paper-dropdown-menu id="exampleSimulation" label="Select">
-                                                    <paper-listbox class="dropdown-content">
+                                                    <paper-menu class="dropdown-content">
                                                         <paper-item label="allosaurus">allosaurus</paper-item>
                                                         <paper-item label="brontosaurus">brontosaurus</paper-item>
                                                         <paper-item label="carcharodontosaurus">carcharodontosaurus</paper-item>
                                                         <paper-item label="diplodocus">diplodocus</paper-item>
-                                                    </paper-listbox>
+                                                    </paper-menu>
                                                 </paper-dropdown-menu>
                                             <!--paper-button raised class="custom">Select<iron-icon icon="receipt"></iron-icon></paper-button-->
                                         </td>
@@ -166,16 +167,16 @@
                                         </td>
                                         <td>
                                             <paper-dropdown-menu id="connectionType" label="Select connection" class="submit_work_form">
-                                                <paper-listbox class="dropdown-content">
+                                                <paper-menu class="dropdown-content">
                                                     <paper-item label="ActiveMQ">ActiveMQ</paper-item>
                                                     <paper-item label="MPI">MPI</paper-item>
-                                                </paper-listbox>
+                                                </paper-menu>
                                             </paper-dropdown-menu>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><paper-input class="submit_work_form" name="rows" label="Rows" allowed-pattern="[0-9]"></paper-input></td>
-                                        <td><paper-input class="submit_work_form" name="cols" label="Columns" allowed-pattern="[0-9]"></paper-input></td>
+                                        <td><paper-input id="form_row" class="submit_work_form" name="rows" label="Rows" allowed-pattern="[0-9]"></paper-input></td>
+                                        <td><paper-input id="form_col" class="submit_work_form" name="cols" label="Columns" allowed-pattern="[0-9]"></paper-input></td>
                                         <td><paper-input class="submit_work_form" name="aoi" label="Area of interest" allowed-pattern="[0-9]"></paper-input></td>
                                     </tr>
                                     <tr>
