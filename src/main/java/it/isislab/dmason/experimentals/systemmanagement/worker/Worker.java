@@ -21,6 +21,7 @@ import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
 import it.isislab.dmason.sim.engine.DistributedState;
+import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.ConnectionType;
@@ -44,9 +45,11 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.rmi.server.UID;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -239,12 +242,14 @@ public class Worker {
 					if(map.containsKey("newsim")){
 						System.out.println("ho ricevuto la simulazione");
 						Simulation sim=(Simulation)map.get("newsim");
+						
+						
 						System.out.println("stampo sim"+sim.toString());
+						System.out.println("stampo cellstype "+sim.getCellTypeList());
+						
 						createNewSimulationProcess(sim);
 
 						new Thread(new Runnable() {
-
-
 
 							@Override
 							public void run() {
@@ -274,8 +279,11 @@ public class Worker {
 						GeneralParam params = null;
 						String prefix=null;
 						System.out.println("worker simulazin "+getSimulationList().size());
+						
 						Simulation simulation=getSimulationList().get(id);
-
+                        List<CellType> cellstype=simulation.getCellTypeList();
+						
+						
 						int aoi=simulation.getAoi();
 						int height= simulation.getHeight();
 						int width= simulation.getWidth();
@@ -287,30 +295,30 @@ public class Worker {
 						long step=simulation.getNumberStep();
 						prefix= simulation.getTopicPrefix();
 						System.out.println(width+" "+height+" "+aoi+" "+rows+" "+cols+" "+agents+" "
-								+ ""+mode+"|val="+" "+ step+" "  +DistributedField2D.UNIFORM_PARTITIONING_MODE+" "+ConnectionType.pureActiveMQ);
+								+ ""+mode+"| val="+" "+ step+" "  +DistributedField2D.UNIFORM_PARTITIONING_MODE+" "+ConnectionType.pureActiveMQ);
 
 
 						params=new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ); 	
 						params.setIp(IP_ACTIVEMQ);
 						params.setPort(PORT_ACTIVEMQ);
-						params.setI(1);
-						params.setJ(0);
-
-
-
-
-
-						DistributedState dis=makeSimulation( params, prefix,getSimulationsDirectories()+File.separator+simulation.getSimName()+File.separator+simulation.getJarName());
-						dis.schedule.step(dis.getState());
-						int i=0;
-						while(i!=step)
-						{
-							System.out.println("endsim with prefixID"+dis.schedule.getSteps());
-							dis.schedule.step(dis);
-							i++;
+						
+						
+						for (CellType cellType : cellstype) {
+							
+							params.setI(cellType.pos_i);
+							params.setJ(cellType.pos_j);
+							CellExecutor celle=(new CellExecutor(params, prefix, simulation.getSimName(), simulation.getJarName()));
+							executorThread.add(celle);
+							celle.startSimulation();
+							System.out.println("Created cell "+cellType);
+							
 						}
-
-
+						for(CellExecutor cexe:executorThread)
+						{
+							cexe.start();
+							System.out.println("Start cell "+cexe);
+						}
+						
 					}
 
 
@@ -320,7 +328,44 @@ public class Worker {
 			}
 		});
 	}
+	private ArrayList<CellExecutor> executorThread=new ArrayList<CellExecutor>();
+	class CellExecutor extends Thread{
+		
+		public GeneralParam params;
+		public String prefix;
+		public String sim_name;
+		public String jar_name;
+		public boolean run=true;
+		private DistributedState dis;
 
+		public CellExecutor(GeneralParam params, String prefix, String sim_name,String jar_name) {
+			super();
+			this.params = params;
+			this.prefix=prefix;
+			this.sim_name=sim_name;
+			this.jar_name=jar_name;
+			dis=makeSimulation( params, prefix,getSimulationsDirectories()+File.separator+sim_name+File.separator+jar_name);
+			
+		}
+		public void startSimulation(){
+			dis.start();
+		}
+		@Override
+		public  void run() {
+			System.out.println("Start cell for "+params.getMaxStep());
+			int i=0;
+			while(i!=params.getMaxStep() && run)
+			{
+				System.out.println("endsim with prefixID "+dis.schedule.getSteps());
+				dis.schedule.step(dis);
+				i++;
+			}
+		}
+		public synchronized void stopThread()
+		{
+			run=false;
+		}
+	}
 	//create folder for the sim
 	private void createNewSimulationProcess(Simulation sim){
 		this.createSimulationDirectoryByID(sim.getSimName());
@@ -421,10 +466,7 @@ public class Worker {
 
 	protected DistributedState makeSimulation(GeneralParam params, String prefix,String pathJar)
 	{
-
-
 		String path_jar_file=pathJar;
-
 		try{
 			JarFile jar=new JarFile(new File(path_jar_file));
 			Enumeration e=jar.entries();

@@ -1,7 +1,9 @@
 package it.isislab.dmason.experimentals.systemmanagement.master;
 
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.systemmanagement.utils.MyFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
+import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
@@ -17,12 +19,15 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.sound.midi.SysexMessage;
 
 import org.apache.activemq.broker.BrokerService;
 
@@ -246,7 +251,7 @@ public class MasterServer implements MultiServerInterface{
 						//
 						//						}
 
-					
+
 						if(map.containsKey("downloaded")){
 							System.out.println("staje senza pensier"+map.get("downloaded"));
 						}						
@@ -307,7 +312,7 @@ public class MasterServer implements MultiServerInterface{
 		try {
 
 			System.out.println("Listening");
-            ArrayList<Thread> threads=new ArrayList<Thread>();
+			ArrayList<Thread> threads=new ArrayList<Thread>();
 			Thread t=null;
 			while (counter<checkControl) {
 				sock = welcomeSocket.accept();
@@ -321,7 +326,7 @@ public class MasterServer implements MultiServerInterface{
 				a.join();
 			}
 			return true;
-			
+
 		} 
 		catch (UnknownHostException e) {e.printStackTrace();} catch (IOException e) {
 			if (welcomeSocket != null && !welcomeSocket.isClosed()) {
@@ -333,7 +338,7 @@ public class MasterServer implements MultiServerInterface{
 			if (welcomeSocket != null && !welcomeSocket.isClosed()) {
 				try {welcomeSocket.close();} 
 				catch (IOException exx){exx.printStackTrace(System.err); return false;}
-		}}
+			}}
 
 		return false;
 	}
@@ -390,9 +395,78 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
+	private HashMap<String, Integer> slotsAvailableForSimWorker(ArrayList<String> topicWorkers, HashMap<String, String> listAllWorkers){
+
+		HashMap<String,Integer> slotsForWorkers=new HashMap<String,Integer>();
+
+		//riempo una hashmap con topic-numcell per i worker della sim
+		for(String topicToFind: topicWorkers ){
+			String numcells=listAllWorkers.get(topicToFind).split(",")[0].split(":")[1];
+			System.out.println(topicToFind+"|||"+numcells);
+			slotsForWorkers.put(topicToFind, Integer.parseInt(numcells));
+		}
+
+		return slotsForWorkers;
+	}
 
 
 
+	public HashMap<String , List<CellType>> assignCellsToWorkers(HashMap<String, Integer> slots,Simulation simul){
+
+		HashMap<String/*idtopic*/, List<CellType>> workerlist = new HashMap<String, List<CellType>>(); 
+
+		ArrayList<String> workerID=new ArrayList<String>(slots.keySet());
+		int mode=simul.getMode();
+		int LP=simul.getP();
+		int rows=(int) (mode==0?simul.getRows(): Math.ceil(Math.sqrt(LP/*get LP from geneoparam*/))); 
+		int cols=(int) (mode==0?simul.getColumns()/*getfrom genparm*/: Math.ceil(Math.sqrt(LP/*get LP from geneoparam*/))); 
+
+		LP=mode==0?rows*cols:LP/*get from gene parame*/;
+
+		int assignedLP=LP;
+		try {
+			int w=0;
+			int lastIndex=-1;
+			boolean goNext=false;
+			for(int i=0; i < rows; i++){
+				goNext=false; lastIndex=-1;
+				for(int j=0; j < cols;){
+
+					if(slots.get(workerID.get(w)) > 0)
+					{
+						slots.put(workerID.get(w), slots.get(workerID.get(w))-1);
+						List<CellType> cells=workerlist.get(workerID.get(w))==null?new ArrayList<CellType>():workerlist.get(workerID.get(w));
+						cells.add(new CellType(i,j));
+						workerlist.put(workerID.get(w),cells);
+						assignedLP--;
+						goNext=true;
+
+					}
+					if(goNext){
+						j++;
+						goNext=false;
+						lastIndex=-1;
+					}
+					else{
+						if(lastIndex==w)
+
+							throw new DMasonException("Error! Not enough slots on the workers for the given partitioning.");
+
+						if(lastIndex==-1) lastIndex=w;
+					}
+					w=(w+1)%slots.size();
+					if(assignedLP < 1) break;
+				}
+
+			}
+		} catch (DMasonException e) {
+			// TODO Auto-generated catch block
+			System.err.println(e.getMessage());
+			return null;
+		}
+			
+		return workerlist;
+	}
 
 
 	public synchronized boolean submitSimulation(Simulation sim) {
@@ -402,9 +476,26 @@ public class MasterServer implements MultiServerInterface{
 		this.topicIdWorkersForSimulation.put(simul.getSimID(), simul.getTopicList());
 		System.out.println(simul);
 		System.out.println(simul.getTopicList().size());
-		for(String topicName: simul.getTopicList())
-			getConnection().publishToTopic(simul, topicName, "newsim");
 
+		HashMap<String, Integer> slotsAvalaible=slotsAvailableForSimWorker(simul.getTopicList(),infoWorkers);
+
+		HashMap<String, List<CellType>> assignmentToworkers=assignCellsToWorkers(slotsAvalaible, simul);
+
+		if(assignmentToworkers==null) return false;
+		
+        //for testing 
+		for (String topickey: assignmentToworkers.keySet()){
+			System.out.println(topickey+" "+assignmentToworkers.get(topickey));
+		}	
+
+//		for(String topicName: simul.getTopicList())
+//			getConnection().publishToTopic(simul, topicName, "newsim");
+
+		for (String topicName: assignmentToworkers.keySet()){
+			simul.setListCellType(assignmentToworkers.get(topicName));
+			getConnection().publishToTopic(simul, topicName, "newsim");
+		}
+		
 		String pathJar=simul.getSimulationFolder()+File.separator+sim.getJarName();
 		return this.invokeCopyServer(pathJar ,simul.getTopicList().size());
 	}

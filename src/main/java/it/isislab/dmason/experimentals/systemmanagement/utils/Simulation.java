@@ -4,6 +4,7 @@ import it.isislab.dmason.sim.field.CellType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
@@ -32,12 +33,13 @@ public class Simulation implements Serializable{
 	private int numCells;
 	private String execFileName;
 	private String topicPrefix;
+	private int P;
 
 
 
 	//private GeneralParam parameters;
 	private ArrayList<String> topicList;
-	private ArrayList<CellType> cellTypeList;
+	private List<CellType> cellTypeList;
 
 
 
@@ -84,11 +86,48 @@ public class Simulation implements Serializable{
 	}
 
 
-	public ArrayList<CellType> getCellTypeList() {
+	public Simulation(String simName, String simulationFolder,String execSimNAme,
+			String p, String aoi, String width,
+			String height, String numAgent, String stepsnumber, int mode, int connection) {
+		this.simName = simName;
+		this.simulationFolder = simulationFolder;
+		this.aoi = Integer.parseInt(aoi);
+		this.width = Integer.parseInt(width);
+		this.height = Integer.parseInt(height);
+		this.numAgents = Integer.parseInt(numAgent);
+		this.numCells= getRows()*getColumns();
+		this.connectionType=connection;
+		this.topicList=new ArrayList<>();
+		this.mode = mode;		
+		this.numStep=Long.parseLong(stepsnumber);
+		this.execFileName=execSimNAme;
+		this.cellTypeList=new ArrayList<CellType>();
+		this.P=Integer.parseInt(p);
+
+	}
+
+
+	/**
+	 * @return the p
+	 */
+	public int getP() {
+		return P;
+	}
+
+
+	/**
+	 * @param p the p to set
+	 */
+	public void setP(int p) {
+		P = p;
+	}
+
+
+	public List<CellType> getCellTypeList() {
 		return cellTypeList;
 	}
-	
-	
+
+
 	public long getNumberStep(){ 
 		return numStep;
 	}
@@ -258,6 +297,14 @@ public class Simulation implements Serializable{
 				+ numCells + "\", num_worker:\""
 				+ topicList.size() + "\"}";
 	}
+
+
+	public void setListCellType(List<CellType> list) {
+		cellTypeList=list;
+
+	}
+
+
 
 
 }
