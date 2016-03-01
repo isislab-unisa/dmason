@@ -113,7 +113,9 @@ public class SubmitSimulationServlet extends HttpServlet {
 
 		//upload jar in sim.getSimulationFolder() 
 
-		server.submitSimulation(sim);
+		if(server.submitSimulation(sim)){
+			resp.setStatus(HttpServletResponse.SC_OK);
+		}
 
 	}
 
