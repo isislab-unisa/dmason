@@ -74,9 +74,10 @@ public class SubmitSimulationServlet extends HttpServlet {
 		String width=	listParams.get("width");
 		String height=	listParams.get("heigth");
 		String numAgent=listParams.get("numAgents");
-		String numStep=listParams.get("step");
+		String numStep= listParams.get("step");
 		String conType= listParams.get("connectionType");
 		String modeType = listParams.get("partitioning");
+		String cells = listParams.get("cells");
 		int mode = (modeType.equals("uniform"))?DistributedField2D.UNIFORM_PARTITIONING_MODE: DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
 
 		//connection

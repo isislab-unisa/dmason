@@ -150,8 +150,8 @@
                                     <tr>
                                         <td colspan="3" style="text-align:center">
                                             <paper-radio-group id="partitioning" selected="uniform">
-                                                <paper-radio-button required name="uniform" onclick=""><span>Uniform  <iron-icon icon="view-module"></iron-icon></span></paper-radio-button>
-                                                <paper-radio-button required name="non-uniform" onclick=""> <span>Non-Uniform <iron-icon icon="view-quilt"></iron-icon></span></paper-radio-button>
+                                                <paper-radio-button required name="uniform" onclick="change_params(this)"><span>Uniform  <iron-icon icon="view-module"></iron-icon></span></paper-radio-button>
+                                                <paper-radio-button required name="non-uniform" onclick="change_params(this)"> <span>Non-Uniform <iron-icon icon="view-quilt"></iron-icon></span></paper-radio-button>
                                             </paper-radio-group>
                                         </td>
                                     </tr>
@@ -175,8 +175,11 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><paper-input id="form_row" class="submit_work_form" name="rows" label="Rows" allowed-pattern="[0-9]"></paper-input></td>
-                                        <td><paper-input id="form_col" class="submit_work_form" name="cols" label="Columns" allowed-pattern="[0-9]"></paper-input></td>
+                                        <td>
+                                            <paper-input id="form_row" class="submit_work_form" name="rows" label="Rows" allowed-pattern="[0-9]" error-message="Rows X Columns value exceeds available slots!" onchange="validate(this)"></paper-input>
+                                            <paper-input style="display:none" id="form_cells" class="submit_work_form" name="cells" label="Cells" allowed-pattern="[0-9]" error-message="Cells value exceeds available slots!"></paper-input>
+                                        </td>
+                                        <td><paper-input id="form_col" class="submit_work_form" name="cols" label="Columns" allowed-pattern="[0-9]" error-message="Rows X Columns value exceeds  available slots!"></paper-input></td>
                                         <td><paper-input class="submit_work_form" name="aoi" label="Area of interest" allowed-pattern="[0-9]"></paper-input></td>
                                     </tr>
                                     <tr>

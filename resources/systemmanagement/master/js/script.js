@@ -200,6 +200,43 @@ function selectItem(element){
 }
 
 
+function change_params(element){
+    var buttonName =$(element).attr("name");
+    console.log(buttonName);
+    switch (buttonName){
+        case "uniform":
+            $("#form_cells").css("display","none");
+            $("#form_row").css("display","block");
+            $("#form_col").css("display","block");
+            break;
+        case "non-uniform":
+            $("#form_cells").css("display","block");
+            $("#form_row").css("display","none");
+            $("#form_col").css("display","none");
+    }
+
+}
+
+function validate(element){
+    slots = (("#head_num_slots").text()).trim();
+    id = $(element).attr("id");
+    switch (id){
+        case "form_row":
+            //if(row * cols) > slots then invalid =true
+            break;
+        case "form_cells":
+            break;
+        case "form_col":
+            break;
+
+
+
+    }
+
+
+}
+
+
 function submitForm(){
     startProgress();
     var form = document.getElementById("sendSimulationForm");
