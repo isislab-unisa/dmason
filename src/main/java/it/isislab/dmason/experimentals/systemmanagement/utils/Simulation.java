@@ -1,5 +1,7 @@
 package it.isislab.dmason.experimentals.systemmanagement.utils;
 
+import it.isislab.dmason.sim.field.CellType;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -35,6 +37,7 @@ public class Simulation implements Serializable{
 
 	//private GeneralParam parameters;
 	private ArrayList<String> topicList;
+	private ArrayList<CellType> cellTypeList;
 
 
 
@@ -76,10 +79,16 @@ public class Simulation implements Serializable{
 		this.mode = mode;		
 		this.numStep=Long.parseLong(stepsnumber);
 		this.execFileName=execSimNAme;
+		this.cellTypeList=new ArrayList<CellType>();
 
 	}
 
 
+	public ArrayList<CellType> getCellTypeList() {
+		return cellTypeList;
+	}
+	
+	
 	public long getNumberStep(){ 
 		return numStep;
 	}
