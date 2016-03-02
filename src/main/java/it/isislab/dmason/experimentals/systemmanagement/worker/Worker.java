@@ -109,6 +109,8 @@ public class Worker {
 			simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 			this.slotsNumber=slots;
 			signRequestToMaster();
+			
+			System.out.println("Worker started ...");
 
 			//for running 
 			getConnection().createTopic("SIMULATION_READY", 1);
@@ -555,7 +557,6 @@ public class Worker {
 			URL[] urls = new URL[]{url};
 			ClassLoader cl = new URLClassLoader(urls);
 			Class distributedState=null;
-
 			while(e.hasMoreElements()){
 
 				JarEntry je=(JarEntry)e.nextElement();
@@ -612,7 +613,6 @@ public class Worker {
 
 	protected boolean createConnection(){
 		Address address=new Address(this.getIpActivemq(), this.getPortActivemq());
-		System.out.println("connection to server "+address);
 		return conn.setupConnection(address);
 
 	}
