@@ -403,13 +403,22 @@ public class Simulation implements Serializable{
 	 */
 	public String toString() {
 		if(mode==DistributedField2D.UNIFORM_PARTITIONING_MODE)
-			return "{name:\"" + simName + "\", id:\"" + simID
-					+ "\", simulationFolder:\"" + simulationFolder + "\", rows:\"" + rows
-					+ "\", columns:\"" + columns + "\",aoi:\"" + aoi + "\", width:\"" + width
-					+ "\", height:\"" + height + "\",numAgents:\"" + numAgents + "\",partitioning:\""
-					+ getModeForToString(this.mode) + "\", connectionType:\"" + connectionType + "\", num_cell:\""
-					+ numCells + "\", num_worker:\""+ topicList.size() + "\", start:\""+startTime
-					+"\", step:\""+step+"\",status:\""+simulationStatus+"\"}";
+			return "{\"name\":\"" + simName + "\","
+					+ " \"id\":\"" + simID+ "\","
+					+ " \"simulationFolder\":\"" + simulationFolder + "\","
+					+ " \"rows\":\"" + rows+ "\","
+					+ " \"columns\":\"" + columns + "\","
+					+ "\"aoi\":\"" + aoi + "\","
+					+ " \"width\":\"" + width+ "\","
+					+ " \"height\":\"" + height + "\","
+					+ "\"numAgents\":\"" + numAgents + "\","
+					+ "\"partitioning\":\""+ getModeForToString(this.mode) + "\","
+					+ " \"connectionType\":\"" + connectionType + "\","
+					+ " \"num_cell\":\""+ numCells + "\","
+					+ " \"num_worker\":\""+ topicList.size() + "\","
+					+ " \"start\":\""+startTime+"\","
+					+ " \"step\":\""+step+"\","
+					+ " \"status\":\""+simulationStatus+"\"}";
 		else 
 			return "{name:\"" + simName + "\", id:\"" + simID
 					+ "\", simulationFolder:\"" + simulationFolder + "\", aoi:\"" + aoi + "\", width:\"" + width
@@ -417,7 +426,7 @@ public class Simulation implements Serializable{
 					+ getModeForToString(this.mode) + "\", connectionType:\"" + connectionType + "\", cells:\""
 					+ P + "\", num_worker:\""
 					+ topicList.size() + "\", start:\""+startTime
-					+"\", step:\""+step+"\",status:\""+simulationStatus+"\"}";
+					+"\", step:\""+step+"\", status:\""+simulationStatus+"\"}";
 
 	}
 

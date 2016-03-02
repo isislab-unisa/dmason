@@ -81,11 +81,11 @@ $(
                     if($('#load_workers_dialog').prop("opened"))close_dialog("load_workers_dialog");
                     load_tiles_monitoring();
             },1000);
-        else
+        /*else
             if(window.location.pathname=="/simulations.jsp")
                 setInterval(function(){
                     update_simulation_info();
-                },1000);
+                },1000);*/
     }
 );
 
@@ -364,15 +364,11 @@ function update_simulation_info(){
 
 function _update_sim_info(_message){
 
-    var message=_message;
-    // var tiles="<div class=\"grid-sizer-monitoring\"></div>";
+    var message = new Array({"name":"flockers3", "id":"1", "simulationFolder":"/home/flaser/git/dmason/dmason/master/simulations/flockers3", "rows":"2", "columns":"2","aoi":"22", "width":"2222", "height":"2222","numAgents":"222222","partitioning":"uniform", "connectionType":"0", "num_cell":"4", "num_worker":"1", "start":"-9223372036854775808", "step":"-9223372036854775808", "status":"null"});
 
 
-    //console.log(message);
-    if(message.length>0) {
-        console.log(message);
-        document.querySelector("#list-simulations").attr("listItem", message);
-    }
-
+    var scope = document.querySelector('template[is="dom-bind"]');
+    
+    scope.$.list_simulations.listItem = message;
 
 }
