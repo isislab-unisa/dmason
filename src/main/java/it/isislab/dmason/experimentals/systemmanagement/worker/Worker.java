@@ -57,6 +57,7 @@ import java.util.jar.JarFile;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
+import org.apache.commons.collections.map.AbstractHashedMap;
 import org.apache.pig.parser.AliasMasker.load_clause_return;
 import org.jets3t.service.multithread.GetObjectHeadsEvent;
 
@@ -112,6 +113,45 @@ public class Worker {
 		this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
 		simulationList=new HashMap< Integer, Simulation>();
 		this.slotsNumber=slots;
+		signRequestToMaster();
+
+		try {
+			getConnection().createTopic("SIMULATION_READY", 1);
+			getConnection().subscribeToTopic("SIMULATION_READY");
+			getConnection().asynchronousReceive("SIMULATION_READY", new MyMessageListener() {
+
+				@Override
+				public void onMessage(Message msg) {
+					// TODO Auto-generated method stub
+					Object o;
+					try {
+						o=parseMessage(msg);
+						MyHashMap map=(MyHashMap) o;
+
+						//se + diretta a me il master mi invia il topic univoco comunicazione master-me
+						if(map.containsKey("cellready")){
+							int sim_id=(int) map.get("cellready");
+							
+							simulations.get(sim_id).setReceived_cell_type(simulations.get(sim_id).getReceived_cell_type()+1);
+							if(simulations.get(sim_id).getReceived_cell_type()==simulations.get(sim_id).getNumCells())
+							{
+								runSimulation(sim_id);
+							}
+						} 
+
+				
+
+					} catch (JMSException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+			});
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 
@@ -192,7 +232,7 @@ public class Worker {
 	} 	
 
 	//mi mettto in ascolto sui messaggi che il master mi invia(1-1)
-	private void listenerForMasterComunication(){
+	private synchronized void listenerForMasterComunication(){
 		System.out.println("Ricevuto ack iscrzione");
 		//mi sottoscrivo e mi metto in ricezione sul tale topic per comuncazioni del master
 		try{
@@ -211,28 +251,6 @@ public class Worker {
 					o=parseMessage(msg);
 					final	MyHashMap map=(MyHashMap) o;
 
-					//					if(map.containsKey("jar"))
-					//					{
-					//
-					//						
-					//						new Thread(new Runnable() {
-					//
-					//							@Override
-					//							public void run() {
-					//								int port=(int) map.get("jar");
-					//								System.out.println("scarica da porta "+port);
-					//								String local=System.currentTimeMillis()+"out.jar";
-					//								simulation.setJarName(local);
-					//								downloadFile(port, simulation.getSimulationFolder()+File.separator+local);
-					//
-					//								System.out.println("invio downloaded al master");
-					//							}
-					//						}).start(); 
-					//						getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
-					//					}
-
-
-
 					if(map.containsKey("check")){
 						String info=getInfoWorker();
 
@@ -242,11 +260,11 @@ public class Worker {
 					if(map.containsKey("newsim")){
 						System.out.println("ho ricevuto la simulazione");
 						Simulation sim=(Simulation)map.get("newsim");
-						
-						
+
+
 						System.out.println("stampo sim"+sim.toString());
 						System.out.println("stampo cellstype "+sim.getCellTypeList());
-						
+
 						createNewSimulationProcess(sim);
 
 						new Thread(new Runnable() {
@@ -279,11 +297,11 @@ public class Worker {
 						GeneralParam params = null;
 						String prefix=null;
 						System.out.println("worker simulazin "+getSimulationList().size());
-						
+
 						Simulation simulation=getSimulationList().get(id);
-                        List<CellType> cellstype=simulation.getCellTypeList();
-						
-						
+						List<CellType> cellstype=simulation.getCellTypeList();
+
+
 						int aoi=simulation.getAoi();
 						int height= simulation.getHeight();
 						int width= simulation.getWidth();
@@ -301,25 +319,25 @@ public class Worker {
 						params=new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ); 	
 						params.setIp(IP_ACTIVEMQ);
 						params.setPort(PORT_ACTIVEMQ);
-						
-						
+						simulations.put(simulation.getSimID(), simulation);
+						executorThread.put(simulation.getSimID(),new ArrayList<CellExecutor>());
 						for (CellType cellType : cellstype) {
 							slotsNumber--;
 							params.setI(cellType.pos_i);
 							params.setJ(cellType.pos_j);
 							CellExecutor celle=(new CellExecutor(params, prefix, simulation.getSimName(), simulation.getJarName()));
-							executorThread.add(celle);
+
+
+							executorThread.get(simulation.getSimID()).add(celle);
 							celle.startSimulation();
-							System.out.println("Created cell "+cellType);
-							
-						}
-						for(CellExecutor cexe:executorThread)
-						{
-							cexe.start();
-							System.out.println("Start cell "+cexe);
+							getConnection().publishToTopic(simulation.getSimID(),"SIMULATION_READY", "cellready");
+							System.out.println("Created cell "+cellType+" for simulation "+simulation.getSimID());
+
 						}
 						
+
 					}
+
 
 
 				} catch (JMSException e) {e.printStackTrace();}
@@ -328,9 +346,21 @@ public class Worker {
 			}
 		});
 	}
-	private ArrayList<CellExecutor> executorThread=new ArrayList<CellExecutor>();
+	private HashMap<Integer, Simulation> simulations=new HashMap<Integer,Simulation>();
+	private HashMap<Integer,ArrayList<CellExecutor>> executorThread=new HashMap<Integer,ArrayList<CellExecutor>>();
+
+	private synchronized void runSimulation(int sim_id)
+	{
+		for(CellExecutor cexe:executorThread.get(sim_id))
+		{
+			cexe.start();
+			System.out.println("Start cell "+cexe+" for simulation "+sim_id);
+		}
+
+
+	}
 	class CellExecutor extends Thread{
-		
+
 		public GeneralParam params;
 		public String prefix;
 		public String sim_name;
@@ -347,7 +377,7 @@ public class Worker {
 			System.out.println("Simulation params "+params.toString());
 			System.out.println( prefix);
 			dis=makeSimulation( params, prefix, getSimulationsDirectories()+File.separator+sim_name+File.separator+jar_name);
-			
+
 		}
 		public void startSimulation(){
 			dis.start();

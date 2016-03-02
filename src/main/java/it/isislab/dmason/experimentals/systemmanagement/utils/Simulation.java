@@ -37,7 +37,22 @@ public class Simulation implements Serializable{
 	private int P;
 	private ArrayList<String> topicList;
 	private List<CellType> cellTypeList;
+	private int received_cell_type;
 
+
+	/**
+	 * @return the received_cell_type
+	 */
+	public int getReceived_cell_type() {
+		return received_cell_type;
+	}
+
+	/**
+	 * @param received_cell_type the received_cell_type to set
+	 */
+	public void setReceived_cell_type(int received_cell_type) {
+		this.received_cell_type = received_cell_type;
+	}
 
 	/**
 	 * 
