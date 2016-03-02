@@ -285,9 +285,9 @@ function _validate(element){
 
 
 function submitForm(){
-
+/*
     if(!_validate())
-        return;
+        return;*/
     startProgress();
     var form = document.getElementById("sendSimulationForm");
     $(form).unbind('submit').bind("submit",_OnsubmitSimulation);
