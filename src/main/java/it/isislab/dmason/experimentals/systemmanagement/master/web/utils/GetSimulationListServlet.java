@@ -21,7 +21,7 @@ public class GetSimulationListServlet extends HttpServlet {
 			return;
 		masterServer = (MasterServer) req.getServletContext().getAttribute("masterServer");
 		PrintWriter p = resp.getWriter();
-		String message = "{\"simulations\":[";
+		String message = "[";
         int startMessageSize = message.length();
         if(masterServer==null)
             return;
@@ -30,12 +30,12 @@ public class GetSimulationListServlet extends HttpServlet {
         }
 
         if(message.length() > startMessageSize)
-            message=message.substring(0, message.length()-1)+"]}";
+            message=message.substring(0, message.length()-1)+"]";
         else
             message="[]";
         
-        p.print(message);
-        p.close();
+		p.write(message);
+		p.close();
 	}
 	
 	@Override

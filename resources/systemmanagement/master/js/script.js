@@ -286,7 +286,7 @@ function _validate(element){
 
 function submitForm(){
 
-    if(!validate())
+    if(!_validate())
         return;
     startProgress();
     var form = document.getElementById("sendSimulationForm");
@@ -354,3 +354,27 @@ function resetForm(event) {
 
 
 
+
+function update_simulation_info(){
+    $.ajax({
+        url:"simulationList",
+        success: function(result){
+            _update_sim_info(result);
+        }
+    });
+}
+
+function _update_sim_info(_message){
+
+    var message=_message;
+    // var tiles="<div class=\"grid-sizer-monitoring\"></div>";
+
+
+    //console.log(message);
+    if(message.length>0) {
+        console.log(message);
+        document.querySelector("#list-simulations").attr("listItem", message);
+    }
+
+
+}

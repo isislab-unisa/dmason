@@ -117,10 +117,13 @@
             %>
             list_sim = <%=message %>;
 
-            scope.addEventListener('dom-change',function(event){
+
+
+        scope.addEventListener('dom-change', update_simulation_info());
+            /*scope.addEventListener('dom-change',function(event){
                 //this.$['list-simulations'].listItem = [{id:1, name:"flockers"},{id:2, name:"Ants"}];
                 this.$['list-simulations'].listItem = list_sim;
-            });
+            });*/
 
 
         scope._onTileClick = function(event) {
