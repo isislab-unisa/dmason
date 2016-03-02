@@ -75,10 +75,11 @@ public class Worker {
 	private String TOPICPREFIX="";
 	private int slotsNumber=0;
 	private static final String MASTER_TOPIC="MASTER";
-	private static String prova=System.getProperty("user.home")+File.separator+"Scrivania"+File.separator;
-	private static final String workerDirectory=prova+"worker";
-	private static final String workerTemporary=workerDirectory+File.separator+"temporary";
-	private static final String simulationsDirectories=workerDirectory+File.separator+"simulations";
+	private static String dmasonDirectory=System.getProperty("user.dir")+File.separator+"dmason";
+	
+	private static  String workerDirectory;
+	private static  String workerTemporary;
+	private static  String simulationsDirectories;
 	private String TOPIC_WORKER_ID="";
 	private String TOPIC_WORKER_ID_MASTER="";
 	private static String WORKER_IP="127.0.0.1";
@@ -101,8 +102,7 @@ public class Worker {
 	 */
 	public Worker(String ipMaster,String portMaster, int slots) {
 
-		MyFileSystem.make(workerTemporary);
-		MyFileSystem.make(simulationsDirectories);
+		
 
 		this.IP_ACTIVEMQ=ipMaster;
 		this.PORT_ACTIVEMQ=portMaster;
@@ -111,6 +111,13 @@ public class Worker {
 		this.createConnection();
 		this.startMasterComunication();
 		this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
+		
+		workerDirectory=dmasonDirectory+File.separator+"worker"+TOPIC_WORKER_ID;
+		workerTemporary=workerDirectory+File.separator+"temporary";
+		simulationsDirectories=workerDirectory+File.separator+"simulations";
+		MyFileSystem.make(workerTemporary);
+		MyFileSystem.make(simulationsDirectories);
+		
 		simulationList=new HashMap< Integer, Simulation>();
 		this.slotsNumber=slots;
 		signRequestToMaster();
@@ -132,8 +139,8 @@ public class Worker {
 						if(map.containsKey("cellready")){
 							int sim_id=(int) map.get("cellready");
 							
-							simulations.get(sim_id).setReceived_cell_type(simulations.get(sim_id).getReceived_cell_type()+1);
-							if(simulations.get(sim_id).getReceived_cell_type()==simulations.get(sim_id).getNumCells())
+							simulationList.get(sim_id).setReceived_cell_type(simulationList.get(sim_id).getReceived_cell_type()+1);
+							if(simulationList.get(sim_id).getReceived_cell_type()==simulationList.get(sim_id).getNumCells())
 							{
 								runSimulation(sim_id);
 							}
@@ -319,7 +326,7 @@ public class Worker {
 						params=new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ); 	
 						params.setIp(IP_ACTIVEMQ);
 						params.setPort(PORT_ACTIVEMQ);
-						simulations.put(simulation.getSimID(), simulation);
+						simulationList.put(simulation.getSimID(), simulation);
 						executorThread.put(simulation.getSimID(),new ArrayList<CellExecutor>());
 						for (CellType cellType : cellstype) {
 							slotsNumber--;
@@ -346,7 +353,7 @@ public class Worker {
 			}
 		});
 	}
-	private HashMap<Integer, Simulation> simulations=new HashMap<Integer,Simulation>();
+	//private HashMap<Integer, Simulation> simulations=new HashMap<Integer,Simulation>();
 	private HashMap<Integer,ArrayList<CellExecutor>> executorThread=new HashMap<Integer,ArrayList<CellExecutor>>();
 
 	private synchronized void runSimulation(int sim_id)

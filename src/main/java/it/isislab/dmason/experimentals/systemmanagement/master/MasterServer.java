@@ -52,11 +52,8 @@ public class MasterServer implements MultiServerInterface{
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 
 	//path directories 
-
-	private static String winzozz=System.getProperty("user.home")+File.separator+"Desktop"+File.separator;//togliere
-	private static String linux=System.getProperty("user.home")+File.separator+"Scrivania"+File.separator;//toliere
-
-	private static final String masterDirectoryFolder=linux+"master";
+	private static String dmasonDirectory=System.getProperty("user.dir")+File.separator+"dmason";
+	private static final String masterDirectoryFolder=dmasonDirectory+File.separator+"master";
 	private static final String masterTemporaryFolder=masterDirectoryFolder+File.separator+"temporay";
 	private static final String masterHistoryFolder=masterDirectoryFolder+File.separator+"history";
 	private static final String simulationsDirectoriesFolder=masterDirectoryFolder+File.separator+"simulations";
@@ -64,8 +61,8 @@ public class MasterServer implements MultiServerInterface{
 
 
 	//copyserver
-	Socket sock=null;
-	ServerSocket welcomeSocket;
+	protected Socket sock=null;
+	protected ServerSocket welcomeSocket;
 
 	//info 
 	protected HashMap<String/*IDprefixOfWorker*/,String/*MyIDTopicprefixOfWorker*/> topicIdWorkers;

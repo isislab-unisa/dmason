@@ -7,12 +7,9 @@ public interface MultiServerInterface {
 	
 	
 	public void checkAllConnectedWorkers();
-	public void sumbit();
-	
 	public void start(int idSimulation);
 	public void stop(int idSimulation);
-	public void pause(int idSimulation);
-	
+	public void pause(int idSimulation);	
 	public HashMap<String, String> getInfoWorkers();
 	
 }
