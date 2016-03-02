@@ -1,6 +1,7 @@
 package it.isislab.dmason.experimentals.systemmanagement.master.web.utils;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,8 +20,8 @@ public class GetSimulationListServlet extends HttpServlet {
 		if(req.getServletContext().getAttribute("masterServer")==null)
 			return;
 		masterServer = (MasterServer) req.getServletContext().getAttribute("masterServer");
-		
-		String message = "[";
+		PrintWriter p = resp.getWriter();
+		String message = "{\"simulations\":[";
         int startMessageSize = message.length();
         if(masterServer==null)
             return;
@@ -29,10 +30,12 @@ public class GetSimulationListServlet extends HttpServlet {
         }
 
         if(message.length() > startMessageSize)
-            message=message.substring(0, message.length()-1)+"]";
+            message=message.substring(0, message.length()-1)+"]}";
         else
             message="[]";
-		
+        
+        p.print(message);
+        p.close();
 	}
 	
 	@Override
