@@ -514,7 +514,6 @@ public class Worker {
 			FileOutputStream fos = null;
 			BufferedOutputStream bos = null;
 			try {
-				System.out.println("Creating file...");
 
 				File v=new File(localJarFilePath);
 				if(v.exists()){
@@ -526,8 +525,6 @@ public class Worker {
 				fos = new FileOutputStream( v );
 				bos = new BufferedOutputStream(fos);
 				bytesRead = is.read(aByte, 0, aByte.length);
-
-				System.out.println("Writing on file...");
 				do {
 					baos.write(aByte);
 					bytesRead = is.read(aByte);
@@ -536,14 +533,14 @@ public class Worker {
 				bos.write(baos.toByteArray());
 				bos.flush();
 				bos.close();
-				System.out.println("End writing...");
+				//System.out.println("jar copy finished...");
 				clientSocket.close();
 
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
 		}	
-		//getConnection().publishToTopic(TOPIC_WORKER_ID, "READY", "downloaded");//togli
+		
 	}
 
 

@@ -3,12 +3,16 @@ package it.isislab.dmason.experimentals.systemmanagement.master;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.systemmanagement.utils.MyFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
+import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
+import it.isislab.dmason.experimentals.util.management.JarClassLoader;
+import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,24 +20,24 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
 
 import org.apache.activemq.broker.BrokerService;
 
-/**
- * 
- * @author miccar
- *
- */
 public class MasterServer implements MultiServerInterface{
 
 
@@ -237,8 +241,6 @@ public class MasterServer implements MultiServerInterface{
 
 	}
 
-
-
 	/**
 	 * Servlet
 	 * Create directory for a simulation 
@@ -276,13 +278,10 @@ public class MasterServer implements MultiServerInterface{
 
 		int counter=0;
 		try {
-
-			//System.out.println("Listening");
 			ArrayList<Thread> threads=new ArrayList<Thread>();
 			Thread t=null;
 			while (counter<checkControl) {
 				sock = welcomeSocket.accept();
-				System.out.println("Connected");
 				counter++;
 				t=new Thread(new CopyMultiThreadServer(sock,jarFile));
 				t.start();
@@ -315,7 +314,6 @@ public class MasterServer implements MultiServerInterface{
 		String address="tcp://"+IP_ACTIVEMQ+":"+PORT_ACTIVEMQ;
 		try {
 			broker.addConnector(address);
-			System.out.println("Starting activemq "+address);
 			broker.start();
 		} catch (Exception e1) {e1.printStackTrace();}
 	}
@@ -337,7 +335,6 @@ public class MasterServer implements MultiServerInterface{
 
 	private boolean createConnection(){
 		Address address=new Address(IP_ACTIVEMQ, PORT_ACTIVEMQ);
-		System.out.println("Creating connection to server "+address);
 		return conn.setupConnection(address);
 
 	}
@@ -429,7 +426,49 @@ public class MasterServer implements MultiServerInterface{
 		return workerlist;
 	}
 
+	protected boolean validateSimulationJar(String pathJar)
+	{
+		String path_jar_file=pathJar;
+		try{
+			JarFile jar=new JarFile(new File(path_jar_file));
+			Enumeration e=jar.entries();
+			File file  = new File(path_jar_file);
+			URL url = file.toURL(); 
+			URL[] urls = new URL[]{url};
+			ClassLoader cl = new URLClassLoader(urls);
+			Class distributedState=null;
 
+			while(e.hasMoreElements()){
+
+				JarEntry je=(JarEntry)e.nextElement();
+				String classPath = je.getName();
+				if(!je.getName().contains(".class")) continue;
+
+				String[] nameclass = classPath.split("/");
+				nameclass[0]=((nameclass[nameclass.length-1]).split(".class"))[0];
+
+				byte[] classBytes = new byte[(int) je.getSize()];
+				InputStream input = jar.getInputStream(je);
+				BufferedInputStream readInput=new BufferedInputStream(input);
+
+				Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
+
+				if(c.getSuperclass().equals(DistributedState.class))
+					distributedState=c;
+
+			}
+			if(distributedState==null) return false;
+			JarClassLoader cload = new JarClassLoader(new URL("jar:file://"+path_jar_file+"!/"));
+
+			cload.addToClassPath();
+
+			return true;
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		return false;
+
+	}
 	public synchronized boolean submitSimulation(Simulation sim) {
 		final Simulation simul=sim;
 
@@ -440,11 +479,6 @@ public class MasterServer implements MultiServerInterface{
 
 		if(assignmentToworkers==null) return false;
 
-		//for testing 
-		for (String topickey: assignmentToworkers.keySet()){
-			System.out.println(topickey+" "+assignmentToworkers.get(topickey));
-		}	
-
 
 		for (String topicName: assignmentToworkers.keySet()){
 			simul.setListCellType(assignmentToworkers.get(topicName));
@@ -453,7 +487,8 @@ public class MasterServer implements MultiServerInterface{
 
 		String pathJar=simul.getSimulationFolder()+File.separator+sim.getJarName();
 
-
+		if(!validateSimulationJar(pathJar)) return false;
+		
 
 		try {
 			getConnection().createTopic("SIMULATION_"+sim.getSimID(), 1);
