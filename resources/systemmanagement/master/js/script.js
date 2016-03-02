@@ -81,11 +81,11 @@ $(
                     if($('#load_workers_dialog').prop("opened"))close_dialog("load_workers_dialog");
                     load_tiles_monitoring();
             },1000);
-
-        if(window.location.pathname=="/simulations.jsp")
-            setInterval(function(){
-                update_simulation_info();
-            },1000);
+        else
+            if(window.location.pathname=="/simulations.jsp")
+                setInterval(function(){
+                    update_simulation_info();
+                },1000);
     }
 );
 
@@ -351,8 +351,6 @@ function resetForm(event) {
     $("#submit_btn").attr("disabled",false);
     document.getElementById("sendSimulationForm").reset();
 }
-
-
 
 
 function update_simulation_info(){
