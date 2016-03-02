@@ -1,6 +1,7 @@
 package it.isislab.dmason.experimentals.systemmanagement.utils;
 
 import it.isislab.dmason.sim.field.CellType;
+import it.isislab.dmason.sim.field.DistributedField2D;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import java.util.List;
 
 /**
  * 
- * @author miccar
+ * @author 
  *
  */
 public class Simulation implements Serializable{
@@ -34,19 +35,14 @@ public class Simulation implements Serializable{
 	private String execFileName;
 	private String topicPrefix;
 	private int P;
-
-
-
-	//private GeneralParam parameters;
 	private ArrayList<String> topicList;
 	private List<CellType> cellTypeList;
 
 
-
-
-
+	/**
+	 * 
+	 */
 	public Simulation() {}
-
 
 	/**
 	 * 
@@ -82,10 +78,23 @@ public class Simulation implements Serializable{
 		this.numStep=Long.parseLong(stepsnumber);
 		this.execFileName=execSimNAme;
 		this.cellTypeList=new ArrayList<CellType>();
-
 	}
 
 
+	/**
+	 * 
+	 * @param simName
+	 * @param simulationFolder
+	 * @param execSimNAme
+	 * @param p
+	 * @param aoi
+	 * @param width
+	 * @param height
+	 * @param numAgent
+	 * @param stepsnumber
+	 * @param mode
+	 * @param connection
+	 */
 	public Simulation(String simName, String simulationFolder,String execSimNAme,
 			String p, String aoi, String width,
 			String height, String numAgent, String stepsnumber, int mode, int connection) {
@@ -284,18 +293,28 @@ public class Simulation implements Serializable{
 	}
 
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
+
+	/**
+	 * toString method for Simulation in json format
+	 *
 	 */
-	@Override
 	public String toString() {
-		return "{name:\"" + simName + "\", id:\"" + simID
-				+ "\", simulationFolder:\"" + simulationFolder + "\", rows:\"" + rows
-				+ "\", columns:\"" + columns + "\",aoi:\"" + aoi + "\", width:\"" + width
-				+ "\", height:\"" + height + "\",numAgents:\"" + numAgents + "\",partitioning:\""
-				+ getModeForToString(this.mode) + "\", connectionType:\"" + connectionType + "\", num_cell:\""
-				+ numCells + "\", num_worker:\""
-				+ topicList.size() + "\"}";
+		if(mode==DistributedField2D.UNIFORM_PARTITIONING_MODE)
+			return "{name:\"" + simName + "\", id:\"" + simID
+					+ "\", simulationFolder:\"" + simulationFolder + "\", rows:\"" + rows
+					+ "\", columns:\"" + columns + "\",aoi:\"" + aoi + "\", width:\"" + width
+					+ "\", height:\"" + height + "\",numAgents:\"" + numAgents + "\",partitioning:\""
+					+ getModeForToString(this.mode) + "\", connectionType:\"" + connectionType + "\", num_cell:\""
+					+ numCells + "\", num_worker:\""
+					+ topicList.size() + "\"}";
+		else 
+			return "{name:\"" + simName + "\", id:\"" + simID
+					+ "\", simulationFolder:\"" + simulationFolder + "\", aoi:\"" + aoi + "\", width:\"" + width
+					+ "\", height:\"" + height + "\",numAgents:\"" + numAgents + "\",partitioning:\""
+					+ getModeForToString(this.mode) + "\", connectionType:\"" + connectionType + "\", cells:\""
+					+ P + "\", num_worker:\""
+					+ topicList.size() + "\"}";
+
 	}
 
 

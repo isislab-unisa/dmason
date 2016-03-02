@@ -304,7 +304,7 @@ public class Worker {
 						
 						
 						for (CellType cellType : cellstype) {
-							
+							slotsNumber--;
 							params.setI(cellType.pos_i);
 							params.setJ(cellType.pos_j);
 							CellExecutor celle=(new CellExecutor(params, prefix, simulation.getSimName(), simulation.getJarName()));

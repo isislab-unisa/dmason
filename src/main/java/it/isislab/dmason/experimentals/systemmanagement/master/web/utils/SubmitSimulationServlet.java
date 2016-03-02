@@ -23,6 +23,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 
 	MasterServer server=null;
 	final static String ACTIVEMQ="ActiveMQ";
+	final static String MPI="MPI";
 	HashMap<String,String> listParams = null;
 
 
@@ -86,6 +87,9 @@ public class SubmitSimulationServlet extends HttpServlet {
 		if(conType.equalsIgnoreCase(ACTIVEMQ))
 			connection=ConnectionType.pureActiveMQ;
 
+		if(conType.equalsIgnoreCase(MPI))
+			System.out.println("STAI USANDO MPI ");
+		
 		//topics
 
 		String topics[] =listParams.get("workers").split(",");
@@ -104,15 +108,17 @@ public class SubmitSimulationServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 
-		Simulation sim =new Simulation(simName, simPath,jarSim.getName() ,rows, columns, aoi, width, height, numAgent, numStep, mode, connection) ;
-
+		Simulation sim=null;
+		if(mode==DistributedField2D.UNIFORM_PARTITIONING_MODE)
+		sim =new Simulation(simName, simPath,jarSim.getName() ,rows, columns, aoi, width, height, numAgent, numStep, mode, connection) ;
+		else
+		sim=new Simulation(simName, simPath, jarSim.getName(), cells, aoi, width, height, numAgent, numStep, mode, connection);	
+		
 		sim.setTopicList(topicList);
 		int simId=server.getKeySim().incrementAndGet();
 		sim.setSimID(simId);
 		sim.setTopicPrefix(simName+"-"+simId);
 
-
-		//upload jar in sim.getSimulationFolder() 
 
 		if(server.submitSimulation(sim)){
 			resp.setStatus(HttpServletResponse.SC_OK);
