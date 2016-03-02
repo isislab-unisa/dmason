@@ -70,10 +70,10 @@ public class WorkerInfo implements Serializable{
 	public String getWorkerID(){return workerID;}
 
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
+    /**
+     * YOU MUST NOT CHANGE THIS JSON FORMAT
+     * THE FIRST PARAMETER SLOTS used in a master to set numslots
+     */
 	public String toString() {
 		return "{\"slots\":"+ slots+","+
 				"\"cpuLoad\":" + cpuLoad +","+

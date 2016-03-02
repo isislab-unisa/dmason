@@ -20,14 +20,12 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.sound.midi.SysexMessage;
 
 import org.apache.activemq.broker.BrokerService;
 
@@ -155,17 +153,6 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-
-	public void sumbit(){
-
-
-
-	}
-
-
-
-
-
 	/**
 	 * Listen for new Worker connection
 	 */
@@ -234,24 +221,8 @@ public class MasterServer implements MultiServerInterface{
 
 						if(map.containsKey("info")){
 							infoWorkers.put(myTopicForWorker,""+ map.get("info"));
-							//System.out.println("PRINT FOR LOGGER_INFO RECEIVED FROM MASTER<Key info"+"><Value"+map.get("info")+">");
 						}
 
-
-
-
-						//						if(map.containsKey("simrcv")){
-						//							String topic=(String) map.get("simrcv");
-						//							simReceivedProcess(topic/*,(String)map.get("simrcv")*/);
-						//
-						//
-						//
-						//						}
-
-
-						if(map.containsKey("downloaded")){
-							System.out.println("staje senza pensier"+map.get("downloaded"));
-						}						
 
 
 					} catch (JMSException e) {
@@ -293,8 +264,6 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-
-
 	/**
 	 * 
 	 * @param port
@@ -308,7 +277,7 @@ public class MasterServer implements MultiServerInterface{
 		int counter=0;
 		try {
 
-			System.out.println("Listening");
+			//System.out.println("Listening");
 			ArrayList<Thread> threads=new ArrayList<Thread>();
 			Thread t=null;
 			while (counter<checkControl) {
@@ -341,12 +310,7 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-	protected String getTopicPrefix(String path){
-		return ""+path.hashCode();
-	}
-
 	//Start methods to open a connection and a topic for initial communication 
-
 	private void startActivemq(){
 		String address="tcp://"+IP_ACTIVEMQ+":"+PORT_ACTIVEMQ;
 		try {
@@ -365,6 +329,7 @@ public class MasterServer implements MultiServerInterface{
 			prop.load(input);
 			this.setIpActivemq(prop.getProperty("ipmaster"));
 			this.setPortActivemq(prop.getProperty("portmaster"));
+			this.setCopyServerPort(Integer.parseInt(prop.getProperty("copyport")));
 		} catch (IOException e2) {
 			System.err.println(e2.getMessage());
 		}finally{try {input.close();} catch (IOException e) {System.err.println(e.getMessage());}}
@@ -399,7 +364,6 @@ public class MasterServer implements MultiServerInterface{
 		//riempo una hashmap con topic-numcell per i worker della sim
 		for(String topicToFind: topicWorkers ){
 			String numcells=listAllWorkers.get(topicToFind).split(",")[0].split(":")[1];
-			System.out.println(topicToFind+"|||"+numcells);
 			slotsForWorkers.put(topicToFind, Integer.parseInt(numcells));
 		}
 
@@ -408,7 +372,7 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-	public HashMap<String , List<CellType>> assignCellsToWorkers(HashMap<String, Integer> slots,Simulation simul){
+	private HashMap<String , List<CellType>> assignCellsToWorkers(HashMap<String, Integer> slots,Simulation simul){
 
 		HashMap<String/*idtopic*/, List<CellType>> workerlist = new HashMap<String, List<CellType>>(); 
 
@@ -461,7 +425,7 @@ public class MasterServer implements MultiServerInterface{
 			System.err.println(e.getMessage());
 			return null;
 		}
-			
+
 		return workerlist;
 	}
 
@@ -471,29 +435,76 @@ public class MasterServer implements MultiServerInterface{
 
 		simulationsList.put(simul.getSimID(), simul);
 		this.topicIdWorkersForSimulation.put(simul.getSimID(), simul.getTopicList());
-		System.out.println(simul);
-		System.out.println(simul.getTopicList().size());
-
 		HashMap<String, Integer> slotsAvalaible=slotsAvailableForSimWorker(simul.getTopicList(),infoWorkers);
-
 		HashMap<String, List<CellType>> assignmentToworkers=assignCellsToWorkers(slotsAvalaible, simul);
 
 		if(assignmentToworkers==null) return false;
-		
-        //for testing 
+
+		//for testing 
 		for (String topickey: assignmentToworkers.keySet()){
 			System.out.println(topickey+" "+assignmentToworkers.get(topickey));
 		}	
 
-//		for(String topicName: simul.getTopicList())
-//			getConnection().publishToTopic(simul, topicName, "newsim");
 
 		for (String topicName: assignmentToworkers.keySet()){
 			simul.setListCellType(assignmentToworkers.get(topicName));
 			getConnection().publishToTopic(simul, topicName, "newsim");
 		}
-		
+
 		String pathJar=simul.getSimulationFolder()+File.separator+sim.getJarName();
+
+
+
+		try {
+			getConnection().createTopic("SIMULATION_"+sim.getSimID(), 1);
+			getConnection().subscribeToTopic("SIMULATION_"+sim.getSimID());
+
+			conn.asynchronousReceive("SIMULATION_"+sim.getSimID(), new MyMessageListener() {
+
+				@Override
+				public void onMessage(Message msg) {
+
+					Object o;
+					try {
+						o=parseMessage(msg);
+						MyHashMap map=(MyHashMap) o;
+
+						if(map.containsKey("workerstatus")){
+
+							synchronized (simulationsList) {
+
+								Simulation s=(Simulation) map.get("workerstatus");
+								Simulation s_master=simulationsList.get(simul.getSimID());
+								
+								if(s_master.getStartTime() < s.getStartTime())
+								{
+									s_master.setStartTime(s.getStartTime());
+								}
+								if(s_master.getStep() < s.getStep())
+								{
+									s_master.setStep(s.getStep());
+									System.out.println(s.getStep());
+								}
+							}
+
+
+						} 
+
+					} catch (JMSException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}
+			});
+
+
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+
 		return this.invokeCopyServer(pathJar ,simul.getTopicList().size());
 	}
 

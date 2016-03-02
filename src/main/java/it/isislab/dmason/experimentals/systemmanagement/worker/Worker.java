@@ -28,14 +28,15 @@ import it.isislab.dmason.util.connection.ConnectionType;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -45,21 +46,16 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.rmi.server.UID;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
-
-import org.apache.commons.collections.map.AbstractHashedMap;
-import org.apache.pig.parser.AliasMasker.load_clause_return;
-import org.jets3t.service.multithread.GetObjectHeadsEvent;
 
 /**
  * 
@@ -76,7 +72,6 @@ public class Worker {
 	private int slotsNumber=0;
 	private static final String MASTER_TOPIC="MASTER";
 	private static String dmasonDirectory=System.getProperty("user.dir")+File.separator+"dmason";
-	
 	private static  String workerDirectory;
 	private static  String workerTemporary;
 	private static  String simulationsDirectories;
@@ -84,13 +79,8 @@ public class Worker {
 	private String TOPIC_WORKER_ID_MASTER="";
 	private static String WORKER_IP="127.0.0.1";
 	private int DEFAULT_COPY_SERVER_PORT=0;
-
 	private HashMap< Integer, Simulation> simulationList;
-
-	//private LinkedList<Simulation> simulationList;
-
-
-
+	private SimpleDateFormat sdf=null;
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 
 
@@ -101,28 +91,22 @@ public class Worker {
 	 * @param topicPrefix
 	 */
 	public Worker(String ipMaster,String portMaster, int slots) {
-
-		
-
-		this.IP_ACTIVEMQ=ipMaster;
-		this.PORT_ACTIVEMQ=portMaster;
-		this.conn=new ConnectionNFieldsWithActiveMQAPI();
-		WORKER_IP=getIP();
-		this.createConnection();
-		this.startMasterComunication();
-		this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
-		
-		workerDirectory=dmasonDirectory+File.separator+"worker"+TOPIC_WORKER_ID;
-		workerTemporary=workerDirectory+File.separator+"temporary";
-		simulationsDirectories=workerDirectory+File.separator+"simulations";
-		MyFileSystem.make(workerTemporary);
-		MyFileSystem.make(simulationsDirectories);
-		
-		simulationList=new HashMap< Integer, Simulation>();
-		this.slotsNumber=slots;
-		signRequestToMaster();
-
 		try {
+
+
+			this.IP_ACTIVEMQ=ipMaster;
+			this.PORT_ACTIVEMQ=portMaster;
+			this.conn=new ConnectionNFieldsWithActiveMQAPI();
+			WORKER_IP=getIP();
+			this.createConnection();
+			this.startMasterComunication();
+			this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
+			generateFolders(); //generate folders for worker
+			simulationList=new HashMap< /*idsim*/Integer, Simulation>();
+			this.slotsNumber=slots;
+			signRequestToMaster();
+
+			//for running 
 			getConnection().createTopic("SIMULATION_READY", 1);
 			getConnection().subscribeToTopic("SIMULATION_READY");
 			getConnection().asynchronousReceive("SIMULATION_READY", new MyMessageListener() {
@@ -138,7 +122,7 @@ public class Worker {
 						//se + diretta a me il master mi invia il topic univoco comunicazione master-me
 						if(map.containsKey("cellready")){
 							int sim_id=(int) map.get("cellready");
-							
+
 							simulationList.get(sim_id).setReceived_cell_type(simulationList.get(sim_id).getReceived_cell_type()+1);
 							if(simulationList.get(sim_id).getReceived_cell_type()==simulationList.get(sim_id).getNumCells())
 							{
@@ -146,54 +130,14 @@ public class Worker {
 							}
 						} 
 
-				
 
-					} catch (JMSException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
+					} catch (JMSException e) {e.printStackTrace();}
+
 				}
 			});
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (Exception e) {e.printStackTrace();}
 	}
 
-
-
-
-
-	/**
-	 * Explores NetworkInterface and finds IP Address 
-	 * @return ip of Worker
-	 */
-	private static String getIP() {
-
-		try {
-			//String c=InetAddress.getLocalHost().getHostAddress();//doesn't work on windows            
-			String c=InetAddress.getByName("localhost").getHostAddress();
-			Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
-			for (; n.hasMoreElements();)
-			{
-				NetworkInterface e = n.nextElement();
-				Enumeration<InetAddress> a = e.getInetAddresses();
-				for (; a.hasMoreElements();){
-					InetAddress addr = a.nextElement();
-					String p=addr.getHostAddress();
-					if(p.contains(".") && p.compareTo(c)!=0)
-						return p;
-				}
-			}
-		} 
-		catch (SocketException e1) {
-			e1.printStackTrace();
-		} catch (UnknownHostException e1) {
-			e1.printStackTrace();
-		}
-		return WORKER_IP;
-	} 
 
 	//mi metto in ricezione sul master
 	protected void startMasterComunication() {
@@ -220,11 +164,8 @@ public class Worker {
 
 					if(map.containsKey("port")){
 						int port=(int) map.get("port");
-
 						DEFAULT_COPY_SERVER_PORT=port;
 					}
-
-
 
 				} catch (JMSException e) {
 					// TODO Auto-generated catch block
@@ -240,7 +181,6 @@ public class Worker {
 
 	//mi mettto in ascolto sui messaggi che il master mi invia(1-1)
 	private synchronized void listenerForMasterComunication(){
-		System.out.println("Ricevuto ack iscrzione");
 		//mi sottoscrivo e mi metto in ricezione sul tale topic per comuncazioni del master
 		try{
 			getConnection().subscribeToTopic(TOPIC_WORKER_ID_MASTER);
@@ -265,30 +205,20 @@ public class Worker {
 					}
 
 					if(map.containsKey("newsim")){
-						System.out.println("ho ricevuto la simulazione");
 						Simulation sim=(Simulation)map.get("newsim");
-
-
-						System.out.println("stampo sim"+sim.toString());
-						System.out.println("stampo cellstype "+sim.getCellTypeList());
-
 						createNewSimulationProcess(sim);
 
 						new Thread(new Runnable() {
 
 							@Override
 							public void run() {
-
-
+								
 								String local=System.currentTimeMillis()+sim.getJarName();
 								sim.setJarName(local);
-
 								downloadFile(DEFAULT_COPY_SERVER_PORT, sim.getSimulationFolder()+File.separator+local);
-
-								System.out.println("invio downloaded al master");
 							}
 						}).start(); 
-						getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
+						//getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
 
 					}
 
@@ -303,8 +233,6 @@ public class Worker {
 
 						GeneralParam params = null;
 						String prefix=null;
-						System.out.println("worker simulazin "+getSimulationList().size());
-
 						Simulation simulation=getSimulationList().get(id);
 						List<CellType> cellstype=simulation.getCellTypeList();
 
@@ -319,8 +247,6 @@ public class Worker {
 						int typeConn=simulation.getConnectionType();
 						long step=simulation.getNumberStep();
 						prefix= simulation.getTopicPrefix();
-						System.out.println(width+" "+height+" "+aoi+" "+rows+" "+cols+" "+agents+" "
-								+ ""+mode+"| val="+" "+ step+" "  +DistributedField2D.UNIFORM_PARTITIONING_MODE+" "+ConnectionType.pureActiveMQ);
 
 
 						params=new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ); 	
@@ -332,22 +258,29 @@ public class Worker {
 							slotsNumber--;
 							params.setI(cellType.pos_i);
 							params.setJ(cellType.pos_j);
-							CellExecutor celle=(new CellExecutor(params, prefix, simulation.getSimName(), simulation.getJarName()));
-
+							FileOutputStream output = new FileOutputStream(simulation.getSimulationFolder()+File.separator+"out"+File.separator+cellType+".out");
+							PrintStream printOut = new PrintStream(output);
+						
+							CellExecutor celle=(new CellExecutor(params, prefix,simulation.getSimName()+""+simulation.getSimID(), simulation.getJarName(),printOut,simulation.getSimID(),
+									(cellstype.indexOf(cellstype)==0?true:false)));
 
 							executorThread.get(simulation.getSimID()).add(celle);
 							celle.startSimulation();
 							getConnection().publishToTopic(simulation.getSimID(),"SIMULATION_READY", "cellready");
-							System.out.println("Created cell "+cellType+" for simulation "+simulation.getSimID());
 
 						}
 						
+						getConnection().createTopic("SIMULATION_"+simulation.getSimID(), 1);
+						getConnection().publishToTopic(simulation,"SIMULATION_"+simulation.getSimID(), "workerstatus");
 
 					}
 
 
 
-				} catch (JMSException e) {e.printStackTrace();}
+				} catch (JMSException e) {e.printStackTrace();} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 
 			}
@@ -358,10 +291,12 @@ public class Worker {
 
 	private synchronized void runSimulation(int sim_id)
 	{
+		Simulation s=simulationList.get(sim_id);
+		s.setStartTime(System.currentTimeMillis());
+		s.setStep(0);
 		for(CellExecutor cexe:executorThread.get(sim_id))
 		{
 			cexe.start();
-			System.out.println("Start cell "+cexe+" for simulation "+sim_id);
 		}
 
 
@@ -370,21 +305,23 @@ public class Worker {
 
 		public GeneralParam params;
 		public String prefix;
-		public String sim_name;
+		public String folder_sim;
 		public String jar_name;
+		private int sim_id;
 		public boolean run=true;
+		public boolean masterCell=false;
 		private DistributedState dis;
 
-		public CellExecutor(GeneralParam params, String prefix, String sim_name,String jar_name) {
+		public CellExecutor(GeneralParam params, String prefix, String folder_name,String jar_name, PrintStream out,int sim_id,boolean master_cell) {
 			super();
 			this.params = params;
 			this.prefix=prefix;
-			this.sim_name=sim_name;
+			this.folder_sim=folder_name;
 			this.jar_name=jar_name;
-			System.out.println("Simulation params "+params.toString());
-			System.out.println( prefix);
-			dis=makeSimulation( params, prefix, getSimulationsDirectories()+File.separator+sim_name+File.separator+jar_name);
-
+			dis=makeSimulation( params, prefix, getSimulationsDirectories()+File.separator+folder_sim+File.separator+jar_name);
+			dis.setOutputStream(out);
+			this.sim_id=sim_id;
+			this.masterCell=master_cell;
 		}
 		public void startSimulation(){
 			dis.start();
@@ -393,31 +330,52 @@ public class Worker {
 		public  void run() {
 			System.out.println("Start cell for "+params.getMaxStep());
 			int i=0;
+			Simulation s=simulationList.get(sim_id);
+			
 			while(i!=params.getMaxStep() && run)
 			{   
-				System.out.println("endsim with prefixID "+i+"   "+dis.schedule.getSteps());
+				if(masterCell)
+					{
+						s.setStep(i);
+						getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
+					}
 				dis.schedule.step(dis);
 				i++;
 			}
+			this.stopThread();
 		}
 		public synchronized void stopThread()
 		{
 			run=false;
+			slotsNumber++;
+			Simulation s=simulationList.get(sim_id);
+			if(masterCell)
+				{
+					s.setEndTime(System.currentTimeMillis());
+					System.out.println("publish workstatus "+"SIMULATION_"+s.getSimID());
+					getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
+				}
+			System.out.println("End cell on worker for simualtion: "+sim_id);
+			
+			
+			//invio news al master
 		}
 	}
 	//create folder for the sim
-	private void createNewSimulationProcess(Simulation sim){
-		this.createSimulationDirectoryByID(sim.getSimName());
-		sim.setSimulationFolder(simulationsDirectories+File.separator+sim.getSimName());
+	private synchronized void createNewSimulationProcess(Simulation sim){
+
+		String path=this.createSimulationDirectoryByID(sim.getSimName()+""+sim.getSimID());
+		sim.setSimulationFolder(path);
 		getSimulationList().put(sim.getSimID(),sim);
 		System.out.println("sto per pubblicare al master");
 		this.getConnection().publishToTopic(TOPIC_WORKER_ID_MASTER, this.TOPIC_WORKER_ID, "simrcv");
 
 
 	}
-	protected void createSimulationDirectoryByID(String simID){
-		String path=simulationsDirectories+File.separator+simID+File.separator+"runs";
-		MyFileSystem.make(path);
+	private String createSimulationDirectoryByID(String  name){
+		String path=simulationsDirectories+File.separator+name;
+		MyFileSystem.make(path+File.separator+"out");
+		return path;
 	}
 
 	protected void deleteSimulationDirectoryByID(String simID){
@@ -600,6 +558,49 @@ public class Worker {
 
 
 
+	private void generateFolders() throws FileNotFoundException {
+		sdf = new SimpleDateFormat(); 
+		sdf.applyPattern("dd-MM-yy-HH_mm");
+		String dataStr = sdf.format(new Date()); // data corrente (20 febbraio 2014)
+		workerDirectory=dmasonDirectory+File.separator+"worker"+File.separator+dataStr;
+		workerTemporary=workerDirectory+File.separator+"temporary";
+		simulationsDirectories=workerDirectory+File.separator+"simulations";
+		MyFileSystem.make(workerTemporary);
+		MyFileSystem.make(simulationsDirectories);
+		MyFileSystem.make(workerDirectory+File.separator+"err");
+		FileOutputStream output = new FileOutputStream(workerDirectory+File.separator+"err"+File.separator+"worker"+TOPIC_WORKER_ID+".err");
+		PrintStream printOut = new PrintStream(output);
+		System.setErr(printOut);
+	}
+
+	/**
+	 * Explores NetworkInterface and finds IP Address 
+	 * @return ip of Worker
+	 */
+	private static String getIP() {
+
+		try {     
+			String c=InetAddress.getByName("localhost").getHostAddress();
+			Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
+			for (; n.hasMoreElements();)
+			{
+				NetworkInterface e = n.nextElement();
+				Enumeration<InetAddress> a = e.getInetAddresses();
+				for (; a.hasMoreElements();){
+					InetAddress addr = a.nextElement();
+					String p=addr.getHostAddress();
+					if(p.contains(".") && p.compareTo(c)!=0)
+						return p;
+				}
+			}
+		} 
+		catch (SocketException e1) {
+			e1.printStackTrace();
+		} catch (UnknownHostException e1) {
+			e1.printStackTrace();
+		}
+		return WORKER_IP;
+	} 
 
 	//getters and setters
 	public String getIpActivemq() {return IP_ACTIVEMQ;}
@@ -610,7 +611,7 @@ public class Worker {
 	public void setTopicPrefix(String topicPrefix) {TOPICPREFIX = topicPrefix;}
 	public ConnectionNFieldsWithActiveMQAPI getConnection() {return conn;}
 	public String getSimulationsDirectories() {return simulationsDirectories;}
-	public int getSlotsNumber(){return slotsNumber;}
+	public synchronized Integer getSlotsNumber(){return slotsNumber;}
 	public int setSlotsNumuber(int slots){return this.slotsNumber=slots;}
 	public HashMap<Integer, Simulation> getSimulationList(){return simulationList;}
 

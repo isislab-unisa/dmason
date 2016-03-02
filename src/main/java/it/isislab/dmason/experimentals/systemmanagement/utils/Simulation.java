@@ -38,7 +38,67 @@ public class Simulation implements Serializable{
 	private ArrayList<String> topicList;
 	private List<CellType> cellTypeList;
 	private int received_cell_type;
+	
+	private long startTime=Long.MIN_VALUE;
+	private long endTime=Long.MIN_VALUE;
+	private long step=Long.MIN_VALUE;
 
+
+	/**
+	 * @return the endTime
+	 */
+	public long getEndTime() {
+		return endTime;
+	}
+
+	/**
+	 * @param endTime the endTime to set
+	 */
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
+	}
+
+	/**
+	 * @return the numStep
+	 */
+	public long getNumStep() {
+		return numStep;
+	}
+
+	/**
+	 * @param numStep the numStep to set
+	 */
+	public void setNumStep(long numStep) {
+		this.numStep = numStep;
+	}
+
+	/**
+	 * @return the startTime
+	 */
+	public long getStartTime() {
+		return startTime;
+	}
+
+	/**
+	 * @param startTime the startTime to set
+	 */
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
+	}
+
+	/**
+	 * @return the step
+	 */
+	public long getStep() {
+		return step;
+	}
+
+	/**
+	 * @param step the step to set
+	 */
+	public void setStep(long step) {
+		this.step = step;
+	}
 
 	/**
 	 * @return the received_cell_type

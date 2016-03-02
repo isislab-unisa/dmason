@@ -128,7 +128,7 @@ public class DFlockers extends DistributedState<Double2D>
 		for (EntryParam<String, Object> entryParam : simParams) {
 
 			try {
-				System.out.println(this.getClass().getDeclaredField(entryParam.getParamName()).get(this));
+				out.println(this.getClass().getDeclaredField(entryParam.getParamName()).get(this));
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (SecurityException e) {

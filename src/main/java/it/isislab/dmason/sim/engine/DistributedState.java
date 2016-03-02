@@ -28,6 +28,7 @@ import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.ConnectionType;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,6 +80,12 @@ public abstract class DistributedState<E> extends SimState {
 	private DistributedStateConnectionJMS<E> serviceJMS;
 	private DistributedStateConnectionMPI<E> serviceMPI;
 	
+	public PrintStream out;
+	
+	public void setOutputStream(PrintStream out)
+	{
+		this.out=out;
+	}
 	
 	public DistributedState() {
 		super(null, new DistributedMultiSchedule<E>());

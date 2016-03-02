@@ -191,7 +191,8 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
     	        
 		lastd = new Double2D(dx,dy);
 		pos = new Double2D(flock.flockers.stx(pos.x + dx), flock.flockers.sty(pos.y + dy));
-    	        
+    	      
+		flock.out.println(pos);
 		try {
 			flock.flockers.setDistributedObjectLocation(pos, this, state);
 		} catch (DMasonException e) {
