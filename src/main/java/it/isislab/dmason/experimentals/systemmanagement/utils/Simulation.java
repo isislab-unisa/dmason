@@ -42,7 +42,19 @@ public class Simulation implements Serializable{
 	private long startTime=Long.MIN_VALUE;
 	private long endTime=Long.MIN_VALUE;
 	private long step=Long.MIN_VALUE;
+	private String Status; //play,pause,stop
 
+
+	
+	
+	
+	public String getStatus() {
+		return Status;
+	}
+
+	public void setStatus(String status) {
+		Status = status;
+	}
 
 	/**
 	 * @return the endTime
@@ -380,15 +392,16 @@ public class Simulation implements Serializable{
 					+ "\", columns:\"" + columns + "\",aoi:\"" + aoi + "\", width:\"" + width
 					+ "\", height:\"" + height + "\",numAgents:\"" + numAgents + "\",partitioning:\""
 					+ getModeForToString(this.mode) + "\", connectionType:\"" + connectionType + "\", num_cell:\""
-					+ numCells + "\", num_worker:\""
-					+ topicList.size() + "\"}";
+					+ numCells + "\", num_worker:\""+ topicList.size() + "\", start:\""+startTime
+					+"\", step:\""+step+"\",status:\"+Status+\"}";
 		else 
 			return "{name:\"" + simName + "\", id:\"" + simID
 					+ "\", simulationFolder:\"" + simulationFolder + "\", aoi:\"" + aoi + "\", width:\"" + width
 					+ "\", height:\"" + height + "\",numAgents:\"" + numAgents + "\",partitioning:\""
 					+ getModeForToString(this.mode) + "\", connectionType:\"" + connectionType + "\", cells:\""
 					+ P + "\", num_worker:\""
-					+ topicList.size() + "\"}";
+					+ topicList.size() + "\", start:\""+startTime
+					+"\", step:\""+step+"\",status:\"+Status+\"}";
 
 	}
 

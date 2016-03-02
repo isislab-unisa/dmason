@@ -59,4 +59,13 @@
         <servlet-name>SimulationControllerServlet</servlet-name>
         <url-pattern>/simulationController</url-pattern>
     </servlet-mapping>
+    
+ 	<servlet id="simulationList">
+        <servlet-name>GetSimulationListServlet</servlet-name>
+        <servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.GetSimulationListServlet</servlet-class>
+	  </servlet>
+    <servlet-mapping>
+        <servlet-name>GetSimulationListServlet</servlet-name>
+        <url-pattern>/simulationList</url-pattern>
+    </servlet-mapping>
 </web-app>

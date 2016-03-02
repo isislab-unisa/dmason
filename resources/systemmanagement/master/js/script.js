@@ -81,6 +81,11 @@ $(
                     if($('#load_workers_dialog').prop("opened"))close_dialog("load_workers_dialog");
                     load_tiles_monitoring();
             },1000);
+
+        if(window.location.pathname=="/simulations.jsp")
+            setInterval(function(){
+                update_simulation_info();
+            },1000);
     }
 );
 
@@ -200,9 +205,9 @@ function selectItem(element){
 }
 
 
-function change_params(element){
+function change_partitioning_input_params(element){
     var buttonName =$(element).attr("name");
-    console.log(buttonName);
+    //console.log(buttonName);
     switch (buttonName){
         case "uniform":
             $("#form_cells").css("display","none");
@@ -213,24 +218,66 @@ function change_params(element){
             $("#form_cells").css("display","block");
             $("#form_row").css("display","none");
             $("#form_col").css("display","none");
+            break;
     }
 
 }
 
-function validate(element){
-    slots = (("#head_num_slots").text()).trim();
-    id = $(element).attr("id");
+function _validate(element){
+    current_element = $(element);
+    //console.log("ci sono!");
+    slots = ($("#head_num_slots").text()).trim();
+    if(slots)
+        slots = parseInt(slots);
+    //console.log("Available slots "+slots);
+
+    row_element   = $("#form_row");
+    cols_element  = $("#form_col");
+    cells_element = $("#form_cells");
+
+    row = document.querySelector("#"+row_element.attr("id")).value;
+    cols = document.querySelector("#"+cols_element.attr("id")).value;
+    cells = document.querySelector("#"+cells_element.attr("id")).value;
+
+
+    id = current_element.attr("id");
+
+    value = document.querySelector("#"+id).value;
+    cur_slot = (value)?parseInt(value):1;
+    console.log("Id element "+id+" input value "+value+" cur_slot "+cur_slot);
+
+
+    if(cur_slot > slots){
+        current_element.attr("invalid","true");
+        $("#submit_btn").attr("disabled","true");
+        return false;
+    }else{
+        if(current_element.attr("invalid") == "true")
+            //current_element.attr("invalid","false");
+            current_element.children()[0].updateAddons({invalid: false});
+    }
+
+    //if(row * cols) > slots then invalid =true
+
     switch (id){
         case "form_row":
-            //if(row * cols) > slots then invalid =true
+            if(cols){
+                int_val = parseInt(cols);
+                cur_slot *=int_val;
+                if(cur_slot > slots){
+                    current_element.attr("invalid","true");
+                    $("#submit_btn").attr("disabled","true");
+                    return false;
+                }
+            }
+            if( $("#submit_btn").attr("disabled")=="true")
+                $("#submit_btn").attr("disabled","false");
+
             break;
         case "form_cells":
             break;
         case "form_col":
             break;
-
-
-
     }
 
 
@@ -238,6 +285,9 @@ function validate(element){
 
 
 function submitForm(){
+
+    if(!validate())
+        return;
     startProgress();
     var form = document.getElementById("sendSimulationForm");
     $(form).unbind('submit').bind("submit",_OnsubmitSimulation);
@@ -293,14 +343,12 @@ function _OnsubmitSimulation(event) {
             window.location="simulations.jsp";
         }
     });
-
-
-
 }
 
 function resetForm(event) {
     progress = document.querySelector('paper-progress');
     progress.style.display = "none";
+    $("#submit_btn").attr("disabled",false);
     document.getElementById("sendSimulationForm").reset();
 }
 
