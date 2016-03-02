@@ -344,7 +344,9 @@ public class Worker {
 			this.prefix=prefix;
 			this.sim_name=sim_name;
 			this.jar_name=jar_name;
-			dis=makeSimulation( params, prefix,getSimulationsDirectories()+File.separator+sim_name+File.separator+jar_name);
+			System.out.println("Simulation params "+params.toString());
+			System.out.println( prefix);
+			dis=makeSimulation( params, prefix, getSimulationsDirectories()+File.separator+sim_name+File.separator+jar_name);
 			
 		}
 		public void startSimulation(){
@@ -355,8 +357,8 @@ public class Worker {
 			System.out.println("Start cell for "+params.getMaxStep());
 			int i=0;
 			while(i!=params.getMaxStep() && run)
-			{
-				System.out.println("endsim with prefixID "+dis.schedule.getSteps());
+			{   
+				System.out.println("endsim with prefixID "+i+"   "+dis.schedule.getSteps());
 				dis.schedule.step(dis);
 				i++;
 			}
