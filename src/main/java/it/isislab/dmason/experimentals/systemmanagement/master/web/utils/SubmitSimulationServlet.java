@@ -41,7 +41,6 @@ public class SubmitSimulationServlet extends HttpServlet {
 		FileItem jarSim = null;
 
 		if(!ServletFileUpload.isMultipartContent(req)){
-			System.out.println("nothing to do");
 			return;
 		}
 		else{
@@ -52,11 +51,9 @@ public class SubmitSimulationServlet extends HttpServlet {
 
 				for(FileItem item : items) {
 					if(!item.isFormField()){
-						System.out.println("visto "+item.getName());
 						jarSim = item;
 						//item.write(file);
 					}else{
-						System.out.println(item.getFieldName()+" "+item.getString());
 						listParams.put(item.getFieldName(), item.getString());
 					}
 				}
