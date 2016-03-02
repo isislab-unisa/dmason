@@ -28,7 +28,6 @@ import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -94,10 +93,9 @@ public class Worker {
 	 * @param portMaster
 	 * @param topicPrefix
 	 */
+	@SuppressWarnings("serial")
 	public Worker(String ipMaster,String portMaster, int slots) {
 		try {
-
-
 			this.IP_ACTIVEMQ=ipMaster;
 			this.PORT_ACTIVEMQ=portMaster;
 			this.conn=new ConnectionNFieldsWithActiveMQAPI();
@@ -109,21 +107,19 @@ public class Worker {
 			simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 			this.slotsNumber=slots;
 			signRequestToMaster();
+			
+			
 
-			//for running 
 			getConnection().createTopic("SIMULATION_READY", 1);
 			getConnection().subscribeToTopic("SIMULATION_READY");
 			getConnection().asynchronousReceive("SIMULATION_READY", new MyMessageListener() {
 
 				@Override
 				public void onMessage(Message msg) {
-					// TODO Auto-generated method stub
 					Object o;
 					try {
 						o=parseMessage(msg);
 						MyHashMap map=(MyHashMap) o;
-
-						//se + diretta a me il master mi invia il topic univoco comunicazione master-me
 						if(map.containsKey("cellready")){
 							int sim_id=(int) map.get("cellready");
 
@@ -140,10 +136,11 @@ public class Worker {
 				}
 			});
 		} catch (Exception e) {e.printStackTrace();}
+		
+		System.out.println("Worker started ...");
 	}
 
-
-	//mi metto in ricezione sul master
+	@SuppressWarnings("serial")
 	protected void startMasterComunication() {
 		final Worker worker=this;
 
@@ -151,7 +148,6 @@ public class Worker {
 		catch (Exception e1) {e1.printStackTrace();}
 
 		conn.asynchronousReceive(MASTER_TOPIC, new MyMessageListener() {
-
 			@Override
 			public void onMessage(Message msg) {
 
@@ -159,8 +155,6 @@ public class Worker {
 				try {
 					o=parseMessage(msg);
 					MyHashMap map=(MyHashMap) o;
-
-					//se + diretta a me il master mi invia il topic univoco comunicazione master-me
 					if(map.containsKey(worker.TOPIC_WORKER_ID)){
 						TOPIC_WORKER_ID_MASTER=map.get(TOPIC_WORKER_ID).toString();
 						listenerForMasterComunication();
@@ -172,7 +166,6 @@ public class Worker {
 					}
 
 				} catch (JMSException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
@@ -183,12 +176,10 @@ public class Worker {
 
 	} 	
 
-	//mi mettto in ascolto sui messaggi che il master mi invia(1-1)
+	@SuppressWarnings("serial")
 	private synchronized void listenerForMasterComunication(){
-		//mi sottoscrivo e mi metto in ricezione sul tale topic per comuncazioni del master
 		try{
 			getConnection().subscribeToTopic(TOPIC_WORKER_ID_MASTER);
-			//mi metto in attesa sul canale 
 		}catch(Exception e){ e.printStackTrace();}
 
 
@@ -240,8 +231,6 @@ public class Worker {
 						String prefix=null;
 						Simulation simulation=getSimulationList().get(id);
 						List<CellType> cellstype=simulation.getCellTypeList();
-
-
 						int aoi=simulation.getAoi();
 						int height= simulation.getHeight();
 						int width= simulation.getWidth();
@@ -249,11 +238,12 @@ public class Worker {
 						int rows=simulation.getRows();
 						int agents=simulation.getNumAgents();
 						int mode=simulation.getMode();
+						@SuppressWarnings("unused")
 						int typeConn=simulation.getConnectionType();
+						
+						System.err.println("TODO MANAGE CONNECTION MPI");
 						long step=simulation.getNumberStep();
 						prefix= simulation.getTopicPrefix();
-
-
 						params=new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ); 	
 						params.setIp(IP_ACTIVEMQ);
 						params.setPort(PORT_ACTIVEMQ);
@@ -319,7 +309,7 @@ public class Worker {
 		s.setStartTime(System.currentTimeMillis());
 		s.setStep(0);
 		getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
-
+		System.out.println("Simulation "+sim_id+" started, with "+executorThread.get(sim_id).size()+".");
 
 
 	}
@@ -335,7 +325,7 @@ public class Worker {
 		s.setStatusFINISHED();
 		s.setEndTime(System.currentTimeMillis());
 		getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
-
+		System.out.println("Simulation "+sim_id+" stopped, with "+executorThread.get(sim_id).size());
 
 	}
 	private synchronized void pauseSimulation(int sim_id)
@@ -348,6 +338,7 @@ public class Worker {
 		s.setStatusPAUSED();
 		s.setEndTime(System.currentTimeMillis());
 		getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
+		System.out.println("Simulation "+sim_id+" paused, with "+executorThread.get(sim_id).size());
 
 		
 
@@ -362,6 +353,7 @@ public class Worker {
 		public boolean run=true;
 		public boolean pause=false;
 		public boolean masterCell=false;
+		@SuppressWarnings("rawtypes")
 		private DistributedState dis;
 
 		final Lock lock = new ReentrantLock();
@@ -420,10 +412,6 @@ public class Worker {
 		{
 			run=false;
 			slotsNumber++;
-			Simulation s=simulationList.get(sim_id);
-		
-			
-			//invio news al master
 		}
 		public void restartThread() {
 			try{
@@ -544,18 +532,20 @@ public class Worker {
 	}
 
 
+	@SuppressWarnings({ "rawtypes", "deprecation" })
 	protected DistributedState makeSimulation(GeneralParam params, String prefix,String pathJar)
 	{
 		String path_jar_file=pathJar;
 		try{
+			@SuppressWarnings("resource")
 			JarFile jar=new JarFile(new File(path_jar_file));
 			Enumeration e=jar.entries();
 			File file  = new File(path_jar_file);
 			URL url = file.toURL(); 
 			URL[] urls = new URL[]{url};
+			@SuppressWarnings("resource")
 			ClassLoader cl = new URLClassLoader(urls);
 			Class distributedState=null;
-
 			while(e.hasMoreElements()){
 
 				JarEntry je=(JarEntry)e.nextElement();
@@ -565,10 +555,6 @@ public class Worker {
 				String[] nameclass = classPath.split("/");
 				nameclass[0]=((nameclass[nameclass.length-1]).split(".class"))[0];
 
-				byte[] classBytes = new byte[(int) je.getSize()];
-				InputStream input = jar.getInputStream(je);
-				BufferedInputStream readInput=new BufferedInputStream(input);
-
 				Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
 
 				if(c.getSuperclass().equals(DistributedState.class))
@@ -576,27 +562,20 @@ public class Worker {
 
 			}
 			if(distributedState==null) return null;
+			@SuppressWarnings("resource")
 			JarClassLoader cload = new JarClassLoader(new URL("jar:file://"+path_jar_file+"!/"));
-
 			cload.addToClassPath();
-			System.out.println(""+distributedState.getName());
-
-
 			return (DistributedState) cload.getInstance(distributedState.getName(), params,prefix);
 		} catch (Exception e){
 			e.printStackTrace();
 		}
 		return null;
 
-
-		//		Constructor constr = distributedState.getConstructor(new Class[]{ params.getClass() });
-		//		return (DistributedState) constr.newInstance(new Object[]{ params });
-
 	}
 
 
 	/**
-	 * Reestituisce info al master del worker
+	 * 
 	 */
 	private String getInfoWorker() 
 	{
@@ -607,27 +586,17 @@ public class Worker {
 		return info.toString();
 
 	}
-	//method for topic 
-
 
 	protected boolean createConnection(){
 		Address address=new Address(this.getIpActivemq(), this.getPortActivemq());
-		System.out.println("connection to server "+address);
 		return conn.setupConnection(address);
 
 	}
-
-
-
-	//invio richiesta di iscrizione e comunico il topic sul quale
-	//invierò informazioni
 	public void signRequestToMaster(){
 		try{	
 			conn.createTopic("READY", 1);
 			conn.subscribeToTopic("READY");
 			conn.publishToTopic(this.TOPIC_WORKER_ID,"READY" ,"signrequest");
-
-			//topic per fornire info al master 
 			conn.createTopic(this.TOPIC_WORKER_ID, 1);
 			conn.subscribeToTopic(TOPIC_WORKER_ID);
 		} catch(Exception e){e.printStackTrace();}
@@ -636,10 +605,8 @@ public class Worker {
 
 
 	public void getLogBySimID(int simID){
-		Simulation sim=getSimulationList().get(simID);
+	//	Simulation sim=getSimulationList().get(simID);
 	}
-
-
 
 	private void generateFolders() throws FileNotFoundException {
 		sdf = new SimpleDateFormat(); 
