@@ -7,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -26,7 +25,6 @@ import org.kohsuke.args4j.Option;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
-import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -74,7 +72,7 @@ public class Manager {
 		BufferedReader in;
 		boolean running = true;
 		String host;
-		public WorkerThread(String host) throws IOException, JSchException {
+		public WorkerThread(String host,int nslot) throws IOException, JSchException {
 			this.host=host;
 			JSch jsch=new JSch();
 			session=jsch.getSession(System.getProperty("user.name"), host, 22);
@@ -87,7 +85,7 @@ public class Manager {
 		    in=new BufferedReader(new InputStreamReader(channel.getInputStream()));
 		    //System.out.println("./"+dmason+" -m worker -ip "+ip+" -port "+port+" -ns "+ns+";");
 		 
-			channel.setCommand("java -jar "+dmason+" -m worker -ip "+ip+" -port "+port+" -ns "+ns+";");
+			channel.setCommand("java -jar "+dmason+" -m worker -ip "+ip+" -port "+port+" -ns "+nslot+";");
 			
 		}
 		@Override
@@ -151,7 +149,6 @@ public class Manager {
 		CmdLineParser parser = new CmdLineParser(this);
 		try {
 
-			// parse the arguments.
 			parser.parseArgument(args);
 			
 			if(mode.equals("master"))
@@ -169,10 +166,13 @@ public class Manager {
 					
 					WorkerThread w;
 
-					for(String host:arguments)
+					//for(String host : arguments)
+					for (int i = 0; i < arguments.size()-1; i+=2)	
 					{
-						System.out.print("Start worker on "+host+" ");
-						w=new WorkerThread(host);
+						String host=arguments.get(i);
+						int ns=Integer.parseInt(arguments.get(i+1));
+						System.out.println("Start worker on "+host+" with nslots "+ns);
+						w=new WorkerThread(host,ns);
 						workers.add(w);
 						w.start();
 					}

@@ -103,7 +103,7 @@ public class Worker {
 			this.createConnection();
 			this.startMasterComunication();
 			this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
-			generateFolders(); //generate folders for worker
+			generateFolders(TOPIC_WORKER_ID); //generate folders for worker
 			simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 			this.slotsNumber=slots;
 			signRequestToMaster();
@@ -264,7 +264,7 @@ public class Worker {
 							getConnection().publishToTopic(simulation.getSimID(),"SIMULATION_READY", "cellready");
 
 						}
-						simulation.setStatusCREATED();
+						//simulation.setStatusCREATED();
 
 						getConnection().createTopic("SIMULATION_"+simulation.getSimID(), 1);
 						getConnection().publishToTopic(simulation,"SIMULATION_"+simulation.getSimID(), "workerstatus");
@@ -442,6 +442,7 @@ public class Worker {
 		String path=this.createSimulationDirectoryByID(sim.getSimName()+""+sim.getSimID());
 		sim.setSimulationFolder(path);
 		getSimulationList().put(sim.getSimID(),sim);
+		sim.setStatusCREATED();
 		this.getConnection().publishToTopic(TOPIC_WORKER_ID_MASTER, this.TOPIC_WORKER_ID, "simrcv");
 
 
@@ -608,11 +609,11 @@ public class Worker {
 	//	Simulation sim=getSimulationList().get(simID);
 	}
 
-	private void generateFolders() throws FileNotFoundException {
+	private void generateFolders(String wID) throws FileNotFoundException {
 		sdf = new SimpleDateFormat(); 
 		sdf.applyPattern("dd-MM-yy-HH_mm");
 		String dataStr = sdf.format(new Date()); // data corrente (20 febbraio 2014)
-		workerDirectory=dmasonDirectory+File.separator+"worker"+File.separator+dataStr;
+		workerDirectory=dmasonDirectory+File.separator+"worker"+File.separator+wID+File.separator+dataStr;
 		workerTemporary=workerDirectory+File.separator+"temporary";
 		simulationsDirectories=workerDirectory+File.separator+"simulations";
 		MyFileSystem.make(workerTemporary);
