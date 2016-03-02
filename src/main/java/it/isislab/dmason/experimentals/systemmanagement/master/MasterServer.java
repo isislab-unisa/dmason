@@ -472,19 +472,20 @@ public class MasterServer implements MultiServerInterface{
 						if(map.containsKey("workerstatus")){
 
 							synchronized (simulationsList) {
-
 								Simulation s=(Simulation) map.get("workerstatus");
 								Simulation s_master=simulationsList.get(simul.getSimID());
-								
+
 								if(s_master.getStartTime() < s.getStartTime())
-								{
+								{   
 									s_master.setStartTime(s.getStartTime());
 								}
 								if(s_master.getStep() < s.getStep())
 								{
 									s_master.setStep(s.getStep());
-									System.out.println(s.getStep());
 								}
+
+
+								s_master.setSTATUS(s.getStatus());
 							}
 
 
@@ -515,8 +516,6 @@ public class MasterServer implements MultiServerInterface{
 	 * @Override
 	 */
 	public void start(int idSimulation){
-
-		System.out.println("launch start command for simiD "+idSimulation);
 
 		Simulation simulationToExec=getSimulationsList().get(idSimulation);
 		int iDSimToExec=simulationToExec.getSimID();

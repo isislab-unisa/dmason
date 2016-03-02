@@ -22,12 +22,12 @@ import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
-import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.ConnectionType;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -52,8 +52,12 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 
@@ -196,14 +200,13 @@ public class Worker {
 				Object o;
 				try {
 					o=parseMessage(msg);
-					final	MyHashMap map=(MyHashMap) o;
+					final MyHashMap map=(MyHashMap) o;
 
 					if(map.containsKey("check")){
 						String info=getInfoWorker();
 
 						getConnection().publishToTopic(info, TOPIC_WORKER_ID, "info");
 					}
-
 					if(map.containsKey("newsim")){
 						Simulation sim=(Simulation)map.get("newsim");
 						createNewSimulationProcess(sim);
@@ -212,24 +215,26 @@ public class Worker {
 
 							@Override
 							public void run() {
-								
+
 								String local=System.currentTimeMillis()+sim.getJarName();
 								sim.setJarName(local);
 								downloadFile(DEFAULT_COPY_SERVER_PORT, sim.getSimulationFolder()+File.separator+local);
 							}
 						}).start(); 
-						//getConnection().publishToTopic(TOPIC_WORKER_ID,TOPIC_WORKER_ID, "downloaded");
 
 					}
-
-
-
 					if (map.containsKey("start")){
 
-						System.out.println("Ho ricev start command per sim id "+map.get("start"));
-
-
 						int id = (int)map.get("start");
+
+						if(simulationList.containsKey(id) && simulationList.get(id).getStatus().equals(Simulation.PAUSED))
+						{
+							for(CellExecutor cexe:executorThread.get(id))
+							{
+								cexe.restartThread();
+							}
+							return;
+						}
 
 						GeneralParam params = null;
 						String prefix=null;
@@ -260,22 +265,34 @@ public class Worker {
 							params.setJ(cellType.pos_j);
 							FileOutputStream output = new FileOutputStream(simulation.getSimulationFolder()+File.separator+"out"+File.separator+cellType+".out");
 							PrintStream printOut = new PrintStream(output);
-						
+
 							CellExecutor celle=(new CellExecutor(params, prefix,simulation.getSimName()+""+simulation.getSimID(), simulation.getJarName(),printOut,simulation.getSimID(),
-									(cellstype.indexOf(cellstype)==0?true:false)));
+									(cellstype.indexOf(cellType)==0?true:false)));
 
 							executorThread.get(simulation.getSimID()).add(celle);
 							celle.startSimulation();
 							getConnection().publishToTopic(simulation.getSimID(),"SIMULATION_READY", "cellready");
 
 						}
-						
+						simulation.setStatusCREATED();
+
 						getConnection().createTopic("SIMULATION_"+simulation.getSimID(), 1);
 						getConnection().publishToTopic(simulation,"SIMULATION_"+simulation.getSimID(), "workerstatus");
+						
 
 					}
+					if (map.containsKey("stop")){
 
+						int id = (int)map.get("stop");
+						stopSimulation(id);
+					}
+					if (map.containsKey("pause")){
 
+						int id = (int)map.get("pause");
+						pauseSimulation(id);
+					}
+
+					//END METHOD
 
 				} catch (JMSException e) {e.printStackTrace();} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
@@ -298,7 +315,41 @@ public class Worker {
 		{
 			cexe.start();
 		}
+		s.setStatusSTARTED();
+		s.setStartTime(System.currentTimeMillis());
+		s.setStep(0);
+		getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
 
+
+
+	}
+	private synchronized void stopSimulation(int sim_id)
+	{
+		Simulation s=simulationList.get(sim_id);
+		s.setEndTime(System.currentTimeMillis());
+		for(CellExecutor cexe:executorThread.get(sim_id))
+		{
+			cexe.stopThread();
+		}
+		//simulationList.remove(sim_id);
+		s.setStatusFINISHED();
+		s.setEndTime(System.currentTimeMillis());
+		getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
+
+
+	}
+	private synchronized void pauseSimulation(int sim_id)
+	{
+		Simulation s=simulationList.get(sim_id);
+		for(CellExecutor cexe:executorThread.get(sim_id))
+		{
+			cexe.pauseThread();
+		}
+		s.setStatusPAUSED();
+		s.setEndTime(System.currentTimeMillis());
+		getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
+
+		
 
 	}
 	class CellExecutor extends Thread{
@@ -309,8 +360,12 @@ public class Worker {
 		public String jar_name;
 		private int sim_id;
 		public boolean run=true;
+		public boolean pause=false;
 		public boolean masterCell=false;
 		private DistributedState dis;
+
+		final Lock lock = new ReentrantLock();
+		final Condition isPause  = lock.newCondition(); 
 
 		public CellExecutor(GeneralParam params, String prefix, String folder_name,String jar_name, PrintStream out,int sim_id,boolean master_cell) {
 			super();
@@ -323,22 +378,39 @@ public class Worker {
 			this.sim_id=sim_id;
 			this.masterCell=master_cell;
 		}
+
 		public void startSimulation(){
 			dis.start();
+
 		}
 		@Override
 		public  void run() {
 			System.out.println("Start cell for "+params.getMaxStep());
 			int i=0;
 			Simulation s=simulationList.get(sim_id);
-			
+
 			while(i!=params.getMaxStep() && run)
 			{   
-				if(masterCell)
+				
+				try{
+					lock.lock();
+					
+					while(pause)
 					{
-						s.setStep(i);
-						getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
+						isPause.await();
 					}
+					
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}finally{
+					lock.unlock();
+				}
+				if(masterCell)
+				{
+					s.setStep(i);
+					getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
+				}
 				dis.schedule.step(dis);
 				i++;
 			}
@@ -349,16 +421,31 @@ public class Worker {
 			run=false;
 			slotsNumber++;
 			Simulation s=simulationList.get(sim_id);
-			if(masterCell)
-				{
-					s.setEndTime(System.currentTimeMillis());
-					System.out.println("publish workstatus "+"SIMULATION_"+s.getSimID());
-					getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
-				}
-			System.out.println("End cell on worker for simualtion: "+sim_id);
-			
+		
 			
 			//invio news al master
+		}
+		public void restartThread() {
+			try{
+				lock.lock();
+				
+				pause=false;
+				isPause.signalAll();
+				
+			}finally{
+				lock.unlock();
+			}
+		}
+		public void pauseThread() {
+			try{
+				lock.lock();
+				
+				pause=true;
+				isPause.signalAll();
+				
+			}finally{
+				lock.unlock();
+			}
 		}
 	}
 	//create folder for the sim
@@ -367,7 +454,6 @@ public class Worker {
 		String path=this.createSimulationDirectoryByID(sim.getSimName()+""+sim.getSimID());
 		sim.setSimulationFolder(path);
 		getSimulationList().put(sim.getSimID(),sim);
-		System.out.println("sto per pubblicare al master");
 		this.getConnection().publishToTopic(TOPIC_WORKER_ID_MASTER, this.TOPIC_WORKER_ID, "simrcv");
 
 
