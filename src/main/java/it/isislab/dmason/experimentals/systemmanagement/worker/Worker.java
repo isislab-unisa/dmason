@@ -184,17 +184,20 @@ public class Worker {
 						int id = (int)map.get("start");
 
 						if(simulationList.containsKey(id) && simulationList.get(id).getStatus().equals(Simulation.PAUSED))
-						{
+						{  
+							simulationList.get(id).setStatus(Simulation.STARTED);
 							for(CellExecutor cexe:executorThread.get(id))
 							{
 								cexe.restartThread();
 							}
+							
 							return;
 						}
 
 						GeneralParam params = null;
 						String prefix=null;
 						Simulation simulation=getSimulationList().get(id);
+						
 						List<CellType> cellstype=simulation.getCellTypeList();
 						int aoi=simulation.getAoi();
 						int height= simulation.getHeight();

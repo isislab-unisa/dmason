@@ -519,7 +519,7 @@ public class MasterServer implements MultiServerInterface{
 									s_master.setStep(s.getStep());
 								}
 
-
+                               
 								s_master.setStatus(s.getStatus());
 							}
 
