@@ -111,6 +111,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 		else
 		sim=new Simulation(simName, simPath, jarSim.getName(), cells, aoi, width, height, numAgent, numStep, mode, connection);	
 		
+	
 		sim.setTopicList(topicList);
 		int simId=server.getKeySim().incrementAndGet();
 		sim.setSimID(simId);

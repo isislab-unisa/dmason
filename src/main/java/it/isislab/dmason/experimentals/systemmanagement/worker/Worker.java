@@ -409,7 +409,6 @@ public class Worker {
 		String path=this.createSimulationDirectoryByID(sim.getSimName()+""+sim.getSimID());
 		sim.setSimulationFolder(path);
 		getSimulationList().put(sim.getSimID(),sim);
-		sim.setStatus(Simulation.CREATED);
 		this.getConnection().publishToTopic(TOPIC_WORKER_ID_MASTER, this.TOPIC_WORKER_ID, "simrcv");
 
 
