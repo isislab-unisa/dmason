@@ -3,7 +3,6 @@ package it.isislab.dmason.experimentals.systemmanagement.master;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
-import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
@@ -11,7 +10,6 @@ import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,12 +30,15 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
-
 import org.apache.activemq.broker.BrokerService;
 
+/**
+ * 
+ * @author miccar
+ *
+ */
 public class MasterServer implements MultiServerInterface{
 
 
@@ -72,7 +73,9 @@ public class MasterServer implements MultiServerInterface{
 	public HashMap<String,String> infoWorkers;
 	private HashMap<Integer,Simulation> simulationsList; //list simulation 
 	private AtomicInteger keySimulation;
-
+    
+	//copy logs
+	private HashMap<String /*workertopicforrequest*/, String /*portcopyLog*/> workerListForCopyLogs=new HashMap<String,String>();
 
 
 	public AtomicInteger getKeySim(){
@@ -544,6 +547,21 @@ public class MasterServer implements MultiServerInterface{
 		return this.invokeCopyServer(pathJar ,simul.getTopicList().size());
 	}
 
+	
+	
+	public void logForSimulationByID(int idSimulation){
+		Simulation simulationForLog=getSimulationsList().get(idSimulation);
+		String folderCopy= simulationForLog.getSimulationFolder()+File.separator+"runs";
+		ArrayList<String> topicWorkers= simulationForLog.getTopicList();
+		for(String topic :topicWorkers)
+		getConnection().publishToTopic(simulationForLog.getSimID(), topic, "logs");
+		//appicc o client con porta
+		
+	
+		
+	}
+	
+	
 
 	///////////methods  START STOP PAUSE	
 

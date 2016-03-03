@@ -16,7 +16,9 @@
  */
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
+import it.isislab.dmason.experimentals.systemmanagement.utils.FindAvailablePort;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
@@ -141,6 +143,66 @@ public class Worker {
 
 
 
+	void playSimulationProcessByID(int id){
+		try {
+		if(simulationList.containsKey(id) && simulationList.get(id).getStatus().equals(Simulation.PAUSED))
+		{  
+			simulationList.get(id).setStatus(Simulation.STARTED);
+			for(CellExecutor cexe:executorThread.get(id))
+			{
+				cexe.restartThread();
+			}
+
+			return;
+		}
+
+		GeneralParam params = null;
+		String prefix=null;
+		Simulation simulation=getSimulationList().get(id);
+
+		List<CellType> cellstype=simulation.getCellTypeList();
+		int aoi=simulation.getAoi();
+		int height= simulation.getHeight();
+		int width= simulation.getWidth();
+		int cols=simulation.getColumns();
+		int rows=simulation.getRows();
+		int agents=simulation.getNumAgents();
+		int mode=simulation.getMode();
+		@SuppressWarnings("unused")
+		int typeConn=simulation.getConnectionType();
+
+		System.err.println("TODO MANAGE CONNECTION MPI");
+		long step=simulation.getNumberStep();
+		prefix= simulation.getTopicPrefix();
+		params=new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ); 	
+		params.setIp(IP_ACTIVEMQ);
+		params.setPort(PORT_ACTIVEMQ);
+		simulationList.put(simulation.getSimID(), simulation);
+		executorThread.put(simulation.getSimID(),new ArrayList<CellExecutor>());
+		for (CellType cellType : cellstype) {
+			slotsNumber--;
+			params.setI(cellType.pos_i);
+			params.setJ(cellType.pos_j);
+			FileOutputStream output = new FileOutputStream(simulation.getSimulationFolder()+File.separator+"out"+File.separator+cellType+".out");
+			PrintStream printOut = new PrintStream(output);
+
+			CellExecutor celle=(new CellExecutor(params, prefix,simulation.getSimName()+""+simulation.getSimID(), simulation.getJarName(),printOut,simulation.getSimID(),
+					(cellstype.indexOf(cellType)==0?true:false)));
+
+			executorThread.get(simulation.getSimID()).add(celle);
+			celle.startSimulation();
+			getConnection().publishToTopic(simulation.getSimID(),"SIMULATION_READY", "cellready");
+
+		}
+
+		getConnection().createTopic("SIMULATION_"+simulation.getSimID(), 1);
+		getConnection().publishToTopic(simulation,"SIMULATION_"+simulation.getSimID(), "workerstatus");
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+
+
 	@SuppressWarnings("serial")
 	private synchronized void listenerForMasterComunication(){
 		try{
@@ -183,58 +245,7 @@ public class Worker {
 
 						int id = (int)map.get("start");
 
-						if(simulationList.containsKey(id) && simulationList.get(id).getStatus().equals(Simulation.PAUSED))
-						{  
-							simulationList.get(id).setStatus(Simulation.STARTED);
-							for(CellExecutor cexe:executorThread.get(id))
-							{
-								cexe.restartThread();
-							}
-							
-							return;
-						}
-
-						GeneralParam params = null;
-						String prefix=null;
-						Simulation simulation=getSimulationList().get(id);
-						
-						List<CellType> cellstype=simulation.getCellTypeList();
-						int aoi=simulation.getAoi();
-						int height= simulation.getHeight();
-						int width= simulation.getWidth();
-						int cols=simulation.getColumns();
-						int rows=simulation.getRows();
-						int agents=simulation.getNumAgents();
-						int mode=simulation.getMode();
-						@SuppressWarnings("unused")
-						int typeConn=simulation.getConnectionType();
-
-						System.err.println("TODO MANAGE CONNECTION MPI");
-						long step=simulation.getNumberStep();
-						prefix= simulation.getTopicPrefix();
-						params=new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ); 	
-						params.setIp(IP_ACTIVEMQ);
-						params.setPort(PORT_ACTIVEMQ);
-						simulationList.put(simulation.getSimID(), simulation);
-						executorThread.put(simulation.getSimID(),new ArrayList<CellExecutor>());
-						for (CellType cellType : cellstype) {
-							slotsNumber--;
-							params.setI(cellType.pos_i);
-							params.setJ(cellType.pos_j);
-							FileOutputStream output = new FileOutputStream(simulation.getSimulationFolder()+File.separator+"out"+File.separator+cellType+".out");
-							PrintStream printOut = new PrintStream(output);
-
-							CellExecutor celle=(new CellExecutor(params, prefix,simulation.getSimName()+""+simulation.getSimID(), simulation.getJarName(),printOut,simulation.getSimID(),
-									(cellstype.indexOf(cellType)==0?true:false)));
-
-							executorThread.get(simulation.getSimID()).add(celle);
-							celle.startSimulation();
-							getConnection().publishToTopic(simulation.getSimID(),"SIMULATION_READY", "cellready");
-
-						}
-
-						getConnection().createTopic("SIMULATION_"+simulation.getSimID(), 1);
-						getConnection().publishToTopic(simulation,"SIMULATION_"+simulation.getSimID(), "workerstatus");
+						playSimulationProcessByID(id);
 
 
 					}
@@ -244,17 +255,20 @@ public class Worker {
 						stopSimulation(id);
 					}
 					if (map.containsKey("pause")){
-                        
+
 						int id = (int)map.get("pause");
 						System.out.println("Command pause received for simulation "+id);
 						pauseSimulation(id);
 					}
 
-					//END METHOD
+					if(map.containsKey("logs")){
+						int id=(int)map.get("logs");
+						System.out.println("Received request for logs for simid "+id);
+						getLogBySimID(id);
+						
+					}
 
-				} catch (JMSException e) {e.printStackTrace();} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}
+				} catch (JMSException e) {e.printStackTrace();} 
 
 
 			}
@@ -354,7 +368,7 @@ public class Worker {
 
 			while(i!=params.getMaxStep() && run)
 			{   
-                if(i%500==0){System.out.println("STEP NUMBER "+dis.schedule.getSteps());}
+				if(i%500==0){System.out.println("STEP NUMBER "+dis.schedule.getSteps());}
 				try{
 					lock.lock();
 
@@ -545,6 +559,11 @@ public class Worker {
 	}
 
 
+	
+	private int findAvailablePort(){
+		int port=FindAvailablePort.getPortAvailable();
+		return port;
+	}
 	/**
 	 * 
 	 */
@@ -554,6 +573,8 @@ public class Worker {
 		info.setIP(WORKER_IP);
 		info.setWorkerID(this.TOPIC_WORKER_ID_MASTER);
 		info.setNumSlots(this.getSlotsNumber());
+		String port =""+findAvailablePort();
+		info.setPortCopyLog(port);
 		return info.toString();
 
 	}

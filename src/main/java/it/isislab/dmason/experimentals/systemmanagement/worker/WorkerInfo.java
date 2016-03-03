@@ -17,6 +17,22 @@ public class WorkerInfo implements Serializable{
 	private String ip="";
 	private String workerID="";
 	private String maxHeap="";
+	private String portCopyLog="";
+	
+	/**
+	 * @return the portCopyLog
+	 */
+	public String getPortCopyLog() {
+		return portCopyLog;
+	}
+
+	/**
+	 * @param portCopyLog the portCopyLog to set
+	 */
+	public void setPortCopyLog(String portCopyLog) {
+		this.portCopyLog = portCopyLog;
+	}
+
 
 	/*private String numStep;
 		  private String mode;
@@ -43,6 +59,7 @@ public class WorkerInfo implements Serializable{
 		maxHeap =dx;
 	}
 	
+
 	public void setIP(String ip){this.ip=ip;};
 	
 	public void setCpuLoad(double x){this.cpuLoad=""+x;}
@@ -80,7 +97,9 @@ public class WorkerInfo implements Serializable{
 				"\"availableheapmemory\":\""+availableheapmemory +"\","+ 
 				"\"busyheapmemory\":\""+ busyheapmemory +"\","+
 				"\"maxHeap\":\""+maxHeap+"\","+
-				"\"ip\":\""+ ip +"\","+"\"workerID\":\""+workerID+"\"}";
+				"\"ip\":\""+ ip +"\","+
+				"\"portcopy\":\""+ portCopyLog +"\","+
+				"\"workerID\":\""+workerID+"\"}";
 	}		
 }
 
