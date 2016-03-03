@@ -1,5 +1,5 @@
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../paper-button/paper-button.html">
+<link rel="import" href="../../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../iron-icons/av-icons.html">
 
 
@@ -10,12 +10,15 @@
                 display: block;
             }
 
-            paper-button{
+            paper-icon-button{
                 width: 50px;
+                height: 50px;
                 margin:0;
-                font-size: medium;
+                padding: 2px;
+                background-color: #636363;
+                border-radius: 100%;
             }
-            paper-button[disabled]{
+            paper-icon-button[disabled]{
                 background: transparent;
             }
             .button{
@@ -24,9 +27,9 @@
 
         </style>
         <div class="layout horizontal center-justified button">
-            <paper-button raised id="play" on-tap="showButton"><iron-icon icon="av:play-circle-filled"></iron-icon> Play</paper-button>
-            <paper-button raised disabled id="pause" on-tap="showButton"><iron-icon icon="av:pause-circle-outline"></iron-icon>Pause</paper-button>
-            <paper-button raised disabled id="stop" on-tap="showButton"><iron-icon icon="av:stop"></iron-icon>Stop</paper-button>
+            <paper-icon-button id="play" title="play" on-click="showButton" icon="av:play-circle-filled" ></paper-icon-button>
+            <paper-icon-button disabled id="pause" title="pause" on-click="showButton" icon="av:pause-circle-outline"></paper-icon-button>
+            <paper-icon-button disabled id="stop" title="stop" on-click="showButton" icon="av:stop"></paper-icon-button>
         </div>
     </template>
 </dom-module>
@@ -95,14 +98,16 @@
 
         showButton: function (event) {
 
-            var id = event.target.id;
+            var button = event.target.parentElement;
+            var id = button.id;
 
-            prev = event.target.parentElement;
+            prev = button.parentElement;
 
             this._enable_button(id);
 
             if (id) {
-                this.$$("#" + id).disabled = true;
+                console.log(event.target.parentElement);
+                event.target.parentElement.disabled = true;
                 this.fire('submit-sim', {
                     tile: prev,
                     data: "" + id
