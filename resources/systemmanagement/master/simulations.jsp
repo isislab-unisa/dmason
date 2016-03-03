@@ -97,27 +97,7 @@
             </template>
 
         <script>
-        <%@ page import="it.isislab.dmason.experimentals.systemmanagement.utils.Simulation,it.isislab.dmason.experimentals.systemmanagement.master.MasterServer" %>
         var scope = document.querySelector('template[is="dom-bind"]');
-           var list_sim =[];
-
-            <%
-                String message = "[";
-                int startMessageSize = message.length();
-                MasterServer masterServer =(MasterServer) request.getServletContext().getAttribute("masterServer");
-                if(masterServer==null)
-                    return;
-                for(Simulation s : masterServer.getSimulationsList().values())
-                        message+=s+",";
-
-                if(message.length() > startMessageSize)
-                    message=message.substring(0, message.length()-1)+"]";
-                else
-                    message="[]";
-            %>
-            list_sim = <%=message %>;
-
-
 
         scope.addEventListener('dom-change', function(event){update_simulation_info()});
 

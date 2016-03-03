@@ -413,13 +413,20 @@ public class Simulation implements Serializable{
 			+ " \"step\":\""+step+"\","
 			+ " \"status\":\""+simulationStatus+"\"}";
 		else // NON UNIFORM
-			return "{name:\"" + simName + "\", id:\"" + simID
-					+ "\", simulationFolder:\"" + simulationFolder + "\", aoi:\"" + aoi + "\", width:\"" + width
-					+ "\", height:\"" + height + "\",numAgents:\"" + numAgents + "\",partitioning:\""
-					+ getModeForToString(this.mode) + "\", connectionType:\"" + connectionType + "\", cells:\""
-					+ P + "\", num_worker:\""
-					+ topicList.size() + "\", start:\""+startTime
-					+"\", step:\""+step+"\", status:\""+simulationStatus+"\"}";
+			return "{\"name\":\"" + simName + "\","
+					+ "\"id\":\"" + simID+ "\","
+					+ "\"simulationFolder\":\"" + simulationFolder + "\","
+					+ "\"aoi\":\"" + aoi + "\","
+					+ "\"width\":\"" + width+ "\","
+					+ "\"height\":\"" + height + "\","
+					+ "\"numAgents\":\"" + numAgents + "\","
+					+ "\"partitioning\":\""+ getModeForToString(this.mode) + "\","
+					+ "\"connectionType\":\"" + connectionType + "\","
+					+ "\"cells\":\""+ P + "\","
+					+ "\"num_worker\":\""+ topicList.size() + "\","
+					+ "\"start\":\""+startTime+"\","
+					+ "\"step\":\""+step+"\","
+					+ "\"status\":\""+simulationStatus+"\"}";
 
 	}
 

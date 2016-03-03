@@ -18,9 +18,12 @@
             paper-button[disabled]{
                 background: transparent;
             }
+            .button{
+                width: auto;
+            }
 
         </style>
-        <div class="layout horizontal center">
+        <div class="layout horizontal center-justified button">
             <paper-button raised id="play" on-tap="showButton"><iron-icon icon="av:play-circle-filled"></iron-icon> Play</paper-button>
             <paper-button raised disabled id="pause" on-tap="showButton"><iron-icon icon="av:pause-circle-outline"></iron-icon>Pause</paper-button>
             <paper-button raised disabled id="stop" on-tap="showButton"><iron-icon icon="av:stop"></iron-icon>Stop</paper-button>
@@ -38,11 +41,25 @@
         properties: {
             simID:{
                 type:String
+            },
+            status:{
+                type:String,
+                value: function(){
+
+                }
             }
         },
 
+
         showButton: function (event){
-             id = event.target.id;
+            var id=""
+            if(status){
+                id = status;
+                console.log("ci sono!");
+             }else{
+                id = event.target.id;
+             }
+
              prev = event.target.parentElement;
             switch (id){
                 case "pause":
