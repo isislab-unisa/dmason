@@ -3,6 +3,7 @@ package it.isislab.dmason.experimentals.systemmanagement.master;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
+import it.isislab.dmason.experimentals.systemmanagement.worker.WorkerInfo;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
@@ -10,6 +11,7 @@ import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,8 +32,10 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
+
 import org.apache.activemq.broker.BrokerService;
 
 /**
@@ -227,7 +231,16 @@ public class MasterServer implements MultiServerInterface{
 						MyHashMap map=(MyHashMap) o;
 
 						if(map.containsKey("info")){
-							infoWorkers.put(myTopicForWorker,""+ map.get("info"));
+							WorkerInfo info=(WorkerInfo) map.get("info");
+							
+							///topic da prendere
+							//oggetto address come value e come kiave il topic suil quale devo pubblicare
+							
+							workerListForCopyLogs.put(info.getIP(), info.getPortCopyLog());
+							
+							
+							
+							infoWorkers.put(myTopicForWorker,""+ info);
 						}
 
 
