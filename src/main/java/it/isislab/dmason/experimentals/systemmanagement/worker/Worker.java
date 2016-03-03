@@ -16,7 +16,7 @@
  */
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
-import it.isislab.dmason.experimentals.systemmanagement.utils.MyFileSystem;
+import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
@@ -416,14 +416,14 @@ public class Worker {
 	}
 	private String createSimulationDirectoryByID(String  name){
 		String path=simulationsDirectories+File.separator+name;
-		MyFileSystem.make(path+File.separator+"out");
+		DMasonFileSystem.make(path+File.separator+"out");
 		return path;
 	}
 
 	protected void deleteSimulationDirectoryByID(String simID){
 		String path=simulationsDirectories+File.separator+simID;
 		File c=new File(path);
-		MyFileSystem.delete(c);
+		DMasonFileSystem.delete(c);
 	}
 
 
@@ -584,9 +584,9 @@ public class Worker {
 		workerDirectory=dmasonDirectory+File.separator+"worker"+File.separator+wID+File.separator+dataStr;
 		workerTemporary=workerDirectory+File.separator+"temporary";
 		simulationsDirectories=workerDirectory+File.separator+"simulations";
-		MyFileSystem.make(workerTemporary);
-		MyFileSystem.make(simulationsDirectories);
-		MyFileSystem.make(workerDirectory+File.separator+"err");
+		DMasonFileSystem.make(workerTemporary);
+		DMasonFileSystem.make(simulationsDirectories);
+		DMasonFileSystem.make(workerDirectory+File.separator+"err");
 		FileOutputStream output = new FileOutputStream(workerDirectory+File.separator+"err"+File.separator+"worker"+TOPIC_WORKER_ID+".err");
 		PrintStream printOut = new PrintStream(output);
 		System.setErr(printOut);

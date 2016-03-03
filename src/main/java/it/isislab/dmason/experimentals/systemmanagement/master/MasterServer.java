@@ -1,7 +1,7 @@
 package it.isislab.dmason.experimentals.systemmanagement.master;
 
 import it.isislab.dmason.exception.DMasonException;
-import it.isislab.dmason.experimentals.systemmanagement.utils.MyFileSystem;
+import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
@@ -97,10 +97,10 @@ public class MasterServer implements MultiServerInterface{
 		broker = new BrokerService();
 		conn=new ConnectionNFieldsWithActiveMQAPI();
 
-		MyFileSystem.make(masterDirectoryFolder);// master
-		MyFileSystem.make(masterTemporaryFolder);//temp folder
-		MyFileSystem.make(masterHistoryFolder); //master/history
-		MyFileSystem.make(simulationsDirectoriesFolder+File.separator+"jobs"); //master/simulations/jobs
+		DMasonFileSystem.make(masterDirectoryFolder);// master
+		DMasonFileSystem.make(masterTemporaryFolder);//temp folder
+		DMasonFileSystem.make(masterHistoryFolder); //master/history
+		DMasonFileSystem.make(simulationsDirectoriesFolder+File.separator+"jobs"); //master/simulations/jobs
 
 		this.loadProperties();
 		this.startActivemq();
@@ -248,7 +248,7 @@ public class MasterServer implements MultiServerInterface{
 	 */
 	public void createSimulationDirectoryByID(String simName){
 		String path=simulationsDirectoriesFolder+File.separator+simName+File.separator+"runs";
-		MyFileSystem.make(path);
+		DMasonFileSystem.make(path);
 	}
 
 
@@ -262,7 +262,7 @@ public class MasterServer implements MultiServerInterface{
 	public void deleteSimulationDirectoryByID(String simID){
 		String path=simulationsDirectoriesFolder+File.separator+simID;
 		File c=new File(path);
-		MyFileSystem.delete(c);
+		DMasonFileSystem.delete(c);
 	}
 
 

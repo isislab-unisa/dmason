@@ -2,7 +2,7 @@ package it.isislab.dmason.experimentals.systemmanagement.utils;
 
 import java.io.File;
 
-public class MyFileSystem {
+public class DMasonFileSystem {
 
 	public static void make(String path){
 		//modify 
