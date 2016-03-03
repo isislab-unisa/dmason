@@ -43,25 +43,22 @@
                 type:String
             },
             status:{
-                type:String,
-                value: function(){
-
-                }
+                type:String
             }
         },
 
 
-        showButton: function (event){
-            var id=""
-            if(status){
-                id = status;
+        showButton: function (event) {
+            var id = ""
+            if (status) {
+                id = getId(status);
                 console.log("ci sono!");
-             }else{
+            } else {
                 id = event.target.id;
-             }
+            }
 
-             prev = event.target.parentElement;
-            switch (id){
+            prev = event.target.parentElement;
+            switch (id) {
                 case "pause":
                     this.$.play.disabled = false;
                     this.$.stop.disabled = false;
@@ -78,16 +75,31 @@
                     console.log("Done!");
                     break;
             }
-            if(id){
-                this.$$("#"+id).disabled = true;
+            if (id) {
+                this.$$("#" + id).disabled = true;
                 this.fire('submit-sim', {
-                 tile: prev,
-                 data: ""+id
-                 });
+                    tile: prev,
+                    data: "" + id
+                });
             }
 
+            getId: function(status) {
+                newStatus = status.toLowerCase();
+                switch (newStatus) {
+                    case "started":
+                        return "play";
 
+                    case "finished":
+                        return "stop";
 
+                    case "paused":
+                        return "pause";
+                    default :
+                        return "";
+                        break;
+                }
+
+            }
         }
     });
 </script>
