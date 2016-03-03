@@ -43,12 +43,14 @@
                 type:String
             },
             status:{
-                type:String,
-                observer: '_display_button'
+                type:String
             }
         },
 
-        getId: function(status) {
+        observers:[
+            '_display_button(status)'
+        ],
+        _getId: function(status) {
             newStatus = status.toLowerCase();
             switch (newStatus) {
                 case "started":
@@ -70,25 +72,25 @@
                 case "pause":
                     this.$.play.disabled = false;
                     this.$.stop.disabled = false;
-                    console.log("Done!");
+                    this.$.pause.disabled = true;
                     break;
                 case "stop":
                     this.$.play.disabled = false;
                     this.$.pause.disabled = true;
-                    console.log("Done!");
+                    this.$.stop.disabled = true;
                     break;
                 case "play":
                     this.$.stop.disabled = false;
                     this.$.pause.disabled = false;
-                    console.log("Done!");
+                    this.$.play.disabled = true;
                     break;
             }
         },
 
         _display_button: function(newValue, oldValue) {
-            var id = getId(newValue);
+            var id = this._getId(newValue);
             if(id){
-                _enable_button(id);
+                this._enable_button(id);
             }
         },
 
@@ -98,7 +100,7 @@
 
             prev = event.target.parentElement;
 
-            _enable_button(id);
+            this._enable_button(id);
 
             if (id) {
                 this.$$("#" + id).disabled = true;
