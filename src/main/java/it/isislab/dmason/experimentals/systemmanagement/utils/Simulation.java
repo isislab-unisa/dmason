@@ -169,6 +169,7 @@ public class Simulation implements Serializable{
 		this.numStep=Long.parseLong(stepsnumber);
 		this.execFileName=execSimNAme;
 		this.cellTypeList=new ArrayList<CellType>();
+		this.setStatus(CREATED);
 	}
 
 
@@ -203,6 +204,7 @@ public class Simulation implements Serializable{
 		this.execFileName=execSimNAme;
 		this.cellTypeList=new ArrayList<CellType>();
 		this.P=Integer.parseInt(p);
+		this.setStatus(CREATED);
 
 	}
 
