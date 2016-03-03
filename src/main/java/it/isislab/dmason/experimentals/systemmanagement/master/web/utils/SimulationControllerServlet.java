@@ -15,7 +15,7 @@ public class SimulationControllerServlet extends HttpServlet {
 	
 @Override
 protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	
+	resp.setContentType("text/plain;charset=UTF-8");
 	if(req.getServletContext().getAttribute("masterServer")==null)
 		return;
 
@@ -35,7 +35,7 @@ protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws Se
             if(op.equals("stop"))
                 masterServer.stop(i);
             else
-                if(op.equals("stop"))
+                if(op.equals("pause"))
                    masterServer.pause(i);
     }else
     	System.out.println("non sono entrato");

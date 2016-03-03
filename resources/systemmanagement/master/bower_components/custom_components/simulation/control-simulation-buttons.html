@@ -78,6 +78,7 @@
                     this.$.play.disabled = false;
                     this.$.pause.disabled = true;
                     this.$.stop.disabled = true;
+                    console.log("leggo "+id);
                     break;
                 case "play":
                     this.$.stop.disabled = false;
@@ -87,8 +88,9 @@
             }
         },
 
-        _display_button: function(newValue, oldValue) {
+        _display_button: function(newValue) {
             var id = this._getId(newValue);
+
             if(id){
                 this._enable_button(id);
             }
