@@ -82,7 +82,7 @@ $(
                     load_tiles_monitoring();
             },1000);
         else
-            if(window.location.pathname=="/simulations.jsp")
+            if(window.location.pathname=="/simulations.html")
 
                 setTimeout(function() {
                     setInterval(function(){
@@ -345,7 +345,7 @@ function _OnsubmitSimulation(event) {
             maxRepeat =0;
             resetForm(event);
             dialog.close();
-            window.location="simulations.jsp";
+            window.location="simulations.html";
         }
     });
 }
@@ -369,17 +369,11 @@ function update_simulation_info(){
 
 function _update_sim_info(_message){
     var scp = document.querySelector('template[is="dom-bind"]');
-
-
     var message=_message;
-
-
     var obj =[];
-
     //console.log(message);
     if(message.length>0)
         obj = JSON.parse(message);
-
 
     if(obj.hasOwnProperty('simulations')){
         scp.$.list_simulations.listItem = obj.simulations;

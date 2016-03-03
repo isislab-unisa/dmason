@@ -43,13 +43,11 @@
                 type:String
             },
             status:{
-                type:String
+                type:String,
+                observer:'_display_button'
             }
         },
 
-        observers:[
-            '_display_button(status)'
-        ],
         _getId: function(status) {
             newStatus = status.toLowerCase();
             switch (newStatus) {
@@ -78,7 +76,6 @@
                     this.$.play.disabled = false;
                     this.$.pause.disabled = true;
                     this.$.stop.disabled = true;
-                    console.log("leggo "+id);
                     break;
                 case "play":
                     this.$.stop.disabled = false;
@@ -88,9 +85,9 @@
             }
         },
 
-        _display_button: function(newValue) {
+        _display_button: function(newValue, oldValue) {
             var id = this._getId(newValue);
-
+            console.log("leggo "+id);
             if(id){
                 this._enable_button(id);
             }
