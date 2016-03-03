@@ -43,21 +43,29 @@
                 type:String
             },
             status:{
-                type:String
+                type:String,
+                observer: '_display_button'
             }
         },
 
+        getId: function(status) {
+            newStatus = status.toLowerCase();
+            switch (newStatus) {
+                case "started":
+                    return "play";
 
-        showButton: function (event) {
-            var id = ""
-            if (status) {
-                id = getId(status);
-                console.log("ci sono!");
-            } else {
-                id = event.target.id;
+                case "finished":
+                    return "stop";
+
+                case "paused":
+                    return "pause";
+                default :
+                    return "";
+                    break;
             }
+        },
 
-            prev = event.target.parentElement;
+        _enable_button: function(id){
             switch (id) {
                 case "pause":
                     this.$.play.disabled = false;
@@ -75,6 +83,23 @@
                     console.log("Done!");
                     break;
             }
+        },
+
+        _display_button: function(newValue, oldValue) {
+            var id = getId(newValue);
+            if(id){
+                _enable_button(id);
+            }
+        },
+
+        showButton: function (event) {
+
+            var id = event.target.id;
+
+            prev = event.target.parentElement;
+
+            _enable_button(id);
+
             if (id) {
                 this.$$("#" + id).disabled = true;
                 this.fire('submit-sim', {
@@ -82,24 +107,7 @@
                     data: "" + id
                 });
             }
-
-            getId: function(status) {
-                newStatus = status.toLowerCase();
-                switch (newStatus) {
-                    case "started":
-                        return "play";
-
-                    case "finished":
-                        return "stop";
-
-                    case "paused":
-                        return "pause";
-                    default :
-                        return "";
-                        break;
-                }
-
-            }
         }
+
     });
 </script>
