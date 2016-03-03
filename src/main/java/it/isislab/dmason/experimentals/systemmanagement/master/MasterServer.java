@@ -554,7 +554,7 @@ public class MasterServer implements MultiServerInterface{
 
 		Simulation simulationToExec=getSimulationsList().get(idSimulation);
 		int iDSimToExec=simulationToExec.getSimID();
-
+		System.out.println("Start command received for simulation with id "+idSimulation);
 		for(String workerTopic : simulationToExec.getTopicList()){
 
 			this.getConnection().publishToTopic(iDSimToExec, workerTopic, "start");
@@ -571,8 +571,9 @@ public class MasterServer implements MultiServerInterface{
 	public void stop(int idSimulation) {
 		Simulation simulationToStop=getSimulationsList().get(idSimulation);
 		int iDSimToStop=simulationToStop.getSimID();
-
-		for(String workerTopic : simulationToStop.getTopicList()){
+        System.out.println("Stop command received for simulation with id "+idSimulation);
+		
+        for(String workerTopic : simulationToStop.getTopicList()){
 
 			this.getConnection().publishToTopic(iDSimToStop, workerTopic, "stop");
 		}
@@ -586,9 +587,9 @@ public class MasterServer implements MultiServerInterface{
 	public void pause(int idSimulation) {
 		Simulation simulationToPause=getSimulationsList().get(idSimulation);
 		int iDSimToPause=simulationToPause.getSimID();
-
+		System.out.println("Pause command received for simulation with id "+idSimulation);
+		
 		for(String workerTopic : simulationToPause.getTopicList()){
-
 			this.getConnection().publishToTopic(iDSimToPause, workerTopic, "pause");
 		}
 

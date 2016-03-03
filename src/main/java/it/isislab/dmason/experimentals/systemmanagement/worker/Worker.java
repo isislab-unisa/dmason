@@ -241,8 +241,9 @@ public class Worker {
 						stopSimulation(id);
 					}
 					if (map.containsKey("pause")){
-
+                        
 						int id = (int)map.get("pause");
+						System.out.println("Command pause received for simulation "+id);
 						pauseSimulation(id);
 					}
 
@@ -350,7 +351,7 @@ public class Worker {
 
 			while(i!=params.getMaxStep() && run)
 			{   
-                if(i%50==0){System.out.println("STEP NUMBER "+dis.schedule.getSteps());}
+                //if(i%50==0){System.out.println("STEP NUMBER "+dis.schedule.getSteps());}
 				try{
 					lock.lock();
 
