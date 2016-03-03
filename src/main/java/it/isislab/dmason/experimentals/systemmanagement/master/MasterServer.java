@@ -520,7 +520,7 @@ public class MasterServer implements MultiServerInterface{
 								}
 
 
-								s_master.setSTATUS(s.getStatus());
+								s_master.setStatus(s.getStatus());
 							}
 
 

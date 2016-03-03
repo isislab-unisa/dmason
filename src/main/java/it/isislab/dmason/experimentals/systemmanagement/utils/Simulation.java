@@ -55,21 +55,9 @@ public class Simulation implements Serializable{
 	public String getStatus() {
 		return simulationStatus;
 	}
-	public void setSTATUS(String status)
+	public void setStatus(String status)
 	{
 		this.simulationStatus=status;
-	}
-	public void setStatusCREATED() {
-		simulationStatus=CREATED  ;
-	}
-	public void setStatusSTARTED() {
-		simulationStatus=STARTED  ;
-	}
-	public void setStatusPAUSED() {
-		simulationStatus=PAUSED  ;
-	}
-	public void setStatusFINISHED() {
-		simulationStatus=FINISHED  ;
 	}
 
 	/**
@@ -149,7 +137,7 @@ public class Simulation implements Serializable{
 
 	/**
 	 * 
-	 * Wrapper of a sim
+	 * Simulation for ActivemQ Connection
 	 * 
 	 * @param simName
 	 * @param simID
@@ -185,7 +173,7 @@ public class Simulation implements Serializable{
 
 
 	/**
-	 * 
+	 * Simulation  for MPI Connection
 	 * @param simName
 	 * @param simulationFolder
 	 * @param execSimNAme
@@ -396,6 +384,11 @@ public class Simulation implements Serializable{
 	}
 
 
+	public void setListCellType(List<CellType> list) {
+		cellTypeList=list;
+
+	}
+
 
 	/**
 	 * toString method for Simulation in json format
@@ -404,22 +397,22 @@ public class Simulation implements Serializable{
 	public String toString() {
 		if(mode==DistributedField2D.UNIFORM_PARTITIONING_MODE)
 			return "{\"name\":\"" + simName + "\","
-					+ " \"id\":\"" + simID+ "\","
-					+ " \"simulationFolder\":\"" + simulationFolder + "\","
-					+ " \"rows\":\"" + rows+ "\","
-					+ " \"columns\":\"" + columns + "\","
-					+ "\"aoi\":\"" + aoi + "\","
-					+ " \"width\":\"" + width+ "\","
-					+ " \"height\":\"" + height + "\","
-					+ "\"numAgents\":\"" + numAgents + "\","
-					+ "\"partitioning\":\""+ getModeForToString(this.mode) + "\","
-					+ " \"connectionType\":\"" + connectionType + "\","
-					+ " \"num_cell\":\""+ numCells + "\","
-					+ " \"num_worker\":\""+ topicList.size() + "\","
-					+ " \"start\":\""+startTime+"\","
-					+ " \"step\":\""+step+"\","
-					+ " \"status\":\""+simulationStatus+"\"}";
-		else 
+			+ " \"id\":\"" + simID+ "\","
+			+ " \"simulationFolder\":\"" + simulationFolder + "\","
+			+ " \"rows\":\"" + rows+ "\","
+			+ " \"columns\":\"" + columns + "\","
+			+ "\"aoi\":\"" + aoi + "\","
+			+ " \"width\":\"" + width+ "\","
+			+ " \"height\":\"" + height + "\","
+			+ "\"numAgents\":\"" + numAgents + "\","
+			+ "\"partitioning\":\""+ getModeForToString(this.mode) + "\","
+			+ " \"connectionType\":\"" + connectionType + "\","
+			+ " \"num_cell\":\""+ numCells + "\","
+			+ " \"num_worker\":\""+ topicList.size() + "\","
+			+ " \"start\":\""+startTime+"\","
+			+ " \"step\":\""+step+"\","
+			+ " \"status\":\""+simulationStatus+"\"}";
+		else // NON UNIFORM
 			return "{name:\"" + simName + "\", id:\"" + simID
 					+ "\", simulationFolder:\"" + simulationFolder + "\", aoi:\"" + aoi + "\", width:\"" + width
 					+ "\", height:\"" + height + "\",numAgents:\"" + numAgents + "\",partitioning:\""
@@ -429,14 +422,6 @@ public class Simulation implements Serializable{
 					+"\", step:\""+step+"\", status:\""+simulationStatus+"\"}";
 
 	}
-
-
-	public void setListCellType(List<CellType> list) {
-		cellTypeList=list;
-
-	}
-
-
 
 
 }

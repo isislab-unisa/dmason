@@ -88,7 +88,7 @@ public class Worker {
 
 
 	/**
-	 * 
+	 * WORKER 
 	 * @param ipMaster
 	 * @param portMaster
 	 * @param topicPrefix
@@ -107,8 +107,7 @@ public class Worker {
 			simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 			this.slotsNumber=slots;
 			signRequestToMaster();
-			
-			
+
 
 			getConnection().createTopic("SIMULATION_READY", 1);
 			getConnection().subscribeToTopic("SIMULATION_READY");
@@ -136,45 +135,11 @@ public class Worker {
 				}
 			});
 		} catch (Exception e) {e.printStackTrace();}
-		
+
 		System.out.println("Worker started ...");
 	}
 
-	@SuppressWarnings("serial")
-	protected void startMasterComunication() {
-		final Worker worker=this;
 
-		try {conn.subscribeToTopic(MASTER_TOPIC);} 
-		catch (Exception e1) {e1.printStackTrace();}
-
-		conn.asynchronousReceive(MASTER_TOPIC, new MyMessageListener() {
-			@Override
-			public void onMessage(Message msg) {
-
-				Object o;
-				try {
-					o=parseMessage(msg);
-					MyHashMap map=(MyHashMap) o;
-					if(map.containsKey(worker.TOPIC_WORKER_ID)){
-						TOPIC_WORKER_ID_MASTER=map.get(TOPIC_WORKER_ID).toString();
-						listenerForMasterComunication();
-					} 
-
-					if(map.containsKey("port")){
-						int port=(int) map.get("port");
-						DEFAULT_COPY_SERVER_PORT=port;
-					}
-
-				} catch (JMSException e) {
-					e.printStackTrace();
-				}
-
-			}
-		});
-
-
-
-	} 	
 
 	@SuppressWarnings("serial")
 	private synchronized void listenerForMasterComunication(){
@@ -240,7 +205,7 @@ public class Worker {
 						int mode=simulation.getMode();
 						@SuppressWarnings("unused")
 						int typeConn=simulation.getConnectionType();
-						
+
 						System.err.println("TODO MANAGE CONNECTION MPI");
 						long step=simulation.getNumberStep();
 						prefix= simulation.getTopicPrefix();
@@ -264,11 +229,10 @@ public class Worker {
 							getConnection().publishToTopic(simulation.getSimID(),"SIMULATION_READY", "cellready");
 
 						}
-						//simulation.setStatusCREATED();
 
 						getConnection().createTopic("SIMULATION_"+simulation.getSimID(), 1);
 						getConnection().publishToTopic(simulation,"SIMULATION_"+simulation.getSimID(), "workerstatus");
-						
+
 
 					}
 					if (map.containsKey("stop")){
@@ -285,7 +249,6 @@ public class Worker {
 					//END METHOD
 
 				} catch (JMSException e) {e.printStackTrace();} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
@@ -293,11 +256,11 @@ public class Worker {
 			}
 		});
 	}
-	//private HashMap<Integer, Simulation> simulations=new HashMap<Integer,Simulation>();
+
+
 	private HashMap<Integer,ArrayList<CellExecutor>> executorThread=new HashMap<Integer,ArrayList<CellExecutor>>();
 
-	private synchronized void runSimulation(int sim_id)
-	{
+	private synchronized void runSimulation(int sim_id){
 		Simulation s=simulationList.get(sim_id);
 		s.setStartTime(System.currentTimeMillis());
 		s.setStep(0);
@@ -305,7 +268,7 @@ public class Worker {
 		{
 			cexe.start();
 		}
-		s.setStatusSTARTED();
+		s.setStatus(Simulation.STARTED);
 		s.setStartTime(System.currentTimeMillis());
 		s.setStep(0);
 		getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
@@ -313,6 +276,10 @@ public class Worker {
 
 
 	}
+	/**
+	 * 
+	 * @param sim_id
+	 */
 	private synchronized void stopSimulation(int sim_id)
 	{
 		Simulation s=simulationList.get(sim_id);
@@ -322,7 +289,7 @@ public class Worker {
 			cexe.stopThread();
 		}
 		//simulationList.remove(sim_id);
-		s.setStatusFINISHED();
+		s.setStatus(Simulation.FINISHED);
 		s.setEndTime(System.currentTimeMillis());
 		getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
 		System.out.println("Simulation "+sim_id+" stopped, with "+executorThread.get(sim_id).size());
@@ -335,12 +302,12 @@ public class Worker {
 		{
 			cexe.pauseThread();
 		}
-		s.setStatusPAUSED();
+		s.setStatus(Simulation.PAUSED);
 		s.setEndTime(System.currentTimeMillis());
 		getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
 		System.out.println("Simulation "+sim_id+" paused, with "+executorThread.get(sim_id).size());
 
-		
+
 
 	}
 	class CellExecutor extends Thread{
@@ -383,15 +350,15 @@ public class Worker {
 
 			while(i!=params.getMaxStep() && run)
 			{   
-				
+
 				try{
 					lock.lock();
-					
+
 					while(pause)
 					{
 						isPause.await();
 					}
-					
+
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -416,10 +383,10 @@ public class Worker {
 		public void restartThread() {
 			try{
 				lock.lock();
-				
+
 				pause=false;
 				isPause.signalAll();
-				
+
 			}finally{
 				lock.unlock();
 			}
@@ -427,22 +394,22 @@ public class Worker {
 		public void pauseThread() {
 			try{
 				lock.lock();
-				
+
 				pause=true;
 				isPause.signalAll();
-				
+
 			}finally{
 				lock.unlock();
 			}
 		}
 	}
-	//create folder for the sim
+
 	private synchronized void createNewSimulationProcess(Simulation sim){
 
 		String path=this.createSimulationDirectoryByID(sim.getSimName()+""+sim.getSimID());
 		sim.setSimulationFolder(path);
 		getSimulationList().put(sim.getSimID(),sim);
-		sim.setStatusCREATED();
+		sim.setStatus(Simulation.CREATED);
 		this.getConnection().publishToTopic(TOPIC_WORKER_ID_MASTER, this.TOPIC_WORKER_ID, "simrcv");
 
 
@@ -529,7 +496,7 @@ public class Worker {
 				ex.printStackTrace();
 			}
 		}	
-		
+
 	}
 
 
@@ -588,7 +555,7 @@ public class Worker {
 
 	}
 
-	protected boolean createConnection(){
+	private boolean createConnection(){
 		Address address=new Address(this.getIpActivemq(), this.getPortActivemq());
 		return conn.setupConnection(address);
 
@@ -606,8 +573,9 @@ public class Worker {
 
 
 	public void getLogBySimID(int simID){
-	//	Simulation sim=getSimulationList().get(simID);
+		//	Simulation sim=getSimulationList().get(simID);
 	}
+
 
 	private void generateFolders(String wID) throws FileNotFoundException {
 		sdf = new SimpleDateFormat(); 
@@ -623,6 +591,8 @@ public class Worker {
 		PrintStream printOut = new PrintStream(output);
 		System.setErr(printOut);
 	}
+
+
 
 	/**
 	 * Explores NetworkInterface and finds IP Address 
@@ -653,6 +623,41 @@ public class Worker {
 		return WORKER_IP;
 	} 
 
+
+	@SuppressWarnings("serial")
+	private void startMasterComunication() {
+		final Worker worker=this;
+
+		try {conn.subscribeToTopic(MASTER_TOPIC);} 
+		catch (Exception e1) {e1.printStackTrace();}
+
+		conn.asynchronousReceive(MASTER_TOPIC, new MyMessageListener() {
+			@Override
+			public void onMessage(Message msg) {
+
+				Object o;
+				try {
+					o=parseMessage(msg);
+					MyHashMap map=(MyHashMap) o;
+					if(map.containsKey(worker.TOPIC_WORKER_ID)){
+						TOPIC_WORKER_ID_MASTER=map.get(TOPIC_WORKER_ID).toString();
+						listenerForMasterComunication();
+					} 
+
+					if(map.containsKey("port")){
+						int port=(int) map.get("port");
+						DEFAULT_COPY_SERVER_PORT=port;
+					}
+
+				} catch (JMSException e) {
+					e.printStackTrace();
+				}
+
+			}
+		});
+	} 	
+
+
 	//getters and setters
 	public String getIpActivemq() {return IP_ACTIVEMQ;}
 	public void setIpActivemq(String iP) {IP_ACTIVEMQ = iP;}
@@ -665,7 +670,4 @@ public class Worker {
 	public synchronized Integer getSlotsNumber(){return slotsNumber;}
 	public int setSlotsNumuber(int slots){return this.slotsNumber=slots;}
 	public HashMap<Integer, Simulation> getSimulationList(){return simulationList;}
-
-
-
 }
