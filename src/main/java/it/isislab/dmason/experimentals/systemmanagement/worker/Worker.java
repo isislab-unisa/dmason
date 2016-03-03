@@ -351,7 +351,7 @@ public class Worker {
 
 			while(i!=params.getMaxStep() && run)
 			{   
-                //if(i%50==0){System.out.println("STEP NUMBER "+dis.schedule.getSteps());}
+                if(i%500==0){System.out.println("STEP NUMBER "+dis.schedule.getSteps());}
 				try{
 					lock.lock();
 
