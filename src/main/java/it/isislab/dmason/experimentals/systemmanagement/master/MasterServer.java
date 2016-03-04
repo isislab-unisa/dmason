@@ -240,7 +240,6 @@ public class MasterServer implements MultiServerInterface{
 							//Address adr=new Address(info.getIP(), info.getPortCopyLog());
 							//workerListForCopyLogs.put(getTopicIdWorkers().get(topicOfWorker), adr);
 							//System.out.println();
-							System.out.println("addd "+infoReceived);
 							infoWorkers.put(myTopicForWorker, infoReceived);
 						}
 
