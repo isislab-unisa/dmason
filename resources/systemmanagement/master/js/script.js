@@ -303,8 +303,6 @@ function _validate(element){
 
     }
 
-    //if(row * cols) > slots then invalid =true
-
 }
 
 
