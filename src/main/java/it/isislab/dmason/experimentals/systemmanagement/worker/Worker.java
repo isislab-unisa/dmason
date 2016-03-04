@@ -606,6 +606,7 @@ public class Worker {
 	   String folderToCopy=sim.getSimulationFolder()+File.separator+"out";
 	   String zippone=sim.getSimulationFolder()+File.separator+"out"+File.separator+"zippone.zip";
 	   System.out.println("Copy file from folder "+folderToCopy+" to "+zippone);
+	   ZipDirectory.createZipDirectory(zippone, folderToCopy);
 	   
 
 	   }

@@ -17,7 +17,7 @@ public class ZipDirectory {
 	private static   String OUTPUT_ZIP_FILE = "";
 	private  static  String SOURCE_FOLDER = "";
 
-	static boolean createZipDirectory(String zipFileToCreate, String folderToZip){
+	public static boolean createZipDirectory(String zipFileToCreate, String folderToZip){
 		OUTPUT_ZIP_FILE=zipFileToCreate;
 		SOURCE_FOLDER=folderToZip;
 		fileList = new ArrayList<String>();
@@ -102,7 +102,7 @@ public class ZipDirectory {
 
 
 
-	private static boolean unZipDirectory(String zipFile, String outputFolder){
+	public static boolean unZipDirectory(String zipFile, String outputFolder){
 
 		byte[] buffer = new byte[1024];
 
