@@ -17,19 +17,19 @@ public class WorkerInfo implements Serializable{
 	private String ip="";
 	private String workerID="";
 	private String maxHeap="";
-	private String portCopyLog="";
+	private int portCopyLog;
 
 	/**
 	 * @return the portCopyLog
 	 */
-	public String getPortCopyLog() {
+	public int getPortCopyLog() {
 		return portCopyLog;
 	}
 
 	/**
 	 * @param portCopyLog the portCopyLog to set
 	 */
-	public void setPortCopyLog(String portCopyLog) {
+	public void setPortCopyLog(int portCopyLog) {
 		this.portCopyLog = portCopyLog;
 	}
 
@@ -98,7 +98,7 @@ public class WorkerInfo implements Serializable{
 				"\"busyheapmemory\":\""+ busyheapmemory +"\","+
 				"\"maxHeap\":\""+maxHeap+"\","+
 				"\"ip\":\""+ ip +"\","+
-				"\"portcopylog\":\""+ portCopyLog +"\","+
+				"\"portcopylog\":"+ portCopyLog +","+
 				"\"workerID\":\""+workerID+"\"}";
 	}
 
@@ -109,7 +109,7 @@ public class WorkerInfo implements Serializable{
 		inf.setIP("123.0.0.0");
 		inf.setWorkerID("1");
 		inf.setNumSlots(11);
-		inf.setPortCopyLog("1616");
+		inf.setPortCopyLog(1616);
 
 		System.out.println(inf.toString());
 		String [] split1=inf.toString().split(",");

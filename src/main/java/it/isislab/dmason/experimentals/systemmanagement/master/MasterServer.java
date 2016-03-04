@@ -700,7 +700,8 @@ public class MasterServer implements MultiServerInterface{
 
 		for(String topic: topicWorkers){ //per ogni worker della simulazione recupero ip e porta del risppettivo copyserver per i log
 			Address address= workerListForCopyLogs.get(topic);
-			String ip= address.getIPaddress();
+	
+			String ip= address.getIPaddress().replace("\"", "");
 			int port = Integer.parseInt(address.getPort());
 			System.out.println("avvio copy client "+ip+":"+port);  
 			//appiccia copyclient

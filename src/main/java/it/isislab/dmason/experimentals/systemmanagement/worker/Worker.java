@@ -578,7 +578,7 @@ public class Worker {
 		info.setIP(WORKER_IP);
 		info.setWorkerID(this.TOPIC_WORKER_ID_MASTER);
 		info.setNumSlots(this.getSlotsNumber());
-		String port =""+findAvailablePort();
+		int port =findAvailablePort();
 		info.setPortCopyLog(port);
 		return info;
 
