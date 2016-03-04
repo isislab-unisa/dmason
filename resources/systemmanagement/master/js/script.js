@@ -229,37 +229,42 @@ function change_partitioning_input_params(element){
 }
 
 function _validate(element){
-    current_element = $(element);
+    var current_element = $(element);
     //console.log("ci sono!");
-    slots = ($("#head_num_slots").text()).trim();
+   var  slots = ($("#head_num_slots").text()).trim();
     if(slots)
         slots = parseInt(slots);
     //console.log("Available slots "+slots);
 
-    row_element   = $("#form_row");
-    cols_element  = $("#form_col");
-    cells_element = $("#form_cells");
+    var row_element   = $("#form_row");
+    var cols_element  = $("#form_col");
+    var cells_element = $("#form_cells");
 
-    row = document.querySelector("#"+row_element.attr("id")).value;
-    cols = document.querySelector("#"+cols_element.attr("id")).value;
-    cells = document.querySelector("#"+cells_element.attr("id")).value;
+    var paper_input_container = current_element.children()[0];
+
+    var row = document.querySelector("#"+row_element.attr("id")).value;
+    var cols = document.querySelector("#"+cols_element.attr("id")).value;
+    var cells = document.querySelector("#"+cells_element.attr("id")).value;
 
 
-    id = current_element.attr("id");
+    var id = current_element.attr("id");
 
-    value = document.querySelector("#"+id).value;
-    cur_slot = (value)?parseInt(value):1;
+    var value = document.querySelector("#"+id).value;
+    var cur_slot = (value)?parseInt(value):1;
     console.log("Id element "+id+" input value "+value+" cur_slot "+cur_slot);
 
 
     if(cur_slot > slots){
         current_element.attr("invalid","true");
-        $("#submit_btn").attr("disabled","true");
+        for (var addon, index = 0; addon = paper_input_container._addons[index]; index++) {
+            addon.update({invalid: true});
+        }
+        $("#submit_btn").disabled = true;
         return false;
     }else{
-        if(current_element.attr("invalid") == "true")
-            //current_element.attr("invalid","false");
-            current_element.children()[0].updateAddons({invalid: false});
+        for (var addon, index = 0; addon = paper_input_container._addons[index]; index++) {
+            addon.update({invalid: false});
+        }
     }
 
     //if(row * cols) > slots then invalid =true
