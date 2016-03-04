@@ -19,31 +19,40 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.google.gson.JsonObject;
-
 public class GetInfoForLogServlet extends HttpServlet{
 
 	private static final long serialVersionUID = 1L;
 	MasterServer masterServer=null;
+	
+	static boolean DEBUG = true;
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/plain;charset=UTF-8");
 		if(req.getServletContext().getAttribute("masterServer")==null)
 			return;
-		JSONObject file = null;
+		JSONObject file;
 		JSONArray list_file = new JSONArray();
 		PrintWriter p = resp.getWriter();
 		masterServer = (MasterServer) req.getServletContext().getAttribute("masterServer");
 		String idSimulation = (String)req.getParameter("id");
-		String logsPathName = masterServer.logForSimulationByID(Integer.parseInt(idSimulation));
+		String logsPathName = "";
+		
+		if(DEBUG)
+			logsPathName = "/home/flaser/git/dmason/dmason/master/simulations/perfile/runs";
+		else
+			logsPathName = masterServer.logForSimulationByID(Integer.parseInt(idSimulation));
 
+		
+		
+		
 		File log_root = new File(logsPathName);
 		BufferedReader br = null;
 		String sCurrentLine = null;
 		String content = "";
-		if(!log_root.isDirectory()){
-			for(File f: log_root.listFiles())
+		if(log_root.isDirectory()){
+			for(File f: log_root.listFiles()){
+				System.out.println("leggo "+f.getName());
 				if(f.exists()){
 					file = new JSONObject();
 					//lf[i]={fileName:'file'+i,modifiedDate:"22/01/2016"};
@@ -55,14 +64,16 @@ public class GetInfoForLogServlet extends HttpServlet{
 					if(f.canRead()){
 						br = new BufferedReader(new FileReader(f));
 						while ((sCurrentLine = br.readLine()) != null) {
-							content+=sCurrentLine;
+							content+=sCurrentLine+'\n';
 						}
+						
 						file.put("content", content);
 					}
 					list_file.add(file);
 				}
+			}
 		}
-
+		br.close();
 		JSONObject json_files = new JSONObject();
 		json_files.put("files", list_file);
 		
@@ -70,7 +81,7 @@ public class GetInfoForLogServlet extends HttpServlet{
 		json_files.writeJSONString(out);
 
 		String jsonText = out.toString();
-		System.out.print(jsonText);
+		System.out.println(jsonText);
 		p.print(jsonText);
 		p.close();
 	}

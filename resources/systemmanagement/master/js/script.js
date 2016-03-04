@@ -397,3 +397,26 @@ function _update_sim_info(_message){
     }
 
 }
+
+
+function getListFile(){
+    $.ajax({
+        url:"requestForLog",
+        success: function(result){
+            _getListFile(result);
+        }
+    });
+}
+
+function _getListFile(result){
+    if(!result) return;
+    var list_file = JSON.parse(result);
+    if(!list_file.hasOwnProperty("files")) return;
+
+    var scp = document.querySelector('template[is="dom-bind"]');
+    var list =[];
+    for(var f, i=0; f = list_file.files[i]; i++){
+            console.log(f);
+            list[i] = f;
+    }
+}
