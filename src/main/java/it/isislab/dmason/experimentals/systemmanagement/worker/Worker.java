@@ -24,6 +24,7 @@ import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
+import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.ConnectionType;
 import it.isislab.dmason.util.connection.MyHashMap;
@@ -168,13 +169,18 @@ public class Worker {
 		int rows=simulation.getRows();
 		int agents=simulation.getNumAgents();
 		int mode=simulation.getMode();
+		int p=simulation.getP();
 		@SuppressWarnings("unused")
 		int typeConn=simulation.getConnectionType();
 
 		System.err.println("TODO MANAGE CONNECTION MPI");
 		long step=simulation.getNumberStep();
 		prefix= simulation.getTopicPrefix();
-		params=new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ); 	
+		
+		params=(simulation.getMode()==DistributedField2D.UNIFORM_PARTITIONING_MODE)?
+				new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ):
+			new GeneralParam(width, height, aoi,p, agents, mode,step,ConnectionType.pureActiveMQ);
+		System.out.println("PARAMETRI SIMULAZIONE "+params.toString());
 		params.setIp(IP_ACTIVEMQ);
 		params.setPort(PORT_ACTIVEMQ);
 		simulationList.put(simulation.getSimID(), simulation);

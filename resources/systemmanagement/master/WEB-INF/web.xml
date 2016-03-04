@@ -68,4 +68,13 @@
         <servlet-name>GetSimulationListServlet</servlet-name>
         <url-pattern>/simulationList</url-pattern>
     </servlet-mapping>
+    
+    	<servlet id="requestForLog">
+        <servlet-name>GetInfoForLogServlet</servlet-name>
+        <servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.GetInfoForLogServlet</servlet-class>
+	  </servlet>
+    <servlet-mapping>
+        <servlet-name>GetInfoForLogServlet</servlet-name>
+        <url-pattern>/requestForLog</url-pattern>
+    </servlet-mapping>
 </web-app>

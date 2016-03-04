@@ -254,7 +254,7 @@ public class GeneralParam implements Serializable
 	public String toString() {
 		return "GeneralParam [Width=" + Width + ", Height=" + Height
 				+ ", Rows=" + Rows + ", Columns=" + Columns + ", AOI="
-				+ Aoi + ", NumAgents=" + NumAgents + ", Mode=" + Mode
+				+ Aoi + ", P="+ P + ", NumAgents=" + NumAgents + ", Mode=" + Mode
 				+ ", MaxStep=" + MaxStep + ", ip=" + ip + ", port=" + port
 				+ ", i=" + i + ", j=" + j + ", isBatch=" + isBatch + "]";
 	}

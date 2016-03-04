@@ -38,7 +38,7 @@ protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws Se
                 if(op.equals("pause"))
                    masterServer.pause(i);
     }else
-    	System.out.println("non sono entrato");
+    	System.out.println("something wrong simulation controller servlet");
 		
 }
 

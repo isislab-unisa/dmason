@@ -46,7 +46,7 @@ public class Simulation implements Serializable{
 	public static final String STARTED="STARTED";
 	public static final String FINISHED="FINISHED";
 	public static final String PAUSED="PAUSED";
-	private String simulationStatus; //play,pause,stop
+	private String simulationStatus=CREATED; //play,pause,stop
 
 
 
@@ -169,12 +169,12 @@ public class Simulation implements Serializable{
 		this.numStep=Long.parseLong(stepsnumber);
 		this.execFileName=execSimNAme;
 		this.cellTypeList=new ArrayList<CellType>();
-		this.setStatus(CREATED);
+
 	}
 
 
 	/**
-	 * Simulation  for MPI Connection
+	 * Simulation  for NON UNIFORM Connection
 	 * @param simName
 	 * @param simulationFolder
 	 * @param execSimNAme
@@ -196,7 +196,6 @@ public class Simulation implements Serializable{
 		this.width = Integer.parseInt(width);
 		this.height = Integer.parseInt(height);
 		this.numAgents = Integer.parseInt(numAgent);
-		this.numCells= getRows()*getColumns();
 		this.connectionType=connection;
 		this.topicList=new ArrayList<>();
 		this.mode = mode;		
@@ -204,7 +203,8 @@ public class Simulation implements Serializable{
 		this.execFileName=execSimNAme;
 		this.cellTypeList=new ArrayList<CellType>();
 		this.P=Integer.parseInt(p);
-		this.setStatus(CREATED);
+		this.numCells= P;
+
 
 	}
 

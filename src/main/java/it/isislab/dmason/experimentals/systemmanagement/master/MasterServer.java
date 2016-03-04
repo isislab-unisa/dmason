@@ -7,6 +7,7 @@ import it.isislab.dmason.experimentals.systemmanagement.worker.WorkerInfo;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
+import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
@@ -77,7 +78,7 @@ public class MasterServer implements MultiServerInterface{
 	public HashMap<String,String> infoWorkers;
 	private HashMap<Integer,Simulation> simulationsList; //list simulation 
 	private AtomicInteger keySimulation;
-    
+
 	//copy logs
 	private HashMap<String /*workertopicforrequest*/, Address /*portcopyLog*/> workerListForCopyLogs=new HashMap<String,Address>();
 
@@ -232,15 +233,9 @@ public class MasterServer implements MultiServerInterface{
 
 						if(map.containsKey("info")){
 							String infoReceived=""+map.get("info");
-							
-							//HashMap<String/*IDprefixOfWorker*/,String/*MyIDTopicprefixOfWorker*/> topicIdWorkers;
-							
-							///topic da prendere
-							//oggetto address come value e come kiave il topic suil quale devo pubblicare
-							//Address adr=new Address(info.getIP(), info.getPortCopyLog());
-							//workerListForCopyLogs.put(getTopicIdWorkers().get(topicOfWorker), adr);
-							//System.out.println();
 							infoWorkers.put(myTopicForWorker, infoReceived);
+							processInfoForCopyLog(infoReceived,topicOfWorker);
+
 						}
 
 
@@ -255,6 +250,27 @@ public class MasterServer implements MultiServerInterface{
 		} 
 		catch (Exception e){e.printStackTrace();}
 
+	}
+
+	private synchronized void processInfoForCopyLog(String info,String topicOfWorker){
+
+		//parse message to get ip e port for logs
+		String [] split=info.split(",");
+
+		String iPaddress="";
+		String port="";
+
+		for(String x: split){
+			if(x.contains("ip")) 
+				iPaddress=x.split(":")[1];
+			if(x.contains("portcopylog"))
+				port=x.split(":")[1];
+
+
+		}
+		String topic=getTopicIdWorkers().get(topicOfWorker);
+		Address address=new Address(iPaddress, port);
+		workerListForCopyLogs.put(/*topic per inviare al worker*/topic, address);
 	}
 
 	/**
@@ -389,58 +405,168 @@ public class MasterServer implements MultiServerInterface{
 
 		HashMap<String/*idtopic*/, List<CellType>> workerlist = new HashMap<String, List<CellType>>(); 
 
-		ArrayList<String> workerID=new ArrayList<String>(slots.keySet());
+		//ArrayList<String> workerID=new ArrayList<String>(slots.keySet());
 		int mode=simul.getMode();
 		int LP=simul.getP();
 		int rows=(int) (mode==0?simul.getRows(): Math.ceil(Math.sqrt(LP/*get LP from geneoparam*/))); 
 		int cols=(int) (mode==0?simul.getColumns()/*getfrom genparm*/: Math.ceil(Math.sqrt(LP/*get LP from geneoparam*/))); 
 
-		LP=mode==0?rows*cols:LP/*get from gene parame*/;
+		LP=mode==DistributedField2D.UNIFORM_PARTITIONING_MODE?rows*cols:LP/*get from gene parame*/;
 
 		int assignedLP=LP;
-		try {
-			int w=0;
-			int lastIndex=-1;
-			boolean goNext=false;
-			for(int i=0; i < rows; i++){
-				goNext=false; lastIndex=-1;
-				for(int j=0; j < cols;){
 
-					if(slots.get(workerID.get(w)) > 0)
-					{
-						slots.put(workerID.get(w), slots.get(workerID.get(w))-1);
-						List<CellType> cells=workerlist.get(workerID.get(w))==null?new ArrayList<CellType>():workerlist.get(workerID.get(w));
-						cells.add(new CellType(i,j));
-						workerlist.put(workerID.get(w),cells);
-						assignedLP--;
-						goNext=true;
+		if(mode==DistributedField2D.UNIFORM_PARTITIONING_MODE){  
+			workerlist= divideForUniform(rows,cols,slots,workerlist,assignedLP);
+			//			int w=0;
+			//			int lastIndex=-1;
+			//			boolean goNext=false;
+			//			for(int i=0; i < rows; i++){
+			//				goNext=false; lastIndex=-1;
+			//				for(int j=0; j < cols;){
+			//
+			//					if(slots.get(workerID.get(w)) > 0)
+			//					{
+			//						slots.put(workerID.get(w), slots.get(workerID.get(w))-1);
+			//						List<CellType> cells=workerlist.get(workerID.get(w))==null?new ArrayList<CellType>():workerlist.get(workerID.get(w));
+			//						cells.add(new CellType(i,j));
+			//						workerlist.put(workerID.get(w),cells);
+			//						assignedLP--;
+			//						goNext=true;
+			//
+			//					}
+			//					if(goNext){
+			//						j++;
+			//						goNext=false;
+			//						lastIndex=-1;
+			//					}
+			//					else{
+			//						if(lastIndex==w)
+			//							System.err.println("errore");
+			//						//						throw new DMasonException("Error! Not enough slots on the workers for the given partitioning.");
+			//
+			//						if(lastIndex==-1) lastIndex=w;
+			//					}
+			//					w=(w+1)%slots.size();
+			//					if(assignedLP < 1) break;
+			//				}
+			//
+			//			}
+		}else if (mode==DistributedField2D.NON_UNIFORM_PARTITIONING_MODE){ //non uniform
+			workerlist=divideForNonUniform( LP, slots, workerlist,assignedLP);
+			//			int w=0;
+			//			int lastIndex=-1;
+			//			boolean goNext=false;
+			//			for(int i=0; i < LP; i++){
+			//				goNext=false; lastIndex=-1;
+			//				if(slots.get(workerID.get(w)) > 0)
+			//				{
+			//					slots.put(workerID.get(w), slots.get(workerID.get(w))-1);
+			//					List<CellType> cells=workerlist.get(workerID.get(w))==null?new ArrayList<CellType>():workerlist.get(workerID.get(w));
+			//					cells.add(new CellType(0,i));
+			//					workerlist.put(workerID.get(w),cells);
+			//					assignedLP--;
+			//					goNext=true;
+			//
+			//				}
+			//				if(goNext){
+			//					goNext=false;
+			//					lastIndex=-1;
+			//				}
+			//				else{
+			//					if(lastIndex==w)
+			//						System.err.println("errore");
+			//					//						throw new DMasonException("Error! Not enough slots on the workers for the given partitioning.");
+			//
+			//					if(lastIndex==-1) lastIndex=w;
+			//				}
+			//				w=(w+1)%slots.size();
+			//				if(assignedLP < 1) break;
+		}				
 
-					}
-					if(goNext){
-						j++;
-						goNext=false;
-						lastIndex=-1;
-					}
-					else{
-						if(lastIndex==w)
-
-							throw new DMasonException("Error! Not enough slots on the workers for the given partitioning.");
-
-						if(lastIndex==-1) lastIndex=w;
-					}
-					w=(w+1)%slots.size();
-					if(assignedLP < 1) break;
-				}
-
-			}
-		} catch (DMasonException e) {
+		/* catch (DMasonException e) {
 			// TODO Auto-generated catch block
 			System.err.println(e.getMessage());
 			return null;
-		}
-
+		}*/
 		return workerlist;
 	}
+
+
+	private HashMap<String/*idtopic*/, List<CellType>> divideForUniform(int rows,int cols,HashMap<String, Integer> slots,HashMap<String/*idtopic*/, List<CellType>> workerlist, int assignedLP){
+		ArrayList<String> workerID=new ArrayList<String>(slots.keySet());
+		int w=0;
+		int lastIndex=-1;
+		boolean goNext=false;
+		for(int i=0; i < rows; i++){
+			goNext=false; lastIndex=-1;
+			for(int j=0; j < cols;){
+
+				if(slots.get(workerID.get(w)) > 0)
+				{
+					slots.put(workerID.get(w), slots.get(workerID.get(w))-1);
+					List<CellType> cells=workerlist.get(workerID.get(w))==null?new ArrayList<CellType>():workerlist.get(workerID.get(w));
+					cells.add(new CellType(i,j));
+					workerlist.put(workerID.get(w),cells);
+					assignedLP--;
+					goNext=true;
+
+				}
+				if(goNext){
+					j++;
+					goNext=false;
+					lastIndex=-1;
+				}
+				else{
+					if(lastIndex==w)
+						System.err.println("errore");
+					//						throw new DMasonException("Error! Not enough slots on the workers for the given partitioning.");
+
+					if(lastIndex==-1) lastIndex=w;
+				}
+				w=(w+1)%slots.size();
+				if(assignedLP < 1) break;
+			}
+		}
+		return workerlist;
+	}
+
+	private HashMap<String/*idtopic*/, List<CellType>> divideForNonUniform(int LP,HashMap<String, Integer> slots,HashMap<String/*idtopic*/, List<CellType>> workerlist, int assignedLP){
+
+		ArrayList<String> workerID=new ArrayList<String>(slots.keySet());
+		int w=0;
+		int lastIndex=-1;
+		boolean goNext=false;
+		for(int i=0; i < LP; i++){
+			goNext=false; lastIndex=-1;
+			if(slots.get(workerID.get(w)) > 0)
+			{
+				slots.put(workerID.get(w), slots.get(workerID.get(w))-1);
+				List<CellType> cells=workerlist.get(workerID.get(w))==null?new ArrayList<CellType>():workerlist.get(workerID.get(w));
+				cells.add(new CellType(0,i));
+				workerlist.put(workerID.get(w),cells);
+				assignedLP--;
+				goNext=true;
+
+			}
+			if(goNext){
+				goNext=false;
+				lastIndex=-1;
+			}
+			else{
+				if(lastIndex==w)
+					System.err.println("errore");
+				//						throw new DMasonException("Error! Not enough slots on the workers for the given partitioning.");
+
+				if(lastIndex==-1) lastIndex=w;
+			}
+			w=(w+1)%slots.size();
+			if(assignedLP < 1) break;
+
+
+		}				
+		return workerlist;
+	}
+
 
 	protected boolean validateSimulationJar(String pathJar)
 	{
@@ -504,7 +630,7 @@ public class MasterServer implements MultiServerInterface{
 		String pathJar=simul.getSimulationFolder()+File.separator+sim.getJarName();
 
 		if(!validateSimulationJar(pathJar)) return false;
-		
+
 
 		try {
 			getConnection().createTopic("SIMULATION_"+sim.getSimID(), 1);
@@ -535,7 +661,7 @@ public class MasterServer implements MultiServerInterface{
 									s_master.setStep(s.getStep());
 								}
 
-                               
+
 								s_master.setStatus(s.getStatus());
 							}
 
@@ -560,21 +686,30 @@ public class MasterServer implements MultiServerInterface{
 		return this.invokeCopyServer(pathJar ,simul.getTopicList().size());
 	}
 
-	
-	
+
+
 	public void logForSimulationByID(int idSimulation){
+		System.out.println("Request for logs for simulation with id servlet"+idSimulation);
 		Simulation simulationForLog=getSimulationsList().get(idSimulation);
+
 		String folderCopy= simulationForLog.getSimulationFolder()+File.separator+"runs";
+
 		ArrayList<String> topicWorkers= simulationForLog.getTopicList();
 		for(String topic :topicWorkers)
-		getConnection().publishToTopic(simulationForLog.getSimID(), topic, "logs");
-		//appicc o client con porta
-		
-	
-		
+			getConnection().publishToTopic(simulationForLog.getSimID(), topic, "logs");
+
+		for(String topic: topicWorkers){ //per ogni worker della simulazione recupero ip e porta del risppettivo copyserver per i log
+			Address address= workerListForCopyLogs.get(topic);
+			String ip= address.getIPaddress();
+			int port = Integer.parseInt(address.getPort());
+			System.out.println("avvio copy client "+ip+":"+port);  
+			//appiccia copyclient
+
+		}	
+
 	}
-	
-	
+
+
 
 	///////////methods  START STOP PAUSE	
 
@@ -602,9 +737,9 @@ public class MasterServer implements MultiServerInterface{
 	public void stop(int idSimulation) {
 		Simulation simulationToStop=getSimulationsList().get(idSimulation);
 		int iDSimToStop=simulationToStop.getSimID();
-        System.out.println("Stop command received for simulation with id "+idSimulation);
-		
-        for(String workerTopic : simulationToStop.getTopicList()){
+		System.out.println("Stop command received for simulation with id "+idSimulation);
+
+		for(String workerTopic : simulationToStop.getTopicList()){
 
 			this.getConnection().publishToTopic(iDSimToStop, workerTopic, "stop");
 		}
@@ -619,7 +754,7 @@ public class MasterServer implements MultiServerInterface{
 		Simulation simulationToPause=getSimulationsList().get(idSimulation);
 		int iDSimToPause=simulationToPause.getSimID();
 		System.out.println("Pause command received for simulation with id "+idSimulation);
-		
+
 		for(String workerTopic : simulationToPause.getTopicList()){
 			this.getConnection().publishToTopic(iDSimToPause, workerTopic, "pause");
 		}
@@ -631,7 +766,7 @@ public class MasterServer implements MultiServerInterface{
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	
+
 	//getters and setters
 	public MasterServer getMasterServer(){return this;}
 	public HashMap<String,String> getTopicIdWorkers(){return topicIdWorkers;}	//all connected workers 
