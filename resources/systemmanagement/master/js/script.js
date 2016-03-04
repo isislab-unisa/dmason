@@ -56,11 +56,11 @@ function open_dialog_setting_new_simulation(){
 function open_dialog(id_paper_dialog){
 
 
-        var dialog = document.getElementById(id_paper_dialog);
-        if (dialog) {
-            dialog.open();
-        }
+    var dialog = document.getElementById(id_paper_dialog);
+    if (dialog) {
+        dialog.open();
     }
+}
 
 function close_dialog(id_paper_dialog){
 
@@ -77,18 +77,18 @@ $(
         if(window.location.pathname=="/" || window.location.pathname=="/index.jsp")
             setInterval(function(){
 
-                    loadWorkers();
-                    if($('#load_workers_dialog').prop("opened"))close_dialog("load_workers_dialog");
-                    load_tiles_monitoring();
+                loadWorkers();
+                if($('#load_workers_dialog').prop("opened"))close_dialog("load_workers_dialog");
+                load_tiles_monitoring();
             },1000);
         else
-            if(window.location.pathname=="/simulations.html")
+        if(window.location.pathname=="/simulations.html")
 
-                setTimeout(function() {
-                    setInterval(function(){
-                        update_simulation_info();
-                        },1000);
-                    }, 5000);
+            setTimeout(function() {
+                setInterval(function(){
+                    update_simulation_info();
+                },1000);
+            }, 5000);
 
 
     }
@@ -136,7 +136,7 @@ function _loadWorkers(_message){
 
     var message=_message;
     var grid=document.getElementById("workers");
-   // var tiles="<div class=\"grid-sizer-monitoring\"></div>";
+    // var tiles="<div class=\"grid-sizer-monitoring\"></div>";
 
     var obj =[];
 
@@ -148,7 +148,7 @@ function _loadWorkers(_message){
     old_list = [];
     $(grid).children('div').each(function(){
         if($(this).attr("id")){
-           // console.log("aggiungo "+$(this).attr("id"));
+            // console.log("aggiungo "+$(this).attr("id"));
             old_list[$(this).attr("id")] = $(this);
         }
     });
@@ -159,8 +159,8 @@ function _loadWorkers(_message){
             w = obj.workers[i];
             var curNode = document.getElementById(w.workerID);
             if(!curNode){
-               node = $("<div id="+w.workerID+" class=\"grid-item-monitoring\" onclick=\"selectItem(this)\"></div>");
-               // node.append($("<div class=\"worker-system-info\"><span>Worker ID: "+ w.workerID+"</span></div>"));
+                node = $("<div id="+w.workerID+" class=\"grid-item-monitoring\" onclick=\"selectItem(this)\"></div>");
+                // node.append($("<div class=\"worker-system-info\"><span>Worker ID: "+ w.workerID+"</span></div>"));
                 node.append($("<div class=\"worker-system-info\"><span id=\"w-cpu-"+w.workerID+"\">CPU:"+w.cpuLoad+" %</span></div>"));
                 node.append($("<div class=\"worker-system-info\"><span>Heap:</span></div>"));
                 node.append($("<div class=\"worker-system-info\"><span id=\"w-max-heap-"+w.workerID+"\" class=\"tab\">Max "+w.maxHeap+" MB</span></div>"));
@@ -181,13 +181,13 @@ function _loadWorkers(_message){
             }
 
             /*
-            tiles+="<div id="+w.workerID+" class=\"grid-item-monitoring\" onclick=\"selectItem(this)\">"
-                +"<div class=\"worker-system-info\"><span>Worker ID: "+i+"</span></div>"
-                +"<div class=\"worker-system-info\"><span>CPU:"+w.cpuLoad+" %</span></div>"
-                +"<div class=\"worker-system-info\"><span>JVM RAM: Free "+w.availableheapmemory+"  MB Used "+w.busyheapmemory+"  MB</span></div>"
-                +"<div class=\"worker-system-info\"><span>IP: "+w.ip+"</span></div>"
-                +"<div class=\"worker-system-info\"><span>#Simulations</span></div>"
-                +"</div>";*/
+             tiles+="<div id="+w.workerID+" class=\"grid-item-monitoring\" onclick=\"selectItem(this)\">"
+             +"<div class=\"worker-system-info\"><span>Worker ID: "+i+"</span></div>"
+             +"<div class=\"worker-system-info\"><span>CPU:"+w.cpuLoad+" %</span></div>"
+             +"<div class=\"worker-system-info\"><span>JVM RAM: Free "+w.availableheapmemory+"  MB Used "+w.busyheapmemory+"  MB</span></div>"
+             +"<div class=\"worker-system-info\"><span>IP: "+w.ip+"</span></div>"
+             +"<div class=\"worker-system-info\"><span>#Simulations</span></div>"
+             +"</div>";*/
         }
     }
     if(old_list.length > 0)
@@ -196,16 +196,16 @@ function _loadWorkers(_message){
             $(old_list[id]).remove();
         }
 
-   // grid.innerHTML=tiles;
+    // grid.innerHTML=tiles;
     load_tiles_monitoring();
 }
 
 
 function selectItem(element){
-        if($(element).hasClass("grid-item-selected"))
-            $(element).removeClass("grid-item-selected");
-        else
-            $(element).addClass("grid-item-selected");
+    if($(element).hasClass("grid-item-selected"))
+        $(element).removeClass("grid-item-selected");
+    else
+        $(element).addClass("grid-item-selected");
 
 }
 
@@ -231,7 +231,7 @@ function change_partitioning_input_params(element){
 function _validate(element){
     var current_element = $(element);
     //console.log("ci sono!");
-   var  slots = ($("#head_num_slots").text()).trim();
+    var  slots = ($("#head_num_slots").text()).trim();
     if(slots)
         slots = parseInt(slots);
     //console.log("Available slots "+slots);
@@ -253,51 +253,65 @@ function _validate(element){
     var cur_slot = (value)?parseInt(value):1;
     console.log("Id element "+id+" input value "+value+" cur_slot "+cur_slot);
 
+    var submit_btn = document.querySelector("#submit_btn");
 
     if(cur_slot > slots){
-        current_element.attr("invalid","true");
-        for (var addon, index = 0; addon = paper_input_container._addons[index]; index++) {
-            addon.update({invalid: true});
-        }
-        $("#submit_btn").disabled = true;
+
+        paper_input_container.invalid = true;
+
+        submit_btn.disabled = true;
         return false;
-    }else{
-        for (var addon, index = 0; addon = paper_input_container._addons[index]; index++) {
-            addon.update({invalid: false});
+    }
+    else{
+
+        switch (id){
+            case "form_row":
+                if(cols){
+                    var int_val = parseInt(cols);
+                    cur_slot *=int_val;
+                    if(cur_slot > slots){
+                        paper_input_container.invalid =true;
+                        submit_btn.disabled = true;
+                        return false;
+                    }
+                }
+                break;
+            case "form_cells":
+                if(cells){
+                    var int_val=parseInt(cells);
+                    if(int_val > slots){
+                        paper_input_container.invalid =true;
+                        submit_btn.disabled = true;
+                        return false;
+                    }
+                }
+                break;
+            case "form_col":
+                if(row){
+                    var int_val = parseInt(row);
+                    cur_slot *=int_val;
+                    if(cur_slot > slots){
+                        paper_input_container.invalid =true;
+                        submit_btn.disabled = true;
+                        return false;
+                    }
+                }
+                break;
         }
+        paper_input_container.invalid =false;
+        submit_btn.disabled = false;
+
     }
 
     //if(row * cols) > slots then invalid =true
-
-    switch (id){
-        case "form_row":
-            if(cols){
-                int_val = parseInt(cols);
-                cur_slot *=int_val;
-                if(cur_slot > slots){
-                    current_element.attr("invalid","true");
-                    $("#submit_btn").attr("disabled","true");
-                    return false;
-                }
-            }
-            if( $("#submit_btn").attr("disabled")=="true")
-                $("#submit_btn").attr("disabled","false");
-
-            break;
-        case "form_cells":
-            break;
-        case "form_col":
-            break;
-    }
-
 
 }
 
 
 function submitForm(){
-/*
-    if(!_validate())
-        return;*/
+    /*
+     if(!_validate())
+     return;*/
     startProgress();
     var form = document.getElementById("sendSimulationForm");
     $(form).unbind('submit').bind("submit",_OnsubmitSimulation);

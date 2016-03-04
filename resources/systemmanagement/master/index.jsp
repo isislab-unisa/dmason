@@ -46,6 +46,8 @@
 <link rel="import" href="bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="bower_components/paper-input/paper-input-error.html">
 
 <link rel="import" href="bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
@@ -179,7 +181,9 @@
                                             <paper-input id="form_row" class="submit_work_form" name="rows" label="Rows" allowed-pattern="[0-9]" error-message="R x C' value exceeds available slots!" onInput="_validate(this)"></paper-input>
                                             <paper-input style="display:none" id="form_cells" class="submit_work_form" name="cells" label="Cells" allowed-pattern="[0-9]" error-message="Cells value exceeds available slots!" onInput="_validate(this)"></paper-input>
                                         </td>
-                                        <td><paper-input id="form_col" class="submit_work_form" name="cols" label="Columns" allowed-pattern="[0-9]" error-message="Rows X Columns value exceeds  available slots!" onInput="_validate(this)"></paper-input></td>
+                                        <td>
+                                            <paper-input id="form_col" class="submit_work_form" name="cols" label="Columns" allowed-pattern="[0-9]" error-message="Rows X Columns value exceeds  available slots!" onInput="_validate(this)"></paper-input>
+                                        </td>
                                         <td><paper-input class="submit_work_form" name="aoi" label="Area of interest" allowed-pattern="[0-9]"></paper-input></td>
                                     </tr>
                                     <tr>
