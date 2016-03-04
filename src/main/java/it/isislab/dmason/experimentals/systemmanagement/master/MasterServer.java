@@ -688,7 +688,7 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-	public void logForSimulationByID(int idSimulation){
+	public String logForSimulationByID(int idSimulation){
 		System.out.println("Request for logs for simulation with id servlet"+idSimulation);
 		Simulation simulationForLog=getSimulationsList().get(idSimulation);
 
@@ -708,6 +708,7 @@ public class MasterServer implements MultiServerInterface{
 
 		}	
 
+		return folderCopy;
 	}
 
 
