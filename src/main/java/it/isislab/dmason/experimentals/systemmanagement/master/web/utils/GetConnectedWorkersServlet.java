@@ -18,7 +18,7 @@ public class GetConnectedWorkersServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/plain;charset=UTF-8");
 		if(req.getServletContext().getAttribute("masterServer")==null)
-			return;
+			return; 	
 		
 		myServer = (MultiServerInterface) req.getServletContext().getAttribute("masterServer");
 		String message = "{\"workers\":[";

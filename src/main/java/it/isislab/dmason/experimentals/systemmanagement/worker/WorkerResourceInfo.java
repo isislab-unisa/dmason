@@ -1,11 +1,17 @@
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
+
+import java.io.Serializable;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.text.DecimalFormat;
 
-public class WorkerResourceInfo {
+public class WorkerResourceInfo implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * 
 	 */

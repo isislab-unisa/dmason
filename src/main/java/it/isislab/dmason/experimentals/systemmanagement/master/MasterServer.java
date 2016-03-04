@@ -79,7 +79,7 @@ public class MasterServer implements MultiServerInterface{
 	private AtomicInteger keySimulation;
     
 	//copy logs
-	private HashMap<String /*workertopicforrequest*/, String /*portcopyLog*/> workerListForCopyLogs=new HashMap<String,String>();
+	private HashMap<String /*workertopicforrequest*/, Address /*portcopyLog*/> workerListForCopyLogs=new HashMap<String,Address>();
 
 
 	public AtomicInteger getKeySim(){
@@ -231,16 +231,17 @@ public class MasterServer implements MultiServerInterface{
 						MyHashMap map=(MyHashMap) o;
 
 						if(map.containsKey("info")){
-							WorkerInfo info=(WorkerInfo) map.get("info");
+							String infoReceived=""+map.get("info");
+							
+							//HashMap<String/*IDprefixOfWorker*/,String/*MyIDTopicprefixOfWorker*/> topicIdWorkers;
 							
 							///topic da prendere
 							//oggetto address come value e come kiave il topic suil quale devo pubblicare
-							
-							workerListForCopyLogs.put(info.getIP(), info.getPortCopyLog());
-							
-							
-							
-							infoWorkers.put(myTopicForWorker,""+ info);
+							//Address adr=new Address(info.getIP(), info.getPortCopyLog());
+							//workerListForCopyLogs.put(getTopicIdWorkers().get(topicOfWorker), adr);
+							//System.out.println();
+							System.out.println("addd "+infoReceived);
+							infoWorkers.put(myTopicForWorker, infoReceived);
 						}
 
 
@@ -629,11 +630,9 @@ public class MasterServer implements MultiServerInterface{
 
 	///////////end  START STOP PAUSE
 
-
-
-
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	
 	//getters and setters
 	public MasterServer getMasterServer(){return this;}
 	public HashMap<String,String> getTopicIdWorkers(){return topicIdWorkers;}	//all connected workers 

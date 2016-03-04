@@ -9,7 +9,7 @@ public class WorkerInfo implements Serializable{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	
 	private String cpuLoad;
 	private int slots;
 	private String availableheapmemory;
@@ -100,6 +100,10 @@ public class WorkerInfo implements Serializable{
 				"\"ip\":\""+ ip +"\","+
 				"\"portcopy\":\""+ portCopyLog +"\","+
 				"\"workerID\":\""+workerID+"\"}";
-	}		
+	}
+	
+	
+	
+	
 }
 

@@ -203,7 +203,7 @@ public class Worker {
 	}
 
 
-	@SuppressWarnings("serial")
+
 	private synchronized void listenerForMasterComunication(){
 		try{
 			getConnection().subscribeToTopic(TOPIC_WORKER_ID_MASTER);
@@ -221,9 +221,8 @@ public class Worker {
 					final MyHashMap map=(MyHashMap) o;
 
 					if(map.containsKey("check")){
-						String info=getInfoWorker();
-
-						getConnection().publishToTopic(info, TOPIC_WORKER_ID, "info");
+						String info=getInfoWorker().toString();
+						getConnection().publishToTopic(info, TOPIC_WORKER_ID,"info");
 					}
 					if(map.containsKey("newsim")){
 						Simulation sim=(Simulation)map.get("newsim");
@@ -567,7 +566,7 @@ public class Worker {
 	/**
 	 * 
 	 */
-	private String getInfoWorker() 
+	private WorkerInfo getInfoWorker() 
 	{
 		WorkerInfo info=new WorkerInfo();
 		info.setIP(WORKER_IP);
@@ -575,7 +574,7 @@ public class Worker {
 		info.setNumSlots(this.getSlotsNumber());
 		String port =""+findAvailablePort();
 		info.setPortCopyLog(port);
-		return info.toString();
+		return info;
 
 	}
 
@@ -597,7 +596,12 @@ public class Worker {
 
 
 	public void getLogBySimID(int simID){
-		//	Simulation sim=getSimulationList().get(simID);
+	   Simulation sim=getSimulationList().get(simID);
+	   String logFolder=sim.getSimulationFolder()+File.separator+"out";
+	   System.out.println("Copy file from folder "+logFolder);
+	   
+	   
+	   
 	}
 
 
