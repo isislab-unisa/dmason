@@ -20,6 +20,7 @@ import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.FindAvailablePort;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
+import it.isislab.dmason.experimentals.systemmanagement.utils.ZipDirectory;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
 import it.isislab.dmason.sim.engine.DistributedState;
@@ -180,7 +181,6 @@ public class Worker {
 		params=(simulation.getMode()==DistributedField2D.UNIFORM_PARTITIONING_MODE)?
 				new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ):
 			new GeneralParam(width, height, aoi,p, agents, mode,step,ConnectionType.pureActiveMQ);
-		System.out.println("PARAMETRI SIMULAZIONE "+params.toString());
 		params.setIp(IP_ACTIVEMQ);
 		params.setPort(PORT_ACTIVEMQ);
 		simulationList.put(simulation.getSimID(), simulation);
@@ -603,12 +603,15 @@ public class Worker {
 
 	public void getLogBySimID(int simID){
 	   Simulation sim=getSimulationList().get(simID);
-	   String logFolder=sim.getSimulationFolder()+File.separator+"out";
-	   System.out.println("Copy file from folder "+logFolder);
+	   String folderToCopy=sim.getSimulationFolder()+File.separator+"out";
+	   String zippone=sim.getSimulationFolder()+File.separator+"out"+File.separator+"zippone.zip";
+	   System.out.println("Copy file from folder "+folderToCopy+" to "+zippone);
+	   
+
+	   }
 	   
 	   
-	   
-	}
+	
 
 
 	private void generateFolders(String wID) throws FileNotFoundException {

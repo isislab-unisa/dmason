@@ -704,6 +704,7 @@ public class MasterServer implements MultiServerInterface{
 			String ip= address.getIPaddress().replace("\"", "");
 			int port = Integer.parseInt(address.getPort());
 			System.out.println("avvio copy client "+ip+":"+port);  
+			
 			//appiccia copyclient
 
 		}	
