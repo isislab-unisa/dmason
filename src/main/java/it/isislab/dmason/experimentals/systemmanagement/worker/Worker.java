@@ -64,6 +64,8 @@ import java.util.jar.JarFile;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
+import com.sun.swing.internal.plaf.synth.resources.synth;
+
 /**
  * 
  * @author Michele Carillo
@@ -601,13 +603,12 @@ public class Worker {
 
 
 
-	public void getLogBySimID(int simID){
+	public boolean getLogBySimID(int simID){
 	   Simulation sim=getSimulationList().get(simID);
 	   String folderToCopy=sim.getSimulationFolder()+File.separator+"out";
 	   String zippone=sim.getSimulationFolder()+File.separator+"out"+File.separator+"zippone.zip";
 	   System.out.println("Copy file from folder "+folderToCopy+" to "+zippone);
-	   ZipDirectory.createZipDirectory(zippone, folderToCopy);
-	   
+	   return ZipDirectory.createZipDirectory(zippone, folderToCopy);	   
 
 	   }
 	   
