@@ -1,6 +1,6 @@
 
-* { box-sizing: border-box; color:#bdced7;}
-
+* { box-sizing: border-box;}
+body {color:#bdced7;}
 
 
 .grid-monitoring, .grid-settings {
