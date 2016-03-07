@@ -17,6 +17,7 @@
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
 import it.isislab.dmason.exception.DMasonException;
+import it.isislab.dmason.experimentals.systemmanagement.utils.ClientSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.FindAvailablePort;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
@@ -63,6 +64,8 @@ import java.util.jar.JarFile;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+
+import org.apache.tools.ant.taskdefs.Copy;
 
 import com.sun.swing.internal.plaf.synth.resources.synth;
 
@@ -236,16 +239,15 @@ public class Worker {
 						Simulation sim=(Simulation)map.get("newsim");
 						createNewSimulationProcess(sim);
 
-						new Thread(new Runnable() {
+						//new Thread(new Runnable() {
 
-							@Override
-							public void run() {
+							//@Override
+							//public void run() {
 
-								String local=System.currentTimeMillis()+sim.getJarName();
-								sim.setJarName(local);
-								downloadFile(DEFAULT_COPY_SERVER_PORT, sim.getSimulationFolder()+File.separator+local);
-							}
-						}).start(); 
+								
+								downloadFile(sim,DEFAULT_COPY_SERVER_PORT);
+							//}
+						//}).start(); 
 
 					}
 					if (map.containsKey("start")){
@@ -453,73 +455,76 @@ public class Worker {
 
 
 
-	/**
-	 * 
-	 * @param path_jar_file
-	 * @param params
-	 * @param prefix
-	 * @return
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 * @throws NoSuchMethodException
-	 * @throws SecurityException
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 * @throws IllegalArgumentException
-	 * @throws InvocationTargetException
-	 */
 
 
-
-
-	protected void downloadFile(int serverSocketPort,String localJarFilePath){ 
-
-		byte[] aByte = new byte[1];
-		int bytesRead;
-		Socket clientSocket = null;
-		InputStream is = null;
+	protected synchronized void downloadFile(Simulation sim,int serverSocketPort){ 
+		
+		String local=System.currentTimeMillis()+sim.getJarName();
+		sim.setJarName(local);
+		String localJarFilePath=sim.getSimulationFolder()+File.separator+local;
+		
+		Socket clientSocket;
 		try {
 			clientSocket = new Socket( this.IP_ACTIVEMQ , serverSocketPort );
-			is = clientSocket.getInputStream();
-
-
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		} 
-
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-		if (is != null) {
-
-			FileOutputStream fos = null;
-			BufferedOutputStream bos = null;
-			try {
-
-				File v=new File(localJarFilePath);
-				if(v.exists()){
-					v.delete();
-					v=new File(localJarFilePath);
-				} 
-				v.setWritable(true);
-				v.setExecutable(true);
-				fos = new FileOutputStream( v );
-				bos = new BufferedOutputStream(fos);
-				bytesRead = is.read(aByte, 0, aByte.length);
-				do {
-					baos.write(aByte);
-					bytesRead = is.read(aByte);
-				} while (bytesRead != -1);
-
-				bos.write(baos.toByteArray());
-				bos.flush();
-				bos.close();
-				//System.out.println("jar copy finished...");
-				clientSocket.close();
-
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
-		}	
+			Thread tr=null;
+	        tr=new Thread(new ClientSocketCopy(clientSocket, localJarFilePath));
+	        tr.start();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        
+		
+		
+		
+		
+		
+//		byte[] aByte = new byte[1];
+//		int bytesRead;
+//		Socket clientSocket = null;
+//		InputStream is = null;
+//		try {
+//			clientSocket = new Socket( this.IP_ACTIVEMQ , serverSocketPort );
+//			is = clientSocket.getInputStream();
+//
+//
+//		} catch (IOException ex) {
+//			ex.printStackTrace();
+//		} 
+//
+//		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//
+//		if (is != null) {
+//
+//			FileOutputStream fos = null;
+//			BufferedOutputStream bos = null;
+//			try {
+//
+//				File v=new File(localJarFilePath);
+//				if(v.exists()){
+//					v.delete();
+//					v=new File(localJarFilePath);
+//				} 
+//				v.setWritable(true);
+//				v.setExecutable(true);
+//				fos = new FileOutputStream( v );
+//				bos = new BufferedOutputStream(fos);
+//				bytesRead = is.read(aByte, 0, aByte.length);
+//				do {
+//					baos.write(aByte);
+//					bytesRead = is.read(aByte);
+//				} while (bytesRead != -1);
+//
+//				bos.write(baos.toByteArray());
+//				bos.flush();
+//				bos.close();
+//				clientSocket.close();
+//
+//			} catch (IOException ex) {
+//				ex.printStackTrace();
+//			}
+//		}	
 
 	}
 

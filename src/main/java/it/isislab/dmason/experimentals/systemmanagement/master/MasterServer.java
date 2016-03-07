@@ -1,6 +1,7 @@
 package it.isislab.dmason.experimentals.systemmanagement.master;
 
 import it.isislab.dmason.exception.DMasonException;
+import it.isislab.dmason.experimentals.systemmanagement.utils.ServerSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.experimentals.systemmanagement.worker.WorkerInfo;
@@ -315,7 +316,7 @@ public class MasterServer implements MultiServerInterface{
 			while (counter<checkControl) {
 				sock = welcomeSocket.accept();
 				counter++;
-				t=new Thread(new CopyMultiThreadServer(sock,jarFile));
+				t=new Thread(new ServerSocketCopy(sock,jarFile));
 				t.start();
 				threads.add(t);
 			}

@@ -1,4 +1,4 @@
-package it.isislab.dmason.experimentals.systemmanagement.master;
+package it.isislab.dmason.experimentals.systemmanagement.utils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -18,11 +18,11 @@ import java.net.Socket;
  * @author Carmine Spagnuolo
  *
  */
-public class CopyMultiThreadServer implements Runnable {
+public class ServerSocketCopy implements Runnable {
 	private Socket csocket=null;
 	private String jarPathToSend;
 
-	public CopyMultiThreadServer(Socket c, String jarPath) {
+	public ServerSocketCopy(Socket c, String jarPath) {
 		this.csocket=c;
 		this.jarPathToSend=jarPath;
 	}
