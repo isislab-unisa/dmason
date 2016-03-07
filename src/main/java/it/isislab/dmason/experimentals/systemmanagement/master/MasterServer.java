@@ -291,8 +291,8 @@ public class MasterServer implements MultiServerInterface{
 			Thread tr=null;
 			tr=new Thread(new ClientSocketCopy(clientSocket, fileCopy));
 			tr.start();
-            tr.join();
-			
+			tr.join();
+
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -301,11 +301,11 @@ public class MasterServer implements MultiServerInterface{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		System.out.println("End download "+fileCopy);
 		System.out.println(new File(fileCopy).exists());
 		ZipDirectory.unZipDirectory(fileCopy, folderCopy);
-		
+
 	}
 
 
@@ -746,18 +746,6 @@ public class MasterServer implements MultiServerInterface{
 		ArrayList<String> topicWorkers= simulationForLog.getTopicList();
 		for(String topic :topicWorkers)
 			getConnection().publishToTopic(simulationForLog.getSimID(), topic, "logreq");
-
-
-		//		for(String topic: topicWorkers){ //per ogni worker della simulazione recupero ip e porta del risppettivo copyserver per i log
-		//			Address address= workerListForCopyLogs.get(topic);
-		//	
-		//			String ip= address.getIPaddress().replace("\"", "");
-		//			int port = Integer.parseInt(address.getPort());
-		//			System.out.println("avvio copy client "+ip+":"+port);  
-		//			
-		//			//appiccia copyclient
-		//
-		//		}	
 
 		return folderCopy;
 	}

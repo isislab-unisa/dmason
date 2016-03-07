@@ -16,7 +16,7 @@
  */
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
-import it.isislab.dmason.exception.DMasonException;
+
 import it.isislab.dmason.experimentals.systemmanagement.utils.ClientSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.FindAvailablePort;
@@ -33,16 +33,11 @@ import it.isislab.dmason.util.connection.ConnectionType;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
-
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
-import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
@@ -63,13 +58,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
-
-import org.apache.tools.ant.taskdefs.Copy;
-
-import com.sun.swing.internal.plaf.synth.resources.synth;
 
 /**
  * 
@@ -101,7 +91,7 @@ public class Worker {
 	//Socket for log services
 	protected Socket sock=null;
 	protected ServerSocket welcomeSocket;
-	
+
 
 	/**
 	 * WORKER 
@@ -123,7 +113,7 @@ public class Worker {
 			simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 			this.slotsNumber=slots;
 			signRequestToMaster();
-            this.PORT_COPY_LOG=findAvailablePort();
+			this.PORT_COPY_LOG=findAvailablePort();
 			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP));
 
 			getConnection().createTopic("SIMULATION_READY", 1);
@@ -160,62 +150,62 @@ public class Worker {
 
 	void playSimulationProcessByID(int id){
 		try {
-		if(simulationList.containsKey(id) && simulationList.get(id).getStatus().equals(Simulation.PAUSED))
-		{  
-			simulationList.get(id).setStatus(Simulation.STARTED);
-			for(CellExecutor cexe:executorThread.get(id))
-			{
-				cexe.restartThread();
+			if(simulationList.containsKey(id) && simulationList.get(id).getStatus().equals(Simulation.PAUSED))
+			{  
+				simulationList.get(id).setStatus(Simulation.STARTED);
+				for(CellExecutor cexe:executorThread.get(id))
+				{
+					cexe.restartThread();
+				}
+
+				return;
 			}
 
-			return;
-		}
+			GeneralParam params = null;
+			String prefix=null;
+			Simulation simulation=getSimulationList().get(id);
 
-		GeneralParam params = null;
-		String prefix=null;
-		Simulation simulation=getSimulationList().get(id);
+			List<CellType> cellstype=simulation.getCellTypeList();
+			int aoi=simulation.getAoi();
+			int height= simulation.getHeight();
+			int width= simulation.getWidth();
+			int cols=simulation.getColumns();
+			int rows=simulation.getRows();
+			int agents=simulation.getNumAgents();
+			int mode=simulation.getMode();
+			int p=simulation.getP();
+			@SuppressWarnings("unused")
+			int typeConn=simulation.getConnectionType();
 
-		List<CellType> cellstype=simulation.getCellTypeList();
-		int aoi=simulation.getAoi();
-		int height= simulation.getHeight();
-		int width= simulation.getWidth();
-		int cols=simulation.getColumns();
-		int rows=simulation.getRows();
-		int agents=simulation.getNumAgents();
-		int mode=simulation.getMode();
-		int p=simulation.getP();
-		@SuppressWarnings("unused")
-		int typeConn=simulation.getConnectionType();
+			System.err.println("TODO MANAGE CONNECTION MPI");
+			long step=simulation.getNumberStep();
+			prefix= simulation.getTopicPrefix();
 
-		System.err.println("TODO MANAGE CONNECTION MPI");
-		long step=simulation.getNumberStep();
-		prefix= simulation.getTopicPrefix();
-		
-		params=(simulation.getMode()==DistributedField2D.UNIFORM_PARTITIONING_MODE)?
-				new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ):
-			new GeneralParam(width, height, aoi,p, agents, mode,step,ConnectionType.pureActiveMQ);
-		params.setIp(IP_ACTIVEMQ);
-		params.setPort(PORT_ACTIVEMQ);
-		simulationList.put(simulation.getSimID(), simulation);
-		executorThread.put(simulation.getSimID(),new ArrayList<CellExecutor>());
-		for (CellType cellType : cellstype) {
-			slotsNumber--;
-			params.setI(cellType.pos_i);
-			params.setJ(cellType.pos_j);
-			FileOutputStream output = new FileOutputStream(simulation.getSimulationFolder()+File.separator+"out"+File.separator+cellType+".out");
-			PrintStream printOut = new PrintStream(output);
+			params=(simulation.getMode()==DistributedField2D.UNIFORM_PARTITIONING_MODE)?
+					new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ):
+						new GeneralParam(width, height, aoi,p, agents, mode,step,ConnectionType.pureActiveMQ);
+					params.setIp(IP_ACTIVEMQ);
+					params.setPort(PORT_ACTIVEMQ);
+					simulationList.put(simulation.getSimID(), simulation);
+					executorThread.put(simulation.getSimID(),new ArrayList<CellExecutor>());
+					for (CellType cellType : cellstype) {
+						slotsNumber--;
+						params.setI(cellType.pos_i);
+						params.setJ(cellType.pos_j);
+						FileOutputStream output = new FileOutputStream(simulation.getSimulationFolder()+File.separator+"out"+File.separator+cellType+".out");
+						PrintStream printOut = new PrintStream(output);
 
-			CellExecutor celle=(new CellExecutor(params, prefix,simulation.getSimName()+""+simulation.getSimID(), simulation.getJarName(),printOut,simulation.getSimID(),
-					(cellstype.indexOf(cellType)==0?true:false)));
+						CellExecutor celle=(new CellExecutor(params, prefix,simulation.getSimName()+""+simulation.getSimID(), simulation.getJarName(),printOut,simulation.getSimID(),
+								(cellstype.indexOf(cellType)==0?true:false)));
 
-			executorThread.get(simulation.getSimID()).add(celle);
-			celle.startSimulation();
-			getConnection().publishToTopic(simulation.getSimID(),"SIMULATION_READY", "cellready");
+						executorThread.get(simulation.getSimID()).add(celle);
+						celle.startSimulation();
+						getConnection().publishToTopic(simulation.getSimID(),"SIMULATION_READY", "cellready");
 
-		}
+					}
 
-		getConnection().createTopic("SIMULATION_"+simulation.getSimID(), 1);
-		getConnection().publishToTopic(simulation,"SIMULATION_"+simulation.getSimID(), "workerstatus");
+					getConnection().createTopic("SIMULATION_"+simulation.getSimID(), 1);
+					getConnection().publishToTopic(simulation,"SIMULATION_"+simulation.getSimID(), "workerstatus");
 		}catch(IOException e){
 			e.printStackTrace();
 		}
@@ -246,16 +236,8 @@ public class Worker {
 					if(map.containsKey("newsim")){
 						Simulation sim=(Simulation)map.get("newsim");
 						createNewSimulationProcess(sim);
-
-						//new Thread(new Runnable() {
-
-							//@Override
-							//public void run() {
-
-								
-								downloadFile(sim,DEFAULT_COPY_SERVER_PORT);
-							//}
-						//}).start(); 
+						
+						downloadFile(sim,DEFAULT_COPY_SERVER_PORT);
 
 					}
 					if (map.containsKey("start")){
@@ -282,7 +264,7 @@ public class Worker {
 						int id=(int)map.get("logreq");
 						System.out.println("Received request for logs for simid "+id);
 						getLogBySimIDProcess(id);
-						
+
 					}
 
 				} catch (JMSException e) {e.printStackTrace();} 
@@ -466,73 +448,23 @@ public class Worker {
 
 
 	protected synchronized void downloadFile(Simulation sim,int serverSocketPort){ 
-		
+
 		String local=System.currentTimeMillis()+sim.getJarName();
 		sim.setJarName(local);
 		String localJarFilePath=sim.getSimulationFolder()+File.separator+local;
-		
+
 		Socket clientSocket;
 		try {
 			clientSocket = new Socket( this.IP_ACTIVEMQ , serverSocketPort );
 			Thread tr=null;
-	        tr=new Thread(new ClientSocketCopy(clientSocket, localJarFilePath));
-	        tr.start();
+			tr=new Thread(new ClientSocketCopy(clientSocket, localJarFilePath));
+			tr.start();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-        
-		
-		
-		
-		
-		
-//		byte[] aByte = new byte[1];
-//		int bytesRead;
-//		Socket clientSocket = null;
-//		InputStream is = null;
-//		try {
-//			clientSocket = new Socket( this.IP_ACTIVEMQ , serverSocketPort );
-//			is = clientSocket.getInputStream();
-//
-//
-//		} catch (IOException ex) {
-//			ex.printStackTrace();
-//		} 
-//
-//		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//
-//		if (is != null) {
-//
-//			FileOutputStream fos = null;
-//			BufferedOutputStream bos = null;
-//			try {
-//
-//				File v=new File(localJarFilePath);
-//				if(v.exists()){
-//					v.delete();
-//					v=new File(localJarFilePath);
-//				} 
-//				v.setWritable(true);
-//				v.setExecutable(true);
-//				fos = new FileOutputStream( v );
-//				bos = new BufferedOutputStream(fos);
-//				bytesRead = is.read(aByte, 0, aByte.length);
-//				do {
-//					baos.write(aByte);
-//					bytesRead = is.read(aByte);
-//				} while (bytesRead != -1);
-//
-//				bos.write(baos.toByteArray());
-//				bos.flush();
-//				bos.close();
-//				clientSocket.close();
-//
-//			} catch (IOException ex) {
-//				ex.printStackTrace();
-//			}
-//		}	
+
 
 	}
 
@@ -579,7 +511,7 @@ public class Worker {
 	}
 
 
-	
+
 	private int findAvailablePort(){
 		int port=FindAvailablePort.getPortAvailable();
 		return port;
@@ -616,53 +548,53 @@ public class Worker {
 
 
 	public synchronized void getLogBySimIDProcess(int simID){
-		  Simulation sim=getSimulationList().get(simID);
-		   String folderToCopy=sim.getSimulationFolder()+File.separator+"out";
-		   String fileToSend=sim.getSimulationFolder()+File.separator+"out"+File.separator+"zippone.zip";
-		
+		Simulation sim=getSimulationList().get(simID);
+		String folderToCopy=sim.getSimulationFolder()+File.separator+"out";
+		String fileToSend=sim.getSimulationFolder()+File.separator+"out"+File.separator+"zippone.zip";
+
 		if(getLogBySimID(folderToCopy,fileToSend)){
 			System.out.println("File zip creato nella dir "+fileToSend);
 			startServiceCopyForLog(fileToSend,simID);
-			
-			
+
+
 		}
 	}
-	
-	
+
+
 	private void startServiceCopyForLog(String zipFile,int id){
 		System.out.println("apro stream copia per "+zipFile);
 		getConnection().publishToTopic(id, this.TOPIC_WORKER_ID, "logready");
 		try{
-		Thread t=null;
-		
+			Thread t=null;
+
 			sock = welcomeSocket.accept();
-		
+
 			t=new Thread(new ServerSocketCopy(sock,zipFile));
 			t.start();
-		
-		
-	 
+
+
+
 		}catch (UnknownHostException e) {e.printStackTrace();} catch (IOException e) {
-		if (welcomeSocket != null && !welcomeSocket.isClosed()) {
-			try {welcomeSocket.close();} 
-			catch (IOException exx){exx.printStackTrace(System.err);}
+			if (welcomeSocket != null && !welcomeSocket.isClosed()) {
+				try {welcomeSocket.close();} 
+				catch (IOException exx){exx.printStackTrace(System.err);}
+			}
 		}
 	}
-	}
-	
-	
-	
-	private boolean getLogBySimID(String folderToCopy, String zippone){
-//	   Simulation sim=getSimulationList().get(simID);
-//	   String folderToCopy=sim.getSimulationFolder()+File.separator+"out";
-//	   String zippone=sim.getSimulationFolder()+File.separator+"out"+File.separator+"zippone.zip";
-	   System.out.println("Copy file from folder "+folderToCopy+" to "+zippone);
-	   return ZipDirectory.createZipDirectory(zippone, folderToCopy);	   
 
-	   }
-	   
-	   
-	
+
+
+	private boolean getLogBySimID(String folderToCopy, String zippone){
+		//	   Simulation sim=getSimulationList().get(simID);
+		//	   String folderToCopy=sim.getSimulationFolder()+File.separator+"out";
+		//	   String zippone=sim.getSimulationFolder()+File.separator+"out"+File.separator+"zippone.zip";
+		System.out.println("Copy file from folder "+folderToCopy+" to "+zippone);
+		return ZipDirectory.createZipDirectory(zippone, folderToCopy);	   
+
+	}
+
+
+
 
 
 	private void generateFolders(String wID) throws FileNotFoundException {

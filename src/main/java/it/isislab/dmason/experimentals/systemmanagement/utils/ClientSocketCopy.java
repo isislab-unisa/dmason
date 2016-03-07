@@ -63,7 +63,7 @@ public class ClientSocketCopy implements Runnable {
 				bos.flush();
 				bos.close();
 				cSocket.close();
-
+           System.out.println(localJarPath +" copied");
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
