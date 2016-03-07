@@ -5,6 +5,7 @@ import it.isislab.dmason.experimentals.systemmanagement.utils.ClientSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.ServerSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
+import it.isislab.dmason.experimentals.systemmanagement.utils.ZipDirectory;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
@@ -19,7 +20,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
@@ -34,6 +37,8 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -238,7 +243,7 @@ public class MasterServer implements MultiServerInterface{
 							processInfoForCopyLog(infoReceived,topicOfWorker);
 
 						}
-						
+
 						if(map.containsKey("logready")){
 							int simID=(int) map.get("logready");
 							System.out.println("start copy of logs for sim id "+simID);
@@ -260,35 +265,36 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 	private synchronized void downloadLogsForSimulationByID(int simID,String topicOfWorker){
-		Simulation sim=simulationsList.get(simID);
-		String folderCopy=sim.getSimulationFolder()+File.separator+"runs"+File.separator+topicOfWorker+".zip";
-		System.out.println("folder per la copia "+folderCopy);
-		
 
-		
+		Simulation sim=simulationsList.get(simID);
+		String folderCopy=sim.getSimulationFolder()+File.separator+"runs";
+		String fileCopy=folderCopy+File.separator+topicOfWorker+".zip";
+		System.out.println("folder per la copia "+fileCopy);
+
+
+
 		Address address= workerListForCopyLogs.get(topicOfWorker);
 
-			String iplog= address.getIPaddress().replace("\"", "");
-			int port = Integer.parseInt(address.getPort());
-		
-		
+		String iplog= address.getIPaddress().replace("\"", "");
+		int port = Integer.parseInt(address.getPort());
+
+
 		Socket clientSocket;
 		try {
 			clientSocket = new Socket( iplog ,port );
 			Thread tr=null;
-	        tr=new Thread(new ClientSocketCopy(clientSocket, folderCopy));
-	        tr.start();
-	        
+			tr=new Thread(new ClientSocketCopy(clientSocket, fileCopy));
+			tr.start();
+
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("emnd copy of "+folderCopy);
 	}
-	
-	
-	
+
+
+
 	private synchronized void processInfoForCopyLog(String info,String topicOfWorker){
 
 		//parse message to get ip e port for logs
@@ -726,8 +732,8 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-	
-	
+
+
 
 
 
@@ -791,17 +797,17 @@ public class MasterServer implements MultiServerInterface{
 		for(String topic :topicWorkers)
 			getConnection().publishToTopic(simulationForLog.getSimID(), topic, "logreq");
 
-		
-//		for(String topic: topicWorkers){ //per ogni worker della simulazione recupero ip e porta del risppettivo copyserver per i log
-//			Address address= workerListForCopyLogs.get(topic);
-//	
-//			String ip= address.getIPaddress().replace("\"", "");
-//			int port = Integer.parseInt(address.getPort());
-//			System.out.println("avvio copy client "+ip+":"+port);  
-//			
-//			//appiccia copyclient
-//
-//		}	
+
+		//		for(String topic: topicWorkers){ //per ogni worker della simulazione recupero ip e porta del risppettivo copyserver per i log
+		//			Address address= workerListForCopyLogs.get(topic);
+		//	
+		//			String ip= address.getIPaddress().replace("\"", "");
+		//			int port = Integer.parseInt(address.getPort());
+		//			System.out.println("avvio copy client "+ip+":"+port);  
+		//			
+		//			//appiccia copyclient
+		//
+		//		}	
 
 		return folderCopy;
 	}
