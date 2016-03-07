@@ -93,6 +93,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         properties: {
             listItem:{
                 type:Array
+            },
+
+            animationConfig: {
+                type: Object,
+                value: function() {
+                    return {
+                        'exit': [{
+                            name: 'ripple-animation',
+                            id: 'ripple',
+                            fromPage: this
+                        }, {
+                            name: 'hero-animation',
+                            id: 'hero',
+                            fromPage: this
+                        }]
+                    }
+                }
             }
         },
 

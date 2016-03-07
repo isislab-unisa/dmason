@@ -5,7 +5,7 @@
 
 <dom-module id="control-simulation-buttons">
     <template>
-        <style>
+        <style is="custom-style">
             :host {
                 display: block;
             }
@@ -18,7 +18,7 @@
                 border-radius: 100%;
             }
             paper-icon-button[disabled]{
-                background: transparent;
+                background-color: transparent;
             }
             paper-icon-button:hover{
                 background-color: #636363;
@@ -92,7 +92,6 @@
 
         _display_button: function(newValue, oldValue) {
             var id = this._getId(newValue);
-            console.log("leggo "+id);
             if(id){
                 this._enable_button(id);
             }

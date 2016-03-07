@@ -4,6 +4,7 @@ import it.isislab.dmason.experimentals.systemmanagement.master.MasterServer;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -42,16 +43,24 @@ public class GetInfoForLogServlet extends HttpServlet{
 		logsPathName = masterServer.logRequestForSimulationByID(Integer.parseInt(idSimulation));
 
 		
-		
-		
 		File log_root = new File(logsPathName);
 		String sCurrentLine = null;
 		Path p;
 		BufferedReader br=null;
 		String content = "";
+		File[] list = log_root.listFiles(new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				// TODO Auto-generated method stub
+				return name.endsWith(".out");
+			}
+		});
+		
+		
 		if(log_root.isDirectory()){
-			for(File f: log_root.listFiles()){
-				System.out.println("leggo "+f.getName());
+			for(File f: list){
+				//System.out.println("leggo "+f.getName());
 				if(f.exists()){
 					p = FileSystems.getDefault().getPath(logsPathName,f.getName());
 					file = new JSONObject();
@@ -87,7 +96,7 @@ public class GetInfoForLogServlet extends HttpServlet{
 		json_files.writeJSONString(out);
 
 		String jsonText = out.toString();
-		System.out.println(jsonText);
+		//System.out.println(jsonText);
 		printer.print(jsonText);
 		printer.close();
 	}

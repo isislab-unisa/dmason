@@ -49,11 +49,11 @@ function open_dialog_setting_new_simulation(){
         return;
     }
 
-    open_dialog("add-simulation-paper-dialog");
+    open_dialog_by_ID("add-simulation-paper-dialog");
 
 }
 
-function open_dialog(id_paper_dialog){
+function open_dialog_by_ID(id_paper_dialog){
 
 
     var dialog = document.getElementById(id_paper_dialog);
@@ -62,7 +62,7 @@ function open_dialog(id_paper_dialog){
     }
 }
 
-function close_dialog(id_paper_dialog){
+function close_dialog_by_ID(id_paper_dialog){
 
 
     var dialog = document.getElementById(id_paper_dialog);
@@ -78,18 +78,18 @@ $(
             setInterval(function(){
 
                 loadWorkers();
-                if($('#load_workers_dialog').prop("opened"))close_dialog("load_workers_dialog");
+                if($('#load_workers_dialog').prop("opened"))close_dialog_by_ID("load_workers_dialog");
                 load_tiles_monitoring();
             },1000);
         else
-        if(window.location.pathname=="/simulations.html")
+        if(window.location.pathname=="/simulations.html") {
 
-            setTimeout(function() {
-                setInterval(function(){
+            setTimeout(function () {
+                setInterval(function () {
                     update_simulation_info();
-                },1000);
+                }, 1000);
             }, 5000);
-
+        }
 
     }
 );
@@ -399,11 +399,13 @@ function _update_sim_info(_message){
 }
 
 
-function getListFile(){
+function getListFile(sim_id){
     $.ajax({
         url:"requestForLog",
+        data:{id:sim_id},
         success: function(result){
             _getListFile(result);
+
         }
     });
 }
@@ -416,7 +418,13 @@ function _getListFile(result){
     var scp = document.querySelector('template[is="dom-bind"]');
     var list =[];
     for(var f, i=0; f = list_file.files[i]; i++){
-            console.log(f);
+            //console.log(f);
             list[i] = f;
     }
+    close_dialog_by_ID("load_sim_log_file");
+    var scp = document.querySelector('template[is="dom-bind"]');
+    scp.$.fullsize_card.listFile =list;
+
+    scp.$.pages.selected = 1;
+
 }

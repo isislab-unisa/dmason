@@ -43,6 +43,7 @@
         <link rel="import" href="bower_components/paper-input/paper-input.html">
         <link rel="import" href="bower_components/paper-progress/paper-progress.html">
         <link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">"
+        <link rel="import" href="bower_components/paper-spinner/paper-spinner.html">
 
 
         <link rel="import" href="bower_components/iron-icons/iron-icons.html">
@@ -90,10 +91,17 @@
             <template is="dom-bind" id="simulations">
                 <neon-animated-pages id="pages" selected="0">
                         <animated-grid id="list_simulations" on-tile-click="_onTileClick" ></animated-grid>
-                        <fullsize-page-with-card id="fullsize-card" on-go-back="_onFullsizeClick">
+                        <fullsize-page-with-card id="fullsize_card" on-go-back="_onFullsizeClick">
                         </fullsize-page-with-card>
                 </neon-animated-pages>
             </template>
+            <paper-dialog id="load_sim_log_file"  entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal>
+                <div class="layout horizontal center">
+                    <paper-spinner class="multi" active alt="Loading workers list"></paper-spinner>
+                    <span>Loading.....</span>
+                </div>
+
+            </paper-dialog>
 
         <script>
         var scope = document.querySelector('template[is="dom-bind"]');
@@ -103,13 +111,16 @@
 
 
         scope._onTileClick = function(event) {
-            this.$['fullsize-card'].sim = event.detail.data;
-        var lf=[];
+            var _sim = event.detail.data;
+            this.$['fullsize_card'].sim = _sim;
+            open_dialog_by_ID("load_sim_log_file");
+            getListFile(_sim.id);
+      /*  var lf=[];
         for(i=0; i<110;i++)
             lf[i]={fileName:'file'+i,modifiedDate:"22/01/2016"};
 
             this.$['fullsize-card'].listFile =lf;
-            this.$.pages.selected = 1;
+            this.$.pages.selected = 1;*/
         };
         scope._onFullsizeClick = function(event){
              this.$.pages.selected = 0;
