@@ -263,6 +263,9 @@ public class Worker {
 					if(map.containsKey("logreq")){
 						int id=(int)map.get("logreq");
 						System.out.println("Received request for logs for simid "+id);
+						if(simulationList.get(id).getStatus().equals(Simulation.STARTED)) 
+						  pauseSimulation(id);
+						 
 						getLogBySimIDProcess(id);
 
 					}
@@ -554,6 +557,7 @@ public class Worker {
 
 		if(getLogBySimID(folderToCopy,fileToSend)){
 			System.out.println("File zip creato nella dir "+fileToSend);
+			playSimulationProcessByID(simID);
 			startServiceCopyForLog(fileToSend,simID);
 
 
