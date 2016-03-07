@@ -42,7 +42,7 @@
         </paper-toolbar>
 
         <div class="main">
-            <template is="dom-repeat" items="{{list_log}}" as="file">
+            <template is="dom-repeat" id="list_file" items="{{list_log}}" as="file">
                 <paper-item on-click="_onClick">
                     <paper-item-body two-line>
                         <div>{{file.fileName}}</div>
@@ -89,15 +89,17 @@
         },
         _onClick: function(event) {
             var target = event.target;
-            while (target !== this && !target._templateInstance) {
+            /*while (target !== this && !target._templateInstance) {
                 target = target.parentNode;
-            }
+            }*/
             // configure the page animation
             this.sharedElements = {
                 'hero': target,
             };
+            var item = this.$.list_file.itemForElement(target);
+            //console.log(item);
             this.fire('item-click', {
-                item: target,
+                data:item
             });
         }
     });
