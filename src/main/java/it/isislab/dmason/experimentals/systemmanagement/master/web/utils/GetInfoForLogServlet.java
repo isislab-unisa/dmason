@@ -88,7 +88,8 @@ public class GetInfoForLogServlet extends HttpServlet{
 				}
 			}
 		}
-		br.close();
+		if(br!=null)
+			br.close();
 		JSONObject json_files = new JSONObject();
 		json_files.put("files", list_file);
 		
