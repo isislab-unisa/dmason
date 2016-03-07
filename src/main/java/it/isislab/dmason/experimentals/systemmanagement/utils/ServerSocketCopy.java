@@ -60,7 +60,7 @@ public class ServerSocketCopy implements Runnable {
 				outToClient.flush();
 				outToClient.close();
 				csocket.close();
-
+            System.out.println("end copy "+jarPathToSend);
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}

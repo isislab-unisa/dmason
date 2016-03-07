@@ -20,6 +20,7 @@ import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.systemmanagement.utils.ClientSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.FindAvailablePort;
+import it.isislab.dmason.experimentals.systemmanagement.utils.ServerSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.experimentals.systemmanagement.utils.ZipDirectory;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
@@ -44,6 +45,7 @@ import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.URL;
@@ -81,6 +83,7 @@ public class Worker {
 	private String IP_ACTIVEMQ="";
 	private String PORT_ACTIVEMQ="";
 	private String TOPICPREFIX="";
+	private int PORT_COPY_LOG;
 	private int slotsNumber=0;
 	private static final String MASTER_TOPIC="MASTER";
 	private static String dmasonDirectory=System.getProperty("user.dir")+File.separator+"dmason";
@@ -95,6 +98,10 @@ public class Worker {
 	private SimpleDateFormat sdf=null;
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 
+	//Socket for log services
+	protected Socket sock=null;
+	protected ServerSocket welcomeSocket;
+	
 
 	/**
 	 * WORKER 
@@ -116,7 +123,8 @@ public class Worker {
 			simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 			this.slotsNumber=slots;
 			signRequestToMaster();
-
+            this.PORT_COPY_LOG=findAvailablePort();
+			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP));
 
 			getConnection().createTopic("SIMULATION_READY", 1);
 			getConnection().subscribeToTopic("SIMULATION_READY");
@@ -270,10 +278,10 @@ public class Worker {
 						pauseSimulation(id);
 					}
 
-					if(map.containsKey("logs")){
-						int id=(int)map.get("logs");
+					if(map.containsKey("logreq")){
+						int id=(int)map.get("logreq");
 						System.out.println("Received request for logs for simid "+id);
-						getLogBySimID(id);
+						getLogBySimIDProcess(id);
 						
 					}
 
@@ -585,8 +593,7 @@ public class Worker {
 		info.setIP(WORKER_IP);
 		info.setWorkerID(this.TOPIC_WORKER_ID_MASTER);
 		info.setNumSlots(this.getSlotsNumber());
-		int port =findAvailablePort();
-		info.setPortCopyLog(port);
+		info.setPortCopyLog(PORT_COPY_LOG);
 		return info;
 
 	}
@@ -608,10 +615,47 @@ public class Worker {
 
 
 
-	public boolean getLogBySimID(int simID){
-	   Simulation sim=getSimulationList().get(simID);
-	   String folderToCopy=sim.getSimulationFolder()+File.separator+"out";
-	   String zippone=sim.getSimulationFolder()+File.separator+"out"+File.separator+"zippone.zip";
+	public synchronized void getLogBySimIDProcess(int simID){
+		  Simulation sim=getSimulationList().get(simID);
+		   String folderToCopy=sim.getSimulationFolder()+File.separator+"out";
+		   String fileToSend=sim.getSimulationFolder()+File.separator+"out"+File.separator+"zippone.zip";
+		
+		if(getLogBySimID(folderToCopy,fileToSend)){
+			System.out.println("File zip creato nella dir "+fileToSend);
+			startServiceCopyForLog(fileToSend,simID);
+			
+			
+		}
+	}
+	
+	
+	private void startServiceCopyForLog(String zipFile,int id){
+		System.out.println("apro stream copia per "+zipFile);
+		getConnection().publishToTopic(id, this.TOPIC_WORKER_ID, "logready");
+		try{
+		Thread t=null;
+		
+			sock = welcomeSocket.accept();
+		
+			t=new Thread(new ServerSocketCopy(sock,zipFile));
+			t.start();
+		
+		
+	 
+		}catch (UnknownHostException e) {e.printStackTrace();} catch (IOException e) {
+		if (welcomeSocket != null && !welcomeSocket.isClosed()) {
+			try {welcomeSocket.close();} 
+			catch (IOException exx){exx.printStackTrace(System.err);}
+		}
+	}
+	}
+	
+	
+	
+	private boolean getLogBySimID(String folderToCopy, String zippone){
+//	   Simulation sim=getSimulationList().get(simID);
+//	   String folderToCopy=sim.getSimulationFolder()+File.separator+"out";
+//	   String zippone=sim.getSimulationFolder()+File.separator+"out"+File.separator+"zippone.zip";
 	   System.out.println("Copy file from folder "+folderToCopy+" to "+zippone);
 	   return ZipDirectory.createZipDirectory(zippone, folderToCopy);	   
 
