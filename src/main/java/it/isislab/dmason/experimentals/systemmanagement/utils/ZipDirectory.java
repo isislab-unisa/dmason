@@ -114,6 +114,7 @@ public class ZipDirectory {
 				folder.mkdir();
 			}
 
+			System.out.println("Start exstrazione "+zipFile);
 			//get the zip file content
 			ZipInputStream zis = 
 					new ZipInputStream(new FileInputStream(zipFile));
@@ -145,7 +146,7 @@ public class ZipDirectory {
 			zis.closeEntry();
 			zis.close();
 
-			System.out.println("Done");
+			System.out.println("Done unzip");
             return true;
             
 		}catch(IOException ex){
@@ -157,7 +158,7 @@ public class ZipDirectory {
 
 	public static void main(String[] args) {
 		String folderToZip="/home/miccar/Scrivania/worker/04-03-16-15_33/simulations/gvsbhscbhd1/out";
-		String pathZip="/home/miccar/Scrivania/prova.zip";
+		String pathZip="/home/miccar/git/dmason/dmason/master/simulations/miasim/runs/-1043054413.zip";
 		String pathUnzip="/home/miccar/Scrivania/outputZip";
 
 		//if(ZipDirectory.createZipDirectory(pathZip, folderToZip)) System.out.println("finished");

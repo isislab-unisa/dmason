@@ -43,7 +43,13 @@ import java.util.zip.ZipInputStream;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
+import oracle.jrockit.jfr.events.DynamicValueDescriptor;
+
 import org.apache.activemq.broker.BrokerService;
+
+import com.sun.nio.zipfs.ZipPath;
+
+import scala.annotation.meta.field;
 
 /**
  * 
@@ -285,12 +291,21 @@ public class MasterServer implements MultiServerInterface{
 			Thread tr=null;
 			tr=new Thread(new ClientSocketCopy(clientSocket, fileCopy));
 			tr.start();
-
+            tr.join();
+			
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
+		System.out.println("End download "+fileCopy);
+		System.out.println(new File(fileCopy).exists());
+		ZipDirectory.unZipDirectory(fileCopy, folderCopy);
+		
 	}
 
 
@@ -460,79 +475,15 @@ public class MasterServer implements MultiServerInterface{
 
 		if(mode==DistributedField2D.UNIFORM_PARTITIONING_MODE){  
 			workerlist= divideForUniform(rows,cols,slots,workerlist,assignedLP);
-			//			int w=0;
-			//			int lastIndex=-1;
-			//			boolean goNext=false;
-			//			for(int i=0; i < rows; i++){
-			//				goNext=false; lastIndex=-1;
-			//				for(int j=0; j < cols;){
-			//
-			//					if(slots.get(workerID.get(w)) > 0)
-			//					{
-			//						slots.put(workerID.get(w), slots.get(workerID.get(w))-1);
-			//						List<CellType> cells=workerlist.get(workerID.get(w))==null?new ArrayList<CellType>():workerlist.get(workerID.get(w));
-			//						cells.add(new CellType(i,j));
-			//						workerlist.put(workerID.get(w),cells);
-			//						assignedLP--;
-			//						goNext=true;
-			//
-			//					}
-			//					if(goNext){
-			//						j++;
-			//						goNext=false;
-			//						lastIndex=-1;
-			//					}
-			//					else{
-			//						if(lastIndex==w)
-			//							System.err.println("errore");
-			//						//						throw new DMasonException("Error! Not enough slots on the workers for the given partitioning.");
-			//
-			//						if(lastIndex==-1) lastIndex=w;
-			//					}
-			//					w=(w+1)%slots.size();
-			//					if(assignedLP < 1) break;
-			//				}
-			//
-			//			}
+
 		}else if (mode==DistributedField2D.NON_UNIFORM_PARTITIONING_MODE){ //non uniform
 			workerlist=divideForNonUniform( LP, slots, workerlist,assignedLP);
-			//			int w=0;
-			//			int lastIndex=-1;
-			//			boolean goNext=false;
-			//			for(int i=0; i < LP; i++){
-			//				goNext=false; lastIndex=-1;
-			//				if(slots.get(workerID.get(w)) > 0)
-			//				{
-			//					slots.put(workerID.get(w), slots.get(workerID.get(w))-1);
-			//					List<CellType> cells=workerlist.get(workerID.get(w))==null?new ArrayList<CellType>():workerlist.get(workerID.get(w));
-			//					cells.add(new CellType(0,i));
-			//					workerlist.put(workerID.get(w),cells);
-			//					assignedLP--;
-			//					goNext=true;
-			//
-			//				}
-			//				if(goNext){
-			//					goNext=false;
-			//					lastIndex=-1;
-			//				}
-			//				else{
-			//					if(lastIndex==w)
-			//						System.err.println("errore");
-			//					//						throw new DMasonException("Error! Not enough slots on the workers for the given partitioning.");
-			//
-			//					if(lastIndex==-1) lastIndex=w;
-			//				}
-			//				w=(w+1)%slots.size();
-			//				if(assignedLP < 1) break;
+
 		}				
 
-		/* catch (DMasonException e) {
-			// TODO Auto-generated catch block
-			System.err.println(e.getMessage());
-			return null;
-		}*/
 		return workerlist;
 	}
+
 
 
 	private HashMap<String/*idtopic*/, List<CellType>> divideForUniform(int rows,int cols,HashMap<String, Integer> slots,HashMap<String/*idtopic*/, List<CellType>> workerlist, int assignedLP){
@@ -703,7 +654,6 @@ public class MasterServer implements MultiServerInterface{
 								{
 									s_master.setStep(s.getStep());
 								}
-
 
 								s_master.setStatus(s.getStatus());
 							}
