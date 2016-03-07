@@ -40,9 +40,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 position: absolute;
                 top: 0;
                 left: 0;
-                margin:10px;
-                width: 100%;
-                height: 100%;
+                width: 1024px;
+                height: 768px;
+                min-width: 1024px;
+                min-height: 768px;
                 overflow-x: visible;
             }
             .card {
@@ -50,6 +51,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 margin: 50px auto auto 120px;
                 width: 780px;
                 height: 580px;
+                min-width: 780px;
+                min-height: 580px;
                 background-color: #3f4242;
                 @apply(--layout-horizontal);
             }
@@ -72,7 +75,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             div.animation-log-container{
-                width: 600px;
+                min-width: 300px;
                 margin-left: 30px;
 
             }
@@ -93,7 +96,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         </style>
 
-        <div id="fixed" class="fixed"><paper-button id="back_button" on-click="go_back"><iron-icon icon="arrow-back"></iron-icon> BACK</paper-button></div>
+        <div id="fixed" class="fixed horizontal layout"><paper-button id="back_button" on-click="go_back"><iron-icon icon="arrow-back"></iron-icon> BACK</paper-button></div>
         <div id="card" class="card">
             <div class="simulation-container">
                 <paper-card id="sim_info" heading="Simulation Info">
@@ -105,6 +108,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <paper-button raised>Download Logs <iron-icon icon="file-download"></iron-icon></paper-button>
                 </div>
             </div>
+            <div class="flex"></div>
             <div class="animation-log-container">
                 <neon-animated-pages id="log_files" selected="0">
                     <list-view list_log="{{listFile}}" on-item-click="_onItemClick"></list-view>

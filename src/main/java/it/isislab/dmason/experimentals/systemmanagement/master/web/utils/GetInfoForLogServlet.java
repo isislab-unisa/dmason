@@ -4,10 +4,13 @@ import it.isislab.dmason.experimentals.systemmanagement.master.MasterServer;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -23,8 +26,6 @@ public class GetInfoForLogServlet extends HttpServlet{
 
 	private static final long serialVersionUID = 1L;
 	MasterServer masterServer=null;
-	
-	static boolean DEBUG = true;
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -33,27 +34,26 @@ public class GetInfoForLogServlet extends HttpServlet{
 			return;
 		JSONObject file;
 		JSONArray list_file = new JSONArray();
-		PrintWriter p = resp.getWriter();
+		PrintWriter printer = resp.getWriter();
 		masterServer = (MasterServer) req.getServletContext().getAttribute("masterServer");
 		String idSimulation = (String)req.getParameter("id");
 		String logsPathName = "";
 		
-		if(DEBUG)
-			logsPathName = "/home/flaser/git/dmason/dmason/master/simulations/perfile/runs";
-		else
-			logsPathName = masterServer.logForSimulationByID(Integer.parseInt(idSimulation));
+		logsPathName = masterServer.logRequestForSimulationByID(Integer.parseInt(idSimulation));
 
 		
 		
 		
 		File log_root = new File(logsPathName);
-		BufferedReader br = null;
 		String sCurrentLine = null;
+		Path p;
+		BufferedReader br=null;
 		String content = "";
 		if(log_root.isDirectory()){
 			for(File f: log_root.listFiles()){
 				System.out.println("leggo "+f.getName());
 				if(f.exists()){
+					p = FileSystems.getDefault().getPath(logsPathName,f.getName());
 					file = new JSONObject();
 					//lf[i]={fileName:'file'+i,modifiedDate:"22/01/2016"};
 					file.put("fileName", f.getName());
@@ -62,9 +62,15 @@ public class GetInfoForLogServlet extends HttpServlet{
 					String dateText = df2.format(date);
 					file.put("modifiedDate", dateText);
 					if(f.canRead()){
-						br = new BufferedReader(new FileReader(f));
-						while ((sCurrentLine = br.readLine()) != null) {
-							content+=sCurrentLine+'\n';
+						content="";
+						Charset charset = Charset.forName("US-ASCII");
+						try {
+							br = Files.newBufferedReader(p, charset);
+						    while ((sCurrentLine = br.readLine()) != null) {
+								content+=sCurrentLine+'\n';
+						    }
+						} catch (IOException x) {
+						    System.err.format("IOException: %s%n", x);
 						}
 						
 						file.put("content", content);
@@ -82,8 +88,8 @@ public class GetInfoForLogServlet extends HttpServlet{
 
 		String jsonText = out.toString();
 		System.out.println(jsonText);
-		p.print(jsonText);
-		p.close();
+		printer.print(jsonText);
+		printer.close();
 	}
 
 	@Override
