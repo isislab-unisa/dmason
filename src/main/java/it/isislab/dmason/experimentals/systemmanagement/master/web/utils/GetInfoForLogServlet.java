@@ -4,6 +4,7 @@ import it.isislab.dmason.experimentals.systemmanagement.master.MasterServer;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -57,12 +58,11 @@ public class GetInfoForLogServlet extends HttpServlet{
 			}
 		});
 		
-		
 		if(log_root.isDirectory()){
 			for(File f: list){
 				//System.out.println("leggo "+f.getName());
 				if(f.exists()){
-					p = FileSystems.getDefault().getPath(logsPathName,f.getName());
+					content="";
 					file = new JSONObject();
 					//lf[i]={fileName:'file'+i,modifiedDate:"22/01/2016"};
 					file.put("fileName", f.getName());
@@ -71,15 +71,9 @@ public class GetInfoForLogServlet extends HttpServlet{
 					String dateText = df2.format(date);
 					file.put("modifiedDate", dateText);
 					if(f.canRead()){
-						content="";
-						Charset charset = Charset.forName("US-ASCII");
-						try {
-							br = Files.newBufferedReader(p, charset);
-						    while ((sCurrentLine = br.readLine()) != null) {
-								content+=sCurrentLine+'\n';
-						    }
-						} catch (IOException x) {
-						    System.err.format("IOException: %s%n", x);
+						br = new BufferedReader(new FileReader(f));
+						while ((sCurrentLine = br.readLine()) != null) {
+							content+=sCurrentLine+'\n';
 						}
 						
 						file.put("content", content);
