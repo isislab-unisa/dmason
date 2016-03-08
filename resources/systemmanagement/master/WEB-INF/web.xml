@@ -77,4 +77,14 @@
         <servlet-name>GetInfoForLogServlet</servlet-name>
         <url-pattern>/requestForLog</url-pattern>
     </servlet-mapping>
+    
+    	<servlet id="removeSimulation">
+        <servlet-name>GetInfoForLogServlet</servlet-name>
+        <servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.RemoveSimulationServlet</servlet-class>
+	  </servlet>
+    <servlet-mapping>
+        <servlet-name>RemoveSimulationServlet</servlet-name>
+        <url-pattern>/removeSimulation</url-pattern>
+    </servlet-mapping>
+    
 </web-app>

@@ -349,9 +349,12 @@ public class MasterServer implements MultiServerInterface{
 	 * Delete a directory for a simulation
 	 * @param simID name of a directory to delete
 	 */
-	public synchronized void deleteSimulationDirectoryByID(String simID){
+	public synchronized void removeSimulationProcessByID(String simID){
         String folder=simulationsList.get(simID).getSimulationFolder();
 		DMasonFileSystem.delete(new File(folder));
+		for (String topic : simulationsList.get(simID).getTopicList()) {
+			getConnection().publishToTopic(simID, topic, "simrm");
+		}
 		simulationsList.remove(simID);
 	}
 

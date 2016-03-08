@@ -270,6 +270,14 @@ public class Worker {
 						getLogBySimIDProcess(id,pre_status);
 
 					}
+					if (map.containsKey("simrm")){
+
+						int id = (int)map.get("simrm");
+						System.out.println("Command remove received for simulation "+id);
+						deleteSimulationProcessByID(id);
+					}
+					
+					
 
 				} catch (JMSException e) {e.printStackTrace();} 
 
@@ -440,7 +448,7 @@ public class Worker {
 		return path;
 	}
 
-	public  synchronized void deleteSimulationDirectoryByID(String simID){
+	public  synchronized void deleteSimulationProcessByID(int simID){
         String folder=simulationList.get(simID).getSimulationFolder();
 		DMasonFileSystem.delete(new File(folder));
 		simulationList.remove(simID);
