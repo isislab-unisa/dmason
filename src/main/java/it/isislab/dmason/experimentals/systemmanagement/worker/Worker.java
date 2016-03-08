@@ -440,10 +440,10 @@ public class Worker {
 		return path;
 	}
 
-	protected void deleteSimulationDirectoryByID(String simID){
-		String path=simulationsDirectories+File.separator+simID;
-		File c=new File(path);
-		DMasonFileSystem.delete(c);
+	public  synchronized void deleteSimulationDirectoryByID(String simID){
+        String folder=simulationList.get(simID).getSimulationFolder();
+		DMasonFileSystem.delete(new File(folder));
+		simulationList.remove(simID);
 	}
 
 
@@ -580,13 +580,15 @@ public class Worker {
 			t=new Thread(new ServerSocketCopy(sock,zipFile));
 			t.start();
 			t.join();
-
+            sock.close();
+			
 		}catch (UnknownHostException e) {e.printStackTrace();} catch (IOException e) {
 			if (welcomeSocket != null && !welcomeSocket.isClosed()) {
 				try {welcomeSocket.close();} 
 				catch (IOException exx){exx.printStackTrace(System.err); return false;}
 			}
 		} catch (InterruptedException e) {e.printStackTrace();}
+		
 		return true;
 	}
 
