@@ -12,6 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../neon-animation/animations/ripple-animation.html">
 <link rel="import" href="../../neon-animation/animations/hero-animation.html">
 <link rel="import" href="../../paper-button/paper-button.html">
+<link rel="import" href="../../paper-badge/paper-badge.html">
 <link rel="import" href="../../iron-icons/av-icons.html">
 <link rel="import" href="simulation-info.html">
 <link rel="import" href="control-simulation-buttons.html">
@@ -69,6 +70,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
            .onHover:hover{
                cursor: pointer;
            }
+            paper-badge{
+                --paper-badge-width:25px;
+                --paper-badge-height:25px;
+                --paper-badge-text-color:white;
+                --paper-badge-background: rgba(17, 19, 23, 0.98);
+                visibility: hidden;
+                cursor: pointer;
+            }
+
+            .grid-item-simulations:hover > paper-badge{
+                visibility: visible;
+            }
 
         </style>
 
@@ -78,6 +91,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <div class="grid-item-simulations layout vertical" id="sim-{{sim.id}}">
                         <simulation-info class="onHover" sim={{sim}} id="sim-info"></simulation-info>
                         <control-simulation-buttons status={{sim.status}} on-submit-sim="_onSubmitSim"></control-simulation-buttons>
+                        <paper-badge label="X"></paper-badge>
                 </div>
             </template>
         </div>
