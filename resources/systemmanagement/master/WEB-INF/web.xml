@@ -79,7 +79,7 @@
     </servlet-mapping>
     
     	<servlet id="removeSimulation">
-        <servlet-name>GetInfoForLogServlet</servlet-name>
+        <servlet-name>RemoveSimulationServlet</servlet-name>
         <servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.RemoveSimulationServlet</servlet-class>
 	  </servlet>
     <servlet-mapping>

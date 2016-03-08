@@ -87,17 +87,14 @@
                 }
             }
         },
-        _onClick: function(event) {
-            var target = event.target;
-            /*while (target !== this && !target._templateInstance) {
-                target = target.parentNode;
-            }*/
+        _onClick: function(e) {
+            var target = e.target;
+          console.log("jeee "+this.file);
             // configure the page animation
             this.sharedElements = {
                 'hero': target,
             };
             var item = this.$.list_file.itemForElement(target);
-            //console.log(item);
             this.fire('item-click', {
                 data:item
             });

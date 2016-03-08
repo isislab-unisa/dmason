@@ -28,7 +28,7 @@ public class GetInfoForLogServlet extends HttpServlet{
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.setContentType("application/json;charset=UTF-8");
+		resp.setContentType("text/plain;charset=UTF-8");
 		if(req.getServletContext().getAttribute("masterServer")==null)
 			return;
 		JSONObject file;
@@ -77,6 +77,7 @@ public class GetInfoForLogServlet extends HttpServlet{
 					}
 					list_file.add(file);
 				}
+				System.out.println(content);
 			}
 		}
 		if(br!=null)
