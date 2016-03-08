@@ -4,7 +4,9 @@ import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -92,9 +94,18 @@ public class Simulation implements Serializable{
 	 * @return the startTime
 	 */
 	public long getStartTime() {
+		
+		
 		return startTime;
 	}
 
+	public String getStartTimeAsDate(){
+		Date date=new Date(this.getStartTime());
+		SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy");
+		String dateText = df2.format(date);
+		return dateText;
+	}
+	
 	/**
 	 * @param startTime the startTime to set
 	 */
@@ -411,7 +422,7 @@ public class Simulation implements Serializable{
 			+ " \"connectionType\":\"" + connectionType + "\","
 			+ " \"num_cell\":\""+ numCells + "\","
 			+ " \"num_worker\":\""+ topicList.size() + "\","
-			+ " \"start\":\""+startTime+"\","
+			+ " \"start\":\""+this.getStartTimeAsDate()+"\","
 			+ " \"step\":\""+step+"\","
 			+ " \"status\":\""+simulationStatus+"\"}";
 		else // NON UNIFORM
@@ -426,11 +437,12 @@ public class Simulation implements Serializable{
 					+ "\"connectionType\":\"" + connectionType + "\","
 					+ "\"cells\":\""+ P + "\","
 					+ "\"num_worker\":\""+ topicList.size() + "\","
-					+ "\"start\":\""+startTime+"\","
+					+ "\"start\":\""+this.getStartTimeAsDate()+"\","
 					+ "\"step\":\""+step+"\","
 					+ "\"status\":\""+simulationStatus+"\"}";
 
 	}
 
+	
 
 }
