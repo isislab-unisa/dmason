@@ -43,7 +43,7 @@
 
         <div class="main">
             <template is="dom-repeat" id="list_file" items="{{list_log}}" as="file">
-                <paper-item on-click="_onClick">
+                <paper-item on-click="onClick">
                     <paper-item-body two-line>
                         <div>{{file.fileName}}</div>
                         <div secondary>{{file.modifiedDate}}</div>
@@ -87,16 +87,16 @@
                 }
             }
         },
-        _onClick: function(e) {
+        onClick: function(e) {
             var target = e.target;
-          console.log("jeee "+this.file);
+
             // configure the page animation
             this.sharedElements = {
                 'hero': target,
             };
-            var item = this.$.list_file.itemForElement(target);
+            var __item = this.$.list_file.itemForElement(target);
             this.fire('item-click', {
-                data:item
+                data:__item
             });
         }
     });

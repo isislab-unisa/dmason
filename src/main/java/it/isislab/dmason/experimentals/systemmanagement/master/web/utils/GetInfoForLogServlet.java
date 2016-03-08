@@ -77,7 +77,6 @@ public class GetInfoForLogServlet extends HttpServlet{
 					}
 					list_file.add(file);
 				}
-				System.out.println(content);
 			}
 		}
 		if(br!=null)

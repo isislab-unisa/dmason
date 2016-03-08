@@ -180,7 +180,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         _onItemClick: function(event) {
             var item = event.detail.data;
-            this.$.full_file.content = item.content;
+            if(item)
+                this.$.full_file.content = item.content;
             this.$.log_files.selected = 1;
         },
         _onClose: function(event) {
