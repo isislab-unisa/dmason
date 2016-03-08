@@ -33,6 +33,7 @@ import it.isislab.dmason.util.connection.ConnectionType;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -58,6 +59,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 
@@ -236,7 +238,7 @@ public class Worker {
 					if(map.containsKey("newsim")){
 						Simulation sim=(Simulation)map.get("newsim");
 						createNewSimulationProcess(sim);
-						
+
 						downloadFile(sim,DEFAULT_COPY_SERVER_PORT);
 
 					}
@@ -263,10 +265,9 @@ public class Worker {
 					if(map.containsKey("logreq")){
 						int id=(int)map.get("logreq");
 						System.out.println("Received request for logs for simid "+id);
-						if(simulationList.get(id).getStatus().equals(Simulation.STARTED)) 
-						  pauseSimulation(id);
-						 
-						getLogBySimIDProcess(id);
+						String pre_status=simulationList.get(id).getStatus();
+						if(!simulationList.get(id).getStatus().equals(Simulation.PAUSED))pauseSimulation(id);
+						getLogBySimIDProcess(id,pre_status);
 
 					}
 
@@ -550,40 +551,43 @@ public class Worker {
 
 
 
-	public synchronized void getLogBySimIDProcess(int simID){
+
+
+
+	public synchronized void getLogBySimIDProcess(int simID,String status){
 		Simulation sim=getSimulationList().get(simID);
 		String folderToCopy=sim.getSimulationFolder()+File.separator+"out";
 		String fileToSend=sim.getSimulationFolder()+File.separator+"out"+File.separator+"zippone.zip";
 
 		if(getLogBySimID(folderToCopy,fileToSend)){
 			System.out.println("File zip creato nella dir "+fileToSend);
-			playSimulationProcessByID(simID);
-			startServiceCopyForLog(fileToSend,simID);
-
+			
+			if(status.equals(Simulation.STARTED))playSimulationProcessByID(simID);
+			
+			if(startServiceCopyForLog(fileToSend,simID))
+                DMasonFileSystem.delete(new File(fileToSend));
 
 		}
 	}
 
 
-	private void startServiceCopyForLog(String zipFile,int id){
+	private boolean startServiceCopyForLog(String zipFile,int id){
 		System.out.println("apro stream copia per "+zipFile);
 		getConnection().publishToTopic(id, this.TOPIC_WORKER_ID, "logready");
 		try{
 			Thread t=null;
-
 			sock = welcomeSocket.accept();
-
 			t=new Thread(new ServerSocketCopy(sock,zipFile));
 			t.start();
-
-
+			t.join();
 
 		}catch (UnknownHostException e) {e.printStackTrace();} catch (IOException e) {
 			if (welcomeSocket != null && !welcomeSocket.isClosed()) {
 				try {welcomeSocket.close();} 
-				catch (IOException exx){exx.printStackTrace(System.err);}
+				catch (IOException exx){exx.printStackTrace(System.err); return false;}
 			}
-		}
+		} catch (InterruptedException e) {e.printStackTrace();}
+		return true;
 	}
 
 

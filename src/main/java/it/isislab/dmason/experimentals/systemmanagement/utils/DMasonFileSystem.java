@@ -19,7 +19,10 @@ public class DMasonFileSystem {
 	}
 
 
-
+    /**
+     * Remove the folder from the file system
+     * 
+     */
 	public static void delete(File file) {
 
 		if(file.isDirectory()){
@@ -55,5 +58,5 @@ public class DMasonFileSystem {
 			System.out.println("File is deleted : " + file.getAbsolutePath());
 		}
 	}
-
+		
 }
