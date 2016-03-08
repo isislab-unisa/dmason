@@ -115,7 +115,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <div class="animation-log-container">
                     <neon-animated-pages id="log_files" selected="0">
                         <list-view list_log="{{listFile}}" on-item-click="_onItemClick"></list-view>
-                        <full-log-view on-close="_onClose"></full-log-view>
+                        <full-log-view id="full_file" on-close="_onClose"></full-log-view>
                     </neon-animated-pages>
                 </div>
             </div>
@@ -178,10 +178,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         go_back:function(){
             this.fire('go-back');
         },
-        _onItemClick: function() {
+        _onItemClick: function(event) {
+            var item = event.detail.data;
+            this.$.full_file.content = item.content;
             this.$.log_files.selected = 1;
         },
-        _onClose: function() {
+        _onClose: function(event) {
             this.$.log_files.selected = 0;
         }
     });
