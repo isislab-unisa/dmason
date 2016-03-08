@@ -41,9 +41,9 @@ public class Simulation implements Serializable{
 	private List<CellType> cellTypeList;
 	private int received_cell_type;
 
-	private long startTime=Long.MIN_VALUE;
+	private long startTime=System.currentTimeMillis();
 	private long endTime=Long.MIN_VALUE;
-	private long step=Long.MIN_VALUE;
+	private long step=0;
 	public static final String CREATED="CREATED";
 	public static final String STARTED="STARTED";
 	public static final String FINISHED="FINISHED";
