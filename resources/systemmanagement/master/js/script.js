@@ -307,13 +307,47 @@ function _validate(element){
 
 
 function submitForm(){
-    /*
-     if(!_validate())
-     return;*/
-    startProgress();
+
     var form = document.getElementById("sendSimulationForm");
+    if(!checkForm(form)){
+        return;
+    }
+
+    startProgress();
     $(form).unbind('submit').bind("submit",_OnsubmitSimulation);
     form.submit();
+}
+
+function checkForm(form){
+
+    var error_toast_message = document.querySelector("#missing_settings");
+    var conn_type =document.querySelector("#connectionType").selectedItemLabel;
+    var jarFile = $("#simulation-jar-chooser").val();
+    var exampleSim = document.querySelector("#exampleSimulation").selectedItemLabel;
+    var partitioning = document.querySelector("#partitioning").selected;
+    console.log(conn_type);
+    if(!conn_type){
+        $(error_toast_message).text("You should select a connection type");
+        error_toast_message.open();
+        return false;
+    }
+    if(!jarFile && !exampleSim){
+        $(error_toast_message).text("You should select an example simulation or submit a simulation jar");
+        error_toast_message.open();
+        return false;
+    }
+
+    $("#sendSimulationForm paper-input").each(function(n,paper_input){
+        if(paper_input.id.startsWith("form_"))
+            if(paper_input.value==""){
+                $(error_toast_message).text("You should fill "+paper_input.label);
+                error_toast_message.open();
+                return false;
+            }
+
+    });
+    console.log(conn_type);
+    return false;
 }
 
 function _OnsubmitSimulation(event) {
