@@ -93,7 +93,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         <simulation-info class="onHover" sim={{sim}} id="sim-info"></simulation-info>
                         <control-simulation-buttons status={{sim.status}} on-submit-sim="_onSubmitSim"></control-simulation-buttons>
                         <template is="dom-if" if="{{checkStatus(sim.status)}}">
-                            <paper-badge label="X"></paper-badge>
+                            <paper-badge label="X" on-click="deleteSim({{sim.id}})"></paper-badge>
                         </template>
                 </div>
             </template>
@@ -153,7 +153,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         checkStatus: function(status){
-            console.log("weeee "+status);
 
             if(status.toLowerCase()=="created"){
                 console.log("weeee "+status);
@@ -161,6 +160,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
             else
                 return false;
+        },
+
+        deleteSim: function(id){
+            console.log("cancello "+id);
         }
 
 
