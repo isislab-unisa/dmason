@@ -46,7 +46,7 @@ public class RemoveSimulationServlet extends HttpServlet {
 		
 		masterServer = (MasterServer) req.getServletContext().getAttribute("masterServer");
 		
-		String id= req.getParameter("id");
+		int id= Integer.parseInt(req.getParameter("id"));
 		masterServer.removeSimulationProcessByID(id);
 	}
 	

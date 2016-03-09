@@ -53,6 +53,8 @@ import java.util.jar.JarFile;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import org.apache.activemq.broker.BrokerService;
+import org.apache.hadoop.fs.FileUtil;
+import org.apache.mina.filter.executor.DefaultIoEventSizeEstimator;
 
 /**
  * 
@@ -258,10 +260,20 @@ public class MasterServer implements MultiServerInterface{
 						if(map.containsKey("logready")){
 							int simID=(int) map.get("logready");
 							System.out.println("start copy of logs for sim id "+simID);
-							downloadLogsForSimulationByID(simID,topicIdWorkers.get(topicOfWorker));
+							downloadLogsForSimulationByID(simID,topicIdWorkers.get(topicOfWorker),false);
 						}
 
-
+						if(map.containsKey("loghistory")){
+							int simID=(int) map.get("loghistory");
+							System.out.println("start copy of logs history for sim id "+simID);
+							downloadLogsForSimulationByID(simID,topicIdWorkers.get(topicOfWorker),true);
+							//String src=getSimulationsList().get(simID).getSimulationFolder();
+							//createCopyInHistory(src);
+							//System.out.println("cancello la sim"+simID);
+							//DMasonFileSystem.copyFolder(new File(pathname), new File(masterHistoryFolder));
+						}
+						
+						
 
 					} catch (JMSException e) {
 						e.printStackTrace();
@@ -275,7 +287,7 @@ public class MasterServer implements MultiServerInterface{
 
 	}
 
-	private synchronized void downloadLogsForSimulationByID(int simID,String topicOfWorker){
+	private synchronized void downloadLogsForSimulationByID(int simID,String topicOfWorker,boolean removeSimulation){
 
 		Simulation sim=simulationsList.get(simID);
 		String folderCopy=sim.getSimulationFolder()+File.separator+"runs";
@@ -297,7 +309,25 @@ public class MasterServer implements MultiServerInterface{
 			tr=new Thread(new ClientSocketCopy(clientSocket, fileCopy));
 			tr.start();
 			tr.join();
-
+			System.out.println("End download "+fileCopy);
+			System.out.println(new File(fileCopy).exists());
+			Thread t=new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					ZipDirectory.unZipDirectory(fileCopy, folderCopy);
+				}
+			});
+			t.start();
+			t.join();
+			
+			if(removeSimulation){
+				System.out.println("rimuopvo simulazione");
+				if(createCopyInHistory(folderCopy,simID)){
+					removeSimulationProcessByID(simID);
+				}
+			}
+			
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -307,10 +337,7 @@ public class MasterServer implements MultiServerInterface{
 			e.printStackTrace();
 		}
 
-		System.out.println("End download "+fileCopy);
-		System.out.println(new File(fileCopy).exists());
-		ZipDirectory.unZipDirectory(fileCopy, folderCopy);
-
+		
 	}
 
 
@@ -354,7 +381,7 @@ public class MasterServer implements MultiServerInterface{
 	 * Delete a directory for a simulation
 	 * @param simID name of a directory to delete
 	 */
-	public synchronized void removeSimulationProcessByID(String simID){
+	public synchronized void removeSimulationProcessByID(int simID){
         String folder=simulationsList.get(simID).getSimulationFolder();
 		DMasonFileSystem.delete(new File(folder));
 		for (String topic : simulationsList.get(simID).getTopicList()) {
@@ -664,6 +691,10 @@ public class MasterServer implements MultiServerInterface{
 								}
 
 								s_master.setStatus(s.getStatus());
+								
+								if(s.getStatus().equals(Simulation.FINISHED)){
+									startHistoryProcessForSimulation(s.getSimID());
+								}
 							}
 
 
@@ -689,8 +720,12 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-
-
+	
+  void startHistoryProcessForSimulation(int id){
+	 
+	  logRequestForSimulationByID(id,"history");
+	  
+  }
 
 
 
@@ -727,10 +762,35 @@ public class MasterServer implements MultiServerInterface{
 
 			this.getConnection().publishToTopic(iDSimToStop, workerTopic, "stop");
 		}
-
+		
 	}
 
 
+	private boolean createCopyInHistory(String src, int simid){
+		String pathhistory=masterHistoryFolder+File.separator+getSimulationsList().get(simid).getSimName()+simid;
+    	DMasonFileSystem.make(masterHistoryFolder);
+    	File srcFolder = new File(src);
+    	File destFolder = new File(pathhistory);
+    	
+    
+    	//make sure source exists
+    	if(!srcFolder.exists()){
+           System.out.println("Directory does not exist.");
+ 
+
+        }else{
+
+           try{
+        	DMasonFileSystem.copyFolder(srcFolder,destFolder);
+           }catch(IOException e){
+        	e.printStackTrace();
+        	
+           }
+        }
+    	
+    	return true;
+	}
+	
 	/**
 	 * @Override
 	 */
@@ -745,7 +805,7 @@ public class MasterServer implements MultiServerInterface{
 
 	}  
 
-	public String logRequestForSimulationByID(int idSimulation){
+	public String logRequestForSimulationByID(int idSimulation, String typeReq){
 		System.out.println("Request for logs for simulation with id servlet"+idSimulation);
 		Simulation simulationForLog=getSimulationsList().get(idSimulation);
 
@@ -753,7 +813,7 @@ public class MasterServer implements MultiServerInterface{
 
 		ArrayList<String> topicWorkers= simulationForLog.getTopicList();
 		for(String topic :topicWorkers)
-			getConnection().publishToTopic(simulationForLog.getSimID(), topic, "logreq");
+			getConnection().publishToTopic(simulationForLog.getSimID(), topic, typeReq/*"logreq"*/);
 
 		return folderCopy;
 	}

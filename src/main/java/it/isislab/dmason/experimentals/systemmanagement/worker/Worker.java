@@ -268,17 +268,27 @@ public class Worker {
 						System.out.println("Received request for logs for simid "+id);
 						String pre_status=simulationList.get(id).getStatus();
 						if(!simulationList.get(id).getStatus().equals(Simulation.PAUSED))pauseSimulation(id);
-						getLogBySimIDProcess(id,pre_status);
+						getLogBySimIDProcess(id,pre_status,"log");
 
 					}
+
+					if(map.containsKey("history")){
+						int id=(int)map.get("history");
+						System.out.println("Received request for history for simid "+id);
+						String pre_status=simulationList.get(id).getStatus();
+						getLogBySimIDProcess(id,pre_status,"history");
+
+					}
+
+
 					if (map.containsKey("simrm")){
 
 						int id = (int)map.get("simrm");
 						System.out.println("Command remove received for simulation "+id);
 						deleteSimulationProcessByID(id);
 					}
-					
-					
+
+
 
 				} catch (JMSException e) {e.printStackTrace();} 
 
@@ -398,11 +408,14 @@ public class Worker {
 				if(masterCell)
 				{
 					s.setStep(i);
+					if(i==params.getMaxStep()-1){s.setStatus(Simulation.FINISHED);}
 					getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
 				}
 				dis.schedule.step(dis);
 				i++;
+				
 			}
+			
 			this.stopThread();
 		}
 		public synchronized void stopThread()
@@ -450,7 +463,7 @@ public class Worker {
 	}
 
 	public  synchronized void deleteSimulationProcessByID(int simID){
-        String folder=simulationList.get(simID).getSimulationFolder();
+		String folder=simulationList.get(simID).getSimulationFolder();
 		DMasonFileSystem.delete(new File(folder));
 		simulationList.remove(simID);
 	}
@@ -561,43 +574,69 @@ public class Worker {
 
 
 
-
-
-	public synchronized void getLogBySimIDProcess(int simID,String status){
+	/**
+	 * 
+	 * @param simID
+	 * @param status
+	 * @param type simple log or log for  history 
+	 */
+	public synchronized void getLogBySimIDProcess(int simID,String status, String type){
 		Simulation sim=getSimulationList().get(simID);
 		String folderToCopy=sim.getSimulationFolder()+File.separator+"out";
 		String fileToSend=sim.getSimulationFolder()+File.separator+"out"+File.separator+"zippone.zip";
 
-		if(getLogBySimID(folderToCopy,fileToSend)){
-			System.out.println("File zip creato nella dir "+fileToSend);
-			
-			if(status.equals(Simulation.STARTED))playSimulationProcessByID(simID);
-			
-			if(startServiceCopyForLog(fileToSend,simID))
-                DMasonFileSystem.delete(new File(fileToSend));
-
+		if(type.equals("log")){
+			if(getLogBySimID(folderToCopy,fileToSend)){
+				System.out.println("File zip creato nella dir "+fileToSend);			
+				if(status.equals(Simulation.STARTED))playSimulationProcessByID(simID);
+				if(startServiceCopyForLog(fileToSend,simID,"logready"))
+					DMasonFileSystem.delete(new File(fileToSend));
+			}
 		}
-	}
+		
+		else{
+			System.out.println("ktmv");
+			if(getLogBySimID(folderToCopy,fileToSend)){
+				System.out.println("File zip creato nella dir "+fileToSend);			
+
+				if(startServiceCopyForLog(fileToSend,simID,"loghistory")){
+					System.out.println("File zip creato nella dir "+fileToSend);
+					DMasonFileSystem.delete(new File(fileToSend));
+				}	
+			}
+		}	
+	} 
 
 
-	private boolean startServiceCopyForLog(String zipFile,int id){
+
+
+
+	/**
+	 * 
+	 * @param zipFile
+	 * @param id
+	 * @param type logready || history
+	 * @return
+	 */
+	private boolean startServiceCopyForLog(String zipFile,int id,String type){
 		System.out.println("apro stream copia per "+zipFile);
-		getConnection().publishToTopic(id, this.TOPIC_WORKER_ID, "logready");
+		getConnection().publishToTopic(id, this.TOPIC_WORKER_ID, type);
 		try{
 			Thread t=null;
 			sock = welcomeSocket.accept();
 			t=new Thread(new ServerSocketCopy(sock,zipFile));
 			t.start();
 			t.join();
-            sock.close();
-			
+			sock.close();
+
 		}catch (UnknownHostException e) {e.printStackTrace();} catch (IOException e) {
 			if (welcomeSocket != null && !welcomeSocket.isClosed()) {
 				try {welcomeSocket.close();} 
 				catch (IOException exx){exx.printStackTrace(System.err); return false;}
 			}
 		} catch (InterruptedException e) {e.printStackTrace();}
-		
+
+
 		return true;
 	}
 

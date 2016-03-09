@@ -61,7 +61,7 @@ public class GetInfoForLogServlet extends HttpServlet{
 		String idSimulation = (String)req.getParameter("id");
 		String logsPathName = "";
 		
-		logsPathName = masterServer.logRequestForSimulationByID(Integer.parseInt(idSimulation));
+		logsPathName = masterServer.logRequestForSimulationByID(Integer.parseInt(idSimulation),"logreq");
 
 		
 		File log_root = new File(logsPathName);
