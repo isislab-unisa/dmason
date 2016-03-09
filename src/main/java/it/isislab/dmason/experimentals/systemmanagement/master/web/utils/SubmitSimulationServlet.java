@@ -99,7 +99,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 		String columns=	listParams.get("cols");
 		String aoi=		listParams.get("aoi");
 		String width=	listParams.get("width");
-		String height=	listParams.get("heigth");
+		String height=	listParams.get("height");
 		String numAgent=listParams.get("numAgents");
 		String numStep= listParams.get("step");
 		String conType= listParams.get("connectionType");
