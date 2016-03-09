@@ -30,7 +30,6 @@
 <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="bower_components/paper-drawer-panel/paper-drawer-panel.html">
 <link rel="import" href="bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
-<link rel="import" href="bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="bower_components/paper-item/paper-item.html">
 <link rel="import" href="bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="bower_components/paper-styles/paper-styles.html">
@@ -43,7 +42,7 @@
 <link rel="import" href="bower_components/paper-input/paper-input.html">
 <link rel="import" href="bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
-<link rel="import" href="bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="bower_components/paper-input/paper-input-container.html">
@@ -135,12 +134,12 @@
                                         <td>
                                             <span>Select an example simulation</span><br>
                                                 <paper-dropdown-menu id="exampleSimulation" label="Select">
-                                                    <paper-menu class="dropdown-content">
+                                                    <paper-listbox class="dropdown-content">
                                                         <paper-item label="allosaurus">allosaurus</paper-item>
                                                         <paper-item label="brontosaurus">brontosaurus</paper-item>
                                                         <paper-item label="carcharodontosaurus">carcharodontosaurus</paper-item>
                                                         <paper-item label="diplodocus">diplodocus</paper-item>
-                                                    </paper-menu>
+                                                    </paper-listbox>
                                                 </paper-dropdown-menu>
                                             <!--paper-button raised class="custom">Select<iron-icon icon="receipt"></iron-icon></paper-button-->
                                         </td>
@@ -169,10 +168,10 @@
                                         </td>
                                         <td>
                                             <paper-dropdown-menu id="connectionType" label="Select connection" class="submit_work_form">
-                                                <paper-menu class="dropdown-content" selected="0">
+                                                <paper-listbox class="dropdown-content" selected="0">
                                                     <paper-item label="ActiveMQ">ActiveMQ</paper-item>
                                                     <paper-item label="MPI">MPI</paper-item>
-                                                </paper-menu>
+                                                </paper-listbox>
                                             </paper-dropdown-menu>
                                         </td>
                                     </tr>

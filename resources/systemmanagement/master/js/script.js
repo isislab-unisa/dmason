@@ -325,7 +325,12 @@ function checkForm(form){
     var jarFile = $("#simulation-jar-chooser").val();
     var exampleSim = document.querySelector("#exampleSimulation").selectedItemLabel;
     var partitioning = document.querySelector("#partitioning").selected;
-    console.log(conn_type);
+
+    if(!partitioning){
+        $(error_toast_message).text("You should select a partitioning");
+        error_toast_message.open();
+        return false;
+    }
     if(!conn_type){
         $(error_toast_message).text("You should select a connection type");
         error_toast_message.open();
@@ -340,14 +345,37 @@ function checkForm(form){
     $("#sendSimulationForm paper-input").each(function(n,paper_input){
         if(paper_input.id.startsWith("form_"))
             if(paper_input.value==""){
-                $(error_toast_message).text("You should fill "+paper_input.label);
-                error_toast_message.open();
-                return false;
-            }
 
+                switch (paper_input.label.toLowerCase()){
+                    case "cells":
+                        if (partitioning.toLowerCase() == 'non-uniform') {
+                            $(error_toast_message).text("You should fill " + paper_input.label);
+                            error_toast_message.open();
+                            return false;
+                        }
+                        break;
+                    case "rows":
+                        if (partitioning.toLowerCase() == 'uniform') {
+                            $(error_toast_message).text("You should fill " + paper_input.label);
+                            error_toast_message.open();
+                            return false;
+                        }
+                        break;
+                    case "columns":
+                        if (partitioning.toLowerCase() == 'uniform') {
+                            $(error_toast_message).text("You should fill " + paper_input.label);
+                            error_toast_message.open();
+                            return false;
+                        }
+                        break;
+                    default :
+                        $(error_toast_message).text("You should fill " + paper_input.label);
+                        error_toast_message.open();
+                        return false;
+                }
+            }
     });
-    console.log(conn_type);
-    return false;
+    return true;
 }
 
 function _OnsubmitSimulation(event) {
@@ -404,8 +432,8 @@ function _OnsubmitSimulation(event) {
 function resetForm(event) {
     progress = document.querySelector('paper-progress');
     progress.style.display = "none";
-    $("#submit_btn").attr("disabled",false);
-    document.getElementById("sendSimulationForm").reset();
+    document.querySelector("#submit_btn").disabled = false;
+    document.querySelector("#sendSimulationForm").reset();
 }
 
 
