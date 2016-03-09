@@ -81,6 +81,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             .grid-item-simulations:hover > paper-badge{
                 visibility: visible;
+                z-index: 5555;
             }
 
         </style>
@@ -91,7 +92,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <div class="grid-item-simulations layout vertical" id="sim-{{sim.id}}">
                         <simulation-info class="onHover" sim={{sim}} id="sim-info"></simulation-info>
                         <control-simulation-buttons status={{sim.status}} on-submit-sim="_onSubmitSim"></control-simulation-buttons>
-                        <paper-badge label="X"></paper-badge>
+                        <template is="dom-if" if="{{checkStatus(sim.status)}}">
+                            <paper-badge label="X"></paper-badge>
+                        </template>
                 </div>
             </template>
         </div>
@@ -147,6 +150,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 url:"simulationController",
                 data:"id="+id+"&op="+op
             });
+        },
+
+        checkStatus: function(status){
+            console.log("weeee "+status);
+
+            if(status.toLowerCase()=="created"){
+                console.log("weeee "+status);
+                return true;
+            }
+            else
+                return false;
         }
 
 
