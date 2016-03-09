@@ -501,7 +501,9 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 		//not implemented 
 	}
 
-	@Override
+	/**
+	 * Notify if the connection is interupted
+	 */
 	public void transportInterupted() {
 		// Notify observers of change
 		
