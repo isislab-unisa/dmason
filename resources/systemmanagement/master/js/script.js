@@ -215,14 +215,14 @@ function change_partitioning_input_params(element){
     //console.log(buttonName);
     switch (buttonName){
         case "uniform":
-            $("#form_cells").css("display","none");
-            $("#form_row").css("display","block");
-            $("#form_col").css("display","block");
+            $("#form_cells").attr("disabled",true);
+            $("#form_row").attr("disabled",false);
+            $("#form_col").attr("disabled",false);
             break;
         case "non-uniform":
-            $("#form_cells").css("display","block");
-            $("#form_row").css("display","none");
-            $("#form_col").css("display","none");
+            $("#form_cells").attr("disabled",false);
+            $("#form_row").attr("disabled",true);
+            $("#form_col").attr("disabled",true);
             break;
     }
 
@@ -321,18 +321,12 @@ function submitForm(){
 function checkForm(form){
 
     var error_toast_message = document.querySelector("#missing_settings");
-    var conn_type =document.querySelector("#connectionType").selectedItemLabel;
     var jarFile = $("#simulation-jar-chooser").val();
     var exampleSim = document.querySelector("#exampleSimulation").selectedItemLabel;
     var partitioning = document.querySelector("#partitioning").selected;
 
     if(!partitioning){
         $(error_toast_message).text("You should select a partitioning");
-        error_toast_message.open();
-        return false;
-    }
-    if(!conn_type){
-        $(error_toast_message).text("You should select a connection type");
         error_toast_message.open();
         return false;
     }
@@ -384,7 +378,6 @@ function _OnsubmitSimulation(event) {
 
     var formData = new FormData(form);
 
-
     //Workaround by https://github.com/rnicholus/ajax-form/issues/63
 
     var myPaperRadioGroup = document.getElementById('partitioning');
@@ -402,11 +395,9 @@ function _OnsubmitSimulation(event) {
         formData.append(myDropDownMenuSampleSim.id, myDropDownMenuSampleSim.selectedItemLabel);
     }
 
-    var myDropDownMenuConnection = document.getElementById('connectionType');
-    if (!myDropDownMenuConnection.selectedItem) {
-        formData.append(myDropDownMenuConnection.id, "");
-    } else {
-        formData.append(myDropDownMenuConnection.id, myDropDownMenuConnection.selectedItemLabel);
+    var myCheckBoxConnection = document.querySelector('#connectionType');
+    if (myCheckBoxConnection.checked) {
+        formData.append(myCheckBoxConnection.id, "mpi");
     }
 
 

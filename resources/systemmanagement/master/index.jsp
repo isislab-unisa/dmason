@@ -47,6 +47,7 @@
 <link rel="import" href="bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="bower_components/paper-input/paper-input-container.html">
 <link rel="import" href="bower_components/paper-input/paper-input-error.html">
+<link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html">
 
 <link rel="import" href="bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
@@ -146,15 +147,17 @@
                                     </tr>
                                     <tr><td colspan="3"><paper-progress></paper-progress></td></tr>
                                     <tr>
-                                        <td colspan="3" style="text-align:center; text-transform: uppercase;"><span>Partitioning</span></td>
+                                        <td colspan="2" style="text-align:center; text-transform: uppercase;"><span>Partitioning</span></td>
+                                        <td style="text-align:center; text-transform: uppercase;"><span>extra</span></td>
                                     </tr>
                                     <tr>
-                                        <td colspan="3" style="text-align:center">
+                                        <td colspan="2" style="text-align:center">
                                             <paper-radio-group id="partitioning" selected="uniform">
                                                 <paper-radio-button required name="uniform" onclick="change_partitioning_input_params(this)"><span>Uniform  <iron-icon icon="view-module"></iron-icon></span></paper-radio-button>
                                                 <paper-radio-button required name="non-uniform" onclick="change_partitioning_input_params(this)"> <span>Non-Uniform <iron-icon icon="view-quilt"></iron-icon></span></paper-radio-button>
                                             </paper-radio-group>
                                         </td>
+                                        <td><paper-checkbox id="connectionType" class="layout horizontal center">enable MPI boost</paper-checkbox></td>
                                     </tr>
                                     <tr>
                                         <td colspan="3" style="text-align:center; text-transform: uppercase;"><span>parameters</span></td>
@@ -167,18 +170,18 @@
                                             <paper-input id="form_steps" class="submit_work_form" name="step" label="Number of step" allowed-pattern="[0-9]"></paper-input>
                                         </td>
                                         <td>
-                                            <paper-dropdown-menu id="connectionType" label="Select connection" class="submit_work_form">
+                                            <paper-input disabled id="form_cells" class="submit_work_form" name="cells" label="Cells" allowed-pattern="[0-9]" error-message="Cells value exceeds available slots!" onInput="_validate(this)"></paper-input>
+                                            <!--paper-dropdown-menu id="connectionType" label="Select connection" class="submit_work_form">
                                                 <paper-listbox class="dropdown-content" selected="0">
                                                     <paper-item label="ActiveMQ">ActiveMQ</paper-item>
                                                     <paper-item label="MPI">MPI</paper-item>
                                                 </paper-listbox>
-                                            </paper-dropdown-menu>
+                                            </paper-dropdown-menu-->
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
                                             <paper-input id="form_row" class="submit_work_form" name="rows" label="Rows" allowed-pattern="[0-9]" error-message="R x C' value exceeds available slots!" onInput="_validate(this)"></paper-input>
-                                            <paper-input style="display:none" id="form_cells" class="submit_work_form" name="cells" label="Cells" allowed-pattern="[0-9]" error-message="Cells value exceeds available slots!" onInput="_validate(this)"></paper-input>
                                         </td>
                                         <td>
                                             <paper-input id="form_col" class="submit_work_form" name="cols" label="Columns" allowed-pattern="[0-9]" error-message="Rows X Columns value exceeds  available slots!" onInput="_validate(this)"></paper-input>
@@ -187,7 +190,7 @@
                                     </tr>
                                     <tr>
                                         <td><paper-input id="form_width" class="submit_work_form" name="width" label="Width" allowed-pattern="[0-9]"></paper-input></td>
-                                        <td><paper-input id="form_height" class="submit_work_form" name="Height" label="Height" allowed-pattern="[0-9]"></paper-input></td>
+                                        <td><paper-input id="form_height" class="submit_work_form" name="height" label="Height" allowed-pattern="[0-9]"></paper-input></td>
                                         <td><paper-input id="form_numAgents" class="submit_work_form" name="numAgents" label="Number of Agents" allowed-pattern="[0-9]"></paper-input></td>
                                     </tr>
 
