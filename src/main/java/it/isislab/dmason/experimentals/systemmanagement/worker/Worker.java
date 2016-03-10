@@ -473,7 +473,7 @@ public class Worker {
 
 
 
-	protected synchronized void downloadFile(Simulation sim,int serverSocketPort){ 
+	private synchronized void downloadFile(Simulation sim,int serverSocketPort){ 
 
 		String local=System.currentTimeMillis()+sim.getJarName();
 		sim.setJarName(local);
@@ -496,7 +496,7 @@ public class Worker {
 
 
 	@SuppressWarnings({ "rawtypes", "deprecation" })
-	protected DistributedState makeSimulation(GeneralParam params, String prefix,String pathJar)
+	private DistributedState makeSimulation(GeneralParam params, String prefix,String pathJar)
 	{
 		String path_jar_file=pathJar;
 		try{
@@ -583,7 +583,7 @@ public class Worker {
 	public synchronized void getLogBySimIDProcess(int simID,String status, String type){
 		Simulation sim=getSimulationList().get(simID);
 		String folderToCopy=sim.getSimulationFolder()+File.separator+"out";
-		String fileToSend=sim.getSimulationFolder()+File.separator+"out"+File.separator+"zippone.zip";
+		String fileToSend=sim.getSimulationFolder()+File.separator+"out"+File.separator+sim.getSimName()+".zip";
 
 		if(type.equals("log")){
 			if(getLogBySimID(folderToCopy,fileToSend)){
@@ -642,12 +642,9 @@ public class Worker {
 
 
 
-	private boolean getLogBySimID(String folderToCopy, String zippone){
-		//	   Simulation sim=getSimulationList().get(simID);
-		//	   String folderToCopy=sim.getSimulationFolder()+File.separator+"out";
-		//	   String zippone=sim.getSimulationFolder()+File.separator+"out"+File.separator+"zippone.zip";
-		System.out.println("Copy file from folder "+folderToCopy+" to "+zippone);
-		return ZipDirectory.createZipDirectory(zippone, folderToCopy);	   
+	private boolean getLogBySimID(String folderToCopy, String zipPath){
+		System.out.println("Copy file from folder "+folderToCopy+" to "+zipPath);
+		return ZipDirectory.createZipDirectory(zipPath, folderToCopy);	   
 
 	}
 
