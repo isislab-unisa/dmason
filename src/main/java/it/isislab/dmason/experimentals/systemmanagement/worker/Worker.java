@@ -431,7 +431,7 @@ public class Worker {
 				
 			}
 			
-			this.stopThread();
+			//this.stopThread();
 		}
 		public synchronized void stopThread()
 		{
