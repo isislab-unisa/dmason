@@ -447,6 +447,8 @@ function _update_sim_info(_message){
 
     if(obj.hasOwnProperty('simulations')){
         scp.$.list_simulations.listItem = obj.simulations;
+    }else{
+        scp.$.list_simulations.listItem = obj;
     }
 
 }
