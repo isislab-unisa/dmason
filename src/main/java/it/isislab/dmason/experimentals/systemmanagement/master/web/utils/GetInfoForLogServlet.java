@@ -24,10 +24,13 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 import java.io.StringWriter;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -66,9 +69,10 @@ public class GetInfoForLogServlet extends HttpServlet{
 		
 		File log_root = new File(logsPathName);
 		String sCurrentLine = null;
-		Path p;
-		BufferedReader br=null;
+		RandomAccessFile raf=null;
 		String content = "";
+		int MAX_LINE_FOR_PREVIEW = 50;		
+		List<String> last_lines = null;
 		File[] list = log_root.listFiles(new FilenameFilter() {
 			
 			@Override
@@ -79,6 +83,7 @@ public class GetInfoForLogServlet extends HttpServlet{
 		});
 		
 		if(log_root.isDirectory()){
+			int num_line;
 			for(File f: list){
 				//System.out.println("leggo "+f.getName());
 				if(f.exists()){
@@ -91,19 +96,28 @@ public class GetInfoForLogServlet extends HttpServlet{
 					String dateText = df2.format(date);
 					file.put("modifiedDate", dateText);
 					if(f.canRead()){
-						br = new BufferedReader(new FileReader(f));
-						while ((sCurrentLine = br.readLine()) != null) {
-							content+=sCurrentLine+'\n';
+						raf = new RandomAccessFile(f, "r");
+						long length = raf.length();
+						last_lines = new LinkedList<String>();
+						//it starts to read from 4th part of file
+						raf.seek(length-(length/4));
+			
+						while ((sCurrentLine = raf.readLine()) != null) {
+							//read last MAX_LINE_FOR_PREVIEW lines
+							if(last_lines.add(sCurrentLine) && last_lines.size()>MAX_LINE_FOR_PREVIEW)
+								last_lines.remove(0);
 						}
-						
+						for (int i = 0; i < last_lines.size(); i++) {
+							content+=last_lines.get(i)+'\n';
+						}
 						file.put("content", content);
 					}
 					list_file.add(file);
 				}
 			}
 		}
-		if(br!=null)
-			br.close();
+		if(raf!=null)
+			raf.close();
 		JSONObject json_files = new JSONObject();
 		json_files.put("files", list_file);
 		
