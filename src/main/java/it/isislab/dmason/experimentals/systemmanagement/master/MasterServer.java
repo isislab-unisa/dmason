@@ -20,6 +20,7 @@ package it.isislab.dmason.experimentals.systemmanagement.master;
 import it.isislab.dmason.experimentals.systemmanagement.utils.ClientSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.ServerSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
+import it.isislab.dmason.experimentals.systemmanagement.utils.FindAvailablePort;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.experimentals.systemmanagement.utils.ZipDirectory;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
@@ -73,7 +74,7 @@ public class MasterServer implements MultiServerInterface{
 	private static final String MASTER_TOPIC="MASTER";
 	private  String IP_ACTIVEMQ="";
 	private  String PORT_ACTIVEMQ="";
-	private int DEFAULT_PORT_COPY_SERVER=1414;
+	private int DEFAULT_PORT_COPY_SERVER;
 	private BrokerService broker=null;
 	private Properties prop = null;
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
@@ -128,7 +129,7 @@ public class MasterServer implements MultiServerInterface{
 		DMasonFileSystem.make(masterTemporaryFolder);//temp folder
 		DMasonFileSystem.make(masterHistoryFolder); //master/history
 		DMasonFileSystem.make(simulationsDirectoriesFolder+File.separator+"jobs"); //master/simulations/jobs
-
+        
 		this.loadProperties();
 		this.startActivemq();
 		this.createConnection();
@@ -144,6 +145,8 @@ public class MasterServer implements MultiServerInterface{
 		this.keySimulation=new AtomicInteger(0);
 		simulationsList=new HashMap<>();
 		try {
+			DEFAULT_PORT_COPY_SERVER=FindAvailablePort.getPortAvailable();
+			System.out.println("copy server start on port "+DEFAULT_PORT_COPY_SERVER);
 			welcomeSocket = new ServerSocket(DEFAULT_PORT_COPY_SERVER,1000,InetAddress.getByName(this.IP_ACTIVEMQ));
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -219,58 +222,61 @@ public class MasterServer implements MultiServerInterface{
 		});
 	}
 
-
+    /**
+     * When a sign request is detected by a worker
+     * 1. create a topic for communication master-> worker
+     * 2. listening on topic worker for communication worker->master 
+     *  
+     * @param topicOfWorker worker->master 
+     */
 	private void processSignRequest(String topicOfWorker){
 
 
 		try {
-			//mi sottoscrivo al worker
+			//subscribe topic worker
 			getConnection().subscribeToTopic(topicOfWorker);
 
 
-			//creo prefix univoco per comunicazione da master a worker 1-1 e creo topic
+			//create an univocal prefix  for  master->worker 1-1 communication
 			final String myTopicForWorker=""+topicOfWorker.hashCode();
 
 			getTopicIdWorkers().put(topicOfWorker,myTopicForWorker);
 			getConnection().createTopic(myTopicForWorker, 1);
 			getConnection().subscribeToTopic(myTopicForWorker);
 
-			//mando al worker il mioID univoco per esso di comunicazione
+			//send to worker prefix master->worker for communication
 			getConnection().publishToTopic(myTopicForWorker, "MASTER", topicOfWorker);
 
 			this.getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, "MASTER", "port");
-			//mi metto in ricezione sul topic del worker
+			//listening on topic worker
 			getConnection().asynchronousReceive(topicOfWorker, new MyMessageListener() {
 
-				@Override
+				//messages received from workers
 				public void onMessage(Message msg) {
 
 					Object o;
 					try {
 						o=parseMessage(msg);
 						MyHashMap map=(MyHashMap) o;
-
+                        
+						//response to master info req
 						if(map.containsKey("info")){
 							String infoReceived=""+map.get("info");
 							infoWorkers.put(myTopicForWorker, infoReceived);
 							processInfoForCopyLog(infoReceived,topicOfWorker);
 
 						}
-
+                        // response to master logs req	
 						if(map.containsKey("logready")){
 							int simID=(int) map.get("logready");
 							System.out.println("start copy of logs for sim id "+simID);
 							downloadLogsForSimulationByID(simID,topicIdWorkers.get(topicOfWorker),false);
 						}
-
+                        // response to master logs req(when a sim is stopped )
 						if(map.containsKey("loghistory")){
 							int simID=(int) map.get("loghistory");
 							System.out.println("start copy of logs history for sim id "+simID);
 							downloadLogsForSimulationByID(simID,topicIdWorkers.get(topicOfWorker),true);
-							//String src=getSimulationsList().get(simID).getSimulationFolder();
-							//createCopyInHistory(src);
-							//System.out.println("cancello la sim"+simID);
-							//DMasonFileSystem.copyFolder(new File(pathname), new File(masterHistoryFolder));
 						}
 
 
@@ -286,7 +292,12 @@ public class MasterServer implements MultiServerInterface{
 		catch (Exception e){e.printStackTrace();}
 
 	}
-
+    /**
+     * Download logs with socket 
+     * @param simID id of simulation 
+     * @param topicOfWorker my topic for this worker
+     * @param removeSimulation true if is a history req, false otherwise
+     */
 	private synchronized void downloadLogsForSimulationByID(int simID,String topicOfWorker,boolean removeSimulation){
 
 		Simulation sim=simulationsList.get(simID);
@@ -309,7 +320,7 @@ public class MasterServer implements MultiServerInterface{
 			tr=new Thread(new ClientSocketCopy(clientSocket, fileCopy));
 			tr.start();
 			tr.join();
-			System.out.println("End download "+fileCopy);
+			//System.out.println("End download "+fileCopy);
 			System.out.println(new File(fileCopy).exists());
 			Thread t=new Thread(new Runnable() {
 
@@ -322,7 +333,6 @@ public class MasterServer implements MultiServerInterface{
 			t.join();
 
 			if(removeSimulation){
-				System.out.println("rimuopvo simulazione");
 				if(createCopyInHistory(folderCopy,simID)){
 					removeSimulationProcessByID(simID);
 				}
@@ -333,7 +343,6 @@ public class MasterServer implements MultiServerInterface{
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -368,7 +377,7 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 	/**
-	 * Servlet
+	 * 
 	 * Create directory for a simulation 
 	 * @param simID name of directory to create
 	 */
@@ -381,7 +390,7 @@ public class MasterServer implements MultiServerInterface{
 
 
 	/**
-	 * Sevlet
+	 *
 	 * Delete a directory for a simulation
 	 * @param simID name of a directory to delete
 	 */
@@ -438,7 +447,7 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-	//Start methods to open a connection and a topic for initial communication 
+	//start ActivemQ service
 	private void startActivemq(){
 		String address="tcp://"+IP_ACTIVEMQ+":"+PORT_ACTIVEMQ;
 		try {
@@ -447,6 +456,9 @@ public class MasterServer implements MultiServerInterface{
 		} catch (Exception e1) {e1.printStackTrace();}
 	}
 
+	/**
+	 * Load properties from file path
+	 */
 	private void loadProperties(){
 
 		InputStream input=null;
@@ -456,7 +468,7 @@ public class MasterServer implements MultiServerInterface{
 			prop.load(input);
 			this.setIpActivemq(prop.getProperty("ipmaster"));
 			this.setPortActivemq(prop.getProperty("portmaster"));
-			this.setCopyServerPort(Integer.parseInt(prop.getProperty("copyport")));
+			//this.setCopyServerPort(Integer.parseInt(prop.getProperty("copyport")));
 		} catch (IOException e2) {
 			System.err.println(e2.getMessage());
 		}finally{try {input.close();} catch (IOException e) {System.err.println(e.getMessage());}}
@@ -646,6 +658,12 @@ public class MasterServer implements MultiServerInterface{
 		return false;
 
 	}
+	
+	/**
+	 * 
+	 * @param sim
+	 * @return
+	 */
 	public synchronized boolean submitSimulation(Simulation sim) {
 		final Simulation simul=sim;
 
@@ -823,8 +841,8 @@ public class MasterServer implements MultiServerInterface{
 	public ConnectionNFieldsWithActiveMQAPI getConnection(){return conn;}	
 
 	// copy server info
-	public int getCopyServerPort(){return DEFAULT_PORT_COPY_SERVER;}
-	public void setCopyServerPort(int port){ this.DEFAULT_PORT_COPY_SERVER=port;}
+	//public int getCopyServerPort(){return DEFAULT_PORT_COPY_SERVER;}
+	///public void setCopyServerPort(int port){ this.DEFAULT_PORT_COPY_SERVER=port;}
 
 	//folder for master
 	public String getMasterdirectoryfolder(){return masterDirectoryFolder;}
