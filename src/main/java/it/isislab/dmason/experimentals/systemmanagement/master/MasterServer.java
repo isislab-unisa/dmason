@@ -162,7 +162,7 @@ public class MasterServer implements MultiServerInterface{
 	//
 	/**
 	 *send a check message to worker on <topic topicworker>
-	 *If worker is sctive, it responds on his topic with key "info" 
+	 *If worker is active, it responds on his topic with key "info" 
 	 * with a info message of worker 
 	 * 
 	 * @param topicWorker

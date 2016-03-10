@@ -215,7 +215,9 @@ public class Worker {
 	}
 
 
-
+    /**
+     * subscrive to topic of master for communication master->worker
+     */
 	private synchronized void listenerForMasterComunication(){
 		try{
 			getConnection().subscribeToTopic(TOPIC_WORKER_ID_MASTER);
@@ -232,37 +234,38 @@ public class Worker {
 					o=parseMessage(msg);
 					final MyHashMap map=(MyHashMap) o;
 
+					//request of resources info from master 
 					if(map.containsKey("check")){
 						String info=getInfoWorker().toString();
 						getConnection().publishToTopic(info, TOPIC_WORKER_ID,"info");
 					}
+					// request of a storage a new simulation
 					if(map.containsKey("newsim")){
 						Simulation sim=(Simulation)map.get("newsim");
 						createNewSimulationProcess(sim);
-
 						downloadFile(sim,DEFAULT_COPY_SERVER_PORT);
 
 					}
+					// request to start a simulation
 					if (map.containsKey("start")){
-
 						int id = (int)map.get("start");
-
 						playSimulationProcessByID(id);
 
-
 					}
+					//request to stop a simulation
 					if (map.containsKey("stop")){
 
 						int id = (int)map.get("stop");
 						stopSimulation(id);
 					}
+					//request to pause a simulation
 					if (map.containsKey("pause")){
 
 						int id = (int)map.get("pause");
 						System.out.println("Command pause received for simulation "+id);
 						pauseSimulation(id);
 					}
-
+					//log request of a simulation
 					if(map.containsKey("logreq")){
 						int id=(int)map.get("logreq");
 						System.out.println("Received request for logs for simid "+id);
@@ -271,23 +274,19 @@ public class Worker {
 						getLogBySimIDProcess(id,pre_status,"log");
 
 					}
-
+                    //log request of a simulation (an history type) 
 					if(map.containsKey("history")){
 						int id=(int)map.get("history");
 						System.out.println("Received request for history for simid "+id);
 						String pre_status=simulationList.get(id).getStatus();
 						getLogBySimIDProcess(id,pre_status,"history");
-
 					}
-
-
+                    //request to remove a simulation
 					if (map.containsKey("simrm")){
-
 						int id = (int)map.get("simrm");
 						System.out.println("Command remove received for simulation "+id);
 						deleteSimulationProcessByID(id);
 					}
-
 
 
 				} catch (JMSException e) {e.printStackTrace();} 
@@ -317,7 +316,7 @@ public class Worker {
 
 	}
 	/**
-	 * 
+	 * Stop simulation process
 	 * @param sim_id
 	 */
 	private synchronized void stopSimulation(int sim_id)
@@ -335,6 +334,10 @@ public class Worker {
 		System.out.println("Simulation "+sim_id+" stopped, with "+executorThread.get(sim_id).size());
 
 	}
+	/**
+	 * Pause simulation process
+	 * @param sim_id
+	 */
 	private synchronized void pauseSimulation(int sim_id)
 	{
 		Simulation s=simulationList.get(sim_id);
