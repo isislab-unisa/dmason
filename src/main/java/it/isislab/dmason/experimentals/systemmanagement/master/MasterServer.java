@@ -129,7 +129,7 @@ public class MasterServer implements MultiServerInterface{
 		DMasonFileSystem.make(masterTemporaryFolder);//temp folder
 		DMasonFileSystem.make(masterHistoryFolder); //master/history
 		DMasonFileSystem.make(simulationsDirectoriesFolder+File.separator+"jobs"); //master/simulations/jobs
-        
+
 		this.loadProperties();
 		this.startActivemq();
 		this.createConnection();
@@ -222,13 +222,13 @@ public class MasterServer implements MultiServerInterface{
 		});
 	}
 
-    /**
-     * When a sign request is detected by a worker
-     * 1. create a topic for communication master-> worker
-     * 2. listening on topic worker for communication worker->master 
-     *  
-     * @param topicOfWorker worker->master 
-     */
+	/**
+	 * When a sign request is detected by a worker
+	 * 1. create a topic for communication master-> worker
+	 * 2. listening on topic worker for communication worker->master 
+	 *  
+	 * @param topicOfWorker worker->master 
+	 */
 	private void processSignRequest(String topicOfWorker){
 
 
@@ -258,7 +258,7 @@ public class MasterServer implements MultiServerInterface{
 					try {
 						o=parseMessage(msg);
 						MyHashMap map=(MyHashMap) o;
-                        
+
 						//response to master info req
 						if(map.containsKey("info")){
 							String infoReceived=""+map.get("info");
@@ -266,13 +266,13 @@ public class MasterServer implements MultiServerInterface{
 							processInfoForCopyLog(infoReceived,topicOfWorker);
 
 						}
-                        // response to master logs req	
+						// response to master logs req	
 						if(map.containsKey("logready")){
 							int simID=(int) map.get("logready");
 							System.out.println("start copy of logs for sim id "+simID);
 							downloadLogsForSimulationByID(simID,topicIdWorkers.get(topicOfWorker),false);
 						}
-                        // response to master logs req(when a sim is stopped )
+						// response to master logs req(when a sim is stopped )
 						if(map.containsKey("loghistory")){
 							int simID=(int) map.get("loghistory");
 							System.out.println("start copy of logs history for sim id "+simID);
@@ -292,13 +292,17 @@ public class MasterServer implements MultiServerInterface{
 		catch (Exception e){e.printStackTrace();}
 
 	}
-    /**
-     * Download logs with socket 
-     * @param simID id of simulation 
-     * @param topicOfWorker my topic for this worker
-     * @param removeSimulation true if is a history req, false otherwise
-     */
+
+
+
+	/**
+	 * Download logs with socket 
+	 * @param simID id of simulation 
+	 * @param topicOfWorker my topic for this worker
+	 * @param removeSimulation true if is a history req, false otherwise
+	 */
 	private synchronized void downloadLogsForSimulationByID(int simID,String topicOfWorker,boolean removeSimulation){
+		System.out.println("Processed request for "+topicOfWorker+" "+simulationsList.get(simID).getTopicList());
 
 		Simulation sim=simulationsList.get(simID);
 		String folderCopy=sim.getSimulationFolder()+File.separator+"runs";
@@ -322,6 +326,8 @@ public class MasterServer implements MultiServerInterface{
 			tr.join();
 			//System.out.println("End download "+fileCopy);
 			System.out.println(new File(fileCopy).exists());
+
+
 			Thread t=new Thread(new Runnable() {
 
 				@Override
@@ -332,11 +338,23 @@ public class MasterServer implements MultiServerInterface{
 			t.start();
 			t.join();
 
+			DMasonFileSystem.delete(new File(fileCopy));
+
+
+
+
 			if(removeSimulation){
+				getConnection().publishToTopic(simID, topicOfWorker, "simrm");
+				simulationsList.get(simID).getTopicList().remove(topicOfWorker);
+				System.out.println(simulationsList.get(simID).getTopicList().size());
 				if(createCopyInHistory(folderCopy,simID)){
-					removeSimulationProcessByID(simID);
+					System.out.println("entro "+simulationsList.get(simID).getTopicList().size());
+					if(simulationsList.get(simID).getTopicList().size()==0){
+						removeSimulationProcessByID(simID);
+					}	
 				}
-			}
+			}	
+
 
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -350,11 +368,12 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-    /**
-     * 
-     * @param info
-     * @param topicOfWorker
-     */
+
+	/**
+	 * 
+	 * @param info
+	 * @param topicOfWorker
+	 */
 	private synchronized void processInfoForCopyLog(String info,String topicOfWorker){
 
 		//parse message to get ip e port for logs
@@ -397,9 +416,10 @@ public class MasterServer implements MultiServerInterface{
 	public synchronized void removeSimulationProcessByID(int simID){
 		String folder=simulationsList.get(simID).getSimulationFolder();
 		DMasonFileSystem.delete(new File(folder));
-		for (String topic : simulationsList.get(simID).getTopicList()) {
-			getConnection().publishToTopic(simID, topic, "simrm");
-		}
+		//for (String topic : simulationsList.get(simID).getTopicList()) {
+		//System.out.println("send simrm "+topic);
+		//getConnection().publishToTopic(simID, topic, "simrm");
+		//}
 		simulationsList.remove(simID);
 	}
 
@@ -494,9 +514,9 @@ public class MasterServer implements MultiServerInterface{
 		}
 	}
 
-    /*
-     * 
-     */
+	/*
+	 * 
+	 */
 	private HashMap<String, Integer> slotsAvailableForSimWorker(ArrayList<String> topicWorkers, HashMap<String, String> listAllWorkers){
 
 		HashMap<String,Integer> slotsForWorkers=new HashMap<String,Integer>();
@@ -516,7 +536,7 @@ public class MasterServer implements MultiServerInterface{
 
 		HashMap<String/*idtopic*/, List<CellType>> workerlist = new HashMap<String, List<CellType>>(); 
 
-		
+
 		int mode=simul.getMode();
 		int LP=simul.getP();
 		int rows=(int) (mode==0?simul.getRows(): Math.ceil(Math.sqrt(LP/*get LP from geneoparam*/))); 
@@ -658,7 +678,7 @@ public class MasterServer implements MultiServerInterface{
 		return false;
 
 	}
-	
+
 	/**
 	 * 
 	 * @param sim
@@ -717,7 +737,8 @@ public class MasterServer implements MultiServerInterface{
 								s_master.setStatus(s.getStatus());
 
 								if(s.getStatus().equals(Simulation.FINISHED)){
-									logRequestForSimulationByID(s.getSimID(),"history");
+									System.out.println("Receved FINISHED for "+s.getSimID());
+									//logRequestForSimulationByID(s.getSimID(),"history");
 								}
 							}
 
@@ -738,7 +759,7 @@ public class MasterServer implements MultiServerInterface{
 
 	///////////methods  START STOP PAUSE LOG	
 
-	
+
 	public void start(int idSimulation){
 
 		Simulation simulationToExec=getSimulationsList().get(idSimulation);
@@ -817,9 +838,11 @@ public class MasterServer implements MultiServerInterface{
 		String folderCopy= simulationForLog.getSimulationFolder()+File.separator+"runs";
 
 		ArrayList<String> topicWorkers= simulationForLog.getTopicList();
-		for(String topic :topicWorkers)
-			getConnection().publishToTopic(simulationForLog.getSimID(), topic, typeReq/*"logreq"*/);
 
+		for(String topic :topicWorkers){
+			getConnection().publishToTopic(simulationForLog.getSimID(), topic, typeReq/*"logreq"*/);
+			System.out.println("send "+typeReq +"to "+topic);
+		}	
 		return folderCopy;
 	}
 

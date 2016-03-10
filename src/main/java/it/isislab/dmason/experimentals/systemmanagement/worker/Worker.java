@@ -275,12 +275,12 @@ public class Worker {
 
 					}
                     //log request of a simulation (an history type) 
-					if(map.containsKey("history")){
+					/*if(map.containsKey("history")){
 						int id=(int)map.get("history");
 						System.out.println("Received request for history for simid "+id);
 						String pre_status=simulationList.get(id).getStatus();
 						getLogBySimIDProcess(id,pre_status,"history");
-					}
+					}*/
                     //request to remove a simulation
 					if (map.containsKey("simrm")){
 						int id = (int)map.get("simrm");
@@ -325,13 +325,25 @@ public class Worker {
 		s.setEndTime(System.currentTimeMillis());
 		for(CellExecutor cexe:executorThread.get(sim_id))
 		{
+			if(cexe.masterCell){ s.setStatus(Simulation.FINISHED);	getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");}
 			cexe.stopThread();
 		}
 		//simulationList.remove(sim_id);
-		s.setStatus(Simulation.FINISHED);
+		
 		s.setEndTime(System.currentTimeMillis());
-		getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
+		//getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
 		System.out.println("Simulation "+sim_id+" stopped, with "+executorThread.get(sim_id).size());
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		String pre_status=simulationList.get(sim_id).getStatus();
+		getLogBySimIDProcess(sim_id,pre_status,"history");
 
 	}
 	/**
@@ -598,7 +610,7 @@ public class Worker {
 		}
 		
 		else{
-			System.out.println("ktmv");
+			
 			if(getLogBySimID(folderToCopy,fileToSend)){
 				System.out.println("File zip creato nella dir "+fileToSend);			
 
@@ -618,7 +630,7 @@ public class Worker {
 	 * 
 	 * @param zipFile
 	 * @param id
-	 * @param type logready || history
+	 * @param type logready || loghistory
 	 * @return
 	 */
 	private boolean startServiceCopyForLog(String zipFile,int id,String type){
