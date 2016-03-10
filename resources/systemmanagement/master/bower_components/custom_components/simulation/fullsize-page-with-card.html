@@ -48,7 +48,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
             .card {
                 position: relative;
-                margin: 50px auto auto 120px;
+                margin: 50px auto auto 25%;
                 width: 780px;
                 height: 580px;
                 min-width: 780px;
@@ -89,10 +89,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             .download-button-container{
-                height:400px;
                 @apply(--layout-horizontal);
                 @apply(--layout-center);
-                @apply(--layout-end);
             }
 
 
@@ -108,6 +106,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             <simulation-info sim="{{sim}}"></simulation-info>
                         </div>
                     </paper-card>
+                    <div class="flex"></div>
                     <div class="download-button-container">
                     <paper-icon-button icon="file-download" raised></paper-icon-button>
                     <span>Download Logs</span>

@@ -61,7 +61,8 @@
         },
 
         _onClick: function(event) {
-
+            if(this.sim.status.toLowerCase()=="created")
+                return;
             var target = event.target;
 
             while(target.tagName.toLowerCase() != "simulation-info")
