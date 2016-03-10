@@ -272,8 +272,8 @@ public class MasterServer implements MultiServerInterface{
 							//System.out.println("cancello la sim"+simID);
 							//DMasonFileSystem.copyFolder(new File(pathname), new File(masterHistoryFolder));
 						}
-						
-						
+
+
 
 					} catch (JMSException e) {
 						e.printStackTrace();
@@ -312,7 +312,7 @@ public class MasterServer implements MultiServerInterface{
 			System.out.println("End download "+fileCopy);
 			System.out.println(new File(fileCopy).exists());
 			Thread t=new Thread(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					ZipDirectory.unZipDirectory(fileCopy, folderCopy);
@@ -320,14 +320,14 @@ public class MasterServer implements MultiServerInterface{
 			});
 			t.start();
 			t.join();
-			
+
 			if(removeSimulation){
 				System.out.println("rimuopvo simulazione");
 				if(createCopyInHistory(folderCopy,simID)){
 					removeSimulationProcessByID(simID);
 				}
 			}
-			
+
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -337,11 +337,15 @@ public class MasterServer implements MultiServerInterface{
 			e.printStackTrace();
 		}
 
-		
+
 	}
 
 
-
+    /**
+     * 
+     * @param info
+     * @param topicOfWorker
+     */
 	private synchronized void processInfoForCopyLog(String info,String topicOfWorker){
 
 		//parse message to get ip e port for logs
@@ -382,7 +386,7 @@ public class MasterServer implements MultiServerInterface{
 	 * @param simID name of a directory to delete
 	 */
 	public synchronized void removeSimulationProcessByID(int simID){
-        String folder=simulationsList.get(simID).getSimulationFolder();
+		String folder=simulationsList.get(simID).getSimulationFolder();
 		DMasonFileSystem.delete(new File(folder));
 		for (String topic : simulationsList.get(simID).getTopicList()) {
 			getConnection().publishToTopic(simID, topic, "simrm");
@@ -478,7 +482,9 @@ public class MasterServer implements MultiServerInterface{
 		}
 	}
 
-
+    /*
+     * 
+     */
 	private HashMap<String, Integer> slotsAvailableForSimWorker(ArrayList<String> topicWorkers, HashMap<String, String> listAllWorkers){
 
 		HashMap<String,Integer> slotsForWorkers=new HashMap<String,Integer>();
@@ -498,7 +504,7 @@ public class MasterServer implements MultiServerInterface{
 
 		HashMap<String/*idtopic*/, List<CellType>> workerlist = new HashMap<String, List<CellType>>(); 
 
-		//ArrayList<String> workerID=new ArrayList<String>(slots.keySet());
+		
 		int mode=simul.getMode();
 		int LP=simul.getP();
 		int rows=(int) (mode==0?simul.getRows(): Math.ceil(Math.sqrt(LP/*get LP from geneoparam*/))); 
@@ -691,28 +697,20 @@ public class MasterServer implements MultiServerInterface{
 								}
 
 								s_master.setStatus(s.getStatus());
-								
+
 								if(s.getStatus().equals(Simulation.FINISHED)){
-									startHistoryProcessForSimulation(s.getSimID());
+									logRequestForSimulationByID(s.getSimID(),"history");
 								}
 							}
 
-
 						} 
 
-					} catch (JMSException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
+					} catch (JMSException e) {e.printStackTrace();}
 				}
 			});
 
 
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		} catch (Exception e1) {e1.printStackTrace();}
 
 
 		return this.invokeCopyServer(pathJar ,simul.getTopicList().size());
@@ -720,21 +718,9 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-	
-  void startHistoryProcessForSimulation(int id){
-	 
-	  logRequestForSimulationByID(id,"history");
-	  
-  }
-
-
-
-
 	///////////methods  START STOP PAUSE LOG	
 
-	/**
-	 * @Override
-	 */
+	
 	public void start(int idSimulation){
 
 		Simulation simulationToExec=getSimulationsList().get(idSimulation);
@@ -750,9 +736,6 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-	/**
-	 * @Override
-	 */
 	public void stop(int idSimulation) {
 		Simulation simulationToStop=getSimulationsList().get(idSimulation);
 		int iDSimToStop=simulationToStop.getSimID();
@@ -762,38 +745,36 @@ public class MasterServer implements MultiServerInterface{
 
 			this.getConnection().publishToTopic(iDSimToStop, workerTopic, "stop");
 		}
-		
+
 	}
 
 
 	private boolean createCopyInHistory(String src, int simid){
 		String pathhistory=masterHistoryFolder+File.separator+getSimulationsList().get(simid).getSimName()+simid;
-    	DMasonFileSystem.make(masterHistoryFolder);
-    	File srcFolder = new File(src);
-    	File destFolder = new File(pathhistory);
-    	
-    
-    	//make sure source exists
-    	if(!srcFolder.exists()){
-           System.out.println("Directory does not exist.");
- 
+		DMasonFileSystem.make(masterHistoryFolder);
+		File srcFolder = new File(src);
+		File destFolder = new File(pathhistory);
 
-        }else{
 
-           try{
-        	DMasonFileSystem.copyFolder(srcFolder,destFolder);
-           }catch(IOException e){
-        	e.printStackTrace();
-        	
-           }
-        }
-    	
-    	return true;
+		//make sure source exists
+		if(!srcFolder.exists()){
+			System.out.println("Directory does not exist.");
+
+
+		}else{
+
+			try{
+				DMasonFileSystem.copyFolder(srcFolder,destFolder);
+			}catch(IOException e){
+				e.printStackTrace();
+
+			}
+		}
+
+		return true;
 	}
-	
-	/**
-	 * @Override
-	 */
+
+
 	public void pause(int idSimulation) {
 		Simulation simulationToPause=getSimulationsList().get(idSimulation);
 		int iDSimToPause=simulationToPause.getSimID();
@@ -805,6 +786,12 @@ public class MasterServer implements MultiServerInterface{
 
 	}  
 
+	/**
+	 * 
+	 * @param idSimulation
+	 * @param typeReq logreq(a request for logs file) | history(a request for logs file when delete a simulation) 
+	 * @return
+	 */
 	public String logRequestForSimulationByID(int idSimulation, String typeReq){
 		System.out.println("Request for logs for simulation with id servlet"+idSimulation);
 		Simulation simulationForLog=getSimulationsList().get(idSimulation);
@@ -848,12 +835,5 @@ public class MasterServer implements MultiServerInterface{
 
 	public HashMap<String, String> getInfoWorkers() { HashMap<String, String> toReturn=infoWorkers; infoWorkers=new HashMap<>();  return toReturn;}
 	public HashMap<Integer,Simulation> getSimulationsList(){return simulationsList;}
-
-
-	//private void simReceivedProcess(String topic){
-
-	//getConnection().publishToTopic(DEFAULT_PORT_COPY_SERVER, topic, "jar");
-
-	//}
 
 }
