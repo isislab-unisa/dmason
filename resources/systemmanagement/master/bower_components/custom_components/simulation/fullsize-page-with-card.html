@@ -89,6 +89,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             .download-button-container{
+                cursor: pointer;
                 @apply(--layout-horizontal);
                 @apply(--layout-center);
             }
@@ -107,9 +108,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         </div>
                     </paper-card>
                     <div class="flex"></div>
-                    <div class="download-button-container">
-                    <paper-icon-button icon="file-download" raised></paper-icon-button>
-                    <span>Download Logs</span>
+                    <div class="download-button-container" on-click="downloadLog">
+                        <form id="download_log_form"method="POST" action="/downloadLogs?id={{sim.id}}">
+                        <paper-icon-button icon="file-download" raised></paper-icon-button>
+                        <span>Download Logs</span>
+                        </form>
                     </div>
                 </div>
                 <div class="flex"></div>
@@ -187,6 +190,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         _onClose: function(event) {
             this.$.log_files.selected = 0;
+        },
+
+        downloadLog: function(event){
+            //history.pushState(null,null,"/downloadLogs?id="+this.sim.id);
+            this.$.download_log_form.submit();
         }
     });
 

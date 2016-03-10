@@ -82,7 +82,7 @@ $(
                 load_tiles_monitoring();
             },1000);
         else
-        if(window.location.pathname=="/simulations.html") {
+        if(window.location.pathname=="/simulations.jsp") {
 
             setTimeout(function () {
                 setInterval(function () {
@@ -415,7 +415,7 @@ function _OnsubmitSimulation(event) {
             maxRepeat =0;
             resetForm(event);
             dialog.close();
-            window.location="simulations.html";
+            window.location="simulations.jsp";
         }
     });
 }

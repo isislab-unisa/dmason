@@ -78,13 +78,22 @@
         <url-pattern>/requestForLog</url-pattern>
     </servlet-mapping>
     
-    	<servlet id="removeSimulation">
+    <servlet id="removeSimulation">
         <servlet-name>RemoveSimulationServlet</servlet-name>
         <servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.RemoveSimulationServlet</servlet-class>
 	  </servlet>
     <servlet-mapping>
         <servlet-name>RemoveSimulationServlet</servlet-name>
         <url-pattern>/removeSimulation</url-pattern>
+    </servlet-mapping>
+    
+    <servlet id="downloadLogs">
+        <servlet-name>DownloadLogsServlet</servlet-name>
+        <servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.DownloadLogsServlet</servlet-class>
+	</servlet>
+    <servlet-mapping>
+        <servlet-name>DownloadLogsServlet</servlet-name>
+        <url-pattern>/downloadLogs</url-pattern>
     </servlet-mapping>
     
 </web-app>

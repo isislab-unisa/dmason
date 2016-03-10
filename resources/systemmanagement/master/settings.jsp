@@ -67,7 +67,7 @@
         <app-sidebar>
 
         <a href="index.jsp" style="text-decoration:none;"> <paper-item ><iron-icon icon="icons:flip-to-front"></iron-icon><span class="span-icon">Monitoring</span></paper-item></a>
-        <a href="simulations.html" style="text-decoration:none;"><paper-item ><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></paper-item></a>
+        <a href="simulations.jsp" style="text-decoration:none;"><paper-item ><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></paper-item></a>
         <a href="history.jsp" style="text-decoration:none;"><paper-item ><iron-icon icon="history"></iron-icon><span class="span-icon">History</span></paper-item></a>
         <a href="settings.jsp" style="text-decoration:none;"><paper-item class="selected"><iron-icon icon="settings"></iron-icon><span class="span-icon">Settings</span></paper-item></a>
 
