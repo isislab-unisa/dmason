@@ -31,12 +31,12 @@ public class DownloadLogsServlet extends HttpServlet {
 			resp.setContentType("text/plain;charset=UTF-8");
 			return; 	
 		}
-		System.out.println("Entro!!!");
+		
 		masterServer = (MasterServer) req.getServletContext().getAttribute("masterServer");
 		String s_id = (String)req.getParameter("id");
 		if(s_id==null)
 			return;
-		System.out.println("Visto ID!!!");
+		
 		int sim_id=Integer.parseInt(s_id);
 		Simulation s = masterServer.getSimulationsList().get(sim_id);
 		
@@ -48,14 +48,14 @@ public class DownloadLogsServlet extends HttpServlet {
 		if(!ZipDirectory.createZipDirectory(filePath, log_path))
 			return;
 		
-		System.out.println("Creato zipppettone!!!");
+		//System.out.println("Creato zipppettone!!!");
 		// reads input file from an absolute path
         File downloadFile = new File(filePath);
         FileInputStream inStream = new FileInputStream(downloadFile);
          
         // if you want to use a relative path to context root:
         String relativePath = getServletContext().getRealPath("");
-        System.out.println("relativePath = " + relativePath);
+        //System.out.println("relativePath = " + relativePath);
          
         // obtains ServletContext
         ServletContext context = getServletContext();
@@ -66,7 +66,7 @@ public class DownloadLogsServlet extends HttpServlet {
             // set to binary type if MIME mapping not found
             mimeType = "application/octet-stream";
         }
-        System.out.println("MIME type: " + mimeType);
+        //System.out.println("MIME type: " + mimeType);
          
         // modifies response
         resp.setContentType(mimeType);
