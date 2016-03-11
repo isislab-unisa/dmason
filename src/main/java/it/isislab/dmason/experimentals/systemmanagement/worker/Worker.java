@@ -34,7 +34,6 @@ import it.isislab.dmason.util.connection.ConnectionType;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -60,7 +59,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 
@@ -77,7 +75,7 @@ public class Worker {
 	private String PORT_ACTIVEMQ="";
 	private String TOPICPREFIX="";
 	private int PORT_COPY_LOG;
-	private int slotsNumber=0;
+	private int  slotsNumber=0;
 	private static final String MASTER_TOPIC="MASTER";
 	private static String dmasonDirectory=System.getProperty("user.dir")+File.separator+"dmason";
 	private static  String workerDirectory;
@@ -151,7 +149,11 @@ public class Worker {
 
 
 
-	void playSimulationProcessByID(int id){
+	/**
+	 * start a simulation by id 
+	 * @param id The id of simulation
+	 */
+	private	void playSimulationProcessByID(int id){
 		try {
 			if(simulationList.containsKey(id) && simulationList.get(id).getStatus().equals(Simulation.PAUSED))
 			{  
@@ -215,9 +217,9 @@ public class Worker {
 	}
 
 
-    /**
-     * subscrive to topic of master for communication master->worker
-     */
+	/**
+	 * subscrive to topic of master for communication master->worker
+	 */
 	private synchronized void listenerForMasterComunication(){
 		try{
 			getConnection().subscribeToTopic(TOPIC_WORKER_ID_MASTER);
@@ -274,14 +276,7 @@ public class Worker {
 						getLogBySimIDProcess(id,pre_status,"log");
 
 					}
-                    //log request of a simulation (an history type) 
-					/*if(map.containsKey("history")){
-						int id=(int)map.get("history");
-						System.out.println("Received request for history for simid "+id);
-						String pre_status=simulationList.get(id).getStatus();
-						getLogBySimIDProcess(id,pre_status,"history");
-					}*/
-                    //request to remove a simulation
+					//request to remove a simulation
 					if (map.containsKey("simrm")){
 						int id = (int)map.get("simrm");
 						System.out.println("Command remove received for simulation "+id);
@@ -325,23 +320,15 @@ public class Worker {
 		s.setEndTime(System.currentTimeMillis());
 		for(CellExecutor cexe:executorThread.get(sim_id))
 		{
-			if(cexe.masterCell){ s.setStatus(Simulation.FINISHED);	getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");}
+			if(cexe.masterCell){ 
+				s.setStatus(Simulation.FINISHED);	
+				getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");}
 			cexe.stopThread();
 		}
-		//simulationList.remove(sim_id);
-		
 		s.setEndTime(System.currentTimeMillis());
-		//getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
 		System.out.println("Simulation "+sim_id+" stopped, with "+executorThread.get(sim_id).size());
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
+		//start process to create a log file for this simulation
 		String pre_status=simulationList.get(sim_id).getStatus();
 		getLogBySimIDProcess(sim_id,pre_status,"history");
 
@@ -423,16 +410,28 @@ public class Worker {
 				if(masterCell)
 				{
 					s.setStep(i);
-					if(i==params.getMaxStep()-1){s.setStatus(Simulation.FINISHED);}
-					getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
 				}
 				dis.schedule.step(dis);
 				i++;
-				
+
 			}
-			
-			//this.stopThread();
+
+			if(i==params.getMaxStep() && masterCell){
+				s.setStatus(Simulation.FINISHED);
+				getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
+				setSlotsNumuber(getSlotsNumber()+s.getCellTypeList().size());
+				// process to create log file
+				//String pre_status=simulationList.get(sim_id).getStatus();
+				//getLogBySimIDProcess(sim_id,pre_status,"history");
+			}
+
+
+
 		}
+
+
+
+
 		public synchronized void stopThread()
 		{
 			run=false;
@@ -608,9 +607,9 @@ public class Worker {
 					DMasonFileSystem.delete(new File(fileToSend));
 			}
 		}
-		
+
 		else{
-			
+
 			if(getLogBySimID(folderToCopy,fileToSend)){
 				System.out.println("File zip creato nella dir "+fileToSend);			
 
@@ -758,6 +757,6 @@ public class Worker {
 	public ConnectionNFieldsWithActiveMQAPI getConnection() {return conn;}
 	public String getSimulationsDirectories() {return simulationsDirectories;}
 	public synchronized Integer getSlotsNumber(){return slotsNumber;}
-	public int setSlotsNumuber(int slots){return this.slotsNumber=slots;}
+	public synchronized int setSlotsNumuber(int slots){return this.slotsNumber=slots;}
 	public HashMap<Integer, Simulation> getSimulationList(){return simulationList;}
 }
