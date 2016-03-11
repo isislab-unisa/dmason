@@ -8,6 +8,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../neon-animation/neon-shared-element-animatable-behavior.html">
+<link rel="import" href="../../neon-animation/neon-animatable.html">
 <link rel="import" href="../../neon-animation/animations/ripple-animation.html">
 <link rel="import" href="../../neon-animation/animations/hero-animation.html">
 <link rel="import" href="../../neon-animation/animations/fade-out-animation.html">
@@ -46,7 +47,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 min-height: 768px;
                 overflow-x: visible;
             }
-            .card {
+
+            .dinamic_container{
                 position: relative;
                 margin: 50px auto auto 25%;
                 width: 780px;
@@ -54,6 +56,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 min-width: 780px;
                 min-height: 580px;
                 background-color: #3f4242;
+            }
+            .card {
+                width: 780px;
+                height: 580px;
+                min-width: 780px;
+                min-height: 580px;
                 @apply(--layout-horizontal);
             }
 
@@ -97,32 +105,52 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         </style>
      <div class="layout vertical center-justified">
-        <div id="fixed" class="fixed horizontal layout"><paper-button id="back_button" on-click="go_back">
-            <iron-icon icon="arrow-back"></iron-icon> BACK</paper-button>
-        </div>
-            <div id="card" class="card">
-                <div class="simulation-container">
-                    <paper-card id="sim_info" heading="Simulation Info">
-                        <div class="card-content">
-                            <simulation-info sim="{{sim}}"></simulation-info>
-                        </div>
-                    </paper-card>
-                    <div class="flex"></div>
-                    <div class="download-button-container" on-click="downloadLog">
-                        <form id="download_log_form"method="POST" action="/downloadLogs?id={{sim.id}}">
-                        <paper-icon-button icon="file-download" raised></paper-icon-button>
-                        <span>Download Logs</span>
-                        </form>
-                    </div>
-                </div>
-                <div class="flex"></div>
-                <div class="animation-log-container">
-                    <neon-animated-pages id="log_files" selected="0">
-                        <list-view list_log="{{listFile}}" on-item-click="_onItemClick"></list-view>
-                        <full-log-view id="full_file" on-close="_onClose"></full-log-view>
-                    </neon-animated-pages>
-                </div>
+        <div id="fixed" class="fixed horizontal layout">
+            <div on-click="go_back">
+                <paper-button><iron-icon icon="arrow-back"></iron-icon> BACK</paper-button>
             </div>
+            <div class="flex"></div>
+            <div on-click="go_next">
+                <paper-button> NEXT<iron-icon icon="arrow-forward"></iron-icon></paper-button>
+            </div>
+
+        </div>
+
+         <neon-animated-pages id="system_info" class="dinamic_container" selected="0">
+                 <div id="card" class="card">
+                     <div class="simulation-container">
+                         <paper-card id="sim_info" heading="Simulation Info">
+                             <div class="card-content">
+                                 <simulation-info sim="{{sim}}"></simulation-info>
+                             </div>
+                         </paper-card>
+                         <div class="flex"></div>
+                         <div class="download-button-container" on-click="downloadLog">
+                             <form id="download_log_form"method="POST" action="/downloadLogs?id={{sim.id}}">
+                                 <paper-icon-button icon="file-download" raised></paper-icon-button>
+                                 <span>Download Logs</span>
+                             </form>
+                         </div>
+                     </div>
+                     <div class="flex"></div>
+                     <div class="animation-log-container">
+                         <neon-animated-pages id="log_files" selected="0">
+                             <list-view list_log="{{listFile}}" on-item-click="_onItemClick"></list-view>
+                             <full-log-view id="full_file" on-close="_onClose"></full-log-view>
+                         </neon-animated-pages>
+                     </div>
+                </div>
+
+
+                <div id="task_manager" class="card">
+                    <div id="SystemCPUMonitor" style="height: 300px; min-width: 780px;;"></div>
+                </div>
+
+         </neon-animated-pages>
+
+
+
+
      </div>
     </template>
 
@@ -173,14 +201,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             name: 'transform-animation',
                             transformFrom: 'none',
                             transformTo: 'translate(0px,-200vh) scale(0.9,1)',
-                            node: this.$.card
+                            node: this.$.system_info
                         }]
                     }
                 }
             }
         },
         go_back:function(){
-            this.fire('go-back');
+            var scope = document.querySelector('neon-animated-pages [id="system_info"]');
+            if(scope.selected==0)
+                this.fire('go-back');
+            else{
+                scope.entryAnimation = 'slide-from-left-animation';
+                scope.exitAnimation = 'slide-right-animation';
+                scope.selected =0;
+            }
+        },
+        go_next: function(){
+            var scope = document.querySelector('neon-animated-pages [id="system_info"]');
+            if(scope.selected!=1){
+                scope.entryAnimation = 'slide-from-right-animation';
+                scope.exitAnimation = 'slide-left-animation';
+                scope.selected = 1;
+            }
         },
         _onItemClick: function(event) {
             var item = event.detail.data;
@@ -195,7 +238,82 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         downloadLog: function(event){
             //history.pushState(null,null,"/downloadLogs?id="+this.sim.id);
             this.$.download_log_form.submit();
+        },
+
+        attached: function () {
+
+            Highcharts.setOptions({
+                global : {
+                    useUTC : false
+                }
+            });
+            var x = 0,y=0;
+            // Create the chart
+            $('#SystemCPUMonitor').highcharts({
+                chart : {
+                    type:'spline',
+                    events : {
+                        load : function () {
+
+                            // set up the updating of the chart each second
+                            var series = this.series[0];
+                            setInterval(function () {
+                                        x =0;
+                                        y = Math.random()*100;
+                                series.addPoint([x, y], true, true);
+                            }, 1000);
+                        }
+                    }
+                },
+                credits: {
+                    enabled: false
+                },
+                title : {
+                    text : 'Live random data'
+                },
+
+                exporting: {
+                    enabled: false
+                },
+                xAxis: {
+                    reversed:true,
+                    type: 'linear',
+                    tickInterval: 20,
+                    max:60,
+                    min:0
+                },
+                yAxis: {
+                    tickInterval:50,
+                    max:100,
+                    min:0
+                },
+                plotOptions: {
+                    series: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                series : [{
+                    name : 'ii',
+                    data: (function () {
+                        // generate an array of random data
+                        var data = [],
+                                i;
+
+                        for (i = 0; i < 60; i++) {
+                            data.push({
+                                x:i,
+                                y: Math.random() * 100
+                            });
+                        }
+                        return data;
+                    }())
+                }]
+            });
+
         }
+
     });
 
 
