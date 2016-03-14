@@ -22,7 +22,7 @@ import sim.util.Double2D;
  * @author Michele Carillo
  * @author Flavio Serrapica
  * @author Carmine Spagnuolo
- * @author Mario Capuozzo
+ * @author Mario Capuoz
  */
 public class DDoubleGrid2DFactoryTester {
 
