@@ -124,7 +124,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                  <simulation-info sim="{{sim}}"></simulation-info>
                              </div>
                          </paper-card>
-                         <div class="flex"></div>
+                         <div class="flex">
+                             <div id="SystemCPUMonitor" style="height: 200px; min-width: 300px;"></div>
+                         </div>
                          <div class="download-button-container" on-click="downloadLog">
                              <form id="download_log_form"method="POST" action="/downloadLogs?id={{sim.id}}">
                                  <paper-icon-button icon="file-download" raised></paper-icon-button>
@@ -132,7 +134,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                              </form>
                          </div>
                      </div>
-                     <div class="flex"></div>
+                     <div class="flex">
+
+                     </div>
                      <div class="animation-log-container">
                          <neon-animated-pages id="log_files" selected="0">
                              <list-view list_log="{{listFile}}" on-item-click="_onItemClick"></list-view>
@@ -143,7 +147,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
                 <div id="task_manager" class="card">
-                    <div id="SystemCPUMonitor" style="height: 300px; min-width: 780px;;"></div>
+
                 </div>
 
          </neon-animated-pages>
@@ -178,6 +182,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     }
                 }
             },
+
             animationConfig: {
                 type: Object,
                 value: function() {
@@ -207,6 +212,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
         },
+        observers:[
+                'AVGCPUWorkLoad(sim)'
+        ],
         go_back:function(){
             var scope = document.querySelector('neon-animated-pages [id="system_info"]');
             if(scope.selected==0)
@@ -240,76 +248,162 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this.$.download_log_form.submit();
         },
 
-        attached: function () {
+        AVGCPUWorkLoad: function (sim) {
 
             Highcharts.setOptions({
                 global : {
                     useUTC : false
                 }
             });
-            var x = 0,y=0;
+
             // Create the chart
             $('#SystemCPUMonitor').highcharts({
-                chart : {
-                    type:'spline',
-                    events : {
-                        load : function () {
+                        colors: ["#2b908f", "#90ee7e", "#f45b5b", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee",
+                            "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
+                        chart: {
+                            type: 'gauge',
+                            backgroundColor: 'transparent',
+                            style: {
+                                fontFamily: "'Unica One', sans-serif",
+                            },
+                            plotBorderColor: '#606063',
+                            marginTop:'25'
 
-                            // set up the updating of the chart each second
-                            var series = this.series[0];
+                        },
+                        exporting: 'false',
+                        title: {
+                            text: 'AVG CPU Load',
+                            style: {
+                                color: '#E0E0E3',
+                                textTransform: 'uppercase',
+                                fontSize: '20px'
+                            }
+                        },
+                        subtitle: {
+                            style: {
+                                color: '#E0E0E3',
+                                textTransform: 'uppercase'
+                            }
+                        },
+                        credits: false,
+                        pane: {
+                            startAngle: -150,
+                            endAngle: 150,
+                            background: [{
+                                backgroundColor: {
+                                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                                    stops: [
+                                        [0, '#FFF'],
+                                        [1, '#333']
+                                    ]
+                                },
+                                borderWidth: 0,
+                                outerRadius: '109%'
+                            }, {
+                                backgroundColor: {
+                                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                                    stops: [
+                                        [0, '#333'],
+                                        [1, '#FFF']
+                                    ]
+                                },
+                                borderWidth: 1,
+                                outerRadius: '107%'
+                            }, {
+                                // default background
+                            }, {
+                                backgroundColor: '#DDD',
+                                borderWidth: 0,
+                                outerRadius: '105%',
+                                innerRadius: '103%'
+                            }]
+                        },
+
+                        // the value axis
+                        yAxis: {
+                            min: 0,
+                            max: 100,
+
+                            minorTickInterval: 'auto',
+                            minorTickWidth: 1,
+                            minorTickLength: 10,
+                            minorTickPosition: 'inside',
+                            minorTickColor: '#0000ff',
+
+                            tickPixelInterval: 30,
+                            tickWidth: 2,
+                            tickPosition: 'inside',
+                            tickLength: 10,
+                            tickColor: '#0000ff',
+                            labels: {
+                                step: 2,
+                                rotation: 'auto'
+                            },
+
+                            title: {
+                                text: '%'
+                            },
+                            plotBands: [{
+                                from: 0,
+                                to: 50,
+                                color: '#00ff66' // green
+                            }, {
+                                from: 50,
+                                to: 80,
+                                color: '#ffff00' // yellow
+                            }, {
+                                from: 80,
+                                to: 100,
+                                color: '#ff0000' // red
+                            }]
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                            style: {
+                                color: '#F0F0F0'
+                            }
+                        },
+                        series: [{
+                            name: 'CPU Load',
+                            data: [0],
+                            tooltip: {
+                                valueSuffix: ' %'
+                            }
+                        }]
+
+                    },
+                    // Add some life
+                    function (chart) {
+                        if (!chart.renderer.forExport) {
                             setInterval(function () {
-                                        x =0;
-                                        y = Math.random()*100;
-                                series.addPoint([x, y], true, true);
+                                var point = chart.series[0].points[0],
+                                        newVal;
+
+                                        $.ajax({
+                                          url:"getWorkersInfoBySimID",
+                                          data:"id="+sim.id,
+                                          success: function(result){
+
+                                              var obj=[];
+                                              if(result.length>0)
+                                                  obj = JSON.parse(result);
+                                              if(obj.hasOwnProperty('workers')){
+
+                                                  var cpu_avg=0;
+                                                  for(var w,i=0; w=obj.workers[i]; i++){
+
+                                                        cpu_avg+= w.cpuLoad;
+                                                  }
+                                                  newVal = Math.floor(cpu_avg/obj.workers.length);
+                                                  
+                                              }else{
+                                                  newVal = point.y;
+                                              }
+                                              point.update(newVal);
+                                          }
+                                        });
                             }, 1000);
                         }
-                    }
-                },
-                credits: {
-                    enabled: false
-                },
-                title : {
-                    text : 'Live random data'
-                },
-
-                exporting: {
-                    enabled: false
-                },
-                xAxis: {
-                    reversed:true,
-                    type: 'linear',
-                    tickInterval: 20,
-                    max:60,
-                    min:0
-                },
-                yAxis: {
-                    tickInterval:50,
-                    max:100,
-                    min:0
-                },
-                plotOptions: {
-                    series: {
-                        marker: {
-                            enabled: false
-                        }
-                    }
-                },
-                series : [{
-                    name : 'ii',
-                    data: (function () {
-                        // generate an array of random data
-                        var data = [],
-                                i;
-
-                        for (i = 0; i < 60; i++) {
-                            data.push({
-                                x:i,
-                                y: Math.random() * 100
-                            });
-                        }
-                        return data;
-                    }())
-                }]
             });
 
         }

@@ -95,5 +95,12 @@
         <servlet-name>DownloadLogsServlet</servlet-name>
         <url-pattern>/downloadLogs</url-pattern>
     </servlet-mapping>
-    
+     <servlet id="getWorkersInfoBySimID">
+        <servlet-name>GetWorkersInfoBySimIDServlet</servlet-name>
+        <servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.GetWorkersInfoBySimIDServlet</servlet-class>
+	</servlet>
+    <servlet-mapping>
+        <servlet-name>GetWorkersInfoBySimIDServlet</servlet-name>
+        <url-pattern>/getWorkersInfoBySimID</url-pattern>
+    </servlet-mapping>
 </web-app>

@@ -24,8 +24,8 @@
 
         <!-- Custom Scripts -->
         <script src="js/script.js"></script>
-        <script src="bower_components/highcharts/highstock.js"></script>
-        <script src="bower_components/highcharts/modules/exporting.js"></script>
+        <script src="bower_components/highcharts/highcharts.js"></script>
+        <script src="bower_components/highcharts/highcharts-more.js"></script>
 
         <!-- Import element -->
         <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
