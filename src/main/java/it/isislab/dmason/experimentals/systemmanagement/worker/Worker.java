@@ -275,8 +275,16 @@ public class Worker {
 						int id=(int)map.get("logreq");
 						System.out.println("Received request for logs for simid "+id);
 						String pre_status=getSimulationList().get(id).getStatus();
-						if(!(getSimulationList().get(id).getStatus().equals(Simulation.PAUSED))) pauseSimulation(id);
-						getLogBySimIDProcess(id,pre_status,"log");
+						if((pre_status.equals(Simulation.STARTED))){ 
+							pauseSimulation(id); 
+							System.out.println("stop in logreq simid "+id);
+							System.out.println("invoke getlog con "+pre_status);
+							getLogBySimIDProcess(id,pre_status,"log");
+						}  
+						else{ //PAUSED
+							System.out.println("invoke getlog con "+pre_status);
+							 getLogBySimIDProcess(id,pre_status,"log");
+						}
 
 					}
 					//request to remove a simulation
@@ -298,17 +306,17 @@ public class Worker {
 	private HashMap<Integer,ArrayList<CellExecutor>> executorThread=new HashMap<Integer,ArrayList<CellExecutor>>();
 
 	private synchronized void runSimulation(int sim_id){
-		Simulation s=getSimulationList().get(sim_id);
-		s.setStartTime(System.currentTimeMillis());
-		s.setStep(0);
+		//Simulation s=getSimulationList().get(sim_id);
+		getSimulationList().get(sim_id).setStartTime(System.currentTimeMillis());
+		getSimulationList().get(sim_id).setStep(0);
 		for(CellExecutor cexe:executorThread.get(sim_id))
 		{
 			cexe.start();
 		}
-		s.setStatus(Simulation.STARTED);
-		s.setStartTime(System.currentTimeMillis());
-		s.setStep(0);
-		getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
+		getSimulationList().get(sim_id).setStatus(Simulation.STARTED);
+		getSimulationList().get(sim_id).setStartTime(System.currentTimeMillis());
+		getSimulationList().get(sim_id).setStep(0);
+		getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
 		System.out.println("Simulation "+sim_id+" started, with "+executorThread.get(sim_id).size()+".");
 
 
@@ -319,16 +327,16 @@ public class Worker {
 	 */
 	private synchronized void stopSimulation(int sim_id)
 	{
-		Simulation s=getSimulationList().get(sim_id);
-		s.setEndTime(System.currentTimeMillis());
+		//Simulation s=getSimulationList().get(sim_id);
+		getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
 		for(CellExecutor cexe:executorThread.get(sim_id))
 		{
 			if(cexe.masterCell){ 
-				s.setStatus(Simulation.FINISHED);	
-				getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");}
+				getSimulationList().get(sim_id).setStatus(Simulation.FINISHED);	
+				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");}
 			cexe.stopThread();
 		}
-		s.setEndTime(System.currentTimeMillis());
+		getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
 		System.out.println("Simulation "+sim_id+" stopped, with "+executorThread.get(sim_id).size());
 
 		//start process to create a log file for this simulation
@@ -342,14 +350,15 @@ public class Worker {
 	 */
 	private synchronized void pauseSimulation(int sim_id)
 	{
-		Simulation s=getSimulationList().get(sim_id);
+		
 		for(CellExecutor cexe:executorThread.get(sim_id))
 		{
 			cexe.pauseThread();
 		}
-		s.setStatus(Simulation.PAUSED);
-		s.setEndTime(System.currentTimeMillis());
-		getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
+		getSimulationList().get(sim_id).setStatus(Simulation.PAUSED);
+		getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
+		
+		getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
 		System.out.println("Simulation "+sim_id+" paused, with "+executorThread.get(sim_id).size());
 
 
@@ -391,7 +400,7 @@ public class Worker {
 		public  void run() {
 			System.out.println("Start cell for "+params.getMaxStep());
 			int i=0;
-			Simulation s=getSimulationList().get(sim_id);
+			//Simulation s=getSimulationList().get(sim_id);
 
 			while(i!=params.getMaxStep() && run)
 			{   
@@ -412,7 +421,7 @@ public class Worker {
 				}
 				if(masterCell)
 				{
-					s.setStep(i);
+					getSimulationList().get(sim_id).setStep(i);
 				}
 				dis.schedule.step(dis);
 				i++;
@@ -420,9 +429,9 @@ public class Worker {
 			}
 
 			if(i==params.getMaxStep() && masterCell){
-				s.setStatus(Simulation.FINISHED);
-				getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
-				setSlotsNumuber(getSlotsNumber()+s.getCellTypeList().size());
+				getSimulationList().get(sim_id).setStatus(Simulation.FINISHED);
+				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
+				setSlotsNumuber(getSlotsNumber()+getSimulationList().get(sim_id).getCellTypeList().size());
 				// process to create log file
 				String pre_status=getSimulationList().get(sim_id).getStatus();
 				getLogBySimIDProcess(sim_id,pre_status,"history");
@@ -672,6 +681,7 @@ public class Worker {
 			if(getLogBySimID(folderToCopy,fileToSend)){
 				System.out.println("File zip creato nella dir "+fileToSend);			
 				if(status.equals(Simulation.STARTED))playSimulationProcessByID(simID);
+				
 				if(startServiceCopyForLog(fileToSend,simID,"logready"))
 					DMasonFileSystem.delete(new File(fileToSend));
 			}
