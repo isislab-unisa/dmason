@@ -117,7 +117,7 @@ public class Worker {
 			this.PORT_COPY_LOG=findAvailablePort();
 			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP));
 
-			getConnection().createTopic("SIMULATION_READY", 1);
+/*			getConnection().createTopic("SIMULATION_READY", 1);
 			getConnection().subscribeToTopic("SIMULATION_READY");
 			getConnection().asynchronousReceive("SIMULATION_READY", new MyMessageListener() {
 
@@ -129,11 +129,13 @@ public class Worker {
 						MyHashMap map=(MyHashMap) o;
 						if(map.containsKey("cellready")){
 							int sim_id=(int) map.get("cellready");
+							if(getSimulationList().containsKey(sim_id)) {
 
-							simulationList.get(sim_id).setReceived_cell_type(simulationList.get(sim_id).getReceived_cell_type()+1);
-							if(simulationList.get(sim_id).getReceived_cell_type()==simulationList.get(sim_id).getNumCells())
-							{
-								runSimulation(sim_id);
+								getSimulationList().get(sim_id).setReceived_cell_type(getSimulationList().get(sim_id).getReceived_cell_type()+1);
+								if(getSimulationList().get(sim_id).getReceived_cell_type()==getSimulationList().get(sim_id).getNumCells())
+								{
+									runSimulation(sim_id);
+								}
 							}
 						} 
 
@@ -141,7 +143,7 @@ public class Worker {
 					} catch (JMSException e) {e.printStackTrace();}
 
 				}
-			});
+			});*/
 		} catch (Exception e) {e.printStackTrace();}
 
 		System.out.println("Worker started ...");
@@ -155,9 +157,9 @@ public class Worker {
 	 */
 	private	void playSimulationProcessByID(int id){
 		try {
-			if(simulationList.containsKey(id) && simulationList.get(id).getStatus().equals(Simulation.PAUSED))
+			if(getSimulationList().containsKey(id) && getSimulationList().get(id).getStatus().equals(Simulation.PAUSED))
 			{  
-				simulationList.get(id).setStatus(Simulation.STARTED);
+				getSimulationList().get(id).setStatus(Simulation.STARTED);
 				for(CellExecutor cexe:executorThread.get(id))
 				{
 					cexe.restartThread();
@@ -191,7 +193,7 @@ public class Worker {
 						new GeneralParam(width, height, aoi,p, agents, mode,step,ConnectionType.pureActiveMQ);
 					params.setIp(IP_ACTIVEMQ);
 					params.setPort(PORT_ACTIVEMQ);
-					simulationList.put(simulation.getSimID(), simulation);
+					getSimulationList().put(simulation.getSimID(), simulation);
 					executorThread.put(simulation.getSimID(),new ArrayList<CellExecutor>());
 					for (CellType cellType : cellstype) {
 						slotsNumber--;
@@ -205,7 +207,7 @@ public class Worker {
 
 						executorThread.get(simulation.getSimID()).add(celle);
 						celle.startSimulation();
-						getConnection().publishToTopic(simulation.getSimID(),"SIMULATION_READY", "cellready");
+						getConnection().publishToTopic(simulation.getSimID(),"SIMULATION_READY"+simulation.getSimID(), "cellready");
 
 					}
 
@@ -251,6 +253,7 @@ public class Worker {
 					// request to start a simulation
 					if (map.containsKey("start")){
 						int id = (int)map.get("start");
+						System.out.println("Received command start for sim "+id+" on topic "+TOPIC_WORKER_ID_MASTER);
 						playSimulationProcessByID(id);
 
 					}
@@ -271,8 +274,8 @@ public class Worker {
 					if(map.containsKey("logreq")){
 						int id=(int)map.get("logreq");
 						System.out.println("Received request for logs for simid "+id);
-						String pre_status=simulationList.get(id).getStatus();
-						if(!simulationList.get(id).getStatus().equals(Simulation.PAUSED))pauseSimulation(id);
+						String pre_status=getSimulationList().get(id).getStatus();
+						if(!getSimulationList().get(id).getStatus().equals(Simulation.PAUSED))pauseSimulation(id);
 						getLogBySimIDProcess(id,pre_status,"log");
 
 					}
@@ -295,7 +298,7 @@ public class Worker {
 	private HashMap<Integer,ArrayList<CellExecutor>> executorThread=new HashMap<Integer,ArrayList<CellExecutor>>();
 
 	private synchronized void runSimulation(int sim_id){
-		Simulation s=simulationList.get(sim_id);
+		Simulation s=getSimulationList().get(sim_id);
 		s.setStartTime(System.currentTimeMillis());
 		s.setStep(0);
 		for(CellExecutor cexe:executorThread.get(sim_id))
@@ -316,7 +319,7 @@ public class Worker {
 	 */
 	private synchronized void stopSimulation(int sim_id)
 	{
-		Simulation s=simulationList.get(sim_id);
+		Simulation s=getSimulationList().get(sim_id);
 		s.setEndTime(System.currentTimeMillis());
 		for(CellExecutor cexe:executorThread.get(sim_id))
 		{
@@ -329,7 +332,7 @@ public class Worker {
 		System.out.println("Simulation "+sim_id+" stopped, with "+executorThread.get(sim_id).size());
 
 		//start process to create a log file for this simulation
-		String pre_status=simulationList.get(sim_id).getStatus();
+		String pre_status=getSimulationList().get(sim_id).getStatus();
 		getLogBySimIDProcess(sim_id,pre_status,"history");
 
 	}
@@ -339,7 +342,7 @@ public class Worker {
 	 */
 	private synchronized void pauseSimulation(int sim_id)
 	{
-		Simulation s=simulationList.get(sim_id);
+		Simulation s=getSimulationList().get(sim_id);
 		for(CellExecutor cexe:executorThread.get(sim_id))
 		{
 			cexe.pauseThread();
@@ -388,7 +391,7 @@ public class Worker {
 		public  void run() {
 			System.out.println("Start cell for "+params.getMaxStep());
 			int i=0;
-			Simulation s=simulationList.get(sim_id);
+			Simulation s=getSimulationList().get(sim_id);
 
 			while(i!=params.getMaxStep() && run)
 			{   
@@ -421,7 +424,7 @@ public class Worker {
 				getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
 				setSlotsNumuber(getSlotsNumber()+s.getCellTypeList().size());
 				// process to create log file
-				String pre_status=simulationList.get(sim_id).getStatus();
+				String pre_status=getSimulationList().get(sim_id).getStatus();
 				getLogBySimIDProcess(sim_id,pre_status,"history");
 			}
 
@@ -462,12 +465,78 @@ public class Worker {
 	}
 
 	private synchronized void createNewSimulationProcess(Simulation sim){
-
+        
 		String path=this.createSimulationDirectoryByID(sim.getSimName()+""+sim.getSimID());
 		sim.setSimulationFolder(path);
 		getSimulationList().put(sim.getSimID(),sim);
 		this.getConnection().publishToTopic(TOPIC_WORKER_ID_MASTER, this.TOPIC_WORKER_ID, "simrcv");
+        
+		
+		//added dal costruttore
+		String createTopicSimReady="SIMULATION_READY"+sim.getSimID();
+		getConnection().createTopic(createTopicSimReady, 1);
+	    try {
+			getConnection().subscribeToTopic(createTopicSimReady);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	    getConnection().asynchronousReceive(createTopicSimReady, new MyMessageListener() {
+			
+			@Override
+			public void onMessage(Message msg) {
+				Object o;
+				try {
+					o=parseMessage(msg);
+					MyHashMap map=(MyHashMap) o;
+					if(map.containsKey("cellready")){
+						int sim_id=(int) map.get("cellready");
+						//if(getSimulationList().containsKey(sim_id)) {
 
+							getSimulationList().get(sim_id).setReceived_cell_type(getSimulationList().get(sim_id).getReceived_cell_type()+1);
+							if(getSimulationList().get(sim_id).getReceived_cell_type()==getSimulationList().get(sim_id).getNumCells())
+							{
+								runSimulation(sim_id);
+							}
+						//}
+					} 
+
+
+				} catch (JMSException e) {e.printStackTrace();}
+				
+			}
+		});
+		
+	    //moved in creationsimulationprocess
+		/*			getConnection().createTopic("SIMULATION_READY", 1);
+		getConnection().subscribeToTopic("SIMULATION_READY");
+		getConnection().asynchronousReceive("SIMULATION_READY", new MyMessageListener() {
+
+			@Override
+			public void onMessage(Message msg) {
+				Object o;
+				try {
+					o=parseMessage(msg);
+					MyHashMap map=(MyHashMap) o;
+					if(map.containsKey("cellready")){
+						int sim_id=(int) map.get("cellready");
+						if(getSimulationList().containsKey(sim_id)) {
+
+							getSimulationList().get(sim_id).setReceived_cell_type(getSimulationList().get(sim_id).getReceived_cell_type()+1);
+							if(getSimulationList().get(sim_id).getReceived_cell_type()==getSimulationList().get(sim_id).getNumCells())
+							{
+								runSimulation(sim_id);
+							}
+						}
+					} 
+
+
+				} catch (JMSException e) {e.printStackTrace();}
+
+			}
+		});*/
+		
+        
 
 	}
 	private String createSimulationDirectoryByID(String  name){
@@ -477,9 +546,9 @@ public class Worker {
 	}
 
 	public  synchronized void deleteSimulationProcessByID(int simID){
-		String folder=simulationList.get(simID).getSimulationFolder();
+		String folder=getSimulationList().get(simID).getSimulationFolder();
 		DMasonFileSystem.delete(new File(folder));
-		simulationList.remove(simID);
+		getSimulationList().remove(simID);
 	}
 
 
