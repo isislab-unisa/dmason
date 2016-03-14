@@ -102,6 +102,7 @@ public class Worker {
 	 */
 	@SuppressWarnings("serial")
 	public Worker(String ipMaster,String portMaster, int slots) {
+		
 		try {
 			this.IP_ACTIVEMQ=ipMaster;
 			this.PORT_ACTIVEMQ=portMaster;
@@ -116,11 +117,11 @@ public class Worker {
 			signRequestToMaster();
 			this.PORT_COPY_LOG=findAvailablePort();
 			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP));
-
+			System.out.println("Starting worker ..."); 
 
 		} catch (Exception e) {e.printStackTrace();}
 
-		System.out.println("Worker started ...");
+		
 	}
 
 
@@ -232,7 +233,6 @@ public class Worker {
 					}
 					//request to stop a simulation
 					if (map.containsKey("stop")){
-
 						int id = (int)map.get("stop");
 						stopSimulation(id);
 					}
@@ -753,6 +753,7 @@ public class Worker {
 					MyHashMap map=(MyHashMap) o;
 					if(map.containsKey(worker.TOPIC_WORKER_ID)){
 						TOPIC_WORKER_ID_MASTER=map.get(TOPIC_WORKER_ID).toString();
+						System.out.println("Ack signup received ...");
 						listenerForMasterComunication();
 					} 
 
