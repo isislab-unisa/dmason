@@ -337,7 +337,8 @@ public class MasterServer implements MultiServerInterface{
 			});
 			t.start();
 			t.join();
-
+            
+			
 			DMasonFileSystem.delete(new File(fileCopy));
 
 
@@ -347,12 +348,13 @@ public class MasterServer implements MultiServerInterface{
 				getConnection().publishToTopic(simID, topicOfWorker, "simrm");
 				simulationsList.get(simID).getTopicList().remove(topicOfWorker);
 				System.out.println(simulationsList.get(simID).getTopicList().size());
-				if(createCopyInHistory(folderCopy,simID)){
-					System.out.println("entro "+simulationsList.get(simID).getTopicList().size());
+				//if(createCopyInHistory(folderCopy,simID)){
+					//System.out.println("entro "+simulationsList.get(simID).getTopicList().size());
 					if(simulationsList.get(simID).getTopicList().size()==0){
 						removeSimulationProcessByID(simID);
+						
 					}	
-				}
+				//}
 			}	
 
 
@@ -368,6 +370,22 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
+	
+	public synchronized boolean createZipForHistory(int sim_id){
+		
+		Simulation s = this.getSimulationsList().get(sim_id);		
+		//String log_path=s.getSimulationFolder()+File.separator+"runs";
+		String log_path=masterTemporaryFolder;
+		String filePath = log_path+File.separator+s.getSimName()+".zip";
+		File f = new File(filePath);
+		if(f.exists())
+			f.delete();
+		return ZipDirectory.createZipDirectory(filePath, log_path);
+			
+		
+	}
+	
+	
 
 	/**
 	 * 
@@ -415,11 +433,10 @@ public class MasterServer implements MultiServerInterface{
 	 */
 	public synchronized void removeSimulationProcessByID(int simID){
 		String folder=simulationsList.get(simID).getSimulationFolder();
+		String folderCopy=folder+File.separator+"runs";
+		createCopyInHistory(folderCopy,simID);
+		
 		DMasonFileSystem.delete(new File(folder));
-		//for (String topic : simulationsList.get(simID).getTopicList()) {
-		//System.out.println("send simrm "+topic);
-		//getConnection().publishToTopic(simID, topic, "simrm");
-		//}
 		simulationsList.remove(simID);
 	}
 
@@ -766,7 +783,7 @@ public class MasterServer implements MultiServerInterface{
 		int iDSimToExec=simulationToExec.getSimID();
 		System.out.println("Start command received for simulation with id "+idSimulation);
 		for(String workerTopic : simulationToExec.getTopicList()){
-
+            System.out.println("send start command to "+workerTopic+"   "+getTopicIdForSimulation());
 			this.getConnection().publishToTopic(iDSimToExec, workerTopic, "start");
 		}
 
@@ -789,25 +806,44 @@ public class MasterServer implements MultiServerInterface{
 
 
 	private boolean createCopyInHistory(String src, int simid){
-		String pathhistory=masterHistoryFolder+File.separator+getSimulationsList().get(simid).getSimName()+simid;
-		DMasonFileSystem.make(masterHistoryFolder);
-		File srcFolder = new File(src);
-		File destFolder = new File(pathhistory);
+		
+		String pathHistory=masterHistoryFolder+File.separator+getSimulationsList().get(simid).getSimName()+simid;
+		Thread t=new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				
+				DMasonFileSystem.make(masterHistoryFolder);
+				File srcFolder = new File(src);
+				File destFolder = new File(pathHistory);
 
 
-		//make sure source exists
-		if(!srcFolder.exists()){
-			System.out.println("Directory does not exist.");
+				//make sure source exists
+				if(!srcFolder.exists()){
+					System.out.println("Directory does not exist.");
 
 
-		}else{
+				}else{
 
-			try{
-				DMasonFileSystem.copyFolder(srcFolder,destFolder);
-			}catch(IOException e){
-				e.printStackTrace();
+					try{
+						DMasonFileSystem.copyFolder(srcFolder,destFolder);
+					}catch(IOException e){
+						e.printStackTrace();
 
+					}
+				}
+				
 			}
+		});
+	
+		t.start();
+		try {
+			t.join();
+			
+			ZipDirectory.createZipDirectory(pathHistory+File.separator+"backupsim.zip", pathHistory);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		return true;
@@ -874,7 +910,7 @@ public class MasterServer implements MultiServerInterface{
 	public String getSimulationsDirectories() {return simulationsDirectoriesFolder;}
 
 
-	public HashMap<String, String> getInfoWorkers() { HashMap<String, String> toReturn=infoWorkers; infoWorkers=new HashMap<>();  return toReturn;}
+	public HashMap<String, String> getInfoWorkers() { HashMap<String, String> toReturn=infoWorkers; /*infoWorkers=new HashMap<>();*/  return toReturn;}
 	public HashMap<Integer,Simulation> getSimulationsList(){return simulationsList;}
 
 }
