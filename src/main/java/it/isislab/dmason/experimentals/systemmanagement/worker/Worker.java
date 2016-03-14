@@ -117,33 +117,7 @@ public class Worker {
 			this.PORT_COPY_LOG=findAvailablePort();
 			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP));
 
-/*			getConnection().createTopic("SIMULATION_READY", 1);
-			getConnection().subscribeToTopic("SIMULATION_READY");
-			getConnection().asynchronousReceive("SIMULATION_READY", new MyMessageListener() {
 
-				@Override
-				public void onMessage(Message msg) {
-					Object o;
-					try {
-						o=parseMessage(msg);
-						MyHashMap map=(MyHashMap) o;
-						if(map.containsKey("cellready")){
-							int sim_id=(int) map.get("cellready");
-							if(getSimulationList().containsKey(sim_id)) {
-
-								getSimulationList().get(sim_id).setReceived_cell_type(getSimulationList().get(sim_id).getReceived_cell_type()+1);
-								if(getSimulationList().get(sim_id).getReceived_cell_type()==getSimulationList().get(sim_id).getNumCells())
-								{
-									runSimulation(sim_id);
-								}
-							}
-						} 
-
-
-					} catch (JMSException e) {e.printStackTrace();}
-
-				}
-			});*/
 		} catch (Exception e) {e.printStackTrace();}
 
 		System.out.println("Worker started ...");
@@ -303,7 +277,7 @@ public class Worker {
 	private HashMap<Integer,ArrayList<CellExecutor>> executorThread=new HashMap<Integer,ArrayList<CellExecutor>>();
 
 	private synchronized void runSimulation(int sim_id){
-		//Simulation s=getSimulationList().get(sim_id);
+
 		getSimulationList().get(sim_id).setStartTime(System.currentTimeMillis());
 		getSimulationList().get(sim_id).setStep(0);
 		for(CellExecutor cexe:executorThread.get(sim_id))
@@ -324,7 +298,6 @@ public class Worker {
 	 */
 	private synchronized void stopSimulation(int sim_id)
 	{
-		//Simulation s=getSimulationList().get(sim_id);
 		getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
 		for(CellExecutor cexe:executorThread.get(sim_id))
 		{
@@ -514,34 +487,7 @@ public class Worker {
 			}
 		});
 		
-	    //moved in creationsimulationprocess
-		/*			getConnection().createTopic("SIMULATION_READY", 1);
-		getConnection().subscribeToTopic("SIMULATION_READY");
-		getConnection().asynchronousReceive("SIMULATION_READY", new MyMessageListener() {
 
-			@Override
-			public void onMessage(Message msg) {
-				Object o;
-				try {
-					o=parseMessage(msg);
-					MyHashMap map=(MyHashMap) o;
-					if(map.containsKey("cellready")){
-						int sim_id=(int) map.get("cellready");
-						if(getSimulationList().containsKey(sim_id)) {
-
-							getSimulationList().get(sim_id).setReceived_cell_type(getSimulationList().get(sim_id).getReceived_cell_type()+1);
-							if(getSimulationList().get(sim_id).getReceived_cell_type()==getSimulationList().get(sim_id).getNumCells())
-							{
-								runSimulation(sim_id);
-							}
-						}
-					} 
-
-
-				} catch (JMSException e) {e.printStackTrace();}
-
-			}
-		});*/
 		
         
 
