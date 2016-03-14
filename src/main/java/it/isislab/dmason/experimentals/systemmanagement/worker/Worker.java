@@ -421,8 +421,8 @@ public class Worker {
 				getConnection().publishToTopic(s,"SIMULATION_"+s.getSimID(), "workerstatus");
 				setSlotsNumuber(getSlotsNumber()+s.getCellTypeList().size());
 				// process to create log file
-				//String pre_status=simulationList.get(sim_id).getStatus();
-				//getLogBySimIDProcess(sim_id,pre_status,"history");
+				String pre_status=simulationList.get(sim_id).getStatus();
+				getLogBySimIDProcess(sim_id,pre_status,"history");
 			}
 
 
@@ -608,7 +608,7 @@ public class Worker {
 			}
 		}
 
-		else{
+		else{ //history
 
 			if(getLogBySimID(folderToCopy,fileToSend)){
 				System.out.println("File zip creato nella dir "+fileToSend);			
