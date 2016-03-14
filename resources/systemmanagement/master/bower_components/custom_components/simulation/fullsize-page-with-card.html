@@ -217,8 +217,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         ],
         go_back:function(){
             var scope = document.querySelector('neon-animated-pages [id="system_info"]');
-            if(scope.selected==0)
+            if(scope.selected==0){
+                if(refreshIntervalId)
+                    clearInterval(refreshIntervalId);
                 this.fire('go-back');
+            }
             else{
                 scope.entryAnimation = 'slide-from-left-animation';
                 scope.exitAnimation = 'slide-right-animation';
@@ -375,7 +378,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     // Add some life
                     function (chart) {
                         if (!chart.renderer.forExport) {
-                            setInterval(function () {
+                            refreshIntervalId=  setInterval(function () {
                                 var point = chart.series[0].points[0],
                                         newVal;
 
@@ -395,7 +398,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                                         cpu_avg+= w.cpuLoad;
                                                   }
                                                   newVal = Math.floor(cpu_avg/obj.workers.length);
-                                                  
+
                                               }else{
                                                   newVal = point.y;
                                               }
