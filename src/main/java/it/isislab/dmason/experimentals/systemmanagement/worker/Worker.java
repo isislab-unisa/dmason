@@ -253,7 +253,6 @@ public class Worker {
 					// request to start a simulation
 					if (map.containsKey("start")){
 						int id = (int)map.get("start");
-						System.out.println("Received command start for sim "+id+" on topic "+TOPIC_WORKER_ID_MASTER);
 						playSimulationProcessByID(id);
 
 					}
@@ -277,8 +276,6 @@ public class Worker {
 						String pre_status=getSimulationList().get(id).getStatus();
 						if((pre_status.equals(Simulation.STARTED))){ 
 							pauseSimulation(id); 
-							System.out.println("stop in logreq simid "+id);
-							System.out.println("invoke getlog con "+pre_status);
 							getLogBySimIDProcess(id,pre_status,"log");
 						}  
 						else{ //PAUSED
@@ -422,6 +419,7 @@ public class Worker {
 				if(masterCell)
 				{
 					getSimulationList().get(sim_id).setStep(i);
+					getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
 				}
 				dis.schedule.step(dis);
 				i++;
