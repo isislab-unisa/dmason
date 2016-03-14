@@ -13,8 +13,14 @@
 
         </style>
 
-        <table id="info">
-
+        <table>
+            <tr><td><span>ID:</span></td><td><span>{{sim.id}}</span></td></tr>
+            <tr><td><span>Name:</span></td><td><span>{{sim.name}}</span></td></tr>
+            <tr><td><span>Partitioning:</span></td><td><span>{{sim.partitioning}}</span></td></tr>
+            <tr><td><span>Num. of Cells:</span></td><td><span>{{sim.num_cell}}</span></td></tr>
+            <tr><td><span>Num. of Worker:</span></td><td><span>{{sim.num_worker}}</span></td></tr>
+            <tr><td><span>Start:</span></td><td><span id="time">{{sim.start}}</span></td></tr>
+            <tr><td><span>Steps:</span></td><td><span id="step">{{sim.step}}</span></td></tr>
         </table>
 
     </template>
@@ -49,9 +55,7 @@
                 }
             }
         },
-        observers:[
-          'updateSimInfo(sim)'
-        ],
+
         listeners: {
             click: '_onClick'
         },
@@ -77,21 +81,6 @@
                 tile: target,
                 data: this.sim
             });
-        },
-
-        updateSimInfo: function(sim){
-            var table =document.querySelector("#info");
-            if(table.hasChildNodes)
-                table.remove();
-            table.text(
-                '<tr><td><span>ID:</span></td><td><span>sim.id</span></td></tr>'+
-                '<tr><td><span>Name:</span></td><td><span>sim.name</span></td></tr>'+
-                '<tr><td><span>Partitioning:</span></td><td><span>sim.partitioning</span></td></tr>'+
-                '<tr><td><span>Num. of Cells:</span></td><td><span>sim.num_cell</span></td></tr>'+
-                '<tr><td><span>Num. of Worker:</span></td><td><span>sim.num_worker</span></td></tr>'+
-                '<tr><td><span>Start:</span></td><td><span id="time">sim.start</span></td></tr>'+
-                '<tr><td><span>Steps:</span></td><td><span id="step">sim.step</span></td></tr>'
-            );
         }
     });
 </script>
