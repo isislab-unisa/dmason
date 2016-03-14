@@ -38,15 +38,23 @@ public class DownloadLogsServlet extends HttpServlet {
 			return;
 		
 		int sim_id=Integer.parseInt(s_id);
-		Simulation s = masterServer.getSimulationsList().get(sim_id);
 		
-		String log_path=s.getSimulationFolder()+File.separator+"runs";
+		
+		
+		masterServer.createZipForHistory(sim_id);//return a boolean true if the file is created 
+		
+		//metodo da inserire nel masterserver.java
+		Simulation s = masterServer.getSimulationsList().get(sim_id);		
+		//String log_path=s.getSimulationFolder()+File.separator+"runs";
+		String log_path=masterServer.getMasterTemporaryFolder();
 		String filePath = log_path+File.separator+s.getSimName()+".zip";
-		File f = new File(filePath);
-		if(f.exists())
-			f.delete();
-		if(!ZipDirectory.createZipDirectory(filePath, log_path))
-			return;
+		//File f = new File(filePath);
+		//if(f.exists())
+			//f.delete();
+		//if(!ZipDirectory.createZipDirectory(filePath, log_path))
+			//return;
+		//fine metodo
+		
 		
 		//System.out.println("Creato zipppettone!!!");
 		// reads input file from an absolute path

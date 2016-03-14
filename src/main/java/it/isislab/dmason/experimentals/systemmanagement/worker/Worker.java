@@ -275,7 +275,7 @@ public class Worker {
 						int id=(int)map.get("logreq");
 						System.out.println("Received request for logs for simid "+id);
 						String pre_status=getSimulationList().get(id).getStatus();
-						if(!getSimulationList().get(id).getStatus().equals(Simulation.PAUSED))pauseSimulation(id);
+						if(!(getSimulationList().get(id).getStatus().equals(Simulation.PAUSED))) pauseSimulation(id);
 						getLogBySimIDProcess(id,pre_status,"log");
 
 					}
