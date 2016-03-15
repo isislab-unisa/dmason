@@ -124,7 +124,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 
 		int simId=server.getKeySim().incrementAndGet();
 		String simPath=server.getSimulationsDirectories()+File.separator+simName+simId;
-		server.createSimulationDirectoryByID(simName);
+		server.createSimulationDirectoryByID(simName, simId);
 		File dir = new File(simPath);
 		File file = new File(dir, jarSim.getName());
 		try {
