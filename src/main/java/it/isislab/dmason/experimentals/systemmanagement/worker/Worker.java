@@ -624,7 +624,7 @@ public class Worker {
 	public synchronized void getLogBySimIDProcess(int simID,String status, String type){
 		Simulation sim=getSimulationList().get(simID);
 		String folderToCopy=sim.getSimulationFolder()+File.separator+"out";
-		String fileToSend=sim.getSimulationFolder()+File.separator+"out"+File.separator+sim.getSimName()+".zip";
+		String fileToSend=sim.getSimulationFolder()+File.separator+"out"+File.separator+this.TOPIC_WORKER_ID_MASTER+".zip";
 
 		if(type.equals("log")){
 			if(getLogBySimID(folderToCopy,fileToSend)){
