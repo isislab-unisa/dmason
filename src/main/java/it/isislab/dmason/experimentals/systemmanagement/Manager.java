@@ -60,10 +60,10 @@ public class Manager {
 	@Option(name="-p", aliases = { "--portjms" },usage="port of the JMS broker (default is 61616)")
 	private String port = "61616";
 
-	@Option(name="-ns", aliases = { "--numberofslots" },usage="number of simulation slot for this worker (defaults is 1)")
+	@Option(name="-ns", aliases = { "--numberofslots" },usage="number of simulation slot for this worker (default is 1)")
 	private int ns = 1;
 
-	@Option(name="-h", aliases = { "--hostslist" },usage="start worker on list og hosts (-h host1 host2 host3))")
+	@Option(name="-h", aliases = { "--hostslist" },usage="start worker on list of hosts (-h host1 host2 host3)")
 	private boolean hosts = false;
 
 	@Argument
@@ -104,7 +104,8 @@ public class Manager {
 		    in=new BufferedReader(new InputStreamReader(channel.getInputStream()));
 		    //System.out.println("./"+dmason+" -m worker -ip "+ip+" -port "+port+" -ns "+ns+";");
 		 
-			channel.setCommand("java -jar "+dmason+" -m worker -ip "+ip+" -port "+port+" -ns "+nslot+";");
+		    System.out.println("java -jar "+dmason+" -m worker -ip "+ip+" -p "+port+" -ns "+nslot+";");
+			channel.setCommand("java -jar "+dmason+" -m worker -ip "+ip+" -p "+port+" -ns "+nslot+";");
 			
 		}
 		@Override
@@ -135,9 +136,7 @@ public class Manager {
 			channel2.setCommand("killall java");
 			channel2.connect();
 			channel2.disconnect();
-			channel.disconnect();
-			session.disconnect();
-			in.close();
+			
 		}
 	}
 	private List<WorkerThread> workers=new ArrayList<WorkerThread>();
@@ -186,10 +185,11 @@ public class Manager {
 					WorkerThread w;
 
 					//for(String host : arguments)
-					for (int i = 0; i < arguments.size()-1; i+=2)	
+					for (int i = 0; i < arguments.size(); i++)	
 					{
+						//System.out.println("compaaaa "+arguments.get(i));
 						String host=arguments.get(i);
-						int ns=Integer.parseInt(arguments.get(i+1));
+						//int ns=Integer.parseInt(arguments.get(i+1));
 						System.out.println("Start worker on "+host+" with nslots "+ns);
 						w=new WorkerThread(host,ns);
 						workers.add(w);
@@ -280,7 +280,6 @@ public class Manager {
 	}
 	public void startWorker(){
 		Worker worker=new Worker(ip, port,ns);
-		worker.signRequestToMaster();
 
 	}
 	public void startMaster() throws DMasonException

@@ -52,7 +52,7 @@
 
 
         </head>
-        <body unresolved onload="load_tiles_simulations()">
+        <body unresolved onload="load_tiles_history()">
 
         <paper-drawer-panel force-narrow >
         <paper-scroll-header-panel drawer id="side-header-panel" fixed fill>
@@ -80,25 +80,18 @@
         </paper-toolbar>
 
         <div class="content content-main">
-                <div class="grid-simulations" id="workers">
-                    <script>/*
-                        var grid=document.getElementById("workers");
-                        var tiles="<div class=\"grid-sizer-simulations\"></div>";
-                        for (i = 0; i < 14; i++) {
-                        tiles+="<div class=\"grid-item-simulations\" onclick=\"show_simulation_info(this)\">"
-                                +'<span>Simulation '+i+'</span>'
-                                +"</div>";
-                        }
-                        grid.innerHTML=tiles;*/
-                    </script>
-                </div>
-
-                <div class="fullsize" onclick="hide_simulation_info()">
-                    <div class="inner-fullsize">
-
+            <div class="grid-simulations">
+                <div class="grid-sizer-simulations"></div>
+                <template is="dom-repeat" id="l_sim" items="{{listItem}}" as="sim">
+                    <div class="grid-item-simulations layout vertical" id="sim-{{sim.id}}">
+                        <simulation-info class="onHover" sim={{sim}} id="sim-info"></simulation-info>
+                        <control-simulation-buttons status={{sim.status}} on-submit-sim="_onSubmitSim"></control-simulation-buttons>
+                        <template is="dom-if" if="{{checkStatus(sim.status)}}">
+                            <paper-badge icon="close" on-click="deleteSim"></paper-badge>
+                        </template>
                     </div>
-                </div>
                 </template>
+            </div>
         </div>
         </paper-scroll-header-panel>
 
