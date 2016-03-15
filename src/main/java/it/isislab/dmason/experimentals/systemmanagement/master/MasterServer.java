@@ -317,6 +317,7 @@ public class MasterServer implements MultiServerInterface{
 
 		Socket clientSocket;
 		try {
+			System.out.println("Download from "+iplog+":"+port);
 			clientSocket = new Socket( iplog ,port );
 			Thread tr=null;
 			tr=new Thread(new ClientSocketCopy(clientSocket, fileCopy));

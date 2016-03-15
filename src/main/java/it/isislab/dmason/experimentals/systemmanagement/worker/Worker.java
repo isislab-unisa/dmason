@@ -661,7 +661,7 @@ public class Worker {
 	 * @return
 	 */
 	private boolean startServiceCopyForLog(String zipFile,int id,String type){
-		System.out.println("apro stream copia per "+zipFile);
+		System.out.println("apro stream copia per "+zipFile+" su porta"+welcomeSocket.getLocalPort());
 		getConnection().publishToTopic(id, this.TOPIC_WORKER_ID, type);
 		try{
 			Thread t=null;
