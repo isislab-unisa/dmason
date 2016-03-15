@@ -166,10 +166,10 @@
                                             <paper-input id="form_simName" class="submit_work_form" name="simName" label="Simulation name" allowed-pattern="[a-zA-Z0-9]"></paper-input>
                                         </td>
                                         <td>
-                                            <paper-input id="form_steps" class="submit_work_form" name="step" label="Number of step" allowed-pattern="^[1-9][0-9]*"></paper-input>
+                                            <paper-input id="form_steps" class="submit_work_form" name="step" label="Number of step" allowed-pattern="[0-9]"></paper-input>
                                         </td>
                                         <td>
-                                            <paper-input disabled id="form_cells" class="submit_work_form" name="cells" label="Cells" allowed-pattern="^[1-9][0-9]*" error-message="Cells value exceeds available slots!" onInput="_validate(this)"></paper-input>
+                                            <paper-input disabled id="form_cells" class="submit_work_form" name="cells" label="Cells" allowed-pattern="[0-9]" error-message="Cells value exceeds available slots!" onInput="_validate(this)"></paper-input>
                                             <!--paper-dropdown-menu id="connectionType" label="Select connection" class="submit_work_form">
                                                 <paper-listbox class="dropdown-content" selected="0">
                                                     <paper-item label="ActiveMQ">ActiveMQ</paper-item>
@@ -180,17 +180,17 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <paper-input id="form_row" class="submit_work_form" name="rows" label="Rows" allowed-pattern="^[1-9][0-9]*" error-message="R x C' value exceeds available slots!" onInput="_validate(this)"></paper-input>
+                                            <paper-input id="form_row" class="submit_work_form" name="rows" label="Rows" allowed-pattern="[0-9]" error-message="R x C' value exceeds available slots!" onInput="_validate(this)"></paper-input>
                                         </td>
                                         <td>
-                                            <paper-input id="form_col" class="submit_work_form" name="cols" label="Columns" allowed-pattern="^[1-9][0-9]*" error-message="Rows X Columns value exceeds  available slots!" onInput="_validate(this)"></paper-input>
+                                            <paper-input id="form_col" class="submit_work_form" name="cols" label="Columns" allowed-pattern="[0-9]" error-message="Rows X Columns value exceeds  available slots!" onInput="_validate(this)"></paper-input>
                                         </td>
-                                        <td><paper-input id="form_aoi" class="submit_work_form" name="aoi" label="Area of interest" allowed-pattern="^[1-9][0-9]*"></paper-input></td>
+                                        <td><paper-input id="form_aoi" class="submit_work_form" name="aoi" label="Area of interest" allowed-pattern="[0-9]"></paper-input></td>
                                     </tr>
                                     <tr>
-                                        <td><paper-input id="form_width" class="submit_work_form" name="width" label="Width" allowed-pattern="^[1-9][0-9]*"></paper-input></td>
-                                        <td><paper-input id="form_height" class="submit_work_form" name="height" label="Height" allowed-pattern="^[1-9][0-9]*"></paper-input></td>
-                                        <td><paper-input id="form_numAgents" class="submit_work_form" name="numAgents" label="Number of Agents" allowed-pattern="^[1-9][0-9]*"></paper-input></td>
+                                        <td><paper-input id="form_width" class="submit_work_form" name="width" label="Width" allowed-pattern="[0-9]"></paper-input></td>
+                                        <td><paper-input id="form_height" class="submit_work_form" name="height" label="Height" allowed-pattern="[0-9]"></paper-input></td>
+                                        <td><paper-input id="form_numAgents" class="submit_work_form" name="numAgents" label="Number of Agents" allowed-pattern="[0-9]"></paper-input></td>
                                     </tr>
 
                                 <tr><td></td>
