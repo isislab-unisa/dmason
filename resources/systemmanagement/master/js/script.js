@@ -342,9 +342,9 @@ function checkForm(form){
         error_toast_message.open();
         return false;
     }
-
+    var success = true;
     $("#sendSimulationForm paper-input").each(function(n,paper_input){
-        if(paper_input.id.startsWith("form_"))
+        if(paper_input.id.startsWith("form_")){
             if(paper_input.value==""){
 
                 switch (paper_input.label.toLowerCase()){
@@ -352,32 +352,37 @@ function checkForm(form){
                         if (partitioning.toLowerCase() == 'non-uniform') {
                             $(error_toast_message).text("You should fill " + paper_input.label);
                             error_toast_message.open();
-                            return false;
+                            success=false;
                         }
                         break;
                     case "rows":
                         if (partitioning.toLowerCase() == 'uniform') {
                             $(error_toast_message).text("You should fill " + paper_input.label);
                             error_toast_message.open();
-                            return false;
+                            success=false;
                         }
                         break;
                     case "columns":
                         if (partitioning.toLowerCase() == 'uniform') {
                             $(error_toast_message).text("You should fill " + paper_input.label);
                             error_toast_message.open();
-                            return false;
+                            success=false;
                         }
                         break;
-                    default :{
+                    default:
                         $(error_toast_message).text("You should fill " + paper_input.label);
                         error_toast_message.open();
-                        return false;
-                    }
+                        success=false;
                 }
+
+
+                return;
+
             }
+        }
+
     });
-    return true;
+    return success;
 }
 
 function _OnsubmitSimulation(event) {
