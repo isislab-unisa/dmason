@@ -665,7 +665,9 @@ public class Worker {
 		getConnection().publishToTopic(id, this.TOPIC_WORKER_ID, type);
 		try{
 			Thread t=null;
+			System.out.println("mi metto in accept");
 			sock = welcomeSocket.accept();
+			System.out.println("mi sblocco dalla accept");
 			t=new Thread(new ServerSocketCopy(sock,zipFile));
 			t.start();
 			t.join();
