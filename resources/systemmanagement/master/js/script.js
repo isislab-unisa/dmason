@@ -14,6 +14,13 @@ function load_tiles_settings(){
             percentPosition: true
         }
     );
+}function load_tiles_history(){
+    $('.grid-settings').masonry({
+            itemSelector: '.grid-item-history',
+            columnWidth: '.grid-sizer-history',
+            percentPosition: true
+        }
+    );
 }
 
 
@@ -362,10 +369,11 @@ function checkForm(form){
                             return false;
                         }
                         break;
-                    default :
+                    default :{
                         $(error_toast_message).text("You should fill " + paper_input.label);
                         error_toast_message.open();
                         return false;
+                    }
                 }
             }
     });
