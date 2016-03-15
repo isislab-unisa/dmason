@@ -137,9 +137,9 @@ public class SubmitSimulationServlet extends HttpServlet {
 		Simulation sim=null;
 		
 		if(mode==DistributedField2D.UNIFORM_PARTITIONING_MODE)
-		sim =new Simulation(simName+simId, simPath,jarSim.getName() ,rows, columns, aoi, width, height, numAgent, numStep, mode, connection) ;
+		sim =new Simulation(simName, simPath,jarSim.getName() ,rows, columns, aoi, width, height, numAgent, numStep, mode, connection) ;
 		else
-		sim=new Simulation(simName+simId, simPath, jarSim.getName(), Integer.parseInt(cells), aoi, width, height, numAgent, numStep, mode, connection);	
+		sim=new Simulation(simName, simPath, jarSim.getName(), Integer.parseInt(cells), aoi, width, height, numAgent, numStep, mode, connection);	
 		
 		sim.setTopicList(topicList);
 		sim.setSimID(simId);

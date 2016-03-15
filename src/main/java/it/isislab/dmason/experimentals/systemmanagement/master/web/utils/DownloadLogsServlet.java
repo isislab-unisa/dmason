@@ -45,7 +45,7 @@ public class DownloadLogsServlet extends HttpServlet {
 		
 		Simulation s = masterServer.getSimulationsList().get(sim_id);		
 		String log_path=masterServer.getMasterTemporaryFolder();
-		String filePath = log_path+File.separator+s.getSimName()+".zip";
+		String filePath = log_path+File.separator+s.getSimName()+s.getSimID()+".zip";
 		
 		
 		

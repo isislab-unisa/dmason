@@ -373,7 +373,7 @@ public class MasterServer implements MultiServerInterface{
 		
 		Simulation s = this.getSimulationsList().get(sim_id);		
 		String log_path=s.getSimulationFolder()+File.separator+"runs";
-		String filePath = this.getMasterTemporaryFolder()+File.separator+s.getSimName()+".zip";
+		String filePath = this.getMasterTemporaryFolder()+File.separator+s.getSimName()+sim_id+".zip";
 		
 		File f = new File(filePath);
 		//if(f.exists())	
