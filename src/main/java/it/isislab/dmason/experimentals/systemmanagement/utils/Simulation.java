@@ -58,7 +58,6 @@ public class Simulation implements Serializable{
 	private ArrayList<String> topicList;
 	private List<CellType> cellTypeList;
 	private int received_cell_type;
-
 	private long startTime=System.currentTimeMillis();
 	private long endTime=Long.MIN_VALUE;
 	private long step=0;
@@ -181,21 +180,21 @@ public class Simulation implements Serializable{
 	 * @param parameters
 	 */
 	public Simulation(String simName, String simulationFolder,String execSimNAme,
-			String rows, String columns, String aoi, String width,
-			String height, String numAgent, String stepsnumber, int mode, int connection) {
+			int rows, int columns, int aoi, int width,
+			int height, int numAgent, long stepsnumber, int mode, int connection) {
 		this.simName = simName;
 		this.simulationFolder = simulationFolder;
-		this.rows = Integer.parseInt(rows);
-		this.columns = Integer.parseInt(columns);
-		this.aoi = Integer.parseInt(aoi);
-		this.width = Integer.parseInt(width);
-		this.height = Integer.parseInt(height);
-		this.numAgents = Integer.parseInt(numAgent);
+		this.rows = rows;
+		this.columns = columns;
+		this.aoi = aoi;
+		this.width = width;
+		this.height = height;
+		this.numAgents =numAgent;
 		this.numCells= getRows()*getColumns();
 		this.connectionType=connection;
 		this.topicList=new ArrayList<>();
 		this.mode = mode;		
-		this.numStep=Long.parseLong(stepsnumber);
+		this.numStep=stepsnumber;
 		this.execFileName=execSimNAme;
 		this.cellTypeList=new ArrayList<CellType>();
 
@@ -217,21 +216,21 @@ public class Simulation implements Serializable{
 	 * @param connection
 	 */
 	public Simulation(String simName, String simulationFolder,String execSimNAme,
-			String p, String aoi, String width,
-			String height, String numAgent, String stepsnumber, int mode, int connection) {
+			int p, int aoi, int width,
+			int height, int numAgent, long stepsnumber, int mode, int connection) {
 		this.simName = simName;
 		this.simulationFolder = simulationFolder;
-		this.aoi = Integer.parseInt(aoi);
-		this.width = Integer.parseInt(width);
-		this.height = Integer.parseInt(height);
-		this.numAgents = Integer.parseInt(numAgent);
+		this.aoi = aoi;
+		this.width =width;
+		this.height = height;
+		this.numAgents = numAgent;
 		this.connectionType=connection;
 		this.topicList=new ArrayList<>();
 		this.mode = mode;		
-		this.numStep=Long.parseLong(stepsnumber);
+		this.numStep=stepsnumber;
 		this.execFileName=execSimNAme;
 		this.cellTypeList=new ArrayList<CellType>();
-		this.P=Integer.parseInt(p);
+		this.P=p;
 		this.numCells= P;
 
 

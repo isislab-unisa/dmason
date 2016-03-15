@@ -96,16 +96,16 @@ public class SubmitSimulationServlet extends HttpServlet {
 
 		//RECEIVE PARAMETER FROM CLIENT		
 		String simName= listParams.get("simName");
-		String rows=	listParams.get("rows");
-		String columns=	listParams.get("cols");
-		String aoi=		listParams.get("aoi");
-		String width=	listParams.get("width");
-		String height=	listParams.get("height");
-		String numAgent=listParams.get("numAgents");
-		String numStep= listParams.get("step");
+		int rows=	Integer.parseInt(listParams.get("rows"));
+		int columns=	Integer.parseInt(listParams.get("cols"));
+		int aoi=		Integer.parseInt(listParams.get("aoi"));
+		int width=	Integer.parseInt(listParams.get("width"));
+		int height=	Integer.parseInt(listParams.get("height"));
+		int numAgent=Integer.parseInt(listParams.get("numAgents"));
+		long numStep= Long.parseLong(listParams.get("step"));
 		String conType= listParams.get("connectionType");
 		String modeType = listParams.get("partitioning");
-		String cells = listParams.get("cells");
+		String cells= listParams.get("cells");
 		int mode = (modeType.equals("uniform"))?DistributedField2D.UNIFORM_PARTITIONING_MODE: DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
 
 		//connection
@@ -137,9 +137,9 @@ public class SubmitSimulationServlet extends HttpServlet {
 		Simulation sim=null;
 		
 		if(mode==DistributedField2D.UNIFORM_PARTITIONING_MODE)
-		sim =new Simulation(simName, simPath,jarSim.getName() ,rows, columns, aoi, width, height, numAgent, numStep, mode, connection) ;
+		sim =new Simulation(simName+simId, simPath,jarSim.getName() ,rows, columns, aoi, width, height, numAgent, numStep, mode, connection) ;
 		else
-		sim=new Simulation(simName, simPath, jarSim.getName(), cells, aoi, width, height, numAgent, numStep, mode, connection);	
+		sim=new Simulation(simName+simId, simPath, jarSim.getName(), Integer.parseInt(cells), aoi, width, height, numAgent, numStep, mode, connection);	
 		
 		sim.setTopicList(topicList);
 		sim.setSimID(simId);

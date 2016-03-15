@@ -372,12 +372,13 @@ public class MasterServer implements MultiServerInterface{
 	public synchronized boolean createZipForHistory(int sim_id){
 		
 		Simulation s = this.getSimulationsList().get(sim_id);		
-		//String log_path=s.getSimulationFolder()+File.separator+"runs";
-		String log_path=masterTemporaryFolder;
-		String filePath = log_path+File.separator+s.getSimName()+".zip";
+		String log_path=s.getSimulationFolder()+File.separator+"runs";
+		String filePath = this.getMasterTemporaryFolder()+File.separator+s.getSimName()+".zip";
+		
 		File f = new File(filePath);
-		if(f.exists())
-			f.delete();
+		//if(f.exists())	
+			//f.delete();
+		
 		return ZipDirectory.createZipDirectory(filePath, log_path);
 			
 		
