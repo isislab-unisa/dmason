@@ -122,7 +122,8 @@ public class SubmitSimulationServlet extends HttpServlet {
 		for(String x: topics) 
 			topicList.add(x);
 
-		String simPath=server.getSimulationsDirectories()+File.separator+simName;
+		int simId=server.getKeySim().incrementAndGet();
+		String simPath=server.getSimulationsDirectories()+File.separator+simName+simId;
 		server.createSimulationDirectoryByID(simName);
 		File dir = new File(simPath);
 		File file = new File(dir, jarSim.getName());
@@ -134,14 +135,13 @@ public class SubmitSimulationServlet extends HttpServlet {
 		}
 
 		Simulation sim=null;
+		
 		if(mode==DistributedField2D.UNIFORM_PARTITIONING_MODE)
 		sim =new Simulation(simName, simPath,jarSim.getName() ,rows, columns, aoi, width, height, numAgent, numStep, mode, connection) ;
 		else
 		sim=new Simulation(simName, simPath, jarSim.getName(), cells, aoi, width, height, numAgent, numStep, mode, connection);	
 		
-	
 		sim.setTopicList(topicList);
-		int simId=server.getKeySim().incrementAndGet();
 		sim.setSimID(simId);
 		sim.setTopicPrefix(simName+"-"+simId);
 

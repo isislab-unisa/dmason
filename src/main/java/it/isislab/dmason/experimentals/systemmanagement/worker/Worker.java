@@ -228,19 +228,24 @@ public class Worker {
 					// request to start a simulation
 					if (map.containsKey("start")){
 						int id = (int)map.get("start");
-						playSimulationProcessByID(id);
+		                 
+						if( (getSimulationList().get(id).getStatus() )!= Simulation.FINISHED && 
+						    (getSimulationList().get(id).getStatus() )!= Simulation.STARTED)
+							playSimulationProcessByID(id);
 
 					}
 					//request to stop a simulation
 					if (map.containsKey("stop")){
 						int id = (int)map.get("stop");
+						if( (getSimulationList().get(id).getStatus()) != Simulation.FINISHED)
 						stopSimulation(id);
 					}
 					//request to pause a simulation
 					if (map.containsKey("pause")){
-
 						int id = (int)map.get("pause");
 						System.out.println("Command pause received for simulation "+id);
+						if((getSimulationList().get(id).getStatus()!= Simulation.FINISHED) 
+								&& (getSimulationList().get(id).getStatus()!= Simulation.PAUSED))
 						pauseSimulation(id);
 					}
 					//log request of a simulation
