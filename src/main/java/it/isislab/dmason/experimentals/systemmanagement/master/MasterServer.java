@@ -317,14 +317,15 @@ public class MasterServer implements MultiServerInterface{
 
 		Socket clientSocket;
 		try {
+			Thread.sleep(5000);
 			System.out.println("Download from "+iplog+":"+port);
 			clientSocket = new Socket( iplog ,port );
 			Thread tr=null;
 			tr=new Thread(new ClientSocketCopy(clientSocket, fileCopy));
 			tr.start();
 			tr.join();
-			//System.out.println("End download "+fileCopy);
-			System.out.println(new File(fileCopy).exists());
+			System.out.println("End download "+fileCopy);
+			//System.out.println(new File(fileCopy).exists());
 
 
 			Thread t=new Thread(new Runnable() {
