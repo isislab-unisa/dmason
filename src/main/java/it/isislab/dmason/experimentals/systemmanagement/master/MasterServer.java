@@ -34,8 +34,15 @@ import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -441,7 +448,8 @@ public class MasterServer implements MultiServerInterface{
 	public synchronized void removeSimulationProcessByID(int simID){
 		String folder=simulationsList.get(simID).getSimulationFolder();
 		String folderCopy=folder+File.separator+"runs";
-		createCopyInHistory(folderCopy,simID);
+		if(simulationsList.get(simID).getStatus().equals(Simulation.FINISHED))
+			createCopyInHistory(folderCopy,simID);
 		
 		DMasonFileSystem.delete(new File(folder));
 		simulationsList.remove(simID);
@@ -815,6 +823,74 @@ public class MasterServer implements MultiServerInterface{
 	private boolean createCopyInHistory(String src, int simid){
 		
 		String pathHistory=masterHistoryFolder+File.separator+getSimulationsList().get(simid).getSimName()+simid;
+		Simulation s = simulationsList.get(simid);
+		
+		
+		Thread c=new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				File resume = new File(s.getSimulationFolder()+File.separator+"runs"+File.separator+s.getSimName()+".history");
+				Properties props = new Properties();
+				FileOutputStream f=null;
+				PrintWriter p =null;
+				try {
+					if(!resume.exists())
+						resume.createNewFile();
+					f = new FileOutputStream(resume);
+					p = new PrintWriter(f);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				Class c = s.getClass();
+				Method[] methods = c.getMethods();
+				
+				for(Method m: methods){
+					if(!m.getName().contains("get")) continue;
+					
+					try {
+						String paramName = m.getName().substring(m.getName().indexOf("get")+3, m.getName().length());
+						String paramValue = ""+m.invoke(s, null);
+						prop.put("kitemorto", "patt");
+						prop.put(paramName, paramValue);
+					} catch (IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				try {
+					props.list(p);
+					f.flush();
+					p.flush();
+					p.close();
+					f.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+		});
+		
+	   c.start();
+	   try {
+		c.join();
+	} catch (InterruptedException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	}
+		
+		
+		
 		Thread t=new Thread(new Runnable() {
 			
 			@Override
@@ -839,7 +915,6 @@ public class MasterServer implements MultiServerInterface{
 
 					}
 				}
-				
 			}
 		});
 	

@@ -262,7 +262,7 @@ public class Simulation implements Serializable{
 		return numStep;
 	}
 
-	public void getNumberStep(long step){ 
+	public void setNumberStep(long step){ 
 		numStep=step;
 	}
 	public String getJarName() {
