@@ -163,7 +163,7 @@ public class MasterServer implements MultiServerInterface{
 	 *If worker is active, it responds on his topic with key "info" 
 	 * with a info message of worker 
 	 * 
-	 * @param topicWorker
+	 * @param topicWorker the topic of info-request 
 	 */
 	protected void checkWorker(String topicWorker){
 
@@ -176,7 +176,7 @@ public class MasterServer implements MultiServerInterface{
 	 * Check if all workers connected is on 
 	 */
 	public void checkAllConnectedWorkers(){
-
+        infoWorkers=new HashMap<>();
 		for (String topic : topicIdWorkers.keySet()) {
 			checkWorker(topic);
 		}
