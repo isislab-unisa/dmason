@@ -94,6 +94,7 @@ public class MasterServer implements MultiServerInterface{
 	protected HashMap<String/*IDprefixOfWorker*/,String/*MyIDTopicprefixOfWorker*/> topicIdWorkers;
 	protected HashMap<Integer,ArrayList<String>> topicIdWorkersForSimulation;
 	public HashMap<String,String> infoWorkers;
+	public HashMap<String,String> support_infoWorkers;
 	private HashMap<Integer,Simulation> simulationsList; //list simulation 
 	private AtomicInteger keySimulation;
 
@@ -137,6 +138,7 @@ public class MasterServer implements MultiServerInterface{
 		this.topicIdWorkers=new HashMap<String,String>();
 		this.topicIdWorkersForSimulation=new HashMap<>();
 		this.infoWorkers=new HashMap<String,String>();
+		support_infoWorkers = new HashMap<>();
 		//waiting for workers connecetion	
 		this.listenForSignRequest();
 
@@ -176,7 +178,9 @@ public class MasterServer implements MultiServerInterface{
 	 * Check if all workers connected is on 
 	 */
 	public void checkAllConnectedWorkers(){
-        infoWorkers=new HashMap<>();
+		infoWorkers = support_infoWorkers;
+		support_infoWorkers = new HashMap<>();
+		
 		for (String topic : topicIdWorkers.keySet()) {
 			checkWorker(topic);
 		}
@@ -260,7 +264,9 @@ public class MasterServer implements MultiServerInterface{
 						//response to master info req
 						if(map.containsKey("info")){
 							String infoReceived=""+map.get("info");
-							infoWorkers.put(myTopicForWorker, infoReceived);
+							support_infoWorkers.put(myTopicForWorker, infoReceived);
+							infoWorkers.putAll(support_infoWorkers);
+							//infoWorkers.put(myTopicForWorker, infoReceived);
 							processInfoForCopyLog(infoReceived,topicOfWorker);
 
 						}
@@ -911,7 +917,7 @@ public class MasterServer implements MultiServerInterface{
 	public String getSimulationsDirectories() {return simulationsDirectoriesFolder;}
 
 
-	public HashMap<String, String> getInfoWorkers() { HashMap<String, String> toReturn=infoWorkers; /*infoWorkers=new HashMap<>();*/  return toReturn;}
+	public HashMap<String, String> getInfoWorkers() { return infoWorkers;}
 	public HashMap<Integer,Simulation> getSimulationsList(){return simulationsList;}
 
 }

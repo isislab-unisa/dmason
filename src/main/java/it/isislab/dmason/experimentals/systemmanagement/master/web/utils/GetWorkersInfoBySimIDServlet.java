@@ -25,7 +25,6 @@ public class GetWorkersInfoBySimIDServlet extends HttpServlet {
 		}
 		
 		masterServer = (MasterServer) req.getServletContext().getAttribute("masterServer");
-		masterServer.checkAllConnectedWorkers();
 		String idSimulation = (String)req.getParameter("id");
 		if(idSimulation==null){
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
