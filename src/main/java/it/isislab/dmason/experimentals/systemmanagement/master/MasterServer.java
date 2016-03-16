@@ -144,7 +144,7 @@ public class MasterServer implements MultiServerInterface{
 		simulationsList=new HashMap<>();
 		try {
 			DEFAULT_PORT_COPY_SERVER=FindAvailablePort.getPortAvailable();
-			System.out.println("copy server start on port "+DEFAULT_PORT_COPY_SERVER);
+			//System.out.println("copy server start on port "+DEFAULT_PORT_COPY_SERVER);
 			welcomeSocket = new ServerSocket(DEFAULT_PORT_COPY_SERVER,1000,InetAddress.getByName(this.IP_ACTIVEMQ));
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -300,12 +300,12 @@ public class MasterServer implements MultiServerInterface{
 	 * @param removeSimulation true if is a history req, false otherwise
 	 */
 	private synchronized void downloadLogsForSimulationByID(int simID,String topicOfWorker,boolean removeSimulation){
-		System.out.println("Processed request for "+topicOfWorker+" "+simulationsList.get(simID).getTopicList());
+	//	System.out.println("Processed request for "+topicOfWorker+" "+simulationsList.get(simID).getTopicList());
 
 		Simulation sim=simulationsList.get(simID);
 		String folderCopy=sim.getSimulationFolder()+File.separator+"runs";
 		String fileCopy=folderCopy+File.separator+topicOfWorker+".zip";
-		System.out.println("folder per la copia "+fileCopy);
+		//System.out.println("folder per la copia "+fileCopy);
 
 
 
@@ -317,13 +317,13 @@ public class MasterServer implements MultiServerInterface{
 
 		Socket clientSocket;
 		try {
-			System.out.println("Download from "+iplog+":"+port);
+			//System.out.println("Download from "+iplog+":"+port);
 			clientSocket = new Socket( iplog ,port );
 			Thread tr=null;
 			tr=new Thread(new ClientSocketCopy(clientSocket, fileCopy));
 			tr.start();
 			tr.join();
-			System.out.println("End download "+fileCopy);
+			//System.out.println("End download "+fileCopy);
 			//System.out.println(new File(fileCopy).exists());
 
 
@@ -346,7 +346,7 @@ public class MasterServer implements MultiServerInterface{
 			if(removeSimulation){
 				getConnection().publishToTopic(simID, topicOfWorker, "simrm");
 				simulationsList.get(simID).getTopicList().remove(topicOfWorker);
-				System.out.println(simulationsList.get(simID).getTopicList().size());
+				//System.out.println(simulationsList.get(simID).getTopicList().size());
 				//if(createCopyInHistory(folderCopy,simID)){
 					//System.out.println("entro "+simulationsList.get(simID).getTopicList().size());
 					if(simulationsList.get(simID).getTopicList().size()==0){
