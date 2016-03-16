@@ -293,7 +293,7 @@ public class Worker {
 		getSimulationList().get(sim_id).setStartTime(System.currentTimeMillis());
 		getSimulationList().get(sim_id).setStep(0);
 		getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
-		System.out.println("Simulation "+sim_id+" started, with "+executorThread.get(sim_id).size()+".");
+		//System.out.println("Simulation "+sim_id+" started, with "+executorThread.get(sim_id).size()+".");
 
 
 	}
@@ -312,7 +312,7 @@ public class Worker {
 			cexe.stopThread();
 		}
 		getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
-		System.out.println("Simulation "+sim_id+" stopped, with "+executorThread.get(sim_id).size());
+		//System.out.println("Simulation "+sim_id+" stopped, with "+executorThread.get(sim_id).size());
 
 		//start process to create a log file for this simulation
 		String pre_status=getSimulationList().get(sim_id).getStatus();
@@ -332,9 +332,8 @@ public class Worker {
 		}
 		getSimulationList().get(sim_id).setStatus(Simulation.PAUSED);
 		getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
-		
 		getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
-		System.out.println("Simulation "+sim_id+" paused, with "+executorThread.get(sim_id).size());
+		//System.out.println("Simulation "+sim_id+" paused, with "+executorThread.get(sim_id).size());
 
 
 
@@ -665,9 +664,9 @@ public class Worker {
 		getConnection().publishToTopic(id, this.TOPIC_WORKER_ID, type);
 		try{
 			Thread t=null;
-			System.out.println("mi metto in accept");
+			//System.out.println("mi metto in accept");
 			sock = welcomeSocket.accept();
-			System.out.println("mi sblocco dalla accept");
+			//System.out.println("mi sblocco dalla accept");
 			t=new Thread(new ServerSocketCopy(sock,zipFile));
 			t.start();
 			t.join();
