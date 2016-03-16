@@ -831,7 +831,7 @@ public class MasterServer implements MultiServerInterface{
 			@Override
 			public void run() {
 				File resume = new File(s.getSimulationFolder()+File.separator+"runs"+File.separator+s.getSimName()+".history");
-				Properties props = new Properties();
+				
 				FileOutputStream f=null;
 				PrintWriter p =null;
 				try {
@@ -846,29 +846,28 @@ public class MasterServer implements MultiServerInterface{
 				
 				Class c = s.getClass();
 				Method[] methods = c.getMethods();
-				
+			
+				p.println("start Time"+s.getStartTime());
+		        p.println("end : "+s.getEndTime());
+		        
 				for(Method m: methods){
 					if(!m.getName().contains("get")) continue;
 					
 					try {
 						String paramName = m.getName().substring(m.getName().indexOf("get")+3, m.getName().length());
 						String paramValue = ""+m.invoke(s, null);
-						prop.put("kitemorto", "patt");
-						prop.put(paramName, paramValue);
+				        
+						p.println(paramName+":"+paramValue);
+				
 					} catch (IllegalAccessException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+				
 					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						
-						e.printStackTrace();
+				;
 					} catch (InvocationTargetException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+				;
 					}
 				}
 				try {
-					props.list(p);
 					f.flush();
 					p.flush();
 					p.close();
