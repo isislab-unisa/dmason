@@ -357,15 +357,16 @@ public class MasterServer implements MultiServerInterface{
 
 
 			if(removeSimulation){
-				getConnection().publishToTopic(simID, topicOfWorker, "simrm");
-				simulationsList.get(simID).getTopicList().remove(topicOfWorker);
+				//getConnection().publishToTopic(simID, topicOfWorker, "simrm");
+				//simulationsList.get(simID).getTopicList().remove(topicOfWorker);
 				//System.out.println(simulationsList.get(simID).getTopicList().size());
 				//if(createCopyInHistory(folderCopy,simID)){
 					//System.out.println("entro "+simulationsList.get(simID).getTopicList().size());
-					if(simulationsList.get(simID).getTopicList().size()==0){
-						removeSimulationProcessByID(simID);
-						
-					}	
+//					if(simulationsList.get(simID).getTopicList().size()==0){
+//						removeSimulationProcessByID(simID);
+//						
+//					}
+					removeSimulationProcessByID(simID);
 				//}
 			}	
 
@@ -845,19 +846,19 @@ public class MasterServer implements MultiServerInterface{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				props.put("simID", s.getSimID());
-				props.put("simName", s.getSimName());
-				props.put("simWidth", s.getWidth());
-				props.put("simHeight", s.getHeight());
-				props.put("simRows", s.getRows());
-				props.put("simColumns", s.getColumns());
-				props.put("simNumAgents", s.getNumAgents());
-				props.put("simAOI", s.getAoi());
-				props.put("simStartTime", s.getStartTimeAsDate());
-				props.put("simEndTime", s.getEndTimeAsDate());
-				props.put("simStepNumber", s.getNumStep());
-				props.put("simNumCells", s.getNumCells());
-				props.put("simStatus", s.getStatus());
+				props.put("simID", ""+s.getSimID());
+				props.put("simName", ""+s.getSimName());
+				props.put("simWidth", ""+s.getWidth());
+				props.put("simHeight", ""+s.getHeight());
+				props.put("simRows", ""+s.getRows());
+				props.put("simColumns", ""+s.getColumns());
+				props.put("simNumAgents", ""+s.getNumAgents());
+				props.put("simAOI", ""+s.getAoi());
+				props.put("simStartTime", ""+s.getStartTimeAsDate());
+				props.put("simEndTime", ""+s.getEndTimeAsDate());
+				props.put("simStepNumber", ""+s.getNumStep());
+				props.put("simNumCells", ""+s.getNumCells());
+				props.put("simStatus", ""+s.getStatus());
 				props.put("simPartitioning", (s.getMode()==0)?"uniform":"non-uniform");
 				props.list(p);
 				p.flush();

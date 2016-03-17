@@ -313,7 +313,8 @@ public class Worker {
 		{
 			if(cexe.masterCell){ 
 				getSimulationList().get(sim_id).setStatus(Simulation.FINISHED);	
-				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");}
+				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
+			}
 			cexe.stopThread();
 		}
 		getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
@@ -411,7 +412,8 @@ public class Worker {
 			if(i==params.getMaxStep() && masterCell){
 				getSimulationList().get(sim_id).setStatus(Simulation.FINISHED);
 				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
-				setSlotsNumuber(getSlotsNumber()+getSimulationList().get(sim_id).getCellTypeList().size());
+				//setSlotsNumuber(getSlotsNumber()+getSimulationList().get(sim_id).getCellTypeList().size());
+				
 				// process to create log file
 				String pre_status=getSimulationList().get(sim_id).getStatus();
 				getLogBySimIDProcess(sim_id,pre_status,"history");
@@ -427,7 +429,8 @@ public class Worker {
 		public synchronized void stopThread()
 		{
 			run=false;
-			slotsNumber++;
+			//slotsNumber++;
+			
 		}
 		public void restartThread() {
 			try{
