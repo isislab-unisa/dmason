@@ -1,7 +1,10 @@
 <style is="custom-style">
 
+    html, body {background-color: #eceff1}
+
     .paper-toolbar-0{
-        background-color: #2C2F2F;
+        background-color: #0f9d58;
+        color: #ffffff;
     }
 
     .side-drawer{
@@ -22,7 +25,7 @@
 
     paper-scroll-header-panel .content-side-bar {
              padding: 8px;
-             background-color: #2C2F2F;
+             background-color:#0f9d58 /*#2C2F2F*/;
              height: 100%;
              overflow: visible;
     }
@@ -31,17 +34,27 @@
         background-color: transparent;
     }
 
+    #add-simulation-paper-dialog{
+        background-color: #cfd8dc ;
+        color:black;
+    }
+
     #add-simulation-to-worker-buttom {
         position: fixed;
         bottom: 25px;
         right: 50px;
-        background-color: #212121;
-        border: 2px solid #3f4242;
+        background-color: #0f9d58;
+        border: 2px solid #000000;
+    }
+    #add-simulation-to-worker-buttom:hover{
+        background-color: #427FED;
+        color:black;
     }
 
     paper-item:hover{
-        background-color:grey;
+        background-color:#ECEFF1;
         font-weight: bold;
+        color:black;
 
     }
 
@@ -76,11 +89,14 @@
     }
 
     paper-checkbox {
-        --paper-checkbox-checked-color: #3f4242;
-        --paper-checkbox-unchecked-color: #3f4242;
+        --paper-checkbox-checked-color: #427FED/*#3f4242*/;
+        --paper-checkbox-unchecked-color: black/*#3f4242*/;
     }
 
 
+    paper-button{
+        background-color: #427FED;
+    }
     paper-button.custom:hover {
         color: var(--paper-indigo-100);
     }

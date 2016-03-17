@@ -51,16 +51,19 @@ body {color:#bdced7;}
 }
 
 .grid-item-monitoring {
-    width:200px;
-    height:200px;
-    float: left;
-    background-color: #3f4242;
-    border: 2px solid #0c3308;
-    border-color: hsla(0, 0%, 0%, 0.5);
-    border-radius: 5px;
-    font-size: large;
-    padding: 10px;
-    position:relative;
+width: 230px;
+height: 190px;
+float: left;
+background-color: #cfd8dc;
+border: 3px solid;
+border-color: black;
+border-radius: 15px;
+font-size: large;
+padding: 10px;
+position: relative;
+color: black;
+margin-top: 20px;
+margin-left: 20px;
 }
 
 .grid-item-history {
@@ -89,11 +92,13 @@ body {color:#bdced7;}
     margin-left:1em;
 }
 .grid-item-monitoring:hover{
-    background-color: grey;
+    background-color: #0F9D58;
+    color:#ffffff;
 }
 
 .grid-item-selected{
-    background-color: grey;
+    background-color: #427fed ;
+    color:black;
 }
 
 .worker-system-info {
