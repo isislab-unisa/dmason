@@ -171,7 +171,7 @@ public class Worker {
 					getSimulationList().put(simulation.getSimID(), simulation);
 					executorThread.put(simulation.getSimID(),new ArrayList<CellExecutor>());
 					for (CellType cellType : cellstype) {
-						slotsNumber--;
+						//slotsNumber--;
 						params.setI(cellType.pos_i);
 						params.setJ(cellType.pos_j);
 						FileOutputStream output = new FileOutputStream(simulation.getSimulationFolder()+File.separator+"out"+File.separator+cellType+".out");
@@ -223,6 +223,11 @@ public class Worker {
 						Simulation sim=(Simulation)map.get("newsim");
 						createNewSimulationProcess(sim);
 						downloadFile(sim,DEFAULT_COPY_SERVER_PORT);
+						List<CellType> cellstype=sim.getCellTypeList();
+						for (CellType cellType : cellstype) {
+							slotsNumber--;
+						}
+						
 
 					}
 					// request to start a simulation
@@ -503,8 +508,13 @@ public class Worker {
 	}
 
 	public  synchronized void deleteSimulationProcessByID(int simID){
-		String folder=getSimulationList().get(simID).getSimulationFolder();
+		Simulation s =getSimulationList().get(simID); 
+		String folder=s.getSimulationFolder();
 		DMasonFileSystem.delete(new File(folder));
+		List<CellType> cellstype=s.getCellTypeList();
+		for (CellType cellType : cellstype) {
+			slotsNumber++;
+		}
 		getSimulationList().remove(simID);
 	}
 

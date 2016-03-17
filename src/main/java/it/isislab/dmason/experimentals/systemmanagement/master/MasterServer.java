@@ -448,6 +448,8 @@ public class MasterServer implements MultiServerInterface{
 	public synchronized void removeSimulationProcessByID(int simID){
 		String folder=simulationsList.get(simID).getSimulationFolder();
 		String folderCopy=folder+File.separator+"runs";
+		for(String topic: simulationsList.get(simID).getTopicList())
+			getConnection().publishToTopic(simID, topic, "simrm");
 		if(simulationsList.get(simID).getStatus().equals(Simulation.FINISHED))
 			createCopyInHistory(folderCopy,simID);
 		
