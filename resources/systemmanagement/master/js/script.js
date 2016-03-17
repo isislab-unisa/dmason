@@ -96,6 +96,13 @@ $(
                     update_simulation_info();
                 }, 1000);
             }, 5000);
+        }else if(window.location.pathname=="/history.jsp") {
+
+            setTimeout(function () {
+                setInterval(function () {
+                    update_history_info();
+                }, 1000);
+            }, 5000);
         }
 
     }
@@ -495,4 +502,29 @@ function _getListFile(result){
 
     scp.$.pages.selected = 1;
 
+}
+
+
+function update_history_info(){
+    $.ajax({
+        url:"getHistoryFolderList",
+        success: function(result){
+            get_history_info(result);
+
+        }
+    });
+}
+
+function get_history_info(result){
+    if(!result) return;
+    var list_sim = JSON.parse(result);
+    if(!list_sim.hasOwnProperty("history")) return;
+
+    var scp = document.querySelector("#sim_history_grid");
+    var list =[];
+    for(var f, i=0; f = list_sim.history[i]; i++){
+        //console.log(f);
+        list[i] = f;
+    }
+    scp.listSimHistory = list;
 }

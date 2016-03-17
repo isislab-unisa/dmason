@@ -410,6 +410,7 @@ public class Worker {
 			}
 
 			if(i==params.getMaxStep() && masterCell){
+				getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
 				getSimulationList().get(sim_id).setStatus(Simulation.FINISHED);
 				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
 				//setSlotsNumuber(getSlotsNumber()+getSimulationList().get(sim_id).getCellTypeList().size());

@@ -846,20 +846,22 @@ public class MasterServer implements MultiServerInterface{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				props.put("simID", ""+s.getSimID());
-				props.put("simName", ""+s.getSimName());
-				props.put("simWidth", ""+s.getWidth());
-				props.put("simHeight", ""+s.getHeight());
-				props.put("simRows", ""+s.getRows());
-				props.put("simColumns", ""+s.getColumns());
-				props.put("simNumAgents", ""+s.getNumAgents());
-				props.put("simAOI", ""+s.getAoi());
-				props.put("simStartTime", ""+s.getStartTimeAsDate());
-				props.put("simEndTime", ""+s.getEndTimeAsDate());
-				props.put("simStepNumber", ""+s.getNumStep());
-				props.put("simNumCells", ""+s.getNumCells());
-				props.put("simStatus", ""+s.getStatus());
-				props.put("simPartitioning", (s.getMode()==0)?"uniform":"non-uniform");
+				props.put("simID", 				""+s.getSimID());
+				props.put("simName", 			""+s.getSimName());
+				props.put("simWidth", 			""+s.getWidth());
+				props.put("simHeight", 			""+s.getHeight());
+				props.put("simRows", 			""+s.getRows());
+				props.put("simColumns", 		""+s.getColumns());
+				props.put("simNumAgents", 		""+s.getNumAgents());
+				props.put("simAOI", 			""+s.getAoi());
+				props.put("simStartTime", 		""+s.getStartTimeAsDate());
+				props.put("simEndTime", 		""+s.getEndTimeAsDate());
+				props.put("simStepNumber", 		""+s.getNumStep());
+				props.put("simNumCells", 		""+s.getNumCells());
+				props.put("simStatus", 			""+s.getStatus());
+				props.put("simNumWorkers",		""+s.getTopicList().size());
+				props.put("simPartitioning", 	(s.getMode()==0)?"uniform":"non-uniform");
+				
 				props.list(p);
 				p.flush();
 				

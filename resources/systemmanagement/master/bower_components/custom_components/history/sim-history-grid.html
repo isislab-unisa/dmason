@@ -1,0 +1,86 @@
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="sim-history-info.html">
+
+
+
+
+<dom-module id="sim-history-grid">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+
+
+            .grid-sizer-history,
+            .grid-item-history
+            {
+                width: auto;
+                heigth:auto;
+            }
+
+
+            .grid-history:after {
+                content: '';
+                display: block;
+                clear: both;
+            }
+
+            .grid-history {
+                background: transparent;
+                max-width: 100%;
+            }
+
+            .grid-item-history {
+                width:auto;
+                height:auto;
+                float: left;
+                background-color: #3f4242;
+                border: 2px solid #0c3308;
+                border-color: hsla(0, 0%, 0%, 0.5);
+                border-radius: 5px;
+                font-size: large;
+                padding:10px;
+                position:relative;
+            }
+
+
+
+        </style>
+
+        <div class="grid-history">
+            <div class="grid-sizer-history"></div>
+            <template is="dom-repeat" id="l_sim_history" items="{{listSimHistory}}" as="sim">
+                <div class="grid-item-history layout vertical" id="sim-{{sim.id}}">
+                    <sim-history-info sim="{{sim}}"></sim-history-info>
+                </div>
+            </template>
+        </div>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: 'sim-history-grid',
+
+        properties: {
+            listSimHistory:{
+                type:Array
+            }
+        },
+
+
+        attached: function(){
+            this.async(function(){
+                $('.grid-history').masonry({
+                            itemSelector: '.grid-item-history',
+                            columnWidth: '.grid-sizer-history',
+                            percentPosition: true
+                        }
+                );
+            });
+        }
+
+
+    });
+</script>

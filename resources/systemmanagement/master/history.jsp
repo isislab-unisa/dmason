@@ -32,16 +32,7 @@
         <link rel="import" href="bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
         <link rel="import" href="bower_components/paper-menu/paper-menu.html">
         <link rel="import" href="bower_components/paper-item/paper-item.html">
-        <link rel="import" href="bower_components/paper-fab/paper-fab.html">
         <link rel="import" href="bower_components/paper-styles/paper-styles.html">
-        <link rel="import" href="bower_components/paper-fab/paper-fab.html">
-        <link rel="import" href="bower_components/paper-toast/paper-toast.html">
-        <link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
-        <link rel="import" href="bower_components/paper-button/paper-button.html">
-        <link rel="import" href="bower_components/paper-radio-button/paper-radio-button.html">
-        <link rel="import" href="bower_components/paper-radio-group/paper-radio-group.html">
-        <link rel="import" href="bower_components/paper-input/paper-input.html">
-        <link rel="import" href="bower_components/paper-progress/paper-progress.html">
         <link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">"
 
 
@@ -51,8 +42,10 @@
         <link rel="import" href="bower_components/iron-icons/image-icons.html">
 
 
+        <link rel="import" href="bower_components/custom_components/history/sim-history-grid.html">
+
         </head>
-        <body unresolved onload="load_tiles_history()">
+        <body unresolved >
 
         <paper-drawer-panel force-narrow >
         <paper-scroll-header-panel drawer id="side-header-panel" fixed fill>
@@ -80,18 +73,7 @@
         </paper-toolbar>
 
         <div class="content content-main">
-            <div class="grid-simulations">
-                <div class="grid-sizer-simulations"></div>
-                <template is="dom-repeat" id="l_sim" items="{{listItem}}" as="sim">
-                    <div class="grid-item-simulations layout vertical" id="sim-{{sim.id}}">
-                        <simulation-info class="onHover" sim={{sim}} id="sim-info"></simulation-info>
-                        <control-simulation-buttons status={{sim.status}} on-submit-sim="_onSubmitSim"></control-simulation-buttons>
-                        <template is="dom-if" if="{{checkStatus(sim.status)}}">
-                            <paper-badge icon="close" on-click="deleteSim"></paper-badge>
-                        </template>
-                    </div>
-                </template>
-            </div>
+            <sim-history-grid id="sim_history_grid"></sim-history-grid>
         </div>
         </paper-scroll-header-panel>
 
