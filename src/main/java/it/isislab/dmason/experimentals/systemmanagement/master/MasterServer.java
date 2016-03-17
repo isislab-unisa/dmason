@@ -843,29 +843,20 @@ public class MasterServer implements MultiServerInterface{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
-				Class c = s.getClass();
-				Method[] methods = c.getMethods();
-				
-				for(Method m: methods){
-					if(!m.getName().contains("get")) continue;
-					
-					try {
-						String paramName = m.getName().substring(m.getName().indexOf("get")+3, m.getName().length());
-						String paramValue = ""+m.invoke(s, null);
-						props.put(paramName, paramValue);
-					} catch (IllegalAccessException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						
-						e.printStackTrace();
-					} catch (InvocationTargetException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+				props.put("simID", s.getSimID());
+				props.put("simName", s.getSimName());
+				props.put("simWidth", s.getWidth());
+				props.put("simHeight", s.getHeight());
+				props.put("simRows", s.getRows());
+				props.put("simColumns", s.getColumns());
+				props.put("simNumAgents", s.getNumAgents());
+				props.put("simAOI", s.getAoi());
+				props.put("simStartTime", s.getStartTimeAsDate());
+				props.put("simEndTime", s.getEndTimeAsDate());
+				props.put("simStepNumber", s.getNumStep());
+				props.put("simNumCells", s.getNumCells());
+				props.put("simStatus", s.getStatus());
+				props.put("simPartitioning", (s.getMode()==0)?"uniform":"non-uniform");
 				props.list(p);
 				p.flush();
 				

@@ -80,13 +80,6 @@ public class Simulation implements Serializable{
 	}
 
 	/**
-	 * @return the endTime
-	 */
-	public long getEndTime() {
-		return endTime;
-	}
-
-	/**
 	 * @param endTime the endTime to set
 	 */
 	public void setEndTime(long endTime) {
@@ -116,13 +109,26 @@ public class Simulation implements Serializable{
 		return startTime;
 	}
 
+	/**
+	 * @return the endTime
+	 */
+	public long getEndTime() {
+		return endTime;
+	}
+	
 	public String getStartTimeAsDate(){
 		Date date=new Date(this.getStartTime());
-		SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy");
+		SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
 		String dateText = df2.format(date);
 		return dateText;
 	}
-	
+
+	public String getEndTimeAsDate(){
+		Date date=new Date(this.getEndTime());
+		SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+		String dateText = df2.format(date);
+		return dateText;
+	}
 	/**
 	 * @param startTime the startTime to set
 	 */
