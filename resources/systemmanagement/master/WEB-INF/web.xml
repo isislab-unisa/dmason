@@ -103,4 +103,12 @@
         <servlet-name>GetWorkersInfoBySimIDServlet</servlet-name>
         <url-pattern>/getWorkersInfoBySimID</url-pattern>
     </servlet-mapping>
+    <servlet id="getHistoryFolderList">
+        <servlet-name>GetHistoryServlet</servlet-name>
+        <servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.GetHistoryServlet</servlet-class>
+	</servlet>
+    <servlet-mapping>
+        <servlet-name>GetHistoryServlet</servlet-name>
+        <url-pattern>/getHistoryFolderList</url-pattern>
+    </servlet-mapping>
 </web-app>

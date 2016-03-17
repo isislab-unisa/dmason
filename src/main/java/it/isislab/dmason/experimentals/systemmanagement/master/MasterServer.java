@@ -853,7 +853,6 @@ public class MasterServer implements MultiServerInterface{
 					try {
 						String paramName = m.getName().substring(m.getName().indexOf("get")+3, m.getName().length());
 						String paramValue = ""+m.invoke(s, null);
-						props.put("kitemorto", "patt");
 						props.put(paramName, paramValue);
 					} catch (IllegalAccessException e) {
 						// TODO Auto-generated catch block
