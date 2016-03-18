@@ -88,6 +88,7 @@ public class GetHistoryServlet extends HttpServlet {
 				String k = (String) prop_keys.nextElement();
 				obj.put(k, prop.getProperty(k));
 			}
+			in.close();
 			history_list.add(obj);
 		}
 		JSONObject list_to_send = new JSONObject();
