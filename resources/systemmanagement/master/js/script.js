@@ -241,8 +241,29 @@ function change_partitioning_input_params(element){
     }
 
 }
+function _validate_params(element){
+    var current_element = $(element);
+    var paper_input_container = current_element.children()[0];
+    var id = current_element.attr("id");
+    var value = document.querySelector("#"+id).value;
+    var submit_btn = document.querySelector("#submit_btn");
+    if(value)
+        value = parseInt(value);
 
-function _validate(element){
+    if(value===0){
+        paper_input_container.invalid = true;
+        submit_btn.disabled = true;
+        return false;
+    }
+
+    paper_input_container.invalid =false;
+    submit_btn.disabled = false;
+
+
+
+}
+
+function _validate_slots(element){
     var current_element = $(element);
     //console.log("ci sono!");
     var  slots = ($("#head_num_slots").text()).trim();
@@ -269,7 +290,7 @@ function _validate(element){
 
     var submit_btn = document.querySelector("#submit_btn");
 
-    if(cur_slot > slots){
+    if(cur_slot > slots || cur_slot==0){
 
         paper_input_container.invalid = true;
 
@@ -283,7 +304,7 @@ function _validate(element){
                 if(cols){
                     var int_val = parseInt(cols);
                     cur_slot *=int_val;
-                    if(cur_slot > slots){
+                    if(cur_slot > slots || cur_slot==0){
                         paper_input_container.invalid =true;
                         submit_btn.disabled = true;
                         return false;
@@ -293,7 +314,7 @@ function _validate(element){
             case "form_cells":
                 if(cells){
                     var int_val=parseInt(cells);
-                    if(int_val > slots){
+                    if(int_val > slots || cur_slot==0){
                         paper_input_container.invalid =true;
                         submit_btn.disabled = true;
                         return false;
@@ -304,7 +325,7 @@ function _validate(element){
                 if(row){
                     var int_val = parseInt(row);
                     cur_slot *=int_val;
-                    if(cur_slot > slots){
+                    if(cur_slot > slots || cur_slot==0){
                         paper_input_container.invalid =true;
                         submit_btn.disabled = true;
                         return false;

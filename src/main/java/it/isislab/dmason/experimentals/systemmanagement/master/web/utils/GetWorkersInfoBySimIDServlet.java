@@ -58,7 +58,10 @@ public class GetWorkersInfoBySimIDServlet extends HttpServlet {
 		}
 		PrintWriter p = resp.getWriter();
 		int sim_id = Integer.parseInt(idSimulation);
-		ArrayList<String> tp_list = masterServer.getSimulationsList().get(sim_id).getTopicList();
+		ArrayList<String> tp_list = new ArrayList<>();
+		if(masterServer.getSimulationsList().get(sim_id)!=null){
+			tp_list=masterServer.getSimulationsList().get(sim_id).getTopicList();
+		}
 		HashMap<String, String> info_workers = masterServer.getInfoWorkers();
 		if(info_workers==null){
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
