@@ -135,7 +135,7 @@
                                         <td>
                                             <span>Select an example simulation</span><br>
                                                 <paper-dropdown-menu id="exampleSimulation" label="Select">
-                                                    <paper-listbox class="dropdown-content">
+                                                    <paper-listbox d>
                                                         <paper-item label="allosaurus">allosaurus</paper-item>
                                                         <paper-item label="brontosaurus">brontosaurus</paper-item>
                                                         <paper-item label="carcharodontosaurus">carcharodontosaurus</paper-item>

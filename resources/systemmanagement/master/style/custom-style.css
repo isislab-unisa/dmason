@@ -54,9 +54,9 @@ body{ color:black;}
     width: 230px;
     height: 190px;
     float: left;
-    background-color: rgba(30,180,203,0.5);
+    background-color: #609f77;
     border: 3px solid;
-    border-color: black;
+    border-color: #bde1f6;
     border-radius: 15px;
     font-size: large;
     padding: 10px;
@@ -92,12 +92,14 @@ body{ color:black;}
     margin-left:1em;
 }
 .grid-item-monitoring:hover{
-    background-color:#cfd8dc ;
+    background-color:transparent ;
+    border-color: #609f77;
 }
 
 .grid-item-selected{
-    background-color: #3EB079 ;
+    background-color: #96ce7f ;
     color:black;
+    border-color:#D73D32;
 }
 
 .worker-system-info {
