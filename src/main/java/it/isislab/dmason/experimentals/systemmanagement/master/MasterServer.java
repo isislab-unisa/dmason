@@ -94,6 +94,7 @@ public class MasterServer implements MultiServerInterface{
 	//info 
 	protected HashMap<String/*IDprefixOfWorker*/,String/*MyIDTopicprefixOfWorker*/> topicIdWorkers;
 	protected HashMap<Integer,ArrayList<String>> topicIdWorkersForSimulation;
+	protected HashMap<Integer,AtomicInteger> counterAckSimRcv;//cnto numero di ack ricevuti per le simrcv dai newsim per la submit
 	public HashMap<String,String> infoWorkers;
 	public HashMap<String,String> support_infoWorkers;
 	private HashMap<Integer,Simulation> simulationsList; //list simulation 
@@ -140,6 +141,7 @@ public class MasterServer implements MultiServerInterface{
 		this.topicIdWorkersForSimulation=new HashMap<>();
 		this.infoWorkers=new HashMap<String,String>();
 		support_infoWorkers = new HashMap<>();
+		this.counterAckSimRcv=new HashMap<Integer,AtomicInteger>();
 		//waiting for workers connecetion	
 		this.listenForSignRequest();
 
@@ -261,6 +263,15 @@ public class MasterServer implements MultiServerInterface{
 					try {
 						o=parseMessage(msg);
 						MyHashMap map=(MyHashMap) o;
+                        
+						//sim(id) downloaded from the worker
+						if(map.containsKey("simrcv")){
+							int id=(int) map.get("simrcv");
+							AtomicInteger value=getCounterAckSimRcv().get(id);
+							int temp=value.incrementAndGet();
+							getCounterAckSimRcv().put(id, new AtomicInteger(temp));//used as a flag, i'm sure that all jars have been downloaded
+
+						}
 
 						//response to master info req
 						if(map.containsKey("info")){
@@ -309,7 +320,7 @@ public class MasterServer implements MultiServerInterface{
 	private synchronized void downloadLogsForSimulationByID(int simID,String topicOfWorker,boolean removeSimulation){
 		//	System.out.println("Processed request for "+topicOfWorker+" "+simulationsList.get(simID).getTopicList());
 
-		Simulation sim=simulationsList.get(simID);
+		Simulation sim=getSimulationsList().get(simID);
 		String folderCopy=sim.getSimulationFolder()+File.separator+"runs";
 		String fileCopy=folderCopy+File.separator+topicOfWorker+".zip";
 		//System.out.println("folder per la copia "+fileCopy);
@@ -349,9 +360,9 @@ public class MasterServer implements MultiServerInterface{
 
 			if(removeSimulation){
 				getConnection().publishToTopic(simID, topicOfWorker, "simrm");
-				simulationsList.get(simID).getTopicList().remove(topicOfWorker);
+				getSimulationsList().get(simID).getTopicList().remove(topicOfWorker);
 
-				if(simulationsList.get(simID).getTopicList().size()==0){
+				if(getSimulationsList().get(simID).getTopicList().size()==0){
 					removeSimulationProcessByID(simID);
 				}
 
@@ -376,7 +387,7 @@ public class MasterServer implements MultiServerInterface{
 		Simulation s = this.getSimulationsList().get(sim_id);		
 		String log_path=s.getSimulationFolder()+File.separator+"runs";
 		String filePath = this.getMasterTemporaryFolder()+File.separator+s.getSimName()+sim_id+".zip";
-		
+
 		return ZipDirectory.createZipDirectory(filePath, log_path);
 	}
 
@@ -430,18 +441,18 @@ public class MasterServer implements MultiServerInterface{
 	public synchronized void removeSimulationProcessByID(int simID){
 		String status=getSimulationsList().get(simID).getStatus();
 		if(status.equals(Simulation.CREATED)){
-			for(String topic: simulationsList.get(simID).getTopicList())
+			for(String topic: getSimulationsList().get(simID).getTopicList())
 				getConnection().publishToTopic(simID, topic, "simrm");
 		}
 
-		String folder=simulationsList.get(simID).getSimulationFolder();
+		String folder=getSimulationsList().get(simID).getSimulationFolder();
 		String folderCopy=folder+File.separator+"runs";
 
-		if(simulationsList.get(simID).getStatus().equals(Simulation.FINISHED))
+		if(getSimulationsList().get(simID).getStatus().equals(Simulation.FINISHED))
 			createCopyInHistory(folderCopy,simID);
 
 		DMasonFileSystem.delete(new File(folder));
-		simulationsList.remove(simID);
+		getSimulationsList().remove(simID);
 	}
 
 
@@ -707,13 +718,14 @@ public class MasterServer implements MultiServerInterface{
 	public synchronized boolean submitSimulation(Simulation sim) {
 		final Simulation simul=sim;
 
-		simulationsList.put(simul.getSimID(), simul);
+		getSimulationsList().put(simul.getSimID(), simul);
 		this.topicIdWorkersForSimulation.put(simul.getSimID(), simul.getTopicList());
 		HashMap<String, Integer> slotsAvalaible=slotsAvailableForSimWorker(simul.getTopicList(),infoWorkers);
 		HashMap<String, List<CellType>> assignmentToworkers=assignCellsToWorkers(slotsAvalaible, simul);
 
-		if(assignmentToworkers==null) return false;
+		if(assignmentToworkers==null) {return false;}
 
+		getCounterAckSimRcv().put(simul.getSimID(), new AtomicInteger(0));
 
 		for (String topicName: assignmentToworkers.keySet()){
 			simul.setListCellType(assignmentToworkers.get(topicName));
@@ -741,9 +753,9 @@ public class MasterServer implements MultiServerInterface{
 
 						if(map.containsKey("workerstatus")){
 
-							synchronized (simulationsList) {
+							synchronized (getSimulationsList()) {
 								Simulation s=(Simulation) map.get("workerstatus");
-								Simulation s_master=simulationsList.get(simul.getSimID());
+								Simulation s_master=getSimulationsList().get(simul.getSimID());
 
 								if(s_master.getStartTime() < s.getStartTime()){
 									s_master.setStartTime(s.getStartTime());
@@ -757,7 +769,7 @@ public class MasterServer implements MultiServerInterface{
 								if(s.getStatus().equals(Simulation.FINISHED)){
 									System.out.println("Receved FINISHED for "+s.getSimID());
 									if(s_master.getEndTime()<s.getEndTime()){
-										simulationsList.get(s.getSimID()).setEndTime(s.getEndTime());
+										getSimulationsList().get(s.getSimID()).setEndTime(s.getEndTime());
 									}
 								}
 							}
@@ -772,7 +784,14 @@ public class MasterServer implements MultiServerInterface{
 		} catch (Exception e1) {e1.printStackTrace();}
 
 
-		return this.invokeCopyServer(pathJar ,simul.getTopicList().size());
+		//return this.invokeCopyServer(pathJar ,simul.getTopicList().size());
+		this.invokeCopyServer(pathJar ,simul.getTopicList().size());
+
+		while((simul.getTopicList().size()) > (getCounterAckSimRcv().get(simul.getSimID())).intValue()){}
+		
+		return true;
+
+
 	}
 
 
@@ -811,7 +830,7 @@ public class MasterServer implements MultiServerInterface{
 	private boolean createCopyInHistory(String src, int simid){
 
 		String pathHistory=masterHistoryFolder+File.separator+getSimulationsList().get(simid).getSimName()+simid;
-		Simulation s = simulationsList.get(simid);
+		Simulation s = getSimulationsList().get(simid);
 
 
 		Thread c=new Thread(new Runnable() {
@@ -953,6 +972,7 @@ public class MasterServer implements MultiServerInterface{
 	public MasterServer getMasterServer(){return this;}
 	public HashMap<String,String> getTopicIdWorkers(){return topicIdWorkers;}	//all connected workers 
 	public HashMap getTopicIdForSimulation(){return topicIdWorkersForSimulation;} //all workers for a simulation from id of their topix
+	public HashMap<Integer,AtomicInteger> getCounterAckSimRcv(){return counterAckSimRcv;} 
 
 	//activemq address port connection
 	public String getIpActivemq() {return IP_ACTIVEMQ;}
@@ -970,6 +990,6 @@ public class MasterServer implements MultiServerInterface{
 
 
 	public HashMap<String, String> getInfoWorkers() { return infoWorkers;}
-	public HashMap<Integer,Simulation> getSimulationsList(){return simulationsList;}
+	public synchronized HashMap<Integer,Simulation> getSimulationsList(){return simulationsList;}
 
 }

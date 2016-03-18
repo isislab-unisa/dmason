@@ -453,9 +453,7 @@ public class Worker {
 		String path=this.createSimulationDirectoryByID(sim.getSimName()+""+sim.getSimID());
 		sim.setSimulationFolder(path);
 		getSimulationList().put(sim.getSimID(),sim);
-		this.getConnection().publishToTopic(TOPIC_WORKER_ID_MASTER, this.TOPIC_WORKER_ID, "simrcv");
-
-
+	
 		//added dal costruttore
 		String createTopicSimReady="SIMULATION_READY"+sim.getSimID();
 		getConnection().createTopic(createTopicSimReady, 1);
@@ -527,12 +525,16 @@ public class Worker {
 			Thread tr=null;
 			tr=new Thread(new ClientSocketCopy(clientSocket, localJarFilePath));
 			tr.start();
+			tr.join();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
+		this.getConnection().publishToTopic(sim.getSimID(), this.TOPIC_WORKER_ID, "simrcv");
 
 	}
 
