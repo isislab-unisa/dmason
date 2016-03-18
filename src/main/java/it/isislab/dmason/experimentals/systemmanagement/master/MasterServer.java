@@ -81,7 +81,7 @@ public class MasterServer implements MultiServerInterface{
 	private  String PORT_ACTIVEMQ="";
 	private int DEFAULT_PORT_COPY_SERVER;
 	private BrokerService broker=null;
-	private Properties prop = null;
+	private Properties startProperties = null;
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 
 	//path directories 
@@ -127,7 +127,7 @@ public class MasterServer implements MultiServerInterface{
 	 * start activemq, initialize master connection, create directories and create initial topic for workers
 	 */
 	public MasterServer(){
-		prop = new Properties();
+		startProperties = new Properties();
 		broker = new BrokerService();
 		conn=new ConnectionNFieldsWithActiveMQAPI();
 
@@ -187,7 +187,7 @@ public class MasterServer implements MultiServerInterface{
 	public void checkAllConnectedWorkers(){
 		infoWorkers = support_infoWorkers;
 		support_infoWorkers = new HashMap<>();
-		
+
 		for (String topic : topicIdWorkers.keySet()) {
 			checkWorker(topic);
 		}
@@ -313,7 +313,7 @@ public class MasterServer implements MultiServerInterface{
 	 * @param removeSimulation true if is a history req, false otherwise
 	 */
 	private synchronized void downloadLogsForSimulationByID(int simID,String topicOfWorker,boolean removeSimulation){
-	//	System.out.println("Processed request for "+topicOfWorker+" "+simulationsList.get(simID).getTopicList());
+		//	System.out.println("Processed request for "+topicOfWorker+" "+simulationsList.get(simID).getTopicList());
 
 		Simulation sim=simulationsList.get(simID);
 		String folderCopy=sim.getSimulationFolder()+File.separator+"runs";
@@ -336,10 +336,7 @@ public class MasterServer implements MultiServerInterface{
 			tr=new Thread(new ClientSocketCopy(clientSocket, fileCopy));
 			tr.start();
 			tr.join();
-			//System.out.println("End download "+fileCopy);
-			//System.out.println(new File(fileCopy).exists());
-
-
+		
 			Thread t=new Thread(new Runnable() {
 
 				@Override
@@ -349,8 +346,8 @@ public class MasterServer implements MultiServerInterface{
 			});
 			t.start();
 			t.join();
-            
-			
+
+
 			DMasonFileSystem.delete(new File(fileCopy));
 
 
@@ -359,14 +356,11 @@ public class MasterServer implements MultiServerInterface{
 			if(removeSimulation){
 				getConnection().publishToTopic(simID, topicOfWorker, "simrm");
 				simulationsList.get(simID).getTopicList().remove(topicOfWorker);
-				//System.out.println(simulationsList.get(simID).getTopicList().size());
-				//if(createCopyInHistory(folderCopy,simID)){
-					//System.out.println("entro "+simulationsList.get(simID).getTopicList().size());
-					if(simulationsList.get(simID).getTopicList().size()==0){
-						removeSimulationProcessByID(simID);
-					}
-					//removeSimulationProcessByID(simID);
-				//}
+				
+				if(simulationsList.get(simID).getTopicList().size()==0){
+					removeSimulationProcessByID(simID);
+				}
+				
 			}	
 
 
@@ -382,23 +376,23 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-	
+
 	public synchronized boolean createZipForHistory(int sim_id){
-		
+
 		Simulation s = this.getSimulationsList().get(sim_id);		
 		String log_path=s.getSimulationFolder()+File.separator+"runs";
 		String filePath = this.getMasterTemporaryFolder()+File.separator+s.getSimName()+sim_id+".zip";
-		
+
 		File f = new File(filePath);
 		//if(f.exists())	
-			//f.delete();
-		
+		//f.delete();
+
 		return ZipDirectory.createZipDirectory(filePath, log_path);
-			
-		
+
+
 	}
-	
-	
+
+
 
 	/**
 	 * 
@@ -451,13 +445,13 @@ public class MasterServer implements MultiServerInterface{
 			for(String topic: simulationsList.get(simID).getTopicList())
 				getConnection().publishToTopic(simID, topic, "simrm");
 		}
-		
+
 		String folder=simulationsList.get(simID).getSimulationFolder();
 		String folderCopy=folder+File.separator+"runs";
-	
+
 		if(simulationsList.get(simID).getStatus().equals(Simulation.FINISHED))
 			createCopyInHistory(folderCopy,simID);
-		
+
 		DMasonFileSystem.delete(new File(folder));
 		simulationsList.remove(simID);
 	}
@@ -524,10 +518,9 @@ public class MasterServer implements MultiServerInterface{
 		//load params from properties file 
 		try {
 			input=new FileInputStream(PROPERTIES_FILE_PATH);	
-			prop.load(input);
-			this.setIpActivemq(prop.getProperty("ipmaster"));
-			this.setPortActivemq(prop.getProperty("portmaster"));
-			//this.setCopyServerPort(Integer.parseInt(prop.getProperty("copyport")));
+			startProperties.load(input);
+			this.setIpActivemq(startProperties.getProperty("ipmaster"));
+			this.setPortActivemq(startProperties.getProperty("portmaster"));
 		} catch (IOException e2) {
 			System.err.println(e2.getMessage());
 		}finally{try {input.close();} catch (IOException e) {System.err.println(e.getMessage());}}
@@ -764,12 +757,10 @@ public class MasterServer implements MultiServerInterface{
 								Simulation s=(Simulation) map.get("workerstatus");
 								Simulation s_master=simulationsList.get(simul.getSimID());
 
-								if(s_master.getStartTime() < s.getStartTime())
-								{   
+								if(s_master.getStartTime() < s.getStartTime()){
 									s_master.setStartTime(s.getStartTime());
 								}
-								if(s_master.getStep() < s.getStep())
-								{
+								if(s_master.getStep() < s.getStep()){
 									s_master.setStep(s.getStep());
 								}
 
@@ -777,7 +768,9 @@ public class MasterServer implements MultiServerInterface{
 
 								if(s.getStatus().equals(Simulation.FINISHED)){
 									System.out.println("Receved FINISHED for "+s.getSimID());
-									simulationsList.get(s.getSimID()).setEndTime(s.getEndTime());
+									if(s_master.getEndTime()<s.getEndTime()){
+										simulationsList.get(s.getSimID()).setEndTime(s.getEndTime());
+									}
 								}
 							}
 
@@ -805,7 +798,7 @@ public class MasterServer implements MultiServerInterface{
 		int iDSimToExec=simulationToExec.getSimID();
 		System.out.println("Start command received for simulation with id "+idSimulation);
 		for(String workerTopic : simulationToExec.getTopicList()){
-            System.out.println("send start command to "+workerTopic+"   "+getTopicIdForSimulation());
+			System.out.println("send start command to "+workerTopic+"   "+getTopicIdForSimulation());
 			this.getConnection().publishToTopic(iDSimToExec, workerTopic, "start");
 		}
 
@@ -828,13 +821,13 @@ public class MasterServer implements MultiServerInterface{
 
 
 	private boolean createCopyInHistory(String src, int simid){
-		
+
 		String pathHistory=masterHistoryFolder+File.separator+getSimulationsList().get(simid).getSimName()+simid;
 		Simulation s = simulationsList.get(simid);
-		
-		
+
+
 		Thread c=new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				File resume = new File(s.getSimulationFolder()+File.separator+"runs"+File.separator+s.getSimName()+".history");
@@ -865,28 +858,28 @@ public class MasterServer implements MultiServerInterface{
 				props.put("simStatus", 			""+s.getStatus());
 				props.put("simNumWorkers",		""+s.getTopicList().size());
 				props.put("simPartitioning", 	(s.getMode()==0)?"uniform":"non-uniform");
-				
+
 				props.list(p);
 				p.flush();
-				
+
 			}
 		});
-		
-	   c.start();
-	   try {
-		c.join();
-	} catch (InterruptedException e1) {
-		// TODO Auto-generated catch block
-		e1.printStackTrace();
-	}
-		
-		
-		
+
+		c.start();
+		try {
+			c.join();
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+
+
 		Thread t=new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
-				
+
 				DMasonFileSystem.make(masterHistoryFolder);
 				File srcFolder = new File(src);
 				File destFolder = new File(pathHistory);
@@ -908,14 +901,13 @@ public class MasterServer implements MultiServerInterface{
 				}
 			}
 		});
-	
+
 		t.start();
 		try {
 			t.join();
-			
+
 			ZipDirectory.createZipDirectory(pathHistory+File.separator+"backupsim.zip", pathHistory);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -972,9 +964,6 @@ public class MasterServer implements MultiServerInterface{
 	public void setPortActivemq(String port) {PORT_ACTIVEMQ = port;}
 	public ConnectionNFieldsWithActiveMQAPI getConnection(){return conn;}	
 
-	// copy server info
-	//public int getCopyServerPort(){return DEFAULT_PORT_COPY_SERVER;}
-	///public void setCopyServerPort(int port){ this.DEFAULT_PORT_COPY_SERVER=port;}
 
 	//folder for master
 	public String getMasterdirectoryfolder(){return masterDirectoryFolder;}

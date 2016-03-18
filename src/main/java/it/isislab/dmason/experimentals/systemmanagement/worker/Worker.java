@@ -298,7 +298,6 @@ public class Worker {
 		getSimulationList().get(sim_id).setStartTime(System.currentTimeMillis());
 		getSimulationList().get(sim_id).setStep(0);
 		getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
-		//System.out.println("Simulation "+sim_id+" started, with "+executorThread.get(sim_id).size()+".");
 
 
 	}
@@ -313,6 +312,7 @@ public class Worker {
 		{
 			if(cexe.masterCell){ 
 				getSimulationList().get(sim_id).setStatus(Simulation.FINISHED);	
+				getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
 				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
 			}
 			cexe.stopThread();
@@ -380,8 +380,8 @@ public class Worker {
 		public  void run() {
 			System.out.println("Start cell for "+params.getMaxStep());
 			int i=0;
-			//Simulation s=getSimulationList().get(sim_id);
-
+			
+            
 			while(i!=params.getMaxStep() && run)
 			{   
 				if(i%500==0){System.out.println("STEP NUMBER "+dis.schedule.getSteps()+" for simid"+sim_id );}
@@ -400,7 +400,7 @@ public class Worker {
 					lock.unlock();
 				}
 				if(masterCell)
-				{
+				{   
 					getSimulationList().get(sim_id).setStep(i);
 					getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
 				}
