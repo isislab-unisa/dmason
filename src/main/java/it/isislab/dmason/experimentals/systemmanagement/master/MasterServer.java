@@ -336,7 +336,7 @@ public class MasterServer implements MultiServerInterface{
 			tr=new Thread(new ClientSocketCopy(clientSocket, fileCopy));
 			tr.start();
 			tr.join();
-		
+
 			Thread t=new Thread(new Runnable() {
 
 				@Override
@@ -356,11 +356,11 @@ public class MasterServer implements MultiServerInterface{
 			if(removeSimulation){
 				getConnection().publishToTopic(simID, topicOfWorker, "simrm");
 				simulationsList.get(simID).getTopicList().remove(topicOfWorker);
-				
+
 				if(simulationsList.get(simID).getTopicList().size()==0){
 					removeSimulationProcessByID(simID);
 				}
-				
+
 			}	
 
 
@@ -382,14 +382,8 @@ public class MasterServer implements MultiServerInterface{
 		Simulation s = this.getSimulationsList().get(sim_id);		
 		String log_path=s.getSimulationFolder()+File.separator+"runs";
 		String filePath = this.getMasterTemporaryFolder()+File.separator+s.getSimName()+sim_id+".zip";
-
-		File f = new File(filePath);
-		//if(f.exists())	
-		//f.delete();
-
+		
 		return ZipDirectory.createZipDirectory(filePath, log_path);
-
-
 	}
 
 

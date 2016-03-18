@@ -44,6 +44,10 @@ import org.apache.activemq.command.ActiveMQObjectMessage;
 public abstract class MyMessageListener implements MessageListener, Serializable
 {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public Object obj;
 	
 	public MyMessageListener() { obj = null; }

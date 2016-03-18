@@ -37,11 +37,11 @@ import java.util.zip.ZipOutputStream;
 public class ZipDirectory {
 
 	static List<String> fileList;
-	private static   String OUTPUT_ZIP_FILE = "";
-	private  static  String SOURCE_FOLDER = "";
+	//private static   String OUTPUT_ZIP_FILE = "";
+	private static  String SOURCE_FOLDER = "";
 
 	public static boolean createZipDirectory(String zipFileToCreate, String folderToZip){
-		OUTPUT_ZIP_FILE=zipFileToCreate;
+		//OUTPUT_ZIP_FILE=zipFileToCreate;
 		SOURCE_FOLDER=folderToZip;
 		fileList = new ArrayList<String>();
 		generateFileList(new File(SOURCE_FOLDER));
