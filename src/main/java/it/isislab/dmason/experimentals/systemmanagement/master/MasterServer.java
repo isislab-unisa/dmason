@@ -777,7 +777,7 @@ public class MasterServer implements MultiServerInterface{
 
 								if(s.getStatus().equals(Simulation.FINISHED)){
 									System.out.println("Receved FINISHED for "+s.getSimID());
-									//logRequestForSimulationByID(s.getSimID(),"history");
+									simulationsList.get(s.getSimID()).setEndTime(s.getEndTime());
 								}
 							}
 
