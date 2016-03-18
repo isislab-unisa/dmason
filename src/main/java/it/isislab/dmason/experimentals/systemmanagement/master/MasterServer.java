@@ -357,16 +357,15 @@ public class MasterServer implements MultiServerInterface{
 
 
 			if(removeSimulation){
-				//getConnection().publishToTopic(simID, topicOfWorker, "simrm");
-				//simulationsList.get(simID).getTopicList().remove(topicOfWorker);
+				getConnection().publishToTopic(simID, topicOfWorker, "simrm");
+				simulationsList.get(simID).getTopicList().remove(topicOfWorker);
 				//System.out.println(simulationsList.get(simID).getTopicList().size());
 				//if(createCopyInHistory(folderCopy,simID)){
 					//System.out.println("entro "+simulationsList.get(simID).getTopicList().size());
-//					if(simulationsList.get(simID).getTopicList().size()==0){
-//						removeSimulationProcessByID(simID);
-//						
-//					}
-					removeSimulationProcessByID(simID);
+					if(simulationsList.get(simID).getTopicList().size()==0){
+						removeSimulationProcessByID(simID);
+					}
+					//removeSimulationProcessByID(simID);
 				//}
 			}	
 
@@ -447,10 +446,15 @@ public class MasterServer implements MultiServerInterface{
 	 * @param simID name of a directory to delete
 	 */
 	public synchronized void removeSimulationProcessByID(int simID){
+		String status=getSimulationsList().get(simID).getStatus();
+		if(status.equals(Simulation.CREATED)){
+			for(String topic: simulationsList.get(simID).getTopicList())
+				getConnection().publishToTopic(simID, topic, "simrm");
+		}
+		
 		String folder=simulationsList.get(simID).getSimulationFolder();
 		String folderCopy=folder+File.separator+"runs";
-		for(String topic: simulationsList.get(simID).getTopicList())
-			getConnection().publishToTopic(simID, topic, "simrm");
+	
 		if(simulationsList.get(simID).getStatus().equals(Simulation.FINISHED))
 			createCopyInHistory(folderCopy,simID);
 		
