@@ -184,7 +184,7 @@ public class MasterServer implements MultiServerInterface{
 		infoWorkers = support_infoWorkers;
 		support_infoWorkers = new HashMap<>();
 
-		for (String topic : topicIdWorkers.keySet()) {
+		for (String topic : getTopicIdWorkers().keySet()) {
 			checkWorker(topic);
 		}
 	}
@@ -286,13 +286,13 @@ public class MasterServer implements MultiServerInterface{
 						if(map.containsKey("logready")){
 							int simID=(int) map.get("logready");
 							System.out.println("start copy of logs for sim id "+simID);
-							downloadLogsForSimulationByID(simID,topicIdWorkers.get(topicOfWorker),false);
+							downloadLogsForSimulationByID(simID,getTopicIdWorkers().get(topicOfWorker),false);
 						}
 						// response to master logs req(when a sim is stopped )
 						if(map.containsKey("loghistory")){
 							int simID=(int) map.get("loghistory");
 							System.out.println("start copy of logs history for sim id "+simID);
-							downloadLogsForSimulationByID(simID,topicIdWorkers.get(topicOfWorker),true);
+							downloadLogsForSimulationByID(simID,getTopicIdWorkers().get(topicOfWorker),true);
 						}
 
 
@@ -318,20 +318,13 @@ public class MasterServer implements MultiServerInterface{
 	 * @param removeSimulation true if is a history req, false otherwise
 	 */
 	private synchronized void downloadLogsForSimulationByID(int simID,String topicOfWorker,boolean removeSimulation){
-		//	System.out.println("Processed request for "+topicOfWorker+" "+simulationsList.get(simID).getTopicList());
 
 		Simulation sim=getSimulationsList().get(simID);
 		String folderCopy=sim.getSimulationFolder()+File.separator+"runs";
 		String fileCopy=folderCopy+File.separator+topicOfWorker+".zip";
-		//System.out.println("folder per la copia "+fileCopy);
-
-
-
 		Address address= workerListForCopyLogs.get(topicOfWorker);
-
 		String iplog= address.getIPaddress().replace("\"", "");
 		int port = Integer.parseInt(address.getPort());
-
 
 		Socket clientSocket;
 		try {
@@ -355,13 +348,10 @@ public class MasterServer implements MultiServerInterface{
 
 			DMasonFileSystem.delete(new File(fileCopy));
 
-
-
-
 			if(removeSimulation){
 				getConnection().publishToTopic(simID, topicOfWorker, "simrm");
 				getSimulationsList().get(simID).getTopicList().remove(topicOfWorker);
-
+            
 				if(getSimulationsList().get(simID).getTopicList().size()==0){
 					removeSimulationProcessByID(simID);
 				}
@@ -970,8 +960,8 @@ public class MasterServer implements MultiServerInterface{
 
 	//getters and setters
 	public MasterServer getMasterServer(){return this;}
-	public HashMap<String,String> getTopicIdWorkers(){return topicIdWorkers;}	//all connected workers 
-	public HashMap getTopicIdForSimulation(){return topicIdWorkersForSimulation;} //all workers for a simulation from id of their topix
+	public synchronized HashMap<String,String> getTopicIdWorkers(){return topicIdWorkers;}	//all connected workers 
+	public synchronized HashMap getTopicIdForSimulation(){return topicIdWorkersForSimulation;} //all workers for a simulation from id of their topix
 	public HashMap<Integer,AtomicInteger> getCounterAckSimRcv(){return counterAckSimRcv;} 
 
 	//activemq address port connection
