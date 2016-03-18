@@ -47,6 +47,7 @@
 <link rel="import" href="bower_components/paper-input/paper-input-container.html">
 <link rel="import" href="bower_components/paper-input/paper-input-error.html">
 <link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="bower_components/paper-menu/paper-menu.html">
 
 <link rel="import" href="bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
@@ -67,12 +68,12 @@
 			</paper-toolbar>
 			<div class="content content-side-bar">
                 <hr>
-				<app-sidebar>
-                        <a style="text-decoration:none;" href="index.jsp"><paper-item class="selected"> <iron-icon icon="icons:flip-to-front"></iron-icon><span class="span-icon">Monitoring</span></paper-item></a>
-                        <a style="text-decoration:none;" href="simulations.jsp"><paper-item ><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></paper-item></a>
-                        <a style="text-decoration:none;" href="history.jsp"><paper-item><iron-icon icon="history"></iron-icon><span class="span-icon">History</span></paper-item></a>
-                        <a style="text-decoration:none;" href="settings.jsp"><paper-item><iron-icon icon="settings"></iron-icon><span class="span-icon">Settings</span></paper-item></a>
-				</app-sidebar>
+				<paper-menu>
+                        <paper-item class="selected"><a style="text-decoration:none;" href="index.jsp"> <iron-icon icon="icons:flip-to-front"></iron-icon><span class="span-icon">Monitoring</span></a></paper-item>
+                        <paper-item><a style="text-decoration:none;" href="simulations.jsp"><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></a></paper-item>
+                        <paper-item><a style="text-decoration:none;" href="history.jsp"><iron-icon icon="history"></iron-icon><span class="span-icon">History</span></a></paper-item>
+                        <paper-item><a style="text-decoration:none;" href="settings.jsp"><iron-icon icon="settings"></iron-icon><span class="span-icon">Settings</span></a></paper-item>
+				</paper-menu>
 			</div>
 		</paper-scroll-header-panel>
     <jsp:useBean id="masterServer" class="it.isislab.dmason.experimentals.systemmanagement.master.MasterServer" scope="application"/>

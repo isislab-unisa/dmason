@@ -64,14 +64,12 @@
         </paper-toolbar>
         <div class="content content-side-bar">
         <hr>
-        <app-sidebar>
-
-        <a href="index.jsp" style="text-decoration:none;"> <paper-item ><iron-icon icon="icons:flip-to-front"></iron-icon><span class="span-icon">Monitoring</span></paper-item></a>
-        <a href="simulations.jsp" style="text-decoration:none;"><paper-item ><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></paper-item></a>
-        <a href="history.jsp" style="text-decoration:none;"><paper-item ><iron-icon icon="history"></iron-icon><span class="span-icon">History</span></paper-item></a>
-        <a href="settings.jsp" style="text-decoration:none;"><paper-item class="selected"><iron-icon icon="settings"></iron-icon><span class="span-icon">Settings</span></paper-item></a>
-
-        </app-sidebar>
+            <paper-menu>
+            <paper-item ><a style="text-decoration:none;" href="index.jsp"> <iron-icon icon="icons:flip-to-front"></iron-icon><span class="span-icon">Monitoring</span></a></paper-item>
+            <paper-item><a style="text-decoration:none;" href="simulations.jsp"><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></a></paper-item>
+            <paper-item><a style="text-decoration:none;" href="history.jsp"><iron-icon icon="history"></iron-icon><span class="span-icon">History</span></a></paper-item>
+            <paper-item class="selected"><a style="text-decoration:none;" href="settings.jsp"><iron-icon icon="settings"></iron-icon><span class="span-icon">Settings</span></a></paper-item>
+            </paper-menu>
         </div>
         </paper-scroll-header-panel>
 
