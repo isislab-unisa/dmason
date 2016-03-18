@@ -34,45 +34,42 @@ import it.isislab.dmason.experimentals.systemmanagement.master.MultiServerInterf
  */
 public class SimulationControllerServlet extends HttpServlet {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	MultiServerInterface masterServer=null;
-	
-@Override
-protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	resp.setContentType("text/plain;charset=UTF-8");
-	if(req.getServletContext().getAttribute("masterServer")==null)
-		return;
 
-	masterServer =(MultiServerInterface) req.getServletContext().getAttribute("masterServer");
-	
-	String id = (String)req.getParameter("id");
-    String op = (String)req.getParameter("op");
-    
-    System.out.println(id);
-    System.out.println(op);
-    
-    if(id != null && op!=null){
-        int i = Integer.parseInt(id);
-        if(op.equals("play"))
-            masterServer.start(i);
-        else
-            if(op.equals("stop"))
-                masterServer.stop(i);
-            else
-                if(op.equals("pause"))
-                   masterServer.pause(i);
-    }else
-    	System.out.println("something wrong simulation controller servlet");
-		
-}
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		resp.setContentType("text/plain;charset=UTF-8");
+		if(req.getServletContext().getAttribute("masterServer")==null)
+			return;
+
+		masterServer =(MultiServerInterface) req.getServletContext().getAttribute("masterServer");
+
+		String id = (String)req.getParameter("id");
+		String op = (String)req.getParameter("op");
+
+		System.out.println(id);
+		System.out.println(op);
+
+		if(id != null && op!=null){
+			int i = Integer.parseInt(id);
+			if(op.equals("play"))
+				masterServer.start(i);
+			else
+				if(op.equals("stop"))
+					masterServer.stop(i);
+				else
+					if(op.equals("pause"))
+						masterServer.pause(i);
+		}else
+			System.out.println("something wrong simulation controller servlet");
+
+	}
 
 
-@Override
+	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	
+
 		doGet(req, resp);
 	}
 }
