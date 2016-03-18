@@ -1,18 +1,29 @@
 <style is="custom-style">
 
-    html, body {background-color: #eceff1}
+    html,body {
+        background-color: white !important;
+    }
 
-    .paper-toolbar-0{
-        background-color: #0f9d58;
-        color: #ffffff;
+
+
+    paper-toolbar{
+        background-color: #D73D32;
+        color: white;
+        font-size: x-large;
     }
 
     .side-drawer{
 
         height: 50px;
     }
+    paper-menu{
+        --paper-menu-background-color: transparent;
+    }
+
+
     paper-scroll-header-panel.side-header-panel{
         background-color: transparent;
+        color:black;
     }
 
     paper-scroll-header-panel {
@@ -25,7 +36,7 @@
 
     paper-scroll-header-panel .content-side-bar {
              padding: 8px;
-             background-color:#0f9d58 /*#2C2F2F*/;
+             background-color:white /*#2C2F2F*/;
              height: 100%;
              overflow: visible;
     }
@@ -36,18 +47,17 @@
 
     #add-simulation-paper-dialog{
         background-color: #cfd8dc ;
-        color:black;
+        color:black !important;
     }
 
     #add-simulation-to-worker-buttom {
         position: fixed;
         bottom: 25px;
         right: 50px;
-        background-color: #0f9d58;
-        border: 2px solid #000000;
+        background-color: #D73D32;
     }
-    #add-simulation-to-worker-buttom:hover{
-        background-color: #427FED;
+
+    paper-item > a{
         color:black;
     }
 

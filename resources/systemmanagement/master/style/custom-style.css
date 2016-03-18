@@ -1,7 +1,7 @@
 
-* { box-sizing: border-box;}
-body {color:#bdced7;}
+* { box-sizing: border-box; }
 
+body{ color:black;}
 
 .grid-monitoring, .grid-settings, .grid-history {
     background: transparent;
@@ -51,19 +51,19 @@ body {color:#bdced7;}
 }
 
 .grid-item-monitoring {
-width: 230px;
-height: 190px;
-float: left;
-background-color: #cfd8dc;
-border: 3px solid;
-border-color: black;
-border-radius: 15px;
-font-size: large;
-padding: 10px;
-position: relative;
-color: black;
-margin-top: 20px;
-margin-left: 20px;
+    width: 230px;
+    height: 190px;
+    float: left;
+    background-color: rgba(30,180,203,0.5);
+    border: 3px solid;
+    border-color: black;
+    border-radius: 15px;
+    font-size: large;
+    padding: 10px;
+    position: relative;
+    color: black;
+    margin-top: 20px;
+    margin-left: 20px;
 }
 
 .grid-item-history {
@@ -92,12 +92,11 @@ margin-left: 20px;
     margin-left:1em;
 }
 .grid-item-monitoring:hover{
-    background-color: #0F9D58;
-    color:#ffffff;
+    background-color:#cfd8dc ;
 }
 
 .grid-item-selected{
-    background-color: #427fed ;
+    background-color: #3EB079 ;
     color:black;
 }
 
