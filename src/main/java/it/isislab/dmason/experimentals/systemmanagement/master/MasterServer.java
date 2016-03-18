@@ -827,12 +827,12 @@ public class MasterServer implements MultiServerInterface{
 				File resume = new File(s.getSimulationFolder()+File.separator+"runs"+File.separator+s.getSimName()+".history");
 				Properties props = new Properties();
 				FileOutputStream f=null;
-				PrintWriter p =null;
+				//PrintWriter p =null;
 				try {
 					if(!resume.exists())
 						resume.createNewFile();
 					f = new FileOutputStream(resume);
-					p = new PrintWriter(f);
+					//p = new PrintWriter(f);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -852,9 +852,18 @@ public class MasterServer implements MultiServerInterface{
 				props.put("simStatus", 			""+s.getStatus());
 				props.put("simNumWorkers",		""+s.getTopicList().size());
 				props.put("simPartitioning", 	(s.getMode()==0)?"uniform":"non-uniform");
+				props.put("simLogZipFile",		pathHistory+File.separator+"backupsim.zip");
 
-				props.list(p);
-				p.flush();
+
+				try {
+					props.store(f, "Resume for sim "+s.getSimName());
+					f.flush();
+					//props.list(p);
+					//p.flush();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 			}
 		});
