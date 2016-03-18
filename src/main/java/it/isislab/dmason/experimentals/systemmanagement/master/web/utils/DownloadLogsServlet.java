@@ -34,19 +34,20 @@ public class DownloadLogsServlet extends HttpServlet {
 		
 		masterServer = (MasterServer) req.getServletContext().getAttribute("masterServer");
 		String s_id = (String)req.getParameter("id");
-		if(s_id==null)
+		String path = (String)req.getParameter("path");
+		if(s_id==null && path == null){
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
-		
-		int sim_id=Integer.parseInt(s_id);
-		
-		
-		
-		masterServer.createZipForHistory(sim_id);//return a boolean true if the file is created 
-		
-		Simulation s = masterServer.getSimulationsList().get(sim_id);		
-		String log_path=masterServer.getMasterTemporaryFolder();
-		String filePath = log_path+File.separator+s.getSimName()+s.getSimID()+".zip";
-		
+		}
+		String filePath=null;
+		if(s_id!=null){
+			int sim_id=Integer.parseInt(s_id);
+			masterServer.createZipForHistory(sim_id);//return a boolean true if the file is created 
+			Simulation s = masterServer.getSimulationsList().get(sim_id);		
+			String log_path=masterServer.getMasterTemporaryFolder();
+			filePath= log_path+File.separator+s.getSimName()+s.getSimID()+".zip";
+		}else
+			filePath = path;
 		
 		
 		//System.out.println("Creato zipppettone!!!");
