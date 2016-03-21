@@ -606,7 +606,7 @@ public class MasterServer implements MultiServerInterface{
 				}
 				else{
 					if(lastIndex==w)
-						System.err.println("errore");
+						System.err.println("errore"); 
 					//						throw new DMasonException("Error! Not enough slots on the workers for the given partitioning.");
 
 					if(lastIndex==-1) lastIndex=w;
