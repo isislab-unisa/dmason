@@ -54,9 +54,7 @@ body{ color:black;}
     width: 230px;
     height: 190px;
     float: left;
-    background-color: #609f77;
-    border: 3px solid;
-    border-color: #bde1f6;
+    background-color: lightskyblue;
     border-radius: 15px;
     font-size: large;
     padding: 10px;
@@ -70,13 +68,14 @@ body{ color:black;}
     width:auto;
     height:auto;
     float: left;
-    background-color: #3f4242;
-    border: 2px solid #0c3308;
+    background-color: #609f77 !important;
+    border: 2px solid black;
     border-color: hsla(0, 0%, 0%, 0.5);
     border-radius: 5px;
     font-size: large;
     padding:10px;
     position:relative;
+    margin-left: 1%;
 }
 
 
@@ -92,14 +91,16 @@ body{ color:black;}
     margin-left:1em;
 }
 .grid-item-monitoring:hover{
-    background-color:transparent ;
-    border-color: #609f77;
+    background-color:#96ce7f ;
+    border:2px solid;
+    border-color: black;
 }
 
 .grid-item-selected{
     background-color: #96ce7f ;
     color:black;
-    border-color:#D73D32;
+    border:2px solid ;
+    border-color:black;
 }
 
 .worker-system-info {
