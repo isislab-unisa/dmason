@@ -54,6 +54,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -69,7 +71,7 @@ import javax.jms.Message;
  * @author Flavio Serrapica
  *
  */
-public class Worker {
+public class Worker implements Observer {
 
 	private String IP_ACTIVEMQ="";
 	private String PORT_ACTIVEMQ="";
@@ -92,7 +94,7 @@ public class Worker {
 	//Socket for log services
 	protected Socket sock=null;
 	protected ServerSocket welcomeSocket;
-
+   
 
 	/**
 	 * WORKER 
@@ -101,7 +103,7 @@ public class Worker {
 	 * @param topicPrefix
 	 */
 
-	public Worker(String ipMaster,String portMaster, int slots) {
+	public Worker(String ipMaster,String portMaster, int slots/*, ConnectionNFieldsWithActiveMQAPI connect*/) {
 
 		try {
 			this.IP_ACTIVEMQ=ipMaster;
@@ -118,7 +120,7 @@ public class Worker {
 			this.PORT_COPY_LOG=findAvailablePort();
 			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP));
 			System.out.println("Starting worker ..."); 
-
+            conn.addObserver(this);
 		} catch (Exception e) {e.printStackTrace();}
 
 
@@ -793,4 +795,28 @@ public class Worker {
 	public synchronized Integer getSlotsNumber(){return slotsNumber;}
 	public synchronized int setSlotsNumuber(int slots){return this.slotsNumber=slots;}
 	public HashMap<Integer, Simulation> getSimulationList(){return simulationList;}
+
+
+
+	@Override
+	public void update(Observable obs, Object arg) {
+		if (obs==conn)
+	      {
+			if(!conn.isConnected()){
+				System.out.println("entro");
+				Thread t=new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						new Worker(IP_ACTIVEMQ, PORT_ACTIVEMQ, slotsNumber);
+						
+					}
+				});
+		       t.start(); 
+
+			}
+			  
+	      
+	      }
+	}
 }

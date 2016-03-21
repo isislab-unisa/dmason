@@ -16,6 +16,8 @@
  */
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
+import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
+
 /**
  * 
  * @author Michele Carillo
@@ -31,7 +33,6 @@ public class WorkerMain {
 
 		String ip =args[0];
 		String port=args[1];
-		
 		new Worker(ip, port,Integer.parseInt(args[2]));
 	}
 
