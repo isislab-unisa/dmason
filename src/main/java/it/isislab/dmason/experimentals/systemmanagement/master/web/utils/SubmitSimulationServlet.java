@@ -140,6 +140,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 		sim=new Simulation(simName, simPath, jarSim.getName(), Integer.parseInt(cells), aoi, width, height, numAgent, numStep, mode, connection);	
 		
 		sim.setTopicList(topicList);
+		sim.setNumWorkers(topicList.size());
 		sim.setSimID(simId);
 		sim.setTopicPrefix(simName+"-"+simId);
 

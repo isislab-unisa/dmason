@@ -56,6 +56,15 @@ public class Simulation implements Serializable{
 	private String topicPrefix;
 	private int P;
 	private ArrayList<String> topicList;
+	private int numWorkers;
+	public int getNumWorkers() {
+		return numWorkers;
+	}
+	public void setNumWorkers(int numWorkers) {
+		this.numWorkers = numWorkers;
+	}
+
+
 	private List<CellType> cellTypeList;
 	private int received_cell_type;
 	private long startTime=Long.MIN_VALUE;

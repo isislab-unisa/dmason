@@ -93,7 +93,7 @@ public class MasterServer implements MultiServerInterface{
 
 	//info 
 	protected HashMap<String/*IDprefixOfWorker*/,String/*MyIDTopicprefixOfWorker*/> topicIdWorkers;
-	protected HashMap<Integer,ArrayList<String>> topicIdWorkersForSimulation;
+	//protected HashMap<Integer,ArrayList<String>> topicIdWorkersForSimulation;
 	protected HashMap<Integer,AtomicInteger> counterAckSimRcv;//cnto numero di ack ricevuti per le simrcv dai newsim per la submit
 	public HashMap<String,String> infoWorkers;
 	public HashMap<String,String> support_infoWorkers;
@@ -138,7 +138,7 @@ public class MasterServer implements MultiServerInterface{
 
 		//topicPrefix of connected workers  
 		this.topicIdWorkers=new HashMap<String,String>();
-		this.topicIdWorkersForSimulation=new HashMap<>();
+		//this.topicIdWorkersForSimulation=new HashMap<>();
 		this.infoWorkers=new HashMap<String,String>();
 		support_infoWorkers = new HashMap<>();
 		this.counterAckSimRcv=new HashMap<Integer,AtomicInteger>();
@@ -709,7 +709,7 @@ public class MasterServer implements MultiServerInterface{
 		final Simulation simul=sim;
 
 		getSimulationsList().put(simul.getSimID(), simul);
-		this.topicIdWorkersForSimulation.put(simul.getSimID(), simul.getTopicList());
+		//this.topicIdWorkersForSimulation.put(simul.getSimID(), simul.getTopicList());
 		HashMap<String, Integer> slotsAvalaible=slotsAvailableForSimWorker(simul.getTopicList(),infoWorkers);
 		HashMap<String, List<CellType>> assignmentToworkers=assignCellsToWorkers(slotsAvalaible, simul);
 
@@ -795,7 +795,7 @@ public class MasterServer implements MultiServerInterface{
 		int iDSimToExec=simulationToExec.getSimID();
 		System.out.println("Start command received for simulation with id "+idSimulation);
 		for(String workerTopic : simulationToExec.getTopicList()){
-			System.out.println("send start command to "+workerTopic+"   "+getTopicIdForSimulation());
+			//System.out.println("send start command to "+workerTopic+"   "+getTopicIdForSimulation());
 			this.getConnection().publishToTopic(iDSimToExec, workerTopic, "start");
 		}
 
@@ -853,7 +853,7 @@ public class MasterServer implements MultiServerInterface{
 				props.put("simStepNumber", 		""+s.getNumStep());
 				props.put("simNumCells", 		""+s.getNumCells());
 				props.put("simStatus", 			""+s.getStatus());
-				props.put("simNumWorkers",		""+s.getTopicList().size());
+				props.put("simNumWorkers",		""+s.getNumWorkers());
 				props.put("simPartitioning", 	(s.getMode()==0)?"uniform":"non-uniform");
 				props.put("simLogZipFile",		pathHistory+File.separator+"backupsim.zip");
 
@@ -960,8 +960,8 @@ public class MasterServer implements MultiServerInterface{
 
 	//getters and setters
 	public MasterServer getMasterServer(){return this;}
-	public synchronized HashMap<String,String> getTopicIdWorkers(){return topicIdWorkers;}	//all connected workers 
-	public synchronized HashMap getTopicIdForSimulation(){return topicIdWorkersForSimulation;} //all workers for a simulation from id of their topix
+	public HashMap<String,String> getTopicIdWorkers(){return topicIdWorkers;}	//all connected workers 
+	//public synchronized HashMap getTopicIdForSimulation(){return topicIdWorkersForSimulation;} //all workers for a simulation from id of their topix
 	public HashMap<Integer,AtomicInteger> getCounterAckSimRcv(){return counterAckSimRcv;} 
 
 	//activemq address port connection
