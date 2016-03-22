@@ -118,6 +118,7 @@
                 </div>
                 <paper-fab id="add-simulation-to-worker-buttom" icon="add" onclick="open_dialog_setting_new_simulation()"></paper-fab>
                 <paper-toast id="miss-worker-selection">You should select some workers before to assign them a partitioning</paper-toast>
+
                 <paper-dialog id="add-simulation-paper-dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
                     <h2>Simulation Settings</h2>
                     <h4>Worker(s) selected: <span id="head_sel_works"></span> Available slot(s): <span id="head_num_slots"></span></h4>
@@ -203,6 +204,9 @@
                                 </table>
                             </form>
                             <paper-toast id="missing_settings">You should fill the other(s) field(s)</paper-toast>
+                            <paper-toast id="undo_submit_sim" duration="5000" class="layout horizontal center" text="Aborting submit simulation">
+                                <div><paper-button class="undo-button" on-click="abortSubmit()">UNDO</paper-button></div>
+                            </paper-toast>
                         </div>
                     </paper-dialog-scrollable>
                 </paper-dialog>
