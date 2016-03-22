@@ -68,11 +68,11 @@
 			</paper-toolbar>
 			<div class="content content-side-bar">
                 <hr>
-				<paper-menu>
-                        <paper-item class="selected"><a style="text-decoration:none;" href="index.jsp"> <iron-icon icon="icons:flip-to-front"></iron-icon><span class="span-icon">Monitoring</span></a></paper-item>
-                        <paper-item><a style="text-decoration:none;" href="simulations.jsp"><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></a></paper-item>
-                        <paper-item><a style="text-decoration:none;" href="history.jsp"><iron-icon icon="history"></iron-icon><span class="span-icon">History</span></a></paper-item>
-                        <paper-item><a style="text-decoration:none;" href="settings.jsp"><iron-icon icon="settings"></iron-icon><span class="span-icon">Settings</span></a></paper-item>
+				<paper-menu >
+                    <paper-item class="selected"><a style="text-decoration:none;" href="index.jsp"> <iron-icon icon="icons:flip-to-front"></iron-icon><span class="span-icon">Monitoring</span></a></paper-item>
+                    <paper-item><a style="text-decoration:none;" href="simulations.jsp"><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></a></paper-item>
+                    <paper-item><a style="text-decoration:none;" href="history.jsp"><iron-icon icon="history"></iron-icon><span class="span-icon">History</span></a></paper-item>
+                    <paper-item><a style="text-decoration:none;" href="settings.jsp"><iron-icon icon="settings"></iron-icon><span class="span-icon">Settings</span></a></paper-item>
 				</paper-menu>
 			</div>
 		</paper-scroll-header-panel>
@@ -135,7 +135,7 @@
                                         <td>
                                             <span>Select an example simulation</span><br>
                                                 <paper-dropdown-menu id="exampleSimulation" label="Select">
-                                                    <paper-listbox d>
+                                                    <paper-listbox class="dropdown-content">
                                                         <paper-item label="allosaurus">allosaurus</paper-item>
                                                         <paper-item label="brontosaurus">brontosaurus</paper-item>
                                                         <paper-item label="carcharodontosaurus">carcharodontosaurus</paper-item>
