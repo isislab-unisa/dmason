@@ -351,7 +351,8 @@ public class MasterServer implements MultiServerInterface{
 			if(removeSimulation){
 				getConnection().publishToTopic(simID, topicOfWorker, "simrm");
 				getSimulationsList().get(simID).getTopicList().remove(topicOfWorker);
-            
+                
+				//i must know last process of history download  
 				if(getSimulationsList().get(simID).getTopicList().size()==0){
 					removeSimulationProcessByID(simID);
 				}
