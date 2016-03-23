@@ -342,13 +342,6 @@ function _validate_slots(element){
 
 }
 
-function abortSubmit(){
-    undo_feature = true;
-    var undo_toast = document.querySelector("#undo_submit_sim");
-    undo_toast.close();
-}
-
-undo_feature=false;
 function submitForm(){
 
     var form = document.getElementById("sendSimulationForm");
@@ -357,13 +350,10 @@ function submitForm(){
     }
 
     startProgress();
-    //var undo_toast = document.querySelector("#undo_submit_sim");
-    //undo_toast.open();
 
-    if(!undo_feature){
         $(form).unbind('submit').bind("submit",_OnsubmitSimulation);
         form.submit();
-    }
+
 }
 
 function checkForm(form){

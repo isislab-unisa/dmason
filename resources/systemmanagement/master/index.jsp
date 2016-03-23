@@ -204,9 +204,6 @@
                                 </table>
                             </form>
                             <paper-toast id="missing_settings">You should fill the other(s) field(s)</paper-toast>
-                            <paper-toast id="undo_submit_sim" duration="5000" class="layout horizontal center" text="Aborting submit simulation">
-                                <div><paper-button class="undo-button" on-click="abortSubmit()">UNDO</paper-button></div>
-                            </paper-toast>
                         </div>
                     </paper-dialog-scrollable>
                 </paper-dialog>
