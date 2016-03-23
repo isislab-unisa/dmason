@@ -353,10 +353,10 @@ function submitForm(){
     if(!checkForm(form)){
         return;
     }
-    undo_toast.open();
+
     startProgress();
-    var undo_toast = document.querySelector("#undo_submit_sim");
-    
+    //var undo_toast = document.querySelector("#undo_submit_sim");
+    //undo_toast.open();
 
     if(!undo_feature){
         $(form).unbind('submit').bind("submit",_OnsubmitSimulation);
