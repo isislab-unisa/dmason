@@ -71,6 +71,48 @@ After that you must put the output data in the `repository` folder of DMASON Git
 		<version>18</version>
 	</dependency>
 
+#### Configure Java Development Kit 8 as default on all cluster's nodes
+Download Java SE Development Kit 8 from oracle site. Follow the instrunctions at this link https://github.com/serfla/jdk-cluster-installer to set JDK 8 as default. 
+Repeat this operation for all nodes of clusters.
+
+### Generate Dmason's jar
+
+Run maven install of DMASON project. After, Under /targer folder copy the following files:
+- DMASON-3.1.jar
+- DMASON-3.1-lib.jar
+- /resources folder
+ 
+You can create a folder called DMASON with these files. Now copy this folder on all nodes of cluster. 
+
+### Configure Activemq
+
+On master node editing Apache ActivemQ configuration file 'resources/systemmanagement/master/conf/config.properties'
+*set ip   (default is 127.0.0.1), the same ip of master node
+*set port (default is 61616)
+
+### Run DMASON on cluster
+
+On master node open a terminal e launch this command to start the master nonde
+
+```sh
+$ java -jar DMASON-3.1.jar -m master
+```
+Now, to start the slaves node you can open a new terminal on the master node and launch this command
+
+```sh
+#M is the max number of available cells that the slave nodes can execute
+java -jar DMASON-3.1.jar -m worker -ip <ipactivemQ> -p <portActivemq> -h slave1 slave2 ... slaveN -ns M
+```
+or you can launch this command on all slave node 
+
+```sh
+#M is the max number of available cells that the slave node can execute
+java -jar DMASON-3.1.jar -m worker -ip <ipactivemQ> -p <portActivemq> -ns M
+```
+
+
+
+
 #Release notes
 
 ### Apache ActiveMQ notes
