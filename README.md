@@ -84,7 +84,7 @@ Repeat this operation for all nodes of clusters.
 Run maven install of DMASON project. After, Under **target** folder copy the following files:
 - DMASON-3.1.jar
 - DMASON-3.1-lib.jar
-- /resources folder
+- resources folder
  
 You can create a folder called DMASON with these files. Now copy this folder on all nodes of cluster. 
 
