@@ -81,7 +81,7 @@ Repeat this operation for all nodes of clusters.
 
 ### Generate Dmason's jar
 
-Run maven install of DMASON project. After, Under /targer folder copy the following files:
+Run maven install of DMASON project. After, Under **target** folder copy the following files:
 - DMASON-3.1.jar
 - DMASON-3.1-lib.jar
 - /resources folder
