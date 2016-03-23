@@ -14,7 +14,9 @@ function load_tiles_settings(){
             percentPosition: true
         }
     );
-}function load_tiles_history(){
+}
+
+function load_tiles_history(){
     $('.grid-settings').masonry({
             itemSelector: '.grid-item-history',
             columnWidth: '.grid-sizer-history',
