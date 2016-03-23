@@ -91,8 +91,9 @@ You can create a folder called DMASON with these files. Now copy this folder on 
 ### Configure Activemq
 
 On master node editing Apache ActivemQ configuration file 'resources/systemmanagement/master/conf/config.properties'
-*set ip   (default is 127.0.0.1), the same ip of master node
-*set port (default is 61616)
+
+-set ip   (default is 127.0.0.1), the same ip of master node
+-set port (default is 61616)
 
 ### Run DMASON on cluster
 
