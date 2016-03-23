@@ -71,7 +71,11 @@ After that you must put the output data in the `repository` folder of DMASON Git
 		<version>18</version>
 	</dependency>
 
-#### Configure Java Development Kit 8 as default on all cluster's nodes
+# DMASON System Management
+You can read how to configure and how to run DMASON on cluster. Follow these steps 
+
+
+### Configure Java Development Kit 8 as default on all cluster's nodes
 Download Java SE Development Kit 8 from oracle site. Follow the instrunctions at this link https://github.com/serfla/jdk-cluster-installer to set JDK 8 as default. 
 Repeat this operation for all nodes of clusters.
 
