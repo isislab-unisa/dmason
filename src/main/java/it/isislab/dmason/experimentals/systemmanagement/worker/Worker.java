@@ -71,7 +71,7 @@ import javax.jms.Message;
  * @author Flavio Serrapica
  *
  */
-public class Worker implements Observer {
+public class Worker /*implements Observer*/ {
 
 	private String IP_ACTIVEMQ="";
 	private String PORT_ACTIVEMQ="";
@@ -94,7 +94,7 @@ public class Worker implements Observer {
 	//Socket for log services
 	protected Socket sock=null;
 	protected ServerSocket welcomeSocket;
-   
+
 
 	/**
 	 * WORKER 
@@ -120,7 +120,7 @@ public class Worker implements Observer {
 			this.PORT_COPY_LOG=findAvailablePort();
 			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP));
 			System.out.println("Starting worker ..."); 
-            conn.addObserver(this);
+		//	conn.addObserver(this);
 		} catch (Exception e) {e.printStackTrace();}
 
 
@@ -320,7 +320,7 @@ public class Worker implements Observer {
 			cexe.stopThread();
 		}
 		getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
-	
+
 		//start process to create a log file for this simulation
 		String pre_status=getSimulationList().get(sim_id).getStatus();
 		getLogBySimIDProcess(sim_id,pre_status,"history");
@@ -455,7 +455,7 @@ public class Worker implements Observer {
 		String path=this.createSimulationDirectoryByID(sim.getSimName()+""+sim.getSimID());
 		sim.setSimulationFolder(path);
 		getSimulationList().put(sim.getSimID(),sim);
-	
+
 		//added dal costruttore
 		String createTopicSimReady="SIMULATION_READY"+sim.getSimID();
 		getConnection().createTopic(createTopicSimReady, 1);
@@ -798,25 +798,41 @@ public class Worker implements Observer {
 
 
 
-	@Override
-	public void update(Observable obs, Object arg) {
-		if (obs==conn)
-	      {
-			if(!conn.isConnected()){
-				System.out.println("entro");
-				Thread t=new Thread(new Runnable() {
-					
-					@Override
-					public void run() {
-						new Worker(IP_ACTIVEMQ, PORT_ACTIVEMQ, slotsNumber);
-						
-					}
-				});
-		       t.start(); 
-
-			}
-			  
-	      
-	      }
-	}
+//	@Override
+//	public void update(Observable obs, Object arg) {
+//		if (obs==conn){
+//			if(!conn.isConnected()){
+//
+//				conn.resetTopic();
+//				conn.reinitializeWorkerConnVar();
+//				try {
+//					conn.unsubscribe(MASTER_TOPIC);
+//					conn.unsubscribe(TOPIC_WORKER_ID);
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//
+//				System.out.println("entro");
+//				Thread t=new Thread(new Runnable() {
+//
+//					@Override
+//					public void run() {
+//						new Worker(IP_ACTIVEMQ, PORT_ACTIVEMQ, slotsNumber);
+//
+//					}
+//				});
+//				t.start(); 
+//
+//			}
+//			
+//			else{
+//				System.out.println("entro2");
+//				startMasterComunication();
+//				signRequestToMaster();
+//			}
+//
+//
+//		}
+//	}
 }
