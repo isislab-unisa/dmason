@@ -79,9 +79,9 @@ You can read how to configure and how to run DMASON on cluster. Follow these ste
 Download Java SE Development Kit 8 from oracle site. Follow the instrunctions at this link https://github.com/serfla/jdk-cluster-installer to set JDK 8 as default. 
 Repeat this operation for all nodes of clusters.
 
-### Generate Dmason's jar
+### Generate DMASON's jar
 
-Run maven install of DMASON project. After, Under **target** folder copy the following files:
+Run maven install of DMASON project. Under **target** folder you can find the following files:
 - DMASON-3.1.jar
 - DMASON-3.1-lib.jar
 - resources folder
@@ -90,7 +90,7 @@ You can create a folder called DMASON with these files. Now copy this folder on 
 
 ### Configure Activemq
 
-On masternode editing Apache ActivemQ configuration file 'resources/systemmanagement/master/conf/config.properties' in order to set ip and port of Apache ActivemQ:
+On master node editing Apache ActivemQ configuration file 'resources/systemmanagement/master/conf/config.properties' in order to set ip and port of Apache ActivemQ:
 - set ip   (default is 127.0.0.1), the same ip of master node
 - set port (default is 61616)
 
