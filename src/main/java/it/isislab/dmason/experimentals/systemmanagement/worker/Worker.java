@@ -71,7 +71,7 @@ import javax.jms.Message;
  * @author Flavio Serrapica
  *
  */
-public class Worker /*implements Observer*/ {
+public class Worker implements Observer {
 
 	private String IP_ACTIVEMQ="";
 	private String PORT_ACTIVEMQ="";
@@ -120,7 +120,7 @@ public class Worker /*implements Observer*/ {
 			this.PORT_COPY_LOG=findAvailablePort();
 			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP));
 			System.out.println("Starting worker ..."); 
-		//	conn.addObserver(this);
+			conn.addObserver(this);
 		} catch (Exception e) {e.printStackTrace();}
 
 
@@ -611,6 +611,7 @@ public class Worker /*implements Observer*/ {
 		try{	
 			conn.createTopic("READY", 1);
 			conn.subscribeToTopic("READY");
+			System.out.println("send signreq");
 			conn.publishToTopic(this.TOPIC_WORKER_ID,"READY" ,"signrequest");
 			conn.createTopic(this.TOPIC_WORKER_ID, 1);
 			conn.subscribeToTopic(TOPIC_WORKER_ID);
@@ -798,41 +799,20 @@ public class Worker /*implements Observer*/ {
 
 
 
-//	@Override
-//	public void update(Observable obs, Object arg) {
-//		if (obs==conn){
-//			if(!conn.isConnected()){
-//
-//				conn.resetTopic();
-//				conn.reinitializeWorkerConnVar();
-//				try {
-//					conn.unsubscribe(MASTER_TOPIC);
-//					conn.unsubscribe(TOPIC_WORKER_ID);
-//				} catch (Exception e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//
-//				System.out.println("entro");
-//				Thread t=new Thread(new Runnable() {
-//
-//					@Override
-//					public void run() {
-//						new Worker(IP_ACTIVEMQ, PORT_ACTIVEMQ, slotsNumber);
-//
-//					}
-//				});
-//				t.start(); 
-//
-//			}
-//			
-//			else{
-//				System.out.println("entro2");
-//				startMasterComunication();
-//				signRequestToMaster();
-//			}
-//
-//
-//		}
-//	}
+	@Override
+	public void update(Observable obs, Object arg) {
+		if (obs==conn){
+			System.out.println("evento catturato var "+conn.isConnected());
+			if(!conn.isConnected()){
+				
+				System.exit(0);
+
+
+			}
+			
+			
+
+
+		}
+	}
 }
