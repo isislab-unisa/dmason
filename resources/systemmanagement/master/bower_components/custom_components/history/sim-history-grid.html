@@ -11,14 +11,10 @@
                 display: block;
             }
 
-
-            .grid-sizer-history,
-            .grid-item-history
-            {
-                width: auto;
-                heigth:auto;
+            .grid-history {
+                background: transparent;
+                max-width: 100%;
             }
-
 
             .grid-history:after {
                 content: '';
@@ -26,25 +22,26 @@
                 clear: both;
             }
 
-            .grid-history {
-                background: transparent;
-                max-width: 100%;
+            .grid-sizer-history,
+            .grid-item-history
+            {
+                width: auto;
+                height:auto;
             }
 
             .grid-item-history {
                 width:auto;
                 height:auto;
                 float: left;
-                background-color: #3f4242;
-                border: 2px solid #0c3308;
+                background-color: #609f77;
+                border: 2px solid black;
                 border-color: hsla(0, 0%, 0%, 0.5);
                 border-radius: 5px;
                 font-size: large;
                 padding:10px;
                 position:relative;
+                margin-left: 1%;
             }
-
-
 
         </style>
 
