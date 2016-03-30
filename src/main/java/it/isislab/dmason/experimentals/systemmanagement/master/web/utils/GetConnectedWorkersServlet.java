@@ -63,16 +63,12 @@ public class GetConnectedWorkersServlet extends HttpServlet {
 			message="";
 
 		p.print(message);
-//		req.setAttribute("message", message);
-//        req.getRequestDispatcher("/index.jsp").forward(req, resp);
-
         p.close();
 	
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(req, resp);
 	}
 

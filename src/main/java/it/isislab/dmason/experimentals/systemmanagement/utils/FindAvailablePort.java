@@ -71,7 +71,10 @@ public class FindAvailablePort {
 	}
 	
 	
-	
+	/**
+	 * Return available port
+	 * @return first available
+	 */
 	public static int getPortAvailable(){
 		
 		 int port=-1; 
@@ -82,12 +85,6 @@ public class FindAvailablePort {
 			 }    
 		 }
 		 return port;
-	}
-	
-	
-	public static void main(String[] args) {
-		
-		System.out.println(FindAvailablePort.getPortAvailable());
 	}
 	
 	

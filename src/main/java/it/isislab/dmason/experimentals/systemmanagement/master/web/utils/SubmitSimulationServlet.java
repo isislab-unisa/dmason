@@ -86,7 +86,6 @@ public class SubmitSimulationServlet extends HttpServlet {
 					}
 				}
 			}catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -128,7 +127,6 @@ public class SubmitSimulationServlet extends HttpServlet {
 		try {
 			jarSim.write(file);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -153,7 +151,6 @@ public class SubmitSimulationServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(req, resp);
 	}
 

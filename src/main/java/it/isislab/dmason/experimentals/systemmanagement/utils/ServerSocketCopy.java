@@ -73,7 +73,6 @@ public class ServerSocketCopy implements Runnable {
 				outToClient.write(mybytearray, 0, mybytearray.length);
 				outToClient.flush();
 				outToClient.close();
-				//csocket.close();
             System.out.println("end copy "+jarPathToSend);
 			} catch (IOException ex) {
 				ex.printStackTrace();
