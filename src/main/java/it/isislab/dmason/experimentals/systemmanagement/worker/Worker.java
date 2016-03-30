@@ -91,7 +91,7 @@ public class Worker implements Observer {
 	private HashMap< Integer, Simulation> simulationList; //simulations' list of this worker
 	private SimpleDateFormat sdf=null;
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
-    
+
 	//Socket for log services
 	protected Socket sock=null;
 	protected ServerSocket welcomeSocket;
@@ -99,7 +99,7 @@ public class Worker implements Observer {
 	/// INTERNAL LOGGER FOR DEBUG 
 	private static final Logger LOGGER=Logger.getLogger(Worker.class.getName()); //show constructor to enable Logger
 
-	
+
 
 	/**
 	 * WORKER 
@@ -111,10 +111,12 @@ public class Worker implements Observer {
 	public Worker(String ipMaster,String portMaster, int slots/*, ConnectionNFieldsWithActiveMQAPI connect*/) {
 
 		try {
+			
 			//comment below  line to enable Logger 
 			LOGGER.setUseParentHandlers(false);  
-			//
 			LOGGER.info("LOGGER ENABLE");
+			//
+			
 			this.IP_ACTIVEMQ=ipMaster;
 			this.PORT_ACTIVEMQ=portMaster;
 			this.conn=new ConnectionNFieldsWithActiveMQAPI();
@@ -183,7 +185,6 @@ public class Worker implements Observer {
 					getSimulationList().put(simulation.getSimID(), simulation);
 					executorThread.put(simulation.getSimID(),new ArrayList<CellExecutor>());
 					for (CellType cellType : cellstype) {
-						//slotsNumber--;
 						params.setI(cellType.pos_i);
 						params.setJ(cellType.pos_j);
 						FileOutputStream output = new FileOutputStream(simulation.getSimulationFolder()+File.separator+"out"+File.separator+cellType+".out");
@@ -207,7 +208,8 @@ public class Worker implements Observer {
 
 
 	/**
-	 * subscrive to topic of master for communication master->worker
+	 * Subscribe to masters' topic  for communication [master->worker]
+	 * Requests' list from master
 	 */
 	private synchronized void listenerForMasterComunication(){
 		try{
@@ -315,7 +317,7 @@ public class Worker implements Observer {
 	}
 	/**
 	 * Stop simulation process
-	 * @param sim_id
+	 * @param sim_id id of simulation to stop 
 	 */
 	private synchronized void stopSimulation(int sim_id)
 	{
@@ -338,7 +340,7 @@ public class Worker implements Observer {
 	}
 	/**
 	 * Pause simulation process
-	 * @param sim_id
+	 * @param sim_id id of simulation to pause
 	 */
 	private synchronized void pauseSimulation(int sim_id){
 
@@ -465,16 +467,11 @@ public class Worker implements Observer {
 		String path=this.createSimulationDirectoryByID(sim.getSimName()+""+sim.getSimID());
 		sim.setSimulationFolder(path);
 		getSimulationList().put(sim.getSimID(),sim);
-
-		//added dal costruttore
 		String createTopicSimReady="SIMULATION_READY"+sim.getSimID();
 		getConnection().createTopic(createTopicSimReady, 1);
 		try {
 			getConnection().subscribeToTopic(createTopicSimReady);
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		} catch (Exception e1) {e1.printStackTrace();}
 		getConnection().asynchronousReceive(createTopicSimReady, new MyMessageListener() {
 
 			@Override
@@ -503,12 +500,21 @@ public class Worker implements Observer {
 
 	}
 
+	/**
+	 * Create a folder for a Simulation
+	 * @param name name of folder 
+	 * @return path of created folder
+	 */
 	private String createSimulationDirectoryByID(String  name){
 		String path=simulationsDirectories+File.separator+name;
 		DMasonFileSystem.make(path+File.separator+"out");
 		return path;
 	}
 
+	/**
+	 * Start process for remove a simulation
+	 * @param simID id of Simulation
+	 */
 	public  synchronized void deleteSimulationProcessByID(int simID){
 		Simulation s =getSimulationList().get(simID); 
 		String folder=s.getSimulationFolder();
@@ -523,8 +529,11 @@ public class Worker implements Observer {
 
 
 
-
-
+    /**
+     * Download with Socket  
+     * @param sim
+     * @param serverSocketPort
+     */
 	private synchronized void downloadFile(Simulation sim,int serverSocketPort){ 
 
 		String local=System.currentTimeMillis()+sim.getJarName();
@@ -593,13 +602,17 @@ public class Worker implements Observer {
 	}
 
 
-
+    /**
+     * Find first available port on node  
+     * @return port
+     */
 	private int findAvailablePort(){
 		int port=FindAvailablePort.getPortAvailable();
 		return port;
 	}
+	
 	/**
-	 * 
+	 * Info of Node
 	 */
 	private WorkerInfo getInfoWorker() 
 	{
@@ -617,6 +630,10 @@ public class Worker implements Observer {
 		return conn.setupConnection(address);
 
 	}
+	
+	/**
+	 * Send a sign request to MASTER  
+	 */
 	public void signRequestToMaster(){
 		try{	
 			conn.createTopic("READY", 1);
@@ -632,9 +649,9 @@ public class Worker implements Observer {
 
 
 	/**
-	 * 
+	 * Create log for a Simulation 
 	 * @param simID
-	 * @param status
+	 * @param status log(a request of log) | history(a request of a finished simulation)
 	 * @param type simple log or log for  history 
 	 */
 	public synchronized void getLogBySimIDProcess(int simID,String status, String type){
@@ -652,7 +669,7 @@ public class Worker implements Observer {
 			}
 		}
 
-		else{ //history
+		else{ //type.equals("history")
 
 			if(getLogBySimID(folderToCopy,fileToSend)){
 				System.out.println("File zip creato nella dir "+fileToSend);			
@@ -670,7 +687,7 @@ public class Worker implements Observer {
 
 
 	/**
-	 * 
+	 * Start Server with socket to send log
 	 * @param zipFile
 	 * @param id
 	 * @param type logready || loghistory
@@ -681,9 +698,9 @@ public class Worker implements Observer {
 		getConnection().publishToTopic(id, this.TOPIC_WORKER_ID, type);
 		try{
 			Thread t=null;
-			//LOGGER.info("mi metto in accept");
+			LOGGER.info("mi metto in accept");
 			sock = welcomeSocket.accept();
-			//LOGGER.info("mi sblocco dalla accept");
+			LOGGER.info("mi sblocco dalla accept");
 			t=new Thread(new ServerSocketCopy(sock,zipFile));
 			t.start();
 			t.join();
@@ -711,7 +728,11 @@ public class Worker implements Observer {
 
 
 
-
+    /**
+     * Create all folder for worker's environment 
+     * @param wID
+     * @throws FileNotFoundException
+     */
 	private void generateFolders(String wID) throws FileNotFoundException {
 		sdf = new SimpleDateFormat(); 
 		sdf.applyPattern("dd-MM-yy-HH_mm");
@@ -807,18 +828,20 @@ public class Worker implements Observer {
 
 
 
-	@Override
+	/**
+	 * EXPERIMENTAL
+	 */
 	public void update(Observable obs, Object arg) {
 		if (obs==conn){
 			LOGGER.info("evento catturato var "+conn.isConnected());
 			if(!conn.isConnected()){
-				
+
 				System.exit(0);
 
 
 			}
-			
-			
+
+
 
 
 		}
