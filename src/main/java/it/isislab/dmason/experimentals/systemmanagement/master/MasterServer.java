@@ -66,7 +66,7 @@ import org.apache.activemq.broker.BrokerService;
 public class MasterServer implements MultiServerInterface{
 
 
-	//default 127.0.0.1:61616 else you have to change config.properties file
+	//ActivemQ settings file, default 127.0.0.1:61616 otherwise you have to change config.properties file
 	private static final String PROPERTIES_FILE_PATH="resources/systemmanagement/master/conf/config.properties";
 
 	//connection and topic
@@ -93,20 +93,14 @@ public class MasterServer implements MultiServerInterface{
 
 	//info 
 	protected HashMap<String/*IDprefixOfWorker*/,String/*MyIDTopicprefixOfWorker*/> topicIdWorkers;
-	//protected HashMap<Integer,ArrayList<String>> topicIdWorkersForSimulation;
-	protected HashMap<Integer,AtomicInteger> counterAckSimRcv;//cnto numero di ack ricevuti per le simrcv dai newsim per la submit
+	protected HashMap<Integer,AtomicInteger> counterAckSimRcv;// number of ack received of simrcv
 	public HashMap<String,String> infoWorkers;
 	public HashMap<String,String> support_infoWorkers;
 	private HashMap<Integer,Simulation> simulationsList; //list simulation 
-	private AtomicInteger keySimulation;
+	private AtomicInteger IDSimulation; // generate id for a simulation 
 
 	//copy logs
 	private HashMap<String /*workertopicforrequest*/, Address /*portcopyLog*/> workerListForCopyLogs=new HashMap<String,Address>();
-
-
-	public AtomicInteger getKeySim(){
-		return keySimulation;
-	}
 
 
 	/**
@@ -145,7 +139,7 @@ public class MasterServer implements MultiServerInterface{
 		//waiting for workers connecetion	
 		this.listenForSignRequest();
 
-		this.keySimulation=new AtomicInteger(0);
+		this.IDSimulation=new AtomicInteger(0);
 		simulationsList=new HashMap<>();
 		try {
 			DEFAULT_PORT_COPY_SERVER=FindAvailablePort.getPortAvailable();
@@ -263,7 +257,7 @@ public class MasterServer implements MultiServerInterface{
 					try {
 						o=parseMessage(msg);
 						MyHashMap map=(MyHashMap) o;
-                        
+
 						//sim(id) downloaded from the worker
 						if(map.containsKey("simrcv")){
 							int id=(int) map.get("simrcv");
@@ -351,7 +345,7 @@ public class MasterServer implements MultiServerInterface{
 			if(removeSimulation){
 				getConnection().publishToTopic(simID, topicOfWorker, "simrm");
 				getSimulationsList().get(simID).getTopicList().remove(topicOfWorker);
-                
+
 				//i must know last process of history download  
 				if(getSimulationsList().get(simID).getTopicList().size()==0){
 					removeSimulationProcessByID(simID);
@@ -372,7 +366,13 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-
+    /**
+     * 
+     * Create zip with all files of simulation
+     * 
+     * @param sim_id simulations' id of simulation 
+     * @return
+     */
 	public synchronized boolean createZipForHistory(int sim_id){
 
 		Simulation s = this.getSimulationsList().get(sim_id);		
@@ -448,10 +448,9 @@ public class MasterServer implements MultiServerInterface{
 
 
 	/**
-	 * 
-	 * @param port
-	 * @param jarFile
-	 * @param stopParam
+	 * Send to all workers simulations' jar with a socket connection  
+	 * @param jarFile   
+	 * @param stopParam number of accept to do
 	 */
 	private boolean invokeCopyServer(String jarFile,int stopParam){
 
@@ -501,6 +500,7 @@ public class MasterServer implements MultiServerInterface{
 
 	/**
 	 * Load properties from file path
+	 * IP and Port of ActivemQ
 	 */
 	private void loadProperties(){
 
@@ -516,6 +516,10 @@ public class MasterServer implements MultiServerInterface{
 		}finally{try {input.close();} catch (IOException e) {System.err.println(e.getMessage());}}
 	}
 
+	/**
+	 * Connection on ActivemQ
+	 * @return
+	 */
 	private boolean createConnection(){
 		Address address=new Address(IP_ACTIVEMQ, PORT_ACTIVEMQ);
 		return conn.setupConnection(address);
@@ -523,7 +527,10 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-
+    /**
+     * 
+     * @param topic
+     */
 	private void createInitialTopic(String topic){
 
 
@@ -608,7 +615,7 @@ public class MasterServer implements MultiServerInterface{
 				else{
 					if(lastIndex==w)
 						System.err.println("errore"); 
-					//						throw new DMasonException("Error! Not enough slots on the workers for the given partitioning.");
+					//	throw new DMasonException("Error! Not enough slots on the workers for the given partitioning.");
 
 					if(lastIndex==-1) lastIndex=w;
 				}
@@ -643,8 +650,8 @@ public class MasterServer implements MultiServerInterface{
 			}
 			else{
 				if(lastIndex==w)
-					System.err.println("errore");
-				//						throw new DMasonException("Error! Not enough slots on the workers for the given partitioning.");
+					System.err.println("Error! Not enough slots on the workers for the given partitioning.");
+
 
 				if(lastIndex==-1) lastIndex=w;
 			}
@@ -702,15 +709,15 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 	/**
+	 * Send a new sim to all workers 
 	 * 
-	 * @param sim
-	 * @return
+	 * @param sim simulation to send
+	 * 
 	 */
 	public synchronized boolean submitSimulation(Simulation sim) {
 		final Simulation simul=sim;
 
 		getSimulationsList().put(simul.getSimID(), simul);
-		//this.topicIdWorkersForSimulation.put(simul.getSimID(), simul.getTopicList());
 		HashMap<String, Integer> slotsAvalaible=slotsAvailableForSimWorker(simul.getTopicList(),infoWorkers);
 		HashMap<String, List<CellType>> assignmentToworkers=assignCellsToWorkers(slotsAvalaible, simul);
 
@@ -775,11 +782,10 @@ public class MasterServer implements MultiServerInterface{
 		} catch (Exception e1) {e1.printStackTrace();}
 
 
-		//return this.invokeCopyServer(pathJar ,simul.getTopicList().size());
 		this.invokeCopyServer(pathJar ,simul.getTopicList().size());
 
 		while((simul.getTopicList().size()) > (getCounterAckSimRcv().get(simul.getSimID())).intValue()){}
-		
+
 		return true;
 
 
@@ -790,6 +796,10 @@ public class MasterServer implements MultiServerInterface{
 	///////////methods  START STOP PAUSE LOG	
 
 
+	/**
+	 * Send start command for a simulation to its workers 
+	 * @param id simulation's id to start
+	 */
 	public void start(int idSimulation){
 
 		Simulation simulationToExec=getSimulationsList().get(idSimulation);
@@ -804,7 +814,10 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-
+	/**
+	 * Send stop command for a simulation to its workers
+	 * @param id simulation's id to stop 
+	 */
 	public void stop(int idSimulation) {
 		Simulation simulationToStop=getSimulationsList().get(idSimulation);
 		int iDSimToStop=simulationToStop.getSimID();
@@ -817,7 +830,28 @@ public class MasterServer implements MultiServerInterface{
 
 	}
 
+	/**
+	 * Send pause command for a simulation to its workers
+	 * @param id simulation's id to pause 
+	 */
+	public void pause(int idSimulation) {
+		Simulation simulationToPause=getSimulationsList().get(idSimulation);
+		int iDSimToPause=simulationToPause.getSimID();
+		System.out.println("Pause command received for simulation with id "+idSimulation);
 
+		for(String workerTopic : simulationToPause.getTopicList()){
+			this.getConnection().publishToTopic(iDSimToPause, workerTopic, "pause");
+		}
+
+	}
+
+	/**
+	 * Create history folder for a finished or stopped simulation 
+	 * 
+	 * @param src   folder of simulation 
+	 * @param simid id of simulation 
+	 * @return
+	 */
 	private boolean createCopyInHistory(String src, int simid){
 
 		String pathHistory=masterHistoryFolder+File.separator+getSimulationsList().get(simid).getSimName()+simid;
@@ -831,14 +865,12 @@ public class MasterServer implements MultiServerInterface{
 				File resume = new File(s.getSimulationFolder()+File.separator+"runs"+File.separator+s.getSimName()+".history");
 				Properties props = new Properties();
 				FileOutputStream f=null;
-				//PrintWriter p =null;
+
 				try {
 					if(!resume.exists())
 						resume.createNewFile();
 					f = new FileOutputStream(resume);
-					//p = new PrintWriter(f);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				props.put("simID", 				""+s.getSimID());
@@ -862,10 +894,8 @@ public class MasterServer implements MultiServerInterface{
 				try {
 					props.store(f, "Resume for sim "+s.getSimName());
 					f.flush();
-					//props.list(p);
-					//p.flush();
+
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
@@ -876,7 +906,6 @@ public class MasterServer implements MultiServerInterface{
 		try {
 			c.join();
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -890,7 +919,6 @@ public class MasterServer implements MultiServerInterface{
 				DMasonFileSystem.make(masterHistoryFolder);
 				File srcFolder = new File(src);
 				File destFolder = new File(pathHistory);
-
 
 				//make sure source exists
 				if(!srcFolder.exists()){
@@ -922,19 +950,9 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-	public void pause(int idSimulation) {
-		Simulation simulationToPause=getSimulationsList().get(idSimulation);
-		int iDSimToPause=simulationToPause.getSimID();
-		System.out.println("Pause command received for simulation with id "+idSimulation);
-
-		for(String workerTopic : simulationToPause.getTopicList()){
-			this.getConnection().publishToTopic(iDSimToPause, workerTopic, "pause");
-		}
-
-	}  
 
 	/**
-	 * 
+	 * Send a log request to workers for a simulation with a given id 
 	 * @param idSimulation
 	 * @param typeReq logreq(a request for logs file) | history(a request for logs file when delete a simulation) 
 	 * @return
@@ -959,11 +977,12 @@ public class MasterServer implements MultiServerInterface{
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-	//getters and setters
+	//GETTER AND SETTERS
+	
 	public MasterServer getMasterServer(){return this;}
 	public HashMap<String,String> getTopicIdWorkers(){return topicIdWorkers;}	//all connected workers 
-	//public synchronized HashMap getTopicIdForSimulation(){return topicIdWorkersForSimulation;} //all workers for a simulation from id of their topix
 	public HashMap<Integer,AtomicInteger> getCounterAckSimRcv(){return counterAckSimRcv;} 
+	public AtomicInteger getKeySim(){return IDSimulation;} 
 
 	//activemq address port connection
 	public String getIpActivemq() {return IP_ACTIVEMQ;}
