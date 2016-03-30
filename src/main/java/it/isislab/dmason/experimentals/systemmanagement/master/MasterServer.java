@@ -149,7 +149,7 @@ public class MasterServer implements MultiServerInterface{
 		this.infoWorkers=new HashMap<String,String>();
 		support_infoWorkers = new HashMap<>();
 		this.counterAckSimRcv=new HashMap<Integer,AtomicInteger>();
-		//waiting for workers connecetion	
+		//waiting for workers connection	
 		this.listenForSignRequest();
 
 		this.IDSimulation=new AtomicInteger(0);
@@ -901,7 +901,7 @@ public class MasterServer implements MultiServerInterface{
 				props.put("simStatus", 			""+s.getStatus());
 				props.put("simNumWorkers",		""+s.getNumWorkers());
 				props.put("simPartitioning", 	(s.getMode()==0)?"uniform":"non-uniform");
-				props.put("simLogZipFile",		pathHistory+File.separator+"backupsim.zip");
+				props.put("simLogZipFile",		pathHistory+File.separator+s.getSimName()+"_history.zip");
 
 
 				try {
@@ -953,8 +953,8 @@ public class MasterServer implements MultiServerInterface{
 		t.start();
 		try {
 			t.join();
-
-			ZipDirectory.createZipDirectory(pathHistory+File.separator+"backupsim.zip", pathHistory);
+            String simname=getSimulationsList().get(simid).getSimName();
+			ZipDirectory.createZipDirectory(pathHistory+File.separator+simname+"_history.zip", pathHistory);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
