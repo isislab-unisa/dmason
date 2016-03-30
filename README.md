@@ -46,7 +46,7 @@ Among the motivations to our focus on distributing the simulation on several mac
 		 ├── files
 		 ├── image
 		 ├── javadoc-style
-		 ├── metis
+		 ├── systemmanagement
 		 └── util
 
 Generate build without runs test suite:
@@ -82,9 +82,8 @@ Repeat this operation for all nodes of clusters.
 ### Generate DMASON's jar
 
 Run maven install of DMASON project. Under **target** folder you can find the following files:
-- DMASON-3.1.jar
-- DMASON-3.1-lib.jar
-- resources folder
+- *DMASON-3.1.jar*
+- *resources* folder
  
 You can create a folder called DMASON with these files. Now copy this folder on all nodes of cluster. 
 
@@ -124,7 +123,7 @@ $ java -jar DMASON-3.1.jar -m worker -ip <ipactivemQ> -p <portActivemq> -ns M
 Please use the Apache ActiveMQ [5.5.1](http://activemq.apache.org/activemq-551-release.html) version.
 
 ### License
-Copyright ISISLab, 2015 Università degli Studi di Salerno.
+Copyright ISISLab, 2016 Università degli Studi di Salerno.
 
 Licensed under the Apache License, Version 2.0 (the "License"); You may not use this file except in compliance with the License.
 You may obtain a copy of the License at
