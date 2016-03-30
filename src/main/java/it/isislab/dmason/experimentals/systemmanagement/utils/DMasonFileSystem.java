@@ -58,7 +58,7 @@ public class DMasonFileSystem {
 			//directory is empty, then delete it
 			if(file.list().length==0){
 				file.delete();
-				System.out.println("Directory is deleted : " + file.getAbsolutePath());
+				//System.out.println("Directory is deleted : " + file.getAbsolutePath());
 
 			}else{
 				//list all the directory contents
@@ -75,15 +75,14 @@ public class DMasonFileSystem {
 				//check the directory again, if empty then delete it
 				if(file.list().length==0){
 					file.delete();
-					System.out.println("Directory is deleted : " 
-							+ file.getAbsolutePath());
+					//System.out.println("Directory is deleted : "+ file.getAbsolutePath());
 				}
 			}
 
 		}else{
 			//if file, then delete it
 			file.delete();
-			System.out.println("File is deleted : " + file.getAbsolutePath());
+			//System.out.println("File is deleted : " + file.getAbsolutePath());
 		}
 	}
 	
@@ -97,8 +96,7 @@ public class DMasonFileSystem {
     		//if directory not exists, create it
     		if(!dest.exists()){
     		   dest.mkdir();
-    		   System.out.println("Directory copied from " 
-                              + src + "  to " + dest);
+    		   //System.out.println("Directory copied from " + src + "  to " + dest);
     		}
     		
     		//list all the directory contents
@@ -128,7 +126,7 @@ public class DMasonFileSystem {
  
     	        in.close();
     	        out.close();
-    	        System.out.println("File copied from " + src + " to " + dest);
+    	        //System.out.println("File copied from " + src + " to " + dest);
     	}
     }
 		
