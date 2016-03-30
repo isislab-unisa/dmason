@@ -76,7 +76,7 @@ You can read how to configure and how to run DMASON on cluster. Follow these ste
 
 
 ### Configure Java Development Kit 8 as default on all cluster's nodes
-Download Java SE Development Kit 8 from oracle site. Follow the instrunctions at this link https://github.com/serfla/jdk-cluster-installer to set JDK 8 as default. 
+Download Java SE Development Kit 8 from oracle site. You can follow this instructions https://github.com/serfla/jdk-cluster-installer to set JDK 8 as default. 
 Repeat this operation for all nodes of clusters.
 
 ### Generate DMASON's jar
@@ -95,11 +95,13 @@ On master node editing Apache ActivemQ configuration file 'resources/systemmanag
 
 ### Run DMASON on cluster
 
-On master node open a terminal e launch this command to start the master nonde
+On master node open a terminal e launch this command to start the master node
 
 ```sh
 $ java -jar DMASON-3.1.jar -m master
 ```
+In your web browser enter the address *http://127.0.0.1:8080* to start a Web UI of system management, if master node is on 127.0.0.1. You have to use *Google Chrome* or *Firefox* as web browser.   
+
 Now, to start the slaves node you can open a new terminal on the master node and launch this command
 
 ```sh
@@ -112,7 +114,6 @@ or you can launch this command on all slave node
 #M is the max number of available cells that the slave node can execute
 $ java -jar DMASON-3.1.jar -m worker -ip <ipactivemQ> -p <portActivemq> -ns M
 ```
-
 
 
 
