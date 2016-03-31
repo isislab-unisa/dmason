@@ -124,6 +124,7 @@ public class Worker implements Observer {
 			this.createConnection();
 			this.startMasterComunication();
 			this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
+			this.TOPIC_WORKER_ID = this.TOPIC_WORKER_ID.replace(":","");
 			generateFolders(TOPIC_WORKER_ID); //generate folders for worker
 			simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 			this.slotsNumber=slots;
@@ -591,7 +592,8 @@ public class Worker implements Observer {
 			}
 			if(distributedState==null) return null;
 			@SuppressWarnings("resource")
-			JarClassLoader cload = new JarClassLoader(new URL("jar:file://"+path_jar_file+"!/"));
+			//JarClassLoader cload = new JarClassLoader(new URL("jar:file://"+path_jar_file+"!/"));
+			JarClassLoader cload = new JarClassLoader(new File(path_jar_file).toURI().toURL());
 			cload.addToClassPath();
 			return (DistributedState) cload.getInstance(distributedState.getName(), params,prefix);
 		} catch (Exception e){
