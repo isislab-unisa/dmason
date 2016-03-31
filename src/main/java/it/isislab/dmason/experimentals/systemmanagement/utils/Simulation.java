@@ -443,7 +443,7 @@ public class Simulation implements Serializable{
 		if(mode==DistributedField2D.UNIFORM_PARTITIONING_MODE)
 			return "{\"name\":\"" + simName + "\","
 			+ " \"id\":\"" + simID+ "\","
-			+ " \"simulationFolder\":\"" + simulationFolder + "\","
+		//	+ " \"simulationFolder\":\"" + simulationFolder + "\","
 			+ " \"rows\":\"" + rows+ "\","
 			+ " \"columns\":\"" + columns + "\","
 			+ "\"aoi\":\"" + aoi + "\","
@@ -460,7 +460,7 @@ public class Simulation implements Serializable{
 		else // NON UNIFORM
 			return "{\"name\":\"" + simName + "\","
 					+ "\"id\":\"" + simID+ "\","
-					+ "\"simulationFolder\":\"" + simulationFolder + "\","
+			//		+ "\"simulationFolder\":\"" + simulationFolder + "\","
 					+ "\"aoi\":\"" + aoi + "\","
 					+ "\"width\":\"" + width+ "\","
 					+ "\"height\":\"" + height + "\","
