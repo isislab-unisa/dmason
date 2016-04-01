@@ -93,9 +93,9 @@ public class SubmitSimulationServlet extends HttpServlet {
 
 		//RECEIVE PARAMETER FROM CLIENT		
 		String simName= listParams.get("simName");
-		int rows=	Integer.parseInt(listParams.get("rows"));
-		int columns=	Integer.parseInt(listParams.get("cols"));
-		int aoi=		Integer.parseInt(listParams.get("aoi"));
+		int rows= (listParams.get("rows")!=null)?Integer.parseInt(listParams.get("rows")):0 ;
+		int columns=	(listParams.get("cols")!=null)?Integer.parseInt(listParams.get("cols")):0;
+		int aoi=	Integer.parseInt(listParams.get("aoi"));
 		int width=	Integer.parseInt(listParams.get("width"));
 		int height=	Integer.parseInt(listParams.get("height"));
 		int numAgent=Integer.parseInt(listParams.get("numAgents"));
