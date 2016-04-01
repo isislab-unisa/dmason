@@ -215,19 +215,14 @@ public class MasterServer implements MultiServerInterface{
 					o=parseMessage(msg);
 					MyHashMap mh = (MyHashMap)o;
 
-					for ( Entry<String, Object> string : mh.entrySet()) {
 
 						//se ricevo una richiesta di sottoscrizione salvo e mi sottoscrivo al topic del worker
 						if(mh.containsKey("signrequest")){
 
-							String topicOfWorker=string.getValue().toString(); 
+							String topicOfWorker=(String) mh.get("signrequest") ;
 							master.processSignRequest(topicOfWorker);
 
 						}
-
-
-
-					}
 
 				} catch (JMSException e) {e.printStackTrace();} 
 			}
