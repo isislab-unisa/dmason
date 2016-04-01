@@ -125,26 +125,5 @@ public class WorkerInfo implements Serializable{
 	}
 
 
-
-	public static void main(String[] args) {
-		WorkerInfo inf=new WorkerInfo();
-		inf.setIP("123.0.0.0");
-		inf.setWorkerID("1");
-		inf.setNumSlots(11);
-		inf.setPortCopyLog(1616);
-
-		System.out.println(inf.toString());
-		String [] split1=inf.toString().split(",");
-		
-		for(String x:split1){
-			if(x.contains("ip")) System.out.println(x.split(":")[1]);
-			if(x.contains("portcopylog"))System.out.println(x.split(":")[1]);
-
-
-		}
-
-	}
-
-
 }
 
