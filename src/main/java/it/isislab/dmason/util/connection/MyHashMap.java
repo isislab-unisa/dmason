@@ -16,7 +16,6 @@
  */
 package it.isislab.dmason.util.connection;
 
-import java.io.Serializable;
 import java.util.HashMap;
 /**
  * 
@@ -29,10 +28,12 @@ import java.util.HashMap;
  * @author Carmine Spagnuolo
  *
  */
-public class MyHashMap extends HashMap<String, Object> implements Serializable{
+public class MyHashMap extends HashMap<String, Object>{
 	
 	/**
+	 * Set below property in vm arguments for Apache ActivemQ version > 5.7
 	 * 
+	 * -Dorg.apache.activemq.SERIALIZABLE_PACKAGES="*"
 	 */
 	private static final long serialVersionUID = 1L;
 	private int full;
