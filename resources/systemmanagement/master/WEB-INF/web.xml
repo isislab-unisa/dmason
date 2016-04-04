@@ -111,4 +111,12 @@
         <servlet-name>GetHistoryServlet</servlet-name>
         <url-pattern>/getHistoryFolderList</url-pattern>
     </servlet-mapping>
+    <servlet id="getJarsList">
+        <servlet-name> LoadExampleSimulationsServlet</servlet-name>
+        <servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.LoadExampleSimulationsServlet</servlet-class>
+	</servlet>
+    <servlet-mapping>
+        <servlet-name> LoadExampleSimulationsServlet</servlet-name>
+        <url-pattern>/getJarsList</url-pattern>
+    </servlet-mapping>
 </web-app>

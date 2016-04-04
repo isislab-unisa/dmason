@@ -191,7 +191,7 @@ public class Worker implements Observer {
 						FileOutputStream output = new FileOutputStream(simulation.getSimulationFolder()+File.separator+"out"+File.separator+cellType+".out");
 						PrintStream printOut = new PrintStream(output);
 
-						CellExecutor celle=(new CellExecutor(params, prefix,simulation.getSimName()+""+simulation.getSimID(), simulation.getJarName(),printOut,simulation.getSimID(),
+						CellExecutor celle=(new CellExecutor(params, prefix,simulation.getSimName()+""+simulation.getSimID(), simulation.getJarPath(),printOut,simulation.getSimID(),
 								(cellstype.indexOf(cellType)==0?true:false)));
 
 						executorThread.get(simulation.getSimID()).add(celle);
@@ -359,7 +359,7 @@ public class Worker implements Observer {
 		public GeneralParam params;
 		public String prefix;
 		public String folder_sim;
-		public String jar_name;
+		public String jar_pathname;
 		private int sim_id;
 		public boolean run=true;
 		public boolean pause=false;
@@ -370,13 +370,13 @@ public class Worker implements Observer {
 		final Lock lock = new ReentrantLock();
 		final Condition isPause  = lock.newCondition(); 
 
-		public CellExecutor(GeneralParam params, String prefix, String folder_name,String jar_name, PrintStream out,int sim_id,boolean master_cell) {
+		public CellExecutor(GeneralParam params, String prefix, String folder_name,String jar_path, PrintStream out,int sim_id,boolean master_cell) {
 			super();
 			this.params = params;
 			this.prefix=prefix;
 			this.folder_sim=folder_name;
-			this.jar_name=jar_name;
-			dis=makeSimulation( params, prefix, getSimulationsDirectories()+File.separator+folder_sim+File.separator+jar_name);
+			this.jar_pathname=jar_path;
+			dis=makeSimulation( params, prefix, jar_pathname);
 			dis.setOutputStream(out);
 			this.sim_id=sim_id;
 			this.masterCell=master_cell;
@@ -537,14 +537,15 @@ public class Worker implements Observer {
      */
 	private synchronized void downloadFile(Simulation sim,int serverSocketPort){ 
 
-		String local=System.currentTimeMillis()+sim.getJarName();
-		sim.setJarName(local);
-		String localJarFilePath=sim.getSimulationFolder()+File.separator+local;
-
+	    String jarName=System.currentTimeMillis()+".jar";
+		
+		String localJarFilePath=sim.getSimulationFolder()+File.separator+jarName;
+		sim.setJarPath(localJarFilePath);
 		Socket clientSocket;
 		try {
 			clientSocket = new Socket( this.IP_ACTIVEMQ , serverSocketPort );
 			Thread tr=null;
+			System.out.println("copio in "+localJarFilePath);
 			tr=new Thread(new ClientSocketCopy(clientSocket, localJarFilePath));
 			tr.start();
 			tr.join();

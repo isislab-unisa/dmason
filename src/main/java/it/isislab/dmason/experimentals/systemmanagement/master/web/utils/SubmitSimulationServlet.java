@@ -110,7 +110,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 		int connection=ConnectionType.pureActiveMQ;
 	
 		if(conType!=null && conType.equalsIgnoreCase(MPI))
-			System.out.println("STAI USANDO MPI ");
+			System.out.println("MPI setting are not implemented yet ");
 		
 		//topics
 
@@ -121,21 +121,28 @@ public class SubmitSimulationServlet extends HttpServlet {
 
 		int simId=server.getKeySim().incrementAndGet();
 		String simPath=server.getSimulationsDirectories()+File.separator+simName+simId;
+		
 		server.createSimulationDirectoryByID(simName, simId);
-		File dir = new File(simPath);
+		
+		
+		// moved code into master
+		/*File dir = new File(simPath);
 		File file = new File(dir, jarSim.getName());
 		try {
 			jarSim.write(file);
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-
+		}*/
+		String simPathJar=simPath+File.separator+"jar";
+        server.copyJarOnMaster(simPathJar,jarSim);
+		
+		
 		Simulation sim=null;
 		
 		if(mode==DistributedField2D.UNIFORM_PARTITIONING_MODE)
-		sim =new Simulation(simName, simPath,jarSim.getName() ,rows, columns, aoi, width, height, numAgent, numStep, mode, connection) ;
+		sim =new Simulation(simName, simPath,simPathJar+File.separator+jarSim.getName() ,rows, columns, aoi, width, height, numAgent, numStep, mode, connection) ;
 		else
-		sim=new Simulation(simName, simPath, jarSim.getName(), Integer.parseInt(cells), aoi, width, height, numAgent, numStep, mode, connection);	
+		sim=new Simulation(simName, simPath, simPathJar+File.separator+jarSim.getName(), Integer.parseInt(cells), aoi, width, height, numAgent, numStep, mode, connection);	
 		
 		sim.setTopicList(topicList);
 		sim.setNumWorkers(topicList.size());

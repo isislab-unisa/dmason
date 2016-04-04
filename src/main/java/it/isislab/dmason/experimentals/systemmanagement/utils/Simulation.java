@@ -280,12 +280,12 @@ public class Simulation implements Serializable{
 	public void setNumberStep(long step){ 
 		numStep=step;
 	}
-	public String getJarName() {
+	public String getJarPath() {
 		return execFileName;
 	}
 
 
-	public void setJarName(String simName) {
+	public void setJarPath(String simName) {
 		this.execFileName = simName;
 	}
 

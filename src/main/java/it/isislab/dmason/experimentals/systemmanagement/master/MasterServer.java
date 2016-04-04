@@ -56,6 +56,7 @@ import java.util.logging.Logger;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import org.apache.activemq.broker.BrokerService;
+import org.apache.commons.fileupload.FileItem;
 
 /**
  * 
@@ -69,7 +70,10 @@ public class MasterServer implements MultiServerInterface{
 
 	//ActivemQ settings file, default 127.0.0.1:61616 otherwise you have to change config.properties file
 	private static final String PROPERTIES_FILE_PATH="resources/systemmanagement/master/conf/config.properties";
-
+	
+	//examplew jars path 
+    private static final String JARS_EXAMPLE_PATH="resources/examples";
+	
 	//connection and topic
 	private static final String MASTER_TOPIC="MASTER";
 	private  String IP_ACTIVEMQ="";
@@ -85,6 +89,9 @@ public class MasterServer implements MultiServerInterface{
 	private static final String masterTemporaryFolder=masterDirectoryFolder+File.separator+"temporay";
 	private static final String masterHistoryFolder=masterDirectoryFolder+File.separator+"history";
 	private static final String simulationsDirectoriesFolder=masterDirectoryFolder+File.separator+"simulations";
+	private static final String masterSimulationsJarsFolder=masterDirectoryFolder+File.separator+"jars";
+	private static final String masterExampleJarsFolder=masterSimulationsJarsFolder+File.separator+"examples";
+	private static final String masterCustomJarsFolder=	masterSimulationsJarsFolder+File.separator+"customs";
 
 
 
@@ -134,10 +141,12 @@ public class MasterServer implements MultiServerInterface{
 		DMasonFileSystem.make(masterDirectoryFolder);// master
 		DMasonFileSystem.make(masterTemporaryFolder);//temp folder
 		DMasonFileSystem.make(masterHistoryFolder); //master/history
+		DMasonFileSystem.make(masterExampleJarsFolder);//master/jars/examples
+		DMasonFileSystem.make(masterCustomJarsFolder);//master/jars/customs
 		DMasonFileSystem.make(simulationsDirectoriesFolder+File.separator+"jobs"); //master/simulations/jobs
-
 		this.loadProperties();
 		this.startActivemq();
+		loadJarsExample();
 		this.createConnection();
 		this.createInitialTopic(MASTER_TOPIC);
 
@@ -159,6 +168,19 @@ public class MasterServer implements MultiServerInterface{
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+
+
+	private void loadJarsExample() {
+		File src=new File(JARS_EXAMPLE_PATH);
+		File dest=new File(masterExampleJarsFolder);
+		try {
+			DMasonFileSystem.copyFolder(src, dest);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -423,8 +445,11 @@ public class MasterServer implements MultiServerInterface{
 	 */
 	public void createSimulationDirectoryByID(String simName,int simID){
 		String createNameFolder=simName+simID;
-		String path=simulationsDirectoriesFolder+File.separator+createNameFolder+File.separator+"runs";
-		DMasonFileSystem.make(path);
+		String simpath=simulationsDirectoriesFolder+File.separator+createNameFolder+File.separator+"runs";
+		String jarPath=simulationsDirectoriesFolder+File.separator+createNameFolder+File.separator+"jar";
+		DMasonFileSystem.make(simpath);
+		DMasonFileSystem.make(jarPath);
+		
 	}
 
 
@@ -467,7 +492,9 @@ public class MasterServer implements MultiServerInterface{
 			ArrayList<Thread> threads=new ArrayList<Thread>();
 			Thread t=null;
 			while (counter<checkControl) {
+				System.out.println("open stream "+jarFile);
 				sock = welcomeSocket.accept();
+				System.out.println("esco della accept");
 				counter++;
 				t=new Thread(new ServerSocketCopy(sock,jarFile));
 				t.start();
@@ -672,6 +699,8 @@ public class MasterServer implements MultiServerInterface{
 
 	protected boolean validateSimulationJar(String pathJar)
 	{
+		System.out.println(pathJar);
+		
 		String path_jar_file=pathJar;
 		try{
 			JarFile jar=new JarFile(new File(path_jar_file));
@@ -736,8 +765,9 @@ public class MasterServer implements MultiServerInterface{
 			getConnection().publishToTopic(simul, topicName, "newsim");
 		}
 
-		String pathJar=simul.getSimulationFolder()+File.separator+sim.getJarName();
-
+		String pathJar=simul.getJarPath();
+        System.out.println("file jar "+pathJar);
+		
 		if(!validateSimulationJar(pathJar)) return false;
 
 
@@ -985,6 +1015,58 @@ public class MasterServer implements MultiServerInterface{
 		return folderCopy;
 	}
 
+	
+	
+	public void copyJarOnMaster(String simPathJar,FileItem jarSim){
+		Thread t=new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				File dir = new File(simPathJar);
+				File file = new File(dir, jarSim.getName());
+				try {
+					jarSim.write(file);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}	
+			}
+		});
+		t.start();
+		try {t.join();} catch (InterruptedException e) {e.printStackTrace();}
+		
+		
+	}
+	
+	
+	public HashMap<String , String> getListExampleSimulationsJars(){
+		HashMap<String, String> list=new HashMap<String, String>();
+		File file=new File(masterExampleJarsFolder);
+		
+		for (File filentry : file.listFiles()) {
+			if(filentry.getAbsolutePath().endsWith(".jar")){
+				list.put(filentry.getName().replace(".jar", ""), filentry.getAbsolutePath());
+			}
+		}
+		
+		return list;
+	}
+	
+	
+	public HashMap<String, String> getListCustomSimulationsJars(){
+		HashMap<String, String> list=new HashMap<String, String>();
+		File file=new File(masterCustomJarsFolder);
+		
+		for (File filentry : file.listFiles()) {
+			if(filentry.getAbsolutePath().endsWith(".jar")){
+				list.put(filentry.getName().replace(".jar", ""), filentry.getAbsolutePath());
+			}
+		}
+		
+		return list;
+		
+	}
+	
+	
 	///////////end  START STOP PAUSE
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1010,6 +1092,8 @@ public class MasterServer implements MultiServerInterface{
 	public String getMasterTemporaryFolder() {return masterTemporaryFolder;}
 	public String getMasterHistory() {return masterHistoryFolder;}
 	public String getSimulationsDirectories() {return simulationsDirectoriesFolder;}
+	public String getMasterExampleJarsFolder(){return masterExampleJarsFolder;}
+	public String getMasterCustomJarsFolder(){return masterCustomJarsFolder;}
 
 
 	public HashMap<String, String> getInfoWorkers() { return infoWorkers;}
