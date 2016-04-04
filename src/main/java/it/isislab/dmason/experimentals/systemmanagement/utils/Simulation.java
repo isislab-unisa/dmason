@@ -467,7 +467,7 @@ public class Simulation implements Serializable{
 					+ "\"numAgents\":\"" + numAgents + "\","
 					+ "\"partitioning\":\""+ getModeForToString(this.mode) + "\","
 					+ "\"connectionType\":\"" + connectionType + "\","
-					+ "\"cells\":\""+ P + "\","
+					+ "\"num_cell\":\""+ P + "\","
 					+ "\"num_worker\":\""+ topicList.size() + "\","
 					+ "\"start\":\""+this.getStartTimeAsDate()+"\","
 					+ "\"step\":\""+step+"\","

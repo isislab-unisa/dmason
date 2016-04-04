@@ -48,13 +48,11 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import org.apache.activemq.broker.BrokerService;
@@ -123,12 +121,12 @@ public class MasterServer implements MultiServerInterface{
 	 * start activemq, initialize master connection, create directories and create initial topic for workers
 	 */
 	public MasterServer(){
-		
+
 		//comment below line to enable Logger 
 		LOGGER.setUseParentHandlers(false);  
 		//
 		LOGGER.info("LOGGER ENABLE");
-		
+
 		startProperties = new Properties();
 		broker = new BrokerService();
 		conn=new ConnectionNFieldsWithActiveMQAPI();
@@ -216,13 +214,13 @@ public class MasterServer implements MultiServerInterface{
 					MyHashMap mh = (MyHashMap)o;
 
 
-						//se ricevo una richiesta di sottoscrizione salvo e mi sottoscrivo al topic del worker
-						if(mh.containsKey("signrequest")){
+					//se ricevo una richiesta di sottoscrizione salvo e mi sottoscrivo al topic del worker
+					if(mh.containsKey("signrequest")){
 
-							String topicOfWorker=(String) mh.get("signrequest") ;
-							master.processSignRequest(topicOfWorker);
+						String topicOfWorker=(String) mh.get("signrequest") ;
+						master.processSignRequest(topicOfWorker);
 
-						}
+					}
 
 				} catch (JMSException e) {e.printStackTrace();} 
 			}
@@ -885,8 +883,15 @@ public class MasterServer implements MultiServerInterface{
 				props.put("simName", 			""+s.getSimName());
 				props.put("simWidth", 			""+s.getWidth());
 				props.put("simHeight", 			""+s.getHeight());
-				props.put("simRows", 			""+s.getRows());
-				props.put("simColumns", 		""+s.getColumns());
+
+				if(s.getMode()==DistributedField2D.UNIFORM_PARTITIONING_MODE ){
+					props.put("simRows", 			""+s.getRows());
+					props.put("simColumns", 		""+s.getColumns());
+				}
+				else if(s.getMode()==DistributedField2D.NON_UNIFORM_PARTITIONING_MODE){
+					props.put("simRows", 			"-");
+					props.put("simColumns", 		"-");
+				}
 				props.put("simNumAgents", 		""+s.getNumAgents());
 				props.put("simAOI", 			""+s.getAoi());
 				props.put("simStartTime", 		""+s.getStartTimeAsDate());
@@ -948,7 +953,7 @@ public class MasterServer implements MultiServerInterface{
 		t.start();
 		try {
 			t.join();
-            String simname=getSimulationsList().get(simid).getSimName();
+			String simname=getSimulationsList().get(simid).getSimName();
 			ZipDirectory.createZipDirectory(pathHistory+File.separator+simname+"_history.zip", pathHistory);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
