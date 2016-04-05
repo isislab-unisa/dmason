@@ -529,7 +529,9 @@ public class MasterServer implements MultiServerInterface{
 	private void startActivemq(){
 		String address="tcp://"+IP_ACTIVEMQ+":"+PORT_ACTIVEMQ;
 		try {
-			// set ActivemQ config tempUsage property  
+			/*code to set ActivemQ configuration 
+			for tempUsage property a big value can cause error 
+			for node with low disk space*/ 
 			Long val=new Long("5368709120");
 			TempUsage usage=new TempUsage();
 			UsageCapacity c=broker.getSystemUsage().getTempUsage().getLimiter();
@@ -538,7 +540,7 @@ public class MasterServer implements MultiServerInterface{
 			SystemUsage su = broker.getSystemUsage();
 			su.setTempUsage(usage);
 			broker.setSystemUsage(su);
-		
+		    // 
 			broker.addConnector(address);
 			broker.start();
 		} catch (Exception e1) {e1.printStackTrace();}
