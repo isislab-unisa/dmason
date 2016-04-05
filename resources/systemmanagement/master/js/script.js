@@ -578,16 +578,8 @@ function _loadJarList(result){
 
     var examplesList=list_jar.jars[0];
     var customsList=list_jar.jars[1];
-
-
     var examples_menu=document.querySelector("#examplesJarlist");
     var customs_menu=document.querySelector("#customsJarlist");
-
-
-
-    //$(examples_menu).children("paper-item").remove();
-    //$(customs_menu).children("paper-item").remove();
-
     var menu="",i;
 
     for(i=0; i<examplesList.examples.length; i++) {
