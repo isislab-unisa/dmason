@@ -48,7 +48,7 @@ body{ color:black;}
     width: 230px;
     height: 190px;
     float: left;
-    background-color: lightskyblue;
+    background-color: #9fc6af;
     border-radius: 15px;
     font-size: large;
     padding: 10px;
@@ -72,13 +72,13 @@ body{ color:black;}
     margin-left:1em;
 }
 .grid-item-monitoring:hover{
-    background-color:#96ce7f ;
+    background-color: #70a985;
     border:2px solid;
     border-color: black;
 }
 
 .grid-item-selected{
-    background-color: #96ce7f ;
+    background-color: #70a985;
     color:black;
     border:2px solid ;
     border-color:black;

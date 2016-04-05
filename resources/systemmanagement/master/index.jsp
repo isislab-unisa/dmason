@@ -137,8 +137,8 @@
                                             <span>Select an example simulation</span><br>
                                                 <paper-dropdown-menu id="exampleSimulation" label="Select">
                                                     <paper-menu class="dropdown-content">
-                                                        <paper-item id="examplesJarlist" disabled >Examples</paper-item>
-                                                        <paper-item id="customsJarlist" disabled >Customs</paper-item>
+                                                        <paper-item id="examplesJarlist" disabled ><h5 style="color:#D73D32;">Examples</h5></paper-item>
+                                                        <paper-item id="customsJarlist" disabled > <h5 style="color:#D73D32;">Customs</h5></paper-item>
                                                      </paper-menu>
                                                 </paper-dropdown-menu>
                                             <!--paper-button raised class="custom">Select<iron-icon icon="receipt"></iron-icon></paper-button-->

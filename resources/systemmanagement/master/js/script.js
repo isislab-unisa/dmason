@@ -598,7 +598,7 @@ function _loadJarList(result){
     $(examples_menu).after(menu);
     menu="";
     for(var f, i=0; f = customsList.customs[i]; i++){
-        menu+="<paper-item label=\""+f.path+"\">"+ f.name+"</paper-item>";
+        menu+="<paper-item id= label=\""+f.path+"\">"+ f.name+"</paper-item>";
 
     }
     $(customs_menu).after(menu);

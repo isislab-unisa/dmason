@@ -56,6 +56,9 @@ import java.util.logging.Logger;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.usage.SystemUsage;
+import org.apache.activemq.usage.TempUsage;
+import org.apache.activemq.usage.UsageCapacity;
 import org.apache.commons.fileupload.FileItem;
 
 /**
@@ -526,6 +529,16 @@ public class MasterServer implements MultiServerInterface{
 	private void startActivemq(){
 		String address="tcp://"+IP_ACTIVEMQ+":"+PORT_ACTIVEMQ;
 		try {
+			// set ActivemQ config tempUsage property  
+			Long val=new Long("5368709120");
+			TempUsage usage=new TempUsage();
+			UsageCapacity c=broker.getSystemUsage().getTempUsage().getLimiter();
+			c.setLimit(val);
+			usage.setLimiter(c);
+			SystemUsage su = broker.getSystemUsage();
+			su.setTempUsage(usage);
+			broker.setSystemUsage(su);
+		
 			broker.addConnector(address);
 			broker.start();
 		} catch (Exception e1) {e1.printStackTrace();}
