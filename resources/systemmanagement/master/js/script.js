@@ -552,3 +552,56 @@ function get_history_info(result){
     }
     scp.listSimHistory = list;
 }
+
+
+$(function(){
+   loadJarsList();
+}
+);
+
+function loadJarsList(){
+    $.ajax({
+        url:"getJarsList",
+        success: function(result){
+            _loadJarList(result);
+
+        }
+    });
+
+}
+
+
+function _loadJarList(result){
+    if(!result) return;
+    var list_jar = JSON.parse(result);
+    if(!list_jar.hasOwnProperty("jars")) return;
+
+    var examplesList=list_jar.jars[0];
+    var customsList=list_jar.jars[1];
+
+
+    var examples_menu=document.querySelector("#examplesJarlist");
+    var customs_menu=document.querySelector("#customsJarlist");
+
+
+
+    //$(examples_menu).children("paper-item").remove();
+    //$(customs_menu).children("paper-item").remove();
+
+    var menu="",i;
+
+    for(i=0; i<examplesList.examples.length; i++) {
+        var f=examplesList.examples[i];
+        menu += "<paper-item label=\"" + f.path + "\">" + f.name + "</paper-item>";
+    }
+
+    $(examples_menu).after(menu);
+    menu="";
+    for(var f, i=0; f = customsList.customs[i]; i++){
+        menu+="<paper-item label=\""+f.path+"\">"+ f.name+"</paper-item>";
+
+    }
+    $(customs_menu).after(menu);
+
+
+}

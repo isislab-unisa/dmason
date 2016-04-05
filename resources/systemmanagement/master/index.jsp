@@ -48,7 +48,7 @@
 <link rel="import" href="bower_components/paper-input/paper-input-error.html">
 <link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="bower_components/paper-menu/paper-menu.html">
-
+<link rel="import" href="bower_components/paper-menu/paper-submenu.html">
 <link rel="import" href="bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="bower_components/iron-image/iron-image.html">
@@ -136,12 +136,10 @@
                                         <td>
                                             <span>Select an example simulation</span><br>
                                                 <paper-dropdown-menu id="exampleSimulation" label="Select">
-                                                    <paper-listbox class="dropdown-content">
-                                                        <paper-item label="allosaurus">allosaurus</paper-item>
-                                                        <paper-item label="brontosaurus">brontosaurus</paper-item>
-                                                        <paper-item label="carcharodontosaurus">carcharodontosaurus</paper-item>
-                                                        <paper-item label="diplodocus">diplodocus</paper-item>
-                                                    </paper-listbox>
+                                                    <paper-menu class="dropdown-content">
+                                                        <paper-item id="examplesJarlist" disabled >Examples</paper-item>
+                                                        <paper-item id="customsJarlist" disabled >Customs</paper-item>
+                                                     </paper-menu>
                                                 </paper-dropdown-menu>
                                             <!--paper-button raised class="custom">Select<iron-icon icon="receipt"></iron-icon></paper-button-->
                                         </td>
