@@ -29,7 +29,10 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileUtils;
+
 import it.isislab.dmason.experimentals.systemmanagement.master.MasterServer;
+import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.util.connection.ConnectionType;
@@ -83,7 +86,9 @@ public class SubmitSimulationServlet extends HttpServlet {
 					if(!item.isFormField()){
 						jarSim = item;
 						//item.write(file);
+						System.out.println("hai sottomesso un file "+jarSim);
 					}else{
+						System.out.println(item.getFieldName()+" "+item.getString());
 						listParams.put(item.getFieldName(), item.getString());
 					}
 				}
@@ -109,7 +114,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 		String modeType = listParams.get("partitioning");
 		String cells= listParams.get("cells");
 		int mode = (modeType.equals("uniform"))?DistributedField2D.UNIFORM_PARTITIONING_MODE: DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
-
+		String exampleSimulation = listParams.get("exampleSimulation");
 		//connection
 
 		int connection=ConnectionType.pureActiveMQ;
@@ -132,18 +137,31 @@ public class SubmitSimulationServlet extends HttpServlet {
 		
 
 		String simPathJar=simPath+File.separator+"jar";
+		String jarSimName ="";
 		
-		
-		// metodo da eseguire solo per nuove sim
-        server.copyJarOnMaster(simPathJar,jarSim);
+		if(exampleSimulation!="" && jarSim.getName().equals("")){
+			File f = new File(exampleSimulation);
+			jarSimName=f.getName();
+			FileUtils.copyFileToDirectory(f, new File(simPathJar));
+			System.out.println("Entro con "+jarSimName+" and "+simPathJar);
+		}
+		else
+		{
+			// metodo da eseguire solo per nuove sim
+			// da copiare anche nella cartella jars
+			server.copyJarOnMaster(simPathJar,jarSim);
+			jarSimName=jarSim.getName();
+			System.out.println("Entro con "+jarSimName+" and "+jarSim==null);
+		}
 		
 		
 		Simulation sim=null;
 		
+		
 		if(mode==DistributedField2D.UNIFORM_PARTITIONING_MODE)
-		sim =new Simulation(simName, simPath,simPathJar+File.separator+jarSim.getName() ,rows, columns, aoi, width, height, numAgent, numStep, mode, connection) ;
+		sim =new Simulation(simName, simPath,simPathJar+File.separator+jarSimName ,rows, columns, aoi, width, height, numAgent, numStep, mode, connection) ;
 		else
-		sim=new Simulation(simName, simPath, simPathJar+File.separator+jarSim.getName(), Integer.parseInt(cells), aoi, width, height, numAgent, numStep, mode, connection);	
+		sim=new Simulation(simName, simPath, simPathJar+File.separator+jarSimName, Integer.parseInt(cells), aoi, width, height, numAgent, numStep, mode, connection);	
 		
 		sim.setTopicList(topicList);
 		sim.setNumWorkers(topicList.size());
