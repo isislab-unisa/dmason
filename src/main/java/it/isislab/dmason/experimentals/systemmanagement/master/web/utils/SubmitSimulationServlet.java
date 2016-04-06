@@ -30,9 +30,7 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
-
 import it.isislab.dmason.experimentals.systemmanagement.master.MasterServer;
-import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.util.connection.ConnectionType;
@@ -149,8 +147,9 @@ public class SubmitSimulationServlet extends HttpServlet {
 		{
 			// metodo da eseguire solo per nuove sim
 			// da copiare anche nella cartella jars
-			server.copyJarOnMaster(simPathJar,jarSim);
+			server.copyJarOnDirectory(simPathJar,jarSim);
 			jarSimName=jarSim.getName();
+		
 			System.out.println("Entro con "+jarSimName+" and "+jarSim==null);
 		}
 		

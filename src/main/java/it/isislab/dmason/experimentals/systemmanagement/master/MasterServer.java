@@ -60,6 +60,7 @@ import org.apache.activemq.usage.SystemUsage;
 import org.apache.activemq.usage.TempUsage;
 import org.apache.activemq.usage.UsageCapacity;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
 
 /**
  * 
@@ -1032,7 +1033,10 @@ public class MasterServer implements MultiServerInterface{
 
 	
 	
-	public void copyJarOnMaster(String simPathJar,FileItem jarSim){
+	public void copyJarOnDirectory(String simPathJar,FileItem jarSim){
+		
+		Thread f=null;
+		
 		Thread t=new Thread(new Runnable() {
 			
 			@Override
@@ -1049,8 +1053,32 @@ public class MasterServer implements MultiServerInterface{
 		t.start();
 		try {t.join();} catch (InterruptedException e) {e.printStackTrace();}
 		
-		
+	
+		Thread j=	new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						FileUtils.copyFileToDirectory(new File(simPathJar+File.separator+jarSim.getName()),new File(getMasterCustomJarsFolder()));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+			});
+			
+		j.start();
+		try {
+			j.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
+	
+	
 	
 	
 	public HashMap<String , String> getListExampleSimulationsJars(){
