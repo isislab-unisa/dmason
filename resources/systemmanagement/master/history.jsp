@@ -5,9 +5,6 @@
         <!-- Polyfill Web Components for older browsers -->
         <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
-        <!--polymer theme-->
-        <link rel="import" href="style/dark-side/dark-side.html">
-
         <!-- Custom Polymer CSS -->
         <link rel="import" href="style/polymer/styles-polymer.html">
 

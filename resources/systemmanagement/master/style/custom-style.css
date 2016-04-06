@@ -36,26 +36,27 @@ body{ color:black;}
     width:300px;
     height:300px;
     float: left;
-    background-color: #3f4242;
+    background-color: white;
     border: 2px solid #0c3308;
     border-color: hsla(0, 0%, 0%, 0.5);
     border-radius: 5px;
     font-size: large;
     position:relative;
+
 }
 
 .grid-item-monitoring {
     width: 230px;
     height: 190px;
     float: left;
-    background-color: #9fc6af;
+    background-color: #e2726a;
     border-radius: 15px;
     border: 2px solid;
     border-color:  hsla(0, 0%, 0%, 0.5);
     font-size: large;
     padding: 10px;
     position: relative;
-    color: black;
+    color: white;
     margin-top: 20px;
     margin-left: 20px;
 }
@@ -74,13 +75,14 @@ body{ color:black;}
     margin-left:1em;
 }
 .grid-item-monitoring:hover{
-    background-color: #70a985;
+    background-color:  #fbebea;
+    color:black;
     border:2px solid;
     border-color: black;
 }
 
 .grid-item-selected{
-    background-color: #70a985;
+    background-color:  #fbebea;
     color:black;
     border:2px solid ;
     border-color:black;

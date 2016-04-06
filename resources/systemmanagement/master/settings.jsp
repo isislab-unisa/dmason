@@ -5,9 +5,6 @@
         <!-- Polyfill Web Components for older browsers -->
         <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
-        <!--polymer theme-->
-        <link rel="import" href="style/dark-side/dark-side.html">
-
         <!-- Custom Polymer CSS -->
         <link rel="import" href="style/polymer/styles-polymer.html">
 
@@ -84,7 +81,7 @@
             <script>
                 var grid=document.getElementById("workers");
                 var tiles="<div class=\"grid-sizer-settings\"></div>";
-                for (i = 0; i < 5; i++) {
+                for (i = 0; i < 1; i++) {
                 tiles+="<div class=\"grid-item-settings\">"
                 + "<paper-card image=\"images/Apache-activemq-logo.png\">"
                 +"<div class=\"card-content\" >"

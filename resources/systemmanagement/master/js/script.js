@@ -584,7 +584,7 @@ function _loadJarList(result){
 
     for(i=0; i<examplesList.examples.length; i++) {
         var f=examplesList.examples[i];
-        menu += "<paper-item label=\"" + f.path + "\">" + f.name + "</paper-item>";
+        menu += "<paper-item name=\"" + f.name+"\" label=\"" + f.path + "\">" + f.name + "</paper-item>";
     }
 
     $(examples_menu).after(menu);

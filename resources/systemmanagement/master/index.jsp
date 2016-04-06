@@ -5,9 +5,6 @@
 <!-- Polyfill Web Components for older browsers -->
 <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
-<!--polymer theme-->
-<link rel="import" href="style/dark-side/dark-side.html">
-
 <!-- Custom Polymer CSS -->
 <link rel="import" href="style/polymer/styles-polymer.html">
 
@@ -48,7 +45,7 @@
 <link rel="import" href="bower_components/paper-input/paper-input-error.html">
 <link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="bower_components/paper-menu/paper-menu.html">
-<link rel="import" href="bower_components/paper-menu/paper-submenu.html">
+<link rel="import" href="bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="bower_components/iron-image/iron-image.html">
@@ -121,7 +118,7 @@
 
                 <paper-dialog id="add-simulation-paper-dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
                     <h2>Simulation Settings</h2>
-                    <h4>Worker(s) selected: <span id="head_sel_works"></span> Available slot(s): <span id="head_num_slots"></span></h4>
+                    <h4 >Worker(s) selected: <span id="head_sel_works"></span> Available slot(s): <span id="head_num_slots"></span></h4>
                     <paper-dialog-scrollable>
                         <div class="horizontal-section">
                             <form is="iron-form" id="sendSimulationForm" >
@@ -136,10 +133,10 @@
                                         <td>
                                             <span>Select an example simulation</span><br>
                                                 <paper-dropdown-menu id="exampleSimulation" label="Select">
-                                                    <paper-menu class="dropdown-content">
-                                                        <paper-item id="examplesJarlist" disabled ><h5 style="color:#D73D32;">Examples</h5></paper-item>
-                                                        <paper-item id="customsJarlist" disabled > <h5 style="color:#D73D32;">Customs</h5></paper-item>
-                                                     </paper-menu>
+                                                    <paper-listbox class="dropdown-content">
+                                                        <paper-item id="examplesJarlist" label="mammt">Examples</paper-item>
+                                                        <paper-item id="customsJarlist" disabled > Customs</paper-item>
+                                                     </paper-listbox>
                                                 </paper-dropdown-menu>
                                             <!--paper-button raised class="custom">Select<iron-icon icon="receipt"></iron-icon></paper-button-->
                                         </td>

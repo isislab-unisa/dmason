@@ -66,6 +66,8 @@ public class SubmitSimulationServlet extends HttpServlet {
 		server =(MasterServer)  req.getServletContext().getAttribute("masterServer");
 		listParams = new HashMap<>();
 
+		/*if*****************da eseguire solo per nuovi upload ***********************************************/
+		
 		FileItem jarSim = null;
 
 		if(!ServletFileUpload.isMultipartContent(req)){
@@ -90,7 +92,10 @@ public class SubmitSimulationServlet extends HttpServlet {
 			}
 
 		}
+		/********************************************************************/
 
+		/**else ************************************************/
+		
 		//RECEIVE PARAMETER FROM CLIENT		
 		String simName= listParams.get("simName");
 		int rows= (listParams.get("rows")!=null)?Integer.parseInt(listParams.get("rows")):0 ;
@@ -125,15 +130,11 @@ public class SubmitSimulationServlet extends HttpServlet {
 		server.createSimulationDirectoryByID(simName, simId);
 		
 		
-		// moved code into master
-		/*File dir = new File(simPath);
-		File file = new File(dir, jarSim.getName());
-		try {
-			jarSim.write(file);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}*/
+
 		String simPathJar=simPath+File.separator+"jar";
+		
+		
+		// metodo da eseguire solo per nuove sim
         server.copyJarOnMaster(simPathJar,jarSim);
 		
 		
