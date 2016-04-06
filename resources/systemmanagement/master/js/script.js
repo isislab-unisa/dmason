@@ -83,13 +83,15 @@ function close_dialog_by_ID(id_paper_dialog){
 $(
     function(){
         //console.log(window.location.pathname)
-        if(window.location.pathname=="/" || window.location.pathname=="/index.jsp")
+        if(window.location.pathname=="/" || window.location.pathname=="/index.jsp"){
             setInterval(function(){
-
                 loadWorkers();
                 if($('#load_workers_dialog').prop("opened"))close_dialog_by_ID("load_workers_dialog");
                 load_tiles_monitoring();
             },1000);
+
+            loadJarsList();
+        }
         else
         if(window.location.pathname=="/simulations.jsp") {
 
@@ -444,6 +446,7 @@ function _OnsubmitSimulation(event) {
         formData.append(myCheckBoxConnection.id, "mpi");
     }
 
+    console.log(formData);
 
     $.ajax({
         url:"submitSimulation",
@@ -554,11 +557,6 @@ function get_history_info(result){
 }
 
 
-$(function(){
-   loadJarsList();
-}
-);
-
 function loadJarsList(){
     $.ajax({
         url:"getJarsList",
@@ -578,22 +576,25 @@ function _loadJarList(result){
 
     var examplesList=list_jar.jars[0];
     var customsList=list_jar.jars[1];
-    var examples_menu=document.querySelector("#examplesJarlist");
-    var customs_menu=document.querySelector("#customsJarlist");
+    var drowdown_example_sims_list = document.querySelector("#loader_sims_list_example");
+    /*
     var menu="",i;
 
     for(i=0; i<examplesList.examples.length; i++) {
         var f=examplesList.examples[i];
         menu += "<paper-item name=\"" + f.name+"\" label=\"" + f.path + "\">" + f.name + "</paper-item>";
     }
-
     $(examples_menu).after(menu);
     menu="";
     for(var f, i=0; f = customsList.customs[i]; i++){
-        menu+="<paper-item id= label=\""+f.path+"\">"+ f.name+"</paper-item>";
+        menu+="<paper-item label=\""+f.path+"\">"+ f.name+"</paper-item>";
 
     }
     $(customs_menu).after(menu);
+    */
+    if(examplesList.examples.length>0)
+        drowdown_example_sims_list.examples=examplesList.examples;
 
-
+    if(customsList.customs.length>0)
+        drowdown_example_sims_list.customs=customsList.customs;
 }

@@ -38,7 +38,6 @@
 <link rel="import" href="bower_components/paper-input/paper-input.html">
 <link rel="import" href="bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
-<link rel="import" href="bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="bower_components/paper-input/paper-input-container.html">
@@ -54,6 +53,8 @@
 
 
 <link rel="import" href="bower_components/neon-animation/neon-animations.html">
+
+<link rel="import" href="bower_components/custom_components/simulation/simulation-example-list.html">
 </head>
 <body unresolved>
 
@@ -117,8 +118,12 @@
                 <paper-toast id="miss-worker-selection">You should select some workers before to assign them a partitioning</paper-toast>
 
                 <paper-dialog id="add-simulation-paper-dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
-                    <h2>Simulation Settings</h2>
-                    <h4 >Worker(s) selected: <span id="head_sel_works"></span> Available slot(s): <span id="head_num_slots"></span></h4>
+                    <div class="layout vertical center">
+
+                            <h1>Simulation Settings</h1>
+                            <h2 >Worker(s) selected: <span id="head_sel_works"></span> Available slot(s): <span id="head_num_slots"></span></h2>
+
+                    </div>
                     <paper-dialog-scrollable>
                         <div class="horizontal-section">
                             <form is="iron-form" id="sendSimulationForm" >
@@ -132,12 +137,14 @@
                                         <td></td>
                                         <td>
                                             <span>Select an example simulation</span><br>
-                                                <paper-dropdown-menu id="exampleSimulation" label="Select">
+                                                <!--paper-dropdown-menu id="exampleSimulation" label="Select">
                                                     <paper-listbox class="dropdown-content">
-                                                        <paper-item id="examplesJarlist" label="mammt">Examples</paper-item>
-                                                        <paper-item id="customsJarlist" disabled > Customs</paper-item>
+                                                        <paper-item id="examplesJarlist"  >Examples</paper-item>
+
+                                                        <paper-item id="customsJarlist"  > Customs</paper-item>
                                                      </paper-listbox>
-                                                </paper-dropdown-menu>
+                                                </paper-dropdown-menu-->
+                                                <simulation-example-list id="loader_sims_list_example"></simulation-example-list>
                                             <!--paper-button raised class="custom">Select<iron-icon icon="receipt"></iron-icon></paper-button-->
                                         </td>
                                     </tr>
