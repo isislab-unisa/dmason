@@ -71,8 +71,8 @@ After that you must put the output data in the `repository` folder of DMASON Git
 		<version>18</version>
 	</dependency>
 
-# DMASON System Management
-You can read how to configure and how to run DMASON on cluster. Follow these steps 
+# DMASON on cluster
+To run DMASON on cluster, you can follow these steps 
 
 
 ### Configure Java Development Kit 8 as default on all cluster's nodes
