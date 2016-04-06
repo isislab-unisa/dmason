@@ -100,7 +100,7 @@ On master node open a terminal e launch this command to start the master node
 ```sh
 $ java -jar DMASON-3.1.jar -m master
 ```
-In your web browser enter the address *http://127.0.0.1:8080* to start a Web UI of system management, if master node is on 127.0.0.1. You have to use *Google Chrome* or *Firefox* as web browser.   
+In your web browser enter the address *http://127.0.0.1:8080* to start a Web UI of system management, if master node is on 127.0.0.1. You have to use *Google Chrome* or *Firefox* as web browser. You have to use the latest version of these browsers.   
 
 Now, to start the slaves node you can open a new terminal on the master node and launch this command
 
