@@ -115,7 +115,7 @@ or you can launch this command on all slave node
 $ java -jar DMASON-3.1.jar -m worker -ip <ipactivemQ> -p <portActivemq> -ns M
 ```
 
-
+where M is the max number of available cells that the slave nodes can execute.
 
 #Release notes
 
