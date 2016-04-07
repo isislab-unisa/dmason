@@ -84,9 +84,9 @@ public class SubmitSimulationServlet extends HttpServlet {
 					if(!item.isFormField()){
 						jarSim = item;
 						//item.write(file);
-						System.out.println("hai sottomesso un file "+jarSim);
+						//System.out.println("hai sottomesso un file "+jarSim);
 					}else{
-						System.out.println(item.getFieldName()+" "+item.getString());
+						//System.out.println(item.getFieldName()+" "+item.getString());
 						listParams.put(item.getFieldName(), item.getString());
 					}
 				}
@@ -141,7 +141,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 			File f = new File(exampleSimulation);
 			jarSimName=f.getName();
 			FileUtils.copyFileToDirectory(f, new File(simPathJar));
-			System.out.println("Entro con "+jarSimName+" and "+simPathJar);
+		//	System.out.println("Entro con "+jarSimName+" and "+simPathJar);
 		}
 		else
 		{
@@ -150,7 +150,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 			server.copyJarOnDirectory(simPathJar,jarSim);
 			jarSimName=jarSim.getName();
 		
-			System.out.println("Entro con "+jarSimName+" and "+jarSim==null);
+//			System.out.println("Entro con "+jarSimName+" and "+jarSim==null);
 		}
 		
 		

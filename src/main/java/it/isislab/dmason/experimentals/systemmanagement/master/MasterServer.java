@@ -74,10 +74,10 @@ public class MasterServer implements MultiServerInterface{
 
 	//ActivemQ settings file, default 127.0.0.1:61616 otherwise you have to change config.properties file
 	private static final String PROPERTIES_FILE_PATH="resources/systemmanagement/master/conf/config.properties";
-	
+
 	//examplew jars path 
-    private static final String JARS_EXAMPLE_PATH="resources/examples";
-	
+	private static final String JARS_EXAMPLE_PATH="resources/examples";
+
 	//connection and topic
 	private static final String MASTER_TOPIC="MASTER";
 	private  String IP_ACTIVEMQ="";
@@ -453,7 +453,7 @@ public class MasterServer implements MultiServerInterface{
 		String jarPath=simulationsDirectoriesFolder+File.separator+createNameFolder+File.separator+"jar";
 		DMasonFileSystem.make(simpath);
 		DMasonFileSystem.make(jarPath);
-		
+
 	}
 
 
@@ -533,7 +533,20 @@ public class MasterServer implements MultiServerInterface{
 			/*code to set ActivemQ configuration 
 			for tempUsage property a big value can cause error 
 			for node with low disk space*/ 
-			Long val=new Long("5368709120");
+
+			String os=System.getProperty("os.name").toLowerCase();
+			File rootFileSystem=null;;
+
+			Long val=new Long(1000000000);
+
+			if(os.contains("linux")){
+				rootFileSystem=new File("/");
+				val=new Long(rootFileSystem.getFreeSpace()/2); 
+			}else if(os.contains("windows")){
+				//
+				System.out.println("windows system using 1Gb for tempUsage");
+			}
+
 			TempUsage usage=new TempUsage();
 			UsageCapacity c=broker.getSystemUsage().getTempUsage().getLimiter();
 			c.setLimit(val);
@@ -541,7 +554,7 @@ public class MasterServer implements MultiServerInterface{
 			SystemUsage su = broker.getSystemUsage();
 			su.setTempUsage(usage);
 			broker.setSystemUsage(su);
-		    // 
+            /*     end code for tempUsage setting    */
 			broker.addConnector(address);
 			broker.start();
 		} catch (Exception e1) {e1.printStackTrace();}
@@ -716,7 +729,7 @@ public class MasterServer implements MultiServerInterface{
 	protected boolean validateSimulationJar(String pathJar)
 	{
 		System.out.println(pathJar);
-		
+
 		String path_jar_file=pathJar;
 		try{
 			JarFile jar=new JarFile(new File(path_jar_file));
@@ -782,8 +795,8 @@ public class MasterServer implements MultiServerInterface{
 		}
 
 		String pathJar=simul.getJarPath();
-        System.out.println("file jar "+pathJar);
-		
+		System.out.println("file jar "+pathJar);
+
 		if(!validateSimulationJar(pathJar)) return false;
 
 
@@ -1031,14 +1044,14 @@ public class MasterServer implements MultiServerInterface{
 		return folderCopy;
 	}
 
-	
-	
+
+
 	public void copyJarOnDirectory(String simPathJar,FileItem jarSim){
-		
+
 		Thread f=null;
-		
+
 		Thread t=new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				File dir = new File(simPathJar);
@@ -1052,22 +1065,22 @@ public class MasterServer implements MultiServerInterface{
 		});
 		t.start();
 		try {t.join();} catch (InterruptedException e) {e.printStackTrace();}
-		
-	
+
+
 		Thread j=	new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					try {
-						FileUtils.copyFileToDirectory(new File(simPathJar+File.separator+jarSim.getName()),new File(getMasterCustomJarsFolder()));
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
+
+			@Override
+			public void run() {
+				try {
+					FileUtils.copyFileToDirectory(new File(simPathJar+File.separator+jarSim.getName()),new File(getMasterCustomJarsFolder()));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-			});
-			
+
+			}
+		});
+
 		j.start();
 		try {
 			j.join();
@@ -1077,39 +1090,39 @@ public class MasterServer implements MultiServerInterface{
 		}
 
 	}
-	
-	
-	
-	
+
+
+
+
 	public HashMap<String , String> getListExampleSimulationsJars(){
 		HashMap<String, String> list=new HashMap<String, String>();
 		File file=new File(masterExampleJarsFolder);
-		
+
 		for (File filentry : file.listFiles()) {
 			if(filentry.getAbsolutePath().endsWith(".jar")){
 				list.put(filentry.getName().replace(".jar", ""), filentry.getAbsolutePath());
 			}
 		}
-		
+
 		return list;
 	}
-	
-	
+
+
 	public HashMap<String, String> getListCustomSimulationsJars(){
 		HashMap<String, String> list=new HashMap<String, String>();
 		File file=new File(masterCustomJarsFolder);
-		
+
 		for (File filentry : file.listFiles()) {
 			if(filentry.getAbsolutePath().endsWith(".jar")){
 				list.put(filentry.getName().replace(".jar", ""), filentry.getAbsolutePath());
 			}
 		}
-		
+
 		return list;
-		
+
 	}
-	
-	
+
+
 	///////////end  START STOP PAUSE
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
