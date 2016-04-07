@@ -29,17 +29,20 @@ import java.net.ServerSocket;
  */
 public class FindAvailablePort {
 	
-	static final int MIN_PORT_NUMBER = 1000;
-	static final int MAX_PORT_NUMBER = 3000;
+	private  int MIN_PORT_NUMBER = 0;
+	private  int MAX_PORT_NUMBER = 100;
 	
-	
+	public FindAvailablePort(int min,int max) {
+	     MIN_PORT_NUMBER=min;
+	     MAX_PORT_NUMBER=max;
+	}
 
 	/**
 	 * Checks to see if a specific port is available.
 	 *
 	 * @param port the port to check for availability
 	 */
-	private static boolean available(int port, int _min, int _max) {
+	private boolean available(int port, int _min, int _max) {
 	    if (port < _min || port > _max) {
 	        throw new IllegalArgumentException("Invalid start port: " + port);
 	    }
@@ -75,7 +78,7 @@ public class FindAvailablePort {
 	 * Return available port
 	 * @return first available
 	 */
-	public static int getPortAvailable(){
+	public int getPortAvailable(){
 		
 		 int port=-1; 
 		 for(int i=MIN_PORT_NUMBER; i< MAX_PORT_NUMBER; i++){

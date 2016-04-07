@@ -82,7 +82,7 @@ public class Worker implements Observer {
 	private static final String MASTER_TOPIC="MASTER";
 	private static String dmasonDirectory=System.getProperty("user.dir")+File.separator+"dmason";
 	private static  String workerDirectory; // worker main directory
-	private static  String workerTemporary; //temporary folder used, temporary zip files are generated in this folder 
+	//private static  String workerTemporary; //temporary folder used, temporary zip files are generated in this folder 
 	private static  String simulationsDirectories; // list of simulations' folder
 	private String TOPIC_WORKER_ID=""; // worker's topic , worker write in this topic (publish) for all communication           
 	private String TOPIC_WORKER_ID_MASTER=""; // master topic for this worker, master write all communication to this worker(asynchronous receive listening on this topic)
@@ -91,7 +91,7 @@ public class Worker implements Observer {
 	private HashMap< Integer, Simulation> simulationList; //simulations' list of this worker
 	private SimpleDateFormat sdf=null;
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
-
+    private FindAvailablePort availableport;
 	//Socket for log services
 	protected Socket sock=null;
 	protected ServerSocket welcomeSocket;
@@ -129,7 +129,8 @@ public class Worker implements Observer {
 			simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 			this.slotsNumber=slots;
 			signRequestToMaster();
-			this.PORT_COPY_LOG=findAvailablePort(); //socket communication with master (server side, used for logs)
+			availableport=new FindAvailablePort(1000, 3000);
+			this.PORT_COPY_LOG=availableport.getPortAvailable(); //socket communication with master (server side, used for logs)
 			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP)); //create server for socket communication
 			System.out.println("Starting worker ..."); 
 			conn.addObserver(this); //EXPERIMENTAL 
@@ -608,11 +609,12 @@ public class Worker implements Observer {
     /**
      * Find first available port on node  
      * @return port
-     */
+     
 	private int findAvailablePort(){
-		int port=FindAvailablePort.getPortAvailable();
+		availableport=new FindAvailablePort(1000, 3000);
+		int port=availableport.getPortAvailable();
 		return port;
-	}
+	}*/
 	
 	/**
 	 * Info of Node
@@ -741,9 +743,9 @@ public class Worker implements Observer {
 		sdf.applyPattern("dd-MM-yy-HH_mm");
 		String dataStr = sdf.format(new Date()); // data corrente (20 febbraio 2014)
 		workerDirectory=dmasonDirectory+File.separator+"worker"+File.separator+wID+File.separator+dataStr;
-		workerTemporary=workerDirectory+File.separator+"temporary";
+		//workerTemporary=workerDirectory+File.separator+"temporary";
 		simulationsDirectories=workerDirectory+File.separator+"simulations";
-		DMasonFileSystem.make(workerTemporary);
+		//DMasonFileSystem.make(workerTemporary);
 		DMasonFileSystem.make(simulationsDirectories);
 		DMasonFileSystem.make(workerDirectory+File.separator+"err");
 		FileOutputStream output = new FileOutputStream(workerDirectory+File.separator+"err"+File.separator+"worker"+TOPIC_WORKER_ID+".err");
@@ -843,9 +845,6 @@ public class Worker implements Observer {
 
 
 			}
-
-
-
 
 		}
 	}

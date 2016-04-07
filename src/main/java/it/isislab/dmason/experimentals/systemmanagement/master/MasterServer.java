@@ -110,6 +110,7 @@ public class MasterServer implements MultiServerInterface{
 	public HashMap<String,String> support_infoWorkers;
 	private HashMap<Integer,Simulation> simulationsList; //list simulation 
 	private AtomicInteger IDSimulation; // generate id for a simulation 
+	private FindAvailablePort availableport;
 
 	//copy logs
 	private HashMap<String /*workertopicforrequest*/, Address /*portcopyLog*/> workerListForCopyLogs=new HashMap<String,Address>();
@@ -141,7 +142,6 @@ public class MasterServer implements MultiServerInterface{
 		startProperties = new Properties();
 		broker = new BrokerService();
 		conn=new ConnectionNFieldsWithActiveMQAPI();
-
 		DMasonFileSystem.make(masterDirectoryFolder);// master
 		DMasonFileSystem.make(masterTemporaryFolder);//temp folder
 		DMasonFileSystem.make(masterHistoryFolder); //master/history
@@ -166,7 +166,8 @@ public class MasterServer implements MultiServerInterface{
 		this.IDSimulation=new AtomicInteger(0);
 		simulationsList=new HashMap<>();
 		try {
-			DEFAULT_PORT_COPY_SERVER=FindAvailablePort.getPortAvailable();
+			availableport=new FindAvailablePort(1000, 3000);
+			DEFAULT_PORT_COPY_SERVER=availableport.getPortAvailable();
 			//LOGGER.info("copy server start on port "+DEFAULT_PORT_COPY_SERVER);
 			welcomeSocket = new ServerSocket(DEFAULT_PORT_COPY_SERVER,1000,InetAddress.getByName(this.IP_ACTIVEMQ));
 		} catch (UnknownHostException e) {
