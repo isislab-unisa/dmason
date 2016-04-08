@@ -16,7 +16,6 @@
  */
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
-import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 
 /**
  * 
@@ -31,6 +30,9 @@ public class WorkerMain {
 
 	public static void main(String[] args) throws Exception {
 
+		
+		///System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
+		
 		String ip =args[0];
 		String port=args[1];
 	

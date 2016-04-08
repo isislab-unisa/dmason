@@ -34,6 +34,9 @@ public class MasterServerMain {
 
 	public static void main(String[] args){
 
+        //set params of jvm
+		//System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
+		
 		// 1. Creating the server on port 8080
 		Server server = new Server(8080);
 		ServletContextHandler handler =new ServletContextHandler(server,"resources/systemmanagement/master");	
