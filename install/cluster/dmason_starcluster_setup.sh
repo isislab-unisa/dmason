@@ -43,11 +43,11 @@ mkdir ~/.starcluster
 #chmod 600 ~/.starcluster/config
 
 rm -f ~/.starcluster/config
-wget -P ~/.starcluster/ https://szufel.pl/dmason/config
+wget -P ~/.starcluster/ https://raw.githubusercontent.com/isislab-unisa/dmason/master/install/cluster/config
 
 mkdir ~/.starcluster/plugins
 rm -f ~/.starcluster/plugins/dmason.py
-wget -P ~/.starcluster/plugins/ https://szufel.pl/dmason/plugins/dmason.py
+wget -P ~/.starcluster/plugins/ https://raw.githubusercontent.com/isislab-unisa/dmason/master/install/cluster/plugins/dmason.py
 
 uncomment() {
     sed -i "s/^# $1/$1/g" ~/.starcluster/config
