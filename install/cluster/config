@@ -74,7 +74,7 @@ KEY_LOCATION=~/.ssh/dmasonclusterkey.rsa
 # change this to the name of one of the keypair sections defined above
 KEYNAME = dmasonclusterkey
 # number of ec2 instances to launch
-CLUSTER_SIZE = 3
+CLUSTER_SIZE = 32
 # create the following user on the cluster
 CLUSTER_USER = sgeadmin
 # optionally specify shell (defaults to bash)
