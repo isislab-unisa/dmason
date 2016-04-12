@@ -104,7 +104,9 @@ $(
 
             setTimeout(function () {
                 setInterval(function () {
+                    if($('#load_history_dialog').prop("opened"))close_dialog_by_ID("load_history_dialog");
                     update_history_info();
+                    load_tiles_history();
                 }, 1000);
             }, 5000);
         }
@@ -537,7 +539,7 @@ function update_history_info(){
         url:"getHistoryFolderList",
         success: function(result){
             get_history_info(result);
-
+            close_dialog_by_ID("load_history_dialog");
         }
     });
 }

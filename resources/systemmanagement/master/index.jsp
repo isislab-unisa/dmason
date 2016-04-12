@@ -74,7 +74,7 @@
 				</paper-menu>
 			</div>
 		</paper-scroll-header-panel>
-    <jsp:useBean id="masterServer" class="it.isislab.dmason.experimentals.systemmanagement.master.MasterServer" scope="application"/>
+        <jsp:useBean id="masterServer" class="it.isislab.dmason.experimentals.systemmanagement.master.MasterServer" scope="application"/>
 		<paper-scroll-header-panel main fixed>
 			<paper-toolbar flex id="mainToolBar" class="horizontal">
 				<div><paper-icon-button icon="menu" paper-drawer-toggle ></paper-icon-button></div>

@@ -31,6 +31,10 @@
         <link rel="import" href="bower_components/paper-item/paper-item.html">
         <link rel="import" href="bower_components/paper-styles/paper-styles.html">
         <link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">"
+        <link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
+        <link rel="import" href="bower_components/paper-spinner/paper-spinner.html">
+        <link rel="import" href="bower_components/neon-animation/animations/scale-up-animation.html">
+        <link rel="import" href="bower_components/neon-animation/animations/fade-out-animation.html">
 
 
         <link rel="import" href="bower_components/iron-icons/iron-icons.html">
@@ -42,7 +46,7 @@
         <link rel="import" href="bower_components/custom_components/history/sim-history-grid.html">
 
         </head>
-        <body unresolved >
+        <body unresolved>
 
         <paper-drawer-panel force-narrow >
         <paper-scroll-header-panel drawer id="side-header-panel" fixed fill>
@@ -68,6 +72,14 @@
         </paper-toolbar>
 
         <div class="content content-main">
+            <paper-dialog opened id="load_history_dialog"  entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal>
+
+                <div class="layout horizontal center">
+                    <paper-spinner class="multi" active alt="Loading history"></paper-spinner>
+                    <span>Loading history.....</span>
+                </div>
+
+            </paper-dialog>
             <sim-history-grid id="sim_history_grid"></sim-history-grid>
         </div>
         </paper-scroll-header-panel>

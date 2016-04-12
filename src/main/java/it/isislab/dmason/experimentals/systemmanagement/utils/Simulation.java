@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 
@@ -69,6 +70,7 @@ public class Simulation implements Serializable{
 	private int received_cell_type;
 	private long startTime=Long.MIN_VALUE;
 	private long endTime=Long.MIN_VALUE;
+	private long simTime=Long.MIN_VALUE;
 	private long step=0;
 	public static final String CREATED="CREATED";
 	public static final String STARTED="STARTED";
@@ -93,6 +95,7 @@ public class Simulation implements Serializable{
 	 */
 	public void setEndTime(long endTime) {
 		this.endTime = endTime;
+		this.simTime = endTime - startTime;
 	}
 
 	/**
@@ -125,6 +128,26 @@ public class Simulation implements Serializable{
 		return endTime;
 	}
 	
+	
+	
+	public long getSimTime() {
+		return simTime;
+	}
+	public String getSimTimeAsDate() {
+		
+		String diff = "";
+		Date start=new Date(this.getStartTime());
+		SimpleDateFormat df = new SimpleDateFormat("dHH:mm:ss");
+		Date end=new Date(this.getEndTime());
+		SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+		
+        long timeDiff = Math.abs(end.getTime() - start.getTime());
+        
+        diff = String.format("%d : %d : %d", TimeUnit.MILLISECONDS.toHours(timeDiff),
+                TimeUnit.MILLISECONDS.toMinutes(timeDiff) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeDiff)),
+                TimeUnit.MILLISECONDS.toSeconds(timeDiff) - TimeUnit.MILLISECONDS.toMinutes(timeDiff) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeDiff)));
+        return diff;
+	}
 	public String getStartTimeAsDate(){
 		Date date=new Date(this.getStartTime());
 		SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
