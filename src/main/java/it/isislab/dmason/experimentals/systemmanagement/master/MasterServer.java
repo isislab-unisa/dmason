@@ -76,8 +76,7 @@ import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
  *
  */
 public class MasterServer implements MultiServerInterface{
-	private static final Integer TTL = 2000;
-	private static final long WINDOW_INFO_TIME_CHECK = 10000;
+	private static final Integer TTL = 10000;
 	//ActivemQ settings file, default 127.0.0.1:61616 otherwise you have to change config.properties file
 	private static final String PROPERTIES_FILE_PATH="resources/systemmanagement/master/conf/config.properties";
 
@@ -263,7 +262,6 @@ public class MasterServer implements MultiServerInterface{
 
 										if(!infoWorkers.containsKey(ID))
 										{
-											System.out.println("a primm vot che te vec me fai impazzxiii");
 											processInfoForCopyLog(info,ID);
 											getConnection().createTopic(ID, 1);
 											try {
@@ -317,7 +315,7 @@ public class MasterServer implements MultiServerInterface{
 
 										}
 										infoWorkers.put(ID, info);
-										ttlinfoWorkers.put(ainfo[ainfo.length-1], TTL);
+										ttlinfoWorkers.put(ID, TTL);
 									}
 
 

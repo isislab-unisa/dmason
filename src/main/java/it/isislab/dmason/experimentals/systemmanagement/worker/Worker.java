@@ -123,54 +123,96 @@ public class Worker implements Observer {
 			this.conn=new ConnectionNFieldsWithActiveMQAPI();
 			WORKER_IP=getIP(); //set IP for this worker
 
-			System.out.println("Waiting for connection to Message Broker..");
-			this.createConnection();
-						this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
-			this.TOPIC_WORKER_ID = this.TOPIC_WORKER_ID.replace(":","");
-			generateFolders(TOPIC_WORKER_ID); //generate folders for worker
-			simulationList=new HashMap< /*idsim*/Integer, Simulation>();
-			this.slotsNumber=slots;
-
-
-			availableport=new FindAvailablePort(1000, 3000);
-			this.PORT_COPY_LOG=availableport.getPortAvailable(); //socket communication with master (server side, used for logs)
-			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP)); //create server for socket communication
-			System.out.println("Waiting master connection ..."); 
-
-			conn.addObserver(this); //EXPERIMENTAL 
-
-			this.startMasterComunication();
+			connectToMessageBroker(slots);
 
 		} catch (Exception e) {e.printStackTrace();}
 
 
 	}
+
+	private void connectToMessageBroker(int slots) throws UnknownHostException, IOException
+	{
+		System.out.println("Waiting for connection to Message Broker..");
+		this.createConnection();
+
+		this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
+		this.TOPIC_WORKER_ID = this.TOPIC_WORKER_ID.replace(":","");
+		generateFolders(TOPIC_WORKER_ID); //generate folders for worker
+		simulationList=new HashMap< /*idsim*/Integer, Simulation>();
+		this.slotsNumber=slots;
+
+
+		availableport=new FindAvailablePort(1000, 3000);
+		this.PORT_COPY_LOG=availableport.getPortAvailable(); //socket communication with master (server side, used for logs)
+		welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP)); //create server for socket communication
+		System.out.println("Waiting master connection ..."); 
+
+		conn.addObserver(this); //EXPERIMENTAL 
+
+		this.startMasterComunication();
+		
+		System.out.println("connected.");
+	}
 	private boolean MASTER_ACK=false;
 	private MasterLostChecker masterlost=null;
 	final Lock lock = new ReentrantLock();
 	final Condition waitMaster  = lock.newCondition(); 
-	
+	private MasterChecker masterchecker=null;
+
+	private boolean CONNECTED=true;
+
+	final Lock lockconnection = new ReentrantLock();
+	final Condition waitconnection  = lockconnection.newCondition(); 
+
 	/**
 	 * EXPERIMENTAL
 	 */
 	public void update(Observable obs, Object arg) {
+		
 		if (obs==conn){
-			LOGGER.info("evento catturato var "+conn.isConnected());
+			
 			if(!conn.isConnected()){
-
-				System.exit(0);
-			/*	try {
-					lock.lock();
 				
-						MASTER_ACK=true;
-						System.out.println("Master or activemq disconnected...");
-						waitMaster.signalAll();
+				System.exit(0);
+				CONNECTED=false;
+				(new Thread(){
+					public void run() {
+						
+						try {
+							masterchecker.interrupt();
+							connectToMessageBroker(slotsNumber);
+							try {
+								
+								lockconnection.lock();
+								CONNECTED=true;
+								waitconnection.signalAll();
 					
+							}finally {
+								lockconnection.unlock();
+							}
+							
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					};
+				}).start();
+				//	System.exit(0);
+				
+				try {
+					lockconnection.lock();
+					while(!CONNECTED)
+					{
+						waitconnection.await();
 
-				}finally{
-					lock.unlock();
+					}
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}finally {
+					lockconnection.unlock();
 				}
-*/
+				
 			}
 
 		}
@@ -187,7 +229,7 @@ public class Worker implements Observer {
 					getConnection().publishToTopic(getInfoWorker().toString(), MANAGEMENT,"WORKER");
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
-						e.printStackTrace();
+					e.printStackTrace();
 				}
 			}
 
@@ -208,7 +250,7 @@ public class Worker implements Observer {
 			{
 				if(masterlost==null)
 				{
-	
+
 					masterlost=new MasterLostChecker();
 					masterlost.start();
 
@@ -217,7 +259,7 @@ public class Worker implements Observer {
 						MASTER_ACK=false;
 						while(!MASTER_ACK)
 						{
-						//	System.out.println("Waiting master received my ID "+TOPIC_WORKER_ID.hashCode()+"...");
+							//	System.out.println("Waiting master received my ID "+TOPIC_WORKER_ID.hashCode()+"...");
 
 							waitMaster.await();
 
@@ -252,13 +294,14 @@ public class Worker implements Observer {
 		try {
 			conn.createTopic(MANAGEMENT, 1);
 			conn.subscribeToTopic(MANAGEMENT);
-			
+
 			listenerForMasterComunication();
 		} 
 		catch (Exception e1) {e1.printStackTrace();}
 
 
-		new MasterChecker().start();
+		masterchecker=new MasterChecker();
+		masterchecker.start();
 
 		conn.asynchronousReceive(MANAGEMENT, new MyMessageListener() {
 			@Override
@@ -271,7 +314,7 @@ public class Worker implements Observer {
 					if(map.containsKey("WORKER-ID-"+TOPIC_WORKER_ID.hashCode())){
 						///
 						try {
-							
+
 							lock.lock();
 							if(!MASTER_ACK)
 							{
@@ -338,7 +381,7 @@ public class Worker implements Observer {
 			getConnection().subscribeToTopic(TOPIC_WORKER_ID.hashCode()+"");
 			getConnection().createTopic(TOPIC_WORKER_ID.hashCode()+"",1);
 		}catch(Exception e){ e.printStackTrace();}
-	
+
 
 		getConnection().asynchronousReceive(TOPIC_WORKER_ID.hashCode()+"", new MyMessageListener() {
 
@@ -350,65 +393,65 @@ public class Worker implements Observer {
 					o=parseMessage(msg);
 					final MyHashMap map=(MyHashMap) o;
 
-				
-							// request of a storage a new simulation
-							if(map.containsKey("newsim")){
-							
-								Simulation sim=(Simulation)map.get("newsim");
-								createNewSimulationProcess(sim);
-								System.out.println("apro straem su porta "+DEFAULT_COPY_SERVER_PORT);
-								downloadFile(sim,DEFAULT_COPY_SERVER_PORT);
-								List<CellType> cellstype=sim.getCellTypeList();
-								for (CellType cellType : cellstype) {
-									slotsNumber--;
-								}
+
+					// request of a storage a new simulation
+					if(map.containsKey("newsim")){
+
+						Simulation sim=(Simulation)map.get("newsim");
+						createNewSimulationProcess(sim);
+						System.out.println("apro straem su porta "+DEFAULT_COPY_SERVER_PORT);
+						downloadFile(sim,DEFAULT_COPY_SERVER_PORT);
+						List<CellType> cellstype=sim.getCellTypeList();
+						for (CellType cellType : cellstype) {
+							slotsNumber--;
+						}
 
 
+					}else
+						// request to start a simulation
+						if (map.containsKey("start")){
+							int id = (int)map.get("start");
+
+							if( (getSimulationList().get(id).getStatus() )!= Simulation.FINISHED && 
+									(getSimulationList().get(id).getStatus() )!= Simulation.STARTED)
+								playSimulationProcessByID(id);
+
+						}else
+							//request to stop a simulation
+							if (map.containsKey("stop")){
+								int id = (int)map.get("stop");
+								if( (getSimulationList().get(id).getStatus()) != Simulation.FINISHED)
+									stopSimulation(id);
 							}else
-								// request to start a simulation
-								if (map.containsKey("start")){
-									int id = (int)map.get("start");
-
-									if( (getSimulationList().get(id).getStatus() )!= Simulation.FINISHED && 
-											(getSimulationList().get(id).getStatus() )!= Simulation.STARTED)
-										playSimulationProcessByID(id);
-
+								//request to pause a simulation
+								if (map.containsKey("pause")){
+									int id = (int)map.get("pause");
+									LOGGER.info("Command pause received for simulation "+id);
+									if((getSimulationList().get(id).getStatus()!= Simulation.FINISHED) 
+											&& (getSimulationList().get(id).getStatus()!= Simulation.PAUSED))
+										pauseSimulation(id);
 								}else
-									//request to stop a simulation
-									if (map.containsKey("stop")){
-										int id = (int)map.get("stop");
-										if( (getSimulationList().get(id).getStatus()) != Simulation.FINISHED)
-											stopSimulation(id);
-									}else
-										//request to pause a simulation
-										if (map.containsKey("pause")){
-											int id = (int)map.get("pause");
-											LOGGER.info("Command pause received for simulation "+id);
-											if((getSimulationList().get(id).getStatus()!= Simulation.FINISHED) 
-													&& (getSimulationList().get(id).getStatus()!= Simulation.PAUSED))
-												pauseSimulation(id);
-										}else
-											//log request of a simulation
-											if(map.containsKey("logreq")){
-												int id=(int)map.get("logreq");
-												LOGGER.info("Received request for logs for simid "+id);
-												String pre_status=getSimulationList().get(id).getStatus();
-												if((pre_status.equals(Simulation.STARTED))){ 
-													pauseSimulation(id); 
-													getLogBySimIDProcess(id,pre_status,"log");
-												}  
-												else{ //PAUSED
-													LOGGER.info("invoke getlog con "+pre_status);
-													getLogBySimIDProcess(id,pre_status,"log");
-												}
+									//log request of a simulation
+									if(map.containsKey("logreq")){
+										int id=(int)map.get("logreq");
+										LOGGER.info("Received request for logs for simid "+id);
+										String pre_status=getSimulationList().get(id).getStatus();
+										if((pre_status.equals(Simulation.STARTED))){ 
+											pauseSimulation(id); 
+											getLogBySimIDProcess(id,pre_status,"log");
+										}  
+										else{ //PAUSED
+											LOGGER.info("invoke getlog con "+pre_status);
+											getLogBySimIDProcess(id,pre_status,"log");
+										}
 
-											}else
-												//request to remove a simulation
-												if (map.containsKey("simrm")){
-													int id = (int)map.get("simrm");
-													LOGGER.info("Command remove received for simulation "+id);
-													deleteSimulationProcessByID(id);
-												}
+									}else
+										//request to remove a simulation
+										if (map.containsKey("simrm")){
+											int id = (int)map.get("simrm");
+											LOGGER.info("Command remove received for simulation "+id);
+											deleteSimulationProcessByID(id);
+										}
 
 
 				} catch (JMSException e) {e.printStackTrace();} 
@@ -817,7 +860,7 @@ public class Worker implements Observer {
 		else{ //type.equals("history")
 
 			if(getLogBySimID(folderToCopy,fileToSend)){
-			
+
 				if(startServiceCopyForLog(fileToSend,simID,"loghistory")){
 					System.out.println("File zip creato nella dir "+fileToSend);
 					DMasonFileSystem.delete(new File(fileToSend));
@@ -937,5 +980,5 @@ public class Worker implements Observer {
 
 
 
-	
+
 }

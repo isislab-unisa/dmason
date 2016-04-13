@@ -150,9 +150,8 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 			topics = new HashMap<String, ActiveMQTopic>();
 			// Enable the in-bound flow of messages
 			providerAddress = providerAddr;
+			
 			connection.start();
-			
-			
 			
 			isConnected = true;
 			

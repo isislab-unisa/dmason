@@ -113,7 +113,8 @@ public class WorkerResourceInfo implements Serializable{
 			String lastLine="";
 			while ((line = in.readLine()) != null) {lastLine=line;}
 			pr.waitFor();
-			in.close();			
+			in.close();
+			pr.destroy();
 			lastLine = lastLine.trim();
 			cpu = Double.parseDouble(lastLine.replace(",","."));
 			//System.out.println(cpu);
