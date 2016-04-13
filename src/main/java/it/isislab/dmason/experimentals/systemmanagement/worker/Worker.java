@@ -276,7 +276,7 @@ public class Worker implements Observer {
 							if(!MASTER_ACK)
 							{
 								MASTER_ACK=true;
-								System.out.println("Master connected...");
+								//System.out.println("Master connected...");
 								DEFAULT_COPY_SERVER_PORT=(int)map.get("WORKER-ID-"+TOPIC_WORKER_ID.hashCode());
 								waitMaster.signalAll();
 							}
