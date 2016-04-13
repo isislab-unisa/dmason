@@ -770,6 +770,9 @@ public class MasterServer implements MultiServerInterface{
 
 		if(assignmentToworkers==null) {return false;}
 
+		
+		
+		
 		getCounterAckSimRcv().put(simul.getSimID(), new AtomicInteger(0));
 
 		for (String topicName: assignmentToworkers.keySet()){
