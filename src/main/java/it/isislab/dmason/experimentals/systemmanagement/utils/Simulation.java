@@ -76,6 +76,7 @@ public class Simulation implements Serializable{
 	public static final String STARTED="STARTED";
 	public static final String FINISHED="FINISHED";
 	public static final String PAUSED="PAUSED";
+	public static final String STOPPED="STOPPED";
 	private String simulationStatus=CREATED; //play,pause,stop
 
 

@@ -56,6 +56,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Random;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -79,7 +80,7 @@ public class Worker implements Observer {
 	private String PORT_ACTIVEMQ="";
 	private int PORT_COPY_LOG;
 	private int  slotsNumber=0; //number of available slots(cells of a field in dmason)
-	private static final String MASTER_TOPIC="MASTER";
+	private static final String MANAGEMENT="DMASON-MANAGEMENT";
 	private static String dmasonDirectory=System.getProperty("user.dir")+File.separator+"dmason";
 	private static  String workerDirectory; // worker main directory
 	//private static  String workerTemporary; //temporary folder used, temporary zip files are generated in this folder 
@@ -87,11 +88,11 @@ public class Worker implements Observer {
 	private String TOPIC_WORKER_ID=""; // worker's topic , worker write in this topic (publish) for all communication           
 	private String TOPIC_WORKER_ID_MASTER=""; // master topic for this worker, master write all communication to this worker(asynchronous receive listening on this topic)
 	private static String WORKER_IP="127.0.0.1";
-	private int DEFAULT_COPY_SERVER_PORT=0;
+	private int DEFAULT_COPY_SERVER_PORT=1414;
 	private HashMap< Integer, Simulation> simulationList; //simulations' list of this worker
 	private SimpleDateFormat sdf=null;
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
-    private FindAvailablePort availableport;
+	private FindAvailablePort availableport;
 	//Socket for log services
 	protected Socket sock=null;
 	protected ServerSocket welcomeSocket;
@@ -111,36 +112,330 @@ public class Worker implements Observer {
 	public Worker(String ipMaster,String portMaster, int slots/*, ConnectionNFieldsWithActiveMQAPI connect*/) {
 
 		try {
-			
+
 			//comment below  line to enable Logger 
 			LOGGER.setUseParentHandlers(false);  
 			LOGGER.info("LOGGER ENABLE");
 			//
-			
+
 			this.IP_ACTIVEMQ=ipMaster;
 			this.PORT_ACTIVEMQ=portMaster;
 			this.conn=new ConnectionNFieldsWithActiveMQAPI();
 			WORKER_IP=getIP(); //set IP for this worker
+
+			System.out.println("Waiting for connection to Message Broker..");
 			this.createConnection();
-			this.startMasterComunication();
-			this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
+						this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
 			this.TOPIC_WORKER_ID = this.TOPIC_WORKER_ID.replace(":","");
 			generateFolders(TOPIC_WORKER_ID); //generate folders for worker
 			simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 			this.slotsNumber=slots;
-			signRequestToMaster();
+
+
 			availableport=new FindAvailablePort(1000, 3000);
 			this.PORT_COPY_LOG=availableport.getPortAvailable(); //socket communication with master (server side, used for logs)
 			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP)); //create server for socket communication
-			System.out.println("Starting worker ..."); 
+			System.out.println("Waiting master connection ..."); 
+
 			conn.addObserver(this); //EXPERIMENTAL 
+
+			this.startMasterComunication();
+
 		} catch (Exception e) {e.printStackTrace();}
 
 
 	}
+	private boolean MASTER_ACK=false;
+	private MasterLostChecker masterlost=null;
+	final Lock lock = new ReentrantLock();
+	final Condition waitMaster  = lock.newCondition(); 
+	
+	/**
+	 * EXPERIMENTAL
+	 */
+	public void update(Observable obs, Object arg) {
+		if (obs==conn){
+			LOGGER.info("evento catturato var "+conn.isConnected());
+			if(!conn.isConnected()){
+
+				System.exit(0);
+			/*	try {
+					lock.lock();
+				
+						MASTER_ACK=true;
+						System.out.println("Master or activemq disconnected...");
+						waitMaster.signalAll();
+					
+
+				}finally{
+					lock.unlock();
+				}
+*/
+			}
+
+		}
+	}
+	class MasterLostChecker extends Thread{
+
+		@Override
+		public void run() {
+
+			while(true){
+
+				try {
+					Thread.sleep(2000);
+					getConnection().publishToTopic(getInfoWorker().toString(), MANAGEMENT,"WORKER");
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+						e.printStackTrace();
+				}
+			}
+
+		}
+	}
+
+	class MasterChecker extends Thread{
+		int timeToCheck;
+		int WINDOW_MASTER_CHECK=3000;
+		Random r=new Random();
+		public MasterChecker() {
+			timeToCheck=0;
+
+		}
+		@Override
+		public void run() {
+			do
+			{
+				if(masterlost==null)
+				{
+	
+					masterlost=new MasterLostChecker();
+					masterlost.start();
+
+					try {
+						lock.lock();
+						MASTER_ACK=false;
+						while(!MASTER_ACK)
+						{
+						//	System.out.println("Waiting master received my ID "+TOPIC_WORKER_ID.hashCode()+"...");
+
+							waitMaster.await();
+
+						}
+						if(masterlost!=null)
+						{
+							masterlost.interrupt();
+							masterlost=null;
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}finally{
+						lock.unlock();
+					}
+				}
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+			}while(true);
+
+		}
+	}
+
+
+	@SuppressWarnings("serial")
+	private void startMasterComunication() {
+
+		try {
+			conn.createTopic(MANAGEMENT, 1);
+			conn.subscribeToTopic(MANAGEMENT);
+			
+			listenerForMasterComunication();
+		} 
+		catch (Exception e1) {e1.printStackTrace();}
+
+
+		new MasterChecker().start();
+
+		conn.asynchronousReceive(MANAGEMENT, new MyMessageListener() {
+			@Override
+			public void onMessage(Message msg) {
+
+				Object o;
+				try {
+					o=parseMessage(msg);
+					MyHashMap map=(MyHashMap) o;
+					if(map.containsKey("WORKER-ID-"+TOPIC_WORKER_ID.hashCode())){
+						///
+						try {
+							
+							lock.lock();
+							if(!MASTER_ACK)
+							{
+								MASTER_ACK=true;
+								System.out.println("Master connected...");
+								DEFAULT_COPY_SERVER_PORT=(int)map.get("WORKER-ID-"+TOPIC_WORKER_ID.hashCode());
+								waitMaster.signalAll();
+							}
+
+						}finally{
+							lock.unlock();
+						}
+
+					} 
+
+				} catch (JMSException e) {
+					e.printStackTrace();
+				}
+
+			}
+		});
+
+	} 	
 
 
 
+	/**
+	 * Find first available port on node  
+	 * @return port
+
+	private int findAvailablePort(){
+		availableport=new FindAvailablePort(1000, 3000);
+		int port=availableport.getPortAvailable();
+		return port;
+	}*/
+
+	/**
+	 * Info of Node
+	 */
+	private WorkerInfo getInfoWorker() 
+	{
+		WorkerInfo info=new WorkerInfo();
+		info.setIP(WORKER_IP);
+		info.setWorkerID(this.TOPIC_WORKER_ID.hashCode()+"");
+		info.setNumSlots(this.getSlotsNumber());
+		info.setPortCopyLog(PORT_COPY_LOG);
+		return info;
+
+	}
+
+	private boolean createConnection(){
+		Address address=new Address(this.getIpActivemq(), this.getPortActivemq());
+		return conn.setupConnection(address);
+
+	}
+
+
+	/**
+	 * Subscribe to masters' topic  for communication [master->worker]
+	 * Requests' list from master
+	 */
+	private synchronized void listenerForMasterComunication(){
+		try{
+			getConnection().subscribeToTopic(TOPIC_WORKER_ID.hashCode()+"");
+			getConnection().createTopic(TOPIC_WORKER_ID.hashCode()+"",1);
+		}catch(Exception e){ e.printStackTrace();}
+	
+
+		getConnection().asynchronousReceive(TOPIC_WORKER_ID.hashCode()+"", new MyMessageListener() {
+
+			@Override
+			public void onMessage(Message msg) {
+
+				Object o;
+				try {
+					o=parseMessage(msg);
+					final MyHashMap map=(MyHashMap) o;
+
+				
+							// request of a storage a new simulation
+							if(map.containsKey("newsim")){
+							
+								Simulation sim=(Simulation)map.get("newsim");
+								createNewSimulationProcess(sim);
+								System.out.println("apro straem su porta "+DEFAULT_COPY_SERVER_PORT);
+								downloadFile(sim,DEFAULT_COPY_SERVER_PORT);
+								List<CellType> cellstype=sim.getCellTypeList();
+								for (CellType cellType : cellstype) {
+									slotsNumber--;
+								}
+
+
+							}else
+								// request to start a simulation
+								if (map.containsKey("start")){
+									int id = (int)map.get("start");
+
+									if( (getSimulationList().get(id).getStatus() )!= Simulation.FINISHED && 
+											(getSimulationList().get(id).getStatus() )!= Simulation.STARTED)
+										playSimulationProcessByID(id);
+
+								}else
+									//request to stop a simulation
+									if (map.containsKey("stop")){
+										int id = (int)map.get("stop");
+										if( (getSimulationList().get(id).getStatus()) != Simulation.FINISHED)
+											stopSimulation(id);
+									}else
+										//request to pause a simulation
+										if (map.containsKey("pause")){
+											int id = (int)map.get("pause");
+											LOGGER.info("Command pause received for simulation "+id);
+											if((getSimulationList().get(id).getStatus()!= Simulation.FINISHED) 
+													&& (getSimulationList().get(id).getStatus()!= Simulation.PAUSED))
+												pauseSimulation(id);
+										}else
+											//log request of a simulation
+											if(map.containsKey("logreq")){
+												int id=(int)map.get("logreq");
+												LOGGER.info("Received request for logs for simid "+id);
+												String pre_status=getSimulationList().get(id).getStatus();
+												if((pre_status.equals(Simulation.STARTED))){ 
+													pauseSimulation(id); 
+													getLogBySimIDProcess(id,pre_status,"log");
+												}  
+												else{ //PAUSED
+													LOGGER.info("invoke getlog con "+pre_status);
+													getLogBySimIDProcess(id,pre_status,"log");
+												}
+
+											}else
+												//request to remove a simulation
+												if (map.containsKey("simrm")){
+													int id = (int)map.get("simrm");
+													LOGGER.info("Command remove received for simulation "+id);
+													deleteSimulationProcessByID(id);
+												}
+
+
+				} catch (JMSException e) {e.printStackTrace();} 
+
+
+			}
+		});
+	}
+
+
+	private HashMap<Integer,ArrayList<CellExecutor>> executorThread=new HashMap<Integer,ArrayList<CellExecutor>>();
+
+	private synchronized void runSimulation(int sim_id){
+
+		getSimulationList().get(sim_id).setStartTime(System.currentTimeMillis());
+		getSimulationList().get(sim_id).setStep(0);
+		for(CellExecutor cexe:executorThread.get(sim_id))
+		{
+			cexe.start();
+		}
+		getSimulationList().get(sim_id).setStatus(Simulation.STARTED);
+		getSimulationList().get(sim_id).setStartTime(System.currentTimeMillis());
+		getSimulationList().get(sim_id).setStep(0);
+		getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
+
+
+	}
 	/**
 	 * Start a simulation for first time, or a paused simulation 
 	 * start a simulation by id 
@@ -208,115 +503,6 @@ public class Worker implements Observer {
 		}
 	}
 
-
-	/**
-	 * Subscribe to masters' topic  for communication [master->worker]
-	 * Requests' list from master
-	 */
-	private synchronized void listenerForMasterComunication(){
-		try{
-			getConnection().subscribeToTopic(TOPIC_WORKER_ID_MASTER);
-		}catch(Exception e){ e.printStackTrace();}
-
-
-		getConnection().asynchronousReceive(TOPIC_WORKER_ID_MASTER, new MyMessageListener() {
-
-			@Override
-			public void onMessage(Message msg) {
-
-				Object o;
-				try {
-					o=parseMessage(msg);
-					final MyHashMap map=(MyHashMap) o;
-
-					//request of resources info from master 
-					if(map.containsKey("check")){
-						String info=getInfoWorker().toString();
-						getConnection().publishToTopic(info, TOPIC_WORKER_ID,"info");
-					}
-					// request of a storage a new simulation
-					if(map.containsKey("newsim")){
-						Simulation sim=(Simulation)map.get("newsim");
-						createNewSimulationProcess(sim);
-						downloadFile(sim,DEFAULT_COPY_SERVER_PORT);
-						List<CellType> cellstype=sim.getCellTypeList();
-						for (CellType cellType : cellstype) {
-							slotsNumber--;
-						}
-
-
-					}
-					// request to start a simulation
-					if (map.containsKey("start")){
-						int id = (int)map.get("start");
-
-						if( (getSimulationList().get(id).getStatus() )!= Simulation.FINISHED && 
-								(getSimulationList().get(id).getStatus() )!= Simulation.STARTED)
-							playSimulationProcessByID(id);
-
-					}
-					//request to stop a simulation
-					if (map.containsKey("stop")){
-						int id = (int)map.get("stop");
-						if( (getSimulationList().get(id).getStatus()) != Simulation.FINISHED)
-							stopSimulation(id);
-					}
-					//request to pause a simulation
-					if (map.containsKey("pause")){
-						int id = (int)map.get("pause");
-						LOGGER.info("Command pause received for simulation "+id);
-						if((getSimulationList().get(id).getStatus()!= Simulation.FINISHED) 
-								&& (getSimulationList().get(id).getStatus()!= Simulation.PAUSED))
-							pauseSimulation(id);
-					}
-					//log request of a simulation
-					if(map.containsKey("logreq")){
-						int id=(int)map.get("logreq");
-						LOGGER.info("Received request for logs for simid "+id);
-						String pre_status=getSimulationList().get(id).getStatus();
-						if((pre_status.equals(Simulation.STARTED))){ 
-							pauseSimulation(id); 
-							getLogBySimIDProcess(id,pre_status,"log");
-						}  
-						else{ //PAUSED
-							LOGGER.info("invoke getlog con "+pre_status);
-							getLogBySimIDProcess(id,pre_status,"log");
-						}
-
-					}
-					//request to remove a simulation
-					if (map.containsKey("simrm")){
-						int id = (int)map.get("simrm");
-						LOGGER.info("Command remove received for simulation "+id);
-						deleteSimulationProcessByID(id);
-					}
-
-
-				} catch (JMSException e) {e.printStackTrace();} 
-
-
-			}
-		});
-	}
-
-
-	private HashMap<Integer,ArrayList<CellExecutor>> executorThread=new HashMap<Integer,ArrayList<CellExecutor>>();
-
-	private synchronized void runSimulation(int sim_id){
-
-		getSimulationList().get(sim_id).setStartTime(System.currentTimeMillis());
-		getSimulationList().get(sim_id).setStep(0);
-		for(CellExecutor cexe:executorThread.get(sim_id))
-		{
-			cexe.start();
-		}
-		getSimulationList().get(sim_id).setStatus(Simulation.STARTED);
-		getSimulationList().get(sim_id).setStartTime(System.currentTimeMillis());
-		getSimulationList().get(sim_id).setStep(0);
-		getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
-
-
-	}
 	/**
 	 * Stop simulation process
 	 * @param sim_id id of simulation to stop 
@@ -327,7 +513,7 @@ public class Worker implements Observer {
 		for(CellExecutor cexe:executorThread.get(sim_id))
 		{
 			if(cexe.masterCell){ 
-				getSimulationList().get(sim_id).setStatus(Simulation.FINISHED);	
+				getSimulationList().get(sim_id).setStatus(Simulation.STOPPED);	
 				getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
 				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
 			}
@@ -531,15 +717,15 @@ public class Worker implements Observer {
 
 
 
-    /**
-     * Download with Socket  
-     * @param sim
-     * @param serverSocketPort
-     */
+	/**
+	 * Download with Socket  
+	 * @param sim
+	 * @param serverSocketPort
+	 */
 	private synchronized void downloadFile(Simulation sim,int serverSocketPort){ 
 
-	    String jarName=System.currentTimeMillis()+".jar";
-		
+		String jarName=System.currentTimeMillis()+".jar";
+
 		String localJarFilePath=sim.getSimulationFolder()+File.separator+jarName;
 		sim.setJarPath(localJarFilePath);
 		Socket clientSocket;
@@ -558,7 +744,7 @@ public class Worker implements Observer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		this.getConnection().publishToTopic(sim.getSimID(), this.TOPIC_WORKER_ID, "simrcv");
+		this.getConnection().publishToTopic(sim.getSimID(), TOPIC_WORKER_ID.hashCode()+"", "simrcv");
 
 	}
 
@@ -606,52 +792,6 @@ public class Worker implements Observer {
 	}
 
 
-    /**
-     * Find first available port on node  
-     * @return port
-     
-	private int findAvailablePort(){
-		availableport=new FindAvailablePort(1000, 3000);
-		int port=availableport.getPortAvailable();
-		return port;
-	}*/
-	
-	/**
-	 * Info of Node
-	 */
-	private WorkerInfo getInfoWorker() 
-	{
-		WorkerInfo info=new WorkerInfo();
-		info.setIP(WORKER_IP);
-		info.setWorkerID(this.TOPIC_WORKER_ID_MASTER);
-		info.setNumSlots(this.getSlotsNumber());
-		info.setPortCopyLog(PORT_COPY_LOG);
-		return info;
-
-	}
-
-	private boolean createConnection(){
-		Address address=new Address(this.getIpActivemq(), this.getPortActivemq());
-		return conn.setupConnection(address);
-
-	}
-	
-	/**
-	 * Send a sign request to MASTER  
-	 */
-	public void signRequestToMaster(){
-		try{	
-			conn.createTopic("READY", 1);
-			conn.subscribeToTopic("READY");
-			LOGGER.info("send signreq");
-			conn.publishToTopic(this.TOPIC_WORKER_ID,"READY" ,"signrequest");
-			conn.createTopic(this.TOPIC_WORKER_ID, 1);
-			conn.subscribeToTopic(TOPIC_WORKER_ID);
-		} catch(Exception e){e.printStackTrace();}
-	}
-
-
-
 
 	/**
 	 * Create log for a Simulation 
@@ -666,7 +806,7 @@ public class Worker implements Observer {
 
 		if(type.equals("log")){
 			if(getLogBySimID(folderToCopy,fileToSend)){
-				System.out.println("File zip creato nella dir "+fileToSend);			
+				System.out.println("File zip created to "+fileToSend);			
 				if(status.equals(Simulation.STARTED))playSimulationProcessByID(simID);
 
 				if(startServiceCopyForLog(fileToSend,simID,"logready"))
@@ -677,8 +817,7 @@ public class Worker implements Observer {
 		else{ //type.equals("history")
 
 			if(getLogBySimID(folderToCopy,fileToSend)){
-				System.out.println("File zip creato nella dir "+fileToSend);			
-
+			
 				if(startServiceCopyForLog(fileToSend,simID,"loghistory")){
 					System.out.println("File zip creato nella dir "+fileToSend);
 					DMasonFileSystem.delete(new File(fileToSend));
@@ -700,7 +839,7 @@ public class Worker implements Observer {
 	 */
 	private boolean startServiceCopyForLog(String zipFile,int id,String type){
 		LOGGER.info("apro stream copia per "+zipFile+" su porta"+welcomeSocket.getLocalPort());
-		getConnection().publishToTopic(id, this.TOPIC_WORKER_ID, type);
+		getConnection().publishToTopic(id, TOPIC_WORKER_ID.hashCode()+"", type);
 		try{
 			Thread t=null;
 			LOGGER.info("mi metto in accept");
@@ -733,11 +872,11 @@ public class Worker implements Observer {
 
 
 
-    /**
-     * Create all folder for worker's environment 
-     * @param wID
-     * @throws FileNotFoundException
-     */
+	/**
+	 * Create all folder for worker's environment 
+	 * @param wID
+	 * @throws FileNotFoundException
+	 */
 	private void generateFolders(String wID) throws FileNotFoundException {
 		sdf = new SimpleDateFormat(); 
 		sdf.applyPattern("dd-MM-yy-HH_mm");
@@ -748,7 +887,7 @@ public class Worker implements Observer {
 		//DMasonFileSystem.make(workerTemporary);
 		DMasonFileSystem.make(simulationsDirectories);
 		DMasonFileSystem.make(workerDirectory+File.separator+"err");
-		FileOutputStream output = new FileOutputStream(workerDirectory+File.separator+"err"+File.separator+"worker"+TOPIC_WORKER_ID+".err");
+		FileOutputStream output = new FileOutputStream(workerDirectory+File.separator+"err"+File.separator+"worker"+TOPIC_WORKER_ID.hashCode()+".err");
 		PrintStream printOut = new PrintStream(output);
 		System.setErr(printOut);
 	}
@@ -785,41 +924,6 @@ public class Worker implements Observer {
 	} 
 
 
-	@SuppressWarnings("serial")
-	private void startMasterComunication() {
-		final Worker worker=this;
-
-		try {conn.subscribeToTopic(MASTER_TOPIC);} 
-		catch (Exception e1) {e1.printStackTrace();}
-
-		conn.asynchronousReceive(MASTER_TOPIC, new MyMessageListener() {
-			@Override
-			public void onMessage(Message msg) {
-
-				Object o;
-				try {
-					o=parseMessage(msg);
-					MyHashMap map=(MyHashMap) o;
-					if(map.containsKey(worker.TOPIC_WORKER_ID)){
-						TOPIC_WORKER_ID_MASTER=map.get(TOPIC_WORKER_ID).toString();
-						System.out.println("Ack signup received ...");
-						listenerForMasterComunication();
-					} 
-
-					if(map.containsKey("port")){
-						int port=(int) map.get("port");
-						DEFAULT_COPY_SERVER_PORT=port;
-					}
-
-				} catch (JMSException e) {
-					e.printStackTrace();
-				}
-
-			}
-		});
-	} 	
-
-
 	//getters and setters
 	public String getIpActivemq() {return IP_ACTIVEMQ;}
 	public void setIpActivemq(String iP) {IP_ACTIVEMQ = iP;}
@@ -833,19 +937,5 @@ public class Worker implements Observer {
 
 
 
-	/**
-	 * EXPERIMENTAL
-	 */
-	public void update(Observable obs, Object arg) {
-		if (obs==conn){
-			LOGGER.info("evento catturato var "+conn.isConnected());
-			if(!conn.isConnected()){
-
-				System.exit(0);
-
-
-			}
-
-		}
-	}
+	
 }

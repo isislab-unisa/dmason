@@ -62,9 +62,6 @@ public class WorkerInfo implements Serializable{
 	 */
 	WorkerResourceInfo info=null;
 
-
-
-
 	public WorkerInfo() {
 		info=new WorkerResourceInfo();
 		setNumSlots(info.getNumCores());

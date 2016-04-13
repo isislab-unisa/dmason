@@ -17,9 +17,9 @@
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
 import java.text.DecimalFormat;
 
 /**
@@ -31,15 +31,13 @@ import java.text.DecimalFormat;
  */
 public class WorkerResourceInfo implements Serializable{
 
-	
+
 	private static final long serialVersionUID = 1L;
 
-	private OperatingSystemMXBean  os=null;
 	private Runtime runtime=null;
 	private long available=0;
 	private long busy=0;
 	private long maxHeap = 0;
-	//private double cpuLoad=0.0;
 	private int cores=0;
 	private static final double byte_giga=1073741824;
 	private static final double byte_mega=1048576;
@@ -47,7 +45,6 @@ public class WorkerResourceInfo implements Serializable{
 
 
 	public WorkerResourceInfo() {
-		os = ManagementFactory.getOperatingSystemMXBean();
 		cores = Runtime.getRuntime().availableProcessors();
 		runtime = Runtime.getRuntime();
 	}
@@ -59,15 +56,15 @@ public class WorkerResourceInfo implements Serializable{
 		//System.out.println("Max "+toReturn);
 		return toReturn;		
 	}
-	
+
 	public double getMaxHeapGb(){
 		maxHeap = runtime.maxMemory();
 		double toReturn=maxHeap/byte_giga; 
-		
+
 		return toReturn;		
 	}
-	
-	
+
+
 	public double getAvailableHeapMb(){
 		available=runtime.freeMemory();
 		double toReturn=available/byte_mega; 
@@ -104,6 +101,27 @@ public class WorkerResourceInfo implements Serializable{
 
 
 	//public double getCPULoad(){cpuLoad=os.getSystemLoadAverage(); return cpuLoad;}
-	public double getCPULoad(){return os.getSystemLoadAverage();}
+	public double getCPULoad(){
+		String cmdTop = "/usr/bin/top -b -d1 -n2 | grep Cpu | cut -c 9-14";
+		double cpu = -1;
+		try
+		{
+			ProcessBuilder   ps=new ProcessBuilder("/bin/sh","-c",cmdTop);
+			Process pr = ps.start();  
+			BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+			String line;
+			String lastLine="";
+			while ((line = in.readLine()) != null) {lastLine=line;}
+			pr.waitFor();
+			in.close();			
+			lastLine = lastLine.trim();
+			cpu = Double.parseDouble(lastLine.replace(",","."));
+			//System.out.println(cpu);
 
+
+		}
+		catch (Exception e){ return cpu;}
+		
+		return cpu;
+	}
 }

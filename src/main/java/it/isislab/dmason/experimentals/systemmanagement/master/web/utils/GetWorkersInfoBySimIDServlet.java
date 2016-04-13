@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -62,7 +63,7 @@ public class GetWorkersInfoBySimIDServlet extends HttpServlet {
 		if(masterServer.getSimulationsList().get(sim_id)!=null){
 			tp_list=masterServer.getSimulationsList().get(sim_id).getTopicList();
 		}
-		HashMap<String, String> info_workers = masterServer.getInfoWorkers();
+		Map<String, String> info_workers = masterServer.getInfoWorkers();
 		if(info_workers==null){
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;

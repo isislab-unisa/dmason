@@ -20,6 +20,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
 
+import it.isislab.dmason.experimentals.systemmanagement.utils.ActiveMQStarter;
+
 
 /**
  * 
@@ -34,6 +36,9 @@ public class MasterServerMain {
 
 	public static void main(String[] args){
 
+		
+		
+		
         //set params of jvm
 		//System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
 		
@@ -41,7 +46,10 @@ public class MasterServerMain {
 		Server server = new Server(8080);
 		ServletContextHandler handler =new ServletContextHandler(server,"resources/systemmanagement/master");	
 		server.setHandler(handler);	
-
+		
+		
+		
+		
 		// 2. Creating the WebAppContext for the created content
 		WebAppContext ctx = new WebAppContext();
 		ctx.setResourceBase("resources/systemmanagement/master");
@@ -55,13 +63,13 @@ public class MasterServerMain {
 		classlist.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration", "org.eclipse.jetty.plus.webapp.PlusConfiguration");
 		classlist.addBefore("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration");
 
-		//	ctx.addServlet("it.isislab.dmason.experimentals.systemmanagement.master.web.utils.GetConnectedWorkersServlet", "/getWorkers");
-		//		ctx.addServlet(new ServletHolder(new GetConnectedWorkersServlet(master)),"/getWorkers");//
-		//      ctx.addServlet(new ServletHolder(new CreateSimulationFolderServlet(master)), "/createSim"); 
-		//      ctx.addBean(master);
+		
 
 		//5. Setting the handler and starting the Server
 		server.setHandler(ctx);
+		//Launch activeMq server
+				ActiveMQStarter amqS = new ActiveMQStarter();
+			    amqS.startActivemq();
 		try {
 			server.start();
 			server.join();
@@ -69,7 +77,7 @@ public class MasterServerMain {
 			e.printStackTrace();
 		}
 
-
+		
 
 
 	}

@@ -49,7 +49,7 @@ public class GetConnectedWorkersServlet extends HttpServlet {
 		
 		myServer = (MultiServerInterface) req.getServletContext().getAttribute("masterServer");
 		String message = "{\"workers\":[";
-		myServer.checkAllConnectedWorkers();
+		//myServer.checkAllConnectedWorkers();
 		PrintWriter p = resp.getWriter();
 		
 		int startMessageSize = message.length();

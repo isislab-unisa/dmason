@@ -16,7 +16,7 @@
  */
 package it.isislab.dmason.experimentals.systemmanagement.master;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 
@@ -33,6 +33,6 @@ public interface MultiServerInterface {
 	public void start(int idSimulation);
 	public void stop(int idSimulation);
 	public void pause(int idSimulation);	
-	public HashMap<String, String> getInfoWorkers();
+	public Map<String, String> getInfoWorkers();
 	
 }
