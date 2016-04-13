@@ -110,7 +110,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 		long numStep= Long.parseLong(listParams.get("step"));
 		String conType= listParams.get("connectionType");
 		String modeType = listParams.get("partitioning");
-		String cells= listParams.get("cells");
+		int cells= (listParams.get("cells")!=null)?Integer.parseInt(listParams.get("cells")):-1;
 		int mode = (modeType.equals("uniform"))?DistributedField2D.UNIFORM_PARTITIONING_MODE: DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
 		String exampleSimulation = listParams.get("exampleSimulation");
 		//connection
@@ -124,8 +124,31 @@ public class SubmitSimulationServlet extends HttpServlet {
 
 		String topics[] =listParams.get("workers").split(",");
 		ArrayList< String> topicList=new ArrayList<String>();
-		for(String x: topics) 
-			topicList.add(x);
+		switch(mode){
+			case DistributedField2D.UNIFORM_PARTITIONING_MODE:
+				int numCell = rows * columns;
+				if(numCell < topics.length){
+					for (int i = 0; i < numCell; i++) {
+						topicList.add(topics[i]);
+					}
+				}else{
+					for(String x: topics) 
+						topicList.add(x);
+				}
+				break;
+			case DistributedField2D.NON_UNIFORM_PARTITIONING_MODE:
+				if(cells < topics.length){
+					for (int i = 0; i < cells; i++) {
+						topicList.add(topics[i]);
+					}
+				}else{
+					for(String x: topics) 
+						topicList.add(x);
+				}
+					
+				break;
+		}
+		
 
 		int simId=server.getKeySim().incrementAndGet();
 		String simPath=server.getSimulationsDirectories()+File.separator+simName+simId;
@@ -158,9 +181,9 @@ public class SubmitSimulationServlet extends HttpServlet {
 		
 		
 		if(mode==DistributedField2D.UNIFORM_PARTITIONING_MODE)
-		sim =new Simulation(simName, simPath,simPathJar+File.separator+jarSimName ,rows, columns, aoi, width, height, numAgent, numStep, mode, connection) ;
+			sim =new Simulation(simName, simPath,simPathJar+File.separator+jarSimName ,rows, columns, aoi, width, height, numAgent, numStep, mode, connection);
 		else
-		sim=new Simulation(simName, simPath, simPathJar+File.separator+jarSimName, Integer.parseInt(cells), aoi, width, height, numAgent, numStep, mode, connection);	
+			sim=new Simulation(simName, simPath, simPathJar+File.separator+jarSimName, cells, aoi, width, height, numAgent, numStep, mode, connection);	
 		
 		sim.setTopicList(topicList);
 		sim.setNumWorkers(topicList.size());
