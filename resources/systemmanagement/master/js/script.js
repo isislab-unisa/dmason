@@ -165,11 +165,11 @@ function _loadWorkers(_message){
         obj = JSON.parse(message);
 
     var w;
-    old_list = [];
+    var old_list = [];
     $(grid).children('div').each(function(){
         if($(this).attr("id")){
             // console.log("aggiungo "+$(this).attr("id"));
-            old_list[$(this).attr("id")] = $(this);
+            old_list["\'w-"+$(this).attr("id")+"\'"] = $(this);
         }
     });
 
@@ -192,7 +192,8 @@ function _loadWorkers(_message){
                 $(grid).append(node);
 
             }else{
-                delete old_list[w.workerID];
+                console.log(w.workerID);
+                delete old_list["\'w-"+w.workerID+"\'"];
                 $("#w-cpu-"+w.workerID).text("CPU:"+w.cpuLoad+" %");
                 $("w-max-heap-"+w.workerID).text("Max "+w.maxHeap+" MB</span></div>");
                 $("#w-heap-avaiable-"+w.workerID).text("Free "+w.availableheapmemory+" MB");
@@ -210,8 +211,8 @@ function _loadWorkers(_message){
              +"</div>";*/
         }
     }
-    if(old_list.length > 0)
-        for(id in old_list){
+    if (Object.keys(old_list).length > 0)
+        for (id in old_list) {
 
             $(old_list[id]).remove();
         }

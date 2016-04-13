@@ -49,7 +49,7 @@ body{ color:black;}
     width: 230px;
     height: 190px;
     float: left;
-    background-color: #e2726a;
+    background-color: #1B72CC;
     border-radius: 15px;
     border: 2px solid;
     border-color:  hsla(0, 0%, 0%, 0.5);
@@ -75,14 +75,14 @@ body{ color:black;}
     margin-left:1em;
 }
 .grid-item-monitoring:hover{
-    background-color:  #fbebea;
+    background-color:  #35A4D4;
     color:black;
     border:2px solid;
     border-color: black;
 }
 
 .grid-item-selected{
-    background-color:  #fbebea;
+    background-color:  #35A4D4;
     color:black;
     border:2px solid ;
     border-color:black;
