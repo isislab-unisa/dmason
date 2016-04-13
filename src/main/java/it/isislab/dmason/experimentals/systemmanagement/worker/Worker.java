@@ -217,8 +217,12 @@ public class Worker implements Observer {
 
 		}
 	}
+	String lastinfo;
+	int update_info=30;
 	class MasterLostChecker extends Thread{
-
+		public MasterLostChecker() {
+			lastinfo=getInfoWorker().toString();
+		}
 		@Override
 		public void run() {
 
@@ -226,7 +230,12 @@ public class Worker implements Observer {
 
 				try {
 					Thread.sleep(2000);
-					getConnection().publishToTopic(getInfoWorker().toString(), MANAGEMENT,"WORKER");
+					update_info--;
+					if(update_info<=0){
+							lastinfo=getInfoWorker().toString();
+							update_info=30;
+					}
+					getConnection().publishToTopic(lastinfo, MANAGEMENT,"WORKER");
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

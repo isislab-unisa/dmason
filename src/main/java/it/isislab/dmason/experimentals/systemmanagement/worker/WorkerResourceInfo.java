@@ -100,22 +100,24 @@ public class WorkerResourceInfo implements Serializable{
 	public int getNumCores(){return cores;}
 
 
-	//public double getCPULoad(){cpuLoad=os.getSystemLoadAverage(); return cpuLoad;}
-	public double getCPULoad(){
+//	public double getCPULoad(){return 1;}
+	public static double getCPULoad(){
 		String cmdTop = "/usr/bin/top -b -d1 -n2 | grep Cpu | cut -c 9-14";
 		double cpu = -1;
 		try
 		{
 			ProcessBuilder   ps=new ProcessBuilder("/bin/sh","-c",cmdTop);
+			
 			Process pr = ps.start();  
 			BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
 			String line;
 			String lastLine="";
 			while ((line = in.readLine()) != null) {lastLine=line;}
-			pr.waitFor();
+			
 			in.close();
 			pr.destroy();
-			lastLine = lastLine.trim();
+	        pr.waitFor();
+	        lastLine = lastLine.trim();
 			cpu = Double.parseDouble(lastLine.replace(",","."));
 			//System.out.println(cpu);
 
@@ -124,5 +126,8 @@ public class WorkerResourceInfo implements Serializable{
 		catch (Exception e){ return cpu;}
 		
 		return cpu;
+	}
+	public static void main(String[] args) {
+		getCPULoad();
 	}
 }
