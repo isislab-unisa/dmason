@@ -79,7 +79,7 @@
 			<paper-toolbar flex id="mainToolBar" class="horizontal">
 				<div><paper-icon-button icon="menu" paper-drawer-toggle ></paper-icon-button></div>
                 <div class="flex"><span>DMASON Master</span></div>
-                <div><paper-icon-button icon="refresh" onclick="loadWorkers()"></paper-icon-button></div>
+                <!--div><paper-icon-button icon="refresh" onclick="loadWorkers()"></paper-icon-button></div-->
 		    </paper-toolbar>
 
              <div class="content content-main">
