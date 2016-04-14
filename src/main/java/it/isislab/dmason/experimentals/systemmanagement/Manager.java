@@ -17,6 +17,7 @@
 package it.isislab.dmason.experimentals.systemmanagement;
 
 import it.isislab.dmason.exception.DMasonException;
+import it.isislab.dmason.experimentals.systemmanagement.utils.ActiveMQStarter;
 import it.isislab.dmason.experimentals.systemmanagement.worker.Worker;
 import java.io.BufferedReader;
 import java.io.File;
@@ -306,11 +307,9 @@ public class Manager {
 		classlist.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration", "org.eclipse.jetty.plus.webapp.PlusConfiguration");
 		classlist.addBefore("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration");
 
-		//	ctx.addServlet("it.isislab.dmason.experimentals.systemmanagement.master.web.utils.GetConnectedWorkersServlet", "/getWorkers");
-		//		ctx.addServlet(new ServletHolder(new GetConnectedWorkersServlet(master)),"/getWorkers");//
-		//      ctx.addServlet(new ServletHolder(new CreateSimulationFolderServlet(master)), "/createSim"); 
-		//      ctx.addBean(master);
-
+		ActiveMQStarter amqS = new ActiveMQStarter();
+	    amqS.startActivemq();
+	    
 		//5. Setting the handler and starting the Server
 		server.setHandler(ctx);
 		try {
