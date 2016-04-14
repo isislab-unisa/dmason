@@ -40,8 +40,11 @@ public class SimulationControllerServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/plain;charset=UTF-8");
-		if(req.getServletContext().getAttribute("masterServer")==null)
+		
+		if(req.getServletContext().getAttribute("masterServer")==null){
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
+		}
 
 		masterServer =(MultiServerInterface) req.getServletContext().getAttribute("masterServer");
 
@@ -61,9 +64,11 @@ public class SimulationControllerServlet extends HttpServlet {
 				else
 					if(op.equals("pause"))
 						masterServer.pause(i);
-		}else
-			System.out.println("something wrong simulation controller servlet");
-
+			resp.setStatus(HttpServletResponse.SC_OK);
+		}else{
+			System.out.println("something is wrong in simulation controller servlet");
+			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			}
 	}
 
 

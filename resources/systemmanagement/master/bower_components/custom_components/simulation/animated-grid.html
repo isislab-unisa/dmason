@@ -153,7 +153,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             var id = event.target.parentElement.id;
             var op = event.detail.data;
             id=id.substring(id.indexOf("-")+1,id.length);
-
+            var scope = this;
             $.ajax({
                 url:"simulationController",
                 data:"id="+id+"&op="+op
