@@ -69,6 +69,7 @@ public class MasterServerMain {
 		server.setHandler(ctx);
 		//Launch activeMq server
 				ActiveMQStarter amqS = new ActiveMQStarter();
+				
 			    amqS.startActivemq();
 		try {
 			server.start();

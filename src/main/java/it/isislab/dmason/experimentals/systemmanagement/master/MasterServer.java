@@ -262,6 +262,7 @@ public class MasterServer implements MultiServerInterface{
 
 										if(!infoWorkers.containsKey(ID))
 										{
+											
 											processInfoForCopyLog(info,ID);
 											getConnection().createTopic(ID, 1);
 											try {

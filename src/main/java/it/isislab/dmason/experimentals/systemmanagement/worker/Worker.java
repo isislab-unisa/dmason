@@ -251,17 +251,19 @@ public class Worker implements Observer {
 		Random r=new Random();
 		public MasterChecker() {
 			timeToCheck=0;
-
+			
 		}
 		@Override
 		public void run() {
 			do
 			{
+				System.out.println("Start Mater monitor...");
 				if(masterlost==null)
 				{
 
 					masterlost=new MasterLostChecker();
 					masterlost.start();
+					System.out.println("done.");
 
 					try {
 						lock.lock();
@@ -309,9 +311,9 @@ public class Worker implements Observer {
 		catch (Exception e1) {e1.printStackTrace();}
 
 
-		masterchecker=new MasterChecker();
-		masterchecker.start();
-
+		//masterchecker=new MasterChecker();
+	//	masterchecker.start();
+		new MasterLostChecker().start();
 		conn.asynchronousReceive(MANAGEMENT, new MyMessageListener() {
 			@Override
 			public void onMessage(Message msg) {

@@ -26,6 +26,9 @@ import org.apache.activemq.usage.SystemUsage;
 import org.apache.activemq.usage.TempUsage;
 import org.apache.activemq.usage.UsageCapacity;
 
+import it.isislab.dmason.util.connection.Address;
+import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
+
 /**
  * Start Activemq 
  * @author miccar
@@ -54,6 +57,9 @@ public class ActiveMQStarter {
 			IP_ACTIVEMQ=startProperties.getProperty("ipmaster");
 			PORT_ACTIVEMQ=startProperties.getProperty("portmaster");
 			System.out.println(IP_ACTIVEMQ +" "+PORT_ACTIVEMQ);
+			
+			
+
 		} catch (IOException e2) {
 			System.err.println(e2.getMessage());
 		}finally{
@@ -97,6 +103,12 @@ public class ActiveMQStarter {
 			/*     end code for tempUsage setting    */
 			broker.addConnector(address);
 			broker.start();
+			
+			ConnectionNFieldsWithActiveMQAPI conn=new ConnectionNFieldsWithActiveMQAPI();
+			conn.setupConnection(new Address(IP_ACTIVEMQ, PORT_ACTIVEMQ));
+			conn.createTopic("MANAGEMENT", 1);
+			
+			
 		} catch (Exception e1) {e1.printStackTrace();}
 	}
 	
