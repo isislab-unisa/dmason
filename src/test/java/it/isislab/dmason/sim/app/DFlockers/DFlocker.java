@@ -19,6 +19,8 @@ import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import java.awt.Color;
+import java.util.Date;
+
 import sim.engine.SimState;
 import sim.field.continuous.Continuous2D;
 import sim.portrayal.Orientable2D;
@@ -42,12 +44,16 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
     public Double2D lastd = new Double2D(0,0);
     public Color color;
     public boolean dead = false;
-
+    long startTime=0;
+    long globalTime=System.currentTimeMillis();
+    public boolean stampa=false;
     public DFlocker(){}
     public DFlocker(DistributedState<Double2D> sm,Double2D location) 
-    { 
+    {   
     	super(sm);
+    	startTime=System.currentTimeMillis();
     	pos = location;
+    	
     }
     
     public Bag getNeighbors(DistributedState<Double2D> sm)
@@ -191,14 +197,24 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
     	        
 		lastd = new Double2D(dx,dy);
 		pos = new Double2D(flock.flockers.stx(pos.x + dx), flock.flockers.sty(pos.y + dy));
-    	if(flock.schedule.getSteps()%100==0) flock.out.println(pos);      
-		//flock.out.println(pos);
+    	
+		/**
+		 * TESTING CLUSTER
+		 */
+		long time = System.currentTimeMillis()- startTime ;
+		
+		if( ( time>=(1*60*1000) ) && stampa==true){
+			flock.out.println(( (System.currentTimeMillis()-globalTime)  /1000)/60+";"+ flock.schedule.getSteps()+" "); 
+			startTime=System.currentTimeMillis();
+		} 
+
+		
 		try {
 			flock.flockers.setDistributedObjectLocation(pos, this, state);
 		} catch (DMasonException e) {
 			e.printStackTrace();
 		}	
-	}
+			}
 	
 	public Color getColor() 
 	{

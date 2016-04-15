@@ -175,8 +175,9 @@ public class DFlockers extends DistributedState<Double2D>
 			while(flockers.size() != super.NUMAGENTS / super.NUMPEERS)
 			{
 
-
-
+                if(j==0 && TYPE.pos_i==0 && TYPE.pos_j==0) 
+                	f.stampa=true;
+                 
 				f.setPos(flockers.getAvailableRandomLocation());
 
 				//    			if (random.nextBoolean(deadFlockerProbability))
