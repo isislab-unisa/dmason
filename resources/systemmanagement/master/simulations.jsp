@@ -94,10 +94,9 @@
             </template>
             <paper-dialog id="load_sim_log_file"  entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal>
                 <div class="layout horizontal center">
-                    <paper-spinner class="multi" active alt="Loading workers list"></paper-spinner>
+                    <paper-spinner class="multi" active alt="Loading simulations list"></paper-spinner>
                     <span>Loading.....</span>
                 </div>
-
             </paper-dialog>
 
         <script>
