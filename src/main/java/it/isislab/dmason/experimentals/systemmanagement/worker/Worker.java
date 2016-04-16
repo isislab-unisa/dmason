@@ -86,7 +86,6 @@ public class Worker implements Observer {
 	//private static  String workerTemporary; //temporary folder used, temporary zip files are generated in this folder 
 	private static  String simulationsDirectories; // list of simulations' folder
 	private String TOPIC_WORKER_ID=""; // worker's topic , worker write in this topic (publish) for all communication           
-	private String TOPIC_WORKER_ID_MASTER=""; // master topic for this worker, master write all communication to this worker(asynchronous receive listening on this topic)
 	private static String WORKER_IP="127.0.0.1";
 	private int DEFAULT_COPY_SERVER_PORT=1414;
 	private HashMap< Integer, Simulation> simulationList; //simulations' list of this worker
@@ -122,7 +121,9 @@ public class Worker implements Observer {
 			this.PORT_ACTIVEMQ=portMaster;
 			this.conn=new ConnectionNFieldsWithActiveMQAPI();
 			WORKER_IP=getIP(); //set IP for this worker
-
+            
+			
+			
 			connectToMessageBroker(slots);
 
 		} catch (Exception e) {e.printStackTrace();}
@@ -136,8 +137,8 @@ public class Worker implements Observer {
 		this.createConnection();
 
 		this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
-		this.TOPIC_WORKER_ID = this.TOPIC_WORKER_ID.replace(":","");
 		generateFolders(TOPIC_WORKER_ID); //generate folders for worker
+		this.TOPIC_WORKER_ID=""+TOPIC_WORKER_ID.hashCode();
 		simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 		this.slotsNumber=slots;
 
@@ -270,7 +271,6 @@ public class Worker implements Observer {
 						MASTER_ACK=false;
 						while(!MASTER_ACK)
 						{
-							//	System.out.println("Waiting master received my ID "+TOPIC_WORKER_ID.hashCode()+"...");
 
 							waitMaster.await();
 
@@ -322,7 +322,7 @@ public class Worker implements Observer {
 				try {
 					o=parseMessage(msg);
 					MyHashMap map=(MyHashMap) o;
-					if(map.containsKey("WORKER-ID-"+TOPIC_WORKER_ID.hashCode())){
+					if(map.containsKey("WORKER-ID-"+TOPIC_WORKER_ID)){
 						///
 						try {
 
@@ -331,7 +331,7 @@ public class Worker implements Observer {
 							{
 								MASTER_ACK=true;
 								//System.out.println("Master connected...");
-								DEFAULT_COPY_SERVER_PORT=(int)map.get("WORKER-ID-"+TOPIC_WORKER_ID.hashCode());
+								DEFAULT_COPY_SERVER_PORT=(int)map.get("WORKER-ID-"+TOPIC_WORKER_ID);
 								waitMaster.signalAll();
 							}
 
@@ -369,7 +369,7 @@ public class Worker implements Observer {
 	{
 		WorkerInfo info=new WorkerInfo();
 		info.setIP(WORKER_IP);
-		info.setWorkerID(this.TOPIC_WORKER_ID.hashCode()+"");
+		info.setWorkerID(this.TOPIC_WORKER_ID);
 		info.setNumSlots(this.getSlotsNumber());
 		info.setPortCopyLog(PORT_COPY_LOG);
 		return info;
@@ -389,12 +389,12 @@ public class Worker implements Observer {
 	 */
 	private synchronized void listenerForMasterComunication(){
 		try{
-			getConnection().subscribeToTopic(TOPIC_WORKER_ID.hashCode()+"");
-			getConnection().createTopic(TOPIC_WORKER_ID.hashCode()+"",1);
+			getConnection().subscribeToTopic(TOPIC_WORKER_ID);
+			getConnection().createTopic(TOPIC_WORKER_ID,1);
 		}catch(Exception e){ e.printStackTrace();}
 
 
-		getConnection().asynchronousReceive(TOPIC_WORKER_ID.hashCode()+"", new MyMessageListener() {
+		getConnection().asynchronousReceive(TOPIC_WORKER_ID, new MyMessageListener() {
 
 			@Override
 			public void onMessage(Message msg) {
@@ -798,7 +798,7 @@ public class Worker implements Observer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		this.getConnection().publishToTopic(sim.getSimID(), TOPIC_WORKER_ID.hashCode()+"", "simrcv");
+		this.getConnection().publishToTopic(sim.getSimID(), TOPIC_WORKER_ID, "simrcv");
 
 	}
 
@@ -856,7 +856,7 @@ public class Worker implements Observer {
 	public synchronized void getLogBySimIDProcess(int simID,String status, String type){
 		Simulation sim=getSimulationList().get(simID);
 		String folderToCopy=sim.getSimulationFolder()+File.separator+"out";
-		String fileToSend=sim.getSimulationFolder()+File.separator+"out"+File.separator+this.TOPIC_WORKER_ID_MASTER+".zip";
+		String fileToSend=sim.getSimulationFolder()+File.separator+"out"+File.separator+this.TOPIC_WORKER_ID+".zip";
 
 		if(type.equals("log")){
 			if(getLogBySimID(folderToCopy,fileToSend)){
@@ -893,7 +893,7 @@ public class Worker implements Observer {
 	 */
 	private boolean startServiceCopyForLog(String zipFile,int id,String type){
 		LOGGER.info("apro stream copia per "+zipFile+" su porta"+welcomeSocket.getLocalPort());
-		getConnection().publishToTopic(id, TOPIC_WORKER_ID.hashCode()+"", type);
+		getConnection().publishToTopic(id, TOPIC_WORKER_ID, type);
 		try{
 			Thread t=null;
 			LOGGER.info("mi metto in accept");
@@ -941,7 +941,7 @@ public class Worker implements Observer {
 		//DMasonFileSystem.make(workerTemporary);
 		DMasonFileSystem.make(simulationsDirectories);
 		DMasonFileSystem.make(workerDirectory+File.separator+"err");
-		FileOutputStream output = new FileOutputStream(workerDirectory+File.separator+"err"+File.separator+"worker"+TOPIC_WORKER_ID.hashCode()+".err");
+		FileOutputStream output = new FileOutputStream(workerDirectory+File.separator+"err"+File.separator+"worker"+TOPIC_WORKER_ID+".err");
 		PrintStream printOut = new PrintStream(output);
 		System.setErr(printOut);
 	}
