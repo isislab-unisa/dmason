@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
   <groupId>it.isislab.dmason</groupId>
-  <artifactId>mason.jar</artifactId>
+  <artifactId>sigar.jar</artifactId>
   <versioning>
     <release>6</release>
     <versions>
