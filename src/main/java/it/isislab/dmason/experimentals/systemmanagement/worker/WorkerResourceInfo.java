@@ -17,10 +17,11 @@
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import org.hyperic.sigar.CpuPerc;
+import org.hyperic.sigar.Sigar;
+import org.hyperic.sigar.SigarException;
 
 /**
  * 
@@ -31,7 +32,7 @@ import java.text.DecimalFormat;
  */
 public class WorkerResourceInfo implements Serializable{
 
-
+	 private static Sigar sigar = new Sigar();
 	private static final long serialVersionUID = 1L;
 
 	private Runtime runtime=null;
@@ -101,33 +102,50 @@ public class WorkerResourceInfo implements Serializable{
 
 
 //	public double getCPULoad(){return 1;}
-	public static double getCPULoad(){
-		String cmdTop = "/usr/bin/top -b -d1 -n2 | grep Cpu | cut -c 9-14";
-		double cpu = -1;
-		try
-		{
-			ProcessBuilder   ps=new ProcessBuilder("/bin/sh","-c",cmdTop);
-			
-			Process pr = ps.start();  
-			BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-			String line;
-			String lastLine="";
-			while ((line = in.readLine()) != null) {lastLine=line;}
-			
-			in.close();
-			pr.destroy();
-	        pr.waitFor();
-	        lastLine = lastLine.trim();
-			cpu = Double.parseDouble(lastLine.replace(",","."));
+	public static double  getCPULoad(){
+//		String cmdTop = "/usr/bin/top -b -d1 -n2 | grep Cpu | cut -c 9-14";
+//		double cpu = -1;
+//		try
+//		{
+//			ProcessBuilder   ps=new ProcessBuilder("/bin/sh","-c",cmdTop);
+//			
+//			Process pr = ps.start();  
+//			BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+//			String line;
+//			String lastLine="";
+//			while ((line = in.readLine()) != null) {lastLine=line;}
+//			
+//			in.close();
+//			pr.destroy();
+//	        pr.waitFor();
+//	        lastLine = lastLine.trim();
+//			cpu = Double.parseDouble(lastLine.replace(",","."));
 			//System.out.println(cpu);
 
 
-		}
-		catch (Exception e){ return cpu;}
+	//	}
+		//catch (Exception e){ return cpu;}
 		
-		return cpu;
+		//return cpu;
+		
+		double value=-1;
+	
+	    CpuPerc cpuperc = null;
+	 
+	    try {
+	    	sigar.getCpuList();
+	        cpuperc = sigar.getCpuPerc();
+	    } catch (SigarException se) {
+	        value=-1;
+	    	return value;
+	    }
+	    
+	    value=cpuperc.getCombined()*100;
+	    value=Math.round(value*100);
+	    value/=100;
+	    return value;
+
 	}
-	public static void main(String[] args) {
-		getCPULoad();
-	}
+	
+	
 }
