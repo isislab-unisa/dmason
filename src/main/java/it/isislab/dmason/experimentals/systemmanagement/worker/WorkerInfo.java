@@ -67,7 +67,7 @@ public class WorkerInfo implements Serializable{
 		setNumSlots(info.getNumCores());
 		setAvailableHeap(info.getAvailableHeapMb());
 		setBusyHeap(info.getBusyHeapMb());
-		setCpuLoad(info.getCPULoad());
+		setCpuLoad(WorkerResourceInfo.getCPULoad());
 		setMaxHeap(info.getMaxHeapMb());
 	}
 

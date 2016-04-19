@@ -24,6 +24,8 @@ import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 
 
+
+
 /**
  * 
  * @author Michele Carillo
@@ -137,7 +139,8 @@ public class WorkerResourceInfo implements Serializable{
 	    	sigar.getCpuList();
 	        cpuperc = sigar.getCpuPerc();
 	    } catch (SigarException se) {
-	        value=-1;
+	        se.printStackTrace();
+	    	value=-1;
 	    	return value;
 	    }
 	    
@@ -148,5 +151,7 @@ public class WorkerResourceInfo implements Serializable{
 
 	}
 	
-	
+	public static void main(String[] args) {
+		System.out.println(WorkerResourceInfo.getCPULoad());
+	}
 }
