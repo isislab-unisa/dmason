@@ -57,7 +57,7 @@ function open_dialog_setting_new_simulation(){
         document.querySelector('#miss-worker-selection').open();
         return;
     }
-
+    //resetForm();
     open_dialog_by_ID("add-simulation-paper-dialog");
 
 }
@@ -90,7 +90,7 @@ $(
                 load_tiles_monitoring();
             },1000);
 
-            loadJarsList();
+            //loadJarsList();
         }
         else
         if(window.location.pathname=="/simulations.jsp") {
@@ -192,7 +192,7 @@ function _loadWorkers(_message){
                 $(grid).append(node);
 
             }else{
-                console.log(w.workerID);
+                //console.log(w.workerID);
                 delete old_list["\'w-"+w.workerID+"\'"];
                 $("#w-cpu-"+w.workerID).text("CPU:"+w.cpuLoad+" %");
                 $("w-max-heap-"+w.workerID).text("Max "+w.maxHeap+" MB</span></div>");
@@ -449,8 +449,6 @@ function _OnsubmitSimulation(event) {
         formData.append(myCheckBoxConnection.id, "mpi");
     }
 
-    console.log(formData);
-
     $.ajax({
         url:"submitSimulation",
         type:'POST',
@@ -460,21 +458,25 @@ function _OnsubmitSimulation(event) {
         processData: false,
         success: function(result){
             //remove input tag added previusly
-            $("#workerList").remove();
             var dialog = document.getElementById("add-simulation-paper-dialog");
             maxRepeat =0;
-            resetForm(event);
+            $("#workerList").remove();
+            resetForm();
             dialog.close();
             window.location="simulations.jsp";
         }
     });
 }
 
-function resetForm(event) {
+function resetForm() {
+    document.querySelector("#sendSimulationForm").reset();
+    var input_file = $("#simulation-jar-chooser");
+    input_file.replaceWith(input_file.val('').clone(true));
     progress = document.querySelector('paper-progress');
     progress.style.display = "none";
     document.querySelector("#submit_btn").disabled = false;
-    document.querySelector("#sendSimulationForm").reset();
+
+
 }
 
 
@@ -560,44 +562,3 @@ function get_history_info(result){
 }
 
 
-function loadJarsList(){
-    $.ajax({
-        url:"getJarsList",
-        success: function(result){
-            _loadJarList(result);
-
-        }
-    });
-
-}
-
-
-function _loadJarList(result){
-    if(!result) return;
-    var list_jar = JSON.parse(result);
-    if(!list_jar.hasOwnProperty("jars")) return;
-
-    var examplesList=list_jar.jars[0];
-    var customsList=list_jar.jars[1];
-    var drowdown_example_sims_list = document.querySelector("#loader_sims_list_example");
-    /*
-    var menu="",i;
-
-    for(i=0; i<examplesList.examples.length; i++) {
-        var f=examplesList.examples[i];
-        menu += "<paper-item name=\"" + f.name+"\" label=\"" + f.path + "\">" + f.name + "</paper-item>";
-    }
-    $(examples_menu).after(menu);
-    menu="";
-    for(var f, i=0; f = customsList.customs[i]; i++){
-        menu+="<paper-item label=\""+f.path+"\">"+ f.name+"</paper-item>";
-
-    }
-    $(customs_menu).after(menu);
-    */
-    if(examplesList.examples.length>0)
-        drowdown_example_sims_list.examples=examplesList.examples;
-
-    if(customsList.customs.length>0)
-        drowdown_example_sims_list.customs=customsList.customs;
-}
