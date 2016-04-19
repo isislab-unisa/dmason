@@ -107,10 +107,16 @@
 			<artifactId>jfreechart</artifactId>
 			<version>1.0.15</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>it.isislab.dmason</groupId>
 			<artifactId>mason.18.jar</artifactId>
 			<version>18</version>
+		</dependency>
+		<dependency>
+			<groupId>it.isislab.dmason</groupId>
+			<artifactId>sigar.jar</artifactId>
+			<version>6</version>
 		</dependency>
 		<dependency>
 			<groupId>it.isislab.dmason</groupId>
