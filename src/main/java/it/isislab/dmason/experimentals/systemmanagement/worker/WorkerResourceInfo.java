@@ -16,12 +16,13 @@
  */
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
-
 import java.io.Serializable;
 import java.text.DecimalFormat;
+
 import org.hyperic.sigar.CpuPerc;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
+
 
 /**
  * 
@@ -32,7 +33,7 @@ import org.hyperic.sigar.SigarException;
  */
 public class WorkerResourceInfo implements Serializable{
 
-	 private static Sigar sigar = new Sigar();
+	private static Sigar sigar = new Sigar();
 	private static final long serialVersionUID = 1L;
 
 	private Runtime runtime=null;

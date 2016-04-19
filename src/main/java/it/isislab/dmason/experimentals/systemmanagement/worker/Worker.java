@@ -230,7 +230,7 @@ public class Worker implements Observer {
 			while(true){
 
 				try {
-					Thread.sleep(2000);
+					Thread.sleep(5000);
 				//	update_info--;
 					//if(update_info<=0){
 						//	lastinfo=getInfoWorker().toString();
