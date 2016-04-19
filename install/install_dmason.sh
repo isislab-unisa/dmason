@@ -1,34 +1,35 @@
 #!/bin/bash
 
-DMASON_INSTALL_FOLDER="dmason_install"
-SKIP_JAVA_INSTALL=false;
-SKIP_MAVEN_INSTALL=false;
+DMASON_TMP_FOLDER="dmason_install"
+SKIP_JAVA_INSTALL=''
+SKIP_MAVEN_INSTALL=''
+DMASON_HOME="$HOME/dmason"
 
 if [ $(id -u) -ne 0 ]; then
     echo "You have to run this script as root"
     exit -1
 fi
 
-while getopts "java:maven" opt ; do
+while getopts "jm" opt ; do
 		
 	case $opt in
-		java) 
-			SKIP_JAVA_INSTALL=true;
+		j) 
+			SKIP_JAVA_INSTALL="true"
 			;;
-		maven)
-			SKIP_MAVEN_INSTALL=true;
+		m)
+			SKIP_MAVEN_INSTALL="true"
 			;;
 	esac
 done
 
 
 # create current directory
-mkdir $DMASON_INSTALL_FOLDER
-cd $DMASON_INSTALL_FOLDER
+mkdir $DMASON_TMP_FOLDER
+cd $DMASON_TMP_FOLDER
 
 #download java and set JAVA_HOME env
 JAVA_HOME="$HOME/java/jdk1.8.0_73"
-if [ ! $SKIP_JAVA_INSTALL ]; then
+if [ -z "$SKIP_JAVA_INSTALL" ]; then
 	wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u73-b02/jdk-8u73-linux-x64.tar.gz
 	tar xzvf jdk-8u73-linux-x64.tar.gz
 	mkdir -p "$HOME/java"
@@ -42,7 +43,7 @@ fi
 export JAVA_HOME
 export PATH=$PATH:$JAVA_HOME
 
-if [ ! $SKIP_JAVA_INSTALL ]; then
+if [ -z "$SKIP_JAVA_INSTALL" ]; then
 	update-alternatives --install "/usr/bin/java" "java" "$JAVA_HOME/bin/java" 1 
 	update-alternatives --set "java" "JAVA_HOME/bin/java" 
 	update-alternatives --install "/usr/bin/javac" "javac" "$JAVA_HOME/bin/javac" 1 
@@ -54,8 +55,8 @@ fi
 
 
 #download maven and set MAVEN_HOME env
-if [ ! $SKIP_MAVEN_INSTALL ]; then
-	wget http://apache.panu.it/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz#
+if [ -z "$SKIP_MAVEN_INSTALL" ]; then
+	wget http://apache.panu.it/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
 	tar xzvf apache-maven-3.3.9-bin.tar.gz
 	mkdir -p "$HOME/maven"
 	cp -r apache-maven-3.3.9 "$HOME/maven"
@@ -80,14 +81,14 @@ cd dmason-DMASON3.1-beta
 mvn -Dmaven.test.skip=true clean package
 
 #create folder of executing environment
-mkdir -p "$HOME/dmason"
+mkdir -p "$DMASON_HOME"
 
-cp -r target/DMASON-3.1.jar "$HOME/dmason"
-cp -r target/resources "$HOME/dmason"
-chown -R $SUDO_USER:$SUDO_USER "$HOME/dmason"
+cp -r target/DMASON-3.1.jar "$DMASON_HOME"
+cp -r target/resources "$DMASON_HOME"
+chown -R $SUDO_USER:$SUDO_USER "$DMASON_HOME"
 
-#remove current directory CONTRolla
+#remove current directory
 cd ../..
-rm -r $DMASON_INSTALL_FOLDER
+rm -r $DMASON_TMP_FOLDER
 #display folder
-echo "DMASON has been installed in $HOME/dmason"
+echo "DMASON has been installed in $DMASON_HOME"
