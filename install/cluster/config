@@ -250,11 +250,11 @@ EXTENDS=2xt2.micro
 CLUSTER_SIZE = 4
 
 [cluster 8xt2.micro]
-EXTENDS=2xt3.micro
+EXTENDS=2xt2.micro
 CLUSTER_SIZE = 8
 
 [cluster 16xt2.micro]
-EXTENDS=2xt3.micro
+EXTENDS=2xt2.micro
 CLUSTER_SIZE = 16
 
 
