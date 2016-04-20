@@ -82,5 +82,5 @@ CLUSTER_SIZE = 16
 ```
 
 
-# Use conditions
+# Usage condition
 For free AWS account using an instance type different from a t2.micro will involve a payment. If you are a student or a some members of a Instruction Institute, you can require a educational account which will provide you few credits to start.
