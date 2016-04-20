@@ -43,7 +43,7 @@ CLUSTER_SIZE = 2
 NODE_INSTANCE_TYPE = c3.xlarge
 MASTER_INSTANCE_TYPE = c3.xlarge
 AVAILABILITY_ZONE = us-east-1a
-#SPOT_BID = 0.02
+SPOT_BID = 0.02
 
 [cluster 4xc3.xlarge]
 EXTENDS=2xc3.xlarge
@@ -82,5 +82,5 @@ CLUSTER_SIZE = 16
 ```
 
 
-# Use conditions
+# Usage condition
 For free AWS account using an instance type different from a t2.micro will involve a payment. If you are a student or a some members of a Instruction Institute, you can require a educational account which will provide you few credits to start.
