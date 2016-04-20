@@ -205,7 +205,8 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
 		
 		if( ( time>=(1*60*1000) ) && stampa==true){
 			
-			System.out.println(( (System.currentTimeMillis()-globalTime)  /1000)/60+";"+ flock.schedule.getSteps()/*+" "+new Date(System.currentTimeMillis())*/); 
+			//System.out.println(( (System.currentTimeMillis()-globalTime)  /1000)/60+";"+ flock.schedule.getSteps()/*+" "+new Date(System.currentTimeMillis())*/); 
+			flock.out.println(( (System.currentTimeMillis()-globalTime)  /1000)/60+";"+ flock.schedule.getSteps());
 			startTime=System.currentTimeMillis();
 		} 
 
