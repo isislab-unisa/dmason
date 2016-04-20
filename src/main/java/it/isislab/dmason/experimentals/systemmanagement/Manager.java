@@ -71,7 +71,7 @@ public class Manager {
 	private List<String> arguments = new ArrayList<String>();
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		System.setProperty("java.library.path","./resources/sigar");
 		try {
 
 			new Manager().doMain(args);
