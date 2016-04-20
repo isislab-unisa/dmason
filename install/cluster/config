@@ -194,7 +194,7 @@ CLUSTER_SIZE = 2
 NODE_INSTANCE_TYPE = c3.large
 MASTER_INSTANCE_TYPE = c3.large
 AVAILABILITY_ZONE = us-east-1a
-#SPOT_BID = 0.02
+SPOT_BID = 0.02
 
 [cluster 4xc3.large]
 EXTENDS=2xc3.large
