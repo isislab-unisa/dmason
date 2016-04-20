@@ -115,11 +115,6 @@
 		</dependency>
 		<dependency>
 			<groupId>it.isislab.dmason</groupId>
-			<artifactId>sigar.jar</artifactId>
-			<version>6</version>
-		</dependency>
-		<dependency>
-			<groupId>it.isislab.dmason</groupId>
 			<artifactId>mpi_1.8.2.jar</artifactId>
 			<version>18</version>
 		</dependency>
@@ -145,6 +140,14 @@
 			<version>5.7.0</version>
 		</dependency>
 
+
+
+       <dependency>
+	<groupId>org.fusesource</groupId>
+	<artifactId>sigar</artifactId>
+	<version>1.6.4</version>
+</dependency>
+       
 
 
 		<!-- old conf > <groupId>org.apache.activemq</groupId> <artifactId>activemq-all</artifactId> 

@@ -29,7 +29,7 @@ public class WorkerMain {
 
 
 	public static void main(String[] args) throws Exception {
-
+		System.setProperty("java.library.path","./resources/sigar");
 		
 		///System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
 		
