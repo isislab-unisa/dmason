@@ -184,7 +184,7 @@ public class MasterServer implements MultiServerInterface{
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
-					
+
 					e.printStackTrace();
 				}
 				synchronized (this) {
@@ -252,7 +252,7 @@ public class MasterServer implements MultiServerInterface{
 
 										if(!infoWorkers.containsKey(ID))
 										{
-											
+
 											processInfoForCopyLog(info,ID);
 											getConnection().createTopic(ID, 1);
 											try {
@@ -740,15 +740,15 @@ public class MasterServer implements MultiServerInterface{
 
 		if(assignmentToworkers==null) {return false;}
 
-		
-		
-		
+
+
+
 		getCounterAckSimRcv().put(simul.getSimID(), new AtomicInteger(0));
 
 		for (String topicName: assignmentToworkers.keySet()){
-				simul.setListCellType(assignmentToworkers.get(topicName));
-				getConnection().publishToTopic(simul, topicName, "newsim");}
-		
+			simul.setListCellType(assignmentToworkers.get(topicName));
+			getConnection().publishToTopic(simul, topicName, "newsim");}
+
 
 		String pathJar=simul.getJarPath();
 
@@ -813,6 +813,31 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
+	void waitEndSim(int id){
+		int paramTest=1;
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				/***************TESTING*********************/
+				long start=System.currentTimeMillis();
+		        boolean check=true;
+				while(true && check){
+					long nowTime=System.currentTimeMillis();
+					long checkTime=nowTime-start;				
+					if(checkTime> paramTest*60*1000) { 
+						check=false;
+						stop(id);
+						
+					}
+				}	
+				/*********END******TESTING*********************/
+				
+			}
+		}).start();
+	
+	}
+
 
 	///////////methods  START STOP PAUSE LOG	
 
@@ -831,7 +856,7 @@ public class MasterServer implements MultiServerInterface{
 			this.getConnection().publishToTopic(iDSimToExec, workerTopic, "start");
 		}
 
-
+		waitEndSim(idSimulation); 
 	}
 
 
