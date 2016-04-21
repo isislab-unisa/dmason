@@ -83,7 +83,6 @@ public class Worker implements Observer {
 	private static final String MANAGEMENT="DMASON-MANAGEMENT";
 	private static String dmasonDirectory=System.getProperty("user.dir")+File.separator+"dmason";
 	private static  String workerDirectory; // worker main directory
-	//private static  String workerTemporary; //temporary folder used, temporary zip files are generated in this folder 
 	private static  String simulationsDirectories; // list of simulations' folder
 	private String TOPIC_WORKER_ID=""; // worker's topic , worker write in this topic (publish) for all communication           
 	private static String WORKER_IP="127.0.0.1";
@@ -92,6 +91,7 @@ public class Worker implements Observer {
 	private SimpleDateFormat sdf=null;
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 	private FindAvailablePort availableport;
+	
 	//Socket for log services
 	protected Socket sock=null;
 	protected ServerSocket welcomeSocket;
@@ -198,7 +198,7 @@ public class Worker implements Observer {
 						}
 					};
 				}).start();
-				//	System.exit(0);
+			
 				
 				try {
 					lockconnection.lock();
@@ -218,29 +218,19 @@ public class Worker implements Observer {
 
 		}
 	}
-	//String lastinfo;
-	//int update_info=30;
+	
 	class MasterLostChecker extends Thread{
 		public MasterLostChecker() {
-			//lastinfo=getInfoWorker().toString();
+	
 		}
 		@Override
 		public void run() {
 
 			while(true){
-
 				try {
 					Thread.sleep(3000);
-				//	update_info--;
-					//if(update_info<=0){
-						//	lastinfo=getInfoWorker().toString();
-							//update_info=30;
-					//}
 					getConnection().publishToTopic(getInfoWorker().toString(), MANAGEMENT,"WORKER");
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				} catch (InterruptedException e) {e.printStackTrace();}
 			}
 
 		}
@@ -509,7 +499,7 @@ public class Worker implements Observer {
 			}
 
 			GeneralParam params = null;
-			String prefix=null;
+			//String prefix="";
 			Simulation simulation=getSimulationList().get(id);
 
 			List<CellType> cellstype=simulation.getCellTypeList();
@@ -526,7 +516,7 @@ public class Worker implements Observer {
 
 			System.err.println("TODO MANAGE CONNECTION MPI");
 			long step=simulation.getNumberStep();
-			prefix= simulation.getTopicPrefix();
+			//prefix= simulation.getTopicPrefix();
 
 			params=(simulation.getMode()==DistributedField2D.UNIFORM_PARTITIONING_MODE)?
 					new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ):
@@ -540,8 +530,8 @@ public class Worker implements Observer {
 						params.setJ(cellType.pos_j);
 						FileOutputStream output = new FileOutputStream(simulation.getSimulationFolder()+File.separator+"out"+File.separator+cellType+".out");
 						PrintStream printOut = new PrintStream(output);
-
-						CellExecutor celle=(new CellExecutor(params, prefix,simulation.getSimName()+""+simulation.getSimID(), simulation.getJarPath(),printOut,simulation.getSimID(),
+                        //simulation.getSimName()+""+simulation.getSimID()
+						CellExecutor celle=(new CellExecutor(params,printOut,simulation.getSimID(),
 								(cellstype.indexOf(cellType)==0?true:false)));
 
 						executorThread.get(simulation.getSimID()).add(celle);
@@ -611,15 +601,16 @@ public class Worker implements Observer {
 		final Lock lock = new ReentrantLock();
 		final Condition isPause  = lock.newCondition(); 
 
-		public CellExecutor(GeneralParam params, String prefix, String folder_name,String jar_path, PrintStream out,int sim_id,boolean master_cell) {
+		public CellExecutor(GeneralParam params,PrintStream out,int sim_id,boolean master_cell) {
 			super();
 			this.params = params;
-			this.prefix=prefix;
-			this.folder_sim=folder_name;
-			this.jar_pathname=jar_path;
+			this.sim_id=sim_id;
+			Simulation sim=getSimulationList().get(sim_id);
+			this.prefix=sim.getTopicPrefix();//prefix;
+			this.folder_sim=sim.getSimulationFolder();//folder_name;
+			this.jar_pathname=sim.getJarPath();//jar_path;
 			dis=makeSimulation( params, prefix, jar_pathname);
 			dis.setOutputStream(out);
-			this.sim_id=sim_id;
 			this.masterCell=master_cell;
 		}
 
@@ -795,7 +786,6 @@ public class Worker implements Observer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		this.getConnection().publishToTopic(sim.getSimID(), TOPIC_WORKER_ID, "simrcv");
@@ -820,11 +810,11 @@ public class Worker implements Observer {
 			while(e.hasMoreElements()){
 
 				JarEntry je=(JarEntry)e.nextElement();
-				String classPath = je.getName();
+				//String classPath = je.getName();
 				if(!je.getName().contains(".class")) continue;
 
-				String[] nameclass = classPath.split("/");
-				nameclass[0]=((nameclass[nameclass.length-1]).split(".class"))[0];
+				//String[] nameclass = classPath.split("/");
+			//	nameclass[0]=((nameclass[nameclass.length-1]).split(".class"))[0];
 
 				Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
 
