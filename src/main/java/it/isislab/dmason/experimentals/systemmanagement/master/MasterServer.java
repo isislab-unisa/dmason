@@ -567,7 +567,6 @@ public class MasterServer implements MultiServerInterface{
 			//riempo una hashmap con topic-numcell per i worker della sim
 			for(String topicToFind: topicWorkers ){
 				String numcells=listAllWorkers.get(topicToFind).split(",")[0].split(":")[1];
-				System.out.println("stampa numero celle "+numcells);
 				slotsForWorkers.put(topicToFind, Integer.parseInt(numcells));
 			}
 
@@ -683,7 +682,6 @@ public class MasterServer implements MultiServerInterface{
 
 	protected boolean validateSimulationJar(String pathJar)
 	{
-		System.out.println(pathJar);
 
 		String path_jar_file=pathJar;
 		try{

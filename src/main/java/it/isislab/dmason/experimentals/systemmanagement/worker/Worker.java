@@ -248,7 +248,7 @@ public class Worker implements Observer {
 		public void run() {
 			do
 			{
-				System.out.println("Start Mater monitor...");
+				System.out.println("Start Master monitor...");
 				if(masterlost==null)
 				{
 
@@ -400,7 +400,7 @@ public class Worker implements Observer {
 
 						Simulation sim=(Simulation)map.get("newsim");
 						createNewSimulationProcess(sim);
-						System.out.println("apro straem su porta "+DEFAULT_COPY_SERVER_PORT);
+						//System.out.println("apro straem su porta "+DEFAULT_COPY_SERVER_PORT);
 						downloadFile(sim,DEFAULT_COPY_SERVER_PORT);
 						List<CellType> cellstype=sim.getCellTypeList();
 						for (CellType cellType : cellstype) {
@@ -777,7 +777,7 @@ public class Worker implements Observer {
 		try {
 			clientSocket = new Socket( this.IP_ACTIVEMQ , serverSocketPort );
 			Thread tr=null;
-			System.out.println("copio in "+localJarFilePath);
+			System.out.println("copy in "+localJarFilePath);
 			tr=new Thread(new ClientSocketCopy(clientSocket, localJarFilePath));
 			tr.start();
 			tr.join();
@@ -850,7 +850,7 @@ public class Worker implements Observer {
 
 		if(type.equals("log")){
 			if(getLogBySimID(folderToCopy,fileToSend)){
-				System.out.println("File zip created to "+fileToSend);			
+				System.out.println("Zip File created to "+fileToSend);			
 				if(status.equals(Simulation.STARTED))playSimulationProcessByID(simID);
 
 				if(startServiceCopyForLog(fileToSend,simID,"logready"))
@@ -863,7 +863,7 @@ public class Worker implements Observer {
 			if(getLogBySimID(folderToCopy,fileToSend)){
 
 				if(startServiceCopyForLog(fileToSend,simID,"loghistory")){
-					System.out.println("File zip creato nella dir "+fileToSend);
+					System.out.println("Zip File created to "+fileToSend);
 					DMasonFileSystem.delete(new File(fileToSend));
 				}	
 			}
@@ -908,7 +908,7 @@ public class Worker implements Observer {
 
 
 	private boolean getLogBySimID(String folderToCopy, String zipPath){
-		System.out.println("Copy file from folder "+folderToCopy+" to "+zipPath);
+		//System.out.println("Copy file from folder "+folderToCopy+" to "+zipPath);
 		return ZipDirectory.createZipDirectory(zipPath, folderToCopy);	   
 
 	}
