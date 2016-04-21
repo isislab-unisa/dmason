@@ -812,8 +812,11 @@ public class MasterServer implements MultiServerInterface{
 
 	}
 
-
-	void waitEndSim(int id){
+    /**
+     * TESTING CLUSTER 
+     * @param id
+     */
+	private void waitEndSim(int id){
 		int paramTest=1;
 		new Thread(new Runnable() {
 			
@@ -856,7 +859,7 @@ public class MasterServer implements MultiServerInterface{
 			this.getConnection().publishToTopic(iDSimToExec, workerTopic, "start");
 		}
 
-		waitEndSim(idSimulation); 
+		//waitEndSim(idSimulation); 
 	}
 
 
