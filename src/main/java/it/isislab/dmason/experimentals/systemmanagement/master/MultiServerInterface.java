@@ -29,7 +29,6 @@ public interface MultiServerInterface {
 
 	
 	
-	public void checkAllConnectedWorkers();
 	public void start(int idSimulation);
 	public void stop(int idSimulation);
 	public void pause(int idSimulation);	

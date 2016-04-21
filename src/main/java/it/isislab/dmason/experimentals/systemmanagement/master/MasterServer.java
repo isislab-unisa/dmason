@@ -84,8 +84,6 @@ public class MasterServer implements MultiServerInterface{
 	private static final String JARS_EXAMPLE_PATH="resources/examples";
 
 	//connection and topic
-	private static final String MASTER_TOPIC="MASTER";
-	private static final String MASTER_TOPIC_DISCOVERY="MASTER-DISCOVERY";
 	private static final String MANAGEMENT="DMASON-MANAGEMENT";
 	private  String IP_ACTIVEMQ="";
 	private  String PORT_ACTIVEMQ="";
@@ -149,10 +147,6 @@ public class MasterServer implements MultiServerInterface{
 		loadJarsExample();
 
 
-
-		//DISCOVERY WORKER THREADS
-		//discoverNewWorker();
-
 		//topicPrefix of connected workers  
 		this.topicIdWorkers=new HashMap<String,String>();
 		//this.topicIdWorkersForSimulation=new HashMap<>();
@@ -171,10 +165,8 @@ public class MasterServer implements MultiServerInterface{
 			//LOGGER.info("copy server start on port "+DEFAULT_PORT_COPY_SERVER);
 			welcomeSocket = new ServerSocket(DEFAULT_PORT_COPY_SERVER,1000,InetAddress.getByName(this.IP_ACTIVEMQ));
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -192,7 +184,7 @@ public class MasterServer implements MultiServerInterface{
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				}
 				synchronized (this) {
@@ -204,7 +196,6 @@ public class MasterServer implements MultiServerInterface{
 						ttl-=100;
 						if(ttl <= 0)
 						{
-							//	infoWorkers.remove(workerid);
 							toRemove.add(workerid);
 						}
 						ttlinfoWorkers.put(workerid,ttl);
@@ -237,7 +228,6 @@ public class MasterServer implements MultiServerInterface{
 
 						@Override
 						public void onMessage(Message msg) {
-							// TODO Auto-generated method stub
 							Object o;
 							try {
 								o=parseMessage(msg);
@@ -268,7 +258,6 @@ public class MasterServer implements MultiServerInterface{
 											try {
 												getConnection().subscribeToTopic(ID);
 											} catch (Exception e1) {
-												// TODO Auto-generated catch block
 												e1.printStackTrace();
 											}
 											final String topic=ID;
@@ -354,26 +343,10 @@ public class MasterServer implements MultiServerInterface{
 		try {
 			DMasonFileSystem.copyFolder(src, dest);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-
-
-	/**
-	 * Check if all workers connected is on 
-	 */
-	public void checkAllConnectedWorkers(){
-		/*
-		//for (String topic : getTopicIdWorkers().keySet()) {
-		synchronized (infoWorkers) {
-			for (String topic : infoWorkers.keySet()) {
-				checkWorker(topic);
-			}
-		}*/
-
-	}
 
 	/**
 	 * Download logs with socket 

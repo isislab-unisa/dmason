@@ -85,7 +85,6 @@
              <div class="content content-main">
 
                 <paper-dialog opened id="load_workers_dialog"  entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal>
-                        <% masterServer.checkAllConnectedWorkers();%>
                         <div class="layout horizontal center">
                             <paper-spinner class="multi" active alt="Loading workers list"></paper-spinner>
                             <span>Loading workers list.....</span>
