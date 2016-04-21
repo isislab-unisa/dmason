@@ -76,6 +76,7 @@ import javax.jms.Message;
  */
 public class Worker implements Observer {
 
+
 	private String IP_ACTIVEMQ="";   
 	private String PORT_ACTIVEMQ="";
 	private int PORT_COPY_LOG;
@@ -91,7 +92,7 @@ public class Worker implements Observer {
 	private SimpleDateFormat sdf=null;
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 	private FindAvailablePort availableport;
-	
+
 	//Socket for log services
 	protected Socket sock=null;
 	protected ServerSocket welcomeSocket;
@@ -121,9 +122,9 @@ public class Worker implements Observer {
 			this.PORT_ACTIVEMQ=portMaster;
 			this.conn=new ConnectionNFieldsWithActiveMQAPI();
 			WORKER_IP=getIP(); //set IP for this worker
-            
-			
-			
+
+
+
 			connectToMessageBroker(slots);
 
 		} catch (Exception e) {e.printStackTrace();}
@@ -151,7 +152,7 @@ public class Worker implements Observer {
 		conn.addObserver(this); //EXPERIMENTAL 
 
 		this.startMasterComunication();
-		
+
 		System.out.println("connected.");
 	}
 	private boolean MASTER_ACK=false;
@@ -169,37 +170,37 @@ public class Worker implements Observer {
 	 * EXPERIMENTAL
 	 */
 	public void update(Observable obs, Object arg) {
-		
+
 		if (obs==conn){
-			
+
 			if(!conn.isConnected()){
-				
+
 				System.exit(0);
 				CONNECTED=false;
 				(new Thread(){
 					public void run() {
-						
+
 						try {
 							masterchecker.interrupt();
 							connectToMessageBroker(slotsNumber);
 							try {
-								
+
 								lockconnection.lock();
 								CONNECTED=true;
 								waitconnection.signalAll();
-					
+
 							}finally {
 								lockconnection.unlock();
 							}
-							
+
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					};
 				}).start();
-			
-				
+
+
 				try {
 					lockconnection.lock();
 					while(!CONNECTED)
@@ -213,15 +214,15 @@ public class Worker implements Observer {
 				}finally {
 					lockconnection.unlock();
 				}
-				
+
 			}
 
 		}
 	}
-	
+
 	class MasterLostChecker extends Thread{
 		public MasterLostChecker() {
-	
+
 		}
 		@Override
 		public void run() {
@@ -242,7 +243,7 @@ public class Worker implements Observer {
 		Random r=new Random();
 		public MasterChecker() {
 			timeToCheck=0;
-			
+
 		}
 		@Override
 		public void run() {
@@ -300,9 +301,6 @@ public class Worker implements Observer {
 		} 
 		catch (Exception e1) {e1.printStackTrace();}
 
-
-		//masterchecker=new MasterChecker();
-	//	masterchecker.start();
 		new MasterLostChecker().start();
 		conn.asynchronousReceive(MANAGEMENT, new MyMessageListener() {
 			@Override
@@ -530,7 +528,7 @@ public class Worker implements Observer {
 						params.setJ(cellType.pos_j);
 						FileOutputStream output = new FileOutputStream(simulation.getSimulationFolder()+File.separator+"out"+File.separator+cellType+".out");
 						PrintStream printOut = new PrintStream(output);
-                        //simulation.getSimName()+""+simulation.getSimID()
+						//simulation.getSimName()+""+simulation.getSimID()
 						CellExecutor celle=(new CellExecutor(params,printOut,simulation.getSimID(),
 								(cellstype.indexOf(cellType)==0?true:false)));
 
@@ -622,7 +620,7 @@ public class Worker implements Observer {
 		public  void run() {
 			LOGGER.info("Start cell for "+params.getMaxStep());
 			int i=0;
-
+			boolean test=false;
 
 			while(i!=params.getMaxStep() && run)
 			{   
@@ -649,9 +647,25 @@ public class Worker implements Observer {
 				dis.schedule.step(dis);
 				i++;
 
+
+				/***************TESTING*********************/
+				
+				long nowTime=System.currentTimeMillis();
+				long check=nowTime-getSimulationList().get(sim_id).getStartTime();				
+				if(check> 15*60*1000) { 
+					
+					this.stopThread();  
+					getLogBySimIDProcess(sim_id,Simulation.STOPPED,"history");
+					}
+					
+				/*********END******TESTING*********************/
+
 			}
 
-			if(i==params.getMaxStep() && masterCell){
+
+
+			if(  (i==params.getMaxStep() && masterCell)) {
+				//CHECKKKKKKKK
 				getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
 				getSimulationList().get(sim_id).setStatus(Simulation.FINISHED);
 				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
@@ -814,7 +828,7 @@ public class Worker implements Observer {
 				if(!je.getName().contains(".class")) continue;
 
 				//String[] nameclass = classPath.split("/");
-			//	nameclass[0]=((nameclass[nameclass.length-1]).split(".class"))[0];
+				//	nameclass[0]=((nameclass[nameclass.length-1]).split(".class"))[0];
 
 				Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
 
