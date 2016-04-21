@@ -68,16 +68,28 @@ export PATH=$PATH:$MAVEN_HOME:$MAVEN_HOME/bin
 
 
 #download dmason and unzip project
-#alpha version 
+#master version 
 #wget https://github.com/isislab-unisa/dmason/archive/master.zip
 #unzip master.zip
-wget https://github.com/isislab-unisa/dmason/archive/DMASON3.1-beta.zip
-unzip DMASON3.1-beta.zip
 
+#beta version
+#wget https://github.com/isislab-unisa/dmason/archive/DMASON3.1-beta.zip
+#unzip DMASON3.1-beta.zip
+
+# beta-2 version
+wget https://github.com/isislab-unisa/dmason/archive/DMASON3.1-beta.2.zip
+unzip DMASON3.1-beta.2.zip
 
 # run maven install on dmason project 
 #cd dmason-master
-cd dmason-DMASON3.1-beta
+
+#beta version
+#cd dmason-DMASON3.1-beta
+
+#beta-2 version
+cd dmason-DMASON3.1-beta.2
+
+
 mvn -Dmaven.test.skip=true clean package
 
 #create folder of executing environment
