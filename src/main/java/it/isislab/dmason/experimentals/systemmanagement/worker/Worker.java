@@ -647,19 +647,6 @@ public class Worker implements Observer {
 				dis.schedule.step(dis);
 				i++;
 
-
-				/***************TESTING*********************/
-				
-				long nowTime=System.currentTimeMillis();
-				long check=nowTime-getSimulationList().get(sim_id).getStartTime();				
-				if(check> 15*60*1000) { 
-					
-					this.stopThread();  
-					getLogBySimIDProcess(sim_id,Simulation.STOPPED,"history");
-					}
-					
-				/*********END******TESTING*********************/
-
 			}
 
 
