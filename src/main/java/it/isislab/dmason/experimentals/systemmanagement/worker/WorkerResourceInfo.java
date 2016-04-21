@@ -103,7 +103,10 @@ public class WorkerResourceInfo implements Serializable{
 	}
 	public int getNumCores(){return cores;}
 
-
+    /**
+     * Get global Cpu usage of node
+     * 
+     */
 	public static double  getCPULoad(){
 
 		double value=-1;
