@@ -813,7 +813,8 @@ public class MasterServer implements MultiServerInterface{
 	}
 
     /**
-     * TESTING CLUSTER 
+     * TESTING CLUSTER
+     * insert in start method 
      * @param id
      */
 	private void waitEndSim(int id){
@@ -858,8 +859,6 @@ public class MasterServer implements MultiServerInterface{
 			//LOGGER.info("send start command to "+workerTopic+"   "+getTopicIdForSimulation());
 			this.getConnection().publishToTopic(iDSimToExec, workerTopic, "start");
 		}
-
-		//waitEndSim(idSimulation); 
 	}
 
 
@@ -1060,7 +1059,6 @@ public class MasterServer implements MultiServerInterface{
 				try {
 					FileUtils.copyFileToDirectory(new File(simPathJar+File.separator+jarSim.getName()),new File(getMasterCustomJarsFolder()));
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
@@ -1071,7 +1069,6 @@ public class MasterServer implements MultiServerInterface{
 		try {
 			j.join();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -1138,11 +1135,7 @@ public class MasterServer implements MultiServerInterface{
 	public String getMasterCustomJarsFolder(){return masterCustomJarsFolder;}
 
 
-	public synchronized Map<String, String> getInfoWorkers() {
-
-		//	System.out.println(infoWorkers.size());
-		return infoWorkers;
-	}
+	public synchronized Map<String, String> getInfoWorkers() {return infoWorkers;}
 	public synchronized HashMap<Integer,Simulation> getSimulationsList(){return simulationsList;}
 
 }
