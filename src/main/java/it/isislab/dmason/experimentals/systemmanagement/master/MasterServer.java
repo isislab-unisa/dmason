@@ -34,23 +34,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.sound.midi.SysexMessage;
-
-import org.apache.activemq.broker.BrokerService;
-import org.apache.activemq.usage.SystemUsage;
-import org.apache.activemq.usage.TempUsage;
-import org.apache.activemq.usage.UsageCapacity;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
-
 import it.isislab.dmason.experimentals.systemmanagement.utils.ClientSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.FindAvailablePort;
@@ -58,7 +49,6 @@ import it.isislab.dmason.experimentals.systemmanagement.utils.ServerSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.experimentals.systemmanagement.utils.ZipDirectory;
 import it.isislab.dmason.experimentals.systemmanagement.worker.Worker;
-import it.isislab.dmason.experimentals.systemmanagement.worker.WorkerInfo;
 import it.isislab.dmason.experimentals.util.management.JarClassLoader;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
@@ -80,7 +70,7 @@ public class MasterServer implements MultiServerInterface{
 	//ActivemQ settings file, default 127.0.0.1:61616 otherwise you have to change config.properties file
 	private static final String PROPERTIES_FILE_PATH="resources/systemmanagement/master/conf/config.properties";
 
-	//examplew jars path 
+	//example jars path from resources dmason main path 
 	private static final String JARS_EXAMPLE_PATH="resources/examples";
 
 	//connection and topic
@@ -103,16 +93,15 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-	//copyserver
+	//copyserver for socket
 	protected Socket sock=null;
 	protected ServerSocket welcomeSocket;
 
 	//info 
 	protected HashMap<String/*IDprefixOfWorker*/,String/*MyIDTopicprefixOfWorker*/> topicIdWorkers;
 	protected HashMap<Integer,AtomicInteger> counterAckSimRcv;// number of ack received of simrcv
-	public HashMap<String,String> infoWorkers;
-	public HashMap<String,Integer> ttlinfoWorkers;
-	//public HashMap<String,String> support_infoWorkers;
+	private HashMap<String,String> infoWorkers;
+	private HashMap<String,Integer> ttlinfoWorkers;
 	private HashMap<Integer,Simulation> simulationsList; //list simulation 
 	private AtomicInteger IDSimulation; // generate id for a simulation 
 	private FindAvailablePort availableport;
@@ -241,12 +230,7 @@ public class MasterServer implements MultiServerInterface{
 									String[] ainfo=info.split(":");
 									String ID = ainfo[ainfo.length-1].replace("\"", "");
 									ID=ID.replace("}", "");
-
-									conn.publishToTopic(DEFAULT_PORT_COPY_SERVER, MANAGEMENT, "WORKER-ID-"+ID);//+ainfo[ainfo.length-1]);
-
-									/**
-									 * SE quel topic nn lo tengo mi ci devo mettere in ascolto
-									 */
+									conn.publishToTopic(DEFAULT_PORT_COPY_SERVER, MANAGEMENT, "WORKER-ID-"+ID);
 
 									synchronized (this) {
 
@@ -389,7 +373,7 @@ public class MasterServer implements MultiServerInterface{
 				getConnection().publishToTopic(simID, topicOfWorker, "simrm");
 				getSimulationsList().get(simID).getTopicList().remove(topicOfWorker);
 
-				//i must know last process of history download  
+				//i must know last process of history download to start remove process  
 				if(getSimulationsList().get(simID).getTopicList().size()==0){
 					removeSimulationProcessByID(simID);
 				}
@@ -448,9 +432,8 @@ public class MasterServer implements MultiServerInterface{
 
 
 		}
-		//	String topic=getTopicIdWorkers().get(topicOfWorker);
 		Address address=new Address(iPaddress, port);
-		workerListForCopyLogs.put(/*topic per inviare al worker*/topicOfWorker, address);
+		workerListForCopyLogs.put(topicOfWorker, address);
 	}
 
 	/**
@@ -696,15 +679,9 @@ public class MasterServer implements MultiServerInterface{
 			while(e.hasMoreElements()){
 
 				JarEntry je=(JarEntry)e.nextElement();
-				String classPath = je.getName();
 				if(!je.getName().contains(".class")) continue;
 
-				String[] nameclass = classPath.split("/");
-				nameclass[0]=((nameclass[nameclass.length-1]).split(".class"))[0];
-
-				byte[] classBytes = new byte[(int) je.getSize()];
 				InputStream input = jar.getInputStream(je);
-				BufferedInputStream readInput=new BufferedInputStream(input);
 
 				Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
 
@@ -835,12 +812,12 @@ public class MasterServer implements MultiServerInterface{
 						
 					}
 				}	
-				/*********END******TESTING*********************/
+				
 				
 			}
 		}).start();
 	
-	}
+	}/*********END******TESTING*********************/
 
 
 	///////////methods  START STOP PAUSE LOG	
@@ -966,8 +943,8 @@ public class MasterServer implements MultiServerInterface{
 			e1.printStackTrace();
 		}
 
-
-
+        
+        //start process to copy simulation's file in /master/history
 		Thread t=new Thread(new Runnable() {
 
 			@Override
@@ -1030,7 +1007,11 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-
+    /**
+     * Copy new jar in master folder 
+     * @param simPathJar
+     * @param jarSim
+     */
 	public void copyJarOnDirectory(String simPathJar,FileItem jarSim){
 
 		Thread f=null;
@@ -1076,7 +1057,10 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-
+    /**
+     * Return the list of example simulations
+     * 
+     */
 	public HashMap<String , String> getListExampleSimulationsJars(){
 		HashMap<String, String> list=new HashMap<String, String>();
 		File file=new File(masterExampleJarsFolder);
@@ -1090,7 +1074,10 @@ public class MasterServer implements MultiServerInterface{
 		return list;
 	}
 
-
+    /**
+     * Return list of submitted simulations
+     * 
+     */
 	public HashMap<String, String> getListCustomSimulationsJars(){
 		HashMap<String, String> list=new HashMap<String, String>();
 		File file=new File(masterCustomJarsFolder);

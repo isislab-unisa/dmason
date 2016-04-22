@@ -194,7 +194,6 @@ public class Worker implements Observer {
 							}
 
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					};
@@ -209,7 +208,6 @@ public class Worker implements Observer {
 
 					}
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}finally {
 					lockconnection.unlock();
@@ -340,18 +338,14 @@ public class Worker implements Observer {
 
 
 
-	/**
-	 * Find first available port on node  
-	 * @return port
-
-	private int findAvailablePort(){
-		availableport=new FindAvailablePort(1000, 3000);
-		int port=availableport.getPortAvailable();
-		return port;
-	}*/
 
 	/**
-	 * Info of Node
+	 * Return information of (sended to master)
+	 * -hw resources(cpu,ram)
+	 * -port of node for server socket
+	 * -topic that identify this node
+	 * -topic IP
+	 * -slots still available for this node
 	 */
 	private WorkerInfo getInfoWorker() 
 	{
@@ -462,7 +456,11 @@ public class Worker implements Observer {
 
 
 	private HashMap<Integer,ArrayList<CellExecutor>> executorThread=new HashMap<Integer,ArrayList<CellExecutor>>();
-
+    
+	/**
+	 * Start Thread for simulation running
+	 * @param sim_id
+	 */
 	private synchronized void runSimulation(int sim_id){
 
 		getSimulationList().get(sim_id).setStartTime(System.currentTimeMillis());
@@ -479,7 +477,7 @@ public class Worker implements Observer {
 
 	}
 	/**
-	 * Start a simulation for first time, or a paused simulation 
+	 * Start a simulation for first time, or a paused simulation -> when receive "start"
 	 * start a simulation by id 
 	 * @param id ID of simulation
 	 */
@@ -497,7 +495,6 @@ public class Worker implements Observer {
 			}
 
 			GeneralParam params = null;
-			//String prefix="";
 			Simulation simulation=getSimulationList().get(id);
 
 			List<CellType> cellstype=simulation.getCellTypeList();
@@ -514,7 +511,6 @@ public class Worker implements Observer {
 
 			System.err.println("TODO MANAGE CONNECTION MPI");
 			long step=simulation.getNumberStep();
-			//prefix= simulation.getTopicPrefix();
 
 			params=(simulation.getMode()==DistributedField2D.UNIFORM_PARTITIONING_MODE)?
 					new GeneralParam(width, height, aoi, rows, cols, agents, mode,step,ConnectionType.pureActiveMQ):
@@ -528,7 +524,6 @@ public class Worker implements Observer {
 						params.setJ(cellType.pos_j);
 						FileOutputStream output = new FileOutputStream(simulation.getSimulationFolder()+File.separator+"out"+File.separator+cellType+".out");
 						PrintStream printOut = new PrintStream(output);
-						//simulation.getSimName()+""+simulation.getSimID()
 						CellExecutor celle=(new CellExecutor(params,printOut,simulation.getSimID(),
 								(cellstype.indexOf(cellType)==0?true:false)));
 
@@ -546,12 +541,12 @@ public class Worker implements Observer {
 	}
 
 	/**
-	 * Stop simulation process
+	 * Start stop process for a sim -> when receive "stop" 
 	 * @param sim_id id of simulation to stop 
 	 */
 	private synchronized void stopSimulation(int sim_id)
 	{
-		getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
+		//getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
 		for(CellExecutor cexe:executorThread.get(sim_id))
 		{
 			if(cexe.masterCell){ 
@@ -583,6 +578,12 @@ public class Worker implements Observer {
 		getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
 
 	}
+	
+	/*****************CELLEXECUTOR CLASS******************************/
+	/**
+	 * Class for start, stop, pause with Thread
+	 *
+	 */
 	class CellExecutor extends Thread{
 
 		public GeneralParam params;
@@ -634,7 +635,6 @@ public class Worker implements Observer {
 					}
 
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}finally{
 					lock.unlock();
@@ -695,7 +695,15 @@ public class Worker implements Observer {
 			}
 		}
 	}
-
+	
+	/*****************CELLEXECUTOR CLASS******************************/
+	
+	
+	
+    /**
+     * Create a new sim execution process    
+     * @param sim
+     */
 	private synchronized void createNewSimulationProcess(Simulation sim){
 
 		String path=this.createSimulationDirectoryByID(sim.getSimName()+""+sim.getSimID());
@@ -716,14 +724,12 @@ public class Worker implements Observer {
 					MyHashMap map=(MyHashMap) o;
 					if(map.containsKey("cellready")){
 						int sim_id=(int) map.get("cellready");
-						//if(getSimulationList().containsKey(sim_id)) {
 
 						getSimulationList().get(sim_id).setReceived_cell_type(getSimulationList().get(sim_id).getReceived_cell_type()+1);
 						if(getSimulationList().get(sim_id).getReceived_cell_type()==getSimulationList().get(sim_id).getNumCells())
 						{
 							runSimulation(sim_id);
 						}
-						//}
 					} 
 
 
@@ -764,7 +770,7 @@ public class Worker implements Observer {
 
 
 	/**
-	 * Download with Socket  
+	 * Download with Socket the jar of a sim from master 
 	 * @param sim
 	 * @param serverSocketPort
 	 */
@@ -793,7 +799,13 @@ public class Worker implements Observer {
 
 	}
 
-
+    /**
+     * Create instance of DistributeState from jar
+     * @param params
+     * @param prefix
+     * @param pathJar
+     * @return
+     */
 	@SuppressWarnings({ "rawtypes", "deprecation" })
 	private DistributedState makeSimulation(GeneralParam params, String prefix,String pathJar)
 	{
@@ -811,11 +823,7 @@ public class Worker implements Observer {
 			while(e.hasMoreElements()){
 
 				JarEntry je=(JarEntry)e.nextElement();
-				//String classPath = je.getName();
 				if(!je.getName().contains(".class")) continue;
-
-				//String[] nameclass = classPath.split("/");
-				//	nameclass[0]=((nameclass[nameclass.length-1]).split(".class"))[0];
 
 				Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
 

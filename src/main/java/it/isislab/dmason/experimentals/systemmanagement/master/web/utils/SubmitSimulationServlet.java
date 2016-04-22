@@ -164,16 +164,13 @@ public class SubmitSimulationServlet extends HttpServlet {
 			File f = new File(exampleSimulation);
 			jarSimName=f.getName();
 			FileUtils.copyFileToDirectory(f, new File(simPathJar));
-		//	System.out.println("Entro con "+jarSimName+" and "+simPathJar);
 		}
 		else
 		{
-			// metodo da eseguire solo per nuove sim
-			// da copiare anche nella cartella jars
+			// for new sim, must copy this jar in 
 			server.copyJarOnDirectory(simPathJar,jarSim);
 			jarSimName=jarSim.getName();
 		
-//			System.out.println("Entro con "+jarSimName+" and "+jarSim==null);
 		}
 		
 		
