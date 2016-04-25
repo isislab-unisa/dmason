@@ -137,9 +137,17 @@ public class Worker implements Observer {
 		System.out.println("Waiting for connection to Message Broker..");
 		this.createConnection();
 
-		this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); //my topic to master
+		this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); 
+		/**
+		 * @author miccar
+		 * character ":" cause error in windows folder creation
+		 * YOU MUST NOT REMOVE BELOW LINE OF CODE 
+		 */
+		TOPIC_WORKER_ID=TOPIC_WORKER_ID.replace(":", "");
+		/******************/
+		
 		generateFolders(TOPIC_WORKER_ID); //generate folders for worker
-		this.TOPIC_WORKER_ID=""+TOPIC_WORKER_ID.hashCode();
+		this.TOPIC_WORKER_ID=""+TOPIC_WORKER_ID.hashCode(); //my topic
 		simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 		this.slotsNumber=slots;
 
