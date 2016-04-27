@@ -235,9 +235,11 @@ public class Worker implements Observer {
 
 			while(true){
 				try {
-					Thread.sleep(3000);
+					
+					Thread.sleep(new Random().nextInt(30)*1000 );
+					
 					getConnection().publishToTopic(getInfoWorker().toString(), MANAGEMENT,"WORKER");
-				} catch (InterruptedException e) {e.printStackTrace();}
+				} catch (Exception e) {e.printStackTrace();}
 			}
 
 		}
