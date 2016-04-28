@@ -122,43 +122,37 @@ public class Worker implements Observer {
 			this.PORT_ACTIVEMQ=portMaster;
 			this.conn=new ConnectionNFieldsWithActiveMQAPI();
 			WORKER_IP=getIP(); //set IP for this worker
-
-
-
-			connectToMessageBroker(slots);
+			this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); 
+			/**
+			 * @author miccar
+			 * character ":" cause error in windows folder creation
+			 * YOU MUST NOT REMOVE BELOW LINE OF CODE 
+			 */
+			TOPIC_WORKER_ID=TOPIC_WORKER_ID.replace(":", "");
+			/******************/
+			
+			generateFolders(TOPIC_WORKER_ID); //generate folders for worker
+			this.TOPIC_WORKER_ID=""+TOPIC_WORKER_ID.hashCode(); //my topic
+			simulationList=new HashMap< /*idsim*/Integer, Simulation>();
+			this.slotsNumber=slots;
+			availableport=new FindAvailablePort(1000, 3000);
+			this.PORT_COPY_LOG=availableport.getPortAvailable(); //socket communication with master (server side, used for logs)
+			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP)); //create server for socket communication 
+			conn.addObserver(this); //EXPERIMENTAL 
+			connectToMessageBroker();
 
 		} catch (Exception e) {e.printStackTrace();}
 
 
 	}
 
-	private void connectToMessageBroker(int slots) throws UnknownHostException, IOException
+	private void connectToMessageBroker() throws UnknownHostException, IOException
 	{
 		System.out.println("Waiting for connection to Message Broker..");
 		this.createConnection();
-
-		this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); 
-		/**
-		 * @author miccar
-		 * character ":" cause error in windows folder creation
-		 * YOU MUST NOT REMOVE BELOW LINE OF CODE 
-		 */
-		TOPIC_WORKER_ID=TOPIC_WORKER_ID.replace(":", "");
-		/******************/
 		
-		generateFolders(TOPIC_WORKER_ID); //generate folders for worker
-		this.TOPIC_WORKER_ID=""+TOPIC_WORKER_ID.hashCode(); //my topic
-		simulationList=new HashMap< /*idsim*/Integer, Simulation>();
-		this.slotsNumber=slots;
-
-
-		availableport=new FindAvailablePort(1000, 3000);
-		this.PORT_COPY_LOG=availableport.getPortAvailable(); //socket communication with master (server side, used for logs)
-		welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP)); //create server for socket communication
 		System.out.println("Waiting master connection ..."); 
-
-		conn.addObserver(this); //EXPERIMENTAL 
-
+		
 		this.startMasterComunication();
 
 		System.out.println("connected.");
@@ -190,7 +184,7 @@ public class Worker implements Observer {
 
 						try {
 							masterchecker.interrupt();
-							connectToMessageBroker(slotsNumber);
+							connectToMessageBroker();
 							try {
 
 								lockconnection.lock();
