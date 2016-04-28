@@ -130,7 +130,7 @@ public class Worker implements Observer {
 			 */
 			TOPIC_WORKER_ID=TOPIC_WORKER_ID.replace(":", "");
 			/******************/
-			
+
 			generateFolders(TOPIC_WORKER_ID); //generate folders for worker
 			this.TOPIC_WORKER_ID=""+TOPIC_WORKER_ID.hashCode(); //my topic
 			simulationList=new HashMap< /*idsim*/Integer, Simulation>();
@@ -150,9 +150,9 @@ public class Worker implements Observer {
 	{
 		System.out.println("Waiting for connection to Message Broker..");
 		this.createConnection();
-		
+
 		System.out.println("Waiting master connection ..."); 
-		
+
 		this.startMasterComunication();
 
 		System.out.println("connected.");
@@ -229,9 +229,7 @@ public class Worker implements Observer {
 
 			while(true){
 				try {
-					
 					Thread.sleep(new Random().nextInt(30)*1000 );
-					
 					getConnection().publishToTopic(getInfoWorker().toString(), MANAGEMENT,"WORKER");
 				} catch (Exception e) {e.printStackTrace();}
 			}
@@ -240,7 +238,7 @@ public class Worker implements Observer {
 	}
 
 	class MasterChecker extends Thread{
-	
+
 		public MasterChecker() {}
 		@Override
 		public void run() {
@@ -249,19 +247,15 @@ public class Worker implements Observer {
 				System.out.println("Start Master monitor...");
 				if(masterlost==null)
 				{
-
 					masterlost=new MasterLostChecker();
 					masterlost.start();
 					System.out.println("done.");
-
 					try {
 						lock.lock();
 						MASTER_ACK=false;
 						while(!MASTER_ACK)
 						{
-
 							waitMaster.await();
-
 						}
 						if(masterlost!=null)
 						{
@@ -454,7 +448,7 @@ public class Worker implements Observer {
 
 
 	private HashMap<Integer,ArrayList<CellExecutor>> executorThread=new HashMap<Integer,ArrayList<CellExecutor>>();
-    
+
 	/**
 	 * Start Thread for simulation running
 	 * @param sim_id
@@ -576,7 +570,7 @@ public class Worker implements Observer {
 		getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
 
 	}
-	
+
 	/*****************CELLEXECUTOR CLASS******************************/
 	/**
 	 * Class for start, stop, pause with Thread
@@ -693,15 +687,15 @@ public class Worker implements Observer {
 			}
 		}
 	}
-	
+
 	/*****************CELLEXECUTOR CLASS******************************/
-	
-	
-	
-    /**
-     * Create a new sim execution process    
-     * @param sim
-     */
+
+
+
+	/**
+	 * Create a new sim execution process    
+	 * @param sim
+	 */
 	private synchronized void createNewSimulationProcess(Simulation sim){
 
 		String path=this.createSimulationDirectoryByID(sim.getSimName()+""+sim.getSimID());
@@ -797,13 +791,13 @@ public class Worker implements Observer {
 
 	}
 
-    /**
-     * Create instance of DistributeState from jar
-     * @param params
-     * @param prefix
-     * @param pathJar
-     * @return
-     */
+	/**
+	 * Create instance of DistributeState from jar
+	 * @param params
+	 * @param prefix
+	 * @param pathJar
+	 * @return
+	 */
 	@SuppressWarnings({ "rawtypes", "deprecation" })
 	private DistributedState makeSimulation(GeneralParam params, String prefix,String pathJar)
 	{
