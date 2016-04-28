@@ -16,7 +16,6 @@
  */
 package it.isislab.dmason.experimentals.systemmanagement.master;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -59,6 +58,8 @@ import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiv
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
 
 /**
+ * 
+ * Master for Dmason's System Management
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo
@@ -311,6 +312,7 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 	/**
+	 * Connects Master to ActivemQ
 	 * Connection on ActivemQ
 	 * @return
 	 */
@@ -320,7 +322,9 @@ public class MasterServer implements MultiServerInterface{
 
 	}
 
-
+    /**
+     * Load example jars from example folder
+     */
 	private void loadJarsExample() {
 		File src=new File(JARS_EXAMPLE_PATH);
 		File dest=new File(masterExampleJarsFolder);
@@ -381,11 +385,7 @@ public class MasterServer implements MultiServerInterface{
 			}	
 
 
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -538,12 +538,13 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-	/*
-	 * 
-	 */
+    /**
+     * Calculates slots number available for each worker	
+     * @param topicWorkers
+     * @param listAllWorkers
+     * @return
+     */
 	private HashMap<String, Integer> slotsAvailableForSimWorker(ArrayList<String> topicWorkers, HashMap<String, String> listAllWorkers){
-
-
 
 		HashMap<String,Integer> slotsForWorkers=new HashMap<String,Integer>();
 		synchronized (this) {
@@ -559,7 +560,12 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-
+    /**
+     * Assigns cells to workers selected
+     * @param slots
+     * @param simul
+     * @return
+     */
 	private HashMap<String , List<CellType>> assignCellsToWorkers(HashMap<String, Integer> slots,Simulation simul){
 
 		HashMap<String/*idtopic*/, List<CellType>> workerlist = new HashMap<String, List<CellType>>(); 
@@ -662,7 +668,11 @@ public class MasterServer implements MultiServerInterface{
 		return workerlist;
 	}
 
-
+    /**
+     * Checks if a jar is not corrupted 
+     * @param pathJar
+     * @return
+     */
 	protected boolean validateSimulationJar(String pathJar)
 	{
 
@@ -703,7 +713,7 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 	/**
-	 * Send a new sim to all workers 
+	 * Sends a new sim to all workers 
 	 * 
 	 * @param sim simulation to send
 	 * 
