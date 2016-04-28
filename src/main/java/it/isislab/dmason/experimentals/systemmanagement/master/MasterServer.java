@@ -756,12 +756,11 @@ public class MasterServer implements MultiServerInterface{
 	 * @param simid
 	 */
 	private void updateJSONIDFile(String simid){
-		Object obj;
-		FileWriter jsonFile = null;
+		
 		try {
 			JSONObject jsonID=new JSONObject();
 			jsonID.put("simid", simid);
-			jsonFile=new FileWriter(JSON_ID_PATH);
+			FileWriter jsonFile=new FileWriter(JSON_ID_PATH);
 			jsonFile.write(jsonID.toJSONString());
 			jsonFile.close();
 			
