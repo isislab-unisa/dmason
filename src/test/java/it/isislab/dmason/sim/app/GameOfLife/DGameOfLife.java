@@ -1,22 +1,17 @@
 package it.isislab.dmason.sim.app.GameOfLife;
 
-import java.awt.Color;
 import java.util.List;
-
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
-import it.isislab.dmason.sim.app.DFlockers.DFlocker;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2D;
 import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2DFactory;
-import sim.app.tutorial1and2.Tutorial1;
 import sim.engine.SimState;
 import sim.portrayal.grid.FastValueGridPortrayal2D;
-import sim.util.Double2D;
 import sim.util.Int2D;
 
 public class DGameOfLife extends DistributedState<Int2D> {

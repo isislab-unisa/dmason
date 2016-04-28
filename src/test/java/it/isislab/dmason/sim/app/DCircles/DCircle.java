@@ -4,7 +4,6 @@ import java.awt.Color;
 
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
-import it.isislab.dmason.sim.field.CellType;
 import sim.engine.SimState;
 import sim.util.Bag;
 import sim.util.Double2D;
