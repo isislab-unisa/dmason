@@ -246,13 +246,8 @@ public class Worker implements Observer {
 	}
 
 	class MasterChecker extends Thread{
-		int timeToCheck;
-		int WINDOW_MASTER_CHECK=3000;
-		Random r=new Random();
-		public MasterChecker() {
-			timeToCheck=0;
-
-		}
+	
+		public MasterChecker() {}
 		@Override
 		public void run() {
 			do
@@ -280,7 +275,6 @@ public class Worker implements Observer {
 							masterlost=null;
 						}
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}finally{
 						lock.unlock();
