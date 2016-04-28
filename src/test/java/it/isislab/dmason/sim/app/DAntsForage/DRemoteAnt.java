@@ -150,7 +150,6 @@ public class DRemoteAnt extends RemoteAnt<Int2D>
 		Int2D location = af.buggrid.getObjectLocation(this);
 		int x = location.x;
 		int y = location.y;    
-
 		
 		af.buggrid.getNeighborsMaxDistance(x, y, af.buggrid.AOI, false, new IntBag(), new IntBag());
 
