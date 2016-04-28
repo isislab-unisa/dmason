@@ -19,6 +19,8 @@ package it.isislab.dmason.experimentals.systemmanagement.master;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -41,6 +43,8 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import it.isislab.dmason.experimentals.systemmanagement.utils.ClientSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.FindAvailablePort;
@@ -71,9 +75,13 @@ public class MasterServer implements MultiServerInterface{
 	//ActivemQ settings file, default 127.0.0.1:61616 otherwise you have to change config.properties file
 	private static final String PROPERTIES_FILE_PATH="resources/systemmanagement/master/conf/config.properties";
 
+	private static final String JSON_ID_PATH="resources/systemmanagement/master/conf/simid.json";
+	
 	//example jars path from resources dmason main path 
 	private static final String JARS_EXAMPLE_PATH="resources/examples";
 
+	private JSONParser parser=null;
+	
 	//connection and topic
 	private static final String MANAGEMENT="DMASON-MANAGEMENT";
 	private  String IP_ACTIVEMQ="";
@@ -127,6 +135,8 @@ public class MasterServer implements MultiServerInterface{
 
 		startProperties = new Properties();
 		conn=new ConnectionNFieldsWithActiveMQAPI();
+		parser=new JSONParser();
+		
 		DMasonFileSystem.make(masterDirectoryFolder);// master
 		DMasonFileSystem.make(masterTemporaryFolder);//temp folder
 		DMasonFileSystem.make(masterHistoryFolder); //master/history
@@ -146,8 +156,11 @@ public class MasterServer implements MultiServerInterface{
 		this.counterAckSimRcv=new HashMap<Integer,AtomicInteger>();
 		//waiting for workers connection	
 
-
-		this.IDSimulation=new AtomicInteger(0);
+	//	this.IDSimulation=new AtomicInteger(0);
+        this.readJSONLastID();
+		
+		
+		
 		simulationsList=new HashMap<>();
 		try {
 			availableport=new FindAvailablePort(1000, 3000);
@@ -166,6 +179,10 @@ public class MasterServer implements MultiServerInterface{
 		new TTLWorker().start();
 
 	}
+	
+	
+	
+	
 	class TTLWorker extends Thread{
 		@Override
 		public void run() {
@@ -202,6 +219,27 @@ public class MasterServer implements MultiServerInterface{
 			}
 		}
 	}
+	
+	
+	/**
+	 * Set what is the next id available from master folder 
+	 * An id identify a simulation
+	 * You can manage this id from file
+	 * from json file /conf/simid.json
+	 */
+	private void readJSONLastID(){
+		
+		try {
+			Object obj=parser.parse(new FileReader(JSON_ID_PATH));
+			JSONObject jsonID=(JSONObject)obj;
+			String id=(String) jsonID.get("simid");
+			//System.out.println(id);
+			this.IDSimulation=new AtomicInteger(Integer.parseInt(id));
+		} 
+		catch (Exception e) {e.printStackTrace();}
+	}
+	
+	
 	/**
 	 * 
 	 * @param topic
@@ -713,12 +751,34 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 	/**
+	 * UPDATE value of current simid in the json file
+	 *   
+	 * @param simid
+	 */
+	private void updateJSONIDFile(String simid){
+		Object obj;
+		FileWriter jsonFile = null;
+		try {
+			JSONObject jsonID=new JSONObject();
+			jsonID.put("simid", simid);
+			jsonFile=new FileWriter(JSON_ID_PATH);
+			jsonFile.write(jsonID.toJSONString());
+			jsonFile.close();
+			
+		} catch (Exception e) {e.printStackTrace();}
+		
+		
+	}
+	
+	/**
 	 * Sends a new sim to all workers 
 	 * 
 	 * @param sim simulation to send
 	 * 
 	 */
 	public synchronized boolean submitSimulation(Simulation sim) {
+		
+		updateJSONIDFile(""+sim.getSimID());
 		final Simulation simul=sim;
 
 		getSimulationsList().put(simul.getSimID(), simul);
