@@ -586,7 +586,7 @@ public class MasterServer implements MultiServerInterface{
 
 		HashMap<String,Integer> slotsForWorkers=new HashMap<String,Integer>();
 		synchronized (this) {
-			//riempo una hashmap con topic-numcell per i worker della sim
+			//riempo hashmap con topic-numcell per i worker della sim
 			for(String topicToFind: topicWorkers ){
 				String numcells=listAllWorkers.get(topicToFind).split(",")[0].split(":")[1];
 				slotsForWorkers.put(topicToFind, Integer.parseInt(numcells));
@@ -823,8 +823,8 @@ public class MasterServer implements MultiServerInterface{
 
 
 								if(getSimulationsList().containsKey(s.getSimID())){ // 
-									System.out.println("SEND BY WORKER "+s);
-									System.out.println("CHECKER MASTER"+s_master);
+								//	System.out.println("SEND BY WORKER "+s);
+									//System.out.println("CHECKER MASTER"+s_master);
 
 									if(s_master.getStartTime() < s.getStartTime()){
 										s_master.setStartTime(s.getStartTime());
