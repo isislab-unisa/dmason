@@ -540,11 +540,11 @@ public class Worker implements Observer {
 	{
 		for(CellExecutor cexe:executorThread.get(sim_id))
 		{
-			//if(cexe.masterCell){ 
-			//getSimulationList().get(sim_id).setStatus(Simulation.STOPPED);	
-			//getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
-			//getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
-			//}
+			if(cexe.masterCell){ 
+			getSimulationList().get(sim_id).setStatus(Simulation.STOPPED);	
+			getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
+			getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
+			}
 			cexe.stopThread();
 		}
 		//getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
@@ -640,11 +640,11 @@ public class Worker implements Observer {
 			}
 
 			// simulation stopped 
-			if( (i<params.getMaxStep()) && masterCell ){
-				getSimulationList().get(sim_id).setStatus(Simulation.STOPPED);	
-				getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
-				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
-			}
+//			if( (i<params.getMaxStep()) && masterCell ){
+//				getSimulationList().get(sim_id).setStatus(Simulation.STOPPED);	
+//				getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
+//				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
+//			}
 
 			//simulation finished             
 			if(  (i==params.getMaxStep()) && masterCell) {

@@ -822,32 +822,22 @@ public class MasterServer implements MultiServerInterface{
 								Simulation s_master=getSimulationsList().get(simul.getSimID());
 
 
-								if(getSimulationsList().containsKey(s.getSimID())){ // 
-								//	System.out.println("SEND BY WORKER "+s);
-									//System.out.println("CHECKER MASTER"+s_master);
-
-									if(s_master.getStartTime() < s.getStartTime()){
-										s_master.setStartTime(s.getStartTime());
-									}
-									if(s_master.getStep() < s.getStep()){
-										s_master.setStep(s.getStep());
-									}
-
-									s_master.setStatus(s.getStatus());
-
-									if(s.getStatus().equals(Simulation.FINISHED) || s.getStatus().equals(Simulation.STOPPED)){
-
-										LOGGER.info("Receved FINISHED for "+s.getSimID());
-										if(s_master.getEndTime()<s.getEndTime()){
-											getSimulationsList().get(s.getSimID()).setEndTime(s.getEndTime());
-										}
-									}
-
-
+								if(s_master.getStartTime() < s.getStartTime()){
+									s_master.setStartTime(s.getStartTime());
+								}
+								if(s_master.getStep() < s.getStep()){
+									s_master.setStep(s.getStep());
 								}
 
+								s_master.setStatus(s.getStatus());
 
+								if(s.getStatus().equals(Simulation.FINISHED) || s.getStatus().equals(Simulation.STOPPED)){
 
+									LOGGER.info("Receved FINISHED for "+s.getSimID());
+									if(s_master.getEndTime()<s.getEndTime()){
+										getSimulationsList().get(s.getSimID()).setEndTime(s.getEndTime());
+									}
+								}
 							}
 
 						} 
