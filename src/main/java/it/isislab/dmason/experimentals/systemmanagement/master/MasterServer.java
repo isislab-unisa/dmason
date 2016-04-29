@@ -76,12 +76,12 @@ public class MasterServer implements MultiServerInterface{
 	private static final String PROPERTIES_FILE_PATH="resources/systemmanagement/master/conf/config.properties";
 
 	private static final String JSON_ID_PATH="resources/systemmanagement/master/conf/simid.json";
-	
+
 	//example jars path from resources dmason main path 
 	private static final String JARS_EXAMPLE_PATH="resources/examples";
 
 	private JSONParser parser=null;
-	
+
 	//connection and topic
 	private static final String MANAGEMENT="DMASON-MANAGEMENT";
 	private  String IP_ACTIVEMQ="";
@@ -136,7 +136,7 @@ public class MasterServer implements MultiServerInterface{
 		startProperties = new Properties();
 		conn=new ConnectionNFieldsWithActiveMQAPI();
 		parser=new JSONParser();
-		
+
 		DMasonFileSystem.make(masterDirectoryFolder);// master
 		DMasonFileSystem.make(masterTemporaryFolder);//temp folder
 		DMasonFileSystem.make(masterHistoryFolder); //master/history
@@ -156,11 +156,11 @@ public class MasterServer implements MultiServerInterface{
 		this.counterAckSimRcv=new HashMap<Integer,AtomicInteger>();
 		//waiting for workers connection	
 
-	//	this.IDSimulation=new AtomicInteger(0);
-        this.readJSONLastID();
-		
-		
-		
+		//	this.IDSimulation=new AtomicInteger(0);
+		this.readJSONLastID();
+
+
+
 		simulationsList=new HashMap<>();
 		try {
 			availableport=new FindAvailablePort(1000, 3000);
@@ -179,10 +179,10 @@ public class MasterServer implements MultiServerInterface{
 		new TTLWorker().start();
 
 	}
-	
-	
-	
-	
+
+
+
+
 	class TTLWorker extends Thread{
 		@Override
 		public void run() {
@@ -219,8 +219,8 @@ public class MasterServer implements MultiServerInterface{
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Set what is the next id available from master folder 
 	 * An id identify a simulation
@@ -228,7 +228,7 @@ public class MasterServer implements MultiServerInterface{
 	 * from json file /conf/simid.json
 	 */
 	private void readJSONLastID(){
-		
+
 		try {
 			Object obj=parser.parse(new FileReader(JSON_ID_PATH));
 			JSONObject jsonID=(JSONObject)obj;
@@ -238,8 +238,8 @@ public class MasterServer implements MultiServerInterface{
 		} 
 		catch (Exception e) {e.printStackTrace();}
 	}
-	
-	
+
+
 	/**
 	 * 
 	 * @param topic
@@ -360,9 +360,9 @@ public class MasterServer implements MultiServerInterface{
 
 	}
 
-    /**
-     * Load example jars from example folder
-     */
+	/**
+	 * Load example jars from example folder
+	 */
 	private void loadJarsExample() {
 		File src=new File(JARS_EXAMPLE_PATH);
 		File dest=new File(masterExampleJarsFolder);
@@ -576,12 +576,12 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-    /**
-     * Calculates slots number available for each worker	
-     * @param topicWorkers
-     * @param listAllWorkers
-     * @return
-     */
+	/**
+	 * Calculates slots number available for each worker	
+	 * @param topicWorkers
+	 * @param listAllWorkers
+	 * @return
+	 */
 	private HashMap<String, Integer> slotsAvailableForSimWorker(ArrayList<String> topicWorkers, HashMap<String, String> listAllWorkers){
 
 		HashMap<String,Integer> slotsForWorkers=new HashMap<String,Integer>();
@@ -598,12 +598,12 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-    /**
-     * Assigns cells to workers selected
-     * @param slots
-     * @param simul
-     * @return
-     */
+	/**
+	 * Assigns cells to workers selected
+	 * @param slots
+	 * @param simul
+	 * @return
+	 */
 	private HashMap<String , List<CellType>> assignCellsToWorkers(HashMap<String, Integer> slots,Simulation simul){
 
 		HashMap<String/*idtopic*/, List<CellType>> workerlist = new HashMap<String, List<CellType>>(); 
@@ -706,11 +706,11 @@ public class MasterServer implements MultiServerInterface{
 		return workerlist;
 	}
 
-    /**
-     * Checks if a jar is not corrupted 
-     * @param pathJar
-     * @return
-     */
+	/**
+	 * Checks if a jar is not corrupted 
+	 * @param pathJar
+	 * @return
+	 */
 	protected boolean validateSimulationJar(String pathJar)
 	{
 
@@ -756,19 +756,19 @@ public class MasterServer implements MultiServerInterface{
 	 * @param simid
 	 */
 	private void updateJSONIDFile(String simid){
-		
+
 		try {
 			JSONObject jsonID=new JSONObject();
 			jsonID.put("simid", simid);
 			FileWriter jsonFile=new FileWriter(JSON_ID_PATH);
 			jsonFile.write(jsonID.toJSONString());
 			jsonFile.close();
-			
+
 		} catch (Exception e) {e.printStackTrace();}
-		
-		
+
+
 	}
-	
+
 	/**
 	 * Sends a new sim to all workers 
 	 * 
@@ -776,7 +776,7 @@ public class MasterServer implements MultiServerInterface{
 	 * 
 	 */
 	public synchronized boolean submitSimulation(Simulation sim) {
-		
+
 		updateJSONIDFile(""+sim.getSimID());
 		final Simulation simul=sim;
 
@@ -821,22 +821,33 @@ public class MasterServer implements MultiServerInterface{
 								Simulation s=(Simulation) map.get("workerstatus");
 								Simulation s_master=getSimulationsList().get(simul.getSimID());
 
-								if(s_master.getStartTime() < s.getStartTime()){
-									s_master.setStartTime(s.getStartTime());
-								}
-								if(s_master.getStep() < s.getStep()){
-									s_master.setStep(s.getStep());
-								}
 
-								s_master.setStatus(s.getStatus());
+								if(getSimulationsList().containsKey(s.getSimID())){ // 
+									System.out.println("SEND BY WORKER "+s);
+									System.out.println("CHECKER MASTER"+s_master);
 
-								if(s.getStatus().equals(Simulation.FINISHED) || s.getStatus().equals(Simulation.STOPPED)){
-
-									LOGGER.info("Receved FINISHED for "+s.getSimID());
-									if(s_master.getEndTime()<s.getEndTime()){
-										getSimulationsList().get(s.getSimID()).setEndTime(s.getEndTime());
+									if(s_master.getStartTime() < s.getStartTime()){
+										s_master.setStartTime(s.getStartTime());
 									}
+									if(s_master.getStep() < s.getStep()){
+										s_master.setStep(s.getStep());
+									}
+
+									s_master.setStatus(s.getStatus());
+
+									if(s.getStatus().equals(Simulation.FINISHED) || s.getStatus().equals(Simulation.STOPPED)){
+
+										LOGGER.info("Receved FINISHED for "+s.getSimID());
+										if(s_master.getEndTime()<s.getEndTime()){
+											getSimulationsList().get(s.getSimID()).setEndTime(s.getEndTime());
+										}
+									}
+
+
 								}
+
+
+
 							}
 
 						} 
@@ -858,34 +869,34 @@ public class MasterServer implements MultiServerInterface{
 
 	}
 
-    /**
-     * TESTING CLUSTER
-     * insert in start method 
-     * @param id
-     */
+	/**
+	 * TESTING CLUSTER
+	 * insert in start method 
+	 * @param id
+	 */
 	private void waitEndSim(int id){
 		int paramTest=1;
 		new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				/***************TESTING*********************/
 				long start=System.currentTimeMillis();
-		        boolean check=true;
+				boolean check=true;
 				while(true && check){
 					long nowTime=System.currentTimeMillis();
 					long checkTime=nowTime-start;				
 					if(checkTime> paramTest*60*1000) { 
 						check=false;
 						stop(id);
-						
+
 					}
 				}	
-				
-				
+
+
 			}
 		}).start();
-	
+
 	}/*********END******TESTING*********************/
 
 
@@ -1012,8 +1023,8 @@ public class MasterServer implements MultiServerInterface{
 			e1.printStackTrace();
 		}
 
-        
-        //start process to copy simulation's file in /master/history
+
+		//start process to copy simulation's file in /master/history
 		Thread t=new Thread(new Runnable() {
 
 			@Override
@@ -1076,11 +1087,11 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-    /**
-     * Copy new jar in master folder 
-     * @param simPathJar
-     * @param jarSim
-     */
+	/**
+	 * Copy new jar in master folder 
+	 * @param simPathJar
+	 * @param jarSim
+	 */
 	public void copyJarOnDirectory(String simPathJar,FileItem jarSim){
 
 		Thread f=null;
@@ -1126,10 +1137,10 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-    /**
-     * Return the list of example simulations
-     * 
-     */
+	/**
+	 * Return the list of example simulations
+	 * 
+	 */
 	public HashMap<String , String> getListExampleSimulationsJars(){
 		HashMap<String, String> list=new HashMap<String, String>();
 		File file=new File(masterExampleJarsFolder);
@@ -1143,10 +1154,10 @@ public class MasterServer implements MultiServerInterface{
 		return list;
 	}
 
-    /**
-     * Return list of submitted simulations
-     * 
-     */
+	/**
+	 * Return list of submitted simulations
+	 * 
+	 */
 	public HashMap<String, String> getListCustomSimulationsJars(){
 		HashMap<String, String> list=new HashMap<String, String>();
 		File file=new File(masterCustomJarsFolder);

@@ -647,7 +647,7 @@ public class Worker implements Observer {
 			}
 
 			//simulation finished             
-			if(  (i==params.getMaxStep()) && masterCell) {				
+			if(  (i==params.getMaxStep()) && masterCell) {
 				getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
 				getSimulationList().get(sim_id).setStatus(Simulation.FINISHED);
 				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
