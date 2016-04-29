@@ -986,7 +986,7 @@ public class MasterServer implements MultiServerInterface{
 				props.put("simEndTime", 		""+s.getEndTimeAsDate());
 				props.put("simTime", ""+s.getSimTimeAsDate());
 				props.put("simTimeAsMillis", ""+s.getSimTime());
-				props.put("simStepNumber", 		""+s.getNumStep());
+				props.put("simStepNumber", 		""+s.getStep()+"/"+s.getNumberStep());
 				props.put("simNumCells", 		""+s.getNumCells());
 				props.put("simStatus", 			""+s.getStatus());
 				props.put("simNumWorkers",		""+s.getNumWorkers());

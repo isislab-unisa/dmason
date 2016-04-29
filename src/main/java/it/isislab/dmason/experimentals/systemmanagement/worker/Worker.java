@@ -538,7 +538,6 @@ public class Worker implements Observer {
 	 */
 	private synchronized void stopSimulation(int sim_id)
 	{
-		//getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
 		for(CellExecutor cexe:executorThread.get(sim_id))
 		{
 			if(cexe.masterCell){ 

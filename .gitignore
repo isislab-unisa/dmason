@@ -11,4 +11,4 @@
 /resources/systemmanagement/.idea
 /activemq-data
 /dmason
-/resources/systemmanagement/conf/*.json
+/resources/systemmanagement/master/conf/*.json
