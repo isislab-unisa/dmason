@@ -540,14 +540,14 @@ public class Worker implements Observer {
 	{
 		for(CellExecutor cexe:executorThread.get(sim_id))
 		{
-			if(cexe.masterCell){ 
-				getSimulationList().get(sim_id).setStatus(Simulation.STOPPED);	
-				getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
-				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
-			}
+			//if(cexe.masterCell){ 
+			//getSimulationList().get(sim_id).setStatus(Simulation.STOPPED);	
+			//getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
+			//getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
+			//}
 			cexe.stopThread();
 		}
-		getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
+		//getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
 
 		//start process to create a log file for this simulation
 		String pre_status=getSimulationList().get(sim_id).getStatus();
@@ -612,7 +612,6 @@ public class Worker implements Observer {
 		public  void run() {
 			LOGGER.info("Start cell for "+params.getMaxStep());
 			int i=0;
-			boolean test=false;
 
 			while(i!=params.getMaxStep() && run)
 			{   
@@ -640,10 +639,15 @@ public class Worker implements Observer {
 
 			}
 
+			// simulation stopped 
+			if( (i<params.getMaxStep()) && masterCell ){
+				getSimulationList().get(sim_id).setStatus(Simulation.STOPPED);	
+				getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
+				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
+			}
 
-
-			if(  (i==params.getMaxStep() && masterCell)) {
-				//CHECKKKKKKKK
+			//simulation finished             
+			if(  (i==params.getMaxStep()) && masterCell) {				
 				getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
 				getSimulationList().get(sim_id).setStatus(Simulation.FINISHED);
 				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");

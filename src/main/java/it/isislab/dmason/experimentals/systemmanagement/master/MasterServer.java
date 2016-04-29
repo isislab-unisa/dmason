@@ -129,7 +129,7 @@ public class MasterServer implements MultiServerInterface{
 	public MasterServer(){
 
 		//comment below line to enable Logger 
-		LOGGER.setUseParentHandlers(true);  
+		LOGGER.setUseParentHandlers(false);  
 		//
 		LOGGER.info("LOGGER ENABLE");
 
@@ -986,7 +986,7 @@ public class MasterServer implements MultiServerInterface{
 				props.put("simEndTime", 		""+s.getEndTimeAsDate());
 				props.put("simTime", ""+s.getSimTimeAsDate());
 				props.put("simTimeAsMillis", ""+s.getSimTime());
-				props.put("simStepNumber", 		""+s.getStep()+"/"+s.getNumberStep());
+				props.put("simStepNumber", 		""+(s.getStep()+1)+"/"+s.getNumberStep());
 				props.put("simNumCells", 		""+s.getNumCells());
 				props.put("simStatus", 			""+s.getStatus());
 				props.put("simNumWorkers",		""+s.getNumWorkers());
