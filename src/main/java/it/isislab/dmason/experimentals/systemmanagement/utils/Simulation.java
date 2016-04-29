@@ -50,7 +50,6 @@ public class Simulation implements Serializable{
 	private int height;
 	private int numAgents;
 	private int mode;
-	private long numStep;
 	private int connectionType;
 	private int numCells;
 	private String execFileName;
@@ -58,20 +57,13 @@ public class Simulation implements Serializable{
 	private int P;
 	private ArrayList<String> topicList;
 	private int numWorkers;
-	public int getNumWorkers() {
-		return numWorkers;
-	}
-	public void setNumWorkers(int numWorkers) {
-		this.numWorkers = numWorkers;
-	}
-
-
 	private List<CellType> cellTypeList;
 	private int received_cell_type;
 	private long startTime=Long.MIN_VALUE;
 	private long endTime=Long.MIN_VALUE;
 	private long simTime=Long.MIN_VALUE;
-	private long step=0;
+	private long numStep;//step of simulation 
+	private long step=0;//current step
 	public static final String CREATED="CREATED";
 	public static final String STARTED="STARTED";
 	public static final String FINISHED="FINISHED";
@@ -80,8 +72,89 @@ public class Simulation implements Serializable{
 	private String simulationStatus=CREATED; //play,pause,stop
 
 
+	public Simulation() {}
+
+	/**
+	 * 
+	 * Simulation for ActivemQ Connection
+	 * 
+	 * @param simName
+	 * @param simID
+	 * @param simulationFolder
+	 * @param rows
+	 * @param columns
+	 * @param aoi
+	 * @param width
+	 * @param height
+	 * @param numAgent
+	 * @param mode  if 0 uniform, else if 1 non-uniform
+	 * @param parameters
+	 */
+	public Simulation(String simName, String simulationFolder,String execSimNAme,
+			int rows, int columns, int aoi, int width,
+			int height, int numAgent, long stepsnumber, int mode, int connection) {
+		this.simName = simName;
+		this.simulationFolder = simulationFolder;
+		this.rows = rows;
+		this.columns = columns;
+		this.aoi = aoi;
+		this.width = width;
+		this.height = height;
+		this.numAgents =numAgent;
+		this.numCells= getRows()*getColumns();
+		this.connectionType=connection;
+		this.topicList=new ArrayList<>();
+		this.mode = mode;		
+		this.numStep=stepsnumber;
+		this.execFileName=execSimNAme;
+		this.cellTypeList=new ArrayList<CellType>();
+
+	}
 
 
+	/**
+	 * Simulation  for NON UNIFORM Connection
+	 * @param simName
+	 * @param simulationFolder
+	 * @param execSimNAme
+	 * @param p
+	 * @param aoi
+	 * @param width
+	 * @param height
+	 * @param numAgent
+	 * @param stepsnumber
+	 * @param mode
+	 * @param connection
+	 */
+	public Simulation(String simName, String simulationFolder,String execSimNAme,
+			int p, int aoi, int width,
+			int height, int numAgent, long stepsnumber, int mode, int connection) {
+		this.simName = simName;
+		this.simulationFolder = simulationFolder;
+		this.aoi = aoi;
+		this.width =width;
+		this.height = height;
+		this.numAgents = numAgent;
+		this.connectionType=connection;
+		this.topicList=new ArrayList<>();
+		this.mode = mode;		
+		this.numStep=stepsnumber;
+		this.execFileName=execSimNAme;
+		this.cellTypeList=new ArrayList<CellType>();
+		this.P=p;
+		this.numCells= P;
+
+
+	}
+
+
+	public int getNumWorkers() {
+		return numWorkers;
+	}
+	public void setNumWorkers(int numWorkers) {
+		this.numWorkers = numWorkers;
+	}
+	
 
 	public String getStatus() {
 		return simulationStatus;
@@ -170,6 +243,7 @@ public class Simulation implements Serializable{
 	}
 
 	/**
+	 * return current step of simulation
 	 * @return the step
 	 */
 	public long getStep() {
@@ -177,7 +251,8 @@ public class Simulation implements Serializable{
 	}
 
 	/**
-	 * @param step the step to set
+	 * set current step of simulation
+	 * @param  
 	 */
 	public void setStep(long step) {
 		this.step = step;
@@ -200,80 +275,6 @@ public class Simulation implements Serializable{
 	/**
 	 * 
 	 */
-	public Simulation() {}
-
-	/**
-	 * 
-	 * Simulation for ActivemQ Connection
-	 * 
-	 * @param simName
-	 * @param simID
-	 * @param simulationFolder
-	 * @param rows
-	 * @param columns
-	 * @param aoi
-	 * @param width
-	 * @param height
-	 * @param numAgent
-	 * @param mode  if 0 uniform, else if 1 non-uniform
-	 * @param parameters
-	 */
-	public Simulation(String simName, String simulationFolder,String execSimNAme,
-			int rows, int columns, int aoi, int width,
-			int height, int numAgent, long stepsnumber, int mode, int connection) {
-		this.simName = simName;
-		this.simulationFolder = simulationFolder;
-		this.rows = rows;
-		this.columns = columns;
-		this.aoi = aoi;
-		this.width = width;
-		this.height = height;
-		this.numAgents =numAgent;
-		this.numCells= getRows()*getColumns();
-		this.connectionType=connection;
-		this.topicList=new ArrayList<>();
-		this.mode = mode;		
-		this.numStep=stepsnumber;
-		this.execFileName=execSimNAme;
-		this.cellTypeList=new ArrayList<CellType>();
-
-	}
-
-
-	/**
-	 * Simulation  for NON UNIFORM Connection
-	 * @param simName
-	 * @param simulationFolder
-	 * @param execSimNAme
-	 * @param p
-	 * @param aoi
-	 * @param width
-	 * @param height
-	 * @param numAgent
-	 * @param stepsnumber
-	 * @param mode
-	 * @param connection
-	 */
-	public Simulation(String simName, String simulationFolder,String execSimNAme,
-			int p, int aoi, int width,
-			int height, int numAgent, long stepsnumber, int mode, int connection) {
-		this.simName = simName;
-		this.simulationFolder = simulationFolder;
-		this.aoi = aoi;
-		this.width =width;
-		this.height = height;
-		this.numAgents = numAgent;
-		this.connectionType=connection;
-		this.topicList=new ArrayList<>();
-		this.mode = mode;		
-		this.numStep=stepsnumber;
-		this.execFileName=execSimNAme;
-		this.cellTypeList=new ArrayList<CellType>();
-		this.P=p;
-		this.numCells= P;
-
-
-	}
 
 
 	/**
