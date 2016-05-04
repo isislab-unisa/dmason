@@ -17,10 +17,6 @@
 package it.isislab.dmason.experimentals.systemmanagement;
 
 import it.isislab.dmason.exception.DMasonException;
-import it.isislab.dmason.experimentals.systemmanagement.console.Command;
-import it.isislab.dmason.experimentals.systemmanagement.console.Console;
-import it.isislab.dmason.experimentals.systemmanagement.console.Prompt;
-import it.isislab.dmason.experimentals.systemmanagement.console.PromptListener;
 import it.isislab.dmason.experimentals.systemmanagement.master.MasterServerMain;
 import it.isislab.dmason.experimentals.systemmanagement.worker.Worker;
 import java.io.BufferedReader;
@@ -28,10 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
