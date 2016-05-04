@@ -17,21 +17,24 @@
 package it.isislab.dmason.experimentals.systemmanagement;
 
 import it.isislab.dmason.exception.DMasonException;
-import it.isislab.dmason.experimentals.systemmanagement.utils.ActiveMQStarter;
+import it.isislab.dmason.experimentals.systemmanagement.console.Command;
+import it.isislab.dmason.experimentals.systemmanagement.console.Console;
+import it.isislab.dmason.experimentals.systemmanagement.console.Prompt;
+import it.isislab.dmason.experimentals.systemmanagement.console.PromptListener;
+import it.isislab.dmason.experimentals.systemmanagement.master.MasterServerMain;
 import it.isislab.dmason.experimentals.systemmanagement.worker.Worker;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.webapp.WebAppContext;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -66,9 +69,14 @@ public class Manager {
 
 	@Option(name="-h", aliases = { "--hostslist" },usage="start worker on list of hosts (-h host1 host2 host3)")
 	private boolean hosts = false;
+	
+	@Option(name="-ui", aliases = { "--webUI" },usage="start worker with web UI (-ui")
+	private boolean webUI = false;
 
 	@Argument
 	private List<String> arguments = new ArrayList<String>();
+	
+
 
 	public static void main(String[] args) {
 		System.setProperty("java.library.path","./resources/sigar");
@@ -283,6 +291,7 @@ public class Manager {
 		Worker worker=new Worker(ip, port,ns);
 
 	}
+	
 	public void startMaster() throws DMasonException
 	{
 
@@ -290,34 +299,39 @@ public class Manager {
 		if(!dataresources.exists() || !dataresources.isDirectory())
 			throw new DMasonException("Problems in resources check your data.");
 		// 1. Creating the server on port 8080
-		Server server = new Server(8080);
-		ServletContextHandler handler =new ServletContextHandler(server,"resources/systemmanagement/master");	
-		server.setHandler(handler);	
+//		Server server = new Server(8080);
+//		ServletContextHandler handler =new ServletContextHandler(server,"resources/systemmanagement/master");	
+//		server.setHandler(handler);	
+//
+//		// 2. Creating the WebAppContext for the created content
+//		WebAppContext ctx = new WebAppContext();
+//		ctx.setResourceBase("resources/systemmanagement/master");
+//		//ctx.setContextPath("/master");
+//		ctx.setContextPath("/");
+//		//3. Including the JSTL jars for the webapp.
+//		ctx.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",".*/[^/]*jstl.*\\.jar$");
+//
+//		//4. Enabling the Annotation based configuration
+//		org.eclipse.jetty.webapp.Configuration.ClassList classlist = org.eclipse.jetty.webapp.Configuration.ClassList.setServerDefault(server);
+//		classlist.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration", "org.eclipse.jetty.plus.webapp.PlusConfiguration");
+//		classlist.addBefore("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration");
+//
+//		ActiveMQStarter amqS = new ActiveMQStarter();
+//	    amqS.startActivemq();
+//	    
+//		//5. Setting the handler and starting the Server
+//		server.setHandler(ctx);
+//		try {
+//			server.start();
+//			server.join();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		(new MasterServerMain(webUI)).start();
 
-		// 2. Creating the WebAppContext for the created content
-		WebAppContext ctx = new WebAppContext();
-		ctx.setResourceBase("resources/systemmanagement/master");
-		//ctx.setContextPath("/master");
-		ctx.setContextPath("/");
-		//3. Including the JSTL jars for the webapp.
-		ctx.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",".*/[^/]*jstl.*\\.jar$");
-
-		//4. Enabling the Annotation based configuration
-		org.eclipse.jetty.webapp.Configuration.ClassList classlist = org.eclipse.jetty.webapp.Configuration.ClassList.setServerDefault(server);
-		classlist.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration", "org.eclipse.jetty.plus.webapp.PlusConfiguration");
-		classlist.addBefore("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration");
-
-		ActiveMQStarter amqS = new ActiveMQStarter();
-	    amqS.startActivemq();
-	    
-		//5. Setting the handler and starting the Server
-		server.setHandler(ctx);
-		try {
-			server.start();
-			server.join();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
+	
+	
+	
 
 }
