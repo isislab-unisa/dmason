@@ -39,6 +39,7 @@ import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.util.Double2D;
+import sim.util.Int2D;
 
 
 /**
@@ -211,8 +212,12 @@ public class DistributedMultiSchedule<E> extends Schedule
 			for(TreeObject agent: myCell.getObjects())
 			{
 				this.scheduleOnce((Steppable) agent.obj);
-
-				state.addToField((RemotePositionedAgent<E>) agent.obj, (Double2D)map_agents_on_position.get(agent.obj));
+				if(map_agents_on_position.get(agent.obj) instanceof Double2D)
+					state.addToField((RemotePositionedAgent<E>) agent.obj, (Double2D)map_agents_on_position.get(agent.obj));
+				else{
+					if(map_agents_on_position.get(agent.obj) instanceof Int2D)
+						state.addToField((RemotePositionedAgent<E>) agent.obj, (Int2D)map_agents_on_position.get(agent.obj));
+				}
 			}
 
 			//CRAEZIONE DELLA COMUNICAZIONE

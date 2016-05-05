@@ -14,9 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package it.isislab.dmason.sim.app.DFlockersNonUniformPartitioning;
-import java.util.ArrayList;
-
+package it.isislab.dmason.sim.app.DParticlesNonUniformPartitionig;
 import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 /*
@@ -25,6 +23,9 @@ import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.util.connection.ConnectionType;
+
+import java.util.ArrayList;
+
 import sim.display.Console;
 
 /**
@@ -38,25 +39,23 @@ import sim.display.Console;
  * @author Carmine Spagnuolo
  *
  */
-public class TestDFlockersNonUniformPartitioning {
+public class TestDParticlesNonUniformPartitioning {
 
 	private static boolean graphicsOn=false; //with or without graphics?
-	private static int numSteps = Integer.MAX_VALUE; //only graphicsOn=false
+	private static int numSteps = 3000; //only graphicsOn=false
 	private static int P=9;
-	private static int AOI=10; //max distance
-	private static int NUM_AGENTS=2000; //number of agents
+	private static int AOI=1; //max distance
+	private static int NUM_AGENTS=1000; //number of agents
 	private static int WIDTH=400; //field width
 	private static int HEIGHT=400; //field height
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
-	private static String topicPrefix="flocknoun"; //unique string to identify topics for this simulation
-	
+	private static String topicPrefix="particle"; //unique string to identify topics for this simulation 
 	//don't modify this...
-
 	private static int MODE =  DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
-	
+
 	public static void main(String[] args) 
-	{		
+	{		System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
 		class worker extends Thread
 		{
 			private DistributedState ds;
@@ -66,10 +65,11 @@ public class TestDFlockersNonUniformPartitioning {
 			}
 			@Override
 			public void run() {
+				
 				int i=0;
 				while(i!=numSteps)
 				{
-					System.out.println(i);
+					//System.out.println(i);
 					ds.schedule.step(ds);
 					i++;
 				}
@@ -77,27 +77,25 @@ public class TestDFlockersNonUniformPartitioning {
 		}
 
 		ArrayList<worker> myWorker = new ArrayList<worker>();
-		
 		for (int i = 0; i < P; i++) {
-	
-				GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, AOI,P,NUM_AGENTS,MODE,ConnectionType.pureActiveMQ); 
-				genParam.setI(0);
-				genParam.setJ(i);
-				genParam.setIp(ip);
-				genParam.setPort(port);
-				ArrayList<EntryParam<String, Object>> simParams=new ArrayList<EntryParam<String, Object>>();
-				if(graphicsOn || i==0)
-				{
-					DFlockersNonUniformPartitioningWithUI sim =new DFlockersNonUniformPartitioningWithUI(genParam,simParams,topicPrefix);
-					((Console)sim.createController()).pressPause();
-				}
-				else
-				{
-					DFlockersNonUniformPartitioning sim = new DFlockersNonUniformPartitioning(genParam,simParams,topicPrefix); 
-					worker a = new worker(sim);
-					myWorker.add(a);
-				}
 			
+			GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, AOI,P,NUM_AGENTS,MODE,ConnectionType.pureActiveMQ); 
+			genParam.setI(0);
+			genParam.setJ(i);
+			genParam.setIp(ip);
+			genParam.setPort(port);
+			ArrayList<EntryParam<String, Object>> simParams=new ArrayList<EntryParam<String, Object>>();
+			if(graphicsOn || (i==0))
+			{
+				DParticlesNonUniformPartitioningWithUI sim =new DParticlesNonUniformPartitioningWithUI(genParam,simParams,topicPrefix);
+				((Console)sim.createController()).pressPause();
+			}
+			else
+			{
+				DParticlesNonUniformPartitioning sim = new DParticlesNonUniformPartitioning(genParam,simParams,topicPrefix); 
+				worker a = new worker(sim);
+				myWorker.add(a);
+			}
 		}
 		if(!graphicsOn)
 			for (worker w : myWorker) {

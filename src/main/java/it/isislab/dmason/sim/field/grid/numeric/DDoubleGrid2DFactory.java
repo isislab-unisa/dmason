@@ -26,6 +26,8 @@ import it.isislab.dmason.experimentals.sim.field.grid.numeric.loadbalanced.DDoub
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.DistributedField2D;
+import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2D;
+import it.isislab.dmason.sim.field.grid.sparse.DSparseGridNonUniform;
 import sim.engine.SimState;
 
 /**
@@ -119,6 +121,18 @@ public class DDoubleGrid2DFactory {
 				}
 	}
 
+	public static final DDoubleGrid2D createDDoubleGrid2DNonUniform(int width, int height,SimState sm,int aoi, int id,int P, int MODE, double initialGridValue, boolean fixed, String name, String topicPrefix, boolean isToroidal)throws DMasonException
+	{	
+		if(MODE == DistributedField2D.NON_UNIFORM_PARTITIONING_MODE)
+		{
+			DistributedField2D field = new DDoubleGridNonUniform(width, height, sm, aoi, id, P, initialGridValue,name, topicPrefix);
+			field.setToroidal(isToroidal);
+			if(!fixed)
+				((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
+			
+			return (DDoubleGrid2D)field;
+		}return null;
+	}
 
 	/**
 	 * Method used only for Thin simulations
