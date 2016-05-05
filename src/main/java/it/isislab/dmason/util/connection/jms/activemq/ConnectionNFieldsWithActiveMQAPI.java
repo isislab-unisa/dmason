@@ -129,7 +129,8 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 		
 
 		// Create an ActiveMQConnectionFactory
-		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(strAddr);		
+		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(strAddr);	
+		factory.setTrustAllPackages(true);
 		
 		try
 		{
