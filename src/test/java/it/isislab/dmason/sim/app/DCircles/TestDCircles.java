@@ -58,8 +58,9 @@ public class TestDCircles {
 	
 	
 	public static void main(String[] args) 
-	{		
-		class worker extends Thread
+	{	System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");	
+		
+	class worker extends Thread
 		{
 			private DistributedState ds;
 			public worker(DistributedState ds) {

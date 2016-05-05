@@ -27,7 +27,7 @@ public class TestDGameOfLife {
 	
 	
 	public static void main(String[] args) 
-	{		
+	{	System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");	
 		class worker extends Thread
 		{
 			private DistributedState ds;

@@ -27,38 +27,40 @@ import java.util.HashMap;
  * @author Flavio Serrapica
  * @author Carmine Spagnuolo
  *
+ * 
+ * Sets below property in vm arguments for Apache ActivemQ version > 5.7
+ * -Dorg.apache.activemq.SERIALIZABLE_PACKAGES="*"
+ * 
+ * or adds below line of code in main() method
+ * System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
+ * 
  */
 public class MyHashMap extends HashMap<String, Object>{
-	
-	/**
-	 * Set below property in vm arguments for Apache ActivemQ version > 5.7
-	 * 
-	 * -Dorg.apache.activemq.SERIALIZABLE_PACKAGES="*"
-	 */
-	private static final long serialVersionUID = 1L;
+
 	private int full;
 	public int NUMBER_FIELDS;
-	
+
 	public MyHashMap(int numFields){
+
 		NUMBER_FIELDS = numFields;
 		full = numFields;
 	}
-	
+
 	@Override
 	public Object put(String key, Object value){
-		
+
 		Object obj = super.put(key, value);
 		full--;
 		return obj;
 	}
-	
+
 	public boolean isFull(){
-		
+
 		return full==0;
 	}
-	
+
 	public int getFull(){
-		
+
 		return full;
 	}
 }

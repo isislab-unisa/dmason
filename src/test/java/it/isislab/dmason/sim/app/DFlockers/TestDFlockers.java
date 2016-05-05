@@ -60,7 +60,7 @@ public class TestDFlockers {
 
 	public static void main(String[] args) 
 	{		
-
+		System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
 		if(args.length>0)
 			topicPrefix=args[0];
 		else 

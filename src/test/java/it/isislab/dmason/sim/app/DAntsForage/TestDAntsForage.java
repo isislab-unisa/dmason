@@ -58,7 +58,8 @@ public class TestDAntsForage {
 	private static int MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE; 
 	
 	public static void main(String[] args) 
-	{		
+	{	
+		System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
 		class worker extends Thread
 		{
 			private DistributedState ds;

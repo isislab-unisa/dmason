@@ -51,8 +51,10 @@ public class TestStart15 {
 
 	public static void main(String[] args) 
 	{		
+		System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
 		class worker extends Thread
 		{
+			
 			private DistributedState ds;
 			public worker(DistributedState ds) {
 				this.ds=ds;
