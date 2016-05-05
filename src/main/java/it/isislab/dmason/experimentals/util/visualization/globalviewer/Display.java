@@ -59,9 +59,6 @@ import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
-
-import org.apache.kahadb.util.ByteArrayInputStream;
-
 import sim.display.Console;
 import sim.display.GUIState;
 import sim.engine.Steppable;

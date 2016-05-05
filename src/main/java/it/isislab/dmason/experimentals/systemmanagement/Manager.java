@@ -74,6 +74,7 @@ public class Manager {
 
 	public static void main(String[] args) {
 		System.setProperty("java.library.path","./resources/sigar");
+		System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
 		try {
 
 			new Manager().doMain(args);

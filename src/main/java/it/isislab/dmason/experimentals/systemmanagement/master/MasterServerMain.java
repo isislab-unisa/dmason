@@ -43,7 +43,7 @@ public class MasterServerMain {
 	public void start(){
 		
         //set params of jvm
-		//System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
+		
 		
 		// 1. Creating the server on port 8080
 		Server server = null;
@@ -95,7 +95,8 @@ public class MasterServerMain {
 	}
 	
 	public static void main(String[] args) {
-		MasterServerMain msm = new MasterServerMain(false);
+		System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
+		MasterServerMain msm = new MasterServerMain(true); //set true to enable
 		msm.start();
 	}
 }
