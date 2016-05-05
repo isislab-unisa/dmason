@@ -121,7 +121,7 @@ where M is the max number of available cells that the slave nodes can execute.
 
 ### Apache ActiveMQ notes
 
-Please use the Apache ActiveMQ [5.5.1] or greater  (http://activemq.apache.org/activemq-551-release.html) version.
+Please use the Apache ActiveMQ [5.13.3] (http://activemq.apache.org/activemq-5133-release.html) version, or version greater than or equal to 5.12.2.
 
 ### License
 Copyright ISISLab, 2016 Università degli Studi di Salerno.
