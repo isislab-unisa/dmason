@@ -31,6 +31,14 @@ import org.apache.activemq.usage.UsageCapacity;
  * @author miccar
  *
  */
+
+
+
+/**
+ * 
+ * SET config.properties to change ActivemQ <ip:port>  
+ *
+ */
 public class ActiveMQStarter {
 
 	
