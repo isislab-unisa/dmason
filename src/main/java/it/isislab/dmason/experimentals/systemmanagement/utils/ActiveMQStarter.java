@@ -110,5 +110,8 @@ public class ActiveMQStarter {
 			
 		} catch (Exception e1) {e1.printStackTrace();}
 	}
-	
+	public static void main(String[] args) {
+		ActiveMQStarter activemq=new ActiveMQStarter();
+		activemq.startActivemq();
+	}
 }
