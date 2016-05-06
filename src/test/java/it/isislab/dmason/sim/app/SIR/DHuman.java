@@ -148,7 +148,6 @@ public class DHuman extends RemoteHuman<Double2D> {
                     isResistent = true;  
 			
 					//agentColor = RESISTENT;
-					System.out.println("Resistent!!");
 				}
 
 			}
