@@ -25,8 +25,6 @@ import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.usage.SystemUsage;
 import org.apache.activemq.usage.TempUsage;
 import org.apache.activemq.usage.UsageCapacity;
-import it.isislab.dmason.util.connection.Address;
-import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 
 /**
  * Start Activemq 
