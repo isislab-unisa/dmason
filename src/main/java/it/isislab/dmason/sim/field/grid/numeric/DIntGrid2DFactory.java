@@ -63,7 +63,7 @@ public class DIntGrid2DFactory {
 	public static final DIntGrid2D createDIntGrid2D(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns,int MODE, 
 			int initialGridValue, boolean fixed, String name, String topicPrefix, boolean isToroidal)
 					throws DMasonException
-					{
+	{
 		//general parameters check
 		if(columns<=0 || rows <=0){throw new DMasonException("Illegal value : columns value and rows value must be greater than 0");}
 		if(width<=0) {throw new DMasonException("Illegal value: Field width <= 0 is not defined");}
@@ -73,11 +73,11 @@ public class DIntGrid2DFactory {
 		if(max_distance<=0){throw new DMasonException("Illegal value, max_distance value must be greater than 0");}
 		if(max_distance>=Integer.MAX_VALUE ){throw new DMasonException("Illegal value : max_distance value exceded Integer max value");}
 		if(rows==1 && columns==1){throw new DMasonException("Illegal value : field partitioning with one row and one column is not defined");}
-		
+
 		if(MODE==DistributedField2D.UNIFORM_PARTITIONING_MODE)
 		{
-		
-			  
+
+
 			DIntGrid2D field = new DIntGrid2DXY(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name,topicPrefix,isToroidal);
 			if(!fixed)
 				((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
@@ -85,43 +85,56 @@ public class DIntGrid2DFactory {
 			return field;
 
 		}
-		
-		
-		
-			else if (MODE==DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE){
-				if(rows!=columns){throw new DMasonException("In square mode rows and columns must be equals!");}
-				if(((width% columns == 0) && (height% rows == 0)) && 
-						(((width/ columns)%3 == 0) && ((height/ rows)%3 == 0)))
-				{
 
-					DIntGrid2D field = new DIntGrid2DXYLB(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name, topicPrefix); 
-					field.setToroidal(isToroidal);
-					if(!fixed)
-						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);	
 
-					return field;
-				}
-				else
-					throw new DMasonException("Illegal width or height dimension for NUM_PEERS:"+(rows*columns));
+
+		else if (MODE==DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE){
+			if(rows!=columns){throw new DMasonException("In square mode rows and columns must be equals!");}
+			if(((width% columns == 0) && (height% rows == 0)) && 
+					(((width/ columns)%3 == 0) && ((height/ rows)%3 == 0)))
+			{
+
+				DIntGrid2D field = new DIntGrid2DXYLB(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name, topicPrefix); 
+				field.setToroidal(isToroidal);
+				if(!fixed)
+					((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);	
+
+				return field;
 			}
 			else
-				if(MODE==DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
-				{
-					
-					DIntGrid2D field = new DIntGrid2DYLB(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name,topicPrefix);
-					field.setToroidal(isToroidal);
-					if(!fixed)
-						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
+				throw new DMasonException("Illegal width or height dimension for NUM_PEERS:"+(rows*columns));
+		}
+		else
+			if(MODE==DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
+			{
 
-					return field;
+				DIntGrid2D field = new DIntGrid2DYLB(width, height,sm, max_distance, i, j, rows,columns, initialGridValue, name,topicPrefix);
+				field.setToroidal(isToroidal);
+				if(!fixed)
+					((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
+
+				return field;
 
 
-				}
-				else 
-				{
-					throw new DMasonException("Illegal Distribution Mode");
-				}
-					}
+			}
+			else 
+			{
+				throw new DMasonException("Illegal Distribution Mode");
+			}
+	}
+	
+	public static final DIntGrid2D createDIntGrid2DNonUniform(int width, int height,SimState sm,int aoi, int id,int P, int MODE, int initialGridValue, boolean fixed, String name, String topicPrefix, boolean isToroidal)throws DMasonException
+	{	
+		if(MODE == DistributedField2D.NON_UNIFORM_PARTITIONING_MODE)
+		{
+			DistributedField2D field = new DIntGrid2DNonUniform(width, height, sm, aoi, id, P, initialGridValue,name, topicPrefix);
+			field.setToroidal(isToroidal);
+			if(!fixed)
+				((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
+			
+			return (DIntGrid2D)field;
+		}return null;
+	}
 
 	/**
 	 * Method used only for Thin simulations
@@ -145,7 +158,7 @@ public class DIntGrid2DFactory {
 	public static final DIntGrid2DThin createDIntGrid2DThin(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns,int MODE, 
 			int initialGridValue, boolean fixed, String name, String topicPrefix, boolean isToroidal)
 					throws DMasonException
-					{
+	{
 		if(MODE==DistributedField2D.THIN_MODE)
 		{
 			int field_width,field_height;
@@ -195,5 +208,5 @@ public class DIntGrid2DFactory {
 			{
 				throw new DMasonException("Illegal Distribution Mode");
 			}
-					}
+	}
 }

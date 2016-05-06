@@ -155,8 +155,6 @@ public class DParticlesNonUniformPartitioning extends DistributedState<Int2D> {
 		  
         }catch (DMasonException e) { e.printStackTrace();}
       
-
-       
     }
     
     private void generateNonUniformAgentsDistribution(int num_agents,int P,double width,double height,double dispersion,int unbalace) {
@@ -196,28 +194,29 @@ public class DParticlesNonUniformPartitioning extends DistributedState<Int2D> {
 		    	particles.setObjectLocation(p, loc);
 		    	p=new DParticleNonUniformPartitioning(this,new Int2D(0,0));
 		    
-		    	// Schedule the decreaser
-		        Steppable decreaser = new Steppable()
-		        {
-		            @Override
-		    		public void step(SimState state)
-		            {
-		            	trails.multiply(0.9);
-		            }
-		            static final long serialVersionUID = 6330208160095250478L;
-		        };
-		            
-		        schedule.scheduleRepeating(Schedule.EPOCH,2,decreaser,1);
-
-		    	try {
-		    		if(getTrigger()!=null)
-		    			getTrigger().publishToTriggerTopic("Simulation cell "+particles.cellType+" ready...");
-		    	} catch (Exception e) {
-		    		// TODO Auto-generated catch block
-		    		e.printStackTrace();
-		    	}
+		    	
 			}
 		}
+		// Schedule the decreaser
+        Steppable decreaser = new Steppable()
+        {
+            @Override
+    		public void step(SimState state)
+            {
+            	trails.multiply(0.9);
+            }
+            static final long serialVersionUID = 6330208160095250478L;
+        };
+            
+        schedule.scheduleRepeating(Schedule.EPOCH,2,decreaser,1);
+
+    	try {
+    		if(getTrigger()!=null)
+    			getTrigger().publishToTriggerTopic("Simulation cell "+particles.cellType+" ready...");
+    	} catch (Exception e) {
+    		// TODO Auto-generated catch block
+    		e.printStackTrace();
+    	}
     }
     
     /*DParticleNonUniformPartitioning p=new DParticleNonUniformPartitioning(this,new Int2D(0,0));

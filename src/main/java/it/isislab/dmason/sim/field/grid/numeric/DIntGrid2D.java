@@ -18,6 +18,7 @@
 package it.isislab.dmason.sim.field.grid.numeric;
 
 import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellInterface;
+import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.numeric.region.RegionIntegerNumeric;
@@ -125,6 +126,8 @@ public abstract class DIntGrid2D extends IntGrid2D implements DistributedField2D
 	public ArrayList<ArrayList<RegionNumeric<Integer,EntryNum<Integer,Int2D>>>> updates_cacheLB;
 
 	private boolean isToroidal;
+	
+	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
 	
 	public boolean isToroidal()
 	{
