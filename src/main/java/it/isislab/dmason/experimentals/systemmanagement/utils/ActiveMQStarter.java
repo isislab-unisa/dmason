@@ -103,9 +103,9 @@ public class ActiveMQStarter {
 			broker.addConnector(address);
 			broker.start();
 			
-			ConnectionNFieldsWithActiveMQAPI conn=new ConnectionNFieldsWithActiveMQAPI();
-			conn.setupConnection(new Address(IP_ACTIVEMQ, PORT_ACTIVEMQ));
-			conn.createTopic("MANAGEMENT", 1);
+			//ConnectionNFieldsWithActiveMQAPI conn=new ConnectionNFieldsWithActiveMQAPI();
+			//conn.setupConnection(new Address(IP_ACTIVEMQ, PORT_ACTIVEMQ));
+			//conn.createTopic("MANAGEMENT", 1);
 			
 			
 		} catch (Exception e1) {e1.printStackTrace();}
