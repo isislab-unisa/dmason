@@ -71,7 +71,7 @@ import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
  *
  */
 public class MasterServer implements MultiServerInterface{
-	private static final Integer TTL = 60000;
+	private static final Integer TTL = 30000;
 	//ActivemQ settings file, default 127.0.0.1:61616 otherwise you have to change config.properties file
 	private static final String PROPERTIES_FILE_PATH="resources/systemmanagement/master/conf/config.properties";
 
@@ -241,6 +241,65 @@ public class MasterServer implements MultiServerInterface{
 
 
 	/**
+	 * Open a asynchronous receive listener on  topic
+	 * @param topic of Worker
+	 */
+	private void listenOnTopicWorker(String topic){
+		
+		Thread gepp=new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				getConnection().asynchronousReceive(topic, new MyMessageListener() {
+
+					//messages received from workers
+					public void onMessage(Message msg) {
+						Object o;
+						try {
+							o=parseMessage(msg);
+							MyHashMap map=(MyHashMap) o;
+
+							//sim(id) downloaded from the worker
+							if(map.containsKey("simrcv")){
+								int id=(int) map.get("simrcv");
+								AtomicInteger value=getCounterAckSimRcv().get(id);
+								int temp=value.incrementAndGet();
+								getCounterAckSimRcv().put(id, new AtomicInteger(temp));//used as a flag, i'm sure that all jars have been downloaded
+
+							}
+							else
+								// response to master logs req	
+								if(map.containsKey("logready")){
+									int simID=(int) map.get("logready");
+									LOGGER.info("start copy of logs for sim id "+simID);
+									downloadLogsForSimulationByID(simID,topic,false);
+								}
+								else
+									// response to master logs req(when a sim is stopped )
+									if(map.containsKey("loghistory")){
+										int simID=(int) map.get("loghistory");
+										LOGGER.info("start copy of logs history for sim id "+simID);
+										downloadLogsForSimulationByID(simID,topic,true);
+									}
+
+
+
+						} catch (JMSException e) {
+							e.printStackTrace();
+						}
+
+					}
+				});
+				
+			}
+		});
+		gepp.start();
+		
+		
+	}
+	
+	
+	/**
 	 * 
 	 * @param topic
 	 */
@@ -263,6 +322,8 @@ public class MasterServer implements MultiServerInterface{
 
 								if(map.containsKey("WORKER")){
 
+									synchronized (this) {
+									
 									String info=(String) map.get("WORKER");
 									info.replace("{", "");
 									info.replace("}", "");
@@ -271,7 +332,7 @@ public class MasterServer implements MultiServerInterface{
 									ID=ID.replace("}", "");
 									conn.publishToTopic(DEFAULT_PORT_COPY_SERVER, MANAGEMENT, "WORKER-ID-"+ID);
 
-									synchronized (this) {
+									
 
 										if(!infoWorkers.containsKey(ID))
 										{
@@ -283,47 +344,11 @@ public class MasterServer implements MultiServerInterface{
 											} catch (Exception e1) {
 												e1.printStackTrace();
 											}
-											final String topic=ID;
-											getConnection().asynchronousReceive(ID, new MyMessageListener() {
-
-												//messages received from workers
-												public void onMessage(Message msg) {
-													Object o;
-													try {
-														o=parseMessage(msg);
-														MyHashMap map=(MyHashMap) o;
-
-														//sim(id) downloaded from the worker
-														if(map.containsKey("simrcv")){
-															int id=(int) map.get("simrcv");
-															AtomicInteger value=getCounterAckSimRcv().get(id);
-															int temp=value.incrementAndGet();
-															getCounterAckSimRcv().put(id, new AtomicInteger(temp));//used as a flag, i'm sure that all jars have been downloaded
-
-														}
-														else
-															// response to master logs req	
-															if(map.containsKey("logready")){
-																int simID=(int) map.get("logready");
-																LOGGER.info("start copy of logs for sim id "+simID);
-																downloadLogsForSimulationByID(simID,topic,false);
-															}
-															else
-																// response to master logs req(when a sim is stopped )
-																if(map.containsKey("loghistory")){
-																	int simID=(int) map.get("loghistory");
-																	LOGGER.info("start copy of logs history for sim id "+simID);
-																	downloadLogsForSimulationByID(simID,topic,true);
-																}
-
-
-
-													} catch (JMSException e) {
-														e.printStackTrace();
-													}
-
-												}
-											});
+											
+											listenOnTopicWorker(ID);
+											
+											
+											
 
 
 										}
