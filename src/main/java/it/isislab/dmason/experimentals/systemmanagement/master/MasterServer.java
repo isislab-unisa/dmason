@@ -245,9 +245,9 @@ public class MasterServer implements MultiServerInterface{
 	 * @param topic of Worker
 	 */
 	private void listenOnTopicWorker(String topic){
-		
-		Thread gepp=new Thread(new Runnable() {
-			
+
+		Thread listenerThread=new Thread(new Runnable() {
+
 			@Override
 			public void run() {
 				getConnection().asynchronousReceive(topic, new MyMessageListener() {
@@ -290,15 +290,15 @@ public class MasterServer implements MultiServerInterface{
 
 					}
 				});
-				
+
 			}
 		});
-		gepp.start();
-		
-		
+		listenerThread.start();
+
+
 	}
-	
-	
+
+
 	/**
 	 * 
 	 * @param topic
@@ -323,34 +323,21 @@ public class MasterServer implements MultiServerInterface{
 								if(map.containsKey("WORKER")){
 
 									synchronized (this) {
-									
-									String info=(String) map.get("WORKER");
-									info.replace("{", "");
-									info.replace("}", "");
-									String[] ainfo=info.split(":");
-									String ID = ainfo[ainfo.length-1].replace("\"", "");
-									ID=ID.replace("}", "");
-									conn.publishToTopic(DEFAULT_PORT_COPY_SERVER, MANAGEMENT, "WORKER-ID-"+ID);
+										String info=(String) map.get("WORKER");
+										info.replace("{", "");
+										info.replace("}", "");
+										String[] ainfo=info.split(":");
+										String ID = ainfo[ainfo.length-1].replace("\"", "");
+										ID=ID.replace("}", "");
+										conn.publishToTopic(DEFAULT_PORT_COPY_SERVER, MANAGEMENT, "WORKER-ID-"+ID);
 
-									
-
-										if(!infoWorkers.containsKey(ID))
-										{
-
+										if(!infoWorkers.containsKey(ID)){
 											processInfoForCopyLog(info,ID);
 											getConnection().createTopic(ID, 1);
 											try {
 												getConnection().subscribeToTopic(ID);
-											} catch (Exception e1) {
-												e1.printStackTrace();
-											}
-											
+											} catch (Exception e1) {e1.printStackTrace();}
 											listenOnTopicWorker(ID);
-											
-											
-											
-
-
 										}
 										infoWorkers.put(ID, info);
 										ttlinfoWorkers.put(ID, TTL);
@@ -458,7 +445,7 @@ public class MasterServer implements MultiServerInterface{
 
 	/**
 	 * 
-	 * Create zip with all files of simulation
+	 * Create zip of simulation's files
 	 * 
 	 * @param sim_id simulations' id of simulation 
 	 * @return
@@ -884,37 +871,6 @@ public class MasterServer implements MultiServerInterface{
 
 	}
 
-	/**
-	 * TESTING CLUSTER
-	 * insert in start method 
-	 * @param id
-	 */
-	private void waitEndSim(int id){
-		int paramTest=1;
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				/***************TESTING*********************/
-				long start=System.currentTimeMillis();
-				boolean check=true;
-				while(true && check){
-					long nowTime=System.currentTimeMillis();
-					long checkTime=nowTime-start;				
-					if(checkTime> paramTest*60*1000) { 
-						check=false;
-						stop(id);
-
-					}
-				}	
-
-
-			}
-		}).start();
-
-	}/*********END******TESTING*********************/
-
-
 	///////////methods  START STOP PAUSE LOG	
 
 
@@ -1219,5 +1175,40 @@ public class MasterServer implements MultiServerInterface{
 
 	public synchronized Map<String, String> getInfoWorkers() {return infoWorkers;}
 	public synchronized HashMap<Integer,Simulation> getSimulationsList(){return simulationsList;}
+
+
+
+
+/***************************************************************************************************/
+	/**
+	 * TESTING CLUSTER
+	 * 
+	 * insert in start method 
+	 * @param id
+	 */
+	private void waitEndSim(int id){
+		int paramTest=1;
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				/***************TESTING*********************/
+				long start=System.currentTimeMillis();
+				boolean check=true;
+				while(true && check){
+					long nowTime=System.currentTimeMillis();
+					long checkTime=nowTime-start;				
+					if(checkTime> paramTest*60*1000) { 
+						check=false;
+						stop(id);
+
+					}
+				}	
+
+
+			}
+		}).start();
+
+	}/*********END******TESTING*********************/
 
 }
