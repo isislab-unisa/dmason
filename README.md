@@ -106,9 +106,9 @@ Now, to start the slaves node you can open a new terminal on the master node and
 
 ```sh
 #M is the max number of available cells that the slave nodes can execute
-$ java -jar DMASON-3.1.jar -m worker -ip <ipactivemQ> -p <portActivemq> -h slave1 slave2 ... slaveN -ns M
+$ java -jar DMASON-3.1.jar -m worker -ip <ipactivemQ> -p <portActivemq> -h <ipslave1 ipslave2 ... ipslaveN> -ns <M>
 ```
-or you can launch this command on all slave node 
+or you can launch this command on each slave node 
 
 ```sh
 #M is the max number of available cells that the slave node can execute
