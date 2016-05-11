@@ -61,7 +61,10 @@ body{ color:black;}
     margin-left: 20px;
 }
 
-
+.selectAllWorker {
+    font-size: small;
+    cursor: pointer;
+}
 
 .span-icon{
     margin-left:10px;

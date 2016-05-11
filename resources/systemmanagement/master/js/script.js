@@ -221,6 +221,16 @@ function _loadWorkers(_message){
     load_tiles_monitoring();
 }
 
+function selectAllWorkers(){
+    var grid=document.getElementById("workers");
+    $(grid).children("div").each(function(){
+        if($(this).hasClass("grid-item-monitoring")){
+            //console.log($(this).attr("id"));
+            selectItem($(this));
+        }
+    });
+}
+
 
 function selectItem(element){
     if($(element).hasClass("grid-item-selected"))

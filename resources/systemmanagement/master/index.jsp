@@ -79,7 +79,7 @@
 			<paper-toolbar flex id="mainToolBar" class="horizontal">
 				<div><paper-icon-button icon="menu" paper-drawer-toggle ></paper-icon-button></div>
                 <div class="flex"><span>DMASON Master</span></div>
-                <!--div><paper-icon-button icon="refresh" onclick="loadWorkers()"></paper-icon-button></div-->
+                <div onclick="selectAllWorkers()" class="selectAllWorker"><paper-icon-button icon="select-all"></paper-icon-button><span>Select all workers</span></div>
 		    </paper-toolbar>
 
              <div class="content content-main">
@@ -93,25 +93,7 @@
                 </paper-dialog>
                 <div class="grid-monitoring" id="workers">
                     <div class=\"grid-sizer-monitoring\"></div>
-                    <script>
-                        function load_tails_workers(){
-                                <%
-                                    String message = "{\"workers\":[";
-                                    int startMessageSize = message.length();
-                                    for(String info : masterServer.getInfoWorkers().values()){
-                                        message+=info+",";
-                                    }
-                                    if(message.length() > startMessageSize)
-                                        message=message.substring(0, message.length()-1)+"]}";
-                                    else
-                                        message="";
-                                %>
-                                <!-- tails -->
-                            _loadWorkers('<%=message %>');
 
-                        }
-
-                    </script>
                 </div>
                 <paper-fab id="add-simulation-to-worker-buttom" icon="add" onclick="open_dialog_setting_new_simulation()"></paper-fab>
                 <paper-toast id="miss-worker-selection">You should select some workers before to assign them a partitioning</paper-toast>
