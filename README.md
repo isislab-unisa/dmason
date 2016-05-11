@@ -98,7 +98,7 @@ On master node editing Apache ActivemQ configuration file 'resources/systemmanag
 On master node open a terminal e launch this command to start the master node
 
 ```sh
-$ java -jar DMASON-3.1.jar -m master -ui
+$ java -jar DMASON-3.1.jar -m master
 ```
 In your web browser enter the address *http://127.0.0.1:8080* to start a Web UI of system management, if master node is on 127.0.0.1. You have to use *Google Chrome* or *Firefox* as web browser. You have to use the latest version of these browsers.   
 
