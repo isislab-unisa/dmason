@@ -32,9 +32,12 @@ import it.isislab.dmason.experimentals.systemmanagement.utils.ActiveMQStarter;
  */
 public class MasterServerMain {
 
-	private boolean enableUI = true;
+	private boolean enableUI = false;
 	
 
+	public MasterServerMain() {
+		enableUI = true;
+	}
 
 	public MasterServerMain(boolean WebUI) {
 		this.enableUI = WebUI;
@@ -96,7 +99,7 @@ public class MasterServerMain {
 	
 	public static void main(String[] args) {
 		//System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*"); version under 5.12.2
-		MasterServerMain msm = new MasterServerMain(true); //set true to enable
+		MasterServerMain msm = new MasterServerMain(); 
 		msm.start();
 	}
 }

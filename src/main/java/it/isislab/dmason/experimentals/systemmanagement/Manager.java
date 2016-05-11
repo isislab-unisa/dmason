@@ -17,6 +17,10 @@
 package it.isislab.dmason.experimentals.systemmanagement;
 
 import it.isislab.dmason.exception.DMasonException;
+import it.isislab.dmason.experimentals.systemmanagement.console.Command;
+import it.isislab.dmason.experimentals.systemmanagement.console.Console;
+import it.isislab.dmason.experimentals.systemmanagement.console.Prompt;
+import it.isislab.dmason.experimentals.systemmanagement.console.PromptListener;
 import it.isislab.dmason.experimentals.systemmanagement.master.MasterServerMain;
 import it.isislab.dmason.experimentals.systemmanagement.worker.Worker;
 import java.io.BufferedReader;
@@ -24,8 +28,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -64,12 +70,18 @@ public class Manager {
 	@Option(name="-h", aliases = { "--hostslist" },usage="start worker on list of hosts (-h host1 host2 host3)")
 	private boolean hosts = false;
 	
-	@Option(name="-ui", aliases = { "--webUI" },usage="start worker with web UI (-ui")
-	private boolean webUI = false;
+	
 
 	@Argument
 	private List<String> arguments = new ArrayList<String>();
 	
+	
+	
+	public static final String NO_CONSOLE = "Error: Console unavailable";
+	public static final String TIME_FORMAT = "%1$tH:%1$tM:%1$tS";
+	public static final String PROMPT = "dmason$ "+TIME_FORMAT + " >>>";
+	public static final String UNKNOWN_COMMAND = "Unknown command [%1$s]\n";
+	public static final String COMMAND_ERROR = "Command error [%1$s]: [%2$s]\n";
 
 
 	public static void main(String[] args) {
@@ -322,11 +334,60 @@ public class Manager {
 //		} catch (Exception e) {
 //			e.printStackTrace();
 //		}
-		(new MasterServerMain(webUI)).start();
+		
 
+		(new MasterServerMain()).start();
+		
 	}
 	
 	
-	
+	protected static void execCommandLoop(final Console console) throws IOException
+	{
+		String rootPrompt = "dmason$";
+		final Enum helpmsg = Enum.valueOf(Command.class, "help".toUpperCase());
+		((Prompt)helpmsg).exec(console,null,rootPrompt, new PromptListener()
+		{
+			@Override
+			public void exception(Exception e)
+			{
+				console.printf(Manager.COMMAND_ERROR, helpmsg, e.getMessage());
+			}
+		});
+		
+		while (true)
+		{
+			String commandLine = console.readLine(PROMPT, new Date());
+			Scanner scanner = new Scanner(commandLine);
+
+			if (scanner.hasNext())
+			{
+				final String commandName = scanner.next().toUpperCase();
+
+				try
+				{
+					final Command cmd = Enum.valueOf(Command.class, commandName);
+					String param= scanner.hasNext() ? scanner.nextLine() : null;
+					if(param !=null && param.charAt(0)== ' ')
+						param=param.substring(1,param.length());
+					String[] params = param!=null?param.split(" "):null;
+					
+					cmd.exec(console,params,rootPrompt, new PromptListener() {
+						@Override
+						public void exception(Exception e)
+						{
+							console.printf(COMMAND_ERROR, cmd, e.getMessage());
+							e.printStackTrace(System.out);
+						}
+					});
+				}
+				catch (IllegalArgumentException e)
+				{
+					console.printf(UNKNOWN_COMMAND, commandName);
+				}
+			}
+
+			scanner.close();
+		}
+	}
 
 }
