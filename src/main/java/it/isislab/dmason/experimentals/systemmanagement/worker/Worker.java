@@ -807,13 +807,11 @@ public class Worker implements Observer {
 	{
 		String path_jar_file=pathJar;
 		try{
-			@SuppressWarnings("resource")
 			JarFile jar=new JarFile(new File(path_jar_file));
 			Enumeration e=jar.entries();
 			File file  = new File(path_jar_file);
 			URL url = file.toURL(); 
 			URL[] urls = new URL[]{url};
-			@SuppressWarnings("resource")
 			ClassLoader cl = new URLClassLoader(urls);
 			Class distributedState=null;
 			while(e.hasMoreElements()){
@@ -828,7 +826,6 @@ public class Worker implements Observer {
 
 			}
 			if(distributedState==null) return null;
-			@SuppressWarnings("resource")
 			//JarClassLoader cload = new JarClassLoader(new URL("jar:file://"+path_jar_file+"!/"));
 			JarClassLoader cload = new JarClassLoader(new File(path_jar_file).toURI().toURL());
 			cload.addToClassPath();
