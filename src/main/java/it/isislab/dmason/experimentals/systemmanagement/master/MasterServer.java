@@ -23,6 +23,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -45,6 +47,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import it.isislab.dmason.experimentals.systemmanagement.loader.DMasonClassLoader;
 import it.isislab.dmason.experimentals.systemmanagement.utils.ClientSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.FindAvailablePort;
@@ -52,7 +55,7 @@ import it.isislab.dmason.experimentals.systemmanagement.utils.ServerSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.experimentals.systemmanagement.utils.ZipDirectory;
 import it.isislab.dmason.experimentals.systemmanagement.worker.Worker;
-import it.isislab.dmason.experimentals.util.management.JarClassLoader;
+import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
@@ -725,40 +728,89 @@ public class MasterServer implements MultiServerInterface{
 	 */
 	protected boolean validateSimulationJar(String pathJar)
 	{
-
-		String path_jar_file=pathJar;
+		
 		try{
-			JarFile jar=new JarFile(new File(path_jar_file));
-			Enumeration e=jar.entries();
-			File file  = new File(path_jar_file);
-			URL url = file.toURL(); 
-			URL[] urls = new URL[]{url};
-			ClassLoader cl = new URLClassLoader(urls);
-			Class distributedState=null;
+		JarFile jar=new JarFile(new File(pathJar));
+		Enumeration e=jar.entries();
+		File file  = new File(pathJar);
+		String u = file.toURI().toURL().toString(); 
+		URL url=new URL(u);
+		URL[] urls = new URL[]{url};
 
-			while(e.hasMoreElements()){
+		URLClassLoader aUrlCL = new URLClassLoader(urls, new DMasonClassLoader());
+		Thread.currentThread().setContextClassLoader(aUrlCL);
+		Class distributedState=null;
 
-				JarEntry je=(JarEntry)e.nextElement();
-				if(!je.getName().contains(".class")) continue;
+		while(e.hasMoreElements()){
 
-				InputStream input = jar.getInputStream(je);
+			JarEntry je=(JarEntry)e.nextElement();
+			if(!je.getName().contains(".class")) continue;
 
-				Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
+			Class c=aUrlCL.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
 
-				if(c.getSuperclass().equals(DistributedState.class))
-					distributedState=c;
-
+			if(c.getSuperclass().equals(DistributedState.class)){
+				System.out.println(c);
+				distributedState=c;
 			}
-			if(distributedState==null) return false;
-			JarClassLoader cload = new JarClassLoader(new URL("jar:file://"+path_jar_file+"!/"));
 
-			cload.addToClassPath();
-
-			return true;
-		} catch (Exception e){
-			e.printStackTrace();
 		}
-		return false;
+		if(distributedState==null) return false;
+
+		Class<?> urlClass = aUrlCL.getClass();//URLClassLoader.class;////
+
+		Method method = urlClass.getDeclaredMethod("addURL", new Class[]{URL.class});
+		method.setAccessible(true);
+		method.invoke(aUrlCL, new Object[]{url});;
+
+		Class simClass = aUrlCL.loadClass(distributedState.getName());
+		Constructor constr = simClass.getConstructor(new Class[]{ GeneralParam.class ,String.class});
+		return true;
+		} catch(Exception e){
+			System.err.println("JAR CORRUPTED, export as a Jar File and not as a runnable jar file");
+			return false;
+		}
+		
+		
+		
+		
+		
+
+
+	
+		//
+		//		String path_jar_file=pathJar;
+		//		try{
+		//			JarFile jar=new JarFile(new File(path_jar_file));
+		//			Enumeration e=jar.entries();
+		//			File file  = new File(path_jar_file);
+		//			URL url = file.toURL(); 
+		//			URL[] urls = new URL[]{url};
+		//			ClassLoader cl = new URLClassLoader(urls);
+		//			Class distributedState=null;
+		//
+		//			while(e.hasMoreElements()){
+		//
+		//				JarEntry je=(JarEntry)e.nextElement();
+		//				if(!je.getName().contains(".class")) continue;
+		//
+		//				InputStream input = jar.getInputStream(je);
+		//
+		//				Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
+		//
+		//				if(c.getSuperclass().equals(DistributedState.class))
+		//					distributedState=c;
+		//
+		//			}
+		//			if(distributedState==null) return false;
+		//			JarClassLoader cload = new JarClassLoader(new URL("jar:file://"+path_jar_file+"!/"));
+		//
+		//			cload.addToClassPath();
+		//
+		//			return true;
+		//		} catch (Exception e){
+		//			e.printStackTrace();
+		//		}
+		//		return false;
 
 	}
 
@@ -1179,7 +1231,7 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-/***************************************************************************************************/
+	/***************************************************************************************************/
 	/**
 	 * TESTING CLUSTER
 	 * 

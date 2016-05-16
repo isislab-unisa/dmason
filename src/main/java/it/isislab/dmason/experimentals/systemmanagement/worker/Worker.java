@@ -18,6 +18,7 @@
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
 
+import it.isislab.dmason.experimentals.systemmanagement.loader.DMasonClassLoader;
 import it.isislab.dmason.experimentals.systemmanagement.utils.ClientSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.FindAvailablePort;
@@ -39,6 +40,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
@@ -362,6 +365,7 @@ public class Worker implements Observer {
 	 * Subscribe to masters' topic  for communication [master->worker]
 	 * Requests' list from master
 	 */
+	@SuppressWarnings("serial")
 	private synchronized void listenerForMasterComunication(){
 		try{
 			getConnection().subscribeToTopic(TOPIC_WORKER_ID);
@@ -542,9 +546,9 @@ public class Worker implements Observer {
 		for(CellExecutor cexe:executorThread.get(sim_id))
 		{
 			if(cexe.masterCell){ 
-			getSimulationList().get(sim_id).setStatus(Simulation.STOPPED);	
-			getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
-			getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
+				getSimulationList().get(sim_id).setStatus(Simulation.STOPPED);	
+				getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
+				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
 			}
 			cexe.stopThread();
 		}
@@ -600,7 +604,7 @@ public class Worker implements Observer {
 			this.prefix=sim.getTopicPrefix();//prefix;
 			this.folder_sim=sim.getSimulationFolder();//folder_name;
 			this.jar_pathname=sim.getJarPath();//jar_path;
-			dis=makeSimulation( params, prefix, jar_pathname);
+			dis=makeSimulationWithNewLoader( params, prefix, jar_pathname);
 			dis.setOutputStream(out);
 			this.masterCell=master_cell;
 		}
@@ -641,11 +645,11 @@ public class Worker implements Observer {
 			}
 
 			// simulation stopped 
-//			if( (i<params.getMaxStep()) && masterCell ){
-//				getSimulationList().get(sim_id).setStatus(Simulation.STOPPED);	
-//				getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
-//				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
-//			}
+			//			if( (i<params.getMaxStep()) && masterCell ){
+			//				getSimulationList().get(sim_id).setStatus(Simulation.STOPPED);	
+			//				getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
+			//				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
+			//			}
 
 			//simulation finished             
 			if(  (i==params.getMaxStep()) && masterCell) {
@@ -700,6 +704,7 @@ public class Worker implements Observer {
 	 * Create a new sim execution process    
 	 * @param sim
 	 */
+	@SuppressWarnings("serial")
 	private synchronized void createNewSimulationProcess(Simulation sim){
 
 		String path=this.createSimulationDirectoryByID(sim.getSimName()+""+sim.getSimID());
@@ -712,7 +717,6 @@ public class Worker implements Observer {
 		} catch (Exception e1) {e1.printStackTrace();}
 		getConnection().asynchronousReceive(createTopicSimReady, new MyMessageListener() {
 
-			@Override
 			public void onMessage(Message msg) {
 				Object o;
 				try {
@@ -796,13 +800,13 @@ public class Worker implements Observer {
 	}
 
 	/**
-	 * Create instance of DistributeState from jar
-	 * @param params
+     * Get Distributed state instance of simulation from jar file	 * @param params
 	 * @param prefix
 	 * @param pathJar
 	 * @return
 	 */
-	@SuppressWarnings({ "rawtypes", "deprecation" })
+	@SuppressWarnings({ "rawtypes", "unused", "resource" })
+	@Deprecated
 	private DistributedState makeSimulation(GeneralParam params, String prefix,String pathJar)
 	{
 		String path_jar_file=pathJar;
@@ -837,6 +841,64 @@ public class Worker implements Observer {
 
 	}
 
+
+	/**
+	 * Get Distributed state instance of simulation from jar file and 
+	 * avoid dynamically classloading problem  of the same path from multiple jar
+	 * @param params
+	 * @param prefix
+	 * @param pathJar
+	 * @return
+	 */
+	private DistributedState makeSimulationWithNewLoader(GeneralParam params, String prefix,String pathJar){
+
+		String path_jar_file=pathJar;
+		try{
+
+			JarFile jar=new JarFile(new File(path_jar_file));
+			Enumeration e=jar.entries();
+			File file  = new File(path_jar_file);
+			String u = file.toURI().toURL().toString(); 
+			URL url=new URL(u);
+			URL[] urls = new URL[]{url};
+
+			URLClassLoader aUrlCL = new URLClassLoader(urls, new DMasonClassLoader());
+			Thread.currentThread().setContextClassLoader(aUrlCL);
+			Class<?> distributedState=null;
+
+			while(e.hasMoreElements()){
+
+				JarEntry je=(JarEntry)e.nextElement();
+				if(!je.getName().contains(".class")) continue;
+
+				Class<?> c=aUrlCL.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
+
+				if(c.getSuperclass().equals(DistributedState.class)){
+					distributedState=c;
+				}
+
+			}
+			if(distributedState==null) return null;
+
+			Class<?> urlClass = aUrlCL.getClass();//URLClassLoader.class;////
+
+			Method method = urlClass.getDeclaredMethod("addURL", new Class[]{URL.class});
+			method.setAccessible(true);
+			method.invoke(aUrlCL, new Object[]{url});;
+
+			Class<?> simClass = aUrlCL.loadClass(distributedState.getName());
+			Constructor<?> constr = simClass.getConstructor(new Class[]{ GeneralParam.class ,String.class});
+			Object obj = constr.newInstance(new Object[]{ params ,prefix});
+
+			return (DistributedState) obj;
+
+		} catch (Exception e){
+			e.printStackTrace();
+		} catch (Throwable e1) {
+			e1.printStackTrace();
+		}
+		return null;
+	}
 
 
 	/**
