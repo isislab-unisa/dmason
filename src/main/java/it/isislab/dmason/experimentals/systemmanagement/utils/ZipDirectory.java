@@ -186,10 +186,11 @@ public class ZipDirectory {
 	}    
 
 
+	//TESTING
 	public static void main(String[] args) {
-		String folderToZip="/home/miccar/Scrivania/worker/04-03-16-15_33/simulations/gvsbhscbhd1/out";
-		String pathZip="/home/miccar/git/dmason/dmason/master/simulations/miasim/runs/-1043054413.zip";
-		String pathUnzip="/home/miccar/Scrivania/outputZip";
+		String folderToZip="/home/user/Desktop/worker/04-03-16-15_33/simulations/gvsbhscbhd1/out";
+		String pathZip="/home/user/git/dmason/dmason/master/simulations/miasim/runs/-1043054413.zip";
+		String pathUnzip="/home/user/Desktop/outputZip";
 
 		//if(ZipDirectory.createZipDirectory(pathZip, folderToZip)) System.out.println("finished");
 		if(ZipDirectory.unZipDirectory(pathZip, pathUnzip)) System.out.println("finished");
