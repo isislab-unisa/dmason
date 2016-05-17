@@ -171,27 +171,28 @@ public class DistributedStateConnectionMPI<E> {
 
 			try {
 
-				connectionMPI.createTopic(topicPrefix+TYPE.pos_i + "-" + TYPE.pos_j + "L",
-						schedule.fields2D
-						.size());
-				connectionMPI.createTopic(topicPrefix+TYPE.pos_i + "-" + TYPE.pos_j + "R",
-						schedule.fields2D
-						.size());
-
-				connectionMPI.subscribeToTopic(topicPrefix+TYPE.pos_i + "-"
-						+ ((TYPE.pos_j - 1 + NUMPEERS) % NUMPEERS) + "R");
-				connectionMPI.subscribeToTopic(topicPrefix+TYPE.pos_i + "-"
-						+ ((TYPE.pos_j + 1 + NUMPEERS) % NUMPEERS) + "L");
-
-				MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
-
-				connectionMPI.asynchronousReceive(topicPrefix+TYPE.pos_i + "-"
-						+ ((TYPE.pos_j - 1 + NUMPEERS) % NUMPEERS) + "R",l1);
-
-				MPInFieldsListeners l2 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
-
-				connectionMPI.asynchronousReceive(topicPrefix+TYPE.pos_i + "-"
-						+ ((TYPE.pos_j + 1 + NUMPEERS) % NUMPEERS) + "L",l2);
+				System.out.println("NO BALANCED MODE");
+//				connectionMPI.createTopic(topicPrefix+TYPE.pos_i + "-" + TYPE.pos_j + "E",
+//						schedule.fields2D
+//						.size());
+//				connectionMPI.createTopic(topicPrefix+TYPE.pos_i + "-" + TYPE.pos_j + "W",
+//						schedule.fields2D
+//						.size());
+//
+//				connectionMPI.subscribeToTopic(topicPrefix+TYPE.pos_i + "-"
+//						+ ((TYPE.pos_j - 1 + NUMPEERS) % NUMPEERS) + "W");
+//				connectionMPI.subscribeToTopic(topicPrefix+TYPE.pos_i + "-"
+//						+ ((TYPE.pos_j + 1 + NUMPEERS) % NUMPEERS) + "E");
+//
+//				MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
+//
+//				connectionMPI.asynchronousReceive(topicPrefix+TYPE.pos_i + "-"
+//						+ ((TYPE.pos_j - 1 + NUMPEERS) % NUMPEERS) + "W",l1);
+//
+//				MPInFieldsListeners l2 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
+//
+//				connectionMPI.asynchronousReceive(topicPrefix+TYPE.pos_i + "-"
+//						+ ((TYPE.pos_j + 1 + NUMPEERS) % NUMPEERS) + "E",l2);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -204,230 +205,230 @@ public class DistributedStateConnectionMPI<E> {
 
 				//one columns and N rows
 				if(rows > 1 && columns == 1){
-					connectionMPI.createTopic(topicPrefix+TYPE + "U",
+					connectionMPI.createTopic(topicPrefix+TYPE + "N",
 							schedule.fields2D
 							.size());
-					connectionMPI.createTopic(topicPrefix+TYPE + "D",
+					connectionMPI.createTopic(topicPrefix+TYPE + "S",
 							schedule.fields2D
 							.size());
-					connectionMPI.createTopic(topicPrefix+TYPE + "CUDL",
+					connectionMPI.createTopic(topicPrefix+TYPE + "NW",
 							schedule.fields2D
 							.size());
-					connectionMPI.createTopic(topicPrefix+TYPE + "CUDR",
+					connectionMPI.createTopic(topicPrefix+TYPE + "NE",
 							schedule.fields2D
 							.size());
-					connectionMPI.createTopic(topicPrefix+TYPE + "CDDL",
+					connectionMPI.createTopic(topicPrefix+TYPE + "SW",
 							schedule.fields2D
 							.size());
-					connectionMPI.createTopic(topicPrefix+TYPE + "CDDR",
+					connectionMPI.createTopic(topicPrefix+TYPE + "SE",
 							schedule.fields2D
 							.size());
 
 					connectionMPI.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j + columns) % columns) + "U");
+							+ ((j + columns) % columns) + "N");
 					connectionMPI.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j + columns) % columns) + "D");
+							+ ((j + columns) % columns) + "S");
 
 					connectionMPI.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CDDR");
+							+ ((j - 1 + columns) % columns) + "SE");
 					connectionMPI.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CDDL");
+							+ ((j + 1 + columns) % columns) + "SW");
 					connectionMPI.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CUDR");
+							+ ((j - 1 + columns) % columns) + "NE");
 					connectionMPI.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CUDL");
+							+ ((j + 1 + columns) % columns) + "NW");
 
 					MPInFieldsListeners l3 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j + columns) % columns) + "U",l3);
+							+ ((j + columns) % columns) + "N",l3);
 
 					MPInFieldsListeners l4 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j + columns) % columns) + "D",l4);
+							+ ((j + columns) % columns) + "S",l4);
 
 					MPInFieldsListeners l5 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CDDR",l5);
+							+ ((j - 1 + columns) % columns) + "SE",l5);
 
 					MPInFieldsListeners l6 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CDDL",l6);
+							+ ((j + 1 + columns) % columns) + "SW",l6);
 
 					MPInFieldsListeners l7 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CUDR",l7);
+							+ ((j - 1 + columns) % columns) + "NE",l7);
 
 					MPInFieldsListeners l8 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CUDL",l8);
+							+ ((j + 1 + columns) % columns) + "NW",l8);
 				}
 				//one rows and N columns
 				else if(rows==1 && columns>1){
-					connectionMPI.createTopic(topicPrefix+TYPE + "L",
+					connectionMPI.createTopic(topicPrefix+TYPE + "W",
 							schedule.fields2D
 							.size());
-					connectionMPI.createTopic(topicPrefix+TYPE + "R",
+					connectionMPI.createTopic(topicPrefix+TYPE + "E",
 							schedule.fields2D
 							.size());
 
-					connectionMPI.createTopic(topicPrefix+TYPE + "CUDL",
+					connectionMPI.createTopic(topicPrefix+TYPE + "NW",
 							schedule.fields2D
 							.size());
-					connectionMPI.createTopic(topicPrefix+TYPE + "CUDR",
+					connectionMPI.createTopic(topicPrefix+TYPE + "NE",
 							schedule.fields2D
 							.size());
-					connectionMPI.createTopic(topicPrefix+TYPE + "CDDL",
+					connectionMPI.createTopic(topicPrefix+TYPE + "SW",
 							schedule.fields2D
 							.size());
-					connectionMPI.createTopic(topicPrefix+TYPE + "CDDR",
+					connectionMPI.createTopic(topicPrefix+TYPE + "SE",
 							schedule.fields2D
 							.size());
 
 
 
 					connectionMPI.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "L");
+							+ ((j + 1 + columns) % columns) + "W");
 					connectionMPI.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "R");
+							+ ((j - 1 + columns) % columns) + "E");
 
 					connectionMPI.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CDDR");
+							+ ((j - 1 + columns) % columns) + "SE");
 					connectionMPI.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CDDL");
+							+ ((j + 1 + columns) % columns) + "SW");
 					connectionMPI.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CUDR");
+							+ ((j - 1 + columns) % columns) + "NE");
 					connectionMPI.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CUDL");
+							+ ((j + 1 + columns) % columns) + "NW");
 
 					MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "L",l1);
+							+ ((j + 1 + columns) % columns) + "W",l1);
 
 					MPInFieldsListeners l2 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "R",l2);
+							+ ((j - 1 + columns) % columns) + "E",l2);
 
 					MPInFieldsListeners l5 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CDDR",l5);
+							+ ((j - 1 + columns) % columns) + "SE",l5);
 
 					MPInFieldsListeners l6 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CDDL",l6);
+							+ ((j + 1 + columns) % columns) + "SW",l6);
 
 					MPInFieldsListeners l7 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CUDR",l7);
+							+ ((j - 1 + columns) % columns) + "NE",l7);
 
 					MPInFieldsListeners l8 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CUDL",l8);
+							+ ((j + 1 + columns) % columns) + "NW",l8);
 
 				}
 				else{
 					// N rows and N columns
-					connectionMPI.createTopic(topicPrefix+TYPE + "L",
+					connectionMPI.createTopic(topicPrefix+TYPE + "W",
 							schedule.fields2D
 							.size());
-					connectionMPI.createTopic(topicPrefix+TYPE + "R",
+					connectionMPI.createTopic(topicPrefix+TYPE + "E",
 							schedule.fields2D
 							.size());
-					connectionMPI.createTopic(topicPrefix+TYPE + "D",
+					connectionMPI.createTopic(topicPrefix+TYPE + "S",
 							schedule.fields2D
 							.size());
-					connectionMPI.createTopic(topicPrefix+TYPE + "U",
+					connectionMPI.createTopic(topicPrefix+TYPE + "N",
 							schedule.fields2D
 							.size());
-					connectionMPI.createTopic(topicPrefix+TYPE + "CUDL",
+					connectionMPI.createTopic(topicPrefix+TYPE + "NW",
 							schedule.fields2D
 							.size());
-					connectionMPI.createTopic(topicPrefix+TYPE + "CUDR",
+					connectionMPI.createTopic(topicPrefix+TYPE + "NE",
 							schedule.fields2D
 							.size());
-					connectionMPI.createTopic(topicPrefix+TYPE + "CDDL",
+					connectionMPI.createTopic(topicPrefix+TYPE + "SW",
 							schedule.fields2D
 							.size());
-					connectionMPI.createTopic(topicPrefix+TYPE + "CDDR",
+					connectionMPI.createTopic(topicPrefix+TYPE + "SE",
 							schedule.fields2D
 							.size());
 
 					int sqrt = (int) Math.sqrt(NUMPEERS);
 
 					connectionMPI.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "L");
+							+ ((j + 1 + columns) % columns) + "W");
 
 					connectionMPI.subscribeToTopic(topicPrefix+((i + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "R");
+							+ ((j - 1 + columns) % columns) + "E");
 
 					connectionMPI.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j + columns) % columns) + "U");
+							+ ((j + columns) % columns) + "N");
 
 					connectionMPI.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j + columns) % columns) + "D");
+							+ ((j + columns) % columns) + "S");
 
 					connectionMPI.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CDDR");
+							+ ((j - 1 + columns) % columns) + "SE");
 
 					connectionMPI.subscribeToTopic(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CDDL");
+							+ ((j + 1 + columns) % columns) + "SW");
 
 					connectionMPI.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CUDR");
+							+ ((j - 1 + columns) % columns) + "NE");
 
 					connectionMPI.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CUDL");
+							+ ((j + 1 + columns) % columns) + "NW");
 
 					MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "L",l1);
+							+ ((j + 1 + columns) % columns) + "W",l1);
 
 					MPInFieldsListeners l2 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "R",l2);
+							+ ((j - 1 + columns) % columns) + "E",l2);
 
 					MPInFieldsListeners l3 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j + columns) % columns) + "U",l3);
+							+ ((j + columns) % columns) + "N",l3);
 
 					MPInFieldsListeners l4 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j + columns) % columns) + "D",l4);
+							+ ((j + columns) % columns) + "S",l4);
 
 					MPInFieldsListeners l5 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CDDR",l5);
+							+ ((j - 1 + columns) % columns) + "SE",l5);
 
 					MPInFieldsListeners l6 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i - 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CDDL",l6);
+							+ ((j + 1 + columns) % columns) + "SW",l6);
 
 					MPInFieldsListeners l7 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j - 1 + columns) % columns) + "CUDR",l7);
+							+ ((j - 1 + columns) % columns) + "NE",l7);
 
 					MPInFieldsListeners l8 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
 
 					connectionMPI.asynchronousReceive(topicPrefix+((i + 1 + rows) % rows) + "-"
-							+ ((j + 1 + columns) % columns) + "CUDL",l8);
+							+ ((j + 1 + columns) % columns) + "NW",l8);
 				}
 
 			}catch(Exception e){
@@ -438,58 +439,58 @@ public class DistributedStateConnectionMPI<E> {
 
 			try {
 
-				connectionMPI.createTopic(topicPrefix+TYPE+"L",schedule.fields2D.size());
-				connectionMPI.createTopic(topicPrefix+TYPE+"R",schedule.fields2D.size());
-				connectionMPI.createTopic(topicPrefix+TYPE+"D",schedule.fields2D.size());
-				connectionMPI.createTopic(topicPrefix+TYPE+"U",schedule.fields2D.size());
-				connectionMPI.createTopic(topicPrefix+TYPE+"CUDL",schedule.fields2D.size());
-				connectionMPI.createTopic(topicPrefix+TYPE+"CUDR",schedule.fields2D.size());
-				connectionMPI.createTopic(topicPrefix+TYPE+"CDDL",schedule.fields2D.size());
-				connectionMPI.createTopic(topicPrefix+TYPE+"CDDR",schedule.fields2D.size());
+				connectionMPI.createTopic(topicPrefix+TYPE+"E",schedule.fields2D.size());
+				connectionMPI.createTopic(topicPrefix+TYPE+"W",schedule.fields2D.size());
+				connectionMPI.createTopic(topicPrefix+TYPE+"S",schedule.fields2D.size());
+				connectionMPI.createTopic(topicPrefix+TYPE+"N",schedule.fields2D.size());
+				connectionMPI.createTopic(topicPrefix+TYPE+"NW",schedule.fields2D.size());
+				connectionMPI.createTopic(topicPrefix+TYPE+"NE",schedule.fields2D.size());
+				connectionMPI.createTopic(topicPrefix+TYPE+"SW",schedule.fields2D.size());
+				connectionMPI.createTopic(topicPrefix+TYPE+"SE",schedule.fields2D.size());
 
 				int i=TYPE.pos_i,j=TYPE.pos_j;
 				int sqrt=(int)Math.sqrt(NUMPEERS);
 
-				connectionMPI.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L");
-				connectionMPI.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R");
-				connectionMPI.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U");
-				connectionMPI.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D");
-				connectionMPI.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR");
-				connectionMPI.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL");
-				connectionMPI.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR");
-				connectionMPI.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL");
+				connectionMPI.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"E");
+				connectionMPI.subscribeToTopic(topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"W");
+				connectionMPI.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"N");
+				connectionMPI.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"S");
+				connectionMPI.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"SE");
+				connectionMPI.subscribeToTopic(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"SW");
+				connectionMPI.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"NE");
+				connectionMPI.subscribeToTopic(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"NW");
 
 				MPInFieldsListeners l1 = new MPInFieldsListeners(schedule.fields2D);
 
-				connectionMPI.asynchronousReceive(topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"L",l1);
+				connectionMPI.asynchronousReceive(topicPrefix+((i+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"E",l1);
 
 				MPInFieldsListeners l2 = new MPInFieldsListeners(schedule.fields2D);
 
-				connectionMPI.asynchronousReceive(topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"R",l2);
+				connectionMPI.asynchronousReceive(topicPrefix+((i+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"W",l2);
 
 				MPInFieldsListeners l3 = new MPInFieldsListeners(schedule.fields2D);
 
-				connectionMPI.asynchronousReceive(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"U",l3);
+				connectionMPI.asynchronousReceive(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"N",l3);
 
 				MPInFieldsListeners l4 = new MPInFieldsListeners(schedule.fields2D);
 
-				connectionMPI.asynchronousReceive(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"D",l4);
+				connectionMPI.asynchronousReceive(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+sqrt)%sqrt)+"S",l4);
 
 				MPInFieldsListeners l5 = new MPInFieldsListeners(schedule.fields2D);
 
-				connectionMPI.asynchronousReceive(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CDDR",l5);
+				connectionMPI.asynchronousReceive(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"SE",l5);
 
 				MPInFieldsListeners l6 = new MPInFieldsListeners(schedule.fields2D);
 
-				connectionMPI.asynchronousReceive(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CDDL",l6);
+				connectionMPI.asynchronousReceive(topicPrefix+((i-1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"SW",l6);
 
 				MPInFieldsListeners l7 = new MPInFieldsListeners(schedule.fields2D);
 
-				connectionMPI.asynchronousReceive(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"CUDR",l7);
+				connectionMPI.asynchronousReceive(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j-1+sqrt)%sqrt)+"NE",l7);
 
 				MPInFieldsListeners l8 = new MPInFieldsListeners(schedule.fields2D);
 
-				connectionMPI.asynchronousReceive(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"CUDL",l8);
+				connectionMPI.asynchronousReceive(topicPrefix+((i+1+sqrt)%sqrt)+"-"+((j+1+sqrt)%sqrt)+"NW",l8);
 
 			}catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -505,30 +506,30 @@ public class DistributedStateConnectionMPI<E> {
 			try {
 
 				if(TYPE.pos_j != columns-1){
-					connectionMPI.createTopic(topicPrefix+TYPE + "R",
+					connectionMPI.createTopic(topicPrefix+TYPE + "W",
 							schedule.fields2D
 							.size());
 
-					connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "L");
+					connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "E");
 
 					MPInFieldsListeners l1 = new MPInFieldsListeners(schedule.fields2D);
 
 					connectionMPI.asynchronousReceive(
-							topicPrefix+TYPE.getNeighbourRight() + "L",l1);
+							topicPrefix+TYPE.getNeighbourRight() + "E",l1);
 
 
 				}
 				if(TYPE.pos_j > 0){
-					connectionMPI.createTopic(topicPrefix+TYPE + "L",
+					connectionMPI.createTopic(topicPrefix+TYPE + "E",
 							schedule.fields2D
 							.size());
 
-					connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "R");
+					connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "W");
 
 					MPInFieldsListeners l2 = new MPInFieldsListeners(schedule.fields2D);
 
 					connectionMPI.asynchronousReceive(
-							topicPrefix+TYPE.getNeighbourLeft() + "R",l2);
+							topicPrefix+TYPE.getNeighbourLeft() + "W",l2);
 				}
 
 			} catch (Exception e) {
@@ -543,87 +544,87 @@ public class DistributedStateConnectionMPI<E> {
 					MPInFieldsListeners l = new MPInFieldsListeners(schedule.fields2D);
 					if(TYPE.pos_i==0){
 						//crea sotto e sottomettiti a i+1-spra
-						connectionMPI.createTopic(topicPrefix+TYPE + "D",
+						connectionMPI.createTopic(topicPrefix+TYPE + "S",
 								schedule.fields2D
 								.size());
-						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourDown() + "U");
-						connectionMPI.asynchronousReceive(topicPrefix+(TYPE.getNeighbourDown() + "U"),l);
+						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourDown() + "N");
+						connectionMPI.asynchronousReceive(topicPrefix+(TYPE.getNeighbourDown() + "N"),l);
 					}
 					else if(TYPE.pos_i == rows-1){
 						//crea sopra e sottomettiti a i-1-sotto
-						connectionMPI.createTopic(topicPrefix+TYPE + "U",
+						connectionMPI.createTopic(topicPrefix+TYPE + "N",
 								schedule.fields2D
 								.size());
-						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourUp() + "D");
-						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourUp() + "D",l);
+						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourUp() + "S");
+						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourUp() + "S",l);
 					}
 					else{
-						connectionMPI.createTopic(topicPrefix+TYPE + "D",
+						connectionMPI.createTopic(topicPrefix+TYPE + "S",
 								schedule.fields2D
 								.size());
-						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourDown() + "U");
-						connectionMPI.asynchronousReceive(topicPrefix+(TYPE.getNeighbourDown() + "U"),l);
+						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourDown() + "N");
+						connectionMPI.asynchronousReceive(topicPrefix+(TYPE.getNeighbourDown() + "N"),l);
 
-						connectionMPI.createTopic(topicPrefix+TYPE + "U",
+						connectionMPI.createTopic(topicPrefix+TYPE + "N",
 								schedule.fields2D
 								.size());
-						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourUp() + "D");
-						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourUp() + "D",l);
+						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourUp() + "S");
+						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourUp() + "S",l);
 					}	
 				}
 				else if(rows==1 && columns > 1){
 					MPInFieldsListeners l = new MPInFieldsListeners(schedule.fields2D);
 					if(TYPE.pos_j < columns){
-						connectionMPI.createTopic(topicPrefix+TYPE + "R",
+						connectionMPI.createTopic(topicPrefix+TYPE + "W",
 								schedule.fields2D
 								.size());
 
-						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "L");
-						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourRight() + "L",l);
+						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "W");
+						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourRight() + "W",l);
 
 					}
 					if(TYPE.pos_j > 0){
-						connectionMPI.createTopic(topicPrefix+TYPE + "L",
+						connectionMPI.createTopic(topicPrefix+TYPE + "W",
 								schedule.fields2D
 								.size());
 
-						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "R");
-						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourLeft() + "R",l);
+						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "E");
+						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourLeft() + "E",l);
 					}
 				}
 				else{
 					//N rows and N columns
 
 					if(TYPE.pos_j > 0)
-						connectionMPI.createTopic(topicPrefix+TYPE + "L",
+						connectionMPI.createTopic(topicPrefix+TYPE + "W",
 								schedule.fields2D
 								.size());
 					if(TYPE.pos_j < columns-1)
-						connectionMPI.createTopic(topicPrefix+TYPE + "R",
+						connectionMPI.createTopic(topicPrefix+TYPE + "E",
 								schedule.fields2D
 								.size());
 					if(TYPE.pos_i > 0)
-						connectionMPI.createTopic(topicPrefix+TYPE + "U",
+						connectionMPI.createTopic(topicPrefix+TYPE + "N",
 								schedule.fields2D
 								.size());
 					if(TYPE.pos_i < rows-1)
-						connectionMPI.createTopic(topicPrefix+TYPE + "D",
+						connectionMPI.createTopic(topicPrefix+TYPE + "S",
 								schedule.fields2D
 								.size());
 					if(TYPE.pos_i < rows-1 && TYPE.pos_j < columns-1)
-						connectionMPI.createTopic(topicPrefix+TYPE + "CDDR",
+						connectionMPI.createTopic(topicPrefix+TYPE + "SE",
 								schedule.fields2D
 								.size());
 					if(TYPE.pos_i > 0 && TYPE.pos_j < columns-1)
-						connectionMPI.createTopic(topicPrefix+TYPE + "CUDR",
+						connectionMPI.createTopic(topicPrefix+TYPE + "NE",
 								schedule.fields2D
 								.size());
 					if(TYPE.pos_i < rows-1 && TYPE.pos_j > 0)
-						connectionMPI.createTopic(topicPrefix+TYPE + "CDDL",
+						connectionMPI.createTopic(topicPrefix+TYPE + "SW",
 								schedule.fields2D
 								.size());
 					if(TYPE.pos_i > 0 && TYPE.pos_j > 0)
-						connectionMPI.createTopic(topicPrefix+TYPE + "CUDL",
+						connectionMPI.createTopic(topicPrefix+TYPE + "NW",
 								schedule.fields2D
 								.size());
 
@@ -631,44 +632,44 @@ public class DistributedStateConnectionMPI<E> {
 
 					if(TYPE.pos_i < rows-1 && TYPE.pos_j < columns-1){
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagRightDown()
-						+ "CUDL");
+						+ "NE");
 						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourDiagRightDown()
-						+ "CUDL",l);
+						+ "NE",l);
 					}
 					if(TYPE.pos_i < rows-1 && TYPE.pos_j > 0){
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagLeftDown()
-						+ "CUDR");
+						+ "NW");
 						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourDiagLeftDown()
-						+ "CUDR",l);
+						+ "NW",l);
 					}
 
 					if(TYPE.pos_i > 0 && TYPE.pos_j < columns-1){
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagRightUp()
-						+ "CDDL");
+						+ "SW");
 						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourDiagRightUp()
-						+ "CDDL",l);
+						+ "SW",l);
 					}
 					if(TYPE.pos_i > 0 && TYPE.pos_j > 0){
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagLeftUp()
-						+ "CDDR");
+						+ "SE");
 						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourDiagLeftUp()
-						+ "CDDR",l);
+						+ "SE",l);
 					}
 					if(TYPE.pos_j < columns-1){
-						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "L");
-						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourRight() + "L",l);
+						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "E");
+						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourRight() + "E",l);
 					}
 					if(TYPE.pos_j > 0){
-						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "R");
-						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourLeft() + "R",l);
+						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "W");
+						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourLeft() + "W",l);
 					}
 					if(TYPE.pos_i < rows-1){	
-						connectionMPI.subscribeToTopic(topicPrefix+(TYPE.getNeighbourDown() + "U"));
-						connectionMPI.asynchronousReceive(topicPrefix+(TYPE.getNeighbourDown() + "U"),l);
+						connectionMPI.subscribeToTopic(topicPrefix+(TYPE.getNeighbourDown() + "N"));
+						connectionMPI.asynchronousReceive(topicPrefix+(TYPE.getNeighbourDown() + "N"),l);
 					}
 					if(TYPE.pos_i > 0){
-						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourUp() + "D");
-						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourUp() + "D",l);
+						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourUp() + "S");
+						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourUp() + "S",l);
 					}
 				}
 			}catch (Exception e) {
