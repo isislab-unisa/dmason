@@ -47,6 +47,7 @@ public class TestDFlockersNonUniformPartitioning {
 	private static int NUM_AGENTS=2000; //number of agents
 	private static int WIDTH=400; //field width
 	private static int HEIGHT=400; //field height
+	private static int CONNECTION_TYPE=ConnectionType.pureActiveMQ;
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
 	private static String topicPrefix="flocknoun"; //unique string to identify topics for this simulation
@@ -80,7 +81,7 @@ public class TestDFlockersNonUniformPartitioning {
 		
 		for (int i = 0; i < P; i++) {
 	
-				GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, AOI,P,NUM_AGENTS,MODE,ConnectionType.pureActiveMQ); 
+				GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, AOI, P, NUM_AGENTS, MODE, CONNECTION_TYPE); 
 				genParam.setI(0);
 				genParam.setJ(i);
 				genParam.setIp(ip);

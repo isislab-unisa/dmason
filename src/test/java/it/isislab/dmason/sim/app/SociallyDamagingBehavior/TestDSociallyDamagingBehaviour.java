@@ -49,6 +49,7 @@ public class TestDSociallyDamagingBehaviour {
 	private static int NUM_AGENTS=50; //number of agents
 	private static int WIDTH=100; //field width
 	private static int HEIGHT=100; //field height
+	private static int CONNECTION_TYPE=ConnectionType.pureActiveMQ;
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
 	private static String topicPrefix="human"; //unique string to identify topics for this simulation
@@ -82,7 +83,7 @@ public class TestDSociallyDamagingBehaviour {
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
 				
-				GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, AOI, rows,columns,NUM_AGENTS, MODE,ConnectionType.pureActiveMQ); 
+				GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, AOI, rows,columns,NUM_AGENTS, MODE, CONNECTION_TYPE); 
 				genParam.setI(i);
 				genParam.setJ(j);
 				genParam.setIp(ip);
