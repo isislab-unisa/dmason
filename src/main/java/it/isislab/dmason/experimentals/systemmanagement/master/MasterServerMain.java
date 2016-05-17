@@ -20,7 +20,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import it.isislab.dmason.experimentals.systemmanagement.utils.ActiveMQStarter;
+import it.isislab.dmason.experimentals.systemmanagement.activemq.ActiveMQStarter;
 
 
 /**
