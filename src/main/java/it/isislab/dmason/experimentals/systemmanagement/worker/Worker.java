@@ -946,13 +946,13 @@ public class Worker implements Observer {
 	 * @return
 	 */
 	private boolean startServiceCopyForLog(String zipFile,int id,String type){
-		LOGGER.info("apro stream copia per "+zipFile+" su porta"+welcomeSocket.getLocalPort());
+		LOGGER.info("open stream copy of "+zipFile+" on port "+welcomeSocket.getLocalPort());
 		getConnection().publishToTopic(id, TOPIC_WORKER_ID, type);
 		try{
 			Thread t=null;
-			LOGGER.info("mi metto in accept");
+			LOGGER.info("accept block");
 			sock = welcomeSocket.accept();
-			LOGGER.info("mi sblocco dalla accept");
+			LOGGER.info("exit accept ");
 			t=new Thread(new ServerSocketCopy(sock,zipFile));
 			t.start();
 			t.join();
