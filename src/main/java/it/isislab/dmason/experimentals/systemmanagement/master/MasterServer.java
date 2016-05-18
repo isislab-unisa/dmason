@@ -750,7 +750,6 @@ public class MasterServer implements MultiServerInterface{
 			Class c=aUrlCL.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
 
 			if(c.getSuperclass().equals(DistributedState.class)){
-				System.out.println(c);
 				distributedState=c;
 			}
 
