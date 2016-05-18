@@ -212,12 +212,6 @@ public class Worker implements Observer {
 
 
 			}
-			if(conn.isConnected()){
-				masterchecker.start();
-				System.out.println("alive");
-
-			}
-
 
 		}
 
