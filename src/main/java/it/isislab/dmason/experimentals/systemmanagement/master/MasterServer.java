@@ -773,9 +773,6 @@ public class MasterServer implements MultiServerInterface{
 		
 		
 		
-		
-
-
 	
 		//
 		//		String path_jar_file=pathJar;
@@ -897,7 +894,7 @@ public class MasterServer implements MultiServerInterface{
 
 								if(s.getStatus().equals(Simulation.FINISHED) || s.getStatus().equals(Simulation.STOPPED)){
 
-									LOGGER.info("Receved FINISHED for "+s.getSimID());
+									LOGGER.info("Received FINISHED for "+s.getSimID());
 									if(s_master.getEndTime()<s.getEndTime()){
 										getSimulationsList().get(s.getSimID()).setEndTime(s.getEndTime());
 									}
