@@ -171,7 +171,9 @@ public class DFlockerNonUniformPartitioning extends RemoteFlockNonUniformPartiti
 		pos = flock.flockers.getObjectLocation(this);
 		
 		if (dead) return;
-    	        
+    	
+		System.out.println(flock.flockers.my_width);
+		
 		Bag b = getNeighbors((DistributedState)state);
 		Double2D avoid = avoidance(b,flock.flockers);
 		Double2D cohe = cohesion(b,flock.flockers);

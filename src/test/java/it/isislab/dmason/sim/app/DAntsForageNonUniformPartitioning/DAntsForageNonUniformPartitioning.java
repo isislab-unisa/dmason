@@ -150,11 +150,11 @@ public /*strictfp*/ class DAntsForageNonUniformPartitioning extends DistributedS
 	{    	
 		super(params,new DistributedMultiSchedule<Int2D>(params.getNumAgents(),params.getP(),params.getWidth(),params.getHeight(),params.getAoi()),prefix,params.getConnectionType());
 		this.MODE=params.getMode();
-    	GRID_WIDTH=params.getWidth();
-    	GRID_HEIGHT=params.getHeight();
-    	topicPrefix=prefix;
-    	P=params.getP();
-		
+		GRID_WIDTH=params.getWidth();
+		GRID_HEIGHT=params.getHeight();
+		topicPrefix=prefix;
+		P=params.getP();
+
 
 		FXMIN = (FOOD_XMIN * GRID_WIDTH)/100;
 		FYMIN = (FOOD_YMIN * GRID_HEIGHT)/100;
@@ -195,7 +195,7 @@ public /*strictfp*/ class DAntsForageNonUniformPartitioning extends DistributedS
 		HXMAX = (HOME_XMAX * GRID_WIDTH)/100;
 		HYMAX = (HOME_YMAX * GRID_HEIGHT)/100;
 
-		
+
 		for (EntryParam<String, Object> entryParam : list) {
 
 			try {
@@ -361,34 +361,48 @@ public /*strictfp*/ class DAntsForageNonUniformPartitioning extends DistributedS
 
 		Int2D h = new Int2D((HXMAX+HXMIN)/2,(HYMAX+HYMIN)/2);
 
-		
 
-		
+
+
 		DRemoteAntNonUniformPartitioning ant = new DRemoteAntNonUniformPartitioning(this,new Int2D(0, 0) ,reward);
+		System.out.println("buggrid "+buggrid.my_width + " "+buggrid.my_height);
+		int cnt=0;
 		for(int i=0;i< (P*unbalace);i++)
 		{
 			for(int x=0;x<this.NUMAGENTS/(P*unbalace);x++)
 			{
-				
-				if((sites.own_x<= h.x) && (h.x<(sites.own_x+sites.my_width)) && (sites.own_y<=h.y)
-						&& (h.y<(sites.own_y+sites.my_height))){
-						
-					ant.setPos(h);
 
-					if(!((DistributedMultiSchedule)schedule).scheduleOnceNonUniform(ant, ant.pos.x, ant.pos.y,buggrid,h))
+
+				double px=processors.get(i).x+h.x<=0?width-h.x:(processors.get(i).x+h.x>width?h.x:processors.get(i).x+h.x);
+				double py=processors.get(i).y+h.y<=0?height-h.y:(processors.get(i).y+h.y>height?h.y:processors.get(i).y+h.y);
+
+				if(px<0 || px > width || py < 0 || py> height)
+				{
+					System.err.println("Error location generated"+px+" "+py);
+				}
+
+				Int2D newPos = new Int2D((int)px, (int)py);
+				//System.out.println("sites.own_x<= newPos.x -> "+ (sites.own_x<= newPos.x));
+				
+			
+				if((sites.own_x<= newPos.x) && (newPos.x<(sites.own_x+sites.my_width)) && (sites.own_y<=newPos.y)
+						&& (newPos.y<(sites.own_y+sites.my_height))){
+					cnt++;
+					ant.setPos(newPos);
+
+					if(!((DistributedMultiSchedule)schedule).scheduleOnceNonUniform(ant, ant.pos.x, ant.pos.y,buggrid,newPos))
 					{
 						System.err.println("error position");
 					}	
 
-					buggrid.setObjectLocation(ant, h);
+					buggrid.setObjectLocation(ant, newPos);
 					ant=new DRemoteAntNonUniformPartitioning(this,new Int2D(0,0),reward);
 
 				}
-
 			}
 		}
-		
 
+		System.err.println(cnt);
 		// Schedule evaporation to happen after the ants move and update
 		schedule.scheduleRepeating(Schedule.EPOCH,1, new Steppable()
 		{

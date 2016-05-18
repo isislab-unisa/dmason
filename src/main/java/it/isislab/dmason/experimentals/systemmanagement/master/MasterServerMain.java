@@ -33,6 +33,7 @@ import it.isislab.dmason.experimentals.systemmanagement.utils.activemq.ActiveMQS
 public class MasterServerMain {
 
 	private boolean enableUI = false;
+	public static MasterServer ms=null;
 	
 
 	public MasterServerMain() {
@@ -42,6 +43,8 @@ public class MasterServerMain {
 	public MasterServerMain(boolean WebUI) {
 		this.enableUI = WebUI;
 	}
+	
+	public MasterServer getMasterServer(){ return ms;} 
 	
 	public void start(){
 		
@@ -78,7 +81,7 @@ public class MasterServerMain {
 		amqS.startActivemq();
 		
 		if(!enableUI){
-			MasterServer ms = new MasterServer();
+			ms = new MasterServer();
 		}
 		
 		if(enableUI){
