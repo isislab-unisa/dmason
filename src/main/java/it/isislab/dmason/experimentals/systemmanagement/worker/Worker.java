@@ -83,7 +83,10 @@ public class Worker implements Observer {
 	private String IP_ACTIVEMQ="";   
 	private String PORT_ACTIVEMQ="";
 	private int PORT_COPY_LOG;
+
 	private int  slotsNumber=0; //number of available slots(cells of a field in dmason)
+	private static int slotsNumberBackup=0; // a copy backup of slots number value for reconnection 
+
 	private static final String MANAGEMENT="DMASON-MANAGEMENT";
 	private static String dmasonDirectory=System.getProperty("user.dir")+File.separator+"dmason";
 	private static  String workerDirectory; // worker main directory
@@ -95,6 +98,7 @@ public class Worker implements Observer {
 	private SimpleDateFormat sdf=null;
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
 	private FindAvailablePort availableport;
+
 
 	//Socket for log services
 	protected Socket sock=null;
@@ -137,7 +141,10 @@ public class Worker implements Observer {
 			generateFolders(TOPIC_WORKER_ID); //generate folders for worker
 			this.TOPIC_WORKER_ID=""+TOPIC_WORKER_ID.hashCode(); //my topic
 			simulationList=new HashMap< /*idsim*/Integer, Simulation>();
+
 			this.slotsNumber=slots;
+			this.slotsNumberBackup=slots;
+
 			availableport=new FindAvailablePort(1000, 3000);
 			this.PORT_COPY_LOG=availableport.getPortAvailable(); //socket communication with master (server side, used for logs)
 			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP)); //create server for socket communication 
@@ -179,48 +186,86 @@ public class Worker implements Observer {
 		if (obs==conn){
 
 			if(!conn.isConnected()){
-
-				System.exit(0);
-				CONNECTED=false;
-				(new Thread(){
-					public void run() {
-
-						try {
-							masterchecker.interrupt();
-							connectToMessageBroker();
-							try {
-
-								lockconnection.lock();
-								CONNECTED=true;
-								waitconnection.signalAll();
-
-							}finally {
-								lockconnection.unlock();
-							}
-
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					};
-				}).start();
-
-
+				System.out.println("dead");
+				this.simulationList=new HashMap< /*idsim*/Integer, Simulation>();
+				this.slotsNumber=slotsNumberBackup;
+				MASTER_ACK=false;
+				
 				try {
-					lockconnection.lock();
-					while(!CONNECTED)
-					{
-						waitconnection.await();
+					conn.close();
+					
+					System.out.println("Waiting for connection to Message Broker..");
+					this.createConnection();
 
-					}
-				} catch (InterruptedException e) {
+					System.out.println("Waiting master connection ..."); 
+
+					this.startMasterComunication();
+
+					System.out.println("connected.");
+					
+					//connectToMessageBroker();
+				} catch (Exception e) {
 					e.printStackTrace();
-				}finally {
-					lockconnection.unlock();
 				}
+				
+
+
+
+			}
+			if(conn.isConnected()){
+				masterchecker.start();
+				System.out.println("alive");
 
 			}
 
+
 		}
+
+		//		if (obs==conn){
+		//
+		//			if(!conn.isConnected()){
+		//
+		//				System.exit(0);
+		//				CONNECTED=false;
+		//				(new Thread(){
+		//					public void run() {
+		//
+		//						try {
+		//							masterchecker.interrupt();
+		//							connectToMessageBroker();
+		//							try {
+		//
+		//								lockconnection.lock();
+		//								CONNECTED=true;
+		//								waitconnection.signalAll();
+		//
+		//							}finally {
+		//								lockconnection.unlock();
+		//							}
+		//
+		//						} catch (IOException e) {
+		//							e.printStackTrace();
+		//						}
+		//					};
+		//				}).start();
+		//
+		//
+		//				try {
+		//					lockconnection.lock();
+		//					while(!CONNECTED)
+		//					{
+		//						waitconnection.await();
+		//
+		//					}
+		//				} catch (InterruptedException e) {
+		//					e.printStackTrace();
+		//				}finally {
+		//					lockconnection.unlock();
+		//				}
+		//
+		//			}
+		//
+		//		}
 	}
 
 	class MasterLostChecker extends Thread{
@@ -800,7 +845,7 @@ public class Worker implements Observer {
 	}
 
 	/**
-     * Get Distributed state instance of simulation from jar file	 * @param params
+	 * Get Distributed state instance of simulation from jar file	 * @param params
 	 * @param prefix
 	 * @param pathJar
 	 * @return

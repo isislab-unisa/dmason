@@ -93,7 +93,8 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	private HashMap<String,ActiveMQTopicSubscriber> subscribers;
 	private HashMap<String,ActiveMQTopic> topics;
 	private MessageListener listener;
-	
+	private ActiveMQConnectionFactory factory=null;
+	String address="";
 	/**
 	 * Allows getting the list of topics.
 	 */
@@ -125,12 +126,13 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	@Override
 	public boolean setupConnection(Address providerAddr)
 	{
-		String strAddr = "failover:tcp://" + providerAddr.getIPaddress() + ":" + providerAddr.getPort();
-		
+		//String strAddr = "failover:(tcp://" + providerAddr.getIPaddress() + ":" + providerAddr.getPort()+","+"tcp://" + providerAddr.getIPaddress() + ":" + providerAddr.getPort()+")?randomize=false";
+		String address = "failover:tcp://" + providerAddr.getIPaddress() + ":" + providerAddr.getPort();
 
 		// Create an ActiveMQConnectionFactory
-		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(strAddr);	
+		factory = new ActiveMQConnectionFactory(address);	
 		factory.setTrustAllPackages(true);
+		
 		
 		try
 		{
@@ -160,7 +162,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 			
 			return true;
 		}catch (Exception e) {
-			System.err.println("Unable to create a connection with the provider at address " + strAddr);
+			System.err.println("Unable to create a connection with the provider at address " + address);
 			e.printStackTrace();
 			return false;
 		}
@@ -169,6 +171,8 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	
 	public void close() throws JMSException
 	{
+		pubSession.close();
+		subSession.close();
 		connection.close();
 	}
 	
@@ -279,7 +283,9 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 				subscribers.get(topicName).close();
 				subscribers.get(topicName).stop();
 				subscribers.remove(topicName);
-				
+				pubSession = (ActiveMQTopicSession) connection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
+				// Create a topic session for subscribers
+				subSession = (ActiveMQTopicSession) connection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
 				
 				//publishers.remove(topicName);
 
@@ -508,8 +514,13 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 		// Notify observers of change
 		
 		isConnected = false;
+		publishers = new HashMap<String, ActiveMQTopicPublisher>();
+		contObj = new HashMap<String, MyHashMap>();
+		subscribers = new HashMap<String, ActiveMQTopicSubscriber>();
+		//topics = new HashMap<String, ActiveMQTopic>();
 		setChanged();
 		notifyObservers();
+		
 		
 	}
 
