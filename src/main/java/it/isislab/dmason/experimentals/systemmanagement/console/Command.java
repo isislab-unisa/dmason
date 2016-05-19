@@ -135,7 +135,12 @@ public enum Command implements Prompt{
 
 		@Override
 		public Object exec(Console c, String[] params, String stringPrompt, MasterServer ms) throws Exception {
-			if(params==null){
+			
+			if(ms.getInfoWorkers().keySet().size()==0){ c.printf("No worker available"); return null;}
+
+			execCommand(c, PromptMakeSimulation.class, stringPrompt+"/Simulation ",ms);
+			
+			/*if(params==null){
 				c.printf("too few arguments\n");
 				c.printf("USAGE: createsimulation simName jarFile rows columns aoi width height #agent #step [partitioning(uniform | nonuniform)] [connection (activemq | mpi)]\n");
 				return null;
@@ -225,7 +230,7 @@ public enum Command implements Prompt{
 						subWorkersList = allworkers;
 					}
 					break;
-				/*case DistributedField2D.NON_UNIFORM_PARTITIONING_MODE:
+				case DistributedField2D.NON_UNIFORM_PARTITIONING_MODE:
 					if(cells < topics.length){
 						for (int i = 0; i < cells; i++) {
 							topicList.add(topics[i]);
@@ -235,7 +240,7 @@ public enum Command implements Prompt{
 							topicList.add(x);
 					}
 						
-					break;*/
+					break;
 			}
 
 
@@ -256,7 +261,7 @@ public enum Command implements Prompt{
 				c.printf(e.getMessage()+"\n");
 				c.printf("USAGE: createsimulation simName jarFile rows columns aoi width height #agent #step [partitioning(uniform | nonuniform)] [connection (activemq | mpi)]\n");
 				return null;
-			}
+			}*/
 			return null;
 		}
 

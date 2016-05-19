@@ -331,7 +331,7 @@ public class Manager {
 	
 	protected static void execCommandLoop(final Console console, MasterServer ms) throws IOException
 	{
-		String rootPrompt = "dmason$";
+		String rootPrompt = "dmason";
 		final Enum helpmsg = Enum.valueOf(Command.class, "help".toUpperCase());
 		((Prompt)helpmsg).exec(console,null,rootPrompt,ms, new PromptListener()
 		{
