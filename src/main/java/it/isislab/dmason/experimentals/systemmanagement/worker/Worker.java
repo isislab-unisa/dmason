@@ -186,7 +186,6 @@ public class Worker implements Observer {
 		if (obs==conn){
 
 			if(!conn.isConnected()){
-				System.out.println("dead");
 				this.simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 				this.slotsNumber=slotsNumberBackup;
 				MASTER_ACK=false;
