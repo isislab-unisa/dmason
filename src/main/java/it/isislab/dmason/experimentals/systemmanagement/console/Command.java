@@ -47,10 +47,11 @@ public enum Command implements Prompt{
 
 			c.printf("***************************************************************************************************\n*");
 			c.printf("*    help                 |print commands list.                                                   *\n*");
-			c.printf("*    workers              |avaiable workers list.                                                 *\n*");
-			c.printf("*    start                |exec the simulation corresponding to the given id.                     *\n*");
-			c.printf("*    stop                 |stop the simulation corresponding to the given id.                     *\n*");
-			c.printf("*    pause                |stop the simulation corresponding to the given id.                     *\n*");
+			c.printf("*    workers              |available workers list.                                                 *\n*");
+//			c.printf("*    start                |exec the simulation corresponding to the given id.                     *\n*");
+//			c.printf("*    stop                 |stop the simulation corresponding to the given id.                     *\n*");
+//			c.printf("*    pause                |stop the simulation corresponding to the given id.                     *\n*");
+			c.printf("*    simulationcontroller |controller for the simulation corresponding to the given id            *\n*");
 			c.printf("*    createsimulation     |create new simulation execution.                                       *\n*");
 			c.printf("*    getsimulations       |print all simulations created by the user.                             *\n*");
 			c.printf("*    getsimulation        |print status of the simulation corresponding to the given id.          *\n*");
@@ -140,131 +141,18 @@ public enum Command implements Prompt{
 
 			execCommand(c, PromptMakeSimulation.class, stringPrompt+"/Simulation ",ms);
 			
-			/*if(params==null){
-				c.printf("too few arguments\n");
-				c.printf("USAGE: createsimulation simName jarFile rows columns aoi width height #agent #step [partitioning(uniform | nonuniform)] [connection (activemq | mpi)]\n");
-				return null;
-			}
-			
-			if(params.length < 9 || params.length>11){
-				if(params.length>11)
-					c.printf("too many arguments\n");
-				else
-					c.printf("too few arguments\n");
-				
-				c.printf("USAGE: createsimulation simName jarFile rows columns aoi width height #agent #step [partitioning(uniform | nonuniform)] [connection (activemq | mpi)]\n");
-				return null;
-			}
-			try{
-				String simName = params[0];
-				String pathSimJar = params[1];
-				int rows = Integer.parseInt(params[2]);
-				int columns = Integer.parseInt(params[3]);
-				int aoi = Integer.parseInt(params[4]);
-				int width = Integer.parseInt(params[5]);
-				int height = Integer.parseInt(params[6]);
-				int numAgent = Integer.parseInt(params[7]);
-				int numStep = Integer.parseInt(params[8]);
-				String partitioning="";
-				String connType="";
-				int mode=Integer.MIN_VALUE;
-				int connection = Integer.MIN_VALUE;
-
-				switch(params.length){
-					case 10: String xParam=params[9];
-							switch(xParam){
-								case "uniform": partitioning=xParam; break;
-								case "nonuniform": partitioning=xParam; break;
-								case "activemq": connType=xParam; break;
-								case "mpi": connType=xParam; break;
-							}
-							break; 
-					case 11: partitioning = params[9]; connType=params[10]; break;
-				}
-
-				switch(partitioning.toLowerCase()){
-					case "uniform": mode =DistributedField2D.UNIFORM_PARTITIONING_MODE; break;
-					case "nonuniform": mode =DistributedField2D.NON_UNIFORM_PARTITIONING_MODE; break;
-					default: mode =DistributedField2D.UNIFORM_PARTITIONING_MODE; break;
-				}
-
-				switch(connType.toLowerCase()){
-				case "activemq": connection =ConnectionType.pureActiveMQ; break;
-				case "mpi": connection =ConnectionType.pureMPIParallel; break;
-				default: connection =ConnectionType.pureActiveMQ; break;
-				}
-
-				
-				ArrayList<String> allworkers = new ArrayList<String>();
-				allworkers.addAll(ms.getInfoWorkers().keySet());
-
-				if(allworkers.size() == 0){ c.printf("No worker available"); return null;}
-				
-				ArrayList<String> subWorkersList = new ArrayList<String>();
-				
-				
-				File f = new File(pathSimJar);
-				if(!f.exists()){
-					c.printf("File: "+pathSimJar+" doesn't exist");
-					return null;
-				}
-				
-				
-				
-				int simId=ms.getKeySim().incrementAndGet();
-				String simPath=ms.getSimulationsDirectories()+File.separator+simName+simId;
-				ms.createSimulationDirectoryByID(simName, simId);
-
-				
-				String jarSimName=f.getName();
-				String internalSimPathJar=simPath+File.separator+"jar";
-
-				FileUtils.copyFileToDirectory(f, new File(internalSimPathJar));
-				
-				switch(mode){
-				case DistributedField2D.UNIFORM_PARTITIONING_MODE:
-					int numCell = rows * columns;
-					if(numCell < allworkers.size()){
-						subWorkersList.addAll(allworkers.subList(0,numCell));
-					}else{
-						subWorkersList = allworkers;
-					}
-					break;
-				case DistributedField2D.NON_UNIFORM_PARTITIONING_MODE:
-					if(cells < topics.length){
-						for (int i = 0; i < cells; i++) {
-							topicList.add(topics[i]);
-						}
-					}else{
-						for(String x: topics) 
-							topicList.add(x);
-					}
-						
-					break;
-			}
-
-
-				Simulation s = new Simulation(simName, simPath,internalSimPathJar+File.separator+jarSimName,rows, columns, aoi, width, height, numAgent, numStep, mode, connection);
-				
-				
-				
-				s.setTopicList(subWorkersList);
-				s.setNumWorkers(subWorkersList.size());
-				s.setSimID(simId);
-				s.setTopicPrefix(simName+"-"+simId);
-
-
-				ms.submitSimulation(s );
-				
-			}catch(Exception e){
-				c.printf("Some errors were occurred\n");
-				c.printf(e.getMessage()+"\n");
-				c.printf("USAGE: createsimulation simName jarFile rows columns aoi width height #agent #step [partitioning(uniform | nonuniform)] [connection (activemq | mpi)]\n");
-				return null;
-			}*/
 			return null;
 		}
 
+	}),
+	
+	SIMULATIONCONTROLLER(new Action(){
+		@Override
+		public Object exec(Console c, String[] params, String stringPrompt, MasterServer ms) throws Exception {
+			
+			execCommand(c, PromptSimulationController.class, stringPrompt+"/SimController ",ms);
+			return null;
+		}
 	})
 
 	//	,
