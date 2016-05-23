@@ -188,28 +188,20 @@ public class Worker implements Observer {
 			if(!conn.isConnected()){
 				this.simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 				this.slotsNumber=slotsNumberBackup;
-				MASTER_ACK=false;
-				
+				System.out.println("Waiting master connection ..."); 
+			}
+			if(conn.isConnected()){
 				try {
-					conn.close();
-					
-					System.out.println("Waiting for connection to Message Broker..");
-					this.createConnection();
 
-					System.out.println("Waiting master connection ..."); 
-
-					this.startMasterComunication();
-
-					System.out.println("connected.");
-					
-					//connectToMessageBroker();
+					System.out.println("wco");
+					conn.unsubscribe(MANAGEMENT);
+					conn.createTopic(MANAGEMENT, 1);
+					conn.unsubscribe(MANAGEMENT);
 				} catch (Exception e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
-
-
-
 			}
 
 		}
@@ -272,7 +264,7 @@ public class Worker implements Observer {
 				try {
 					Thread.sleep(new Random().nextInt(3)*1000 );
 					getConnection().publishToTopic(getInfoWorker().toString(), MANAGEMENT,"WORKER");
-
+					System.out.println("publish");
 				} catch (Exception e) {e.printStackTrace();}
 			}
 

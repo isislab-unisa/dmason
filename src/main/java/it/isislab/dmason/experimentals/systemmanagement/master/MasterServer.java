@@ -326,6 +326,8 @@ public class MasterServer implements MultiServerInterface{
 
 								if(map.containsKey("WORKER")){
 
+									System.out.println("entro");
+									
 									synchronized (this) {
 										String info=(String) map.get("WORKER");
 										info.replace("{", "");

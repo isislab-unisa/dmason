@@ -517,7 +517,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 		publishers = new HashMap<String, ActiveMQTopicPublisher>();
 		contObj = new HashMap<String, MyHashMap>();
 		subscribers = new HashMap<String, ActiveMQTopicSubscriber>();
-		//topics = new HashMap<String, ActiveMQTopic>();
+		topics = new HashMap<String, ActiveMQTopic>();
 		setChanged();
 		notifyObservers();
 		
