@@ -45,19 +45,19 @@ public enum Command implements Prompt{
 					+ "╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═══╝ \n"
 					+"\n");
 
-			c.printf("***************************************************************************************************\n*");
-			c.printf("*    help                 |print commands list.                                                   *\n*");
-			c.printf("*    workers              |available workers list.                                                 *\n*");
-//			c.printf("*    start                |exec the simulation corresponding to the given id.                     *\n*");
-//			c.printf("*    stop                 |stop the simulation corresponding to the given id.                     *\n*");
-//			c.printf("*    pause                |stop the simulation corresponding to the given id.                     *\n*");
-			c.printf("*    simulationcontroller |controller for the simulation corresponding to the given id            *\n*");
-			c.printf("*    createsimulation     |create new simulation execution.                                       *\n*");
-			c.printf("*    getsimulations       |print all simulations created by the user.                             *\n*");
-			c.printf("*    getsimulation        |print status of the simulation corresponding to the given id.          *\n*");
-			c.printf("*    getlog               |download the results of the simulation corresponding to the given id.  *\n*");
-			c.printf("*    kill                 |kill the simulation corresponding to the given id.                     *\n*");
-			c.printf("***************************************************************************************************\n");
+			c.printf("***************************************************************************************************");
+			c.printf("*    help                 |print commands list.                                                   *");
+			c.printf("*    workers              |available workers list.                                                *");
+//			c.printf("*    start                |exec the simulation corresponding to the given id.                     *");
+//			c.printf("*    stop                 |stop the simulation corresponding to the given id.                     *");
+//			c.printf("*    pause                |stop the simulation corresponding to the given id.                     *");
+			c.printf("*    simulationcontroller |(start/stop/pause) a simulation                                        *");
+			c.printf("*    createsimulation     |create new simulation execution.                                       *");
+//			c.printf("*    getsimulations       |print all simulations created by the user.                             *");
+//			c.printf("*    getsimulation        |print status of the simulation corresponding to the given id.          *");
+//			c.printf("*    getlog               |download the results of the simulation corresponding to the given id.  *");
+//			c.printf("*    kill                 |kill the simulation corresponding to the given id.                     *");
+			c.printf("***************************************************************************************************");
 			return null;
 		}
 	}),
@@ -149,8 +149,10 @@ public enum Command implements Prompt{
 	SIMULATIONCONTROLLER(new Action(){
 		@Override
 		public Object exec(Console c, String[] params, String stringPrompt, MasterServer ms) throws Exception {
-			
-			execCommand(c, PromptSimulationController.class, stringPrompt+"/SimController ",ms);
+			if(ms.getSimulationsList().size()!=0)
+				execCommand(c, PromptSimulationController.class, stringPrompt+"/SimController ",ms);
+			else
+				c.printf("No simulation available.");
 			return null;
 		}
 	})
