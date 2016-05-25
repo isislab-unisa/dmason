@@ -184,7 +184,7 @@ public class Worker implements Observer {
 	public void update(Observable obs, Object arg) {
 
 		if (obs==conn){
-
+            System.exit(0); 
 			if(!conn.isConnected()){
 				this.simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 				this.slotsNumber=slotsNumberBackup;
@@ -264,7 +264,6 @@ public class Worker implements Observer {
 				try {
 					Thread.sleep(new Random().nextInt(3)*1000 );
 					getConnection().publishToTopic(getInfoWorker().toString(), MANAGEMENT,"WORKER");
-					System.out.println("publish");
 				} catch (Exception e) {e.printStackTrace();}
 			}
 
