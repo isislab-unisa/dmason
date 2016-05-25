@@ -1,12 +1,9 @@
 package it.isislab.dmason.experimentals.systemmanagement.console;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
-import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -14,9 +11,6 @@ import org.json.simple.parser.ParseException;
 
 import it.isislab.dmason.experimentals.systemmanagement.Manager;
 import it.isislab.dmason.experimentals.systemmanagement.master.MasterServer;
-import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
-import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.util.connection.ConnectionType;
 
 public enum Command implements Prompt{
 

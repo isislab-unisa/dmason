@@ -27,7 +27,7 @@ public enum PromptSimulationController implements Prompt {
 			c.printf("*    stop                 |stop the simulation corresponding to the given id.                          *");
 			c.printf("*    pause                |pause the simulation corresponding to the given id.                         *");
 			c.printf("*    list                 |list the existing simulations                                               *");
-			c.printf("*    log                  |show the path where find the simulation log corresponding to the given id.  *");
+			c.printf("*    logs                 |show the path where find the simulation log corresponding to the given id.  *");
 			c.printf("********************************************************************************************************");
 			return null;
 		}
@@ -148,6 +148,8 @@ public enum PromptSimulationController implements Prompt {
 							"*  ID %-18d*       *  ID %-18d*\n"+
 							"*                       *       *                       *\n"+
 							"*  Status %-14s*       *  Status %-14s*\n"+
+							"*                       *       *                       *\n"+
+							"*  Step(s)  %-12d*       *  Step(s)  %-12d*\n"+
 							"*                       *       *                       *\n"+
 							"*  Step(s)  %-12d*       *  Step(s)  %-12d*\n"+
 							"*                       *       *                       *\n"+
