@@ -83,10 +83,8 @@ public class Worker implements Observer {
 	private String IP_ACTIVEMQ="";   
 	private String PORT_ACTIVEMQ="";
 	private int PORT_COPY_LOG;
-
 	private int  slotsNumber=0; //number of available slots(cells of a field in dmason)
 	private static int slotsNumberBackup=0; // a copy backup of slots number value for reconnection 
-
 	private static final String MANAGEMENT="DMASON-MANAGEMENT";
 	private static String dmasonDirectory=System.getProperty("user.dir")+File.separator+"dmason";
 	private static  String workerDirectory; // worker main directory
