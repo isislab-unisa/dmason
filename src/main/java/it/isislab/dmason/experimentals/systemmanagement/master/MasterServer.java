@@ -411,8 +411,8 @@ public class MasterServer implements MultiServerInterface{
 			clientSocket = new Socket( iplog ,port );
 			Thread tr=null;
 			tr=new Thread(new ClientSocketCopy(clientSocket, fileCopy));
-			tr.start();
-			tr.join();
+			
+			
 
 			Thread t=new Thread(new Runnable() {
 
@@ -421,7 +421,9 @@ public class MasterServer implements MultiServerInterface{
 					ZipDirectory.unZipDirectory(fileCopy, folderCopy);
 				}
 			});
+			tr.start();
 			t.start();
+			tr.join();
 			t.join();
 
 
@@ -1129,9 +1131,7 @@ public class MasterServer implements MultiServerInterface{
 				}	
 			}
 		});
-		t.start();
-		try {t.join();} catch (InterruptedException e) {e.printStackTrace();}
-
+		
 
 		Thread j=	new Thread(new Runnable() {
 
@@ -1145,9 +1145,10 @@ public class MasterServer implements MultiServerInterface{
 
 			}
 		});
-
+		t.start();
 		j.start();
 		try {
+			t.join();
 			j.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
