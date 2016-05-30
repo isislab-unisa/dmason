@@ -321,8 +321,9 @@ public class Worker implements Observer {
 
 		try {
 			conn.createTopic(MANAGEMENT, 1);
-			conn.subscribeToTopic(MANAGEMENT);
-
+			conn.subscribeToTopic(MANAGEMENT);			
+			conn.createTopic(TOPIC_WORKER_ID,1); 
+			conn.subscribeToTopic(TOPIC_WORKER_ID);
 			listenerForMasterComunication();
 		} 
 		catch (Exception e1) {e1.printStackTrace();}
@@ -399,11 +400,7 @@ public class Worker implements Observer {
 	 */
 	@SuppressWarnings("serial")
 	private synchronized void listenerForMasterComunication(){
-		try{
-			getConnection().subscribeToTopic(TOPIC_WORKER_ID);
-			getConnection().createTopic(TOPIC_WORKER_ID,1);
-		}catch(Exception e){ e.printStackTrace();}
-
+		
 
 		getConnection().asynchronousReceive(TOPIC_WORKER_ID, new MyMessageListener() {
 
