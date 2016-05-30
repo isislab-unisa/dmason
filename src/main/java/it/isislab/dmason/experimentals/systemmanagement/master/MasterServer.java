@@ -325,7 +325,7 @@ public class MasterServer implements MultiServerInterface{
 								MyHashMap map=(MyHashMap) o;
 
 								if(map.containsKey("WORKER")){
-									
+
 									synchronized (this) {
 										String info=(String) map.get("WORKER");
 										info.replace("{", "");
@@ -730,51 +730,51 @@ public class MasterServer implements MultiServerInterface{
 	 */
 	protected boolean validateSimulationJar(String pathJar)
 	{
-		
+
 		try{
-		JarFile jar=new JarFile(new File(pathJar));
-		Enumeration e=jar.entries();
-		File file  = new File(pathJar);
-		String u = file.toURI().toURL().toString(); 
-		URL url=new URL(u);
-		URL[] urls = new URL[]{url};
+			JarFile jar=new JarFile(new File(pathJar));
+			Enumeration e=jar.entries();
+			File file  = new File(pathJar);
+			String u = file.toURI().toURL().toString(); 
+			URL url=new URL(u);
+			URL[] urls = new URL[]{url};
 
-		URLClassLoader aUrlCL = new URLClassLoader(urls, new DMasonClassLoader());
-		Thread.currentThread().setContextClassLoader(aUrlCL);
-		Class distributedState=null;
+			URLClassLoader aUrlCL = new URLClassLoader(urls, new DMasonClassLoader());
+			Thread.currentThread().setContextClassLoader(aUrlCL);
+			Class distributedState=null;
 
-		while(e.hasMoreElements()){
+			while(e.hasMoreElements()){
 
-			JarEntry je=(JarEntry)e.nextElement();
-			if(!je.getName().contains(".class")) continue;
+				JarEntry je=(JarEntry)e.nextElement();
+				if(!je.getName().contains(".class")) continue;
 
-			Class c=aUrlCL.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
+				Class c=aUrlCL.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
 
-			if(c.getSuperclass().equals(DistributedState.class)){
-				distributedState=c;
+				if(c.getSuperclass().equals(DistributedState.class)){
+					distributedState=c;
+				}
+
 			}
+			if(distributedState==null) return false;
 
-		}
-		if(distributedState==null) return false;
+			Class<?> urlClass = aUrlCL.getClass();//URLClassLoader.class;////
 
-		Class<?> urlClass = aUrlCL.getClass();//URLClassLoader.class;////
+			Method method = urlClass.getDeclaredMethod("addURL", new Class[]{URL.class});
+			method.setAccessible(true);
+			method.invoke(aUrlCL, new Object[]{url});;
 
-		Method method = urlClass.getDeclaredMethod("addURL", new Class[]{URL.class});
-		method.setAccessible(true);
-		method.invoke(aUrlCL, new Object[]{url});;
-
-		Class simClass = aUrlCL.loadClass(distributedState.getName());
-		Constructor constr = simClass.getConstructor(new Class[]{ GeneralParam.class ,String.class});
-		return true;
+			Class simClass = aUrlCL.loadClass(distributedState.getName());
+			Constructor constr = simClass.getConstructor(new Class[]{ GeneralParam.class ,String.class});
+			return true;
 		} catch(Exception e){
 			System.err.println("JAR CORRUPTED, export as a Jar File and not as a runnable jar file");
 			return false;
 		}
-		
-		
-		
-		
-	
+
+
+
+
+
 		//
 		//		String path_jar_file=pathJar;
 		//		try{
@@ -1130,7 +1130,13 @@ public class MasterServer implements MultiServerInterface{
 				}	
 			}
 		});
-		
+		t.start();
+		try {
+			t.join();
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		Thread j=	new Thread(new Runnable() {
 
@@ -1144,10 +1150,9 @@ public class MasterServer implements MultiServerInterface{
 
 			}
 		});
-		t.start();
+
 		j.start();
 		try {
-			t.join();
 			j.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
