@@ -428,7 +428,7 @@ public class Worker implements Observer {
 
 						Simulation sim=(Simulation)map.get("newsim");
 						createNewSimulationProcess(sim);
-						//System.out.println("apro straem su porta "+DEFAULT_COPY_SERVER_PORT);
+						//System.out.println("open stream port "+DEFAULT_COPY_SERVER_PORT);
 						downloadFile(sim,DEFAULT_COPY_SERVER_PORT);
 						List<CellType> cellstype=sim.getCellTypeList();
 						for (CellType cellType : cellstype) {
