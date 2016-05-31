@@ -35,7 +35,7 @@ import org.apache.activemq.usage.UsageCapacity;
 
 
 /**
- * 
+ * ActivemQ starter embedded 
  * SET config.properties to change ActivemQ <ip:port>  
  *
  */
@@ -109,13 +109,10 @@ public class ActiveMQStarter {
 			broker.addConnector(address);
 			broker.start();
 			
-			//ConnectionNFieldsWithActiveMQAPI conn=new ConnectionNFieldsWithActiveMQAPI();
-			//conn.setupConnection(new Address(IP_ACTIVEMQ, PORT_ACTIVEMQ));
-			//conn.createTopic("MANAGEMENT", 1);
-			
 			
 		} catch (Exception e1) {e1.printStackTrace();}
 	}
+	// start ActivemQ
 	public static void main(String[] args) {
 		ActiveMQStarter activemq=new ActiveMQStarter();
 		activemq.startActivemq();
