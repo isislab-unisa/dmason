@@ -76,7 +76,7 @@ public class DGameOfLifeWithUI extends GUIState {
 
 		// make the displayer
 		display = new Display2D(600,600,this);
-		display.setBackdrop(Color.black);
+		display.setBackdrop(Color.WHITE);
 
 		displayFrame = display.createFrame();
 		displayFrame.setTitle("Game Of Life");

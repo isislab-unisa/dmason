@@ -1,6 +1,8 @@
 package it.isislab.dmason.sim.app.GameOfLife;
 
 import java.util.List;
+
+
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
@@ -10,6 +12,8 @@ import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2D;
 import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2DFactory;
+import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2D;
+import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import sim.engine.SimState;
 import sim.portrayal.grid.FastValueGridPortrayal2D;
 import sim.util.Int2D;
@@ -22,7 +26,7 @@ public class DGameOfLife extends DistributedState<Int2D> {
 	private static final long serialVersionUID = 1L;
 
 	public DIntGrid2D grid = null;
-	
+	public DSparseGrid2D core =null;
 	protected FastValueGridPortrayal2D p;
 
 	private String topicPrefix = "";
@@ -113,9 +117,10 @@ public class DGameOfLife extends DistributedState<Int2D> {
 	void seedGrid()
 	{
 		// we stick a b_heptomino in the center of the grid
+		Int2D loc = new Int2D((int)Math.floor((grid.own_x+grid.my_width)/2), (int)Math.floor((grid.own_y+grid.my_height)/2));
 		for(int x=0;x<b_heptomino.length;x++)
 			for(int y=0;y<b_heptomino[x].length;y++)
-				grid.field  [grid.own_x+x][grid.own_y+y]=	b_heptomino[x][y];
+				grid.field [loc.x+x][loc.y+y]=	b_heptomino[x][y];
 	}
 	
 	
@@ -123,24 +128,26 @@ public class DGameOfLife extends DistributedState<Int2D> {
 	public void start()
 	{
 		super.start();
-	
+		
 		try 
 		{
 			grid = DIntGrid2DFactory.createDIntGrid2D(gridWidth, gridHeight, this, super.AOI, TYPE.pos_i,TYPE.pos_j, super.rows,super.columns,MODE, 0, false, "gameoflife", topicPrefix, true);
+			core = DSparseGrid2DFactory.createDSparseGrid2D(gridWidth, gridHeight, this, super.AOI, TYPE.pos_i, TYPE.pos_j, super.rows, super.columns, MODE, "gameoflifeCore", topicPrefix, true);
 			init_connection();
 		} catch (DMasonException e) { e.printStackTrace(); }
 		
 		seedGrid();
-        schedule.scheduleOnce(new DCellAgent(this,grid.getAvailableRandomLocation()));		
+		DCellAgent a = new DCellAgent(this,core.getAvailableRandomLocation());
+		if(core.setObjectLocation(a, a.pos)) schedule.scheduleOnce(a);		
 	}
 	@Override
 	public DistributedField2D getField() {
 		// TODO Auto-generated method stub
-		return grid;
+		return core;
 	}
 
 	@Override
-	public void addToField(RemotePositionedAgent rm, Int2D loc) {System.err.println("wuamn");}
+	public void addToField(RemotePositionedAgent rm, Int2D loc) {core.setObjectLocation(rm, loc);}
 
 	@Override
 	public SimState getState() {

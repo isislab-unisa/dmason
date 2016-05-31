@@ -197,7 +197,8 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
 	 * @return true if all is ok
 	 */
-	private boolean createRegions()
+	
+	public boolean createRegions(QuadTree... cell)
 	{
 		//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
@@ -642,7 +643,6 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	 */
 	public boolean setDistributedObjectLocation( Int2D l, Object remoteValue ,SimState sm) throws DMasonException{
 
-
 		if(!(remoteValue instanceof Integer))
 			throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");
 
@@ -674,7 +674,6 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	 * @return true if the value is added in right way
 	 */
 	private boolean setValue(int value, Int2D l){
-
 
 		if(rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(l.x,l.y))
 		{
@@ -752,6 +751,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 										{
 											if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 												tmp_zoom.add(new EntryNum<Integer, Int2D>(value, l));
+											
 											return myfield.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 										}
 										else
@@ -930,7 +930,9 @@ public class DIntGrid2DXY extends DIntGrid2D {
 
 	@Override
 	public void setTable(HashMap table) {
-		// TODO Auto-generated method stub
+		ConnectionJMS conn = (ConnectionJMS) ((DistributedState<?>)sm).getCommunicationManagementConnection();
+		if(conn!=null)
+			conn.setTable(table);
 
 	}
 
@@ -981,12 +983,5 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	public Bag clear() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-
-	@Override
-	public boolean createRegions(QuadTree... cell) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 }

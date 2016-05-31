@@ -10,14 +10,14 @@ import it.isislab.dmason.util.connection.ConnectionType;
 import sim.display.Console;
 
 public class TestDGameOfLife {
-	private static boolean graphicsOn=false; //with or without graphics?
-	private static int numSteps = 30500; //only graphicsOn=false
+	private static boolean graphicsOn=true; //with or without graphics?
+	private static int numSteps = 100; //only graphicsOn=false
 	private static int rows = 2; //number of rows
 	private static int columns = 1; //number of columns
-	private static int AOI=30; //max distance
-	private static int NUM_AGENTS=20000; //number of agents
-	private static int WIDTH=400; //field width
-	private static int HEIGHT=800; //field height
+	private static int AOI=1; //max distance
+	private static int NUM_AGENTS=20; //number of agents
+	private static int WIDTH=200; //field width
+	private static int HEIGHT=200; //field height
 	private static int CONNECTION_TYPE=ConnectionType.pureActiveMQ;
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq

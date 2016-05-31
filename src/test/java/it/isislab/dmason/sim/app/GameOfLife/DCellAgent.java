@@ -1,5 +1,6 @@
 package it.isislab.dmason.sim.app.GameOfLife;
 
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.DistributedState;
 import sim.engine.SimState;
 import sim.util.Int2D;
@@ -24,12 +25,14 @@ public class DCellAgent extends RemoteCellAgent<Int2D> {
 		int count=0;
 		int width = tut.grid.my_width;
 		int height = tut.grid.my_height;
-
 		
-		for(int y=tut.grid.own_y; y<height; y++)
+		if(tut.grid.cellType.pos_i==1 && tut.grid.cellType.pos_j==0)
+			System.out.println(tut.grid.own_y);
+		for(int y=tut.grid.own_y; y<tut.grid.own_y+height; y++)
 		{
-			for(int x=tut.grid.own_x; x<width; x++)
+			for(int x=tut.grid.own_x; x<tut.grid.own_x+width; x++)
 			{
+				
 				//System.out.println("step executed!");
 				count = 0;
 				// count the number of neighbors around the cell,
@@ -38,24 +41,39 @@ public class DCellAgent extends RemoteCellAgent<Int2D> {
 					for(int dy = -1; dy < 2; dy++)
 						count += isAlive(tut.schedule.getSteps(), tut.grid.field[tut.grid.stx(x+dx)][tut.grid.sty(y+dy)]); 
 
+				
 				// if the count is 2 or less, or 5 or higher, the cell dies
 				// else if the count is 3 exactly, a dead cell becomes live again
 				// else the cell stays as it is
-				if (count <= 2 || count >= 5)  // dead
-					tut.grid.field[x][y] = setDie(tut.schedule.getSteps(), tut.grid.field[x][y]);
-				else if (count == 3) // life
-					tut.grid.field[x][y] = setAlive(tut.schedule.getSteps(), tut.grid.field[x][y]);
-				else
-					if(isAlive(tut.schedule.getSteps(), tut.grid.field[x][y]) == 1)
-						tut.grid.field[x][y] = setAlive(tut.schedule.getSteps(), tut.grid.field[x][y]);
+				try{
+					if (count <= 2 || count >= 5)  // dead
+						//tut.grid.field[x][y] = setDie(tut.schedule.getSteps(), tut.grid.field[x][y]);
+						tut.grid.setDistributedObjectLocation(new Int2D(x, y), setDie(tut.schedule.getSteps(), tut.grid.field[x][y]), tut);
+					else if (count == 3) // life
+						//tut.grid.field[x][y] = setAlive(tut.schedule.getSteps(), tut.grid.field[x][y]);
+						tut.grid.setDistributedObjectLocation(new Int2D(x, y), setAlive(tut.schedule.getSteps(), tut.grid.field[x][y]), tut);
 					else
-						tut.grid.field[x][y] = setDie(tut.schedule.getSteps(), tut.grid.field[x][y]);
+						if(isAlive(tut.schedule.getSteps(), tut.grid.field[x][y]) == 1)
+							tut.grid.setDistributedObjectLocation(new Int2D(x, y), setAlive(tut.schedule.getSteps(), tut.grid.field[x][y]), tut);
+					//tut.grid.field[x][y] = setAlive(tut.schedule.getSteps(), tut.grid.field[x][y]);
+						else
+							//tut.grid.field[x][y] = setDie(tut.schedule.getSteps(), tut.grid.field[x][y]);
+							tut.grid.setDistributedObjectLocation(new Int2D(x, y), setDie(tut.schedule.getSteps(), tut.grid.field[x][y]), tut);
+				}catch(DMasonException e){
+					e.printStackTrace();}
 				
 				if(y==height-1 && x==width-1 && tut.grid.field[x][y]>0)
 				{
 					System.out.println("gesocrist "+tut.schedule.getSteps());
 				}
 			}
+		}
+		
+		try {
+			tut.core.setDistributedObjectLocation(pos, this, tut);
+		} catch (DMasonException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
