@@ -28,7 +28,6 @@ import java.util.Map;
 public interface MultiServerInterface {
 
 	
-	
 	public void start(int idSimulation);
 	public void stop(int idSimulation);
 	public void pause(int idSimulation);	

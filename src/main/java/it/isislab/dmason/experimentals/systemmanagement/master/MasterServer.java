@@ -97,7 +97,7 @@ public class MasterServer implements MultiServerInterface{
 	//path directories 
 	private static String dmasonDirectory=System.getProperty("user.dir")+File.separator+"dmason";
 	private static final String masterDirectoryFolder=dmasonDirectory+File.separator+"master";
-	private static final String masterTemporaryFolder=masterDirectoryFolder+File.separator+"temporay";
+	private static final String masterTemporaryFolder=masterDirectoryFolder+File.separator+"temporary";
 	private static final String masterHistoryFolder=masterDirectoryFolder+File.separator+"history";
 	private static final String simulationsDirectoriesFolder=masterDirectoryFolder+File.separator+"simulations";
 	private static final String masterSimulationsJarsFolder=masterDirectoryFolder+File.separator+"jars";
@@ -128,7 +128,7 @@ public class MasterServer implements MultiServerInterface{
 
 
 	/**
-	 * start activemq, initialize master connection, create directories and create initial topic for workers
+	 * Master Server constructor
 	 */
 	public MasterServer(){
 
@@ -162,8 +162,6 @@ public class MasterServer implements MultiServerInterface{
 
 		//	this.IDSimulation=new AtomicInteger(0);
 		this.readJSONLastID();
-
-
 
 		simulationsList=new HashMap<>();
 		try {
