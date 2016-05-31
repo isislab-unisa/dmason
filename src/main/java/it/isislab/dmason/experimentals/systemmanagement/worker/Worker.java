@@ -113,17 +113,17 @@ public class Worker implements Observer {
 
 
 	/**
-	 * WORKER 
-	 * @param ipMaster
-	 * @param portMaster
-	 * @param topicPrefix
+	 * Worker Constructor
+	 * @param ipMaster   ip ActivemQ
+	 * @param portMaster port ActivemQ
+	 * @param topicPrefix global identifier of simulation
 	 */
 
 	public Worker(String ipMaster,String portMaster, int slots/*, ConnectionNFieldsWithActiveMQAPI connect*/) {
 
 		try {
 
-			//comment below  line to enable Logger 
+			//comment following  line to enable Logger 
 			LOGGER.setUseParentHandlers(false);  
 			LOGGER.info("LOGGER ENABLE");
 			//
@@ -131,26 +131,25 @@ public class Worker implements Observer {
 			this.IP_ACTIVEMQ=ipMaster;
 			this.PORT_ACTIVEMQ=portMaster;
 			this.conn=new ConnectionNFieldsWithActiveMQAPI();
-			WORKER_IP=getIP(); //set IP for this worker
+			WORKER_IP=getIP(); //find local ip
+
 			this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); 
-			/**
+			/************************************************
 			 * @author miccar
 			 * character ":" cause error in windows folder creation
-			 * YOU MUST NOT REMOVE BELOW LINE OF CODE 
+			 * YOU MUST NOT FOLLOWING LINE OF CODE 
 			 */
 			TOPIC_WORKER_ID=TOPIC_WORKER_ID.replace(":", "");
-			/******************/
+			/****************************************************/
 
 			generateFolders(TOPIC_WORKER_ID); //generate folders for worker
 			this.TOPIC_WORKER_ID=""+TOPIC_WORKER_ID.hashCode(); //my topic
 			simulationList=new HashMap< /*idsim*/Integer, Simulation>();
-
 			this.slotsNumber=slots;
-			this.slotsNumberBackup=slots;
-
-			availableport=new FindAvailablePort(1000, 3000);
+			availableport=new FindAvailablePort(1000, 3000); //find an available port on a fixed range <x,y> on nodes-> for Socket node -send ->master 
 			this.PORT_COPY_LOG=availableport.getPortAvailable(); //socket communication with master (server side, used for logs)
 			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP)); //create server for socket communication 
+
 			conn.addObserver(this); //EXPERIMENTAL 
 			connectToMessageBroker();
 
@@ -159,6 +158,11 @@ public class Worker implements Observer {
 
 	}
 
+	/**
+	 * Create a connection, and start communication with master
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 */
 	private void connectToMessageBroker() throws UnknownHostException, IOException
 	{
 		System.out.println("Waiting for connection to Message Broker..");
@@ -170,16 +174,16 @@ public class Worker implements Observer {
 
 		System.out.println("connected.");
 	}
-//	private boolean MASTER_ACK=false;
-//	//private MasterLostChecker masterlost=null;
-//	final Lock lock = new ReentrantLock();
-//	final Condition waitMaster  = lock.newCondition(); 
-//	//private MasterChecker masterchecker=null;
-//
-//	//private boolean CONNECTED=true;
-//
-//	final Lock lockconnection = new ReentrantLock();
-//	final Condition waitconnection  = lockconnection.newCondition(); 
+	//	private boolean MASTER_ACK=false;
+	//	//private MasterLostChecker masterlost=null;
+	//	final Lock lock = new ReentrantLock();
+	//	final Condition waitMaster  = lock.newCondition(); 
+	//	//private MasterChecker masterchecker=null;
+	//
+	//	//private boolean CONNECTED=true;
+	//
+	//	final Lock lockconnection = new ReentrantLock();
+	//	final Condition waitconnection  = lockconnection.newCondition(); 
 
 	/**
 	 * EXPERIMENTAL
@@ -187,7 +191,7 @@ public class Worker implements Observer {
 	public void update(Observable obs, Object arg) {
 
 		if (obs==conn){
-            System.exit(0); 
+			System.exit(0); 
 			if(!conn.isConnected()){
 				this.simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 				this.slotsNumber=slotsNumberBackup;
@@ -204,7 +208,7 @@ public class Worker implements Observer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			}
 
 		}
@@ -255,7 +259,11 @@ public class Worker implements Observer {
 		//
 		//		}
 	}
-
+	/**
+	 * 
+	 * Send info to master 
+	 *
+	 */
 	class MasterLostChecker extends Thread{
 		public MasterLostChecker() {
 
@@ -272,50 +280,52 @@ public class Worker implements Observer {
 
 		}
 	}
-//
-//	class MasterChecker extends Thread{
-//
-//		public MasterChecker() {}
-//		@Override
-//		public void run() {
-//			do
-//			{
-//				System.out.println("Start Master monitor...");
-//				if(masterlost==null)
-//				{
-//					masterlost=new MasterLostChecker();
-//					masterlost.start();
-//					System.out.println("done.");
-//					try {
-//						lock.lock();
-//						MASTER_ACK=false;
-//						while(!MASTER_ACK)
-//						{
-//							waitMaster.await();
-//						}
-//						if(masterlost!=null)
-//						{
-//							masterlost.interrupt();
-//							masterlost=null;
-//						}
-//					} catch (InterruptedException e) {
-//						e.printStackTrace();
-//					}finally{
-//						lock.unlock();
-//					}
-//				}
-//				try {
-//					Thread.sleep(2000);
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//
-//			}while(true);
-//
-//		}
-//	}
+	//
+	//	class MasterChecker extends Thread{
+	//
+	//		public MasterChecker() {}
+	//		@Override
+	//		public void run() {
+	//			do
+	//			{
+	//				System.out.println("Start Master monitor...");
+	//				if(masterlost==null)
+	//				{
+	//					masterlost=new MasterLostChecker();
+	//					masterlost.start();
+	//					System.out.println("done.");
+	//					try {
+	//						lock.lock();
+	//						MASTER_ACK=false;
+	//						while(!MASTER_ACK)
+	//						{
+	//							waitMaster.await();
+	//						}
+	//						if(masterlost!=null)
+	//						{
+	//							masterlost.interrupt();
+	//							masterlost=null;
+	//						}
+	//					} catch (InterruptedException e) {
+	//						e.printStackTrace();
+	//					}finally{
+	//						lock.unlock();
+	//					}
+	//				}
+	//				try {
+	//					Thread.sleep(2000);
+	//				} catch (InterruptedException e) {
+	//					e.printStackTrace();
+	//				}
+	//
+	//			}while(true);
+	//
+	//		}
+	//	}
 
-
+	/**
+	 * Wait master connection, and save Socket port node <-send- master
+	 */
 	@SuppressWarnings("serial")
 	private void startMasterComunication() {
 
@@ -369,7 +379,7 @@ public class Worker implements Observer {
 
 
 	/**
-	 * Return information of (sended to master)
+	 * Return information of: 
 	 * -hw resources(cpu,ram)
 	 * -port of node for server socket
 	 * -topic that identify this node
@@ -395,12 +405,12 @@ public class Worker implements Observer {
 
 
 	/**
-	 * Subscribe to masters' topic  for communication [master->worker]
-	 * Requests' list from master
+	 * Subscribe to master topic  for communication [master->worker]
+	 * Request list from master
 	 */
 	@SuppressWarnings("serial")
 	private synchronized void listenerForMasterComunication(){
-		
+
 
 		getConnection().asynchronousReceive(TOPIC_WORKER_ID, new MyMessageListener() {
 
@@ -581,7 +591,6 @@ public class Worker implements Observer {
 			}
 			cexe.stopThread();
 		}
-		//getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
 
 		//start process to create a log file for this simulation
 		String pre_status=getSimulationList().get(sim_id).getStatus();
@@ -606,7 +615,7 @@ public class Worker implements Observer {
 
 	/*****************CELLEXECUTOR CLASS******************************/
 	/**
-	 * Class for start, stop, pause with Thread
+	 * Class for start, stop, pause simulation with Thread
 	 *
 	 */
 	class CellExecutor extends Thread{
@@ -673,12 +682,6 @@ public class Worker implements Observer {
 
 			}
 
-			// simulation stopped 
-			//			if( (i<params.getMaxStep()) && masterCell ){
-			//				getSimulationList().get(sim_id).setStatus(Simulation.STOPPED);	
-			//				getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
-			//				getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
-			//			}
 
 			//simulation finished             
 			if(  (i==params.getMaxStep()) && masterCell) {
