@@ -1,3 +1,20 @@
+/**
+
+ * Copyright 2016 Universita' degli Studi di Salerno
+
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package it.isislab.dmason.sim.app.GameOfLife;
 
 import java.util.List;
@@ -18,6 +35,13 @@ import sim.engine.SimState;
 import sim.portrayal.grid.FastValueGridPortrayal2D;
 import sim.util.Int2D;
 
+/**
+ * 
+ * @author Michele Carillo
+ * @author Carmine Spagnuolo
+ * @author Flavio Serrapica
+ *
+ */
 public class DGameOfLife extends DistributedState<Int2D> {
 
 	/**
@@ -55,8 +79,9 @@ public class DGameOfLife extends DistributedState<Int2D> {
 	
 	
 	/**
-	 * Constructor 
-	 * @param params
+	 * Constructor
+	 * @param params simulation parameters
+	 * @param prefix unique id for simulation in activemq communication
 	 */
 	public DGameOfLife(GeneralParam params, String prefix) {
 		super(params, new DistributedMultiSchedule<Int2D>(), prefix, params.getConnectionType());
@@ -65,6 +90,7 @@ public class DGameOfLife extends DistributedState<Int2D> {
 		gridHeight=params.getHeight();
 	}
 
+	@Deprecated
 	public DGameOfLife(GeneralParam params,List<EntryParam<String, Object>> simParams, String prefix)
 	{
 		super(params,new DistributedMultiSchedule<Int2D>(), prefix,params.getConnectionType());
@@ -78,16 +104,12 @@ public class DGameOfLife extends DistributedState<Int2D> {
 			try {
 				this.getClass().getDeclaredField(entryParam.getParamName()).set(this, entryParam.getParamValue());
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoSuchFieldException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -98,16 +120,12 @@ public class DGameOfLife extends DistributedState<Int2D> {
 			try {
 				System.out.println(this.getClass().getDeclaredField(entryParam.getParamName()).get(this));
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoSuchFieldException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -140,18 +158,25 @@ public class DGameOfLife extends DistributedState<Int2D> {
 		DCellAgent a = new DCellAgent(this,core.getAvailableRandomLocation());
 		if(core.setObjectLocation(a, a.pos)) schedule.scheduleOnce(a);		
 	}
-	@Override
+	
+	/**
+	 * 
+	 */
 	public DistributedField2D getField() {
-		// TODO Auto-generated method stub
 		return core;
 	}
 
-	@Override
-	public void addToField(RemotePositionedAgent rm, Int2D loc) {core.setObjectLocation(rm, loc);}
+	/**
+	 * 
+	 */
+	public void addToField(RemotePositionedAgent rm, Int2D loc) {
+		core.setObjectLocation(rm, loc);
+		}
 
-	@Override
+	/**
+	 * 
+	 */
 	public SimState getState() {
-		// TODO Auto-generated method stub
 		return this;
 	}
 		
