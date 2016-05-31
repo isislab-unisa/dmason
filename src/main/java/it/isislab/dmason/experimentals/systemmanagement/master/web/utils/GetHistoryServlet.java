@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
@@ -37,7 +39,7 @@ import org.json.simple.JSONObject;
 import it.isislab.dmason.experimentals.systemmanagement.master.MasterServer;
 
 public class GetHistoryServlet extends HttpServlet {
-	
+
 	/**
 	 * 
 	 * @author Michele Carillo
@@ -47,7 +49,7 @@ public class GetHistoryServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 1L;
 	MasterServer myServer =null;
-	
+
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -64,18 +66,22 @@ public class GetHistoryServlet extends HttpServlet {
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return; 	
 		}
+		Map<Integer,JSONObject> ordered=new HashMap<Integer,JSONObject>();
+		
 		JSONObject obj = null;
 		JSONArray history_list = new JSONArray();
+		
 		File[] cur_dir_files = null;
 		Properties prop = null;
 		InputStream in = null;
+		
 		for(File f: f_history.listFiles()){
 			if(!f.isDirectory()) continue;
 			cur_dir_files = f.listFiles(new FileFilter() {
-				
+
 				@Override
 				public boolean accept(File pathname) {
-					
+
 					return pathname.getName().endsWith(".history");
 				}
 			});
@@ -83,14 +89,27 @@ public class GetHistoryServlet extends HttpServlet {
 			in = new FileInputStream(cur_dir_files[0]);
 			prop.load(in);
 			obj = new JSONObject();
+			
 			Enumeration<Object> prop_keys = prop.keys(); 
+			
+			
+			
+			
 			while(prop_keys.hasMoreElements()){
 				String k = (String) prop_keys.nextElement();
 				obj.put(k, prop.getProperty(k));
 			}
 			in.close();
-			history_list.add(obj);
+			String mykey=""+prop.get("simID");
+			int keyConv=Integer.parseInt(mykey);
+			ordered.put(keyConv, obj);
+			//history_list.add(obj);
 		}
+		
+		for(int k:ordered.keySet()){
+			history_list.add(ordered.get(k));
+		}
+		
 		JSONObject list_to_send = new JSONObject();
 		list_to_send.put("history", history_list);
 		StringWriter out = new StringWriter();
