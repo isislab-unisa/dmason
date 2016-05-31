@@ -918,8 +918,8 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	@Override
 	public Int2D getAvailableRandomLocation() {
 	
-		double shiftx=((DistributedState)sm).random.nextInt();
-		double shifty=((DistributedState)sm).random.nextInt();
+		double shiftx=((DistributedState)sm).random.nextDouble();
+		double shifty=((DistributedState)sm).random.nextDouble();
 		int x= (int)(own_x+my_width*shiftx);	
 		int y= (int)(own_y+my_height*shifty);
 
