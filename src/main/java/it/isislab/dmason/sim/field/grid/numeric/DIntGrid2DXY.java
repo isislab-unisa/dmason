@@ -936,7 +936,6 @@ public class DIntGrid2DXY extends DIntGrid2D {
 
 	@Override
 	public UpdateMap getUpdates() {
-		// TODO Auto-generated method stub
 		return updates;
 	}
 
