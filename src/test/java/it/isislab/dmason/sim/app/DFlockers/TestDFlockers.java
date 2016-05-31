@@ -70,8 +70,8 @@ public class TestDFlockers {
 
 		class worker extends Thread
 		{
-			private DistributedState ds;
-			public worker(DistributedState ds) {
+			private DistributedState<?> ds;
+			public worker(DistributedState<?> ds) {
 				this.ds=ds;
 				ds.start();
 			}

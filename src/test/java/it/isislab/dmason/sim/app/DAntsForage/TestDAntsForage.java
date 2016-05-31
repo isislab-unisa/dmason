@@ -63,8 +63,8 @@ public class TestDAntsForage {
 		System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
 		class worker extends Thread
 		{
-			private DistributedState ds;
-			public worker(DistributedState ds) {
+			private DistributedState<?> ds;
+			public worker(DistributedState<?> ds) {
 				this.ds=ds;
 				ds.start();
 			}
