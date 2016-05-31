@@ -876,7 +876,7 @@ public class Worker implements Observer {
 
 	/**
 	 * Get Distributed state instance of simulation from jar file and 
-	 * avoid dynamically classloading problem  of the same path from multiple jar
+	 * avoid dynamically classloading problem  of the same path from multiple jars
 	 * @param params
 	 * @param prefix
 	 * @param pathJar
@@ -1013,7 +1013,7 @@ public class Worker implements Observer {
 
 
 	/**
-	 * Create all folder for worker's environment 
+	 * Create all folder for worker environment 
 	 * @param wID
 	 * @throws FileNotFoundException
 	 */
@@ -1022,9 +1022,7 @@ public class Worker implements Observer {
 		sdf.applyPattern("dd-MM-yy-HH_mm");
 		String dataStr = sdf.format(new Date()); // data corrente (20 febbraio 2014)
 		workerDirectory=dmasonDirectory+File.separator+"worker"+File.separator+wID+File.separator+dataStr;
-		//workerTemporary=workerDirectory+File.separator+"temporary";
 		simulationsDirectories=workerDirectory+File.separator+"simulations";
-		//DMasonFileSystem.make(workerTemporary);
 		DMasonFileSystem.make(simulationsDirectories);
 		DMasonFileSystem.make(workerDirectory+File.separator+"err");
 		FileOutputStream output = new FileOutputStream(workerDirectory+File.separator+"err"+File.separator+"worker"+TOPIC_WORKER_ID+".err");

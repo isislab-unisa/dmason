@@ -31,7 +31,6 @@ import java.io.IOException;
 *
 */
 public class DMasonClassLoader extends ClassLoader {
-	private static boolean DEBUG_FIND_CLASS = false;
 
 
 	public DMasonClassLoader(ClassLoader parent){
@@ -54,8 +53,6 @@ public class DMasonClassLoader extends ClassLoader {
 		byte[] classBytes = null;
 		try
 		{
-			if(DEBUG_FIND_CLASS) System.out.println(name);
-
 			//load byte of class in a matrix of bytes
 			classBytes = loadClassBytes(name);
 
