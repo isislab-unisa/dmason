@@ -137,7 +137,7 @@ public class Worker implements Observer {
 			/************************************************
 			 * @author miccar
 			 * character ":" cause error in windows folder creation
-			 * YOU MUST NOT FOLLOWING LINE OF CODE 
+			 * YOU MUST NOT DELETE FOLLOWING LINE OF CODE 
 			 */
 			TOPIC_WORKER_ID=TOPIC_WORKER_ID.replace(":", "");
 			/****************************************************/
