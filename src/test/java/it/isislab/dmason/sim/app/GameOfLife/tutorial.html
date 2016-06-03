@@ -1,5 +1,11 @@
 <html>
 <header><h1>Game Of Life Model Overview</h1><header>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
 <body style="font-size: 18px;">
 
 
@@ -21,7 +27,7 @@ The initial pattern constitutes the seed of the system. The first generation is 
 The rules continue to be applied repeatedly to create further generations.
 <h4>References:</h4>
     <u1>
-        <li>[https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life)</li>
+        <li>Wikipedia <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life"> Game of Life</a> </li>
         <li>Mathematical Games The fantastic combinations of John Conway's new solitaire game life. Scientific American 223.](Gardner, Martin (October 1970). Mathematical Games, The fantastic combinations of John Conway's new solitaire game life. Scientific American 223.)</li>
     </u1>
 
@@ -48,18 +54,22 @@ As described above, the game is completely deterministic and embarrassingly para
 
 On a 2000 x 1000 field, we position the Glider (initial conditions) on the top-left (0,0) of the matrix field.
 <table>
-    <tr><td>0 &nbsp</td><td>1 &nbsp</td><td>0</td></tr>
-    <tr><td>0 &nbsp</td><td>0 &nbsp</td><td>1</td></tr>
-    <tr><td>1 &nbsp</td><td>1 &nbsp</td><td>1</td></tr>
+    <tr><td>0 &nbsp</td><td>1 &nbsp</td><td>0 &nbsp</td></tr>
+    <tr><td>0 &nbsp</td><td>0 &nbsp</td><td>1 &nbsp</td></tr>
+    <tr><td>1 &nbsp</td><td>1 &nbsp</td><td>1 &nbsp</td></tr>
 </table>
 
 By construction the glider assumes the same shape each four steps, but moves of one cell in south-east direction. Hence at the end of `7987` time step it reaches the bottom-right of the field.
 
-| Benchmark Name  | Description   | Parameter Values |
-|---|---|---|
-| Correctness | Benchmark to test the correctness of the model implementation. The correctness is checked verifing  that, starting with the given initial configuration and performing a certain amount of simulation steps the final configuration corresponds with a given final configuration. | _**W**_=`2000`, _**H**_=`1000`, _**S**_= `7987`,  _**I**_= a single glider positioned on the top-left of the field, _**F**_= a single glider matrix postioned on the bottom-right of the field|
-
+<table>
+    <tr>
+        <td>Correctness</td>
+        <td>Benchmark to test the correctness of the model implementation. The correctness is checked verifing that, starting <br>with the given initial configuration and performing a certain amount of simulation steps the final configuration <br>
+            corresponds with a given final configuration</td>
+        <td>W=2000, H=1000, S= 7987, I= a single glider positioned on the top-left of the field, F= a single glider matrix postioned on the bottom-right of the field</td>
+    </tr>
+</table>
 <h2>Reference Implementation</h2>
-A reference implementation is provided as part of the [DMASON](https://github.com/isislab-unisa/dmason/tree/master/src/test/java/it/isislab/dmason/sim/app/GameOfLife).
+A reference implementation is provided as part of the <a href="https://github.com/isislab-unisa/dmason/tree/master/src/test/java/it/isislab/dmason/sim/app/GameOfLife">DMASON</a>
 </body>
 </html>
