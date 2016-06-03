@@ -1020,7 +1020,7 @@ public class Worker implements Observer {
 	private void generateFolders(String wID) throws FileNotFoundException {
 		sdf = new SimpleDateFormat(); 
 		sdf.applyPattern("dd-MM-yy-HH_mm");
-		String dataStr = sdf.format(new Date()); // data corrente (20 febbraio 2014)
+		String dataStr = sdf.format(new Date());
 		workerDirectory=dmasonDirectory+File.separator+"worker"+File.separator+wID+File.separator+dataStr;
 		simulationsDirectories=workerDirectory+File.separator+"simulations";
 		DMasonFileSystem.make(simulationsDirectories);
