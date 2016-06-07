@@ -111,12 +111,12 @@ public class MasterServer implements MultiServerInterface{
 	protected ServerSocket welcomeSocket;
 
 	//info 
-	protected HashMap<String/*IDprefixOfWorker*/,String/*MyIDTopicprefixOfWorker*/> topicIdWorkers;
-	protected HashMap<Integer,AtomicInteger> counterAckSimRcv;// number of ack received of simrcv
+	//protected HashMap<String/*IDprefixOfWorker*/,String/*MyIDTopicprefixOfWorker*/> topicIdWorkers;
+	protected HashMap<Integer,AtomicInteger> counterAckSimRcv;// number of ack received <simrcv> 
 	private HashMap<String,String> infoWorkers;
 	private HashMap<String,Integer> ttlinfoWorkers;
-	private HashMap<Integer,Simulation> simulationsList; //list simulation 
-	private AtomicInteger IDSimulation; // generate id for a simulation 
+	private HashMap<Integer,Simulation> simulationsList; //list simulation <ID,Simulation>
+	private AtomicInteger IDSimulation; // generate an unique id for a simulation 
 	private FindAvailablePort availableport;
 
 	//copy logs
@@ -152,7 +152,7 @@ public class MasterServer implements MultiServerInterface{
 
 
 		//topicPrefix of connected workers  
-		this.topicIdWorkers=new HashMap<String,String>();
+	//	this.topicIdWorkers=new HashMap<String,String>();
 		//this.topicIdWorkersForSimulation=new HashMap<>();
 		this.infoWorkers=new HashMap<String,String>();
 		this.ttlinfoWorkers=new HashMap<String,Integer>();
@@ -163,7 +163,7 @@ public class MasterServer implements MultiServerInterface{
 		//	this.IDSimulation=new AtomicInteger(0);
 		this.readJSONLastID();
 
-		simulationsList=new HashMap<>();
+		simulationsList=new HashMap<Integer,Simulation>();
 		try {
 			availableport=new FindAvailablePort(1000, 3000);
 			DEFAULT_PORT_COPY_SERVER=availableport.getPortAvailable();
@@ -1204,7 +1204,7 @@ public class MasterServer implements MultiServerInterface{
 	//GETTER AND SETTERS
 
 	public MasterServer getMasterServer(){return this;}
-	public HashMap<String,String> getTopicIdWorkers(){return topicIdWorkers;}	//all connected workers 
+//	public HashMap<String,String> getTopicIdWorkers(){return topicIdWorkers;}	//all connected workers 
 	public HashMap<Integer,AtomicInteger> getCounterAckSimRcv(){return counterAckSimRcv;} 
 	public AtomicInteger getKeySim(){return IDSimulation;} 
 
