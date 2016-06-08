@@ -88,15 +88,14 @@ public class TestDSociallyDamagingBehaviour {
 				genParam.setJ(j);
 				genParam.setIp(ip);
 				genParam.setPort(port);
-				ArrayList<EntryParam<String, Object>> simParams=new ArrayList<EntryParam<String, Object>>();
 				if(/*graphicsOn*/i==0 && j==0)
 				{
-					DSociallyDamagingBehaviorWithUI sim =new DSociallyDamagingBehaviorWithUI(genParam,simParams,topicPrefix);
+					DSociallyDamagingBehaviorWithUI sim =new DSociallyDamagingBehaviorWithUI(genParam,topicPrefix);
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
-					DSociallyDamagingBehavior sim = new DSociallyDamagingBehavior(genParam,simParams,topicPrefix); 
+					DSociallyDamagingBehavior sim = new DSociallyDamagingBehavior(genParam,topicPrefix); 
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}
