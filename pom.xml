@@ -107,7 +107,7 @@
 			<artifactId>jfreechart</artifactId>
 			<version>1.0.15</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>it.isislab.dmason</groupId>
 			<artifactId>mason.18.jar</artifactId>
@@ -142,12 +142,12 @@
 
 
 
-       <dependency>
-	<groupId>org.fusesource</groupId>
-	<artifactId>sigar</artifactId>
-	<version>1.6.4</version>
-</dependency>
-       
+		<dependency>
+			<groupId>org.fusesource</groupId>
+			<artifactId>sigar</artifactId>
+			<version>1.6.4</version>
+		</dependency>
+
 
 
 		<!-- old conf > <groupId>org.apache.activemq</groupId> <artifactId>activemq-all</artifactId> 
