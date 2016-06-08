@@ -15,7 +15,6 @@
    limitations under the License.
  */
 package it.isislab.dmason.sim.app.SociallyDamagingBehavior;
-import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 /*
  * THIS CLASS HAS BEEN USED FOR TESTING PURPOSES IN THE BEGINNINGS,
