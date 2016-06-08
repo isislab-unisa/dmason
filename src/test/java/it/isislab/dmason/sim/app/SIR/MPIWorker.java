@@ -116,16 +116,16 @@ public class MPIWorker {
 				DistributedState state = null;
 				switch (type) {
 				case 0:
-					state = new it.isislab.dmason.sim.app.SIRDoubleBuffering.DPeople(genParam);
+					state = new it.isislab.dmason.sim.app.SIRDoubleBuffering.DPeople(genParam,"test1");
 					break;
 				case 1:
-					state = new it.isislab.dmason.sim.app.SIRStateReflection.DPeople(genParam);
+					state = new it.isislab.dmason.sim.app.SIRStateReflection.DPeople(genParam,"test2");
 					break;
 				case 2:
-					state = new it.isislab.dmason.sim.app.SIRStateWithLookup.DPeople(genParam);
+					state = new it.isislab.dmason.sim.app.SIRStateWithLookup.DPeople(genParam,"test3");
 					break;
 				case 3:
-					state = new it.isislab.dmason.sim.app.SIRState.DPeople(genParam);
+					state = new it.isislab.dmason.sim.app.SIRState.DPeople(genParam,"test4");
 					break;
 
 				default:

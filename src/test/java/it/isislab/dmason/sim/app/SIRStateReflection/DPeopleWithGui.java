@@ -21,9 +21,9 @@ public class DPeopleWithGui extends GUIState {
 	public Object getSimulationInspectedObject() { return state; }  // non-volatile
 	ContinuousPortrayal2D portrayal = new ContinuousPortrayal2D();
 
-	public DPeopleWithGui(GeneralParam args) 
+	public DPeopleWithGui(GeneralParam args, String prefix) 
 	{ 
-		super(new DPeople(args));
+		super(new DPeople(args, prefix));
 
 		name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
 	}

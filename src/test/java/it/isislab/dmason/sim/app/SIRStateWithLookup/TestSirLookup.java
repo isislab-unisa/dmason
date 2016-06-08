@@ -38,7 +38,7 @@ import sim.display.Console;
  * @author Carmine Spagnuolo
  *
  */
-public class TestStart {
+public class TestSirLookup {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 10000; 
@@ -51,6 +51,7 @@ public class TestStart {
 	private static int CONNECTION_TYPE=ConnectionType.pureActiveMQ;
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
+	private static String prefix="sirlookup";
 	
 	//don't modify this...
 	private static int MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE; 
@@ -86,12 +87,12 @@ public class TestStart {
 				genParam.setPort(port);
 				if(graphicsOn || i==0 && j==0)
 				{
-					DPeopleWithGui sim =new DPeopleWithGui(genParam);
+					DPeopleWithGui sim =new DPeopleWithGui(genParam,prefix);
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
-					DPeople sim = new DPeople(genParam); 
+					DPeople sim = new DPeople(genParam,prefix); 
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}

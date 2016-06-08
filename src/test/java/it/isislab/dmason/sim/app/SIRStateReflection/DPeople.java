@@ -24,7 +24,7 @@ public class DPeople extends DistributedState<Double2D> {
 	public double gridHeight ;   
 	public int MODE;
 	
-	public static String topicPrefix = "";
+	public String topicPrefix = "";
 
 
 	public DPeople() {
@@ -32,14 +32,7 @@ public class DPeople extends DistributedState<Double2D> {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public DPeople(GeneralParam params)
-	{    	
-		super(params,new DistributedMultiSchedule<Double2D>(),topicPrefix,params.getConnectionType());
-		this.MODE=params.getMode();
-		gridWidth=params.getWidth();
-		gridHeight=params.getHeight();
-
-	}
+	
 	
 	public DPeople(GeneralParam params,String prefix)
 	{    	

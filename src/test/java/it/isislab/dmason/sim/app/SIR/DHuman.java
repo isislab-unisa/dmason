@@ -2,12 +2,7 @@ package it.isislab.dmason.sim.app.SIR;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.io.IOException;
-import java.io.ObjectStreamException;
-
 import it.isislab.dmason.exception.DMasonException;
-import it.isislab.dmason.sim.engine.DistributedAgentFactory;
-import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import sim.engine.SimState;
 import sim.portrayal.DrawInfo2D;
@@ -44,7 +39,6 @@ public class DHuman extends RemoteHuman<Double2D> {
 	private static double RECOVERY_CHANCE= 10; //[0,10]
 	private static double GAIN_RESISTANCE_CHANCE= 50; //[0,100]
 
-	private Bag neighbors = null;
 	
 	
 	//consinstent
