@@ -89,15 +89,14 @@ public class TestDCircles {
 				genParam.setJ(j);
 				genParam.setIp(ip);
 				genParam.setPort(port);
-				ArrayList<EntryParam<String, Object>> simParams=new ArrayList<EntryParam<String, Object>>();
 				if(graphicsOn  || i==0 && j==0)
 				{
-					DCirclesWithUI sim =new DCirclesWithUI(genParam,simParams,topicPrefix);
+					DCirclesWithUI sim =new DCirclesWithUI(genParam,topicPrefix);
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
-					DCircles sim = new DCircles(genParam,simParams,topicPrefix); 
+					DCircles sim = new DCircles(genParam,topicPrefix); 
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}

@@ -39,7 +39,7 @@ import sim.display.Console;
  * @author Carmine Spagnuolo
  *
  */
-public class TestStart {
+public class TestDFlockerState {
 
 	private static boolean graphicsOn=true; //with or without graphics?
 	private static int numSteps = 1000; 
@@ -52,6 +52,7 @@ public class TestStart {
 	private static int CONNECTION_TYPE=ConnectionType.pureActiveMQ;
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
+	private static String topicPrefix="flockstate";
 	
 	//don't modify this...
 	private static int MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE; 
@@ -87,12 +88,12 @@ public class TestStart {
 				genParam.setPort(port);
 				if(graphicsOn && i==0 && j==0)
 				{
-					DFlockersWithUI sim =new DFlockersWithUI(genParam);
+					DFlockersWithUI sim =new DFlockersWithUI(genParam,topicPrefix);
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
-					DFlockers sim = new DFlockers(genParam); 
+					DFlockers sim = new DFlockers(genParam,topicPrefix); 
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}

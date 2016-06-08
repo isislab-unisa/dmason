@@ -41,6 +41,13 @@ public class DFlockersWithUI extends GUIState
 
 		name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
 	}
+	
+	public DFlockersWithUI(GeneralParam args,String prefix) 
+	{ 
+		super(new DFlockers(args,prefix));
+
+		name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
+	}
 
 	public static String getName() { return "Peer: <"+name+">"; }
 
