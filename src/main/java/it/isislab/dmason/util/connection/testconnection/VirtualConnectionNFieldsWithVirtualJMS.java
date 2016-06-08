@@ -63,9 +63,11 @@ public class VirtualConnectionNFieldsWithVirtualJMS extends Observable
 				
 				while((vsubscribers.get(topic_name)==null) /*|| (vsubscribers.get(topic_name).size()!=8)*/)
 				{
-					System.out.println("[print from "+this.getClass().getSimpleName()+"] "+topic_name+" "+vsubscribers);
+					//System.out.println("[print from "+this.getClass().getSimpleName()+"] "+topic_name+" "+vsubscribers);
 					try {
+						 
 						condVar.await();
+						
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -275,7 +277,7 @@ public class VirtualConnectionNFieldsWithVirtualJMS extends Observable
 	 * We extend Connection with ConnectionWithJMS only if we need a customized
 	 * listener for every (or many) topic.
 	 * 
-	 * @oaram key A string associated to the object to receive.
+	 * @param key A string associated to the object to receive.
 	 * @param listener
 	 *            The listener to run when an object of type <code>key</code> is
 	 *            received.
@@ -288,7 +290,6 @@ public class VirtualConnectionNFieldsWithVirtualJMS extends Observable
 			lists = (lists == null) ? new ArrayList<VirtualMessageListener>(): lists;
 			lists.add((VirtualMessageListener) listener);
 			accesstotopic.addSubscriber();
-			
 			return vsubscribers.put(key, lists) != null;
 
 			// return true;
