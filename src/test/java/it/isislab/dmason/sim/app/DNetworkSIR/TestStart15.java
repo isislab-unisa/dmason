@@ -22,7 +22,6 @@ import it.isislab.dmason.annotation.AuthorAnnotation;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 import it.isislab.dmason.util.connection.ConnectionType;
 
 import java.util.ArrayList;
@@ -35,8 +34,6 @@ import sim.display.Console;
 		)
 public class TestStart15 {
 
-	private static boolean graphicsOn=false; //with or without graphics?
-	private static int numSteps = 100; //only graphicsOn=false
 	private static int rows = 1; //number of rows
 	private static int columns = 4; //number of columns
 	private static int MAX_DISTANCE=1; //max distance
