@@ -143,6 +143,39 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 		super();
 	}
 
+	
+	/**
+	 * AntsForage
+	 * 
+	 * @param params general in order to build a distributed field
+	 * @param list   list parameters for this simulation 
+	 * @param prefix a string added to topic to generate an unique topic for this simulation 
+	 */
+	public DAntsForage(GeneralParam params, String prefix)
+	{ 
+		super(params,new DistributedMultiSchedule<Int2D>(),prefix,params.getConnectionType());
+		this.topicPrefix=prefix;
+		this.MODE=params.getMode();
+		GRID_WIDTH=params.getWidth();
+		GRID_HEIGHT=params.getHeight();
+
+		numAnts = params.getNumAgents();
+
+
+		FXMIN = (FOOD_XMIN * GRID_WIDTH)/100;
+		FYMIN = (FOOD_YMIN * GRID_HEIGHT)/100;
+		FXMAX = (FOOD_XMAX * GRID_WIDTH)/100;
+		FYMAX = (FOOD_YMAX * GRID_HEIGHT)/100;
+
+		HXMIN = (HOME_XMIN * GRID_WIDTH)/100;
+		HYMIN = (HOME_YMIN * GRID_HEIGHT)/100;
+		HXMAX = (HOME_XMAX * GRID_WIDTH)/100;
+		HYMAX = (HOME_YMAX * GRID_HEIGHT)/100;
+
+
+
+	}
+	
 	/**
 	 * AntsForage
 	 * 
