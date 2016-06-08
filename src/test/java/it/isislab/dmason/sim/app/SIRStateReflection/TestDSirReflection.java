@@ -1,44 +1,14 @@
-/**
- * Copyright 2015 Universita' degli Studi di Salerno
-
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
-package it.isislab.dmason.sim.app.SIRState;
-import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
-/*
- * THIS CLASS HAS BEEN USED FOR TESTING PURPOSES IN THE BEGINNINGS,
- */
-import it.isislab.dmason.sim.engine.DistributedState;
-import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.util.connection.ConnectionType;
+package it.isislab.dmason.sim.app.SIRStateReflection;
 
 import java.util.ArrayList;
 
 import sim.display.Console;
+import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
+import it.isislab.dmason.sim.engine.DistributedState;
+import it.isislab.dmason.sim.field.DistributedField2D;
+import it.isislab.dmason.util.connection.ConnectionType;
 
-/**
- * 
- * @author Michele Carillo
- * @author Ada Mancuso
- * @author Dario Mazzeo
- * @author Francesco Milone
- * @author Francesco Raia
- * @author Flavio Serrapica
- * @author Carmine Spagnuolo
- *
- */
-public class TestStart {
+public class TestDSirReflection {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 10000; 
@@ -79,7 +49,7 @@ public class TestStart {
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
 				
-				GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, AOI, rows, columns, NUM_AGENTS, MODE, CONNECTION_TYPE); 
+				GeneralParam genParam = new GeneralParam(WIDTH, HEIGHT, AOI, rows,columns,NUM_AGENTS, MODE, CONNECTION_TYPE); 
 				genParam.setI(i);
 				genParam.setJ(j);
 				genParam.setIp(ip);

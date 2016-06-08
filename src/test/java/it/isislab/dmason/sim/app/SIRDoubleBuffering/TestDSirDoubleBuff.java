@@ -1,21 +1,51 @@
-package it.isislab.dmason.sim.app.SIRStateReflection;
+/**
+ * Copyright 2012 Universita' degli Studi di Salerno
 
-import java.util.ArrayList;
 
-import sim.display.Console;
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+package it.isislab.dmason.sim.app.SIRDoubleBuffering;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
+/*
+ * THIS CLASS HAS BEEN USED FOR TESTING PURPOSES IN THE BEGINNINGS,
+ */
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.util.connection.ConnectionType;
 
-public class TestStart {
+import java.util.ArrayList;
+
+import sim.display.Console;
+
+/**
+ * 
+ * @author Michele Carillo
+ * @author Ada Mancuso
+ * @author Dario Mazzeo
+ * @author Francesco Milone
+ * @author Francesco Raia
+ * @author Flavio Serrapica
+ * @author Carmine Spagnuolo
+ *
+ */
+public class TestDSirDoubleBuff {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 10000; 
 	private static int rows = 1; //number of rows
 	private static int columns = 2; //number of columns
 	private static int AOI=10; //max distance
-	private static int NUM_AGENTS=1000; //number of agents
+	private static int NUM_AGENTS=10; //number of agents
 	private static int WIDTH=400; //field width
 	private static int HEIGHT=400; //field height
 	private static int CONNECTION_TYPE=ConnectionType.pureActiveMQ;
@@ -26,7 +56,7 @@ public class TestStart {
 	private static int MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE; 
 	
 	public static void main(String[] args) 
-	{		System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
+	{	System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");	
 		class worker extends Thread
 		{
 			private DistributedState ds;

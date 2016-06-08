@@ -38,7 +38,7 @@ import sim.display.Console;
  * @author Carmine Spagnuolo
  *
  */
-public class TestStart {
+public class TestDSir {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 1000; 
