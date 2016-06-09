@@ -1,5 +1,5 @@
 /**
- * Copyright 2012 Universita' degli Studi di Salerno
+ * Copyright 2016 Universita' degli Studi di Salerno
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,6 @@ import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,15 +33,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 import javax.jms.JMSException;
-
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQTopicPublisher;
 import org.apache.activemq.ActiveMQTopicSession;
 import org.apache.activemq.ActiveMQTopicSubscriber;
 import org.apache.activemq.advisory.DestinationSource;
-import org.apache.activemq.command.ActiveMQMessage;
 import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.activemq.transport.TransportListener;
