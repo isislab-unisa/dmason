@@ -1,7 +1,5 @@
-package it.isislab.dmason.sim.engine.testing.util;
-
 /**
- * Copyright 2012 Universita' degli Studi di Salerno
+ * Copyright 2016 Universita' degli Studi di Salerno
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +14,7 @@ package it.isislab.dmason.sim.engine.testing.util;
    See the License for the specific language governing permissions and
    limitations under the License.
  */
+package it.isislab.dmason.sim.engine.testing.util;
 
 
 import it.isislab.dmason.annotation.AuthorAnnotation;
@@ -28,7 +27,6 @@ import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.DistributedFieldNetwork;
-import it.isislab.dmason.sim.field.UpdaterThreadForListener;
 import it.isislab.dmason.sim.field.network.DNetwork;
 import it.isislab.dmason.sim.field.support.network.DNetworkJMSMessageListener;
 import it.isislab.dmason.sim.field.support.network.UpdaterThreadJMSForNetworkListener;

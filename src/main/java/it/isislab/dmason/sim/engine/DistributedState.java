@@ -1,5 +1,5 @@
 /**
- * Copyright 2012 Universita' degli Studi di Salerno
+ * Copyright 2016 Universita' degli Studi di Salerno
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,8 +45,7 @@ import ec.util.MersenneTwisterFast;
  * agents, the number of peers involved in the simulation, the ip and port of
  * server.
  * 
- * @param <E>
- *            the type of locations
+ * @param <E>  type of locations
  * 
  * @author Michele Carillo
  * @author Ada Mancuso
