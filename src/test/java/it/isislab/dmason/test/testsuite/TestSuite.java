@@ -5,7 +5,6 @@ import it.isislab.dmason.test.sim.app.DFlockersUnitTest.TestDFlockers;
 import it.isislab.dmason.test.sim.app.DParticlesUnittest.TestDParticles;
 import it.isislab.dmason.test.sim.engine.DistributedStateConnectionJMSTester;
 import it.isislab.dmason.test.sim.field.CellTypeTester;
-import it.isislab.dmason.test.sim.field.UpdateCellTester;
 import it.isislab.dmason.test.sim.field.continuous.DContinuousGrid2DFactoryTester;
 import it.isislab.dmason.test.sim.field.continuous.DContinuousGrid2DXYTester;
 import it.isislab.dmason.test.sim.field.continuous.loadbalanced.DContinuousGrid2DXYLBTester;
@@ -56,7 +55,6 @@ import org.junit.runners.Suite.SuiteClasses;
 
 	/*********************/
 	CellTypeTester.class,
-	UpdateCellTester.class, 		
 	UpdateMapTester.class,
 
 	/*********Connection************/

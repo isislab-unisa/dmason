@@ -23,12 +23,12 @@ import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
+import it.isislab.dmason.test.support.AgentComparator;
 import it.isislab.dmason.util.connection.ConnectionType;
 import sim.util.Int2D;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -42,19 +42,6 @@ import org.junit.Test;
  */
 public class TestDAntsForage {
 
-	class ComparatoreAnts implements Comparator<DRemoteAnt>{
-
-		public ComparatoreAnts() {
-			// TODO Auto-generated constructor stub
-		}
-		@Override
-		public int compare(DRemoteAnt o1, DRemoteAnt o2) {
-			// TODO Auto-generated method stub
-
-			return o1.id.compareTo(o2.id);
-		}
-
-	}
 
 	private static int numSteps = 1000; //only graphicsOn=false
 	private static int rows = 2; //number of ro
@@ -86,7 +73,6 @@ public class TestDAntsForage {
 			int i=0;
 			while(i!=numSteps)
 			{
-				//						System.out.println(i);
 				ds.schedule.step(ds);
 				i++;
 				if(i==1){
@@ -171,7 +157,7 @@ public class TestDAntsForage {
 
 		startWorkers();
 
-		ComparatoreAnts c=new ComparatoreAnts();
+		AgentComparator c=new AgentComparator();
 
 		assertEquals(initial_agents.size(), end_agents.size());
 		

@@ -28,14 +28,12 @@ import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
 import it.isislab.dmason.util.connection.testconnection.VirtualConnection;
 
-// TODO: Auto-generated Javadoc
 /**
  * This is the DistributedStateConnectionJMS's tester.
  *
  * @author Michele Carillo
  * @author Flavio Serrapica
  * @author Carmine Spagnuolo
- * @author Mario Capuozzo
  */
 
 public class DistributedStateConnectionJMSTester {

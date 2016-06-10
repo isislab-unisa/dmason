@@ -22,11 +22,16 @@ import static org.junit.Assert.assertEquals;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.field.DistributedField2D;
+import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
+import it.isislab.dmason.test.sim.app.DAntsForageUnitTest.DRemoteAnt;
+import it.isislab.dmason.test.support.AgentComparator;
 import it.isislab.dmason.util.connection.ConnectionType;
+import sim.util.Int2D;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -42,89 +47,87 @@ import org.junit.Test;
  */
 public class TestDParticles {
 
-	class ComparatoreParticle implements Comparator<DParticle>{
+	
 
-		public ComparatoreParticle() {
-			// TODO Auto-generated constructor stub
-		}
-		@Override
-		public int compare(DParticle o1, DParticle o2) {
-			// TODO Auto-generated method stub
+	private static int numSteps; //only graphicsOn=false
+	private static int rows; //number of rows
+	private static int columns; //number of columns
+	private static int MAX_DISTANCE; //max distance
+	private static int NUM_AGENTS; //number of agents
+	private static int WIDTH; //field width
+	private static int HEIGHT; //field height
+	private static String ip; //ip of activemq
+	private static String port; //port of activemq
 
-			return o1.id.compareTo(o2.id);
-		}
-
-	}
-
-	private static int numSteps = 1000; //only graphicsOn=false
-	private static int rows = 2; //number of rows
-	private static int columns = 2; //number of columns
-	private static int MAX_DISTANCE=1; //max distance
-	private static int NUM_AGENTS=4000; //number of agents
-	private static int WIDTH=300; //field width
-	private static int HEIGHT=300; //field height
-	private static String ip="127.0.0.1"; //ip of activemq
-	private static String port="61616"; //port of activemq
-
-	//don't modify this...
-	//private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE : DistributedField2D.SQUARE_DISTRIBUTION_MODE;  
-	//private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE : DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE; 
 	private static int MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;
 
 
 	ArrayList<DParticle> initial_agents = new ArrayList<DParticle>();
 	ArrayList<DParticle> end_agents = new ArrayList<DParticle>();
-	@Test
-	public void testParticlesWithDSparseGrid2D() throws DMasonException, InterruptedException {
+	
+	class worker extends Thread
+	{
+
+		private DParticles ds;
+		public worker(DParticles ds) {
+			this.ds=ds;
+			ds.start();
 
 
-		class worker extends Thread
-		{
-
-			private DParticles ds;
-			public worker(DParticles ds) {
-				this.ds=ds;
-				ds.start();
-
-
-			}
-			@Override
-			public void run() {
-				int i=0;
-				while(i!=numSteps)
-				{
-					//	System.out.println(i);
-					ds.schedule.step(ds);
-					i++;
-                 if(i==1) 
-					synchronized (initial_agents) {
-						for(Object d:ds.particles.allObjects)
-						{
-							DParticle df=(DParticle) d;
-							
-							
-							if(ds.particles.verifyPosition(df.getPos()))
-								initial_agents.add(df);
-
-						}
+		}
+		@Override
+		public void run() {
+			int i=0;
+			while(i!=numSteps)
+			{
+				//	System.out.println(i);
+				ds.schedule.step(ds);
+				i++;
+             if(i==1) 
+				synchronized (initial_agents) {
+					for(EntryAgent<Int2D> d:ds.particles.myfield.values())
+					{
+						DParticle df=(DParticle) d.r;
+						
+						
+						if(ds.particles.verifyPosition(df.getPos()))
+							initial_agents.add(df);
 
 					}
-                 else if(i==numSteps-1)
-                	 synchronized (end_agents) {
-     					for(Object d:ds.particles.allObjects)
-     					{
-     						DParticle df=(DParticle) d;
-     	
-     						if(ds.particles.verifyPosition(df.getPos()))
-     							end_agents.add(df);
 
-     					}
-     				} 
 				}
-				
-			}
-		}
+             else if(i==numSteps-1)
+            	 synchronized (end_agents) {
+ 					for(EntryAgent<Int2D> d:ds.particles.myfield.values())
+ 					{
+ 						DParticle df=(DParticle) d.r;
+ 	
+ 						if(ds.particles.verifyPosition(df.getPos()))
+ 							end_agents.add(df);
 
+ 					}
+ 				} 
+			}
+			
+		}
+	}
+	
+	@Before
+	public void setUp(){
+        
+		numSteps = 1000; //only graphicsOn=false  
+		rows = 2; //number of rows                
+		columns = 2; //number of columns          
+		MAX_DISTANCE=1; //max distance            
+		NUM_AGENTS=4000; //number of agents       
+		WIDTH=300; //field width                  
+		HEIGHT=300; //field height                
+		ip="127.0.0.1"; //ip of activemq       
+		port="61616"; //port of activemq       
+	}
+	
+		
+	private void startWorkers(){
 		ArrayList<worker> myWorker = new ArrayList<worker>();
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
@@ -146,21 +149,34 @@ public class TestDParticles {
 			w.start();
 		}
 		for (worker w : myWorker) {
-			w.join();
+			try {
+				w.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+	}
+	
+	@Test
+	public void testSimulationReproducibility() throws DMasonException, InterruptedException {
 
-		//verifico la stessa dimensione
+		startWorkers();
+
+		AgentComparator c=new AgentComparator();
+
 		assertEquals(initial_agents.size(), end_agents.size());
-
-		//verifico se gli array siano uguali
-
-		ComparatoreParticle c=new ComparatoreParticle();
-
-		Collections.sort(initial_agents,c);
+		
 		Collections.sort(end_agents,c);
-
-		for(int i=0;i<initial_agents.size();i++){
-			assertEquals(initial_agents.get(i).id, end_agents.get(i).id);
+		ArrayList<DRemoteAnt> firstExec = new ArrayList(end_agents);
+		
+		setUp();
+		startWorkers();
+		Collections.sort(end_agents,c);
+		
+		for(int i=0;i<end_agents.size();i++){
+			assertEquals(firstExec.get(i).pos.x, end_agents.get(i).pos.x);
+			assertEquals(firstExec.get(i).pos.y, end_agents.get(i).pos.y);
 		}
 
 	}

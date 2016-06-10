@@ -19,20 +19,17 @@ package it.isislab.dmason.test.sim.app.DFlockersUnitTest;
  * THIS CLASS HAS BEEN USED FOR TESTING PURPOSES IN THE BEGINNINGS,
  */
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
-import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
+import it.isislab.dmason.test.support.AgentComparator;
 import it.isislab.dmason.util.connection.ConnectionType;
 import sim.util.Double2D;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,30 +37,12 @@ import org.junit.Test;
 /**
  * 
  * @author Michele Carillo
- * @author Ada Mancuso
- * @author Dario Mazzeo
- * @author Francesco Milone
- * @author Francesco Raia
  * @author Flavio Serrapica
  * @author Carmine Spagnuolo
  *
  */
 public class TestDFlockers {
 	
-	class AgentComparator implements Comparator<DFlocker>{
-
-		public AgentComparator() {
-			// TODO Auto-generated constructor stub
-		}
-		@Override
-		public int compare(DFlocker o1, DFlocker o2) {
-			// TODO Auto-generated method stub
-			
-			return o1.id.compareTo(o2.id);
-		}
-		
-	}
-
 	private static int numSteps; //only graphicsOn=false
 	private static int rows; //number of rows
 	private static int columns; //number of columns
@@ -74,27 +53,12 @@ public class TestDFlockers {
 	private static String ip; //ip of activemq
 	private static String port; //port of activemq
 
-	//don't modify this...
-	//private static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_DISTRIBUTION_MODE : DistributedField2D.SQUARE_DISTRIBUTION_MODE; 
-	//rivate static int MODE = (rows==1 || columns==1)? DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE : DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE;
+	
 	private static int MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;
 
-	class MyEntry<A,B>{
-		public A state;
-		public B object;
-		
-		public MyEntry(A state, B object) {
-			super();
-			this.state = state;
-			this.object = object;
-		}
-		
-		
-	}
 
 	ArrayList<DFlocker> initial_agents;
 	HashMap<String, DFlocker> inital_hash=new HashMap<>();
-	HashMap<String, MyEntry<DistributedState, Object>> testMap=new HashMap<>();
 	ArrayList<DFlocker> end_agents;
 	HashMap<String, DFlocker> ends_hash=new HashMap<>();
 	AgentComparator c;
@@ -105,8 +69,6 @@ public class TestDFlockers {
 		public worker(DFlockers ds) {
 			this.ds=ds;
 			ds.start();
-			
-			
 		}
 		@Override
 		public void run() {
@@ -117,6 +79,7 @@ public class TestDFlockers {
 				
 				
 				i++;
+				ds.schedule.step(ds);
 				if(i==1){
 					synchronized (initial_agents) {
 						for(EntryAgent<Double2D> d:ds.flockers.myfield.values())
@@ -133,7 +96,7 @@ public class TestDFlockers {
 
 					}
 				}
-				ds.schedule.step(ds);
+				
 				if(i==numSteps-1){
 					synchronized (end_agents) {
 						for(EntryAgent<Double2D> d:ds.flockers.myfield.values())
