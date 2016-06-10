@@ -115,7 +115,7 @@
 		</dependency>
 		<dependency>
 			<groupId>it.isislab.dmason</groupId>
-			<artifactId>mpi_1.8.2.jar</artifactId>
+			<artifactId>mpi_18.8.jar</artifactId>
 			<version>18</version>
 		</dependency>
 		<dependency>
