@@ -1,7 +1,5 @@
-package it.isislab.dmason.util.connection.mpi.openmpi.parallel;
-
 /**
- * Copyright 2012 Universita' degli Studi di Salerno
+ * Copyright 2016 Universita' degli Studi di Salerno
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +17,9 @@ package it.isislab.dmason.util.connection.mpi.openmpi.parallel;
     @author Ada Mancuso mancuso.ada@gmial.com
     @author Francesco Milone milone.francesco1988@gmail.com
  */
+
+package it.isislab.dmason.util.connection.mpi.openmpi.parallel;
+
 
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.MyHashMap;

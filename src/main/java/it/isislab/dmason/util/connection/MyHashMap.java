@@ -1,5 +1,5 @@
 /**
- * Copyright 2012 Universita' degli Studi di Salerno
+ * Copyright 2016 Universita' degli Studi di Salerno
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,7 @@ import java.util.HashMap;
  * @author Carmine Spagnuolo
  *
  * 
- * Sets below property in vm arguments for Apache ActivemQ version > 5.7
+ * Sets this java property in vm arguments for Apache ActivemQ version 
  * -Dorg.apache.activemq.SERIALIZABLE_PACKAGES="*"
  * 
  * or adds below line of code in main() method
