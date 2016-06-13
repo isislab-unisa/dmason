@@ -21,7 +21,6 @@ import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
-import it.isislab.dmason.sim.engine.testing.util.DistributedStateConnectionFake;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.numeric.DDoubleGrid2D;
 import it.isislab.dmason.sim.field.grid.numeric.DDoubleGrid2DFactory;
@@ -29,6 +28,7 @@ import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2D;
 import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2DFactory;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2D;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
+import it.isislab.dmason.test.sim.engine.util.DistributedStateConnectionFake;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -142,7 +142,7 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 
 	public DAntsForage(GeneralParam params)
 	{ 
-		super(params,new DistributedMultiSchedule<Int2D>(),topicPrefix,new DistributedStateConnectionFake());
+		super(params,new DistributedMultiSchedule<Int2D>(),topicPrefix,new DistributedStateConnectionFake<>());
 		this.MODE=params.getMode();
 		GRID_WIDTH=params.getWidth();
 		GRID_HEIGHT=params.getHeight();

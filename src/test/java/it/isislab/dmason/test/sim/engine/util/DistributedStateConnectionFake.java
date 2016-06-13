@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package it.isislab.dmason.sim.engine.testing.util;
+package it.isislab.dmason.test.sim.engine.util;
 
 
 import it.isislab.dmason.annotation.AuthorAnnotation;
