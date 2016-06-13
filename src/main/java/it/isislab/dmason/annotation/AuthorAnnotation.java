@@ -16,6 +16,12 @@
  */
 package it.isislab.dmason.annotation;
 
+/* 
+* @author Michele Carillo
+* @author Carmine Spagnuolo
+* @author Flavio Serrapica
+*
+*/
 public @interface AuthorAnnotation {
 	   String[] author();
 	   String date();

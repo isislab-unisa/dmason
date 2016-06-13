@@ -19,7 +19,12 @@ package it.isislab.dmason.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
+/**
+ * @author Michele Carillo
+ * @author Carmine Spagnuolo
+ * @author Flavio Serrapica
+ *
+ */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ThinAnnotation {
 
