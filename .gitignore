@@ -12,4 +12,4 @@
 /resources/systemmanagement/.idea
 /activemq-data
 /dmason
-/resources/systemmanagement/master/conf/simid.json
+resources/systemmanagement/master/conf/simid.json
