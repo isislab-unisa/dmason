@@ -20,7 +20,12 @@ public class StateVariable {
 	public String name;
 	public Class type;
 	
-	
+	/**
+	 * @author Michele Carillo
+	 * @author Carmine Spagnuolo
+	 * @author Flavio Serrapica
+	 *
+	 */
 	public StateVariable(String name, Class type) {
 		super();
 		this.name = name;

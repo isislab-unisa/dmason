@@ -1,5 +1,5 @@
 /**
- * Copyright 2012 Universita' degli Studi di Salerno
+ * Copyright 2016 Universita' degli Studi di Salerno
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -154,6 +154,12 @@ public class DIntGrid2DXY extends DIntGrid2D {
 
 	/**
 	 * Constructor of class with paramaters:
+	 * /**
+	 * 
+	 * @author Michele Carillo
+	 * @author Carmine Spagnuolo
+	 * @author Flavio Serrapica
+	 *
 	 * 
 	 * @param width field's width  
 	 * @param height field's height
@@ -192,7 +198,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
 	 * @return true if all is ok
 	 */
-	
+
 	public boolean createRegions(QuadTree... cell)
 	{
 		//upper left corner's coordinates
@@ -481,7 +487,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 		publishRegions(connWorker);
 
 		processUpdates();
-		
+
 		return true;
 	}
 
@@ -746,7 +752,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 										{
 											if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 												tmp_zoom.add(new EntryNum<Integer, Int2D>(value, l));
-											
+
 											return myfield.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 										}
 										else
@@ -912,7 +918,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 
 	@Override
 	public Int2D getAvailableRandomLocation() {
-	
+
 		double shiftx=((DistributedState)sm).random.nextDouble();
 		double shifty=((DistributedState)sm).random.nextDouble();
 		int x= (int)(own_x+my_width*shiftx);	

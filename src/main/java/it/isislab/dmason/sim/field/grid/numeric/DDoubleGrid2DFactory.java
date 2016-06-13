@@ -1,5 +1,5 @@
 /**
- * Copyright 2012 Universita' degli Studi di Salerno
+ * Copyright 2016 Universita' degli Studi di Salerno
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,8 +26,6 @@ import it.isislab.dmason.experimentals.sim.field.grid.numeric.loadbalanced.DDoub
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2D;
-import it.isislab.dmason.sim.field.grid.sparse.DSparseGridNonUniform;
 import sim.engine.SimState;
 
 /**

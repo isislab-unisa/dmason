@@ -1,5 +1,5 @@
 /**
- * Copyright 2012 Universita' degli Studi di Salerno
+ * Copyright 2016 Universita' degli Studi di Salerno
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +23,7 @@ import sim.util.Int2D;
 
 /**
  * A Region specialized to be used in a field with Integer coordinates
+ * 
  * @author Michele Carillo
  * @author Ada Mancuso
  * @author Dario Mazzeo
