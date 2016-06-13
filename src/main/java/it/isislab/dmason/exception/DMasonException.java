@@ -17,6 +17,10 @@
 package it.isislab.dmason.exception;
 
 /**
+ * @author Michele Carillo
+ * @author Carmine Spagnuolo
+ * @author Flavio Serrapica
+ *
  * A specific exception for Distributed Mason
  */
 public class DMasonException extends Exception 

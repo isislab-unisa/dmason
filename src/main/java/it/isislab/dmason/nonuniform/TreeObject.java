@@ -19,6 +19,12 @@ package it.isislab.dmason.nonuniform;
 
 import java.io.Serializable;
 
+/**
+ * @author Michele Carillo
+ * @author Carmine Spagnuolo
+ * @author Flavio Serrapica
+ *
+ */
 public class TreeObject{
 	public Serializable obj;
 	double x;

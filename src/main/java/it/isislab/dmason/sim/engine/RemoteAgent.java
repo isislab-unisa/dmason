@@ -20,6 +20,9 @@ import sim.engine.Steppable;
 
 /**
  * Utility interface for RemoteAgent
+ * @author Michele Carillo
+ * @author Carmine Spagnuolo
+ * @author Flavio Serrapica
  *
  */
 public abstract interface RemoteAgent extends Steppable{

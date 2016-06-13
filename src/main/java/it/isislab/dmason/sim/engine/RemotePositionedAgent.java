@@ -21,6 +21,9 @@ import java.io.Serializable;
 
 /**
  * Interface for a remote agent
+ * @author Michele Carillo
+ * @author Carmine Spagnuolo
+ * @author Flavio Serrapica
  *
  * @param <E> 
  */

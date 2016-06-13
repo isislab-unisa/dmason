@@ -20,6 +20,7 @@ public class StateVariable {
 	public String name;
 	public Class type;
 	
+	
 	public StateVariable(String name, Class type) {
 		super();
 		this.name = name;

@@ -17,9 +17,12 @@
 package it.isislab.dmason.sim.engine;
 
 
+
 /**
- * 
  * Interface needed for memory consistency of the agents
+ * @author Michele Carillo
+ * @author Carmine Spagnuolo
+ * @author Flavio Serrapica
  *
  */
 public interface RemoteAgentState 

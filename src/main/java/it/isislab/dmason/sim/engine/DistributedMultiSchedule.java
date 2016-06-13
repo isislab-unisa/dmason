@@ -28,8 +28,6 @@ import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.DistributedField2DLB;
 import it.isislab.dmason.sim.field.DistributedFieldNetwork;
-import it.isislab.dmason.sim.field.continuous.DContinuousNonUniform;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

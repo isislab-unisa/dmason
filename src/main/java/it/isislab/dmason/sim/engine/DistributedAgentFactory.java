@@ -27,6 +27,11 @@ import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
+/**
+ * @author Michele Carillo
+ * @author Carmine Spagnuolo
+ * @author Flavio Serrapica
+ */
 public class DistributedAgentFactory implements MethodInterceptor, Serializable{
 
 	/**
