@@ -30,10 +30,10 @@ import it.isislab.dmason.sim.field.DistributedFieldNetwork;
 import it.isislab.dmason.sim.field.network.DNetwork;
 import it.isislab.dmason.sim.field.support.network.DNetworkJMSMessageListener;
 import it.isislab.dmason.sim.field.support.network.UpdaterThreadJMSForNetworkListener;
+import it.isislab.dmason.test.util.connection.VirtualConnectionNFieldsWithVirtualJMS;
+import it.isislab.dmason.test.util.connection.VirtualMessageListener;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
-import it.isislab.dmason.util.connection.testconnection.VirtualConnectionNFieldsWithVirtualJMS;
-import it.isislab.dmason.util.connection.testconnection.VirtualMessageListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;

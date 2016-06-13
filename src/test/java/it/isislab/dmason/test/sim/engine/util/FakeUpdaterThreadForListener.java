@@ -19,8 +19,8 @@ package it.isislab.dmason.test.sim.engine.util;
 
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
+import it.isislab.dmason.test.util.connection.VirtualMessageListener;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
-import it.isislab.dmason.util.connection.testconnection.VirtualMessageListener;
 
 import java.io.Serializable;
 import java.util.ArrayList;
