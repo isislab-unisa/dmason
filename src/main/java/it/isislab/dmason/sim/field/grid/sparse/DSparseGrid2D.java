@@ -85,7 +85,6 @@ public abstract class DSparseGrid2D extends SparseGrid2D implements DistributedF
 	//load balancing 
 	public HashMap<Integer,HashMap<CellType, MyCellInterface>> listGrid;
 	public ArrayList<ArrayList<Region<Integer, Int2D>>> updates_cacheLB;
-	public UpdateCell<Integer,MyCellIntegerField> updateCell = new UpdateCell<Integer, MyCellIntegerField>();
     protected VisualizationUpdateMap<String, Object> globals= new VisualizationUpdateMap<String, Object>();
 	/***/
 	

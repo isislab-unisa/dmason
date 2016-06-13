@@ -15,7 +15,7 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.util.connection.testconnection;
+package it.isislab.dmason.test.util.connection;
 
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.util.connection.Address;

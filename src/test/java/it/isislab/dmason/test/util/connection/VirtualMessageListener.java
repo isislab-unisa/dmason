@@ -15,7 +15,7 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.util.connection.testconnection;
+package it.isislab.dmason.test.util.connection;
 
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegionInterface;

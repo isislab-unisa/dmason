@@ -1,4 +1,4 @@
-package it.isislab.dmason.util.connection.testconnection;
+package it.isislab.dmason.test.util.connection;
 
 import java.io.Serializable;
 import java.util.ArrayList;

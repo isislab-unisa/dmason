@@ -2,7 +2,6 @@ package it.isislab.dmason.test.sim.engine;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.jms.JMSException;
@@ -13,100 +12,27 @@ import sim.engine.SimState;
 import sim.util.Bag;
 import sim.util.Double2D;
 import it.isislab.dmason.exception.DMasonException;
-import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.nonuniform.QuadTree;
-import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.DistributedStateConnectionJMS;
-import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.CellType;
-import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
+import it.isislab.dmason.test.sim.engine.util.StubDistributedState;
+import it.isislab.dmason.test.util.connection.VirtualConnection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
-import it.isislab.dmason.util.connection.testconnection.VirtualConnection;
 
-// TODO: Auto-generated Javadoc
 /**
  * This is the DistributedStateConnectionJMS's tester.
  *
  * @author Michele Carillo
  * @author Flavio Serrapica
  * @author Carmine Spagnuolo
- * @author Mario Capuozzo
  */
 
 public class DistributedStateConnectionJMSTester {
-
-	/**
-	 * The Class StubDistributedState.
-	 */
-	class StubDistributedState extends DistributedState<Double2D> {
-
-		/**
-		 * Instantiates a new stub distributed state.
-		 *
-		 * @param field
-		 *            the field
-		 */
-		public StubDistributedState(DistributedField2D<Double2D> field) {
-
-			super();
-			((DistributedMultiSchedule<Double2D>) schedule).addField(field);
-
-		}
-
-		/**
-		 * Instantiates a new stub distributed state.
-		 *
-		 * @param params
-		 *            the params
-		 */
-		public StubDistributedState(GeneralParam params) {
-			super(params, new DistributedMultiSchedule<Double2D>(), "stub",
-					params.getConnectionType());
-
-			this.MODE = params.getMode();
-
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.engine.DistributedState#getField()
-		 */
-		@Override
-		public DistributedField<Double2D> getField() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * it.isislab.dmason.sim.engine.DistributedState#addToField(it.isislab
-		 * .dmason.sim.engine.RemotePositionedAgent, java.lang.Object)
-		 */
-		@Override
-		public void addToField(RemotePositionedAgent<Double2D> rm, Double2D loc) {
-			// TODO Auto-generated method stub
-
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.engine.DistributedState#getState()
-		 */
-		@Override
-		public SimState getState() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-	}
 
 	/**
 	 * The Class StubConnectionJMS.
@@ -356,7 +282,7 @@ public class DistributedStateConnectionJMSTester {
 		DistributedField2D<Double2D> field = new StubDistributedField2D();
 
 		field.setToroidal(isToroidal);
-		StubDistributedState dm = new StubDistributedState(field);
+		StubDistributedState<Double2D> dm = new StubDistributedState(field);
 		dm.rows = rows;
 		dm.columns = colums;
 		dm.NUMPEERS = 1; // if numpeers == 0 is throwed an exeption for a

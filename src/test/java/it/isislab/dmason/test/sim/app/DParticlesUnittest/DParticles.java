@@ -21,12 +21,12 @@ import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
-import it.isislab.dmason.sim.engine.testing.util.DistributedStateConnectionFake;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.grid.numeric.DDoubleGrid2D;
 import it.isislab.dmason.sim.field.grid.numeric.DDoubleGrid2DFactory;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2D;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
+import it.isislab.dmason.test.sim.engine.util.DistributedStateConnectionFake;
 
 import java.awt.Color;
 import sim.engine.Schedule;
@@ -68,7 +68,7 @@ public class DParticles extends DistributedState<Int2D> {
 
 	public DParticles(GeneralParam params)
 	{    	
-		super(params,new DistributedMultiSchedule<Int2D>(),topicPrefix,new DistributedStateConnectionFake());
+		super(params,new DistributedMultiSchedule<Int2D>(),topicPrefix,new DistributedStateConnectionFake<>());
 		this.MODE=params.getMode();
 		gridWidth=params.getWidth();
 		gridHeight=params.getHeight();
