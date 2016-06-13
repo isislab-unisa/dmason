@@ -1,5 +1,5 @@
 /**
- * Copyright 2012 Universita' degli Studi di Salerno
+ * Copyright 2016 Universita' degli Studi di Salerno
 
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,11 +19,9 @@ package it.isislab.dmason.sim.app.DAntsForageNonUniformPartitioning;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
-import it.isislab.dmason.sim.app.DParticlesNonUniformPartitionig.DParticleNonUniformPartitioning;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
