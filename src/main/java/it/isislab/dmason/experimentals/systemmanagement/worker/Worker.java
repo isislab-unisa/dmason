@@ -71,6 +71,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 
 /**
+ * Worker class for DMason System Management
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo
@@ -324,7 +325,7 @@ public class Worker implements Observer {
 	//	}
 
 	/**
-	 * Wait master connection, and save Socket port node <-send- master
+	 * Wait for master connection, and save Socket port node <-send- master
 	 */
 	@SuppressWarnings("serial")
 	private void startMasterComunication() {
@@ -396,7 +397,11 @@ public class Worker implements Observer {
 		return info;
 
 	}
-
+    
+	/**
+	 * Create connection with ActivemQ server
+	 *
+	 */
 	private boolean createConnection(){
 		Address address=new Address(this.getIpActivemq(), this.getPortActivemq());
 		return conn.setupConnection(address);
@@ -405,7 +410,7 @@ public class Worker implements Observer {
 
 
 	/**
-	 * Subscribe to master topic  for communication [master->worker]
+	 * Subscribe to master topic for communication [master->worker]
 	 * Request list from master
 	 */
 	@SuppressWarnings("serial")
@@ -495,7 +500,7 @@ public class Worker implements Observer {
 
 	/**
 	 * Start Thread for simulation running
-	 * @param sim_id
+	 * @param sim_id id of simulation to run
 	 */
 	private synchronized void runSimulation(int sim_id){
 
@@ -515,7 +520,7 @@ public class Worker implements Observer {
 	/**
 	 * Start a simulation for first time, or a paused simulation -> when receive "start"
 	 * start a simulation by id 
-	 * @param id ID of simulation
+	 * @param id ID of simulation to play
 	 */
 	private	void playSimulationProcessByID(int id){
 		try {
@@ -837,41 +842,41 @@ public class Worker implements Observer {
 	 * @param pathJar
 	 * @return
 	 */
-	@SuppressWarnings({ "rawtypes", "unused", "resource" })
-	@Deprecated
-	private DistributedState makeSimulation(GeneralParam params, String prefix,String pathJar)
-	{
-		String path_jar_file=pathJar;
-		try{
-			JarFile jar=new JarFile(new File(path_jar_file));
-			Enumeration e=jar.entries();
-			File file  = new File(path_jar_file);
-			URL url = file.toURL(); 
-			URL[] urls = new URL[]{url};
-			ClassLoader cl = new URLClassLoader(urls);
-			Class distributedState=null;
-			while(e.hasMoreElements()){
-
-				JarEntry je=(JarEntry)e.nextElement();
-				if(!je.getName().contains(".class")) continue;
-
-				Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
-
-				if(c.getSuperclass().equals(DistributedState.class))
-					distributedState=c;
-
-			}
-			if(distributedState==null) return null;
-			//JarClassLoader cload = new JarClassLoader(new URL("jar:file://"+path_jar_file+"!/"));
-			JarClassLoader cload = new JarClassLoader(new File(path_jar_file).toURI().toURL());
-			cload.addToClassPath();
-			return (DistributedState) cload.getInstance(distributedState.getName(), params,prefix);
-		} catch (Exception e){
-			e.printStackTrace();
-		}
-		return null;
-
-	}
+//	@SuppressWarnings({ "rawtypes", "unused", "resource" })
+//	@Deprecated
+//	private DistributedState makeSimulation(GeneralParam params, String prefix,String pathJar)
+//	{
+//		String path_jar_file=pathJar;
+//		try{
+//			JarFile jar=new JarFile(new File(path_jar_file));
+//			Enumeration e=jar.entries();
+//			File file  = new File(path_jar_file);
+//			URL url = file.toURL(); 
+//			URL[] urls = new URL[]{url};
+//			ClassLoader cl = new URLClassLoader(urls);
+//			Class distributedState=null;
+//			while(e.hasMoreElements()){
+//
+//				JarEntry je=(JarEntry)e.nextElement();
+//				if(!je.getName().contains(".class")) continue;
+//
+//				Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
+//
+//				if(c.getSuperclass().equals(DistributedState.class))
+//					distributedState=c;
+//
+//			}
+//			if(distributedState==null) return null;
+//			//JarClassLoader cload = new JarClassLoader(new URL("jar:file://"+path_jar_file+"!/"));
+//			JarClassLoader cload = new JarClassLoader(new File(path_jar_file).toURI().toURL());
+//			cload.addToClassPath();
+//			return (DistributedState) cload.getInstance(distributedState.getName(), params,prefix);
+//		} catch (Exception e){
+//			e.printStackTrace();
+//		}
+//		return null;
+//
+//	}
 
 
 	/**
@@ -880,7 +885,6 @@ public class Worker implements Observer {
 	 * @param params
 	 * @param prefix
 	 * @param pathJar
-	 * @return
 	 */
 	private DistributedState makeSimulationWithNewLoader(GeneralParam params, String prefix,String pathJar){
 

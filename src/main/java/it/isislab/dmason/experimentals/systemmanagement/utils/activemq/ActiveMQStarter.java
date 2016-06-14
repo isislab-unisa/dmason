@@ -73,7 +73,9 @@ public class ActiveMQStarter {
 	}
 	
 
-	//start ActivemQ service
+	/**
+	 * Start ActivemQ service
+	 */
 	public void startActivemq(){
 		
 		String address="tcp://"+IP_ACTIVEMQ+":"+PORT_ACTIVEMQ;
