@@ -26,17 +26,14 @@ import org.apache.activemq.usage.SystemUsage;
 import org.apache.activemq.usage.TempUsage;
 import org.apache.activemq.usage.UsageCapacity;
 
-/**
- * Start Activemq 
- * @author miccar
- *
- */
-
-
 
 /**
- * ActivemQ starter embedded 
+ * Embedded ActivemQ Starter  
  * SET config.properties to change ActivemQ <ip:port>  
+ * 
+ * @author Michele Carillo
+ * @author Carmine Spagnuolo
+ * @author Flavio Serrapica
  *
  */
 public class ActiveMQStarter {
