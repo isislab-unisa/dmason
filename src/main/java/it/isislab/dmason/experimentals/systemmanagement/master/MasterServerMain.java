@@ -24,6 +24,7 @@ import it.isislab.dmason.experimentals.systemmanagement.utils.activemq.ActiveMQS
 
 
 /**
+ * Main class for System Management Master Server 
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo
