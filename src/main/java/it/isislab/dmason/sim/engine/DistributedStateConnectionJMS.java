@@ -68,7 +68,7 @@ public class DistributedStateConnectionJMS<E> {
 	public String port;
 	private ConnectionJMS connectionJMS;
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
-	private ArrayList<DNetworkJMSMessageListener> networkListeners = new ArrayList<DNetworkJMSMessageListener>();
+	protected ArrayList<DNetworkJMSMessageListener> networkListeners = new ArrayList<DNetworkJMSMessageListener>();
 	private UpdaterThreadForListener u1;
 	private UpdaterThreadForListener u2;
 	private UpdaterThreadForListener u3;
@@ -77,16 +77,16 @@ public class DistributedStateConnectionJMS<E> {
 	private UpdaterThreadForListener u6;
 	private UpdaterThreadForListener u7;
 	private UpdaterThreadForListener u8;
-	private DistributedState dm;
-	private Trigger TRIGGER;
-	private DistributedMultiSchedule<E> schedule;
-	private String topicPrefix;
-	private CellType TYPE;
-	private int MODE;
-	private int NUMPEERS;
-	private int rows;
-	private int columns;
-	private HashMap<String, Integer> networkNumberOfSubscribersForField;
+	protected DistributedState dm;
+	protected Trigger TRIGGER;
+	protected DistributedMultiSchedule<E> schedule;
+	protected String topicPrefix;
+	protected CellType TYPE;
+	protected int MODE;
+	protected int NUMPEERS;
+	protected int rows;
+	protected int columns;
+	protected HashMap<String, Integer> networkNumberOfSubscribersForField;
 
 	public DistributedStateConnectionJMS()
 	{
@@ -247,7 +247,7 @@ public class DistributedStateConnectionJMS<E> {
 
 	}
 
-	private void init_spatial_connection() {
+	protected void init_spatial_connection() {
 		boolean toroidal_need=false;
 		for(DistributedField2D field : 
 			((DistributedMultiSchedule<E>)dm.schedule).getFields())
@@ -301,7 +301,7 @@ public class DistributedStateConnectionJMS<E> {
 
 	}
 
-	private void connection_IS_toroidal() {
+	protected void connection_IS_toroidal() {
 
 		if (MODE == DistributedField2D.UNIFORM_PARTITIONING_MODE) { // HORIZONTAL_MODE
 			int i = TYPE.pos_i, j = TYPE.pos_j;
@@ -821,7 +821,7 @@ public class DistributedStateConnectionJMS<E> {
 
 	}
 
-	private void connection_NO_toroidal() {
+	protected void connection_NO_toroidal() {
 
 		if (MODE == DistributedField2D.UNIFORM_PARTITIONING_MODE) { // HORIZONTAL_MODE
 
@@ -1095,7 +1095,7 @@ public class DistributedStateConnectionJMS<E> {
 	/**
 	 * Setup topics for a  distributed field Network.
 	 */
-	private void init_network_connection()
+	protected void init_network_connection()
 	{
 		DistributedMultiSchedule dms = schedule;
 		ArrayList<DNetwork> networkLists = dms.fieldsNetwork;

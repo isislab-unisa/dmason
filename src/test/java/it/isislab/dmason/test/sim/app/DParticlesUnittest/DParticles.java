@@ -27,6 +27,8 @@ import it.isislab.dmason.sim.field.grid.numeric.DDoubleGrid2DFactory;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2D;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.test.sim.engine.util.DistributedStateConnectionFake;
+import it.isislab.dmason.test.sim.engine.util.StubDistributedState;
+import it.isislab.dmason.util.connection.ConnectionType;
 
 import java.awt.Color;
 import sim.engine.Schedule;
@@ -46,7 +48,7 @@ import sim.util.Int2D;
  * @author Carmine Spagnuolo
  *
  */
-public class DParticles extends DistributedState<Int2D> {
+public class DParticles extends StubDistributedState<Int2D> {
 
 	//private static boolean isToroidal=true;
 	public DSparseGrid2D particles;
@@ -68,7 +70,7 @@ public class DParticles extends DistributedState<Int2D> {
 
 	public DParticles(GeneralParam params)
 	{    	
-		super(params,new DistributedMultiSchedule<Int2D>(),topicPrefix,new DistributedStateConnectionFake<>());
+		super(params,new DistributedMultiSchedule<Int2D>(),topicPrefix,ConnectionType.fakeUnitTestJMS);
 		this.MODE=params.getMode();
 		gridWidth=params.getWidth();
 		gridHeight=params.getHeight();
@@ -96,7 +98,7 @@ public class DParticles extends DistributedState<Int2D> {
 	public void start()
 	{
 		//necessario per effettuare la simulazione senza costruttore
-		((DistributedStateConnectionFake)super.getDistributedStateConnectionJMS()).setupfakeconnection(this);
+		//((DistributedStateConnectionFake)super.getDistributedStateConnectionJMS()).setupfakeconnection(this);
 		super.start();
 
 		try 

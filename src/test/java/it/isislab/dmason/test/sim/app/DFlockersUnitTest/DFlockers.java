@@ -26,6 +26,8 @@ import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 import it.isislab.dmason.test.sim.engine.util.DistributedStateConnectionFake;
+import it.isislab.dmason.test.sim.engine.util.StubDistributedState;
+import it.isislab.dmason.util.connection.ConnectionType;
 
 import java.awt.Color;
 import sim.engine.SimState;
@@ -46,7 +48,7 @@ import sim.util.Double2D;
  * @author Carmine Spagnuolo
  *
  */
-public class DFlockers extends DistributedState<Double2D>
+public class DFlockers extends StubDistributedState<Double2D>
 {
 	public DFlockers()
 	{
@@ -120,7 +122,7 @@ public class DFlockers extends DistributedState<Double2D>
      * */
     public DFlockers(GeneralParam params)
     {    	
-    	super(params,new DistributedMultiSchedule<Double2D>(),topicPrefix,new DistributedStateConnectionFake<>());
+    	super(params,new DistributedMultiSchedule<Double2D>(),topicPrefix,ConnectionType.fakeUnitTestJMS);
     	
     	this.MODE=params.getMode();
     	gridWidth=params.getWidth();
@@ -134,7 +136,7 @@ public class DFlockers extends DistributedState<Double2D>
 	public void start()
     {
     	//necessario per effettuare la simulazione senza costruttore
-    	((DistributedStateConnectionFake)super.getDistributedStateConnectionJMS()).setupfakeconnection(this);
+    	//((DistributedStateConnectionFake)super.getDistributedStateConnectionJMS()).setupfakeconnection(this);
     	
     	super.start();
 
