@@ -47,6 +47,7 @@ public class DistributedProperties extends sim.util.Properties implements java.i
     /** Gathers all properties for the object, including ones defined in superclasses. 
         SimpleProperties will search the object for methods of the form <tt>public Object dom<i>Property</i>()</tt>
         which define the domain of the property.  The domFoo() and hideFoo() property extension methods are respected.
+        @param o Object
     */
     public DistributedProperties(Object o) { this(o,true,false,true); }
        

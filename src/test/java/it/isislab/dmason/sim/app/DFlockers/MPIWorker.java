@@ -68,8 +68,8 @@ public class MPIWorker {
 				/*columns*/Integer.parseInt(args[4]),
 				/*numAgents*/agent_number,
 				/*mode*/DistributedField2D.UNIFORM_PARTITIONING_MODE,
-				ConnectionType.pureMPIParallel);
-
+				//ConnectionType.pureMPIParallel);
+				ConnectionType.pureMPIGather);
 		/**
 		 This works when the number of processes = row * col, 
 		 only for DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE
