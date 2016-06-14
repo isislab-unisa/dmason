@@ -198,7 +198,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 
 			QuadTree myCell=parts.get(state.TYPE.pos_j);
 
-			//PREPARAZIONE CAMPI
+			//prepare fields
 			for(DistributedField2D<E> f : fields2D)
 			{
 				f.clear();
@@ -218,7 +218,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 				}
 			}
 
-			//CRAEZIONE DELLA COMUNICAZIONE
+			//create communication non uniform mode
 			state.getDistributedStateConnectionJMS().initNonUnfiromCommunication(myCell);
 
 		}
