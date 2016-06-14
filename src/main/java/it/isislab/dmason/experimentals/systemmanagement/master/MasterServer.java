@@ -67,7 +67,7 @@ import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
 
 /**
  * 
- * Master for Dmason's System Management
+ * Master for DMason System Management
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo
@@ -152,7 +152,7 @@ public class MasterServer implements MultiServerInterface{
 
 
 		//topicPrefix of connected workers  
-	//	this.topicIdWorkers=new HashMap<String,String>();
+		//	this.topicIdWorkers=new HashMap<String,String>();
 		//this.topicIdWorkersForSimulation=new HashMap<>();
 		this.infoWorkers=new HashMap<String,String>();
 		this.ttlinfoWorkers=new HashMap<String,Integer>();
@@ -302,8 +302,8 @@ public class MasterServer implements MultiServerInterface{
 
 
 	/**
+	 * Set initial configuration 
 	 * 
-	 * @param topic
 	 */
 	private void createInitialTopic(){
 		try {
@@ -465,6 +465,7 @@ public class MasterServer implements MultiServerInterface{
 
 
 	/**
+	 * Receive, from worker, ip and port for Socket connection
 	 * 
 	 * @param info
 	 * @param topicOfWorker
@@ -595,7 +596,7 @@ public class MasterServer implements MultiServerInterface{
 	 * Calculates slots number available for each worker	
 	 * @param topicWorkers
 	 * @param listAllWorkers
-	 * @return
+	 *
 	 */
 	private HashMap<String, Integer> slotsAvailableForSimWorker(ArrayList<String> topicWorkers, HashMap<String, String> listAllWorkers){
 
@@ -614,10 +615,10 @@ public class MasterServer implements MultiServerInterface{
 
 
 	/**
-	 * Assigns cells to workers selected
-	 * @param slots
-	 * @param simul
-	 * @return
+	 * Assign cells to selected workers 
+	 * @param slots number of slote 
+	 * @param simul Simulation to execute
+	 * 
 	 */
 	private HashMap<String , List<CellType>> assignCellsToWorkers(HashMap<String, Integer> slots,Simulation simul){
 
@@ -645,7 +646,17 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-
+	/**
+	 * From simulation configuration field division, 
+	 *  
+	 * 
+	 * @param rows number of rows of field 
+	 * @param cols number of columns of field
+	 * @param slots number of available slots for each workers
+	 * @param workerlist an hashmap to identify with key the topic of workers  
+	 * @param assignedLP number of slots
+	 * @return an hashmap with cells to execute for each worker
+	 */
 	private HashMap<String/*idtopic*/, List<CellType>> divideForUniform(int rows,int cols,HashMap<String, Integer> slots,HashMap<String/*idtopic*/, List<CellType>> workerlist, int assignedLP){
 		ArrayList<String> workerID=new ArrayList<String>(slots.keySet());
 		int w=0;
@@ -684,6 +695,14 @@ public class MasterServer implements MultiServerInterface{
 		return workerlist;
 	}
 
+	/**
+	 * 
+	 * @param LP number of slots
+	 * @param slots number of available slots for each workers
+	 * @param workerlist an hashmap to identify with key the topic of workers
+	 * @param assignedLP
+	 * @return an hashmap with cells to execute for each worker
+	 */
 	private HashMap<String/*idtopic*/, List<CellType>> divideForNonUniform(int LP,HashMap<String, Integer> slots,HashMap<String/*idtopic*/, List<CellType>> workerlist, int assignedLP){
 
 		ArrayList<String> workerID=new ArrayList<String>(slots.keySet());
@@ -830,9 +849,9 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 	/**
-	 * Sends a new sim to all workers 
+	 * Send a simulation object to all workers 
 	 * 
-	 * @param sim simulation to send
+	 * @param sim Simulation to send
 	 * 
 	 */
 	public synchronized boolean submitSimulation(Simulation sim) {
@@ -974,7 +993,6 @@ public class MasterServer implements MultiServerInterface{
 	 * 
 	 * @param src   folder of simulation 
 	 * @param simid id of simulation 
-	 * @return
 	 */
 	private boolean createCopyInHistory(String src, int simid){
 
@@ -1108,7 +1126,7 @@ public class MasterServer implements MultiServerInterface{
 
 	/**
 	 * Copy new jar in master folder 
-	 * @param simPathJar
+	 * @param simPathJar 
 	 * @param jarSim
 	 */
 	public void copyJarOnDirectory(String simPathJar,FileItem jarSim){
@@ -1204,7 +1222,7 @@ public class MasterServer implements MultiServerInterface{
 	//GETTER AND SETTERS
 
 	public MasterServer getMasterServer(){return this;}
-//	public HashMap<String,String> getTopicIdWorkers(){return topicIdWorkers;}	//all connected workers 
+	//	public HashMap<String,String> getTopicIdWorkers(){return topicIdWorkers;}	//all connected workers 
 	public HashMap<Integer,AtomicInteger> getCounterAckSimRcv(){return counterAckSimRcv;} 
 	public AtomicInteger getKeySim(){return IDSimulation;} 
 
@@ -1233,9 +1251,9 @@ public class MasterServer implements MultiServerInterface{
 
 	/***************************************************************************************************/
 	/**
-	 * TESTING CLUSTER
-	 * 
-	 * insert in start method 
+	 * TESTING CLUSTER SECTION
+	 ***************************************************************************************************/
+	/** insert in start method 
 	 * @param id
 	 */
 	private void waitEndSim(int id){
@@ -1261,6 +1279,6 @@ public class MasterServer implements MultiServerInterface{
 			}
 		}).start();
 
-	}/*********END******TESTING*********************/
+	}/*********END**TESTING**CLUSTER**SECTION********************/
 
 }
