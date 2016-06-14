@@ -2,7 +2,6 @@ package it.isislab.dmason.experimentals.sim.field.grid.object;
 
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegionInterface;
-import it.isislab.dmason.sim.field.support.field2D.region.RegionNumeric;
 
 import java.io.Serializable;
 
@@ -36,8 +35,8 @@ public class DistributedRegionObject implements Serializable,
 	/**
 	 * Constructor of class with parameters:
 	 * 
-	 * @param mine RegionNumeric into field that send the updates
-	 * @param out RegionNumeric external field that send the updates
+	 * @param mine RegionObject into field that send the updates
+	 * @param out RegionObject external field that send the updates
 	 * @param step the number of step in which send the updates
 	 * @param type the Celltype of cell that send the updates
 	 */

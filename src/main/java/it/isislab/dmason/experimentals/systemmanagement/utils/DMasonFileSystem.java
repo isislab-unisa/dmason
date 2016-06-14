@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
+ * An utils class for file system in DMason 
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo
@@ -87,7 +88,13 @@ public class DMasonFileSystem {
 	}
 	
 	
-
+    /**
+     * Copy a directory in another directory 
+     *  
+     * @param src  directory to copy
+     * @param dest destination path
+     * @throws IOException
+     */
     public static void copyFolder(File src, File dest)
     	throws IOException{
     	

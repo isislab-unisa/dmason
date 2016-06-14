@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.net.Socket;
 
 /**
+ * A client to copy file with Socket tcp connection 
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo

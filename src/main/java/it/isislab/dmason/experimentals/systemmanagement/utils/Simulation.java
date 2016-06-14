@@ -18,7 +18,6 @@ package it.isislab.dmason.experimentals.systemmanagement.utils;
 
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
-
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,6 +26,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * A class to create a Simulation in DMason
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo
@@ -35,11 +35,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class Simulation implements Serializable{
 
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	
 	private String simName;
 	private int simID;
 	private String simulationFolder;
@@ -76,19 +73,18 @@ public class Simulation implements Serializable{
 
 	/**
 	 * 
-	 * Simulation for ActivemQ Connection
+	 * Simulation Object constructor fon Uniform division
 	 * 
-	 * @param simName
-	 * @param simID
-	 * @param simulationFolder
-	 * @param rows
-	 * @param columns
-	 * @param aoi
-	 * @param width
-	 * @param height
-	 * @param numAgent
+	 * @param simName name of simulation 
+	 * @param simID   id of simulation
+	 * @param simulationFolder simulation path for files
+	 * @param rows number of rows of distributed field
+	 * @param columns number of columns of distributed field
+	 * @param aoi area of interest 
+	 * @param width width of field
+	 * @param height height of field 
+	 * @param numAgent number of agents 
 	 * @param mode  if 0 uniform, else if 1 non-uniform
-	 * @param parameters
 	 */
 	public Simulation(String simName, String simulationFolder,String execSimNAme,
 			int rows, int columns, int aoi, int width,
@@ -113,18 +109,18 @@ public class Simulation implements Serializable{
 
 
 	/**
-	 * Simulation  for NON UNIFORM Connection
-	 * @param simName
-	 * @param simulationFolder
-	 * @param execSimNAme
-	 * @param p
-	 * @param aoi
-	 * @param width
-	 * @param height
-	 * @param numAgent
-	 * @param stepsnumber
-	 * @param mode
-	 * @param connection
+	 * 
+	 * Simulation Object constructor for Non-Uniform division
+	 * 
+	 * @param simName name of simulation 
+	 * @param simID   id of simulation
+	 * @param simulationFolder simulation path for files
+	 * @param p number of division of distributed field
+	 * @param aoi area of interest 
+	 * @param width width of field
+	 * @param height height of field 
+	 * @param numAgent number of agents 
+	 * @param mode  if 0 uniform, else if 1 non-uniform
 	 */
 	public Simulation(String simName, String simulationFolder,String execSimNAme,
 			int p, int aoi, int width,
@@ -148,24 +144,42 @@ public class Simulation implements Serializable{
 	}
 
 
+	/**
+	 * Return number of workers
+	 * @return number of workers 
+	 */
 	public int getNumWorkers() {
 		return numWorkers;
 	}
+	/**
+	 * Set number of workers
+	 * @param number of workers 
+	 */
 	public void setNumWorkers(int numWorkers) {
 		this.numWorkers = numWorkers;
 	}
 	
 
+	/**
+	 * Return status of Simulation
+	 * @return the status of a simulation
+	 */
 	public String getStatus() {
 		return simulationStatus;
 	}
+	/**
+	 * Set status of a simulation
+	 * @param status 
+	 */
 	public void setStatus(String status)
 	{
 		this.simulationStatus=status;
 	}
 
 	/**
-	 * @param endTime the endTime to set
+	 * Set end time of simulation
+	 * 
+	 * @param endTime endTime to set
 	 */
 	public void setEndTime(long endTime) {
 		this.endTime = endTime;
@@ -173,21 +187,25 @@ public class Simulation implements Serializable{
 	}
 
 	/**
-	 * @return the numStep
+	 * Get number of steps of a simulation
+	 * 
+	 * @return step simulation number
 	 */
 	public long getNumStep() {
 		return numStep;
 	}
 
 	/**
-	 * @param numStep the numStep to set
+	 * Set number of step for a simulation
+	 * @param number of step
 	 */
 	public void setNumStep(long numStep) {
 		this.numStep = numStep;
 	}
 
 	/**
-	 * @return the startTime
+	 * Return the time of start of simulation
+	 * @return the start time of simulation
 	 */
 	public long getStartTime() {
 		
@@ -196,17 +214,22 @@ public class Simulation implements Serializable{
 	}
 
 	/**
-	 * @return the endTime
+	 * Return end time of simulation in ms
+	 * @return end 
 	 */
 	public long getEndTime() {
 		return endTime;
 	}
 	
 	
-	
+	/**
+	 * Return the duration of a simulation in ms
+	 * @return duration of simulation
+	 */
 	public long getSimTime() {
 		return simTime;
 	}
+	
 	public String getSimTimeAsDate() {
 		
 		String diff = "";
@@ -222,6 +245,12 @@ public class Simulation implements Serializable{
                 TimeUnit.MILLISECONDS.toSeconds(timeDiff) - TimeUnit.MILLISECONDS.toMinutes(timeDiff) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeDiff)));
         return diff;
 	}
+	
+	/**
+	 * Return the date of start of Simulation 
+	 * 
+	 * @return date of the beginning of the simulation  
+	 */
 	public String getStartTimeAsDate(){
 		Date date=new Date(this.getStartTime());
 		SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
@@ -229,6 +258,11 @@ public class Simulation implements Serializable{
 		return dateText;
 	}
 
+	/**
+	 * Return the date of end of Simulation 
+	 * 
+	 * @return date of the end of the simulation  
+	 */
 	public String getEndTimeAsDate(){
 		Date date=new Date(this.getEndTime());
 		SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
@@ -236,6 +270,8 @@ public class Simulation implements Serializable{
 		return dateText;
 	}
 	/**
+	 * 
+	 * 
 	 * @param startTime the startTime to set
 	 */
 	public void setStartTime(long startTime) {
@@ -272,13 +308,10 @@ public class Simulation implements Serializable{
 		this.received_cell_type = received_cell_type;
 	}
 
+
 	/**
 	 * 
-	 */
-
-
-	/**
-	 * @return the p
+	 * @return the p process 
 	 */
 	public int getP() {
 		return P;
@@ -292,12 +325,19 @@ public class Simulation implements Serializable{
 		P = p;
 	}
 
-
+    /**
+     * Return the list of cells assigned on the node
+     * @return the list of cells assigned on the node
+     */
 	public List<CellType> getCellTypeList() {
 		return cellTypeList;
 	}
 
 
+	/**
+	 * Return the number of the step of the simulation
+	 * @return the number of the step of the simulation
+	 */
 	public long getNumberStep(){ 
 		return numStep;
 	}
@@ -422,19 +462,33 @@ public class Simulation implements Serializable{
 	}
 
 
+	/**
+	 * Return type of connection
+	 */
 	public int getConnectionType() {
 		return connectionType;
 	}
 
-
+    /**
+     * Set type of connection
+     * @param connection type 
+     */
 	public void setConnectionType(int connectionType) {
 		this.connectionType = connectionType;}
 
+	/**
+	 * Return the list of topic for the simulation
+	 * 
+	 * @return list of topic for the simulation
+	 */
 	public ArrayList<String> getTopicList() {
 		return topicList;
 	}
 
-
+    /**
+     * Set list of nodes(identified with topics) that executing this simulation
+     * @param list of topic for this simulation 
+     */
 	public void setTopicList(ArrayList<String> topicList) {
 		this.topicList = topicList;
 	}
@@ -443,17 +497,29 @@ public class Simulation implements Serializable{
 		return numCells;
 	}
 
-
+    /**
+     * Return the number of cells in which the field is partitioned
+     * 
+     * @param number of cells in which the field is partitioned
+     */
 	public void setNumCells(int numCells) {
 		this.numCells = numCells;
 	}
 
+	/**
+	 * Return type of field division: uniform, non-uniform
+	 * @param i mode identifier
+	 * @return mode of division
+	 */
 	private String getModeForToString(int i){
 		if(i==0) return "uniform";
 		else return "non-uniform";
 	}
 
-
+    /**
+     * Return list of cells of field to execute on a node
+     * @param list of cells to execute
+     */
 	public void setListCellType(List<CellType> list) {
 		cellTypeList=list;
 
@@ -465,7 +531,7 @@ public class Simulation implements Serializable{
 	 *
 	 */
 	public String toString() {
-		if(mode==DistributedField2D.UNIFORM_PARTITIONING_MODE)
+		if(mode==DistributedField2D.UNIFORM_PARTITIONING_MODE) //UNIFORM
 			return "{\"name\":\"" + simName + "\","
 			+ " \"id\":\"" + simID+ "\","
 		//	+ " \"simulationFolder\":\"" + simulationFolder + "\","

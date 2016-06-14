@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 /**
- * Class that simulates a copy server with tcp
+ * Class to copy file with Socket tcp connection
  * 
  * @author Michele Carillo
  * @author Flavio Serrapica
@@ -34,11 +34,17 @@ import java.net.Socket;
  */
 public class ServerSocketCopy implements Runnable {
 	private Socket csocket=null;
-	private String jarPathToSend;
+	private String pathResourceToSend;
 
-	public ServerSocketCopy(Socket c, String jarPath) {
+	/**
+	 * Constructor
+	 * 
+	 * @param c Socket object
+	 * @param srcpath path of resources to send
+	 */
+	public ServerSocketCopy(Socket c, String srcpath) {
 		this.csocket=c;
-		this.jarPathToSend=jarPath;
+		this.pathResourceToSend=srcpath;
 	}
 
 
@@ -55,7 +61,7 @@ public class ServerSocketCopy implements Runnable {
 
 		if (outToClient != null) {
 			
-			File myFile = new File(jarPathToSend);
+			File myFile = new File(pathResourceToSend);
 			myFile.setReadable(true);
 			byte[] mybytearray = new byte[(int) myFile.length()];
 
@@ -73,7 +79,7 @@ public class ServerSocketCopy implements Runnable {
 				outToClient.write(mybytearray, 0, mybytearray.length);
 				outToClient.flush();
 				outToClient.close();
-            System.out.println("end copy "+jarPathToSend);
+            System.out.println("end copy "+pathResourceToSend);
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}

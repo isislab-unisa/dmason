@@ -21,6 +21,7 @@ import java.net.DatagramSocket;
 import java.net.ServerSocket;
 
 /**
+ * A class to find an available port on node
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo
@@ -76,7 +77,7 @@ public class FindAvailablePort {
 	
 	/**
 	 * Return available port
-	 * @return first available
+	 * @return first available port
 	 */
 	public int getPortAvailable(){
 		
