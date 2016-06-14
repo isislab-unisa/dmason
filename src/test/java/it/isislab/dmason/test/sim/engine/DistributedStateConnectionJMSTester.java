@@ -2,27 +2,15 @@ package it.isislab.dmason.test.sim.engine;
 
 import static org.junit.Assert.*;
 
-import java.util.HashMap;
-
-import javax.jms.JMSException;
-
 import org.junit.Test;
 
-import sim.engine.SimState;
-import sim.util.Bag;
 import sim.util.Double2D;
-import it.isislab.dmason.exception.DMasonException;
-import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
-import it.isislab.dmason.nonuniform.QuadTree;
-import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.DistributedStateConnectionJMS;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.test.sim.engine.util.StubDistributedState;
-import it.isislab.dmason.test.util.connection.VirtualConnection;
-import it.isislab.dmason.util.connection.jms.ConnectionJMS;
-import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
+import it.isislab.dmason.test.sim.field.utils.StubDistributedField2D;
+import it.isislab.dmason.test.util.connection.StubConnectionJMS;
 
 /**
  * This is the DistributedStateConnectionJMS's tester.
@@ -34,226 +22,13 @@ import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
 
 public class DistributedStateConnectionJMSTester {
 
-	/**
-	 * The Class StubConnectionJMS.
-	 */
-	class StubConnectionJMS extends VirtualConnection implements ConnectionJMS {
-
-		/**
-		 * Instantiates a new stub connection jms.
-		 */
-		public StubConnectionJMS() {
-			// TODO Auto-generated constructor stub
-			super();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * it.isislab.dmason.util.connection.jms.ConnectionJMS#asynchronousReceive
-		 * (java.lang.String,
-		 * it.isislab.dmason.util.connection.jms.activemq.MyMessageListener)
-		 */
-		@Override
-		public boolean asynchronousReceive(String arg0, MyMessageListener arg1) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * it.isislab.dmason.util.connection.jms.ConnectionJMS#setTable(java
-		 * .util.HashMap)
-		 */
-		@Override
-		public void setTable(HashMap table) {
-			// TODO Auto-generated method stub
-
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.util.connection.jms.ConnectionJMS#close()
-		 */
-		@Override
-		public void close() throws JMSException {
-			// TODO Auto-generated method stub
-
-		}
-
-	}
-
-	/**
-	 * The Class StubDistributedField2D.
-	 */
-	public class StubDistributedField2D implements DistributedField2D<Double2D> {
-
-		/** The toroidal. */
-		boolean toroidal = false;
-
-		/**
-		 * Instantiates a new stub distributed field2 d.
-		 */
-		public StubDistributedField2D() {
-			super();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.field.DistributedField#synchro()
-		 */
-		@Override
-		public boolean synchro() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.field.DistributedField#getState()
-		 */
-		@Override
-		public DistributedState getState() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * it.isislab.dmason.sim.field.DistributedField#setTable(java.util.HashMap
-		 * )
-		 */
-		@Override
-		public void setTable(HashMap table) {
-			// TODO Auto-generated method stub
-
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.field.DistributedField#getID()
-		 */
-		@Override
-		public String getDistributedFieldID() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.field.DistributedField#getUpdates()
-		 */
-		@Override
-		public UpdateMap getUpdates() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		
-
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.field.DistributedField#getGlobals()
-		 */
-		@Override
-		public VisualizationUpdateMap getGlobals() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.field.DistributedField2D#isToroidal()
-		 */
-		@Override
-		public boolean isToroidal() {
-
-			// TODO Auto-generated method stub
-			return toroidal;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * it.isislab.dmason.sim.field.DistributedField2D#setToroidal(boolean)
-		 */
-		@Override
-		public void setToroidal(boolean isToroidal) {
-			// TODO Auto-generated method stub
-			toroidal = isToroidal;
-
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see it.isislab.dmason.sim.field.DistributedField2D#
-		 * setDistributedObjectLocation(java.lang.Object,
-		 * it.isislab.dmason.sim.engine.RemotePositionedAgent,
-		 * sim.engine.SimState)
-		 */
-		@Override
-		public boolean setDistributedObjectLocation(Double2D location,
-				/*RemotePositionedAgent<Double2D> rm*/Object RemoteObject, SimState sm) throws DMasonException{
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * it.isislab.dmason.sim.field.DistributedField2D#getAvailableRandomLocation
-		 * ()
-		 */
-		@Override
-		public Double2D getAvailableRandomLocation() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public boolean verifyPosition(Double2D pos) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public Bag clear() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public boolean createRegions(QuadTree... cell) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-
-	}
 
 	/** The variable to test. */
 	DistributedStateConnectionJMS<Double2D> toTest;
 
 	/** The connection. */
 	StubConnectionJMS stConnection;
+	StubDistributedState<Double2D> dm;
 
 	/** The num of loop of tests. */
 	int numLoop = 8;
@@ -279,10 +54,10 @@ public class DistributedStateConnectionJMSTester {
 			int posj, boolean isToroidal) {
 		stConnection = new StubConnectionJMS();
 
-		DistributedField2D<Double2D> field = new StubDistributedField2D();
+		DistributedField2D<Double2D> field = new StubDistributedField2D<Double2D>();
 
 		field.setToroidal(isToroidal);
-		StubDistributedState<Double2D> dm = new StubDistributedState(field);
+		dm = new StubDistributedState<Double2D>(field);
 		dm.rows = rows;
 		dm.columns = colums;
 		dm.NUMPEERS = 1; // if numpeers == 0 is throwed an exeption for a

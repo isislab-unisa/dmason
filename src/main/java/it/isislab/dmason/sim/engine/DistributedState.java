@@ -62,7 +62,7 @@ public abstract class DistributedState<E> extends SimState {
 	 */
 	private static final long serialVersionUID = 1L;
 	public int NUMAGENTS;
-	private int count_id;
+	protected int count_id;
 	public int AOI;
 	public int NUMPEERS;
 	public int MODE;
@@ -73,11 +73,11 @@ public abstract class DistributedState<E> extends SimState {
 	public int P;
 	public CellType TYPE;
 	public UpdateGlobalVarAtStep upVar = null;
-	private boolean isPureMPI = false;
-	private boolean isPureAMQ = false;
-	private boolean isHybrid = false;
-	private DistributedStateConnectionJMS<E> serviceJMS;
-	private DistributedStateConnectionMPI<E> serviceMPI;
+	protected boolean isPureMPI = false;
+	protected boolean isPureAMQ = false;
+	protected boolean isHybrid = false;
+	protected DistributedStateConnectionJMS<E> serviceJMS;
+	protected DistributedStateConnectionMPI<E> serviceMPI;
 	
 	public PrintStream out;
 	
@@ -89,8 +89,12 @@ public abstract class DistributedState<E> extends SimState {
 	public DistributedState() {
 		super(null, new DistributedMultiSchedule<E>());
 	}
+	
+	public DistributedState(DistributedMultiSchedule<E> schedule) {
+		super(null, schedule);
+	}
 
-	public DistributedState(GeneralParam params,
+	/*public DistributedState(GeneralParam params,
 			DistributedMultiSchedule<E> sched, String prefix,
 			int typeOfConnection, ConnectionJMS conjms) {
 		super(null, sched);
@@ -111,7 +115,7 @@ public abstract class DistributedState<E> extends SimState {
 		this.MODE = params.getMode();
 		this.topicPrefix = prefix;
 
-	}
+	}*/
 
 	public DistributedState(GeneralParam params,
 			DistributedMultiSchedule<E> sched, String prefix,
@@ -189,40 +193,12 @@ public abstract class DistributedState<E> extends SimState {
 					typeOfConnection);
 			isPureMPI = true;
 			break;
-		case ConnectionType.fakeUnitTestJMS:
-
-			break;
 		default:
 			break;
 		}
 
 	}
 
-	public DistributedState(GeneralParam params,
-			DistributedMultiSchedule<E> sched, String prefix,
-			DistributedStateConnectionJMS fakecone) {
-		super(null, sched);
-
-		long randomizer = 0;
-		if (prefix.startsWith("Batch"))
-			randomizer = System.currentTimeMillis();
-
-		this.TYPE = new CellType(params.getI(), params.getJ());
-		this.random = new MersenneTwisterFast(randomizer
-				+ this.TYPE.getInitialValue());
-		this.AOI = params.getAoi();
-		this.NUMPEERS = params.getRows() * params.getColumns();
-		this.rows = params.getRows();
-		this.columns = params.getColumns();
-		this.NUMAGENTS = params.getNumAgents();
-		this.count_id = NUMAGENTS * TYPE.getInitialValue();
-		this.MODE = params.getMode();
-		this.topicPrefix = prefix;
-
-		serviceJMS = fakecone;
-		isPureAMQ = true;
-
-	}
 
 	public void init_connection() {
 		if (isPureAMQ) {

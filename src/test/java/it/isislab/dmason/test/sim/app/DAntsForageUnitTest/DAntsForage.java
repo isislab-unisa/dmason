@@ -29,6 +29,8 @@ import it.isislab.dmason.sim.field.grid.numeric.DIntGrid2DFactory;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2D;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
 import it.isislab.dmason.test.sim.engine.util.DistributedStateConnectionFake;
+import it.isislab.dmason.test.sim.engine.util.StubDistributedState;
+import it.isislab.dmason.util.connection.ConnectionType;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -45,7 +47,7 @@ import sim.util.Interval;
  * @author Carmine Spagnuolo
  *
  */
-public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
+public /*strictfp*/ class DAntsForage extends StubDistributedState<Int2D>
 {
 
 	public int GRID_HEIGHT;
@@ -142,7 +144,7 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 
 	public DAntsForage(GeneralParam params)
 	{ 
-		super(params,new DistributedMultiSchedule<Int2D>(),topicPrefix,new DistributedStateConnectionFake<>());
+		super(params,new DistributedMultiSchedule<Int2D>(),topicPrefix,ConnectionType.fakeUnitTestJMS);
 		this.MODE=params.getMode();
 		GRID_WIDTH=params.getWidth();
 		GRID_HEIGHT=params.getHeight();
@@ -166,12 +168,12 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 	@Override
 	public void start()
 	{//necessario per effettuare la simulazione senza costruttore
-    	((DistributedStateConnectionFake)super.getDistributedStateConnectionJMS()).setupfakeconnection(this);
+    	//((DistributedStateConnectionFake)super.getDistributedStateConnectionJMS()).setupfakeconnection(this);
 		super.start();  // clear out the schedule
 
 		try 
 		{       	
-			toFoodGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.AOI, TYPE.pos_i, TYPE.pos_j, super.rows,super.columns, MODE, 0, false, "toFoodGrid", topicPrefix,false);
+			toFoodGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, AOI, TYPE.pos_i, TYPE.pos_j, super.rows,super.columns, MODE, 0, false, "toFoodGrid", topicPrefix,false);
 			toHomeGrid = DDoubleGrid2DFactory.createDDoubleGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.AOI, TYPE.pos_i, TYPE.pos_j, super.rows,super.columns, MODE, 0, false, "toHomeGrid", topicPrefix,false);
 			buggrid = DSparseGrid2DFactory.createDSparseGrid2D(GRID_WIDTH, GRID_HEIGHT,this,super.AOI,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE, "buggrid", topicPrefix,false);
 			sites = DIntGrid2DFactory.createDIntGrid2D(GRID_WIDTH, GRID_HEIGHT, this, super.AOI, TYPE.pos_i, TYPE.pos_j, super.rows,super.columns, MODE, 0, true, "sites", topicPrefix,false);
