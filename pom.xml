@@ -341,21 +341,23 @@
 					</execution>
 				</executions>
 			</plugin>
-
-		</plugins>
-	</build>
-
-	<reporting>
-		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.10.1</version>
-				<configuration>
-					<outputDirectory>${project.build.directory}/doc</outputDirectory>
-					<stylesheetfile>${basedir}/resources/javadoc-style/stylesheet.css</stylesheetfile>
-				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<configuration>
+							<outputDirectory>${project.build.directory}/doc</outputDirectory>
+							<stylesheetfile>${basedir}/resources/javadoc-style/stylesheet.css</stylesheetfile>
+						</configuration>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
-	</reporting>
+	</build>
 </project>
