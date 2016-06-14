@@ -19,6 +19,7 @@ package it.isislab.dmason.experimentals.systemmanagement.master;
 import java.util.Map;
 
 /**
+ * Interface for a Master 
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo
@@ -27,9 +28,21 @@ import java.util.Map;
  */
 public interface MultiServerInterface {
 
-	
+	/**
+	 * Start a simulation
+	 * @param idSimulation id of a simulation
+	 */
 	public void start(int idSimulation);
+	/**
+	 * Stop a simulation
+	 * @param idSimulation id of a simulation
+	 */
 	public void stop(int idSimulation);
+	
+	/**
+	 * Pause a simulation
+	 * @param idSimulation id of a simulation
+	 */
 	public void pause(int idSimulation);	
 	public Map<String, String> getInfoWorkers();
 	
