@@ -48,7 +48,9 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 /**
- * 
+ * Class to launch master/workers of 
+ *  DMason System Management
+ *  
  * @author Michele Carillo
  * @author Carmine Spagnuolo
  * @author Flavio Serrapica
