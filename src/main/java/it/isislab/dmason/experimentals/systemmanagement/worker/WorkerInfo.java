@@ -20,6 +20,9 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 
 /**
+ * A class is a container of node 
+ * 
+ *  resources info
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo
@@ -27,10 +30,6 @@ import java.text.DecimalFormat;
  *
  */
 public class WorkerInfo implements Serializable{
-
-	/**
-	 * 
-	 */
 
 	private String cpuLoad;
 	private int slots;
@@ -96,20 +95,35 @@ public class WorkerInfo implements Serializable{
 		this.busyheapmemory=dx;
 	}
 
+	/**
+	 * Set id of Worker 
+	 * @param idworker of node
+	 */
 	public void setWorkerID(String idworker){this.workerID=idworker;}
 	public void setNumSlots(int num){slots = num;};
 	public int getNumSlots(){return slots;}
+	
 	public String getCpuLoad(){return cpuLoad;}
 	public String getAvailableHeapMemory(){return availableheapmemory;}
 	public String getBusyHeapMemory(){return busyheapmemory;}
+
+	/**
+	 * Return ip of node
+	 * 
+	 * @return ip of node
+	 */
 	public String getIP(){return ip;}
+	/**
+	 * Return the Worker ID
+	 * @return id of Worker 
+	 */
 	public String getWorkerID(){return workerID;}
 
 
-	/**
-	 * YOU MUST NOT CHANGE THIS JSON FORMAT
-	 * THE FIRST PARAMETER SLOTS used in a master to set numslots
-	 */
+	
+	 // YOU MUST NOT CHANGE THIS JSON FORMAT
+	 // THE FIRST PARAMETER SLOTS used in a master to set numslots
+	 
 	public String toString() {
 		return "{\"slots\":"+ slots+","+
 				"\"cpuLoad\":" + cpuLoad +","+

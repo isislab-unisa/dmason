@@ -24,9 +24,8 @@ import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 
 
-
-
 /**
+ * Return info for ram and cpu resources of a node
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo
