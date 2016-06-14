@@ -28,6 +28,14 @@ import javax.servlet.http.HttpServletResponse;
 import it.isislab.dmason.experimentals.systemmanagement.master.MasterServer;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 
+/**
+ * 
+ *
+ * @author Michele Carillo
+ * @author Carmine Spagnuolo
+ * @author Flavio Serrapica
+ *
+ */
 public class DownloadLogsServlet extends HttpServlet {
 
 	/**
