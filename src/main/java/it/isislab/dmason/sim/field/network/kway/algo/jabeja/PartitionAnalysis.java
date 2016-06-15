@@ -42,13 +42,14 @@ public class PartitionAnalysis {
 	 * where the number of the line represents a node id
 	 * while the content of the line the partition associated.
 	 * 
-	 * @param logger
+	 * @param logger the logger
 	 * @param baseFilename - a file edgelist describing the graph
 	 * @param outFilename - output file 
 	 * @param numVertices - total number of vertices
 	 * @param numPartitions - number of partitions
-	 * @param vertexIdTranslate 
+	 * @param vertexIdTranslate the vertex translate
 	 * @param vertex_names - mapping vertices with consecutive ids 
+	 * @throws IOException the exception
 	 */
 	public static void writeVertexPartitions(Logger logger, String baseFilename, String outFilename, int numVertices, 
 							int numPartitions, VertexIdTranslate vertexIdTranslate, Integer[] vertex_names) throws IOException {

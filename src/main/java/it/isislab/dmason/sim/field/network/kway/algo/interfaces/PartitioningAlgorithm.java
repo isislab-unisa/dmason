@@ -29,6 +29,8 @@ public  interface PartitioningAlgorithm {
 	/**
 	 * Executes the partition of a graph using the algorithm specified 
 	 * by the class which implements this interface.
+	 * @throws IOException the exception
+	 * @throws InterruptedException the exception 
 	 * @return the path of the file which describes the partition calculated.
 	 */
 	public  String partitioning() throws IOException,InterruptedException;

@@ -51,9 +51,8 @@ import sim.util.Double2D;
  * <p> This version is for a distribution in a <i>square mode</i>.
  *  It represents the field managed by a single peer.
  *  This is an example for a square mode distribution with 9 peers (only to distinguish the regions):
- *  (for code down)
+ *  (for code down)</p/
  *  <p>
- *
  *	<ul>
  *	<li>MYFIELD : Region to be simulated by peer.</li>
  *
@@ -183,6 +182,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	 * @param columns number of columns in the division
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
+	 * @param isToroidal true if it is a toroidal field
 	 */
 	public DContinuousGrid2DXY(double discretization, double width, double height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix,boolean isToroidal) {
 		super(discretization, width, height);
@@ -492,7 +492,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	/**  
 	 * Provide the shift logic of the agents among the peers
 	 * @param location The new location of the remote agent
-	 * @param rm The remote agent to be stepped
+	 * @param remoteObject The remote agent to be stepped
 	 * @param sm SimState of simulation
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
 	 */
@@ -1097,9 +1097,11 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		return globals;
 	}
 
+
 	/**
-	 *	 
-	 **/
+	 * 
+	 * @return all visible agent
+	 */
 	public HashMap<String,EntryAgent<Double2D>> getAllVisibleAgent() {
 
 		HashMap<String,EntryAgent<Double2D>> thor=myfield.clone();
@@ -1138,8 +1140,8 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	 * 
 	 * This method insert all agents in the field and in the corresponding region,
 	 * for this method you must use position of the actual cell
-	 * @param agents
-	 * @return
+	 * @param agents the agents
+	 * @return true if is correct
 	 */
 	public boolean resetAddAll(ArrayList<RemotePositionedAgent<Double2D>> agents)
 	{

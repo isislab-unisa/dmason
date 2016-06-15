@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import javax.jms.JMSException;
 /**
  *	A Listener for the messages swapped among the peers.
- * @param <E> the type of coordinates
- * @param <F> the type of locations
  * 
  * @author Michele Carillo
  * @author Ada Mancuso
@@ -38,6 +36,8 @@ import javax.jms.JMSException;
  * @author Carmine Spagnuolo
  * 
  */
+//* @param <E> the type of coordinates
+//* @param <F> the type of locations
 public class MessageListener extends MyMessageListener
 {	
 

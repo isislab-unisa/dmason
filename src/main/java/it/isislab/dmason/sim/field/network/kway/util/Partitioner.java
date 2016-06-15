@@ -40,6 +40,8 @@ public class Partitioner {
 	 * @param temp - temperature
 	 * @param tempDelta - decrease of temperature
 	 * @param vertex_names - all vertex ids
+	 * @throws IOException the exception
+	 * @throws InterruptedException the exception
 	 * @return NetworkPartition which stores information about the graph
 	 */
 	public static NetworkPartition partitioningWithJabeja(
@@ -60,6 +62,8 @@ public class Partitioner {
 	 * @param bin_path - path where the executable is stored
 	 * @param graph_file_name - file describing the graph
 	 * @param partNumber - number of partitions
+	 * @throws IOException the exception
+	 * @throws InterruptedException the exception 
 	 * @return NetworkPartition which stores information about the graph
 	 */
 	public static NetworkPartition partitioningWithMetis(String bin_path,
@@ -79,6 +83,8 @@ public class Partitioner {
 	 * @param bin_path - path where the executable is stored
 	 * @param graph_file_name - file describing the graph
 	 * @param partNumber - number of partitions
+	 * @throws IOException the exception
+	 * @throws InterruptedException the exception 
 	 * @return NetworkPartition which stores information about the graph
 	 */
 	public static NetworkPartition partitioningWithMetisRelaxed(
@@ -98,6 +104,8 @@ public class Partitioner {
 	 * @param bin_path - path where the executable is stored
 	 * @param graph_file_name - file describing the graph
 	 * @param partNumber - number of partitions
+	 * @throws IOException the exception
+	 * @throws InterruptedException the exception 
 	 * @return NetworkPartition which stores information about the graph
 	 */
 	public static NetworkPartition partitionWithKaffpa(String bin_path,
@@ -117,6 +125,8 @@ public class Partitioner {
 	 * @param bin_path - path where the executable is stored
 	 * @param graph_file_name - file describing the graph
 	 * @param partNumber - number of partitions
+	 * @throws IOException the exception
+	 * @throws InterruptedException the exception 
 	 * @return NetworkPartition which stores information about the graph
 	 */
 	public static NetworkPartition partitionWithKaffpaE(String bin_path,

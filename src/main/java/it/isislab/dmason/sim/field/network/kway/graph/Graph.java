@@ -128,6 +128,7 @@ public class Graph extends SimpleGraph<Vertex, Edge> {
 	 * be incremented the number of self loops. Otherwise, if exists an edge
 	 * between two nodes contained in two different super vertex, a super edge
 	 * will be created.
+	 * @param vertex_names vertex names list
 	 * 
 	 * @param partitionFilename
 	 *            - .part file describing a graph partitioning

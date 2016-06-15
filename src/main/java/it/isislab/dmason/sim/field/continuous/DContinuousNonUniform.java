@@ -311,10 +311,10 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 	/**  
 	 * Provide the shift logic of the agents among the peers
 	 * @param location The new location of the remote agent
-	 * @param rm The remote agent to be stepped
+	 * @param remoteObject The remote agent to be stepped
 	 * @param sm SimState of simulation
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
-	 * @throws DMasonException 
+	 * @throws DMasonException the exception
 	 */
 	@Override
 	public boolean setDistributedObjectLocation(final Double2D location,Object remoteObject,SimState sm) throws DMasonException

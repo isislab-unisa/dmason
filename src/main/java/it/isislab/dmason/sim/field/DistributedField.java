@@ -68,7 +68,7 @@ public interface DistributedField<E> extends Serializable
 		
 	/**
 	 * User fot global parameters synchronization.
-	 * @return
+	 * @return visualization object
 	 */
 	public VisualizationUpdateMap<String, Object> getGlobals();
 	

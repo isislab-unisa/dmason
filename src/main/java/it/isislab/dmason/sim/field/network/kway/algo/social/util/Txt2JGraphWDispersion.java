@@ -33,9 +33,7 @@ import java.util.TreeMap;
 
 public class Txt2JGraphWDispersion {
 
-	/**
-	 * @param args
-	 */
+	
 	public static String s = "taroexhange"; //Grafo da generare 
 	public static String  p;
 

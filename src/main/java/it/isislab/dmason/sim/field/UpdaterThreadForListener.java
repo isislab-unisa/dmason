@@ -25,8 +25,6 @@ import java.util.ArrayList;
 /**
  * A Thread than instances a listener.
  * It's necessary to not block main thread.
- * @param <E> the type of coordinates
- * @param <F> the type of locations
  * 
  * @author Michele Carillo
  * @author Ada Mancuso
@@ -37,6 +35,8 @@ import java.util.ArrayList;
  * @author Carmine Spagnuolo
  * 
  */
+// * @param <E> the type of coordinates
+//* @param <F> the type of locations
 public class UpdaterThreadForListener extends Thread implements Serializable
 {
 	/**

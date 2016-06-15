@@ -62,7 +62,8 @@ public class UpdateCell<E,F> extends HashMap<Long,PriorityQueue<MyCellIntegerFie
      * @param step The number of step which we want the updates
      * @param num_updates The number of updates
      * @return an ArrayList with DistributedRegion at the same step
-     * @throws InterruptedException 
+     * @throws InterruptedException  the exception
+     * @throws DMasonException the exception
      */
 	public  PriorityQueue<MyCellIntegerField> getUpdates(long step,int num_updates) throws InterruptedException,DMasonException
 	{

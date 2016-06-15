@@ -49,6 +49,7 @@ public class AlgoBenchmark {
 	 * @param filepath - the file describing the tests to execute
 	 * @param output_filepath - path of the file describing the results
 	 * @param infoPart - the number of components of the partition
+	 * @throws InterruptedException the exception
 	 */
 	public static void executeTest(String filepath, String output_filepath, int infoPart) throws InterruptedException {
 		String params;

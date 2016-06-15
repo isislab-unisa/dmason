@@ -42,26 +42,26 @@ public interface DistributedField2DLB<E>{
 	public void setIsSplitted(boolean isSplitted);
 	
 	/**
-	 * get parameter on field for split
-	 * @param isSplitted true if cell is splitted   
+	 * Get parameter on field for split
+	 * @return isSplitted true if cell is splitted   
 	 */
 	public boolean isSplitted();
 	
 	/**
 	 * get parameter on field for split
-	 * @param isPrepareForBalance true if cell is splitting   
+	 * @return isPrepareForBalance true if cell is splitting   
 	 */
 	public boolean isPrepareForBalance();
 	
 	/**
 	 * get parameter on field for union
-	 * @param isUnited true if cell is united   
+	 * @return isUnited true if cell is united   
 	 */
 	public boolean isUnited();
 
 	/**
 	 * Set setForBalance 
-	 * @param setForBalance true for loadbalancing
+	 * @param prepareForBalance true for loadbalancing
 	 */
 	public void prepareForBalance(boolean prepareForBalance);
 	

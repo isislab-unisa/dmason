@@ -30,7 +30,7 @@ public class MetisRelaxedProcessBinding implements PartitioningAlgorithm {
 	/**
 	 * @param bin_path - bin path of the executable
 	 * @param graph_path - path of the graph to partition
-	 * @param K - number of partitions
+	 * @param k - number of partitions
 	 */
 	public MetisRelaxedProcessBinding(String bin_path, String graph_path, int k) {
 		this.bin_path = bin_path;

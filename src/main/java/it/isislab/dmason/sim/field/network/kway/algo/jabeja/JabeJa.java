@@ -477,10 +477,11 @@ public class JabeJa implements GraphChiProgram<Integer[], Integer[]>, Partitioni
 
 	/**
 	 * Initialize the sharder-program.
-	 * @param graphName
-	 * @param numShards
-	 * @return
-	 * @throws java.io.IOException
+	 * @param graphName the name of graph
+	 * @param numShards number of shards
+	 * @param _k the param
+	 * @throws IOException the exception
+	 * @return the fast sharder
 	 */
 	protected static FastSharder<Integer[], Integer[]> createSharder(String graphName, int numShards,final int _k) throws IOException {
 
@@ -592,6 +593,9 @@ public class JabeJa implements GraphChiProgram<Integer[], Integer[]>, Partitioni
 		this.vertex_names = vertex_names;
 	}
 	
+	/**
+	 * Constructor
+	 */
 	public JabeJa(){}
 	
  private String baseFilename;

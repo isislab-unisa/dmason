@@ -60,6 +60,7 @@ public final class DContinuousGrid2DFactory
 	 * @param MODE The mode of simulation (horizontal or squared, balanced or not)
 	 * @param name ID of a region
 	 * @param topicPrefix Prefix for the name of topics used only in Batch mode
+	 * @param isToroidal true if the field is a toroidal
 	 * @return The right DContinuous2D
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */
