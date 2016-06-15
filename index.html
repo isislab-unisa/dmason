@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="DMASON : DMASON is a parallel version of the MASON library for writing and running simulations of Agent based simulation models.">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>DMASON</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/isislab-unisa/dmason">View on GitHub</a>
+
+          <h1 id="project_title">DMASON</h1>
+          <h2 id="project_tagline">DMASON is a parallel version of the MASON library for writing and running simulations of Agent based simulation models.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/isislab-unisa/dmason/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/isislab-unisa/dmason/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="dmason" class="anchor" href="#dmason" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>DMASON</h1>
+
+<p>DMASON is a parallel version of the <a href="http://cs.gmu.edu/%7Eeclab/projects/mason/">MASON</a> library for writing and running simulations of Agent based simulation models.</p>
+
+<p>Agent-based simulation models are an increasingly popular tool for research and management in many, different and diverse ﬁelds. In executing such simulations the “speed” is one of the most general and important issues. The traditional answer to this issue is to invest resources in deploying a dedicated installation of dedicated computers. D-MASON is a parallel version of the MASON, a library for writing and running Agent-Based simulations. D-MASON is designed to harness unused PCs for increased performances.</p>
+
+<h2>
+<a id="why-distributed-mason" class="anchor" href="#why-distributed-mason" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Why Distributed MASON?</h2>
+
+<p>Among the motivations to our focus on distributing the simulation on several machines, we can underline how the need for efficiency among the Agent-Based modeling tools is well recognized in literature: many reviews of state-of-the-art frameworks place “speed” upfront as one of the most general and important issues. While a consistent work has been done to allow the distribution of agents on several computing nodes, our approach here is different in principle: we want to introduce the distribution at the framework level, so that the scientists that use the framework (domain experts but with limited knowledge of computer programming and systems) can be unaware of such distribution.</p>
+
+<h3>
+<a id="changelog-dmason-302" class="anchor" href="#changelog-dmason-302" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Changelog DMASON 3.0.2</h3>
+
+<ol>
+<li>
+<p><a href="https://github.com/isislab-unisa/dmason/blob/master/CHANGELOG.md">Changelog list</a></p>
+
+<h1>
+<a id="compiling-dmason-from-src-to-target-using-apache-maven" class="anchor" href="#compiling-dmason-from-src-to-target-using-apache-maven" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Compiling DMASON from src/ to target/ using Apache Maven</h1>
+
+<p>$ mvn clean package</p>
+
+<pre><code>target  
+├── archive-tmp
+├── classes
+│   └── it
+├── dmason-3.0.1-lib.jar
+├── dmason-global-viewer-3.0.1-jar-with-dependencies.jar
+├── dmason-master-3.0.1-jar-with-dependencies.jar
+├── dmason-worker-gui-3.0.1-jar-with-dependencies.jar
+├── dmason-worker-no-gui-3.0.1-jar-with-dependencies.jar
+├── examples
+│   └── resources
+│   ├── dmason-test-ant-forage-3.0.1-jar-with-dependencies.jar
+│   ├── dmason-test-ant-forage-thin-3.0.1-jar-with-dependencies.jar
+│   ├── dmason-test-flcokers-3.0.1-jar-with-dependencies.jar
+│   ├── dmason-test-flcokers-state-memory-3.0.1-jar-with-dependencies.jar
+│   ├── dmason-test-flcokers-thin-3.0.1-jar-with-dependencies.jar
+│   ├── dmason-test-network-3.0.1-jar-with-dependencies.jar
+│   ├── dmason-test-particles-3.0.1-jar-with-dependencies.jar
+│   └── dmason-test-particles-thin-3.0.1-jar-with-dependencies.jar
+├── generated-sources
+│   └── annotations
+├── maven-archiver
+│   └── pom.properties
+├── maven-status
+│   └── maven-compiler-plugin
+└── resources
+ ├── app
+ ├── batch
+ ├── file
+ ├── files
+ ├── image
+ ├── javadoc-style
+ ├── systemmanagement
+ └── util
+</code></pre>
+</li>
+</ol>
+
+<p>Generate build without runs test suite:</p>
+
+<pre><code>$ mvn -Dmaven.test.skip=true clean package 
+</code></pre>
+
+<h1>
+<a id="contributors" class="anchor" href="#contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contributors</h1>
+
+<p>This section is intended for those who want to contribute this project.  You can ask us more informations and how to contribute at <a href="isislab.unisa@gmail.com">isislab.unisa@gmail.com</a>(<a href="http://www.isislab.it">www.isislab.it</a>) or on <a href="https://github.com/isislab-unisa">GitHub</a>.</p>
+
+<h2>
+<a id="add-additional-library-to-repository" class="anchor" href="#add-additional-library-to-repository" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Add additional library to repository</h2>
+
+<p>If you need a library not included in the DMASON repo, you can add it by including the Maven dependency in the <code>pom.xml</code>. If the library is 3rd-Party and is not available on public repository, you can put in the DMASON repository.
+The first step is generate the dependency Maven data, in the fallowing there is an example of that using the <code>MASON</code> library:</p>
+
+<pre><code>$  mvn install:install-file -DgroupId=it.isislab.dmason -DartifactId=mason.18.jar -Dversion=18 -Dfile=./repository/jars/mrjadapter-1.2.jar -Dpackaging=jar -DgeneratePom=true -DlocalRepositoryPath=./repository  -DcreateChecksum=true
+</code></pre>
+
+<p>After that you must put the output data in the <code>repository</code> folder of DMASON GitHub and add to <code>pom.xml</code>:</p>
+
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;it.isislab.dmason&lt;/groupId&gt;
+    &lt;artifactId&gt;mason.18.jar&lt;/artifactId&gt;
+    &lt;version&gt;18&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<h1>
+<a id="dmason-on-cluster" class="anchor" href="#dmason-on-cluster" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>DMASON on cluster</h1>
+
+<p>To run DMASON on cluster, you can follow these steps </p>
+
+<h3>
+<a id="configure-java-development-kit-8-as-default-on-all-clusters-nodes" class="anchor" href="#configure-java-development-kit-8-as-default-on-all-clusters-nodes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configure Java Development Kit 8 as default on all cluster's nodes</h3>
+
+<p>Download Java SE Development Kit 8 from oracle site. You can follow this instructions <a href="https://github.com/serfla/jdk-cluster-installer">https://github.com/serfla/jdk-cluster-installer</a> to set JDK 8 as default. 
+Repeat this operation for all nodes of clusters.</p>
+
+<h3>
+<a id="generate-dmasons-jar" class="anchor" href="#generate-dmasons-jar" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Generate DMASON's jar</h3>
+
+<p>Run maven install of DMASON project. Under <strong>target</strong> folder you can find the following files:</p>
+
+<ul>
+<li><em>DMASON-3.1.jar</em></li>
+<li>
+<em>resources</em> folder</li>
+</ul>
+
+<p>You can create a folder called DMASON with these files. Now copy this folder on all nodes of cluster. </p>
+
+<h3>
+<a id="configure-activemq" class="anchor" href="#configure-activemq" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configure Activemq</h3>
+
+<p>On master node editing Apache ActivemQ configuration file 'resources/systemmanagement/master/conf/config.properties' in order to set ip and port of Apache ActivemQ:</p>
+
+<ul>
+<li>set ip   (default is 127.0.0.1), the same ip of master node</li>
+<li>set port (default is 61616)</li>
+</ul>
+
+<h3>
+<a id="run-dmason-on-cluster" class="anchor" href="#run-dmason-on-cluster" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Run DMASON on cluster</h3>
+
+<p>On master node open a terminal e launch this command to start the master node</p>
+
+<div class="highlight highlight-source-shell"><pre>$ java -jar DMASON-3.1.jar -m master</pre></div>
+
+<p>In your web browser enter the address <em><a href="http://127.0.0.1:8080">http://127.0.0.1:8080</a></em> to start a Web UI of system management, if master node is on 127.0.0.1. You have to use latest version of <em>Google Chrome</em> or <em>Firefox</em> as web browser.   </p>
+
+<p>Now, to start the slaves node you can open a new terminal on the master node and launch this command</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-c">#M is the max number of available cells that the slave nodes can execute</span>
+$ java -jar DMASON-3.1.jar -m worker -ip <span class="pl-k">&lt;</span>ipactivemq<span class="pl-k">&gt;</span> -p <span class="pl-k">&lt;</span>portactivemq<span class="pl-k">&gt;</span> -h <span class="pl-k">&lt;</span>ipslave1 ipslave2 ... ipslaveN<span class="pl-k">&gt;</span> -ns <span class="pl-k">&lt;</span>M<span class="pl-k">&gt;</span></pre></div>
+
+<p>or you can launch this command on each slave node </p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-c">#M is the max number of available cells that the slave node can execute</span>
+$ java -jar DMASON-3.1.jar -m worker -ip <span class="pl-k">&lt;</span>ipactivemQ<span class="pl-k">&gt;</span> -p <span class="pl-k">&lt;</span>portActivemq<span class="pl-k">&gt;</span> -ns M</pre></div>
+
+<p>where M is the max number of available cells that the slave nodes can execute.</p>
+
+<h1>
+<a id="release-notes" class="anchor" href="#release-notes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Release notes</h1>
+
+<h3>
+<a id="apache-activemq-notes" class="anchor" href="#apache-activemq-notes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Apache ActiveMQ notes</h3>
+
+<p>Please use the Apache ActiveMQ <a href="http://activemq.apache.org/activemq-5133-release.html">5.13.3</a> version, or version greater than or equal to 5.12.2.</p>
+
+<h3>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h3>
+
+<p>Copyright ISISLab, 2016 Università degli Studi di Salerno.</p>
+
+<p>Licensed under the Apache License, Version 2.0 (the "License"); You may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+
+<pre><code>   http://www.apache.org/licenses/LICENSE-2.0
+</code></pre>
+
+<p>Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">DMASON maintained by <a href="https://github.com/isislab-unisa">isislab-unisa</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
