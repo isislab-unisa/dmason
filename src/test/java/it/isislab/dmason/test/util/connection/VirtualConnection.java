@@ -24,8 +24,8 @@ public class VirtualConnection implements Connection {
 	 * Instantiates a new virtual connection.
 	 */
 	public VirtualConnection() {
-		topicsSubscribed = new ArrayList<String>(1000);
-		topics = new ArrayList<String>(1000);
+		topicsSubscribed = new ArrayList<String>();
+		topics = new ArrayList<String>();
 	}
 
 	/* (non-Javadoc)

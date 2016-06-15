@@ -66,7 +66,7 @@ public class DistributedStateConnectionJMS<E> {
 	private static final long serialVersionUID = 1L;
 	public String ip;
 	public String port;
-	private ConnectionJMS connectionJMS;
+	protected ConnectionJMS connectionJMS;
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
 	protected ArrayList<DNetworkJMSMessageListener> networkListeners = new ArrayList<DNetworkJMSMessageListener>();
 	private UpdaterThreadForListener u1;
@@ -117,51 +117,32 @@ public class DistributedStateConnectionJMS<E> {
 		networkNumberOfSubscribersForField=dm.networkNumberOfSubscribersForField;
 	}
 
-	//this is only for test
-	public DistributedStateConnectionJMS(DistributedState dm, String ip,String port,ConnectionJMS connectionJMS,boolean thisIsATest) {
-		this.ip = ip;
-		this.port = port;
-		this.dm=dm;
-
-		this.connectionJMS = new ConnectionNFieldsWithActiveMQAPI();
-		//this.connectionJMS=connectionJMS;
-		/**
-		 * 		try {
-			connectionJMS.setupConnection(new Address(ip, port));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		this.TRIGGER = new Trigger(connectionJMS);
-		 */
-		schedule=(DistributedMultiSchedule<E>)dm.schedule;
-		topicPrefix=dm.topicPrefix;
-		TYPE=dm.TYPE;
-		MODE=dm.MODE;
-		NUMPEERS=dm.NUMPEERS;
-		rows=dm.rows;
-		columns=dm.columns;
-		networkNumberOfSubscribersForField=dm.networkNumberOfSubscribersForField;
-	}
-
-
-	/**THIS CONSTRUCTOR WAS CREATED ONLY FOR THE TEST, SO DON'T USE AND DON'T TOUCH IT PLEASE :)*/
-	public DistributedStateConnectionJMS(DistributedState dm, String ip,String port, ConnectionJMS connectionJMS) {
-		this.ip = ip;
-		this.port = port;
-		this.dm=dm;
-		this.connectionJMS = connectionJMS;
-
-
-		schedule=(DistributedMultiSchedule<E>)dm.schedule;
-		topicPrefix=dm.topicPrefix;
-		TYPE=dm.TYPE;
-		MODE=dm.MODE;
-		NUMPEERS=dm.NUMPEERS;
-		rows=dm.rows;
-		columns=dm.columns;
-		networkNumberOfSubscribersForField=dm.networkNumberOfSubscribersForField;
-	}
+//	//this is only for test
+//	public DistributedStateConnectionJMS(DistributedState dm, String ip,String port,ConnectionJMS connectionJMS,boolean thisIsATest) {
+//		this.ip = ip;
+//		this.port = port;
+//		this.dm=dm;
+//
+//		this.connectionJMS = new ConnectionNFieldsWithActiveMQAPI();
+//		//this.connectionJMS=connectionJMS;
+//		/**
+//		 * 		try {
+//			connectionJMS.setupConnection(new Address(ip, port));
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		this.TRIGGER = new Trigger(connectionJMS);
+//		 */
+//		schedule=(DistributedMultiSchedule<E>)dm.schedule;
+//		topicPrefix=dm.topicPrefix;
+//		TYPE=dm.TYPE;
+//		MODE=dm.MODE;
+//		NUMPEERS=dm.NUMPEERS;
+//		rows=dm.rows;
+//		columns=dm.columns;
+//		networkNumberOfSubscribersForField=dm.networkNumberOfSubscribersForField;
+//	}
 
 	public int CONNECTIONS_CREATED_STATUS_P;
 	public boolean CONNECTIONS_CREATED=false;
