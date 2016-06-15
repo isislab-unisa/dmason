@@ -60,12 +60,16 @@ public abstract class MyMessageListener implements MessageListener, Serializable
 	 * message.
 	 * @param msg The message received through the queue.
 	 * @return The object carried by the message.
-	 * @throws JMSException 
+	 * @throws JMSException the exception 
 	 */
 	public final Object parseMessage(Message msg) throws JMSException{
 		return ((ActiveMQObjectMessage)msg).getObject();
 	}
 	
+	/**
+	 * 
+	 * @return the message
+	 */
 	public Object getAsyncMessage(){
 		return obj;
 	}

@@ -108,7 +108,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	/** If you're implementing Connection your program has a standard behavior after receiving:
 	 * you should use only a message listener and with this constructor you can set the 'class listener'.
 	 * For more complex after-receiving actions you had to customize your class or interface...
-	 * @param listener
+	 * @param listener the listener for message
 	 */
 	public ConnectionNFieldsWithActiveMQAPI(MessageListener listener) {
 		this.listener = listener;
@@ -253,8 +253,9 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	/**
 	 * We extend Connection with ConnectionWithJMS only if we need a 
 	 * customized listener for every (or many) topic.
-	 * @oaram key A string associated to the object to receive.
+	 * @param key A string associated to the object to receive.
 	 * @param listener The listener to run when an object of type <code>key</code> is received. 
+	 * @return true if correct
 	 */
 	@Override
 	public boolean asynchronousReceive(String key, MyMessageListener listener)
@@ -316,7 +317,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	 * physical topic on the provider. Also creates a publisher, because
 	 * when a peer creates a topic, certainly it will publish on it.
 	 * @param topicName Identifier to assign to the newly created topic.
-	 * @param numFields
+	 * @param numFields number of fields
 	 * @return <code>true</code> if the connection was successfully established.
 	 */
 	@Override

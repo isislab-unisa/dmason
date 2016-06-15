@@ -24,9 +24,9 @@ import it.isislab.dmason.util.connection.MyHashMap;
 import java.util.ArrayList;
 /**
  *	A Listener for the messages swapped among the peers.
- * @param <E> the type of coordinates
- * @param <F> the type of locations
  */
+//@param <E> the type of coordinates
+//@param <F> the type of locations
 @AuthorAnnotation(
 		author = {"Ada Mancuso","Francesco Milone","Carmine Spagnuolo"},
 		date = "6/3/2014"

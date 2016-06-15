@@ -24,9 +24,9 @@ import java.io.Serializable;
 /**
  * A Thread than instances a listener.
  * It's necessary to not block main thread.
- * @param <E> the type of coordinates
- * @param <F> the type of locations
  */
+  //* @param <E> the type of coordinates
+  // * @param <F> the type of locations
 @AuthorAnnotation(
 		author = {"Ada Mancuso","Francesco Milone","Carmine Spagnuolo"},
 		date = "6/3/2014"

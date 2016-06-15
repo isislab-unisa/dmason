@@ -66,8 +66,8 @@ public interface ConnectionMPI extends Connection{
 	/**
 	 * Allow client to to receive messages asynchronously.
 	 * @param key A string associated to the object to receive.
-	 * @param the topic name 
-	 * @return the message listener 
+	 * @param listener the message listener 
+	 * @return true if is correct
 	 */
 	public boolean asynchronousReceive(String key, MPIMessageListener
 			listener );
