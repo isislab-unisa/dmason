@@ -104,7 +104,7 @@ public class WorkerResourceInfo implements Serializable{
 
     /**
      * Get global Cpu usage of node
-     * 
+     * @return the cpu usage
      */
 	public static double  getCPULoad(){
 

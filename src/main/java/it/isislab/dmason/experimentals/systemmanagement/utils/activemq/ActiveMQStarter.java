@@ -29,7 +29,7 @@ import org.apache.activemq.usage.UsageCapacity;
 
 /**
  * Embedded ActivemQ Starter  
- * SET config.properties to change ActivemQ <ip:port>  
+ * set config.properties to change ActivemQ ip:port  
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo

@@ -76,14 +76,16 @@ public class Simulation implements Serializable{
 	 * Simulation Object constructor fon Uniform division
 	 * 
 	 * @param simName name of simulation 
-	 * @param simID   id of simulation
 	 * @param simulationFolder simulation path for files
 	 * @param rows number of rows of distributed field
 	 * @param columns number of columns of distributed field
+	 * @param execSimNAme pathname of executable file
 	 * @param aoi area of interest 
 	 * @param width width of field
 	 * @param height height of field 
-	 * @param numAgent number of agents 
+	 * @param numAgent number of agents
+	 * @param stepsnumber number of steps
+	 * @param connection type of connection 
 	 * @param mode  if 0 uniform, else if 1 non-uniform
 	 */
 	public Simulation(String simName, String simulationFolder,String execSimNAme,
@@ -113,14 +115,17 @@ public class Simulation implements Serializable{
 	 * Simulation Object constructor for Non-Uniform division
 	 * 
 	 * @param simName name of simulation 
-	 * @param simID   id of simulation
 	 * @param simulationFolder simulation path for files
+	 * @param execSimNAme pathname of executable file
 	 * @param p number of division of distributed field
 	 * @param aoi area of interest 
 	 * @param width width of field
 	 * @param height height of field 
 	 * @param numAgent number of agents 
 	 * @param mode  if 0 uniform, else if 1 non-uniform
+	 * @param stepsnumber number of steps
+	 * @param connection type of connection
+	 * 
 	 */
 	public Simulation(String simName, String simulationFolder,String execSimNAme,
 			int p, int aoi, int width,
@@ -153,7 +158,7 @@ public class Simulation implements Serializable{
 	}
 	/**
 	 * Set number of workers
-	 * @param number of workers 
+	 * @param numWorkers number of workers 
 	 */
 	public void setNumWorkers(int numWorkers) {
 		this.numWorkers = numWorkers;
@@ -169,7 +174,7 @@ public class Simulation implements Serializable{
 	}
 	/**
 	 * Set status of a simulation
-	 * @param status 
+	 * @param status  status of simulation
 	 */
 	public void setStatus(String status)
 	{
@@ -197,7 +202,7 @@ public class Simulation implements Serializable{
 
 	/**
 	 * Set number of step for a simulation
-	 * @param number of step
+	 * @param numStep number of step
 	 */
 	public void setNumStep(long numStep) {
 		this.numStep = numStep;
@@ -288,7 +293,7 @@ public class Simulation implements Serializable{
 
 	/**
 	 * set current step of simulation
-	 * @param  
+	 * @param  step number of steps
 	 */
 	public void setStep(long step) {
 		this.step = step;
@@ -464,6 +469,7 @@ public class Simulation implements Serializable{
 
 	/**
 	 * Return type of connection
+	 * @return type of connection
 	 */
 	public int getConnectionType() {
 		return connectionType;
@@ -471,7 +477,7 @@ public class Simulation implements Serializable{
 
     /**
      * Set type of connection
-     * @param connection type 
+     * @param connectionType type of connection
      */
 	public void setConnectionType(int connectionType) {
 		this.connectionType = connectionType;}
@@ -487,7 +493,7 @@ public class Simulation implements Serializable{
 
     /**
      * Set list of nodes(identified with topics) that executing this simulation
-     * @param list of topic for this simulation 
+     * @param topicList list of topic for this simulation 
      */
 	public void setTopicList(ArrayList<String> topicList) {
 		this.topicList = topicList;
@@ -500,7 +506,7 @@ public class Simulation implements Serializable{
     /**
      * Return the number of cells in which the field is partitioned
      * 
-     * @param number of cells in which the field is partitioned
+     * @param numCells number of cells in which the field is partitioned
      */
 	public void setNumCells(int numCells) {
 		this.numCells = numCells;

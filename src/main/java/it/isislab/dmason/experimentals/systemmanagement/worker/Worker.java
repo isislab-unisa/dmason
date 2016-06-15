@@ -116,6 +116,7 @@ public class Worker implements Observer {
 	 * Worker Constructor
 	 * @param ipMaster   ip ActivemQ
 	 * @param portMaster port ActivemQ
+	 * @param slots number of cells that node can execute
 	 */
 
 	public Worker(String ipMaster,String portMaster, int slots) {
