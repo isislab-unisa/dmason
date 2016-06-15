@@ -67,7 +67,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 		server =(MasterServer)  req.getServletContext().getAttribute("masterServer");
 		listParams = new HashMap<>();
 
-		/*if*****************da eseguire solo per nuovi upload ***********************************************/
+		/*if*****************only for new jar upload ***********************************************/
 		
 		FileItem jarSim = null;
 
@@ -99,7 +99,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 
 		/**else ************************************************/
 		
-		//RECEIVE PARAMETER FROM CLIENT		
+		//PARAMETERS FROM CLIENT		
 		String simName= listParams.get("simName");
 		int rows= (listParams.get("rows")!=null)?Integer.parseInt(listParams.get("rows")):0 ;
 		int columns=	(listParams.get("cols")!=null)?Integer.parseInt(listParams.get("cols")):0;

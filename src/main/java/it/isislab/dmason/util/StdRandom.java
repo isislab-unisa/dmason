@@ -59,14 +59,13 @@ public class StdRandom {
 	
 	/**
 	 * The random generator.
-	 * @uml.property  name="randomGenerator"
+	 * 
 	 */
 	static Random randomGenerator = new Random();
 
 	/**
 	 * Gets the random generator.
 	 * @return  the random generator
-	 * @uml.property  name="randomGenerator"
 	 */
 	public static Random getRandomGenerator() {
 		return randomGenerator;
@@ -75,8 +74,8 @@ public class StdRandom {
 	/**
 	 * Sets the random generator.
 	 * @param randomGenerator  the new random generator
-	 * @uml.property  name="randomGenerator"
-	 */
+	 */ 
+	 
 	public static void setRandomGenerator(Random randomGenerator) {
 		StdRandom.randomGenerator = randomGenerator;
 	}

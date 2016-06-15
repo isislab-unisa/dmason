@@ -18,9 +18,7 @@ package it.isislab.dmason.util.connection.jms;
 
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
-
 import java.util.HashMap;
-
 import javax.jms.JMSException;
 
 /**
@@ -40,7 +38,12 @@ import javax.jms.JMSException;
  */
 public interface ConnectionJMS extends Connection{
 	
-	/** Allow client to to receive in asynchronous way messages and to customize listeners for every topic. */
+	/** Allow client to to receive in asynchronous way messages and to customize listeners for every topic. 
+	 * 
+	 * @param arg0 the topic 
+	 * @param arg1 the message listener object
+	 * @return true if correct
+	 */
 	public boolean asynchronousReceive(String arg0,MyMessageListener arg1);
 	
 	public void setTable(HashMap table);

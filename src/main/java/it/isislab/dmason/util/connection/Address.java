@@ -39,8 +39,9 @@ public class Address implements Serializable{
 	private String port;
 	
 	/**
-	 * @param IPaddress
-	 * @param port number
+	 * Constructor of Address
+	 * @param iPaddress the ip of address
+	 * @param port thr port of address
 	 */
 	public Address(String iPaddress, String port) {
 		super();
@@ -50,7 +51,7 @@ public class Address implements Serializable{
 
 	/** Return a String containing IPaddress
 	 * 
-	 * @return String
+	 * @return an ip address
 	 */
 	public String getIPaddress() {
 		return IPaddress;
@@ -58,7 +59,7 @@ public class Address implements Serializable{
 	
 	/**
 	 * Set, given a value, IPAddress.
-	 * @param iPaddress
+	 * @param iPaddress ip to set
 	 */
 	public void setIPaddress(String iPaddress) {
 		IPaddress = iPaddress;
@@ -66,7 +67,7 @@ public class Address implements Serializable{
 	
 	/**Return a String containing port number
 	 * 
-	 * @return String
+	 * @return the port number
 	 */
 	public String getPort() {
 		return port;
@@ -74,7 +75,7 @@ public class Address implements Serializable{
 
 	/** Set, given a value, port number. 
 	 * 
-	 * @param port
+	 * @param port the port to set
 	 */
 	public void setPort(String port) {
 		this.port = port;

@@ -33,45 +33,66 @@ import java.util.ArrayList;
  *
  */
 public interface Connection {
-	
+
 	/**
 	 * Estabilishes a connection with a provider located at given address.
 	 * @param providerAddr Address of the provider.
+	 * @return true if correct
+	 * @throws Exception for exception
 	 */
 	public boolean setupConnection(Address providerAddr) throws Exception;
-	
+
+
 	/**
-	 * Create an identifier to physical topic using the given string. 
+	 * Create an identifier to physical topic using the given string
+	 *  
+	 * @param topicName name of topic 
+	 * @param numFields num of field
+	 * @throws Exception for exception
+	 * @return true if the topic is created
 	 */
 	public boolean createTopic(String topicName, int numFields) throws Exception;
-	
+
 	/**
 	 * Write a Serializable object to a topic. Using the generic type
 	 * Serializable  allows from type indipendency.
 	 * @param object The Serializable object to publish.
 	 * @param topicName The name of the topic where <code>obejct</code> will be published.
 	 * @param key A string associated to the <code>object</code>.
+	 * @throws Exception for exception
+	 * @return true if the publish is completed
 	 */
 	public boolean publishToTopic(Serializable object, String topicName, String key) throws Exception;
-	
+
 	/**
 	 * Subscribes the peer to a topic named as the given string.
 	 * @param topicName Name of the topic to subscribe to.
+	 * @throws Exception for exception
+	 * @return true if the subscription is completed
 	 */
 	public boolean subscribeToTopic(String topicName) throws Exception;
-	
+
 	/**
 	 * Allow client to to receive messages asynchronously.
 	 * @param key A string associated to the object to receive.
+	 * @return true if correct 
 	 */
 	public boolean asynchronousReceive(String key);
-	
+
 	/**
 	 * Retrieves the list of active topics on the provider.
+	 * @throws Exception for exception
+	 * @return list of topic
 	 */
 	public ArrayList<String> getTopicList() throws Exception;
-	
-	//modificato aggiunto da me
+
+	/**
+	 * Unsubscribe from a topic
+	 * 
+	 * @param topicName name of topic
+	 * @throws Exception for exception
+	 * @return true if correct
+	 */
 	public boolean unsubscribe(String topicName) throws Exception;
 
 }

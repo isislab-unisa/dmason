@@ -56,6 +56,10 @@ public class DistributedProperties extends sim.util.Properties implements java.i
         SimpleProperties will search the object for methods of the form <tt>public Object dom<i>Property</i>()</tt>
         which define the domain of the property.  The domFoo() and hideFoo() property extension methods are respected
         if <tt>includeExtensions</tt> is true.
+        @param o Object
+        @param includeSuperclasses if include superclasses
+        @param includeGetClass     if include get 
+        @param includeExtensions   if include extensions
     */
     public DistributedProperties(Object o, boolean includeSuperclasses, boolean includeGetClass, boolean includeExtensions)
         {
@@ -67,6 +71,12 @@ public class DistributedProperties extends sim.util.Properties implements java.i
         generateProperties(includeSuperclasses,includeGetClass,includeExtensions);
         }
     
+    /**
+     * 
+     * @param includeSuperclasses if include superclasses 
+     * @param includeGetClass     if include a get 
+     * @param includeExtensions   if include extension
+     */
     void generateProperties(boolean includeSuperclasses, boolean includeGetClass, boolean includeExtensions)
         {
         if (object != null && auxillary == null) 
@@ -279,7 +289,8 @@ public class DistributedProperties extends sim.util.Properties implements java.i
         }
 
     /** Returns the name of the given property.
-        Returns null if the index is out of the range [0 ... numProperties() - 1 ]*/
+        Returns null if the index is out of the range [0 ... numProperties() - 1 ]
+     */
     @Override
 	public String getName(int index)
         {
@@ -300,7 +311,8 @@ public class DistributedProperties extends sim.util.Properties implements java.i
         }
         
     /** Returns whether or not the property can be written as well as read
-        Returns false if the index is out of the range [0 ... numProperties() - 1 ]*/
+        Returns false if the index is out of the range [0 ... numProperties() - 1 ]
+     */
     @Override
 	public boolean isReadWrite(int index)
         {
@@ -358,8 +370,8 @@ public class DistributedProperties extends sim.util.Properties implements java.i
             }
         }
 
-    @Override
-	public Object getDomain(int index)
+    
+    public Object getDomain(int index)
         {
         if (auxillary!=null) return auxillary.getDomain(index);
         if (index < 0 || index > numProperties()) return null;
@@ -391,7 +403,11 @@ public class DistributedProperties extends sim.util.Properties implements java.i
             return false;
             }
         }
-    
+    /**
+     * 
+     * @param index to check
+     * @return if it is global
+     */
     public boolean isGlobal(int index)
     	{
     //if (auxillary!=null) return auxillary.isHidden(index);
