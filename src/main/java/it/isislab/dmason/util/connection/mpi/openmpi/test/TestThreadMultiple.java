@@ -24,11 +24,12 @@ import mpi.MPI;
 import mpi.MPIException;
 
 public class TestThreadMultiple extends Thread{
+
 	public TestThreadMultiple()
 	{
 		try {
 			for (int i = 0; i < MPI.COMM_WORLD.getSize(); i++) {
-				if(i!=MPI.COMM_WORLD.getRank())
+				if(i != MPI.COMM_WORLD.getRank())
 				{
 					Receiver r=new Receiver(i);
 					r.start();
@@ -36,66 +37,53 @@ public class TestThreadMultiple extends Thread{
 
 			}
 		} catch (MPIException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	public static void main(String[] args) {
 		try {
 			MPI.InitThread(args, MPI.THREAD_MULTIPLE);
-			
-				new TestThreadMultiple().start();
-
-			
-
+			new TestThreadMultiple().start();
 		} catch (MPIException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	public void run()
 	{
+		int i=0;
 		try {
-			MPI.COMM_WORLD.barrier();
-			Thread.sleep(1000);
-			while(true)
+			while(i<2)
 			{
-
-				int send[]=new int[1];
+				int send[]=new int[2];
 				send[0]=MPI.COMM_WORLD.getRank();
-				MPI.COMM_WORLD.bcast(send, 0,MPI.INT,MPI.COMM_WORLD.getRank());
-
-				MPI.COMM_WORLD.barrier();
-				Thread.sleep(100);
+				send[1]=i;
+				i++;
+				MPI.COMM_WORLD.bcast(send,0,MPI.INT,MPI.COMM_WORLD.getRank());
+				System.out.println("Step "+send[1]+" sended "+send[0]+ " from MPI proc "+MPI.COMM_WORLD.getRank());
 
 			}
 		} catch (MPIException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 	}
 	class Receiver extends Thread{
 		int torcv;
 		public Receiver(int r) {
-			// TODO Auto-generated constructor stub
 			torcv=r;
 		}
 		public void run()
 		{
 			try {
 				System.out.println("Start Receiver for thread "+torcv+" from MPI proc "+MPI.COMM_WORLD.getRank());
+				
 				while(true)
 				{
-					int received[]=new int[1];
-					MPI.COMM_WORLD.bcast(received, 0,MPI.INT,torcv);
-					System.out.println("Received "+received[0]+ " from MPI proc "+torcv+" for MPI proc "+MPI.COMM_WORLD.getRank());
+					int received[]=new int[2];
+					MPI.COMM_WORLD.bcast(received,0,MPI.INT, torcv);
+					System.out.println("Step "+received[1]+" Received "+received[0]+ " from MPI proc "+torcv+" for MPI proc "+MPI.COMM_WORLD.getRank());
 
 				}
 			} catch (MPIException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
