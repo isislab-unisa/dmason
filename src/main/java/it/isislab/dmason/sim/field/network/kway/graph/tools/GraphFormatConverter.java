@@ -226,6 +226,7 @@ public class GraphFormatConverter {
 	 * 
 	 * @param filepath - file graph
 	 * @param outFilename - file edgelist
+	 * @param vertex_names list of vertices 
 	 */
 	public static void dotGraph2edgelist(String filepath, String outFilename, Integer[] vertex_names) {
 		String vertexInfo = "", edge = "", separator = "";

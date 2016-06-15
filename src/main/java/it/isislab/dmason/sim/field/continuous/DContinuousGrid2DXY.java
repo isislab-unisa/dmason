@@ -51,7 +51,9 @@ import sim.util.Double2D;
  * <p> This version is for a distribution in a <i>square mode</i>.
  *  It represents the field managed by a single peer.
  *  This is an example for a square mode distribution with 9 peers (only to distinguish the regions):
- *  (for code down)</p/
+ *  (for code down)
+ *  </p>
+ *  
  *  <p>
  *	<ul>
  *	<li>MYFIELD : Region to be simulated by peer.</li>
@@ -76,7 +78,8 @@ import sim.util.Double2D;
  *	<li> MYTOPIC CDDR (Corner Down Diagonal Right)</li>
  *</ul>
  *</li>
- *	</ul></p>
+ *</ul>
+ *</p>
  *	
  * <PRE>
  ---------------------------------------------------------------------------------------

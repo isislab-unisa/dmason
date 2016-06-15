@@ -21,8 +21,6 @@ import java.io.Serializable;
 
 /**
  * A Wrapper class for all regions of a distributed field.
- * @param <E> the type of coordinates
- * @param <F> the type of locations
  * 
  * @author Michele Carillo
  * @author Ada Mancuso
@@ -75,30 +73,30 @@ public class RegionMap<E,F> implements Serializable
 	 * The Constructor create a RegionMap with the parameters:
 	 *
 	 *
-	 * @param left_out            
-	 * @param left_mine
-	 * @param right_mine
-	 * @param right_out
-	 * @param down_mine
-	 * @param down_out
-	 * @param up_mine
-	 * @param up_out
-	 * @param corner_mine_up_left
-	 * @param corner_out_up_left_diag_center
-	 * @param corner_out_up_left_diag_up
-	 * @param corner_out_up_left_diag_left
-	 * @param corner_mine_up_right
-	 * @param corner_out_up_right_diag_center
-	 * @param corner_out_up_right_diag_up
-	 * @param corner_out_up_right_diag_right
-	 * @param corner_mine_down_left
-	 * @param corner_out_down_left_diag_center
-	 * @param corner_out_down_left_diag_left
-	 * @param corner_out_down_left_diag_down
-	 * @param corner_mine_down_right
-	 * @param corner_out_down_right_diag_center
-	 * @param corner_out_down_right_diag_right
-	 * @param corner_out_down_right_diag_down
+	 * @param left_out region           
+	 * @param left_mine region
+	 * @param right_mine region
+	 * @param right_out region
+	 * @param down_mine region
+	 * @param down_out region
+	 * @param up_mine region
+	 * @param up_out region
+	 * @param corner_mine_up_left region
+	 * @param corner_out_up_left_diag_center region
+	 * @param corner_out_up_left_diag_up region
+	 * @param corner_out_up_left_diag_left region
+	 * @param corner_mine_up_right region
+	 * @param corner_out_up_right_diag_center region
+	 * @param corner_out_up_right_diag_up region
+	 * @param corner_out_up_right_diag_right region
+	 * @param corner_mine_down_left region
+	 * @param corner_out_down_left_diag_center region
+	 * @param corner_out_down_left_diag_left region
+	 * @param corner_out_down_left_diag_down region
+	 * @param corner_mine_down_right region
+	 * @param corner_out_down_right_diag_center region
+	 * @param corner_out_down_right_diag_right region
+	 * @param corner_out_down_right_diag_down region
 	 * 
 	 * 
 	 * @return a region of distribuited field

@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import javax.jms.JMSException;
 /**
  *	A Listener for the messages swapped among the peers.
- * @param <E> the type of coordinates
- * @param <F> the type of locations
  */
 @AuthorAnnotation(
 		author = {"Ada Mancuso","Francesco Milone","Carmine Spagnuolo"},
@@ -37,9 +35,6 @@ public class DNetworkJMSMessageListener extends MyMessageListener
 {	
 
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	public String topic;
 	public ArrayList<DNetwork> fields;

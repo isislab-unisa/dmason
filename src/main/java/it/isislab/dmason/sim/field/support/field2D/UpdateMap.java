@@ -29,8 +29,6 @@ import it.isislab.dmason.exception.DMasonException;
 /**
  * A hash map supporting concurrency for methods put and get.
  * The DistributedRegions are saved using the number of step as key.
- * @param <E> the type of coordinates
- * @param <F> the type of locations
  * 
  * @author Michele Carillo
  * @author Ada Mancuso
@@ -57,8 +55,8 @@ public class UpdateMap<E,F> extends HashMap<Long,PriorityQueue<Object>> implemen
      * @param step The number of step which we want the updates
      * @param num_updates The number of updates
      * @return an ArrayList with DistributedRegion at the same step
-     * @throws InterruptedException 
-     * @throws DMasonException 
+     * @throws InterruptedException the exception
+     * @throws DMasonException the exception
      */
 	public  PriorityQueue<Object> getUpdates(long step,int num_updates) throws InterruptedException, DMasonException
 	{

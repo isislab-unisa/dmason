@@ -147,6 +147,7 @@ public final class DContinuousGrid2DFactory
 	 * @param name ID of a region
 	 * @param topicPrefix Prefix for the name of topics used only in Batch mode
 	 * @return The right DContinuous2DThin
+	 * @param isToroidal true if the field is a toroidal
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */
 	public static final DContinuousGrid2DThin createDContinuous2DThin(double discretization,double width, double height,SimState sm,int max_distance,int i,int j,int rows,int columns, int MODE, String name, String topicPrefix, boolean isToroidal)

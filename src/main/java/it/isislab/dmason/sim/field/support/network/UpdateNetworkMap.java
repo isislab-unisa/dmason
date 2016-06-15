@@ -26,8 +26,6 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * A hash map supporting concurrency for methods put and get.
  * The DistributedRegions are saved using the number of step as key.
- * @param <E> the type of coordinates
- * @param <F> the type of locations
  */
 public class UpdateNetworkMap extends HashMap<Long,PriorityQueue<Object>> implements Serializable
 {
@@ -50,9 +48,8 @@ public class UpdateNetworkMap extends HashMap<Long,PriorityQueue<Object>> implem
 	 * This method returns an ArrayList of updates at the same step.
 	 * It's blocking until the number of updates is the same of the number of requested updates.
 	 * @param step The number of step which we want the updates
-	 * @param num_updates The number of updates
 	 * @return an ArrayList with DistributedRegion at the same step
-	 * @throws InterruptedException 
+	 * @throws InterruptedException the exception
 	 */
 	public  PriorityQueue<Object> getUpdates(long step) throws InterruptedException
 	{

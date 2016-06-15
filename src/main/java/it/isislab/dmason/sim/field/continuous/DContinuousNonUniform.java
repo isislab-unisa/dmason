@@ -26,14 +26,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.logging.Logger;
-
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.sim.field.support.globals.GlobalInspectorHelper;
 import it.isislab.dmason.experimentals.sim.field.support.globals.GlobalParametersHelper;
-import it.isislab.dmason.experimentals.sim.field.support.loadbalancing.MyCellInterface;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.experimentals.util.visualization.zoomviewerapp.ZoomArrayList;
 import it.isislab.dmason.nonuniform.QuadTree;
@@ -60,10 +57,8 @@ import sim.util.Double2D;
  *  It represents the field managed by a single peer.
  *  This is an example for a square mode distribution with 9 peers (only to distinguish the regions):
  *  (for code down)
- *  <p>
+ *  </p>
  *
-
- * </PRE>
  * @author Michele Carillo
  * @author Ada Mancuso
  * @author Dario Mazzeo
@@ -140,10 +135,8 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 	 * @param height field's height
 	 * @param sm The SimState of simulation
 	 * @param max_distance maximum shift distance of the agents
-	 * @param i i position in the field of the cell
-	 * @param j j position in the field of the cell
-	 * @param rows number of rows in the division
-	 * @param columns number of columns in the division
+	 * @param id the id 
+	 * @param p number of partitioning
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
@@ -936,7 +929,8 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 
 
 	/**
-	 * Used by SociallyDamaginBehaviour because ...
+	 * Used by SociallyDamaginBehaviour because
+	 * @return all visible agents
 	 */
 	public HashMap<String,EntryAgent<Double2D>> getAllVisibleAgent() {
 
@@ -1012,8 +1006,8 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 	 * 
 	 * This method insert all agents in the field and in the corresponding region,
 	 * for this method you must use position of the actual cell
-	 * @param agents
-	 * @return
+	 * @param agents the agents
+	 * @return true if correct
 	 */
 	public boolean resetAddAll(ArrayList<RemotePositionedAgent<Double2D>> agents)
 	{
