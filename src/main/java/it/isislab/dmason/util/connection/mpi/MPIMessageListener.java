@@ -25,5 +25,10 @@ package it.isislab.dmason.util.connection.mpi;
  */
 public interface MPIMessageListener{
 	
+	/**
+	 * 
+	 * @param message the message
+	 * @throws Exception the exception
+	 */
 	public void onMessage(Object message) throws Exception;
 }

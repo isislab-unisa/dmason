@@ -43,7 +43,11 @@ public class DNetworkMPIMessageListener implements MPIMessageListener
 	public ArrayList<DistributedFieldNetwork> fields;
 
 
-
+    /**
+     * Constructor 
+     * @param fields the fields 
+     * @param topic name of topic
+     */
 	public DNetworkMPIMessageListener(ArrayList<DistributedFieldNetwork> fields,String topic) 
 	{
 		super();
@@ -55,7 +59,10 @@ public class DNetworkMPIMessageListener implements MPIMessageListener
 	}
 
 
-
+    /**
+     * Return the topic name
+     * @return the topic name
+     */
 	public String getTopic(){
 		return topic;
 	}
