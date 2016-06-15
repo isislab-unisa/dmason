@@ -15,7 +15,7 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.experimentals.field.grid.numeric.thin;
+package it.isislab.dmason.experimentals.sim.field.grid.numeric.thin;
 
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
@@ -25,7 +25,7 @@ import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.MessageListener;
-import it.isislab.dmason.sim.field.grid.numeric.region.RegionDoubleNumeric;
+import it.isislab.dmason.sim.field.grid.numeric.region.RegionIntegerNumeric;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegionNumeric;
 import it.isislab.dmason.sim.field.support.field2D.EntryNum;
 import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
@@ -38,14 +38,13 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
-
 import sim.engine.SimState;
 import sim.util.Bag;
 import sim.util.Int2D;
 
 
 /**
- *  <h3>This Field extends DoubleGrid2D, to be used in a distributed environment. All the necessary informations for 
+ *  <h3>This Field extends IntGrid2D, to be used in a distributed environment. All the necessary informations for 
  *  the distribution of simulation are wrapped in this class.</h3>
  * <p> This version is for a distribution in a <i>horizontal mode</i>.
  *  It represents the field managed by a single peer.
@@ -61,7 +60,7 @@ import sim.util.Int2D;
  *  <li>	A RegionMap that represents all the border Regions</li>
  *  <li> The simstate of sumulation</li>
  *  <li>	An UpdateMap for all the updates</li>
- *  <li> A ((DistributedState)sm).getConnection() object for an abstract ((DistributedState)sm).getConnection()</li>
+ *  <li> A Connection object for an abstract connection</li>
  *  <li> A CellType object for differentiate the field</li>
  *  </ul>
  *  This is an example for a horizontal mode distribution with 'NUM_PEERS' peers (only to distinguish the regions):
@@ -70,7 +69,7 @@ import sim.util.Int2D;
  * <ul>
  *	<li>MYFIELD : Region to be simulated by peer.</li>
  *
- * 	<li>LEFT_MINE, RIGHT_MINE :
+ * 	<li>LEFT_MINE, EAST_MINE :
  *	Boundaries Regions those must be simulated and sent to neighbors.</li>
  *	
  *	<li>LEFT_OUT, RIGHT_OUT : 
@@ -99,20 +98,16 @@ import sim.util.Int2D;
  * ----------------------------------------------------------------------------------------------------------
  * </PRE>
  */
-public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
+public class DIntGrid2DYThin extends DIntGrid2DThin {
 
 	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
+	private double initialValue;
+	private ZoomArrayList<EntryNum<Integer, Int2D>> tmp_zoom=null;
 
-	private ZoomArrayList<EntryNum<Double, Int2D>> tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
 	/**
 	 * It's the name of the specific field
 	 */
 	private String NAME;
-
-	/**
-	 * It represents the initial value in every position of the field
-	 */
-	private double initialValue;
 	private int numAgents;
 	private int width,height,field_width,field_height;
 	private String topicPrefix = "";
@@ -138,7 +133,8 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
-	public DDoubleGrid2DYThin(int width, int height,int field_width,int field_height,SimState sm,int max_distance,int i,int j,int rows,int columns, double initialGridValue, String name, String prefix) {
+	public DIntGrid2DYThin(int width, int height,int field_width,int field_height,SimState sm,int max_distance,int i,int j,int rows, int columns, 
+			int initialGridValue, String name, String prefix) {
 
 		super(field_width, field_height,width,height, initialGridValue);
 		this.width=width;
@@ -146,22 +142,19 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 		this.field_width=field_width;
 		this.field_height=field_height;
 		this.NAME = name;
-		this.sm=sm;		 
-		
+		this.sm=sm;
 		AOI=max_distance;
 		//NUMPEERS=num_peers;
 		this.rows = rows;
-		this.columns = columns;
+		this.columns = columns;	
 		cellType = new CellType(i, j);
-		this.initialValue = initialGridValue;
-		this.topicPrefix  = prefix;
-
-		updates_cache= new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
+		this.topicPrefix = prefix;
+		updates_cache= new ArrayList<RegionNumeric<Integer,EntryNum<Integer,Int2D>>>();
 		numAgents=0;
+
 		createRegion();		
 
 	}
-
 
 	/**
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
@@ -169,8 +162,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	 */
 	private boolean createRegion()
 	{
-		
-		
+		int jumpDistance=AOI;
 		//upper left corner's coordinates
 				if(cellType.pos_j<(width%columns))
 					own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
@@ -198,8 +190,8 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 				{
 					neighborhood.add(cellType.getNeighbourRight());
 				}	
-
-				/*try{
+/*
+				try{
 					actualSnap = new BufferedImage((int)my_width, (int)my_height, BufferedImage.TYPE_3BYTE_BGR);
 				}
 				catch(Exception e)
@@ -211,36 +203,36 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 				isSendingGraphics = false;
 				writer = actualSnap.getRaster();*/
 
-				myfield = new RegionDoubleNumeric(
-						own_x + AOI,            // MyField's x0 coordinate
+				myfield = new RegionIntegerNumeric(
+						own_x + jumpDistance,            // MyField's x0 coordinate
 						own_y,                           // MyField's y0 coordinate
-						own_x + my_width - AOI, // MyField x1 coordinate
+						own_x + my_width - jumpDistance, // MyField x1 coordinate
 						height                          // MyField y1 coordinate
 						);                  // Global width and height 
 
-				rmap.WEST_OUT = new RegionDoubleNumeric(
-						(own_x - AOI + width) % width, // Left-out x0
+				rmap.WEST_OUT = new RegionIntegerNumeric(
+						(own_x - jumpDistance + width) % width, // Left-out x0
 						0,									// Left-out y0
 						(own_x + width) % (width),				// Left-out x1
 						height									// Left-out y1
 						);
 
-				rmap.WEST_MINE = new RegionDoubleNumeric(
+				rmap.WEST_MINE = new RegionIntegerNumeric(
 						(own_x + width) % width,				// Left-mine x0
 						0,									// Left-mine y0
-						(own_x + AOI + width) % width,	// Left-mine x1
+						(own_x + jumpDistance + width) % width,	// Left-mine x1
 						height									// Left-mine y1
 						);
 
-				rmap.EAST_OUT = new RegionDoubleNumeric(
+				rmap.EAST_OUT = new RegionIntegerNumeric(
 						(own_x + my_width + width) % width,                // Right-out x0
 						0,                                               // Right-out y0
-						(own_x + my_width + AOI + width) % width, // Right-out x1
+						(own_x + my_width + jumpDistance + width) % width, // Right-out x1
 						height                                            // Right-out y1
 						);
 
-				rmap.EAST_MINE = new RegionDoubleNumeric(
-						(own_x + my_width - AOI + width) % width, // Right-mine x0
+				rmap.EAST_MINE = new RegionIntegerNumeric(
+						(own_x + my_width - jumpDistance + width) % width, // Right-mine x0
 						0,											   // Right-mine y0
 						(own_x + my_width + width) % width,                // Right-mine x1
 						height                                            // Right-mine y1
@@ -248,8 +240,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 
 				return true;
 		
-		/*
-		//upper left corner's coordinates
+		/*//upper left corner's coordinates
 		if(cellType.pos_j<(width%columns))
 			own_x=(int)Math.floor(width/columns+1)*cellType.pos_j; 
 		else
@@ -298,67 +289,34 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 		}
 
 		// Building the regions
-		rmap.WEST_OUT=RegionDoubleNumeric.createRegionNumeric(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height),my_width, my_height, width, height);
-		if(rmap.WEST_OUT!=null) //this condition if is false, means that this peer have not a neighbour left.
-			rmap.WEST_MINE=RegionDoubleNumeric.createRegionNumeric(own_x,own_y,own_x + MAX_DISTANCE -1, (own_y+my_height)-1,my_width, my_height, width, height);
+		rmap.WEST_OUT=RegionIntegerNumeric.createRegionNumeric(own_x-MAX_DISTANCE,own_y,own_x-1, (own_y+my_height),my_width, my_height, width, height);
+		if(rmap.WEST_OUT!=null)
+			rmap.WEST_MINE=RegionIntegerNumeric.createRegionNumeric(own_x,own_y,own_x + MAX_DISTANCE -1, (own_y+my_height)-1,my_width, my_height, width, height);
 
-		rmap.right_out=RegionDoubleNumeric.createRegionNumeric(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, (own_y+my_height)-1,my_width, my_height, width, height);
+		rmap.right_out=RegionIntegerNumeric.createRegionNumeric(own_x+my_width,own_y,own_x+my_width+MAX_DISTANCE-1, (own_y+my_height)-1,my_width, my_height, width, height);
 		if(rmap.right_out!=null)
-			rmap.right_mine=RegionDoubleNumeric.createRegionNumeric(own_x + my_width -MAX_DISTANCE,own_y,own_x +my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
+			rmap.EAST_MINE=RegionIntegerNumeric.createRegionNumeric(own_x + my_width -MAX_DISTANCE,own_y,own_x +my_width-1, (own_y+my_height)-1,my_width, my_height, width, height);
 
 		if(rmap.WEST_OUT == null)
 		{
 			//peer 0
-			myfield=new RegionDoubleNumeric(own_x,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
+			myfield=new RegionIntegerNumeric(own_x,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
 
-			*//**
-			try 
-			{
-				//connection.createTopic(cellType+"R");
-				connection.subscribeToTopic(cellType.getNeighbourRight()+"L");
-			} catch (Exception e) {e.printStackTrace();}
-			 *//*
 		}
 
 		if(rmap.right_out == null)
 		{
 			//peer NUMPEERS-1
-			myfield=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y, own_x+my_width-1, own_y+my_height-1);
-			*//**
-			try 
-			{
-				//connection.createTopic(cellType+"L");
-				connection.subscribeToTopic(cellType.getNeighbourLeft()+"R");
-			} catch (Exception e) {e.printStackTrace();}
-			 *//*
+			myfield=new RegionIntegerNumeric(own_x+MAX_DISTANCE,own_y, own_x+my_width-1, own_y+my_height-1);
+
 		}
 
 		if(rmap.WEST_OUT!=null && rmap.right_out!=null)
 		{
-			myfield=new RegionDoubleNumeric(own_x+MAX_DISTANCE,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
-			*//**
-			try 
-			{
-				//connection.createTopic(cellType+"L");
-				//connection.createTopic(cellType+"R");
-				connection.subscribeToTopic(cellType.getNeighbourLeft()+"R");
-				connection.subscribeToTopic(cellType.getNeighbourRight()+"L");
-			} catch (Exception e) {e.printStackTrace();}
-			 *//*
-		}
-		*//**
-		if(rmap.right_out!=null )
-		{	// we create a thread for any side existent
-			ut_right=new UpdaterThreadForListener(connection, cellType,this.NUMPEERS,this,neighborhood,cellType.getNeighbourRight()+"L", NAME,updates,listeners);
-			ut_right.start();
+			myfield=new RegionIntegerNumeric(own_x+MAX_DISTANCE,own_y, own_x+my_width-MAX_DISTANCE-1, own_y+my_height-1);
+
 		}
 
-		if(rmap.left_out!=null)
-		{
-			ut_left=new UpdaterThreadForListener(connection, cellType,this.NUMPEERS,this,neighborhood,cellType.getNeighbourLeft()+"R", NAME,updates,listeners);
-			ut_left.start();
-		}
-		 *//*
 		return true;*/
 	}
 
@@ -367,39 +325,43 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	 * 	It's called after every step of schedule.
 	 */
 	@Override
-	public synchronized boolean  synchro() 
-	{		
+	public boolean synchro() {
+
 		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
 
+		if(((DistributedMultiSchedule)sm.schedule).isEnableZoomView)
+		{
+			tmp_zoom=new ZoomArrayList<EntryNum<Integer, Int2D>>();
+			tmp_zoom.STEP=sm.schedule.getSteps()-1;
+		}
+
 		//every value in the myfield region is setted
-		for(EntryNum<Double, Int2D> e: myfield.values())
+		for(EntryNum<Integer, Int2D> e: myfield.values())
 		{			
 			Int2D loc=e.l;
-			double d = e.r;
-			setThin(loc.getX(), loc.getY(), d);
-			//this.field[loc.getX()][loc.getY()]=d;	
-
+			int i = e.r;
+			setThin(loc.getX(), loc.getY(), i);
+			//this.field[loc.getX()][loc.getY()]=i;	
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
-				tmp_zoom.add(new EntryNum<Double, Int2D>(d, loc));
+				tmp_zoom.add(new EntryNum<Integer,Int2D>(i, loc));
 		}     
-		if(conn!=null &&
-				((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
+		if(conn!=null
+				&& ((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 		{
 			try {
 				tmp_zoom.STEP=((DistributedMultiSchedule)sm.schedule).getSteps()-1;
 				conn.publishToTopic(tmp_zoom,"GRAPHICS"+cellType,NAME);
-				tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
+				tmp_zoom=new ZoomArrayList<EntryNum<Integer,Int2D>>();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
 
-
 		updateFields(); //update fields with java reflect
 
-		updates_cache=new ArrayList<RegionNumeric<Integer,EntryNum<Double,Int2D>>>();
+		updates_cache=new ArrayList<RegionNumeric<Integer,EntryNum<Integer,Int2D>>>();
 
 		memorizeRegionOut();
 
@@ -407,22 +369,20 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 		//--> publishing the regions to correspondent topics for the neighbors
 		if( rmap.WEST_OUT!=null )
 		{
-			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr1=new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(rmap.WEST_MINE,rmap.WEST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.WEST);
+			DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr1=new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(rmap.WEST_MINE,rmap.WEST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.WEST);
 			try 
 			{	
-				connWorker.publishToTopic(dr1,topicPrefix+cellType+"L", NAME);
-
+				connWorker.publishToTopic(dr1,topicPrefix+cellType+"L", NAME);	
 			} catch (Exception e1) { e1.printStackTrace(); }
 		}
 		if( rmap.EAST_OUT!=null )
 		{
-			DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> dr2=new DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>(rmap.EAST_MINE,rmap.EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.EAST);
+			DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> dr2=new DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>(rmap.EAST_MINE,rmap.EAST_OUT,(sm.schedule.getSteps()-1),cellType,DistributedRegionNumeric.EAST);
 			try 
 			{			
-				connWorker.publishToTopic(dr2,topicPrefix+cellType+"R", NAME);
-
+				connWorker.publishToTopic(dr2,topicPrefix+cellType+"R", NAME);		
 			} catch (Exception e1) {e1.printStackTrace();}
-		}		
+		}			
 		//<--
 
 		//take from UpdateMap the updates for current last terminated step and use 
@@ -432,10 +392,9 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 		try 
 		{
 			q = updates.getUpdates(sm.schedule.getSteps()-1, neighborhood.size());
-
 			while(!q.isEmpty())
 			{
-				DistributedRegionNumeric<Integer, EntryNum<Double,Int2D>> region=(DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>>)q.poll();
+				DistributedRegionNumeric<Integer, EntryNum<Integer,Int2D>> region=(DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>>)q.poll();
 				verifyUpdates(region);
 			}
 		} catch (InterruptedException e1) {e1.printStackTrace(); } catch (DMasonException e1) {
@@ -443,15 +402,15 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 			e1.printStackTrace();
 		}
 
-		for(RegionNumeric<Integer,EntryNum<Double,Int2D>> region : updates_cache){
-
-			for(EntryNum<Double,Int2D> e_m: region.values())
+		for(RegionNumeric<Integer,EntryNum<Integer,Int2D>> region : updates_cache)
+		{
+			for(EntryNum<Integer,Int2D> e_m: region.values())
 			{
 				Int2D i=new Int2D(e_m.l.getX(), e_m.l.getY());
 				setThin(i.getX(), i.getY(), e_m.r);
 				//field[i.getX()][i.getY()]=e_m.r;
 			}
-		}	
+		}
 
 		this.reset();
 
@@ -465,20 +424,20 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	 * 
 	 * @param box A Distributed Region that contains the updates
 	 */
-	public void verifyUpdates(DistributedRegionNumeric<Integer,EntryNum<Double,Int2D>> box)
+	public void verifyUpdates(DistributedRegionNumeric<Integer,EntryNum<Integer,Int2D>> box)
 	{
-		RegionNumeric<Integer,EntryNum<Double,Int2D>> r_mine=box.out;
-		RegionNumeric<Integer,EntryNum<Double,Int2D>> r_out=box.mine;
+		RegionNumeric<Integer,EntryNum<Integer,Int2D>> r_mine=box.out;
+		RegionNumeric<Integer,EntryNum<Integer,Int2D>> r_out=box.mine;
 
-		for(EntryNum<Double,Int2D> e_m: r_mine.values())
+		for(EntryNum<Integer,Int2D> e_m: r_mine.values())
 		{
 			Int2D i=new Int2D(e_m.l.getX(),e_m.l.getY());
-
 			setThin(i.getX(), i.getY(), e_m.r);
 			//field[i.getX()][i.getY()]=e_m.r;		  		
 		}		
 		updates_cache.add(r_out);
 	}
+
 	/**
 	 * with java Reflect expect to memorize the region out
 	 */
@@ -497,7 +456,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 				Object returnValue = method.invoke(rmap, null);
 				if(returnValue!=null)
 				{
-					RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
+					RegionNumeric<Integer,EntryNum<Integer,Int2D>> region=((RegionNumeric<Integer,EntryNum<Integer,Int2D>>)returnValue);
 					if(name.contains("out"))
 					{
 
@@ -536,27 +495,29 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 				Object returnValue = method.invoke(rmap, null);
 				if(returnValue!=null)
 				{
-					RegionNumeric<Integer,EntryNum<Double,Int2D>> region=((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
+					RegionNumeric<Integer,EntryNum<Integer,Int2D>> region=((RegionNumeric<Integer,EntryNum<Integer,Int2D>>)returnValue);
 
 					if(name.contains("out"))
 					{
-						for(EntryNum<Double,Int2D> e : region.values()){
+						for(EntryNum<Integer,Int2D> e : region.values()){
 
 							Int2D pos = new Int2D(e.l.getX(), e.l.getY());
-							double d = e.r;
-							setThin(pos.getX(), pos.getY(), d);
-							//this.field[pos.getX()][pos.getY()]=d;
+							int i = e.r;
+							setThin(pos.getX(), pos.getY(), i);
+
+							//this.field[pos.getX()][pos.getY()]=i;
 						}
 					}
 					else
 						if(name.contains("mine"))
 						{
-							for(EntryNum<Double,Int2D> e : region.values()){
+							for(EntryNum<Integer,Int2D> e : region.values()){
 
 								Int2D pos = new Int2D(e.l.getX(), e.l.getY());
-								double d = e.r;
-								setThin(pos.getX(), pos.getY(), d);
-								//this.field[pos.getX()][pos.getY()]=d;
+								int i = e.r;
+								setThin(pos.getX(), pos.getY(), i);
+
+								//this.field[pos.getX()][pos.getY()]=i;
 							}
 
 						}
@@ -593,7 +554,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 
 				if(returnValue!=null)
 				{
-					RegionNumeric<Integer,EntryNum<Double, Int2D>> region=((RegionNumeric<Integer,EntryNum<Double, Int2D>>)returnValue);
+					RegionNumeric<Integer,EntryNum<Integer, Int2D>> region=((RegionNumeric<Integer,EntryNum<Integer, Int2D>>)returnValue);
 					region.clear();    
 				}
 			}
@@ -613,27 +574,26 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	 * @param sm
 	 * @return
 	 */
-	@Override
-	//public boolean setDistributedObjectLocation(double d, Int2D l, SimState sm){
+	//public boolean setDistributedObjectLocation(int i, Int2D l, SimState sm){
+	public boolean setDistributedObjectLocation( Int2D l, Object ob ,SimState sm) throws DMasonException{
 
-	public boolean setDistributedObjectLocation(Int2D l, Object remoteValue, SimState sm) throws DMasonException{
+		
 
+		if(!(ob instanceof Integer)) throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a int");
 
+		int i=(Integer) ob;
 
-		if(!(remoteValue instanceof Double)) throw new DMasonException("Cast Exception setDistributedObjectLocation, second parameter must be a double");
-
-		double d=(Double) remoteValue;
 		numAgents++;
 		if(myfield.isMine(l.getX(), l.getY()))
 		{    		
-			return myfield.addEntryNum(new EntryNum<Double,Int2D>(d, l));
+			return myfield.addEntryNum(new EntryNum<Integer,Int2D>(i, l));
 		}
 		else
-			if(setValue(d, l))
+			if(setValue(i, l))
 				return true;
-			else{
-				System.out.println(cellType+")OH MY GOD! DOUBLE "+l.x+" "+l.y+" "); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
-			}
+			else
+				System.out.println(cellType+")OH MY GOD!"); // it should never happen (don't tell it to anyone shhhhhhhh! ;P)
+
 		return false;
 	}
 
@@ -644,7 +604,7 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 	 * @param l The new location of the value
 	 * @return true if the value is added in right way
 	 */
-	public boolean setValue(double value, Int2D l){
+	public boolean setValue(int value, Int2D l){
 
 		Class o=rmap.getClass();
 
@@ -660,20 +620,17 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 
 				if(returnValue!=null)
 				{ 
-					RegionNumeric<Integer,EntryNum<Double,Int2D>> region = ((RegionNumeric<Integer,EntryNum<Double,Int2D>>)returnValue);
+					RegionNumeric<Integer,EntryNum<Integer,Int2D>> region = ((RegionNumeric<Integer,EntryNum<Integer,Int2D>>)returnValue);
 					if(region.isMine(l.getX(),l.getY()))
 					{   	  
 						if(name.contains("mine")){
 							if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
-								tmp_zoom.add(new EntryNum<Double, Int2D>(value, l));
-							return region.addEntryNum(new EntryNum<Double,Int2D>(value, l));
-
+								tmp_zoom.add(new EntryNum<Integer,Int2D>(value, l));
+							return region.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 						}
 						if(name.contains("out"))
-							return region.addEntryNum(new EntryNum<Double,Int2D>(value, l));
-
+							return region.addEntryNum(new EntryNum<Integer,Int2D>(value, l));
 					}
-
 
 				}
 			}
@@ -692,12 +649,6 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 
 		return (DistributedState)sm;
 	}
-	@Override
-	public Int2D getAvailableRandomLocation() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 
 	@Override
 	public void setTable(HashMap table) {
@@ -717,31 +668,36 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 		return updates;
 	}
 
-
 	
 	public void resetParameters() {
 		numAgents=0;
 	}
 
-
+	
 	@Override
-	public void setThin(int i,int j, double val){
+	public void setThin(int i,int j, int val){
 		if(i-own_x+2*AOI>=0 && i-own_x+2*AOI<field_width)
 			field[i-own_x+2*AOI][j]=val;
 	}
 	@Override
-	public double getThin(int i, int j){
+	public int getThin(int i, int j){
 		if(i-own_x+2*AOI>=0 && i-own_x+2*AOI<field_width)
 			return field[i-own_x+2*AOI][j];
-		return Double.MIN_VALUE;
-
+		return Integer.MIN_VALUE;
 	}
-
 
 	@Override
 	public VisualizationUpdateMap<String, Object> getGlobals()
 	{
 		return globals;
+	}
+
+
+
+	@Override
+	public Int2D getAvailableRandomLocation() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	@Override
 	public boolean verifyPosition(Int2D pos) {
@@ -751,13 +707,11 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 
 	}
 
-
 	@Override
 	public Bag clear() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 	@Override
 	public boolean createRegions(QuadTree... cell) {

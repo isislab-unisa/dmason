@@ -6,7 +6,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import it.isislab.dmason.exception.DMasonException;
-import it.isislab.dmason.experimentals.field.grid.numeric.thin.DIntGrid2DXYThin;
+import it.isislab.dmason.experimentals.sim.field.grid.numeric.thin.DIntGrid2DXYThin;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;

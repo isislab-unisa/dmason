@@ -26,7 +26,6 @@ import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.experimentals.systemmanagement.utils.ZipDirectory;
 import it.isislab.dmason.experimentals.systemmanagement.utils.loader.DMasonClassLoader;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
-import it.isislab.dmason.experimentals.util.management.JarClassLoader;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
@@ -117,10 +116,9 @@ public class Worker implements Observer {
 	 * Worker Constructor
 	 * @param ipMaster   ip ActivemQ
 	 * @param portMaster port ActivemQ
-	 * @param topicPrefix global identifier of simulation
 	 */
 
-	public Worker(String ipMaster,String portMaster, int slots/*, ConnectionNFieldsWithActiveMQAPI connect*/) {
+	public Worker(String ipMaster,String portMaster, int slots) {
 
 		try {
 
@@ -939,7 +937,7 @@ public class Worker implements Observer {
 
 	/**
 	 * Create log for a Simulation 
-	 * @param simID
+	 * @param simID the id of simulation
 	 * @param status log(a request of log) | history(a request of a finished simulation)
 	 * @param type simple log or log for  history 
 	 */

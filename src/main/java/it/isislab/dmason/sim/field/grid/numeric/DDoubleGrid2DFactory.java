@@ -18,11 +18,11 @@
 package it.isislab.dmason.sim.field.grid.numeric;
 
 import it.isislab.dmason.exception.DMasonException;
-import it.isislab.dmason.experimentals.field.grid.numeric.thin.DDoubleGrid2DThin;
-import it.isislab.dmason.experimentals.field.grid.numeric.thin.DDoubleGrid2DXYThin;
-import it.isislab.dmason.experimentals.field.grid.numeric.thin.DDoubleGrid2DYThin;
 import it.isislab.dmason.experimentals.sim.field.grid.numeric.loadbalanced.DDoubleGrid2DXYLB;
 import it.isislab.dmason.experimentals.sim.field.grid.numeric.loadbalanced.DDoubleGrid2DYLB;
+import it.isislab.dmason.experimentals.sim.field.grid.numeric.thin.DDoubleGrid2DThin;
+import it.isislab.dmason.experimentals.sim.field.grid.numeric.thin.DDoubleGrid2DXYThin;
+import it.isislab.dmason.experimentals.sim.field.grid.numeric.thin.DDoubleGrid2DYThin;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.DistributedField2D;
@@ -58,6 +58,7 @@ public class DDoubleGrid2DFactory {
 	 * @param fixed If it's true the field is read-only
 	 * @param name ID of a region
 	 * @param topicPrefix Prefix for the name of topics used only in Batch mode
+	 * @param isToroidal true if it is a toroidal field
 	 * @return The right DSparseGrid2D
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */
@@ -146,8 +147,8 @@ public class DDoubleGrid2DFactory {
 	 * @param MODE The mode of simulation (horizontal or squared, balanced or not)
 	 * @param initialGridValue Starting value of the matrix
 	 * @param fixed If it's true the field is read-only
-	 * @param name ID of a region
 	 * @param topicPrefix Prefix for the name of topics used only in Batch mode
+	 * @param isToroidal true if it is a toroidal field
 	 * @return The right DSparseGrid2DThin
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */

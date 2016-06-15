@@ -349,6 +349,7 @@
 					<execution>
 						<id>attach-javadocs</id>
 						<configuration>
+						     <excludePackageNames>it.isislab.dmason.experimentals.sim.*:it.isislab.dmason.experimentals.tools.*:it.isislab.dmason.experimentals.util.*</excludePackageNames>
 							<outputDirectory>${project.build.directory}/doc</outputDirectory>
 							<stylesheetfile>${basedir}/resources/javadoc-style/stylesheet.css</stylesheetfile>
 						</configuration>

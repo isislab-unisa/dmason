@@ -52,12 +52,12 @@ import sim.util.Int2D;
  *  It represents the field managed by a single peer.
  *  This is an example for a square mode distribution with 9 peers (only to distinguish the regions):
  *  (for code down)
- *  <p>
+ *  </p>
  *
  *	<ul>
  *	<li>MYFIELD : Region to be simulated by peer.</li>
  *
- *	<li>LEFT_MINE, EAST_MINE, NORTH_MINE, SOUTH_MINE,CORNER_MINE_LEFT_UP,CORNER_MINE_LEFT_DOWN,
+ *	<li>WEST_MINE, EAST_MINE, NORTH_MINE, SOUTH_MINE,CORNER_MINE_LEFT_UP,CORNER_MINE_LEFT_DOWN,
  *		CORNER_MINE_RIGHT_UP,CORNER_MINE_RIGHT_DOWN :Boundaries Regions those must be simulated and sent to neighbors.</li>
  *	
  *	<li>LEFT_OUT, EAST_OUT, NORTH_OUT, SOUTH_OUT, CORNER_OUT_LEFT_UP_DIAG, CORNER_OUT_LEFT_DOWN_DIAG,
@@ -77,7 +77,7 @@ import sim.util.Int2D;
  *	<li> MYTOPIC CDDR (Corner Down Diagonal Right)</li>
  *</ul>
  *</li>
- *	</ul></p>
+ *	</ul>
  *
  * <PRE>
   ---------------------------------------------------------------------------------------
@@ -201,6 +201,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	 * @param initialGridValue the initial value that we want to set at grid at begin simulation 
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
+	 * @param isToroidal true if the field is toroidal
 	 */
 	public DDoubleGrid2DXY(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns,
 			double initialGridValue, String name, String prefix, boolean isToroidal) 

@@ -450,8 +450,8 @@ public class MasterServer implements MultiServerInterface{
 	 * 
 	 * Create zip of simulation's files
 	 * 
-	 * @param sim_id simulations' id of simulation 
-	 * @return
+	 * @param sim_id simulation id of simulation 
+	 * @return true if the copy is completed
 	 */
 	public synchronized boolean createZipForHistory(int sim_id){
 
@@ -494,6 +494,7 @@ public class MasterServer implements MultiServerInterface{
 	 * 
 	 * Create directory for a simulation 
 	 * @param simID name of directory to create
+	 * @param simName name of folder
 	 */
 	public void createSimulationDirectoryByID(String simName,int simID){
 		String createNameFolder=simName+simID;
@@ -742,8 +743,8 @@ public class MasterServer implements MultiServerInterface{
 
 	/**
 	 * Checks if a jar is not corrupted 
-	 * @param pathJar
-	 * @return
+	 * @param pathJar path of jar
+	 * @return true if the jar file is well-formed for dmason
 	 */
 	protected boolean validateSimulationJar(String pathJar)
 	{
@@ -852,7 +853,7 @@ public class MasterServer implements MultiServerInterface{
 	 * Send a simulation object to all workers 
 	 * 
 	 * @param sim Simulation to send
-	 * 
+	 * @return true if all workers have received the simulation 
 	 */
 	public synchronized boolean submitSimulation(Simulation sim) {
 
@@ -943,7 +944,7 @@ public class MasterServer implements MultiServerInterface{
 
 	/**
 	 * Send start command for a simulation to its workers 
-	 * @param id simulation's id to start
+	 * @param idSimulation simulation id to start
 	 */
 	public void start(int idSimulation){
 
@@ -959,7 +960,7 @@ public class MasterServer implements MultiServerInterface{
 
 	/**
 	 * Send stop command for a simulation to its workers
-	 * @param id simulation's id to stop 
+	 * @param idSimulation simulation id to stop 
 	 */
 	public void stop(int idSimulation) {
 		Simulation simulationToStop=getSimulationsList().get(idSimulation);
@@ -975,7 +976,7 @@ public class MasterServer implements MultiServerInterface{
 
 	/**
 	 * Send pause command for a simulation to its workers
-	 * @param id simulation's id to pause 
+	 * @param idSimulation simulation id to pause 
 	 */
 	public void pause(int idSimulation) {
 		Simulation simulationToPause=getSimulationsList().get(idSimulation);
@@ -993,6 +994,7 @@ public class MasterServer implements MultiServerInterface{
 	 * 
 	 * @param src   folder of simulation 
 	 * @param simid id of simulation 
+	 * @return if the copy is completed
 	 */
 	private boolean createCopyInHistory(String src, int simid){
 
@@ -1104,9 +1106,9 @@ public class MasterServer implements MultiServerInterface{
 
 	/**
 	 * Send a log request to workers for a simulation with a given id 
-	 * @param idSimulation
+	 * @param idSimulation the id of Simulation
 	 * @param typeReq logreq(a request for logs file) | history(a request for logs file when delete a simulation) 
-	 * @return
+	 * @return the path of folder
 	 */
 	public String logRequestForSimulationByID(int idSimulation, String typeReq){
 		LOGGER.info("Request for logs for simulation with id servlet"+idSimulation);
@@ -1126,8 +1128,8 @@ public class MasterServer implements MultiServerInterface{
 
 	/**
 	 * Copy new jar in master folder 
-	 * @param simPathJar 
-	 * @param jarSim
+	 * @param simPathJar the path of jar to copy
+	 * @param jarSim file item object
 	 */
 	public void copyJarOnDirectory(String simPathJar,FileItem jarSim){
 
@@ -1181,6 +1183,8 @@ public class MasterServer implements MultiServerInterface{
 	/**
 	 * Return the list of example simulations
 	 * 
+	 * @return return the list of example simulations
+	 * 
 	 */
 	public HashMap<String , String> getListExampleSimulationsJars(){
 		HashMap<String, String> list=new HashMap<String, String>();
@@ -1198,6 +1202,7 @@ public class MasterServer implements MultiServerInterface{
 	/**
 	 * Return list of submitted simulations
 	 * 
+	 * @return return list of submitted simulations
 	 */
 	public HashMap<String, String> getListCustomSimulationsJars(){
 		HashMap<String, String> list=new HashMap<String, String>();
@@ -1254,7 +1259,7 @@ public class MasterServer implements MultiServerInterface{
 	 * TESTING CLUSTER SECTION
 	 ***************************************************************************************************/
 	/** insert in start method 
-	 * @param id
+	 * @param id id of simulation
 	 */
 	private void waitEndSim(int id){
 		int paramTest=1;

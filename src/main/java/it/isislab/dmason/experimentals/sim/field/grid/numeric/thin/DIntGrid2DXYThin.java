@@ -15,7 +15,7 @@
    limitations under the License.
  */
 
-package it.isislab.dmason.experimentals.field.grid.numeric.thin;
+package it.isislab.dmason.experimentals.sim.field.grid.numeric.thin;
 
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;

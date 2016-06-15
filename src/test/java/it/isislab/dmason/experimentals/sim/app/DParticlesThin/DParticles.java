@@ -19,7 +19,7 @@ package it.isislab.dmason.experimentals.sim.app.DParticlesThin;
 
 import it.isislab.dmason.annotation.ThinAnnotation;
 import it.isislab.dmason.exception.DMasonException;
-import it.isislab.dmason.experimentals.field.grid.numeric.thin.DDoubleGrid2DThin;
+import it.isislab.dmason.experimentals.sim.field.grid.numeric.thin.DDoubleGrid2DThin;
 import it.isislab.dmason.experimentals.sim.field.grid.sparse.thin.DSparseGrid2DThin;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
