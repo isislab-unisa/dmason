@@ -4,8 +4,6 @@ import ec.util.MersenneTwisterFast;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
-import it.isislab.dmason.sim.engine.DistributedStateConnectionJMS;
-import it.isislab.dmason.sim.engine.DistributedStateConnectionMPI;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField;
@@ -57,60 +55,9 @@ public class StubDistributedState<E> extends DistributedState<E> {
 		
 		switch (typeOfConnection) {
 		case ConnectionType.fakeUnitTestJMS:
-			serviceJMS = new DistributedStateConnectionFake(this);
+			serviceJMS = new DistributedStateConnectionJMSFake(this);
 			isPureAMQ = true;
 			break;
-//		case ConnectionType.hybridActiveMQMPIBcast:
-//			serviceJMS = new DistributedStateConnectionJMS(this,
-//					params.getIp(), params.getPort());
-//			serviceMPI = new DistributedStateConnectionMPI(this,
-//					typeOfConnection);
-//			isHybrid = true;
-//			break;
-//		case ConnectionType.hybridActiveMQMPIGather:
-//			serviceJMS = new DistributedStateConnectionJMS(this,
-//					params.getIp(), params.getPort());
-//			serviceMPI = new DistributedStateConnectionMPI(this,
-//					typeOfConnection);
-//			isHybrid = true;
-//			break;
-//		case ConnectionType.hybridActiveMQMPIParallel:
-//			serviceJMS = new DistributedStateConnectionJMS(this,
-//					params.getIp(), params.getPort());
-//			serviceMPI = new DistributedStateConnectionMPI(this,
-//					typeOfConnection);
-//			isHybrid = true;
-//			break;
-//		case ConnectionType.hybridMPIMultipleThreads:
-//			serviceJMS = new DistributedStateConnectionJMS(this,
-//					params.getIp(), params.getPort());
-//			serviceMPI = new DistributedStateConnectionMPI(this,
-//					typeOfConnection);
-//			isHybrid = true;
-//			break;
-//		case ConnectionType.pureMPIBcast:
-//			serviceMPI = new DistributedStateConnectionMPI(this,
-//					typeOfConnection);
-//			isPureMPI = true;
-//			break;
-//		case ConnectionType.pureMPIGather:
-//			serviceMPI = new DistributedStateConnectionMPI(this,
-//					typeOfConnection);
-//			isPureMPI = true;
-//			break;
-//		case ConnectionType.pureMPIParallel:
-//			serviceMPI = new DistributedStateConnectionMPI(this,
-//					typeOfConnection);
-//			isPureMPI = true;
-//			break;
-//		case ConnectionType.pureMPIMultipleThreads:
-//			serviceMPI = new DistributedStateConnectionMPI(this,
-//					typeOfConnection);
-//			isPureMPI = true;
-//			break;
-//		case ConnectionType.fakeUnitTestJMS:
-//
-//			break;
 		default:
 			break;
 		}
@@ -131,35 +78,18 @@ public class StubDistributedState<E> extends DistributedState<E> {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see it.isislab.dmason.sim.engine.DistributedState#getField()
-	 */
 	@Override
 	public DistributedField<E> getField() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * it.isislab.dmason.sim.engine.DistributedState#addToField(it.isislab
-	 * .dmason.sim.engine.RemotePositionedAgent, java.lang.Object)
-	 */
 	@Override
 	public void addToField(RemotePositionedAgent<E> rm, E loc) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see it.isislab.dmason.sim.engine.DistributedState#getState()
-	 */
 	@Override
 	public SimState getState() {
 		// TODO Auto-generated method stub

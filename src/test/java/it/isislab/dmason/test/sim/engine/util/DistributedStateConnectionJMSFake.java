@@ -20,8 +20,8 @@ package it.isislab.dmason.test.sim.engine.util;
 import it.isislab.dmason.experimentals.util.management.globals.util.UpdateGlobalVarAtStep;
 import it.isislab.dmason.experimentals.util.trigger.Trigger;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
+import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.DistributedStateConnectionJMS;
-import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.test.util.connection.VirtualConnectionNFieldsWithVirtualJMS;
 import it.isislab.dmason.test.util.connection.VirtualMessageListener;
@@ -30,7 +30,6 @@ import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 
 import java.util.ArrayList;
 
-import javax.jms.JMSException;
 
 /**
  * 
@@ -46,13 +45,12 @@ import javax.jms.JMSException;
  * @author Carmine Spagnuolo
  * @author Luca Vicidomini       
  */
-public class DistributedStateConnectionFake<E> extends DistributedStateConnectionJMS<E> {
+public class DistributedStateConnectionJMSFake<E> extends DistributedStateConnectionJMS<E> {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private ConnectionJMS connectionJMS;
 	private ArrayList<VirtualMessageListener> listeners = new ArrayList<VirtualMessageListener>();
 	private FakeUpdaterThreadForListener u1;
 	private FakeUpdaterThreadForListener u2;
@@ -63,11 +61,10 @@ public class DistributedStateConnectionFake<E> extends DistributedStateConnectio
 	private FakeUpdaterThreadForListener u7;
 	private FakeUpdaterThreadForListener u8;
 
-	public DistributedStateConnectionFake(StubDistributedState dm) {
+	public DistributedStateConnectionJMSFake(DistributedState dm) {
 		super();
 		this.dm=dm;
 		connectionJMS = new VirtualConnectionNFieldsWithVirtualJMS();
-		
 		schedule=(DistributedMultiSchedule<E>)dm.schedule;
 		topicPrefix=dm.topicPrefix;
 		TYPE=dm.TYPE;
@@ -78,24 +75,22 @@ public class DistributedStateConnectionFake<E> extends DistributedStateConnectio
 		networkNumberOfSubscribersForField=dm.networkNumberOfSubscribersForField;
 	}
 
-//	public void setupfakeconnection(StubDistributedState dm)
-//	{
-//
-//		this.dm=dm;
-//		connectionJMS = new VirtualConnectionNFieldsWithVirtualJMS();
-//		
-//		schedule=(DistributedMultiSchedule<E>)dm.schedule;
-//		topicPrefix=dm.topicPrefix;
-//		TYPE=dm.TYPE;
-//		MODE=dm.MODE;
-//		NUMPEERS=dm.NUMPEERS;
-//		rows=dm.rows;
-//		columns=dm.columns;
-//		networkNumberOfSubscribersForField=dm.networkNumberOfSubscribersForField;
-//	}
-	
+	public DistributedStateConnectionJMSFake(DistributedState dm, String ip,String port, ConnectionJMS connectionJMS) {
+		this.ip = ip;
+		this.port = port;
+		this.dm=dm;
+		this.connectionJMS = connectionJMS;
 
-	
+
+		schedule=(DistributedMultiSchedule<E>)dm.schedule;
+		topicPrefix=dm.topicPrefix;
+		TYPE=dm.TYPE;
+		MODE=dm.MODE;
+		NUMPEERS=dm.NUMPEERS;
+		rows=dm.rows;
+		columns=dm.columns;
+		networkNumberOfSubscribersForField=dm.networkNumberOfSubscribersForField;
+	}
 
 	public void init_connection() {
 		
@@ -123,25 +118,9 @@ public class DistributedStateConnectionFake<E> extends DistributedStateConnectio
 				break;
 			}
 		}
-//		//only for global variables
+
 		dm.upVar=new UpdateGlobalVarAtStep(dm);
-//		ThreadVisualizationCellMessageListener thread = new ThreadVisualizationCellMessageListener(
-//				connectionJMS,
-//				((DistributedMultiSchedule) this.schedule));
-//		thread.start();
-//
-//		try {
-//			boolean a = connectionJMS.createTopic(topicPrefix+"GRAPHICS" + TYPE,
-//					schedule.fields2D.size());
-//			connectionJMS.subscribeToTopic(topicPrefix+"GRAPHICS" + TYPE);
-//			ThreadZoomInCellMessageListener t_zoom = new ThreadZoomInCellMessageListener(
-//					connectionJMS,
-//					TYPE.toString(), (DistributedMultiSchedule) this.schedule);
-//			t_zoom.start();
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+
 		if (toroidal_need)
 		{
 			connection_IS_toroidal();
@@ -151,24 +130,11 @@ public class DistributedStateConnectionFake<E> extends DistributedStateConnectio
 			connection_NO_toroidal();
 		}
 
-//		// Support for Global Parameters
-//		try {
-//			connectionJMS.subscribeToTopic(topicPrefix + "GLOBAL_REDUCED");
-//			UpdaterThreadForGlobalsListener ug = new UpdaterThreadForGlobalsListener(
-//					connectionJMS,
-//					topicPrefix + "GLOBAL_REDUCED",
-//					schedule.fields2D,
-//					listeners);
-//			ug.start();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-
 	}
 	
 	protected void connection_IS_toroidal() {
 
-		if (MODE == DistributedField2D.UNIFORM_PARTITIONING_MODE) { // HORIZONTAL_MODE
+		if (MODE == DistributedField2D.UNIFORM_PARTITIONING_MODE) {
 			int i = TYPE.pos_i, j = TYPE.pos_j;
 			try {
 
@@ -900,60 +866,6 @@ public class DistributedStateConnectionFake<E> extends DistributedStateConnectio
 				e.printStackTrace();
 			}
 		}
-
-	}
-
-	public CellType getType() {
-		return TYPE;
-	}
-
-	public ConnectionJMS getConnection() {
-		return connectionJMS;
-	}
-
-
-	public Trigger getTrigger() {
-		return TRIGGER;
-	}
-
-	//added for close connection of current simulation after reset
-	public void closeConnectionJMS() throws JMSException
-	{
-		connectionJMS.close();
-	}
-
-	public void init_service_connection() {
-//		dm.upVar=new UpdateGlobalVarAtStep(dm);
-//	
-//		ThreadVisualizationCellMessageListener thread = new ThreadVisualizationCellMessageListener(
-//				connectionJMS,
-//				((DistributedMultiSchedule) this.schedule));
-//		thread.start();
-//
-//		try {
-//			boolean a = connectionJMS.createTopic(topicPrefix+"GRAPHICS" + TYPE,
-//					schedule.fields2D.size());
-//			connectionJMS.subscribeToTopic(topicPrefix+"GRAPHICS" + TYPE);
-//			ThreadZoomInCellMessageListener t_zoom = new ThreadZoomInCellMessageListener(
-//					connectionJMS,
-//					TYPE.toString(), (DistributedMultiSchedule) this.schedule);
-//			t_zoom.start();
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		// Support for Global Parameters
-//		try {
-//			connectionJMS.subscribeToTopic(topicPrefix + "GLOBAL_REDUCED");
-//			UpdaterThreadForGlobalsListener ug = new UpdaterThreadForGlobalsListener(
-//					connectionJMS,
-//					topicPrefix + "GLOBAL_REDUCED",
-//					schedule.fields2D,
-//					listeners);
-//			ug.start();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
 
 	}
 }
