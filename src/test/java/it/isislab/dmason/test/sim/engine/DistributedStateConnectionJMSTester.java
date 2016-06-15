@@ -262,7 +262,6 @@ public class DistributedStateConnectionJMSTester {
 					for(int j=0; j < columns; j++){
 						setEnviroment(rows, columns, DistributedField2D.UNIFORM_PARTITIONING_MODE, i, j, isToroidal);
 						assertNotNull(getSubscriberTopicsForNoToroidal(i,j,rows,columns));
-						System.out.println(i+"-"+j+" "+getSubscriberTopicsForNoToroidal(i,j,rows,columns));
 						assertTrue(stConnection.topicsSubscribed.containsAll(getSubscriberTopicsForNoToroidal(i, j,rows,columns)));
 					}
 	}
