@@ -45,10 +45,10 @@ public class DMasonClassLoader extends ClassLoader {
 	/**
 	 * Find the specific class
 	 * 
-	 * @param pathname of class. Class name without .class extension
+	 * @param name of class. Class name without .class extension
 	 * 
 	 */
-	protected Class findClass(String name) throws ClassNotFoundException
+	protected Class<?> findClass(String name) throws ClassNotFoundException
 	{
 		byte[] classBytes = null;
 		try
@@ -62,7 +62,7 @@ public class DMasonClassLoader extends ClassLoader {
 			throw new ClassNotFoundException(name);
 		}
 
-		Class cl = defineClass(null, classBytes, 0 ,classBytes.length);
+		Class<?> cl = defineClass(null, classBytes, 0 ,classBytes.length);
 
 		if(cl == null)
 		{
@@ -75,7 +75,7 @@ public class DMasonClassLoader extends ClassLoader {
 
 	/**
 	 * Load the bytes of class 
-	 * @param classname without .class
+	 * @param name class name without .class
 	 * @return byte[] with bytecode of class.
 	 */
 	private byte[] loadClassBytes(String name) throws IOException

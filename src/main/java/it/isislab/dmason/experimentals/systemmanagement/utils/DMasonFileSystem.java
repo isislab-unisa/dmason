@@ -50,7 +50,7 @@ public class DMasonFileSystem {
 
     /**
      * Remove the folder from the file system
-     * 
+     * @param file file to delete
      */
 	public static void delete(File file) {
 
@@ -93,7 +93,7 @@ public class DMasonFileSystem {
      *  
      * @param src  directory to copy
      * @param dest destination path
-     * @throws IOException
+     * @throws IOException the exception
      */
     public static void copyFolder(File src, File dest)
     	throws IOException{
