@@ -174,17 +174,7 @@ public class Worker implements Observer {
 
 		System.out.println("connected.");
 	}
-	//	private boolean MASTER_ACK=false;
-	//	//private MasterLostChecker masterlost=null;
-	//	final Lock lock = new ReentrantLock();
-	//	final Condition waitMaster  = lock.newCondition(); 
-	//	//private MasterChecker masterchecker=null;
-	//
-	//	//private boolean CONNECTED=true;
-	//
-	//	final Lock lockconnection = new ReentrantLock();
-	//	final Condition waitconnection  = lockconnection.newCondition(); 
-
+	
 	/**
 	 * EXPERIMENTAL
 	 */
@@ -213,51 +203,7 @@ public class Worker implements Observer {
 
 		}
 
-		//		if (obs==conn){
-		//
-		//			if(!conn.isConnected()){
-		//
-		//				System.exit(0);
-		//				CONNECTED=false;
-		//				(new Thread(){
-		//					public void run() {
-		//
-		//						try {
-		//							masterchecker.interrupt();
-		//							connectToMessageBroker();
-		//							try {
-		//
-		//								lockconnection.lock();
-		//								CONNECTED=true;
-		//								waitconnection.signalAll();
-		//
-		//							}finally {
-		//								lockconnection.unlock();
-		//							}
-		//
-		//						} catch (IOException e) {
-		//							e.printStackTrace();
-		//						}
-		//					};
-		//				}).start();
-		//
-		//
-		//				try {
-		//					lockconnection.lock();
-		//					while(!CONNECTED)
-		//					{
-		//						waitconnection.await();
-		//
-		//					}
-		//				} catch (InterruptedException e) {
-		//					e.printStackTrace();
-		//				}finally {
-		//					lockconnection.unlock();
-		//				}
-		//
-		//			}
-		//
-		//		}
+	
 	}
 	/**
 	 * 
@@ -280,48 +226,6 @@ public class Worker implements Observer {
 
 		}
 	}
-	//
-	//	class MasterChecker extends Thread{
-	//
-	//		public MasterChecker() {}
-	//		@Override
-	//		public void run() {
-	//			do
-	//			{
-	//				System.out.println("Start Master monitor...");
-	//				if(masterlost==null)
-	//				{
-	//					masterlost=new MasterLostChecker();
-	//					masterlost.start();
-	//					System.out.println("done.");
-	//					try {
-	//						lock.lock();
-	//						MASTER_ACK=false;
-	//						while(!MASTER_ACK)
-	//						{
-	//							waitMaster.await();
-	//						}
-	//						if(masterlost!=null)
-	//						{
-	//							masterlost.interrupt();
-	//							masterlost=null;
-	//						}
-	//					} catch (InterruptedException e) {
-	//						e.printStackTrace();
-	//					}finally{
-	//						lock.unlock();
-	//					}
-	//				}
-	//				try {
-	//					Thread.sleep(2000);
-	//				} catch (InterruptedException e) {
-	//					e.printStackTrace();
-	//				}
-	//
-	//			}while(true);
-	//
-	//		}
-	//	}
 
 	/**
 	 * Wait for master connection, and save Socket port node <-send- master
@@ -662,7 +566,7 @@ public class Worker implements Observer {
 
 			while(i!=params.getMaxStep() && run)
 			{   
-				if(i%500==0){LOGGER.info("STEP NUMBER "+dis.schedule.getSteps()+" for simid"+sim_id );}
+				if(i%500==0){LOGGER.info("STEP NUMBER "+dis.schedule.getSteps()+" for simid"+sim_id );}//testing
 				try{
 					lock.lock();
 
@@ -835,13 +739,12 @@ public class Worker implements Observer {
 
 	}
 
-	/**
-	 * Get Distributed state instance of simulation from jar file	 * @param params
-	 * @param prefix
-	 * @param pathJar
-	 * @return
-	 */
-//	@SuppressWarnings({ "rawtypes", "unused", "resource" })
+//	/**
+//	 * Get Distributed state instance of simulation from jar file	 * @param params
+//	 * @param prefix
+//	 * @param pathJar
+//	 * @return
+//	 */
 //	@Deprecated
 //	private DistributedState makeSimulation(GeneralParam params, String prefix,String pathJar)
 //	{
