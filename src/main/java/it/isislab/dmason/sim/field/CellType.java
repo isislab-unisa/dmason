@@ -75,4 +75,16 @@ public class CellType implements Serializable
 	
 	@Override
 	public String toString() { return pos_i+"-"+pos_j; }
+
+	@Override
+	public boolean equals(Object obj) {
+		CellType c;
+		if (obj instanceof CellType){
+			c = (CellType)obj;
+			return (c.pos_i == this.pos_i) && (c.pos_j == this.pos_j); 
+		}
+		return false;
+	}
+	
+	
 }

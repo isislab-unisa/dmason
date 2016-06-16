@@ -11,13 +11,10 @@ import it.isislab.dmason.sim.engine.DistributedStateConnectionJMS;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.test.sim.engine.util.DistributedStateConnectionJMSFake;
-import it.isislab.dmason.test.sim.engine.util.FakeUpdaterThreadForListener;
 import it.isislab.dmason.test.sim.engine.util.StubDistributedState;
 import it.isislab.dmason.test.sim.field.utils.StubDistributedField2D;
 import it.isislab.dmason.test.util.connection.StubConnectionJMS;
-import it.isislab.dmason.test.util.connection.VirtualConnection;
-import it.isislab.dmason.test.util.connection.VirtualConnectionNFieldsWithVirtualJMS;
-import it.isislab.dmason.util.connection.jms.ConnectionJMS;
+
 
 /**
  * This is the DistributedStateConnectionJMS's tester.
@@ -215,10 +212,10 @@ public class DistributedStateConnectionJMSTester {
 	}
 	
 	/**
-	 * Verify if the topics are instantiated for a simply, static 3x3 non-toroidal configuration
+	 * Verify if the topics have been created for a RxC non-toroidal configuration
 	 * */
 	@Test
-	public void testInstantiatedTopicsNoToroidalSquareMode() { 
+	public void testCreationTopicsForNoToroidalField() { 
 		int R=3,C=3;
 		boolean isToroidal= false;
 		for(int rows=1; rows <=R; rows++)
@@ -232,10 +229,10 @@ public class DistributedStateConnectionJMSTester {
 	}
 	
 	/**
-	 * Verify if the topics are instantiated for a simply, static 3x3 toroidal configuration
+	 * Verify if the topics have been created for a RxC toroidal configuration
 	 * */
 	@Test
-	public void testInstantiatedTopicsToroidalSquareMode() { 
+	public void testCreationTopicsForToroidalField() { 
 		int R=3,C=3;
 		boolean isToroidal= true;
 		for(int rows=1; rows <=R; rows++)
@@ -250,10 +247,10 @@ public class DistributedStateConnectionJMSTester {
 	
 	
 	/**
-	 * Verify if the topics are instantiated for a simply, static 3x3 non-toroidal configuration
+	 * Verify if the subscribers have been created for a RxC non-toroidal configuration
 	 * */
 	@Test
-	public void testSubscribeTopicsNoToroidal() { 
+	public void testSubscribeTopicsForNoToroidalField() { 
 		int R=3,C=3;
 		boolean isToroidal= false;
 		for(int rows=1; rows <=R; rows++)
@@ -267,10 +264,10 @@ public class DistributedStateConnectionJMSTester {
 	}
 	
 	/**
-	 * Verify if the topics are instantiated for a simply, static 3x3 non-toroidal configuration
+	 * Verify if the subscribers have been created for a RxC toroidal configuration
 	 * */
 	@Test
-	public void testSubscribeTopicsToroidal() { 
+	public void testSubscribeTopicsForToroidalField() { 
 		int R=3,C=3;
 		boolean isToroidal= true;
 		for(int rows=1; rows <=R; rows++)
