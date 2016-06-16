@@ -88,7 +88,7 @@ Run maven install of DMASON project. Under **target** folder you can find the fo
 - *DMASON-3.1.jar*
 - *resources* folder
  
-You can create a folder called DMASON with these files. Now copy this folder on all nodes of cluster. 
+You can create a folder called DMASON with these files. Now you copy this folder on all nodes of cluster. 
 
 ### Configure Activemq
 
