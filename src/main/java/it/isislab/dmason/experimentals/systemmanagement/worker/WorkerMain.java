@@ -18,6 +18,7 @@ package it.isislab.dmason.experimentals.systemmanagement.worker;
 
 
 /**
+ * Main class for Worker
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo
