@@ -473,10 +473,12 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 
 	/**
 	 * Provide the double value shift logic among the peers
-	 * @param d
-	 * @param l
-	 * @param sm
-	 * @return
+	 *
+	 * @param l location
+	 * @param remoteValue remote value
+	 * @param sm schedule
+	 * @throws DMasonException the exception 
+	 * @return true if is correct
 	 */
 	@Override
 	public boolean setDistributedObjectLocation( Int2D l, Object remoteValue ,SimState sm) throws DMasonException{

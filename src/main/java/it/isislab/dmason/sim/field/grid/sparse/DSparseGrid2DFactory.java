@@ -26,8 +26,6 @@ import it.isislab.dmason.experimentals.sim.field.grid.sparse.thin.DSparseGrid2DY
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.DistributedField2D;
-import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
-import it.isislab.dmason.sim.field.continuous.DContinuousNonUniform;
 import sim.engine.SimState;
 
 /**
@@ -58,6 +56,7 @@ public final class DSparseGrid2DFactory
 	 * @param MODE The mode of simulation (horizontal or squared, balanced or not)
 	 * @param name ID of a region
 	 * @param topicPrefix Prefix for the name of topics used only in Batch mode
+	 * @param isToroidal true if the field is a toroidal 
 	 * @return The right DSparseGrid2D
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */
@@ -81,50 +80,50 @@ public final class DSparseGrid2DFactory
 		if(MODE==DistributedField2D.UNIFORM_PARTITIONING_MODE )
 		{
 
-			 
+
 			DistributedField2D field=new DSparseGrid2DXY(width, height,sm, aoi, i, j, rows,columns, name,topicPrefix,isToroidal);
-			
+
 			((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 
 			return (DSparseGrid2D)field;
 
 
 		}
-		
-			else
-				if(MODE==DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE)
-				{
-					if(rows!=columns){throw new DMasonException("In square mode rows and columns must be equals!");}
-					if(((width% columns == 0) && (height% rows == 0)) && 
-							(((width/ columns)%3 == 0) && ((height/ rows)%3 == 0)))
-					{
-						DistributedField2D field = new DSparseGrid2DXYLB(width, height,sm, aoi, i, j, rows,columns, name,topicPrefix);
-						field.setToroidal(isToroidal);
-						((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
-						return (DSparseGrid2D)field;
-					}
-					else
-						throw new DMasonException("Illegal width or height dimension for NUM_PEERS:"+(rows*columns));
-				}
-				else
-					if(MODE==DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
-					{if(rows!=1){throw new DMasonException("Illegal rows dimension for horizontal balanced mode, it must have one row");}
 
-					DistributedField2D field=new DSparseGrid2DYLB(width, height,sm, aoi, i, j, rows,columns, name,topicPrefix);
+		else
+			if(MODE==DistributedField2D.SQUARE_BALANCED_DISTRIBUTION_MODE)
+			{
+				if(rows!=columns){throw new DMasonException("In square mode rows and columns must be equals!");}
+				if(((width% columns == 0) && (height% rows == 0)) && 
+						(((width/ columns)%3 == 0) && ((height/ rows)%3 == 0)))
+				{
+					DistributedField2D field = new DSparseGrid2DXYLB(width, height,sm, aoi, i, j, rows,columns, name,topicPrefix);
 					field.setToroidal(isToroidal);
 					((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
-
 					return (DSparseGrid2D)field;
+				}
+				else
+					throw new DMasonException("Illegal width or height dimension for NUM_PEERS:"+(rows*columns));
+			}
+			else
+				if(MODE==DistributedField2D.HORIZONTAL_BALANCED_DISTRIBUTION_MODE)
+				{if(rows!=1){throw new DMasonException("Illegal rows dimension for horizontal balanced mode, it must have one row");}
+
+				DistributedField2D field=new DSparseGrid2DYLB(width, height,sm, aoi, i, j, rows,columns, name,topicPrefix);
+				field.setToroidal(isToroidal);
+				((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
+
+				return (DSparseGrid2D)field;
 
 
-					}
-					else 
-					{
-						throw new DMasonException("Illegal Distribution Mode");
-					}
+				}
+				else 
+				{
+					throw new DMasonException("Illegal Distribution Mode");
+				}
 
 	}
-	
+
 	public static final DSparseGrid2D createDSparseGrid2DNonUniform(int width, int height,SimState sm,int aoi, int id,int P, int MODE, String name, String topicPrefix, boolean isToroidal)throws DMasonException
 	{	
 		if(MODE == DistributedField2D.NON_UNIFORM_PARTITIONING_MODE)
@@ -135,7 +134,7 @@ public final class DSparseGrid2DFactory
 			return (DSparseGrid2D)field;
 		}return null;
 	}
-	
+
 
 	/**
 	 * Method used only for Thin simulations
@@ -151,6 +150,7 @@ public final class DSparseGrid2DFactory
 	 * @param MODE The mode of simulation (horizontal or squared, balanced or not)
 	 * @param name ID of a region
 	 * @param topicPrefix Prefix for the name of topics used only in Batch mode
+	 * @param isToroidal true if the field is a toroidal 
 	 * @return The right DSparseGrid2DThin
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */

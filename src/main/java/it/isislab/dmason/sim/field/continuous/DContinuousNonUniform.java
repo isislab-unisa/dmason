@@ -136,7 +136,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 	 * @param sm The SimState of simulation
 	 * @param max_distance maximum shift distance of the agents
 	 * @param id the id 
-	 * @param p number of partitioning
+	 * @param P number of partitioning
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */

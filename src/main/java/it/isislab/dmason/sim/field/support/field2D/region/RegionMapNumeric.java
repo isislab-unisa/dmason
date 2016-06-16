@@ -93,7 +93,6 @@ public class RegionMapNumeric<E,F> implements Serializable{
 	 * @param corner_out_down_right_diag_down region
 	 * 
 	 * 
-	 * @return a region of distribuited field
 	 */
 	public RegionMapNumeric(RegionNumeric<E, F> left_out, RegionNumeric<E, F> left_mine,	RegionNumeric<E, F> right_mine, 
 			RegionNumeric<E, F> right_out, RegionNumeric<E, F> down_mine, RegionNumeric<E, F> down_out,

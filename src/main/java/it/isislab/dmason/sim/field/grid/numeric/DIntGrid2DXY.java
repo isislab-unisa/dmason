@@ -50,7 +50,7 @@ import sim.util.Int2D;
  *  It represents the field managed by a single peer.
  *  This is an example for a square mode distribution with 9 peers (only to distinguish the regions):
  *  (for code down)
- *  <p>
+ *  </p>
  *
  *	<ul>
  *	<li>MYFIELD : Region to be simulated by peer.</li>
@@ -75,7 +75,7 @@ import sim.util.Int2D;
  *	<li> MYTOPIC CDDR (Corner Down Diagonal Right)</li>
  *</ul>
  *</li>
- *	</ul></p>
+ *	</ul>
  *
  * <PRE>
  *------------------------------------------------------------------------------------
@@ -172,6 +172,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	 * @param initialGridValue the initial value that we want to set at grid at begin simulation 
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
+	 * @param isToroidal return true if the field is toroidal
 	 */
 	public DIntGrid2DXY(int width, int height,SimState sm,int max_distance,int i,int j,int rows,int columns, 
 			Integer initialGridValue, String name, String prefix, boolean isToroidal) 
@@ -637,10 +638,10 @@ public class DIntGrid2DXY extends DIntGrid2D {
 
 	/**
 	 * Provide the int value shift logic among the peers
-	 * @param d
-	 * @param l
-	 * @param sm
-	 * @return
+	 * @param remoteValue the value 
+	 * @param l the location
+	 * @param sm the simstate
+	 * @return true if it is correct 
 	 */
 	public boolean setDistributedObjectLocation( Int2D l, Object remoteValue ,SimState sm) throws DMasonException{
 

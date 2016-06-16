@@ -147,6 +147,7 @@ public class DDoubleGrid2DFactory {
 	 * @param MODE The mode of simulation (horizontal or squared, balanced or not)
 	 * @param initialGridValue Starting value of the matrix
 	 * @param fixed If it's true the field is read-only
+	 * @param name name of field
 	 * @param topicPrefix Prefix for the name of topics used only in Batch mode
 	 * @param isToroidal true if it is a toroidal field
 	 * @return The right DSparseGrid2DThin

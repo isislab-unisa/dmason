@@ -54,7 +54,6 @@ import sim.util.Double2D;
  *  (for code down)
  *  </p>
  *  
- *  <p>
  *	<ul>
  *	<li>MYFIELD : Region to be simulated by peer.</li>
  *
@@ -79,7 +78,6 @@ import sim.util.Double2D;
  *</ul>
  *</li>
  *</ul>
- *</p>
  *	
  * <PRE>
  ---------------------------------------------------------------------------------------

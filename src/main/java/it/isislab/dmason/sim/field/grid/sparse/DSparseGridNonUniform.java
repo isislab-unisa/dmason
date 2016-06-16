@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.logging.Logger;
-
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.sim.field.support.globals.GlobalInspectorHelper;
 import it.isislab.dmason.experimentals.sim.field.support.globals.GlobalParametersHelper;
@@ -41,7 +40,6 @@ import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.TraceableField;
-import it.isislab.dmason.sim.field.continuous.DContinuousNonUniform;
 import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegion;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
@@ -121,15 +119,12 @@ public class DSparseGridNonUniform extends DSparseGrid2D implements TraceableFie
 	/**
 	 * Constructor of class with paramaters:
 	 * 
-	 * @param discretization the discretization of the field
 	 * @param width field's width  
 	 * @param height field's height
 	 * @param sm The SimState of simulation
 	 * @param max_distance maximum shift distance of the agents
-	 * @param i i position in the field of the cell
-	 * @param j j position in the field of the cell
-	 * @param rows number of rows in the division
-	 * @param columns number of columns in the division
+	 * @param id the id 
+	 * @param P number of partitioning
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
 	 */
@@ -280,10 +275,10 @@ public class DSparseGridNonUniform extends DSparseGrid2D implements TraceableFie
 	/**  
 	 * Provide the shift logic of the agents among the peers
 	 * @param location The new location of the remote agent
-	 * @param rm The remote agent to be stepped
+	 * @param remoteObject The remote agent to be stepped
 	 * @param sm SimState of simulation
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
-	 * @throws DMasonException 
+	 * @throws DMasonException the exception
 	 */
 	@Override
 	public boolean setDistributedObjectLocation(final Int2D location,Object remoteObject,SimState sm) throws DMasonException
@@ -906,6 +901,7 @@ public class DSparseGridNonUniform extends DSparseGrid2D implements TraceableFie
 
 	/**
 	 * Used by SociallyDamaginBehaviour because ...
+	 * @return all visible agent
 	 */
 	public HashMap<String,EntryAgent<Int2D>> getAllVisibleAgent() {
 
@@ -947,8 +943,8 @@ public class DSparseGridNonUniform extends DSparseGrid2D implements TraceableFie
 	 * 
 	 * This method insert all agents in the field and in the corresponding region,
 	 * for this method you must use position of the actual cell
-	 * @param agents
-	 * @return
+	 * @param agents the agents
+	 * @return true if correct
 	 */
 	public boolean resetAddAll(ArrayList<RemotePositionedAgent<Int2D>> agents)
 	{

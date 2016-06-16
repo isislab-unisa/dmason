@@ -160,10 +160,12 @@ public class DistributedMultiSchedule<E> extends Schedule
 	}
 	/**
 	 * The same method of MASON scheduleOnce(Steppable event) but for non uniform partitioning
-	 * @param event
-	 * @param x
-	 * @param y
-	 * @return
+	 * @param event remote agent
+	 * @param x (x,y) coordinates
+	 * @param y (x,y) coordinates
+	 * @param pos the position
+	 * @param onField the field
+	 * @return true if correct
 	 */
 	public boolean scheduleOnceNonUniform(RemotePositionedAgent<E> event,double x, double y,DistributedField2D<E> onField, E pos) {
 		return  tree_partitioning.insert(event, x, y) && (map_agents_on_fields.put(event, onField)==null) && (map_agents_on_position.put(event, pos)==null);

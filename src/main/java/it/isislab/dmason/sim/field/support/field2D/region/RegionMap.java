@@ -98,8 +98,6 @@ public class RegionMap<E,F> implements Serializable
 	 * @param corner_out_down_right_diag_right region
 	 * @param corner_out_down_right_diag_down region
 	 * 
-	 * 
-	 * @return a region of distribuited field
 	 */
 	public RegionMap(Region<E, F> left_out, Region<E, F> left_mine,	Region<E, F> right_mine, 
 			Region<E, F> right_out, Region<E, F> down_mine, Region<E, F> down_out,

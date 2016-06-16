@@ -29,9 +29,7 @@ import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.CellType;
-import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.TraceableField;
-import it.isislab.dmason.sim.field.continuous.region.RegionDouble;
 import it.isislab.dmason.sim.field.grid.region.RegionInteger;
 import it.isislab.dmason.sim.field.support.field2D.DistributedRegion;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
@@ -39,7 +37,6 @@ import it.isislab.dmason.sim.field.support.field2D.UpdateMap;
 import it.isislab.dmason.sim.field.support.field2D.region.Region;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
-
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -48,9 +45,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.logging.Logger;
-
-import javax.xml.ws.soap.MTOMFeature;
-
 import sim.engine.SimState;
 import sim.util.Int2D;
 
@@ -61,7 +55,7 @@ import sim.util.Int2D;
  *  It represents the field managed by a single peer.
  *  This is an example for a square mode distribution with 9 peers (only to distinguish the regions):
  *  (for code down)
- *  <p>
+ *  </p>
  *
  *	<ul>
  *	<li>MYFIELD : Region to be simulated by peer.</li>
@@ -86,7 +80,7 @@ import sim.util.Int2D;
  *	<li> MYTOPIC CDDR (Corner Down Diagonal Right)</li>
  *</ul>
  *</li>
- *	</ul></p>
+ *	</ul>
  *	
  * <PRE>
  ---------------------------------------------------------------------------------------
@@ -180,14 +174,13 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	// -----------------------------------------------------------------------
 	private ZoomArrayList<RemotePositionedAgent> tmp_zoom = new ZoomArrayList<RemotePositionedAgent>();
 
-	
+
 
 	/**
 	 * Constructor of class with paramaters:
 	 * 
-	 * @param discretization the discretization of the field
-	 * @param width field's width  
-	 * @param height field's height
+	 * @param width field width  
+	 * @param height field height
 	 * @param sm The SimState of simulation
 	 * @param max_distance maximum shift distance of the agents
 	 * @param i i position in the field of the cell
@@ -196,6 +189,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 	 * @param columns number of columns in the division
 	 * @param name ID of a region
 	 * @param prefix Prefix for the name of topics used only in Batch mode
+	 * @param isToroidal return true if the field is toroidal
 	 */
 	public DSparseGrid2DXY(int width, int height, SimState sm, int max_distance, int i, int j, int rows, int columns, String name, String prefix,boolean isToroidal) {
 		super(width,height);
@@ -212,7 +206,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 
 		setToroidal(isToroidal);
 		createRegions();
-		
+
 
 
 		// Initialize variables for GlobalInspector
@@ -343,7 +337,7 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 				numNeighbors = 1;
 				rmap.WEST_OUT=new RegionInteger(own_x-AOI,own_y,own_x, own_y+my_height);
 			}
-			
+
 		}else 
 			if(rows>1 && columns == 1){ // Horizontal partitionig
 				numNeighbors =2;
@@ -425,11 +419,11 @@ public class DSparseGrid2DXY extends DSparseGrid2D implements TraceableField
 			}
 	}
 
-private void makeToroidalSections() {
-		
+	private void makeToroidalSections() {
+
 		numNeighbors = 8;
 		myfield=new RegionInteger(own_x+AOI,own_y+AOI, own_x+my_width-AOI , own_y+my_height-AOI);
-		
+
 
 		//corner up left
 		rmap.NORTH_WEST_OUT=new RegionInteger((own_x-AOI + width)%width, (own_y-AOI+height)%height, 
@@ -464,13 +458,13 @@ private void makeToroidalSections() {
 
 
 		rmap.SOUTH_MINE=new RegionInteger(own_x,own_y+my_height-AOI,own_x+my_width, (own_y+my_height));
-		
+
 		rmap.NORTH_OUT=new RegionInteger((own_x+width)%width, (own_y - AOI+height)%height,
 				(own_x+ my_width +width)%width==0?width:(own_x+ my_width +width)%width,(own_y+height)%height==0?height:(own_y+height)%height);
 
 		rmap.SOUTH_OUT=new RegionInteger((own_x+width)%width,(own_y+my_height+height)%height,
 				(own_x+my_width+width)%width==0?width:(own_x+my_width+width)%width, (own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
-		
+
 		//if square partitioning
 		if(rows==1 && columns >1){
 			numNeighbors = 6;
@@ -504,7 +498,7 @@ private void makeToroidalSections() {
 	/**  
 	 * Provide the shift logic of the agents among the peers
 	 * @param location The new location of the remote agent
-	 * @param rm The remote agent to be stepped
+	 * @param remoteObject The remote agent to be stepped
 	 * @param sm SimState of simulation
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
 	 */
@@ -586,7 +580,7 @@ private void makeToroidalSections() {
 			}   
 
 
-		/*	ArrayList<String> actualVar=null;
+			/*	ArrayList<String> actualVar=null;
 			if(conn!=null)
 				actualVar=((DistributedState<?>)sm).upVar.getAllGlobalVarForStep(sm.schedule.getSteps());
 			//upVar.getAllGlobalVarForStep(sm.schedule.getSteps()-1);
@@ -1058,7 +1052,7 @@ private void makeToroidalSections() {
 	public Integer getOwn_y() {	return own_y; }
 	public void setOwn_y(Integer own_y) { this.own_y = own_y; }
 
-/*	@Override
+	/*	@Override
 	public ArrayList<MessageListener> getLocalListener() {
 		return listeners;
 	}*/
@@ -1112,7 +1106,7 @@ private void makeToroidalSections() {
 	}
 
 	/**
-	 * 
+	 * @return all visible agent
 	 */
 	public HashMap<String,EntryAgent<Int2D>> getAllVisibleAgent() {
 
@@ -1152,8 +1146,8 @@ private void makeToroidalSections() {
 	 * 
 	 * This method insert all agents in the field and in the corresponding region,
 	 * for this method you must use position of the actual cell
-	 * @param agents
-	 * @return
+	 * @param agents the agents
+	 * @return if it is correct
 	 */
 	public boolean resetAddAll(ArrayList<RemotePositionedAgent<Int2D>> agents)
 	{

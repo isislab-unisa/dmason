@@ -57,6 +57,7 @@ public class DIntGrid2DFactory {
 	 * @param fixed If it's true the field is read-only
 	 * @param name ID of a region
 	 * @param topicPrefix Prefix for the name of topics used only in Batch mode
+	 * @param isToroidal true if the field is toroidal 
 	 * @return The right DSparseGrid2D
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */
@@ -152,6 +153,7 @@ public class DIntGrid2DFactory {
 	 * @param fixed If it's true the field is read-only
 	 * @param name ID of a region
 	 * @param topicPrefix Prefix for the name of topics used only in Batch mode
+	 * @param isToroidal true if the field is toroidal 
 	 * @return The right DSparseGrid2DThin
 	 * @throws DMasonException if the ratio between field dimensions and the number of peers is not right
 	 */

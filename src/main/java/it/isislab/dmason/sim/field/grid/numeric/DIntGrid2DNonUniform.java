@@ -111,12 +111,25 @@ public class DIntGrid2DNonUniform extends DIntGrid2D implements TraceableField{
 	private int numNeighbors;
 	private QuadTree myCell;
 	
+	
+	
+	
 	/**
-	 * 
+	 *Constructor
+	 *
 	 * @author Michele Carillo
 	 * @author Carmine Spagnuolo
-	 * @author Flavio Serrapica
-	 *
+	 * @author Flavio Serrapica 
+	 * 
+	 * @param width width of field
+	 * @param height height of field
+	 * @param sm simstate
+	 * @param aoi area of interest 
+	 * @param id the id of field 
+	 * @param P number of celss 
+	 * @param initialGridValue initialization value 
+	 * @param name name of field
+	 * @param prefix prefix for topic
 	 */
 	public DIntGrid2DNonUniform(int width, int height, SimState sm, int aoi, int id, int P, Integer initialGridValue, String name, String prefix) {
 		super(width, height,initialGridValue);
@@ -239,11 +252,11 @@ public class DIntGrid2DNonUniform extends DIntGrid2D implements TraceableField{
 	
 	/**  
 	 * Provide the shift logic of the agents among the peers
-	 * @param location The new location of the remote agent
-	 * @param rm The remote agent to be stepped
+	 * @param l The new location of the remote agent
+	 * @param remoteValue The remote agent to be stepped
 	 * @param sm SimState of simulation
 	 * @return 1 if it's in the field, -1 if there's an error (setObjectLocation returns null)
-	 * @throws DMasonException 
+	 * @throws DMasonException the exception
 	 */
 	@Override
 	public boolean setDistributedObjectLocation(final Int2D l, Object remoteValue ,SimState sm) throws DMasonException

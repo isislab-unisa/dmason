@@ -25,7 +25,6 @@ import java.io.Serializable;
  * @author Carmine Spagnuolo
  * @author Flavio Serrapica
  *
- * @param <E> 
  */
 public interface RemotePositionedAgent<E> extends RemoteAgent, Serializable{
 
@@ -39,21 +38,21 @@ public interface RemotePositionedAgent<E> extends RemoteAgent, Serializable{
 	/**
 	 * set agent on position
 	 * 
-	 * @param pos position of 
+	 * @param pos position of  agent
 	 */
 	public void setPos(E pos) ; 
 	
 	/**
 	 * Return the id of an agent
 	 * 
-	 * @return
+	 * @return the id
 	 */
 	public String getId();
 
 	/**
 	 * Set id of agent
 	 * 
-	 * @param id t
+	 * @param id the id of agent
 	 */
 	public void setId(String id);
 	
