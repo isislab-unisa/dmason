@@ -22,15 +22,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
-import org.apache.commons.math.ode.IntegratorException;
-import org.json.simple.JSONObject;
 import it.isislab.dmason.experimentals.systemmanagement.master.MasterServer;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 
 /**
+ * Prompt Controller
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo

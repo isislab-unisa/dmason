@@ -28,6 +28,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 /**
+ * Testing class
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo

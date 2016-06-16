@@ -184,7 +184,11 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-
+    /**
+     * 
+     * Check info from workers still alive 
+     *
+     */
 	class TTLWorker extends Thread{
 		@Override
 		public void run() {
@@ -366,7 +370,7 @@ public class MasterServer implements MultiServerInterface{
 	/**
 	 * Connects Master to ActivemQ
 	 * Connection on ActivemQ
-	 * @return
+	 * @return true id connection is created
 	 */
 	private boolean createConnection(){
 		Address address=new Address(IP_ACTIVEMQ, PORT_ACTIVEMQ);
@@ -467,8 +471,8 @@ public class MasterServer implements MultiServerInterface{
 	/**
 	 * Receive, from worker, ip and port for Socket connection
 	 * 
-	 * @param info
-	 * @param topicOfWorker
+	 * @param info info to process 
+	 * @param topicOfWorker unique worker identifier
 	 */
 	private synchronized void processInfoForCopyLog(String info,String topicOfWorker){
 
