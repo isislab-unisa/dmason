@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import sim.util.Int2D;
 
+
 public class RegionObject extends HashMap<String, EntryObject<Int2D>> implements Cloneable, Serializable {
 
 
