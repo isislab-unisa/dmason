@@ -1,4 +1,4 @@
-##Execute Worker
+##Execute Worker for DMason System Management
 
 To launch a Worker for DMason System Management you need have to execute WorkerMain.java with the following input parameters:
 * ip: ip of ActivemQ address
