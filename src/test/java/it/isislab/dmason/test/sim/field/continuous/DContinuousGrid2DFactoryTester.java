@@ -15,6 +15,7 @@ import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
+import it.isislab.dmason.test.sim.engine.util.StubDistributedState;
 import it.isislab.dmason.util.connection.ConnectionType;
 
 // TODO: Auto-generated Javadoc
@@ -34,56 +35,7 @@ public class DContinuousGrid2DFactoryTester {
 	/** The num of loop for the tests. */
 	int numLoop = 100;
 
-	/**
-	 * The Class StubDistributedState.
-	 */
-	public class StubDistributedState extends DistributedState<Double2D> {
-
-		/** The Constant serialVersionUID. */
-		private static final long serialVersionUID = 1L;
-
-		/**
-		 * Instantiates a new stub distributed state.
-		 *
-		 * @param params the params
-		 */
-		public StubDistributedState(GeneralParam params) {
-			super(params, new DistributedMultiSchedule<Double2D>(), "stub",
-					params.getConnectionType());
-
-			this.MODE = params.getMode();
-
-		}
-
-		/* (non-Javadoc)
-		 * @see it.isislab.dmason.sim.engine.DistributedState#getField()
-		 */
-		@Override
-		public DistributedField<Double2D> getField() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		/* (non-Javadoc)
-		 * @see it.isislab.dmason.sim.engine.DistributedState#addToField(it.isislab.dmason.sim.engine.RemotePositionedAgent, java.lang.Object)
-		 */
-		@Override
-		public void addToField(RemotePositionedAgent<Double2D> rm, Double2D loc) {
-			// TODO Auto-generated method stub
-
-		}
-
-		/* (non-Javadoc)
-		 * @see it.isislab.dmason.sim.engine.DistributedState#getState()
-		 */
-		@Override
-		public SimState getState() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-	}
-
+	
 
 	/**
 	 * test for horizontal distribution mode with int width and height
@@ -104,7 +56,7 @@ public class DContinuousGrid2DFactoryTester {
 							/* columns */2,
 							/* numAgents */1,
 							/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
-							ConnectionType.pureActiveMQ);
+							ConnectionType.fakeUnitTestJMS);
 
 					dcon = DContinuousGrid2DFactory.createDContinuous2D(
 					/* discretization */1.0 / 1.5,/* width */i,/* height */j,/*
@@ -113,7 +65,7 @@ public class DContinuousGrid2DFactoryTester {
 																		 * is
 																		 * SimState
 																		 */
-							new StubDistributedState(genParam),/* maxDistance */
+							new StubDistributedState<Double2D>(genParam),/* maxDistance */
 							1, /* i */
 							0, /* j */
 							0,/* rows */1,/* colums */2,/* mode */
@@ -472,7 +424,7 @@ public class DContinuousGrid2DFactoryTester {
 	@Test
 	public void testHorizontalDistributionModeRowsColums() {
 
-		for (int j = 1; j < numLoop; j++) {
+		for (int j = 2; j < numLoop; j++) {
 			try {
 
 				GeneralParam genParam = new GeneralParam(
@@ -503,6 +455,7 @@ public class DContinuousGrid2DFactoryTester {
 				
 				
 			} catch (DMasonException e) {
+				
 				fail(e.getMessage());
 			}
 		}
@@ -548,11 +501,10 @@ public class DContinuousGrid2DFactoryTester {
 
 	/**
 	 * Test horizontal distribution mode with more of 1 row.
+	 * @throws DMasonException 
 	 */
 	@Test
-	public void testHorizontalDistributionModeMoreOf1Row() {
-
-		try {
+	public void testHorizontalDistributionModeMoreOf1Row() throws DMasonException {
 
 			GeneralParam genParam = new GeneralParam(
 			/* width */10,
@@ -564,22 +516,17 @@ public class DContinuousGrid2DFactoryTester {
 			/* mode */DistributedField2D.UNIFORM_PARTITIONING_MODE,
 					ConnectionType.pureActiveMQ);
 
-			dcon = DContinuousGrid2DFactory.createDContinuous2D(
-			/* discretization */1.0 / 1.5,/* width */10,/* height */10,/*
-																	 * DistributedState
-																	 * but is
-																	 * SimState
-																	 */
-					new StubDistributedState(genParam),/* maxDistance */1, /* i */
-					0, /* j */
-					0,/* rows */2,/* colums */2,/* mode */
-					DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
-					"test", /* topicPrefix */"",/* isToroidal */true);
-
-			fail("horizontal mode can not have more than one column");
-		} catch (DMasonException e) {
-			// ok
-		}
+				dcon = DContinuousGrid2DFactory.createDContinuous2D(
+				/* discretization */1.0 / 1.5,/* width */10,/* height */10,/*
+																		 * DistributedState
+																		 * but is
+																		 * SimState
+																		 */
+						new StubDistributedState(genParam),/* maxDistance */1, /* i */
+						0, /* j */
+						0,/* rows */2,/* colums */2,/* mode */
+						DistributedField2D.UNIFORM_PARTITIONING_MODE, /* name */
+						"test", /* topicPrefix */"",/* isToroidal */true);
 
 	}
 
@@ -737,11 +684,11 @@ public class DContinuousGrid2DFactoryTester {
 	 */
 
 	@Test
-	public void testSquareBalancedDistributionModeX6() {
+	public void testSquareBalancedDistributionModeX6() throws DMasonException{
         
 		//for (int col = 10; col < numLoop; col++) {
 			for (int row = 10; row < numLoop; row++) {
-				try {
+			
                     int col=row;
 					GeneralParam genParam = new GeneralParam(
 							/* width */6 * col,
@@ -770,9 +717,7 @@ public class DContinuousGrid2DFactoryTester {
 									"test", /* topicPrefix */"",/* isToroidal */
 									true);
 
-				} catch (DMasonException e) {
-					fail(e.getMessage());
-				}
+				
 			}
 		//}
 	}
