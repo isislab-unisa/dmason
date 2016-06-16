@@ -52,6 +52,7 @@ import sim.util.Bag;
 import sim.util.Int2D;
 
 /**
+ * Non-Uniform Distributed field for DMason DoubleGrid2D field
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo

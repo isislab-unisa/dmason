@@ -50,6 +50,14 @@ import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import sim.engine.SimState;
 import sim.util.Int2D;
 
+/**
+ * Non-Uniform Distributed field for DMason SparseGrid2D field
+ * 
+ * @author Michele Carillo
+ * @author Carmine Spagnuolo
+ * @author Flavio Serrapica
+ *
+ */
 public class DSparseGridNonUniform extends DSparseGrid2D implements TraceableField{
 
 	/**

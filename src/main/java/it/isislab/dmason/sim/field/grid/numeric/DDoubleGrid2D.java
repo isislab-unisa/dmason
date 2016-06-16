@@ -143,22 +143,11 @@ public abstract class DDoubleGrid2D extends DoubleGrid2D implements DistributedF
 		return isToroidal;
 	}
 	
+
 	public void setToroidal(boolean isToroidal)
 	{
 		this.isToroidal=isToroidal;
 	}
 
-	/**
-	 
-	 * MOVED INTO DISTRIBUTEDFIELD2D  
-	 * 
-	 * Provide the double value shift logic among the peers
-	 * @param d the double value we want to set in a specific location
-	 * @param l is the location where we want to set the value
-	 * @param sm is the simstate
-	 * @return true if all will go in the right way, false otherwise
-	 
-	 
-	public abstract boolean setDistributedObjectLocation(double d, Int2D l, SimState sm);
-    */
+	
 }

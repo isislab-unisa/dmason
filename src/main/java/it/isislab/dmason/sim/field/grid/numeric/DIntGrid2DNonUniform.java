@@ -52,6 +52,14 @@ import sim.engine.SimState;
 import sim.util.Bag;
 import sim.util.Int2D;
 
+/**
+ * Non-Uniform Distributed field for DMason IntGrid2D field
+ * 
+ * @author Michele Carillo
+ * @author Carmine Spagnuolo
+ * @author Flavio Serrapica
+ *
+ */
 public class DIntGrid2DNonUniform extends DIntGrid2D implements TraceableField{
 
 	private static final long serialVersionUID = 1L;
