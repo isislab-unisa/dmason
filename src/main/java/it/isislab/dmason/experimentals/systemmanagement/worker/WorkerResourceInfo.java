@@ -46,13 +46,18 @@ public class WorkerResourceInfo implements Serializable{
 	private static final double byte_mega=1048576;
 
 
-
+    /**
+     * A class for node info 
+     */
 	public WorkerResourceInfo() {
 		cores = Runtime.getRuntime().availableProcessors();
 		runtime = Runtime.getRuntime();
 	}
 
-
+    /**
+     * Available max heap of JVM in Mb
+     * @return available max heap
+     */
 	public double getMaxHeapMb(){
 		maxHeap = runtime.maxMemory();
 		double toReturn=maxHeap/byte_mega; 
@@ -60,6 +65,10 @@ public class WorkerResourceInfo implements Serializable{
 		return toReturn;		
 	}
 
+	/**
+     * Available max heap of JVM in Gb
+     * @return available max heap
+     */
 	public double getMaxHeapGb(){
 		maxHeap = runtime.maxMemory();
 		double toReturn=maxHeap/byte_giga; 
@@ -68,6 +77,10 @@ public class WorkerResourceInfo implements Serializable{
 	}
 
 
+	/**
+     * Current available heap of JVM in Mb
+     * @return current available heap
+     */
 	public double getAvailableHeapMb(){
 		available=runtime.freeMemory();
 		double toReturn=available/byte_mega; 
@@ -75,13 +88,20 @@ public class WorkerResourceInfo implements Serializable{
 		return toReturn;
 	}
 
-
+	/**
+     * Current available heap of JVM in Gb
+     * @return current available heap
+     */
 	public double getAvailableHeapGb(){	
 		available=runtime.freeMemory();
 		double toReturn=available/byte_giga; 
 		return toReturn;		
 	}
 
+	/**
+     * Current busy heap of JVM in Mb
+     * @return current busy heap
+     */
 	public double getBusyHeapMb(){
 		busy= (runtime.maxMemory() - runtime.freeMemory());
 		double toReturn=busy/byte_mega; 
@@ -89,7 +109,10 @@ public class WorkerResourceInfo implements Serializable{
 		return toReturn;
 	}
 
-
+	/**
+     * Current busy heap of JVM in Gb
+     * @return current busy heap
+     */ 
 	public double getBusyHeapGb(){
 		busy= (runtime.totalMemory() - runtime.freeMemory());
 		double toReturn=busy/byte_giga; 
@@ -100,6 +123,10 @@ public class WorkerResourceInfo implements Serializable{
 
 
 	}
+	/**
+	 * Number of cores of cpu node
+	 * @return num cores of cpu node
+	 */
 	public int getNumCores(){return cores;}
 
     /**

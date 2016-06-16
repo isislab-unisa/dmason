@@ -47,7 +47,9 @@ public class ActiveMQStarter {
 	//ActivemQ settings file, default 127.0.0.1:61616 otherwise you have to change config.properties file
 	private static final String PROPERTIES_FILE_PATH="resources/systemmanagement/master/conf/config.properties";
 	
-	
+	/**
+	 * Embedded starter for ActivemQ
+	 */
 	public ActiveMQStarter(){
 		startProperties = new Properties();
 		broker = new BrokerService();
