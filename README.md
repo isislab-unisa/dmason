@@ -35,6 +35,8 @@ Among the motivations to our focus on distributing the simulation on several mac
 		│   └── dmason-test-particles-thin-3.0.1-jar-with-dependencies.jar
 		├── generated-sources
 		│   └── annotations
+		├── javadoc
+		├── javadoc-bundle-options
 		├── maven-archiver
 		│   └── pom.properties
 		├── maven-status
@@ -42,10 +44,11 @@ Among the motivations to our focus on distributing the simulation on several mac
 		└── resources
 		 ├── app
 		 ├── batch
-		 ├── file
+		 ├── examples
 		 ├── files
 		 ├── image
 		 ├── javadoc-style
+		 ├── sigar
 		 ├── systemmanagement
 		 └── util
 
