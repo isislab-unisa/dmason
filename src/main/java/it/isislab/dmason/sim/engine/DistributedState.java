@@ -26,15 +26,11 @@ import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.ConnectionType;
-import it.isislab.dmason.util.connection.jms.ConnectionJMS;
-
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import javax.jms.JMSException;
-
 import sim.engine.SimState;
 import ec.util.MersenneTwisterFast;
 
@@ -94,28 +90,6 @@ public abstract class DistributedState<E> extends SimState {
 		super(null, schedule);
 	}
 
-	/*public DistributedState(GeneralParam params,
-			DistributedMultiSchedule<E> sched, String prefix,
-			int typeOfConnection, ConnectionJMS conjms) {
-		super(null, sched);
-		P=params.getP();
-		long randomizer = 0;
-		if (prefix.startsWith("Batch"))
-			randomizer = System.currentTimeMillis();
-
-		this.TYPE = new CellType(params.getI(), params.getJ());
-		this.random = new MersenneTwisterFast(randomizer
-				+ this.TYPE.getInitialValue());
-		this.AOI = params.getAoi();
-		this.NUMPEERS = params.getRows() * params.getColumns();
-		this.rows = params.getRows();
-		this.columns = params.getColumns();
-		this.NUMAGENTS = params.getNumAgents();
-		this.count_id = NUMAGENTS * TYPE.getInitialValue();
-		this.MODE = params.getMode();
-		this.topicPrefix = prefix;
-
-	}*/
 
 	public DistributedState(GeneralParam params,
 			DistributedMultiSchedule<E> sched, String prefix,
@@ -282,16 +256,12 @@ public abstract class DistributedState<E> extends SimState {
 				this.getClass().getDeclaredField(entryParam.getParamName())
 				.set(this, entryParam.getParamValue());
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoSuchFieldException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
