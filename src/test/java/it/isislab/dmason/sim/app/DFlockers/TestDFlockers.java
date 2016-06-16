@@ -102,7 +102,7 @@ public class TestDFlockers {
 				genParam.setIp(ip);
 				genParam.setPort(port);
 				ArrayList<EntryParam<String, Object>> simParams=new ArrayList<EntryParam<String,Object>>();
-				if(graphicsOn  /*|| i==0 && j==0*/ /*to watch 0-0 celltype*/)
+				if(graphicsOn  || i==0 && j==0/*to watch 0-0 celltype*/)
 				{
 
 					DFlockersWithUI sim =new DFlockersWithUI(genParam,simParams,topicPrefix);
