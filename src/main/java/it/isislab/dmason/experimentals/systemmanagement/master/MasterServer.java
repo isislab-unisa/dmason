@@ -959,6 +959,8 @@ public class MasterServer implements MultiServerInterface{
 			//LOGGER.info("send start command to "+workerTopic+"   "+getTopicIdForSimulation());
 			this.getConnection().publishToTopic(iDSimToExec, workerTopic, "start");
 		}
+		
+		//waitEndSim(idSimulation);
 	}
 
 
@@ -1266,7 +1268,7 @@ public class MasterServer implements MultiServerInterface{
 	 * @param id id of simulation
 	 */
 	private void waitEndSim(int id){
-		int paramTest=1;
+		int minutes=10;
 		new Thread(new Runnable() {
 
 			@Override
@@ -1277,7 +1279,7 @@ public class MasterServer implements MultiServerInterface{
 				while(true && check){
 					long nowTime=System.currentTimeMillis();
 					long checkTime=nowTime-start;				
-					if(checkTime> paramTest*60*1000) { 
+					if(checkTime> minutes*60*1000) { 
 						check=false;
 						stop(id);
 
