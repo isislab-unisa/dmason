@@ -310,9 +310,12 @@ public class Manager {
 		if(!dataresources.exists() || !dataresources.isDirectory())
 			throw new DMasonException("Problems in resources check your data.");
 
-		
+		webUI = true; 
 		MasterServerMain msm = new MasterServerMain(webUI);
 		msm.start();
+/*
+ *  FUTURE WORK - CONSOLE MODE
+ *  
 		MasterServer ms = msm.getMasterServer();
 
 		if(!webUI){
@@ -327,7 +330,7 @@ public class Manager {
 				}
 			else
 				throw new RuntimeException(NO_CONSOLE);
-		}
+		}*/
 	}
 	
 	
