@@ -27,11 +27,8 @@ import it.isislab.dmason.sim.field.grid.numeric.DDoubleGrid2D;
 import it.isislab.dmason.sim.field.grid.numeric.DDoubleGrid2DFactory;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2D;
 import it.isislab.dmason.sim.field.grid.sparse.DSparseGrid2DFactory;
-
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.List;
-
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -106,7 +103,6 @@ public class DParticles extends DistributedState<Int2D> {
 
         try 
         {
-        	
         	particles = DSparseGrid2DFactory.createDSparseGrid2D(gridWidth, gridHeight,this,super.AOI,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE, "particles", topicPrefix,false);
         	trails = DDoubleGrid2DFactory.createDDoubleGrid2D(gridWidth, gridHeight,this,super.AOI,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,0,false,"trails",topicPrefix,false);
 			
@@ -117,7 +113,29 @@ public class DParticles extends DistributedState<Int2D> {
 
         DParticle p=new DParticle(this);
         
-        while(particles.size() != super.NUMAGENTS)
+        int agentsToCreate=0;
+		/**
+		 * Calculate number of agents for this field 
+		 * 
+		 */
+
+		int remainder=super.NUMAGENTS%super.NUMPEERS; 
+
+		if(remainder==0){  
+			agentsToCreate= super.NUMAGENTS / super.NUMPEERS;
+		}
+
+		else if(remainder!=0 && TYPE.pos_i==0 && TYPE.pos_j==0){ 
+			agentsToCreate= (super.NUMAGENTS / super.NUMPEERS)+remainder;
+		}
+
+		else{
+			agentsToCreate= super.NUMAGENTS / super.NUMPEERS;
+		}
+
+		/*****************************************/
+        
+        while(particles.size() != agentsToCreate)
         {		
         	p.setPos(particles.getAvailableRandomLocation());
            

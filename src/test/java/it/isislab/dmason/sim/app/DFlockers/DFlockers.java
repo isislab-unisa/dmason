@@ -73,7 +73,6 @@ public class DFlockers extends DistributedState<Double2D>
 	public double gridWidth ;
 	public double gridHeight ;   
 	public int MODE;
-
 	protected ContinuousPortrayal2D p;
 
 	/**
@@ -167,36 +166,57 @@ public class DFlockers extends DistributedState<Double2D>
 		 * Spawn agents only on cell 0-0
 		 */
 		//if ( (TYPE.pos_i == 0 && TYPE.pos_j == 0) )
+		//{
+
+		DFlocker f=new DFlocker(this,new Double2D(0,0));
+		//int j=0;
+
+
+		int agentsToCreate=0;
+		
+
+		int remainder=super.NUMAGENTS%super.NUMPEERS; 
+
+		if(remainder==0){  
+			agentsToCreate= super.NUMAGENTS / super.NUMPEERS;
+		}
+
+		else if(remainder!=0 && TYPE.pos_i==0 && TYPE.pos_j==0){ 
+			agentsToCreate= (super.NUMAGENTS / super.NUMPEERS)+remainder;
+		}
+
+		else{
+			agentsToCreate= super.NUMAGENTS / super.NUMPEERS;
+		}
+
+		/*****************************************/
+
+
+		while(flockers.size() != agentsToCreate)
 		{
 
-			DFlocker f=new DFlocker(this,new Double2D(0,0));
-			int j=0;
+			//  if(j==0 && TYPE.pos_i==0 && TYPE.pos_j==0) 
+			//	f.stampa=true;
 
-			while(flockers.size() != super.NUMAGENTS / super.NUMPEERS)
+			f.setPos(flockers.getAvailableRandomLocation());
+
+			//    			if (random.nextBoolean(deadFlockerProbability))
+			//    				f.dead = true;
+
+			if(flockers.setObjectLocation(f, f.pos))
 			{
-
-                if(j==0 && TYPE.pos_i==0 && TYPE.pos_j==0) 
-                	f.stampa=true;
-                 
-				f.setPos(flockers.getAvailableRandomLocation());
-
-				//    			if (random.nextBoolean(deadFlockerProbability))
-				//    				f.dead = true;
-
-				if(flockers.setObjectLocation(f, f.pos))
-				{
-					Color c=new Color(
-							128 + this.random.nextInt(128),
-							128 + this.random.nextInt(128),
-							128 + this.random.nextInt(128));
-					f.setColor(c);
-					schedule.scheduleOnce(f);
-					f=new DFlocker(this,new Double2D(0,0));
-				}
-
-				j++;
+				Color c=new Color(
+						128 + this.random.nextInt(128),
+						128 + this.random.nextInt(128),
+						128 + this.random.nextInt(128));
+				f.setColor(c);
+				schedule.scheduleOnce(f);
+				f=new DFlocker(this,new Double2D(0,0));
 			}
-		} //if ( (TYPE.pos_i == 0 && TYPE.pos_j == 0) )
+
+			//j++;
+		}
+		//} //if ( (TYPE.pos_i == 0 && TYPE.pos_j == 0) )
 
 		try {
 			if(getTrigger()!=null)
@@ -246,4 +266,8 @@ public class DFlockers extends DistributedState<Double2D>
 		}
 		return false;
 	}    
+
+
+
+
 }

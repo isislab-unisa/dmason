@@ -20,6 +20,8 @@ package it.isislab.dmason.nonuniform;
 import java.io.Serializable;
 
 /**
+ * Entry per un oggetto che inserisci nel nodo
+ * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo
  * @author Flavio Serrapica
@@ -35,7 +37,7 @@ public class TreeObject{
 		this.x = x;
 		this.y = y;
 	}
-	@Override
+	
 	public boolean equals(Object obj) {
 		// TODO Auto-generated method stub
 		if(obj instanceof TreeObject)

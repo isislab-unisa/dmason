@@ -29,6 +29,9 @@ import org.apache.log4j.Logger;
 
 
 /**
+ * Class for non-uniform distributed fields. It uses a specialized QuadTree data structure
+ * for partitioning Euclidean spaces which has p leafs, where p is the number of cells 
+ * in the partitioning, and  each leaf has a set of object
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo
@@ -38,12 +41,23 @@ import org.apache.log4j.Logger;
 public class QuadTree implements Comparable<QuadTree>{
 
 	private static Logger log=Logger.getLogger(QuadTree.class);
-	
+
+	/**
+	 * 
+	 *A node of the tree 
+	 *
+	 */
 	class BinaryNode implements Comparable<BinaryNode>{
 		QuadTree node1;
 		QuadTree node2;
 		ORIENTATION orientation;
 
+		/**
+		 * Constructor of a node with 2 children 
+		 * @param node1 a node
+		 * @param node2 a node 
+		 * @param orientation a position in the space
+		 */
 		public BinaryNode(QuadTree node1, QuadTree node2, ORIENTATION orientation) {
 			super();
 			this.node1 = node1;
@@ -63,9 +77,19 @@ public class QuadTree implements Comparable<QuadTree>{
 	{
 		return new BinaryNode(node1, node2,orientation);
 	}
+	/**
+	 * 
+	 * The position of the node in the space
+	 *
+	 */
 	public enum ORIENTATION {
 		ROOT,NW, NE, SE, SW, N, S, W, E;
 	}
+	/**
+	 * Translate the given orientation in the opposite 
+	 * @param o
+	 * @return
+	 */
 	public static final ORIENTATION swapOrientation(ORIENTATION o)
 	{
 		switch (o) {
@@ -100,7 +124,7 @@ public class QuadTree implements Comparable<QuadTree>{
 	private double x1,x2,y1,y2;
 	private double discretization = 0.1;
 	private int level = Integer.MAX_VALUE;
-	
+
 	private static double ROOT_WIDTH;
 	private static double ROOT_HEIGHT;
 
@@ -108,6 +132,14 @@ public class QuadTree implements Comparable<QuadTree>{
 
 	private int subtreeObjectsSize;
 
+	/**
+	 * Constructor of QuadTree
+	 * @param _MAX_AGENTS the maximum number of object in a leaf of the tree
+	 * @param x1 north west x 
+	 * @param y1 north west y
+	 * @param x2 south east x
+	 * @param y2 south east y
+	 */
 	public QuadTree(int _MAX_AGENTS,double x1,double y1,double x2,double y2) {
 
 		MAX_AGENTS=_MAX_AGENTS;
@@ -127,23 +159,60 @@ public class QuadTree implements Comparable<QuadTree>{
 		ROOT_HEIGHT=y2;
 		ID="1";//GLOBAL_NODE_ID++;
 	}
-	
+
+	/**
+	 * Constructor 
+	 * @param _MAX_AGENTS  the maximum number of object in a leaf of the tree
+	 * @param x1 north west x 
+	 * @param y1 north west y
+	 * @param x2 south east x
+	 * @param y2 south east y
+	 * @param discretization the minumum size of the space for a leaf
+	 * @param level the height of the node in the tree(the root has 0 level ) 
+	 */
 	public QuadTree(int _MAX_AGENTS,double x1,double y1,double x2,double y2,double discretization, int level) {
 		this(_MAX_AGENTS, x1, y1, x2, y2);
 		this.level=level;
 		this.discretization=discretization;
-		
+
 	}
+	/**
+	 * Constructor 
+	 * @param _MAX_AGENTS  the maximum number of object in a leaf of the tree
+	 * @param x1 north west x 
+	 * @param y1 north west y
+	 * @param x2 south east x
+	 * @param y2 south east y
+	 * @param discretization the minumum size of the space for a leaf
+	 */
 	public QuadTree(int _MAX_AGENTS,double x1,double y1,double x2,double y2,double discretization) {
 		this(_MAX_AGENTS, x1, y1, x2, y2);
 		this.discretization=discretization;
 	}
+
+	/**
+	 * Constructor 
+	 * @param _MAX_AGENTS  the maximum number of object in a leaf of the tree
+	 * @param x1 north west x 
+	 * @param y1 north west y
+	 * @param x2 south east x
+	 * @param y2 south east y
+	 * @param level the height of the node in the tree(the root has 0 level ) 
+	 */
 	public QuadTree(int _MAX_AGENTS,double x1,double y1,double x2,double y2, int level) {
 		this(_MAX_AGENTS, x1, y1, x2, y2);
 		this.level=level;
 	}
-	
-	
+
+	/**
+	 * Constructor 
+	 * @param _MAX_AGENTS  the maximum number of object in a leaf of the tree
+	 * @param x1 north west x 
+	 * @param y1 north west y
+	 * @param x2 south east x
+	 * @param y2 south east y
+	 * @param orientation the position in the space of the node
+	 */
 	private QuadTree(int _MAX_AGENTS,double x1,double y1,double x2,double y2, ORIENTATION orientation) {
 
 		MAX_AGENTS=_MAX_AGENTS;
@@ -158,17 +227,35 @@ public class QuadTree implements Comparable<QuadTree>{
 		this.y1=y1;
 		this.y2=y2;
 		this.orientation=orientation;
-	//	ID=parent.ID++;//GLOBAL_NODE_ID++;
+		//	ID=parent.ID++;//GLOBAL_NODE_ID++;
 	}
+	/**
+	 * Constructor 
+	 * @param _MAX_AGENTS  the maximum number of object in a leaf of the tree
+	 * @param x1 north west x 
+	 * @param y1 north west y
+	 * @param x2 south east x
+	 * @param y2 south east y
+	 * @param discretization the minumum size of the space for a leaf
+	 * @param level the height of the node in the tree(the root has 0 level ) 
+	 * @param ID the unique identifier
+	 */
 	private QuadTree(int _MAX_AGENTS,double x1,double y1,double x2,double y2,double discretization, int level, ORIENTATION orientation,QuadTree parent, String ID) {
 		this(_MAX_AGENTS, x1, y1, x2, y2, orientation);
 		this.level=level;
 		this.discretization=discretization;
 		this.parent=parent;
 		this.ID=ID;
-		
+
 	}
 
+	/**
+	 * Put the object in corresponding node of the tree, if it is needed split a corresponding node 
+	 * @param obj  to insert
+	 * @param x    position x
+	 * @param y    position y
+	 * @return  true if correct
+	 */
 	public boolean insert(Serializable obj, double x, double y)
 	{
 		subtreeObjectsSize++;
@@ -187,6 +274,12 @@ public class QuadTree implements Comparable<QuadTree>{
 		return false;
 	}
 
+	/**
+	 * Create four children nodes for node,   suddividendo lo spazio nel punto centrale  
+	 * @param node the node 
+	 * @param discretization the minumum size of the space for a leaf
+	 * @param level the height of the node in the tree(the root has 0 level ) 
+	 */
 	private static void split(QuadTree node, double discretization, int level)
 	{
 		QuadTree[] neighbors=new QuadTree[4];
@@ -195,10 +288,15 @@ public class QuadTree implements Comparable<QuadTree>{
 		neighbors[1] = new QuadTree(MAX_AGENTS, node.x1+(node.x2-node.x1)/2, node.y1, node.x2, node.y1+(node.y2-node.y1)/2, discretization,level-1, ORIENTATION.NE,node,node.ID+"1");
 		neighbors[2] = new QuadTree(MAX_AGENTS, node.x1, node.y1+(node.y2-node.y1)/2, node.x1+(node.x2-node.x1)/2, node.y2, discretization,level-1, ORIENTATION.SW,node,node.ID+"2");
 		neighbors[3] = new QuadTree(MAX_AGENTS, node.x1+(node.x2-node.x1)/2, node.y1+(node.y2-node.y1)/2, node.x2, node.y2, discretization,level-1, ORIENTATION.SE,node,node.ID+"3");
-		
+
 		node.setNeighbors(neighbors);
 		for(TreeObject s: node.getObjects()) neighbors[getInternalRegion(s.x, s.y, node.x1 + ((node.x2-node.x1)/2), node.y1 + ((node.y2-node.y1)/2))].insert(s.obj, s.x, s.y);
 	}
+	/**
+	 * Merge  
+	 * @param node the node
+	 * @return true if correct
+	 */
 	private static boolean merge(QuadTree node)
 	{
 		if(node.getNeighbors()[0] == null) return false;
@@ -218,6 +316,13 @@ public class QuadTree implements Comparable<QuadTree>{
 
 		return true;
 	}
+
+	/**
+	 *  Divide the tree 
+	 * @param P number of partitions 
+	 * @param root the root of tree
+	 * @param isToroidal true if the field is toroidal false otherwise
+	 */
 	public static final void partition(int P, QuadTree root, boolean isToroidal)
 	{
 		ArrayList<QuadTree> leafs=new ArrayList<QuadTree>(findLeafs(root));
@@ -264,7 +369,7 @@ public class QuadTree implements Comparable<QuadTree>{
 				merge(toMerge);
 
 				QuadTree parent=toMerge.parent;
-				
+
 				if(parent.getNeighbors()[0].getNeighbors()[0] == null
 						&& parent.getNeighbors()[1].getNeighbors()[0] == null
 						&& parent.getNeighbors()[2].getNeighbors()[0] == null
@@ -283,7 +388,12 @@ public class QuadTree implements Comparable<QuadTree>{
 		computeNeighborhood(root,isToroidal);
 
 	}
-	
+	/**
+	 * Calculate the neighborhood
+	 * 
+	 * @param root root of the tree
+	 * @param isToroidal true if the field is toroidal 
+	 */
 	private static final void computeNeighborhood(QuadTree root, boolean isToroidal)
 	{
 		ArrayList<QuadTree> leafs=new ArrayList<QuadTree>(findLeafs(root));
@@ -347,7 +457,7 @@ public class QuadTree implements Comparable<QuadTree>{
 	}
 	private static final boolean isNorthNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
 	{
-  		return (((l1.getY1() == l2.getY2()) || (isToroidal && (l1.getY1() == 0 && l2.getY2() == ROOT_WIDTH))) 
+		return (((l1.getY1() == l2.getY2()) || (isToroidal && (l1.getY1() == 0 && l2.getY2() == ROOT_WIDTH))) 
 				&& (((l1.getX1() <= l2.getX1()) && (l1.getX2() >= l2.getX2())) || ((l1.getX1() >= l2.getX1()) && (l1.getX2() <= l2.getX2()))));
 	}
 	private static final boolean isSouthNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
@@ -363,13 +473,13 @@ public class QuadTree implements Comparable<QuadTree>{
 	{
 		return isWestNeighbor(l2, l1, isToroidal);
 	}
-	
-	
-	
-	
+
+
+
+
 	private static final boolean isNorthWestNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
 	{
-  		return (l1.getX1() == l2.getX2()) && (l1.getY1() == l2.getY2())  || (isToroidal && (((l1.getX1()%ROOT_WIDTH) == (l2.getX2()%ROOT_WIDTH)) && ((l1.getY1()%ROOT_HEIGHT) == (l2.getY2()%ROOT_HEIGHT))));
+		return (l1.getX1() == l2.getX2()) && (l1.getY1() == l2.getY2())  || (isToroidal && (((l1.getX1()%ROOT_WIDTH) == (l2.getX2()%ROOT_WIDTH)) && ((l1.getY1()%ROOT_HEIGHT) == (l2.getY2()%ROOT_HEIGHT))));
 	}
 	private static final boolean isSouthEastNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
 	{
@@ -377,60 +487,60 @@ public class QuadTree implements Comparable<QuadTree>{
 	}
 	private static final boolean isSouthWestNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
 	{
-  		return (l1.getX1() == l2.getX2()) && (l1.getY2() == l2.getY1()) || (isToroidal && (((l1.getX1()%ROOT_WIDTH) == (l2.getX2()%ROOT_WIDTH)) && ((l1.getY2()%ROOT_HEIGHT) == (l2.getY1()%ROOT_HEIGHT))));
+		return (l1.getX1() == l2.getX2()) && (l1.getY2() == l2.getY1()) || (isToroidal && (((l1.getX1()%ROOT_WIDTH) == (l2.getX2()%ROOT_WIDTH)) && ((l1.getY2()%ROOT_HEIGHT) == (l2.getY1()%ROOT_HEIGHT))));
 	}
 	private static final boolean isNorthEastNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
 	{
 		return isSouthWestNeighbor(l2, l1, isToroidal);
 	}
-	
-//	private static final boolean isNorthWestNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
-//	{
-//  		return quadTreeContainsPoint(l2, 
-//  			isToroidal?
-//  					(ROOT_WIDTH+l1.getX1()-(l1.discretization/2))%ROOT_WIDTH:
-//  					(l1.getX1()-(l1.discretization/2)), 
-//  			isToroidal?
-//  		  			(ROOT_HEIGHT+l1.getY1()-(l1.discretization/2))%ROOT_HEIGHT:
-//  		  			(l1.getY1()-(l1.discretization/2)));
-//	}
-//	private static final boolean isSouthWestNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
-//	{
-//		return quadTreeContainsPoint(l2, 
-//	  			isToroidal?
-//	  					(ROOT_WIDTH+l1.getX1()-(l1.discretization/2))%ROOT_WIDTH:
-//	  					(l1.getX1()-(l1.discretization/2)), 
-//	  			isToroidal?
-//	  		  			(ROOT_HEIGHT+l1.getY2()+(l1.discretization/2))%ROOT_HEIGHT:
-//	  		  			(l1.getY2()+(l1.discretization/2)));
-//	}
-//	private static final boolean isSouthEastNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
-//	{
-//		return quadTreeContainsPoint(l2, 
-//	  			isToroidal?
-//	  					(ROOT_WIDTH+l1.getX2()+(l1.discretization/2))%ROOT_WIDTH:
-//	  					(l1.getX2()+(l1.discretization/2)), 
-//	  			isToroidal?
-//	  		  			(ROOT_HEIGHT+l1.getY2()+(l1.discretization/2))%ROOT_HEIGHT:
-//	  		  			(l1.getY2()+(l1.discretization/2)));
-//	}
-//	private static final boolean isNorthEastNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
-//	{
-//		return quadTreeContainsPoint(l2, 
-//	  			isToroidal?
-//	  					(ROOT_WIDTH+l1.getX2()+(l1.discretization/2))%ROOT_WIDTH:
-//	  					(l1.getX2()+(l1.discretization/2)), 
-//	  			isToroidal?
-//	  		  			(ROOT_HEIGHT+l1.getY1()-(l1.discretization/2))%ROOT_HEIGHT:
-//	  		  			(l1.getY1()-(l1.discretization/2)));
-//	}
-//	
-//	private static final boolean quadTreeContainsPoint(QuadTree node, double x,double y)
-//	{
-//		return x > node.getX1() && x < node.getX2() && y > node.getY1() && y < node.getY2();
-//	}
-	
-	
+
+	//	private static final boolean isNorthWestNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
+	//	{
+	//  		return quadTreeContainsPoint(l2, 
+	//  			isToroidal?
+	//  					(ROOT_WIDTH+l1.getX1()-(l1.discretization/2))%ROOT_WIDTH:
+	//  					(l1.getX1()-(l1.discretization/2)), 
+	//  			isToroidal?
+	//  		  			(ROOT_HEIGHT+l1.getY1()-(l1.discretization/2))%ROOT_HEIGHT:
+	//  		  			(l1.getY1()-(l1.discretization/2)));
+	//	}
+	//	private static final boolean isSouthWestNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
+	//	{
+	//		return quadTreeContainsPoint(l2, 
+	//	  			isToroidal?
+	//	  					(ROOT_WIDTH+l1.getX1()-(l1.discretization/2))%ROOT_WIDTH:
+	//	  					(l1.getX1()-(l1.discretization/2)), 
+	//	  			isToroidal?
+	//	  		  			(ROOT_HEIGHT+l1.getY2()+(l1.discretization/2))%ROOT_HEIGHT:
+	//	  		  			(l1.getY2()+(l1.discretization/2)));
+	//	}
+	//	private static final boolean isSouthEastNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
+	//	{
+	//		return quadTreeContainsPoint(l2, 
+	//	  			isToroidal?
+	//	  					(ROOT_WIDTH+l1.getX2()+(l1.discretization/2))%ROOT_WIDTH:
+	//	  					(l1.getX2()+(l1.discretization/2)), 
+	//	  			isToroidal?
+	//	  		  			(ROOT_HEIGHT+l1.getY2()+(l1.discretization/2))%ROOT_HEIGHT:
+	//	  		  			(l1.getY2()+(l1.discretization/2)));
+	//	}
+	//	private static final boolean isNorthEastNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
+	//	{
+	//		return quadTreeContainsPoint(l2, 
+	//	  			isToroidal?
+	//	  					(ROOT_WIDTH+l1.getX2()+(l1.discretization/2))%ROOT_WIDTH:
+	//	  					(l1.getX2()+(l1.discretization/2)), 
+	//	  			isToroidal?
+	//	  		  			(ROOT_HEIGHT+l1.getY1()-(l1.discretization/2))%ROOT_HEIGHT:
+	//	  		  			(l1.getY1()-(l1.discretization/2)));
+	//	}
+	//	
+	//	private static final boolean quadTreeContainsPoint(QuadTree node, double x,double y)
+	//	{
+	//		return x > node.getX1() && x < node.getX2() && y > node.getY1() && y < node.getY2();
+	//	}
+
+
 	private static boolean checkMinMaxSplitMerge(QuadTree root)
 	{
 		TreeSet<QuadTree> leafs=new TreeSet<QuadTree>(findLeafs(root));
@@ -525,13 +635,17 @@ public class QuadTree implements Comparable<QuadTree>{
 		if(x >= cx && y < cy) return 1;
 		return 3;
 	}
-
+	/**
+	 * restiruisce le foglie dell albero
+	 * @param node
+	 * @return
+	 */
 	public static List<QuadTree> findLeafs(QuadTree node)
 	{
 		if(node==null) return new ArrayList<QuadTree>();
 		QuadTree[] neighbors=node.getNeighbors();
 		ArrayList<QuadTree> leafs=new ArrayList<QuadTree>();
-	
+
 		if(neighbors[0]== null && neighbors[1]== null && neighbors[2]== null && neighbors[3]== null)
 		{
 			leafs.add(node);
@@ -579,6 +693,10 @@ public class QuadTree implements Comparable<QuadTree>{
 		return parents;
 	}
 
+	/**
+	 * Print
+	 * @param node
+	 */
 	public static final void printTree(QuadTree node)
 	{
 		QuadTree[] neighbors=node.getNeighbors();
@@ -650,6 +768,11 @@ public class QuadTree implements Comparable<QuadTree>{
 		return parea;
 
 	}
+	/**
+	 * Verifica la correttezza della struttura dell albero
+	 * @param root
+	 * @return
+	 */
 	public static final boolean checkObjects(QuadTree root)
 	{
 		if(root == null || (root.getNeighbors()[0]==null && root.getNeighbors()[1]==null && root.getNeighbors()[2]==null && root.getNeighbors()[3]==null)) return true;
@@ -668,28 +791,43 @@ public class QuadTree implements Comparable<QuadTree>{
 
 		return checkObjects(root.getNeighbors()[0]) && checkObjects(root.getNeighbors()[1]) && checkObjects(root.getNeighbors()[2]) && checkObjects(root.getNeighbors()[3]);
 	}
-	
 
+
+	/**
+	 * 
+	 * @param root
+	 * @return
+	 */
 	public static final  List<QuadTree> getPartitioning(QuadTree root)
 	{
 		return new ArrayList<QuadTree>(findLeafs(root));
 
 	}
-	
+
+	/**
+	 * Restituisce info sul partizion 
+	 * @param partitioning
+	 * @return
+	 */
 	public static String reportPartitioning(List<QuadTree> partitioning)
 	{
 		String report="Partitioning={\n";
-		
+
 		for (QuadTree quadTree : partitioning) {
 			report+="\t"+
 					quadTree + " \n\t--neighborhood=" +
-							quadTree.neighborhood+"#\n";
-			
+					quadTree.neighborhood+"#\n";
+
 		}
-		
+
 		return report+"\n}";
 	}
-	
+
+	/**
+	 * Resttuisce statistiche sul partizionamento
+	 * @param partitioning
+	 * @return
+	 */
 	public static String reportStatsPartitioning(List<QuadTree> partitioning)
 	{
 		String report="Partitioning={\n P: "+partitioning.size()+", ";
@@ -706,16 +844,16 @@ public class QuadTree implements Comparable<QuadTree>{
 				comm_amount+=subscriber.size();
 			}
 		}
-		
+
 		report+="nummer of topics: "+comm_channel+", communication amount: "+comm_amount;
 		int min_size=Collections.min(map_sizes.values());
 		int max_size=Collections.max(map_sizes.values());
 		double mean_size=tot_agents/partitioning.size();
 		double unbalance=((max_size*100)/mean_size)-100;
-		
-		 report+=", min size: "+min_size+", max size: "+max_size+", mean size: "+mean_size+", max unbalance: "+unbalance+"%";
-		
-		
+
+		report+=", min size: "+min_size+", max size: "+max_size+", mean size: "+mean_size+", max unbalance: "+unbalance+"%";
+
+
 		return report+"\n}";
 	}
 	public static final void printQuadTree(QuadTree root, int level){
@@ -750,23 +888,23 @@ public class QuadTree implements Comparable<QuadTree>{
 
 		//QuadTree t=new QuadTree(MAX_AGENTS, 0, 0, W, H,discretiazion,level);
 		QuadTree t=new QuadTree(MAX_AGENTS, 0, 0, W, H);
-//		for (int i = 0; i < TOT_AGENTS; i++) {
-//			if(!t.insert(new String(i+""), r.nextInt(W),  r.nextInt(H)))
-////				if(!t.insert(new String(i+""), r.nextGaussian()*1920,  r.nextGaussian()*1080))
-//			{
-//				System.err.println("Error");
-//				System.exit(-1);
-//			}
-//		}
+		//		for (int i = 0; i < TOT_AGENTS; i++) {
+		//			if(!t.insert(new String(i+""), r.nextInt(W),  r.nextInt(H)))
+		////				if(!t.insert(new String(i+""), r.nextGaussian()*1920,  r.nextGaussian()*1080))
+		//			{
+		//				System.err.println("Error");
+		//				System.exit(-1);
+		//			}
+		//		}
 		t.insert(new String(0+""), 450, 450);
 		t.insert(new String(1+""), 455, 455);
-		
+
 		t.insert(new String(2+""), 400, 100);
 		t.insert(new String(3+""), 500, 100);
-		
-//		t.insert(new String(3+""), 400, 200);
-//		t.insert(new String(3+""), 500, 200);
-		
+
+		//		t.insert(new String(3+""), 400, 200);
+		//		t.insert(new String(3+""), 500, 200);
+
 		System.out.println(checkObjects(t));
 
 		System.out.println("Test area split: "+(computeArea(t)==(W*H)));
@@ -782,11 +920,11 @@ public class QuadTree implements Comparable<QuadTree>{
 		System.out.println("Number of leafs "+printLeafs(t));
 
 		printQuadTree(t,0);
-		
-//		System.out.println(QuadTree.reportPartitioning(QuadTree.getPartitioning(t)));
-		
+
+		//		System.out.println(QuadTree.reportPartitioning(QuadTree.getPartitioning(t)));
+
 		System.out.println(QuadTree.reportStatsPartitioning(QuadTree.getPartitioning(t)));
-		
+
 		for(QuadTree leaf: QuadTree.getPartitioning(t))
 		{
 			System.out.println(leaf);

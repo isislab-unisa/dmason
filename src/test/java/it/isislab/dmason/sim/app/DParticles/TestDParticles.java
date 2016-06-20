@@ -43,10 +43,10 @@ public class TestDParticles {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 3000; //only graphicsOn=false
-	private static int rows = 3; //number of rows
+	private static int rows = 8; //number of rows
 	private static int columns = 3; //number of columns
 	private static int AOI=1; //max distance
-	private static int NUM_AGENTS=10000; //number of agents
+	private static int NUM_AGENTS=119; //number of agents
 	private static int WIDTH=400; //field width
 	private static int HEIGHT=400; //field height
 	private static int CONNECTION_TYPE=ConnectionType.pureActiveMQ;
