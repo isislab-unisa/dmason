@@ -20,7 +20,7 @@ package it.isislab.dmason.nonuniform;
 import java.io.Serializable;
 
 /**
- * Entry per un oggetto che inserisci nel nodo
+ * Entry object for node of QuadTree
  * 
  * @author Michele Carillo
  * @author Carmine Spagnuolo
