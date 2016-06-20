@@ -15,16 +15,12 @@
    limitations under the License.
  */
 package it.isislab.dmason.sim.app.SIR;
+
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
-/*
- * THIS CLASS HAS BEEN USED FOR TESTING PURPOSES IN THE BEGINNINGS,
- */
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.util.connection.ConnectionType;
-
 import java.util.ArrayList;
-
 import sim.display.Console;
 
 /**
@@ -43,7 +39,7 @@ public class TestDSir {
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 1000; 
 	private static int rows = 3; //number of rows
-	private static int columns = 1; //number of columns
+	private static int columns = 3; //number of columns
 	private static int AOI=10; //max distance
 	private static int NUM_AGENTS=1000; //number of agents
 	private static int WIDTH=100; //field width
