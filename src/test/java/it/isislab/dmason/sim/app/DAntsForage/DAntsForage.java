@@ -315,7 +315,8 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 				&& (h.y<(sites.own_y+sites.my_height))){
 
 			DRemoteAnt ant = new DRemoteAnt(this, reward);
-
+            
+			//All agents are created on the same field
 			while(buggrid.size() != super.NUMAGENTS){
 
 				ant.setPos(h);
