@@ -22,6 +22,7 @@ public class DistributedStateTest {
 	DistributedStateConnectionJMSFake conjms;
 	
 	int width, height, aoi, rows, columns, numAgents, mode; 
+	
 	@Before
 	public void setUp(){
 		

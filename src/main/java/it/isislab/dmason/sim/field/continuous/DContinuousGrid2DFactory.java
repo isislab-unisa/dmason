@@ -69,18 +69,27 @@ public final class DContinuousGrid2DFactory
 	{	
 
 		//general parameters check for value   
-
-		if(width>=Double.MAX_VALUE) {throw new DMasonException("Illegal value : width value exceeds Double max value");}
-		if(height<=0) {throw new DMasonException("Illegal value: Field height <= 0 is not defined");}
-		if(height>=Double.MAX_VALUE) {throw new DMasonException("Illegal value : height value exceeds Double max value");}
+		if(discretization<=Double.MIN_VALUE) {throw new DMasonException("Illegal value : discretization exceeds Double MIN value");}
+		if(discretization>=Double.MAX_VALUE) {throw new DMasonException("Illegal value : discretization value exceeds Double MAX value");}
+		if(width>=Double.MAX_VALUE) {throw new DMasonException("Illegal value : width value exceeds Double MAX value");}
+		if(width<=Double.MIN_VALUE) {throw new DMasonException("Illegal value: Field exceeds Double MIN value");}
+		if(height<=Double.MIN_VALUE) {throw new DMasonException("Illegal value: Field exceeds Double MIN value");}
+		if(height>=Double.MAX_VALUE) {throw new DMasonException("Illegal value : height value exceeds Double MAX value");}
+		if(sm==null){throw new DMasonException("Illegal value : SimState is null");}
 		if(max_distance<=0){throw new DMasonException("Illegal value, max_distance value must be greater than 0");}
 		if(max_distance>=Integer.MAX_VALUE ){throw new DMasonException("Illegal value : max_distance value exceded Integer max value");}
 		if(max_distance>=width ){throw new DMasonException(String.format("Illegal value : max_distance (%d) value exceded width(%f) value",max_distance,width));}
-		if(width<=0) {throw new DMasonException("Illegal value: Field width <= 0 is not defined");}
-		if(columns<=0 || rows <=0){throw new DMasonException("Illegal value : columns value and rows value must be greater than 0");}
+		if(i<0){throw new DMasonException("Illegal value : celltype_i value should not be negative");}
+		if(i>=Integer.MAX_VALUE){throw new DMasonException("Illegal value : celltype_i exceeds Integer MAX value");}
+		if(j<0){throw new DMasonException("Illegal value : celltype_j value should not be negative");}
+		if(j>=Integer.MAX_VALUE){throw new DMasonException("Illegal value : celltype_j exceeds Integer MAX value");}
+		if(rows <=0){throw new DMasonException("Illegal value : rows value must be greater than 0");}
+		if(rows >= Integer.MAX_VALUE){throw new DMasonException("Illegal value : rows exceeds Integer MAX value");}
+		if(columns<=0){throw new DMasonException("Illegal value : columns value must be greater than 0");}
+		if(columns >= Integer.MAX_VALUE){throw new DMasonException("Illegal value : columns exceeds Integer MAX value");}
 		if(rows==1 && columns==1){throw new DMasonException("Illegal value : field partitioning with one row and one column is not defined");}
-
-
+		if(name == null){throw new DMasonException("Illegal value : name should not be null");}
+		if(topicPrefix == null){throw new DMasonException("Illegal value : topicPrefix should not be null");}
 		if(MODE==DistributedField2D.UNIFORM_PARTITIONING_MODE)
 		{  
 			DistributedField2D field = new DContinuousGrid2DXY(discretization,width, height,sm, max_distance, i, j, rows,columns,name,topicPrefix,isToroidal);
@@ -120,15 +129,34 @@ public final class DContinuousGrid2DFactory
 				throw new DMasonException("Illegal Distribution Mode");
 			}
 	}
-	public static final DContinuousGrid2D createDContinuous2DNonUniform(double discretization,double width, double height,SimState sm,int max_distance, int id,int P, int MODE, String name, String topicPrefix, boolean isToroidal)
+	public static final DContinuousGrid2D createDContinuous2DNonUniform(double discretization,double width, double height,SimState sm,int max_distance, int id,int P, int MODE, String name, String topicPrefix, boolean isToroidal) throws DMasonException
 	{	
+		
+				if(discretization<=Double.MIN_VALUE) {throw new DMasonException("Illegal value : discretization exceeds Double MIN value");}
+				if(discretization>=Double.MAX_VALUE) {throw new DMasonException("Illegal value : discretization value exceeds Double MAX value");}
+				if(width>=Double.MAX_VALUE) {throw new DMasonException("Illegal value : width value exceeds Double MAX value");}
+				if(width<=Double.MIN_VALUE) {throw new DMasonException("Illegal value: Field exceeds Double MIN value");}
+				if(height<=Double.MIN_VALUE) {throw new DMasonException("Illegal value: Field exceeds Double MIN value");}
+				if(height>=Double.MAX_VALUE) {throw new DMasonException("Illegal value : height value exceeds Double MAX value");}
+				if(sm==null){throw new DMasonException("Illegal value : SimState is null");}
+				if(max_distance<=0){throw new DMasonException("Illegal value, max_distance value must be greater than 0");}
+				if(max_distance>=Integer.MAX_VALUE ){throw new DMasonException("Illegal value : max_distance value exceded Integer max value");}
+				if(max_distance>=width ){throw new DMasonException(String.format("Illegal value : max_distance (%d) value exceded width(%f) value",max_distance,width));}
+				if(id <0){throw new DMasonException("Illegal value : id should not be negative");}
+				if(id >=Integer.MAX_VALUE){throw new DMasonException("Illegal value : id exceeds Integer MAX value");}
+				if(P <0){throw new DMasonException("Illegal value : P should not be negative");}
+				if(P >=Integer.MAX_VALUE){throw new DMasonException("Illegal value : P exceeds Integer MAX value");}
+				if(name == null){throw new DMasonException("Illegal value : name should not be null");}
+				if(topicPrefix == null){throw new DMasonException("Illegal value : topicPrefix should not be null");}
+		
 		if(MODE == DistributedField2D.NON_UNIFORM_PARTITIONING_MODE)
 		{
 			DistributedField2D field = new DContinuousNonUniform(discretization, width, height, sm, max_distance, id, P, name, topicPrefix);
 			field.setToroidal(isToroidal);
 			((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 			return (DContinuousGrid2D)field;
-		}return null;
+		}
+		else throw new DMasonException("Illegal Distribution Mode");
 	}
 
 	/**
@@ -205,3 +233,4 @@ public final class DContinuousGrid2DFactory
 
 	}
 }
+

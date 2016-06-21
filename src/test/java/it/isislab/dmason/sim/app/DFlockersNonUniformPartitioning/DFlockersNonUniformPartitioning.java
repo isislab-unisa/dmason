@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Random;
 
 import it.isislab.dmason.annotation.BatchAnnotation;
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
@@ -230,9 +231,11 @@ public class DFlockersNonUniformPartitioning extends DistributedState<Double2D>
 	{
 		super.start();
 
-
-		flockers = DContinuousGrid2DFactory.createDContinuous2DNonUniform(neighborhood/1.5, gridWidth, gridHeight, this, super.AOI, TYPE.pos_j, P, MODE, "flcokers", topicPrefix, true);
-	
+		try{
+			flockers = DContinuousGrid2DFactory.createDContinuous2DNonUniform(neighborhood/1.5, gridWidth, gridHeight, this, super.AOI, TYPE.pos_j, P, MODE, "flcokers", topicPrefix, true);
+		}catch(DMasonException e){
+			e.printStackTrace();
+		}
 		init_connection();
 
 		generateNonUniformAgentsDistribution(this.NUMAGENTS, P, gridWidth, gridHeight, gridWidth/P,1);
