@@ -135,6 +135,8 @@ public class DParticles extends DistributedState<Int2D> {
 
 		/*****************************************/
         
+		//System.out.println(TYPE.pos_i+"-"+TYPE.pos_j+", agents "+agentsToCreate);
+		
         while(particles.size() != agentsToCreate)
         {		
         	p.setPos(particles.getAvailableRandomLocation());
