@@ -86,9 +86,9 @@ public class QuadTree implements Comparable<QuadTree>{
 		ROOT,NW, NE, SE, SW, N, S, W, E;
 	}
 	/**
-	 * Translate the given orientation in the opposite 
-	 * @param o
-	 * @return
+	 * Transform the given orientation in the opposite 
+	 * @param o orientation in the space
+	 * @return new orientation in the space
 	 */
 	public static final ORIENTATION swapOrientation(ORIENTATION o)
 	{
@@ -636,9 +636,9 @@ public class QuadTree implements Comparable<QuadTree>{
 		return 3;
 	}
 	/**
-	 * restiruisce le foglie dell albero
-	 * @param node
-	 * @return
+	 * Return the leafs of a tree
+	 * @param node the node of tree
+	 * @return the leafs of a tree
 	 */
 	public static List<QuadTree> findLeafs(QuadTree node)
 	{
@@ -694,8 +694,8 @@ public class QuadTree implements Comparable<QuadTree>{
 	}
 
 	/**
-	 * Print
-	 * @param node
+	 * Print the tree
+	 * @param node node of tree
 	 */
 	public static final void printTree(QuadTree node)
 	{
@@ -769,9 +769,9 @@ public class QuadTree implements Comparable<QuadTree>{
 
 	}
 	/**
-	 * Verifica la correttezza della struttura dell albero
-	 * @param root
-	 * @return
+	 * Verify if a tree is well-formed
+	 * @param root root of tree
+	 * @return true if correct
 	 */
 	public static final boolean checkObjects(QuadTree root)
 	{
@@ -793,11 +793,7 @@ public class QuadTree implements Comparable<QuadTree>{
 	}
 
 
-	/**
-	 * 
-	 * @param root
-	 * @return
-	 */
+	
 	public static final  List<QuadTree> getPartitioning(QuadTree root)
 	{
 		return new ArrayList<QuadTree>(findLeafs(root));
@@ -805,9 +801,9 @@ public class QuadTree implements Comparable<QuadTree>{
 	}
 
 	/**
-	 * Restituisce info sul partizion 
-	 * @param partitioning
-	 * @return
+	 * Return information for partitioning 
+	 * @param partitioning the partitioning
+	 * @return information
 	 */
 	public static String reportPartitioning(List<QuadTree> partitioning)
 	{
@@ -824,9 +820,9 @@ public class QuadTree implements Comparable<QuadTree>{
 	}
 
 	/**
-	 * Resttuisce statistiche sul partizionamento
-	 * @param partitioning
-	 * @return
+	 * Return statistic information 
+	 * @param partitioning the partitioning 
+	 * @return information
 	 */
 	public static String reportStatsPartitioning(List<QuadTree> partitioning)
 	{
