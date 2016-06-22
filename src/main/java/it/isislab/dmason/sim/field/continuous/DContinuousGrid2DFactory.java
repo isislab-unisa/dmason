@@ -141,7 +141,6 @@ public final class DContinuousGrid2DFactory
 				if(sm==null){throw new DMasonException("Illegal value : SimState is null");}
 				if(max_distance<=0){throw new DMasonException("Illegal value, max_distance value must be greater than 0");}
 				if(max_distance>=Integer.MAX_VALUE ){throw new DMasonException("Illegal value : max_distance value exceded Integer max value");}
-				if(max_distance>=width ){throw new DMasonException(String.format("Illegal value : max_distance (%d) value exceded width(%f) value",max_distance,width));}
 				if(id <0){throw new DMasonException("Illegal value : id should not be negative");}
 				if(id >=Integer.MAX_VALUE){throw new DMasonException("Illegal value : id exceeds Integer MAX value");}
 				if(P <0){throw new DMasonException("Illegal value : P should not be negative");}
