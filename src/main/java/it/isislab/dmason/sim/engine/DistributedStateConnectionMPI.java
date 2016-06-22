@@ -632,15 +632,15 @@ public class DistributedStateConnectionMPI<E> {
 
 					if(TYPE.pos_i < rows-1 && TYPE.pos_j < columns-1){
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagRightDown()
-						+ "NE");
+						+ "NW");
 						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourDiagRightDown()
-						+ "NE",l);
+						+ "NW",l);
 					}
 					if(TYPE.pos_i < rows-1 && TYPE.pos_j > 0){
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagLeftDown()
-						+ "NW");
+						+ "NE");
 						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourDiagLeftDown()
-						+ "NW",l);
+						+ "NE",l);
 					}
 
 					if(TYPE.pos_i > 0 && TYPE.pos_j < columns-1){
@@ -656,12 +656,12 @@ public class DistributedStateConnectionMPI<E> {
 						+ "SE",l);
 					}
 					if(TYPE.pos_j < columns-1){
-						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "E");
-						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourRight() + "E",l);
+						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "W");
+						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourRight() + "W",l);
 					}
 					if(TYPE.pos_j > 0){
-						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "W");
-						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourLeft() + "W",l);
+						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "E");
+						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourLeft() + "E",l);
 					}
 					if(TYPE.pos_i < rows-1){	
 						connectionMPI.subscribeToTopic(topicPrefix+(TYPE.getNeighbourDown() + "N"));
