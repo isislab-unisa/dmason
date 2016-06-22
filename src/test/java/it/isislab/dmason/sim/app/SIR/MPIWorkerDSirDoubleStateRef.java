@@ -40,7 +40,7 @@ import org.apache.log4j.LogManager;
  * @author carminespagnuolo
  *
  */
-public class MPIWorker {
+public class MPIWorkerDSirDoubleStateRef {
 
 	private static int numSteps = 10000; 
 	private static int rows = 1; //number of rows
@@ -61,7 +61,7 @@ public class MPIWorker {
 	 * @author carminespagnuolo
 	 */
 	public static void main(String[] args) {
-		
+
 		try{
 			/**
 			 * Worker parameters
@@ -96,139 +96,139 @@ public class MPIWorker {
 			/**/
 
 			MPI.Init(args);
-		
+
 			int NUM_STEP=numSteps;
 			GeneralParam genParam=null;
-			
-				genParam = new GeneralParam(
-						/*width*/WIDTH,
-						/*height*/HEIGHT,
-						/*maxDistance*/AOI,
-						/*rows*/rows,
-						/*columns*/columns,
-						/*numAgents*/NUM_AGENTS,
-						/*mode*/DistributedField2D.UNIFORM_PARTITIONING_MODE,
-						ConnectionType.pureActiveMQ);
+
+			genParam = new GeneralParam(
+					/*width*/WIDTH,
+					/*height*/HEIGHT,
+					/*maxDistance*/AOI,
+					/*rows*/rows,
+					/*columns*/columns,
+					/*numAgents*/NUM_AGENTS,
+					/*mode*/DistributedField2D.UNIFORM_PARTITIONING_MODE,
+					ConnectionType.pureMPIParallel);
 
 
 
-				/**
+			/**
 		 This works when the number of processes = row * col, 
 		 only for DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE
-				 **/
+			 **/
+			if(MPI.COMM_WORLD.getRank()==0)
+			{
+				genParam.setI(0);
+				genParam.setJ(0);
+			}else{
+				genParam.setI((int)(MPI.COMM_WORLD.getRank()%rows));
+				genParam.setJ((int)(MPI.COMM_WORLD.getRank()/columns));
+			}
+			/*
+			 * Fake args; because IP and PORT is not needed in MPI version
+			 * */
+			genParam.setIp(ip);
+			genParam.setPort("61616");
+
+			DistributedState state = null;
+			switch (type) {
+			case 0:
+				state = new it.isislab.dmason.sim.app.SIRDoubleBuffering.DPeople(genParam,"test1");
+				break;
+			case 1:
+				state = new it.isislab.dmason.sim.app.SIRStateReflection.DPeople(genParam,"test2");
+				break;
+			case 2:
+				state = new it.isislab.dmason.sim.app.SIRStateWithLookup.DPeople(genParam,"test3");
+				break;
+			case 3:
+				state = new it.isislab.dmason.sim.app.SIRState.DPeople(genParam,"test4");
+				break;
+
+			default:
+				break;
+			}
+
+
+
+			MPI.COMM_WORLD.barrier();
+
+
+			/*Debug: you can omit this code (1) */
+			if(logOn)
 				if(MPI.COMM_WORLD.getRank()==0)
 				{
-					genParam.setI(0);
-					genParam.setJ(0);
-				}else{
-					genParam.setI((int)(MPI.COMM_WORLD.getRank()%rows));
-					genParam.setJ((int)(MPI.COMM_WORLD.getRank()/columns));
+					printParams(args, 0);
+					System.out.println("Prepare simulation.");
 				}
-				/*
-				 * Fake args; because IP and PORT is not needed in MPI version
-				 * */
-				genParam.setIp(ip);
-				genParam.setPort("61616");
+			/*End (1)*/
+			state.start();
 
-				DistributedState state = null;
-				switch (type) {
-				case 0:
-					state = new it.isislab.dmason.sim.app.SIRDoubleBuffering.DPeople(genParam,"test1");
-					break;
-				case 1:
-					state = new it.isislab.dmason.sim.app.SIRStateReflection.DPeople(genParam,"test2");
-					break;
-				case 2:
-					state = new it.isislab.dmason.sim.app.SIRStateWithLookup.DPeople(genParam,"test3");
-					break;
-				case 3:
-					state = new it.isislab.dmason.sim.app.SIRState.DPeople(genParam,"test4");
-					break;
+			long end_time=0;
 
-				default:
-					break;
-				}
+			MPI.COMM_WORLD.barrier();
 
+			/*Debug: you can omit this code (2) */
+			long start_time=0;
+			String file=null;
+			FileOutputStream out=null;
+			PrintStream print=null;
 
+			/*End (2)*/
+			//MPI.COMM_WORLD.barrier();
 
-				MPI.COMM_WORLD.barrier();
-
-
-				/*Debug: you can omit this code (1) */
-				if(logOn)
-					if(MPI.COMM_WORLD.getRank()==0)
-					{
-						printParams(args, 0);
-						System.out.println("Prepare simulation.");
-					}
-				/*End (1)*/
-				state.start();
-
-				long end_time=0;
-
-				MPI.COMM_WORLD.barrier();
-
-				/*Debug: you can omit this code (2) */
-				long start_time=0;
-				String file=null;
-				FileOutputStream out=null;
-				PrintStream print=null;
-
-				/*End (2)*/
-				//MPI.COMM_WORLD.barrier();
-
-				int STEP=NUM_STEP;
-				while(NUM_STEP!=0)                                                
-				{                                                                 
-					/*Debug: you can omit this code (3) */
-					if(MPI.COMM_WORLD.getRank()==0 && logOn)
-					{
-						System.out.print(STEP-NUM_STEP+" . ");
-					}
-					/*End (3)*/
-					state.schedule.step(state);
-					NUM_STEP--;
-
-
-					if(logOn && NUM_STEP == (STEP-1)){	
-
-						if(MPI.COMM_WORLD.getRank()==0)
-						{
-
-							file="SIR-SIM-TIME-"+type+"-"+STEP+"-"+NUM_STEP+"-"+NUM_AGENTS+"-"+WIDTH+"-"+HEIGHT+"-"+AOI+"-"+rows+"-"+columns+".txt";
-							start_time=System.currentTimeMillis();
-							out=new FileOutputStream(file);
-							print=new PrintStream(out);
-
-							System.out.println("Worker 0 FILE:"+file+" simulation started..");
-							System.out.println("STEP:");
-						}
-					}
-					if(logOn && NUM_STEP == 0){	
-						end_time=(System.currentTimeMillis()-start_time);
-
-					}
-
-				}
-
-				/*Debug: you can omit this code (4) */
+			int STEP=NUM_STEP;
+			while(NUM_STEP!=0)                                                
+			{                                                                 
+				/*Debug: you can omit this code (3) */
 				if(MPI.COMM_WORLD.getRank()==0 && logOn)
 				{
+					System.out.print(STEP-NUM_STEP+" . ");
+				}
+				/*End (3)*/
+				state.schedule.step(state);
+				NUM_STEP--;
 
-					print.print(type+";"+STEP+";"+NUM_STEP+";"+NUM_AGENTS+";"+WIDTH+";"+HEIGHT+";"+AOI+";"+rows+";"+columns+";"+end_time+"\n");
-					System.out.println("end Simulation");
-					try{
-						print.close();
-						out.close();
-					}catch (Exception e) {
-						System.out.println("Error file writing: "+file);
 
+				if(logOn && NUM_STEP == (STEP-1)){	
+
+					if(MPI.COMM_WORLD.getRank()==0)
+					{
+
+						file="SIR-SIM-TIME-"+type+"-"+STEP+"-"+NUM_STEP+"-"+NUM_AGENTS+"-"+WIDTH+"-"+HEIGHT+"-"+AOI+"-"+rows+"-"+columns+".txt";
+						start_time=System.currentTimeMillis();
+						out=new FileOutputStream(file);
+						print=new PrintStream(out);
+
+						System.out.println("Worker 0 FILE:"+file+" simulation started..");
+						System.out.println("STEP:");
 					}
 				}
-				/*End (4)*/
-				MPI.Finalize();
-				System.exit(0);
-			
+				if(logOn && NUM_STEP == 0){	
+					end_time=(System.currentTimeMillis()-start_time);
+
+				}
+
+			}
+
+			/*Debug: you can omit this code (4) */
+			if(MPI.COMM_WORLD.getRank()==0 && logOn)
+			{
+
+				print.print(type+";"+STEP+";"+NUM_STEP+";"+NUM_AGENTS+";"+WIDTH+";"+HEIGHT+";"+AOI+";"+rows+";"+columns+";"+end_time+"\n");
+				System.out.println("end Simulation");
+				try{
+					print.close();
+					out.close();
+				}catch (Exception e) {
+					System.out.println("Error file writing: "+file);
+
+				}
+			}
+			/*End (4)*/
+			MPI.Finalize();
+			System.exit(0);
+
 		}catch(Exception e)
 		{
 			e.printStackTrace();
