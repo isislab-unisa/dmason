@@ -61,6 +61,11 @@ public class DAntsForageWithUI extends GUIState
     	name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
     }
     
+    public DAntsForageWithUI(GeneralParam args, String prefix) { 
+    	super(new DAntsForage(args,prefix)); 
+    	name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
+    }
+    
    // public DAntsForageWithUI(SimState state) { super(state); }
     
     // allow the user to inspect the model
