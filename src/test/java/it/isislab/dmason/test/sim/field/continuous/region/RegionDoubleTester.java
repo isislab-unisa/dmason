@@ -1,10 +1,17 @@
 package it.isislab.dmason.test.sim.field.continuous.region;
 
 import static org.junit.Assert.*;
+
+import java.util.Arrays;
+import java.util.HashMap;
+
 import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+import com.thoughtworks.xstream.io.xml.DocumentWriter;
 
 import sim.util.Double2D;
 import it.isislab.dmason.exception.DMasonException;
@@ -26,186 +33,115 @@ public class RegionDoubleTester {
 
 	/** The rd. */
 	RegionDouble rd;
-	double width,height;
+	double own_x,own_y,down_x,down_y;
 
-	/** The loop test. */
-	int loopTest;
-
-	/**
+	/*
 	 * Sets the up.
 	 *
 	 * @throws Exception
 	 *             the exception
 	 */
 	@Before
-	public void setUp() throws Exception {
-		width=100;
-		height=100;
-		rd = new RegionDouble(0.0, 0.0, 100.0, 100.0);
-		loopTest = 10000;
-	}
-
-	// isMine
-	// verify if an entry is located in my region
-
-	/**
-	 * Test is mine0_0.
-	 */
-	@Test
-	public void testIsMine0_0() {
-		// (x>=0) && (y >= 0) && (x <1 ) && (y<1 );
-		assertTrue(rd.isMine(0.0, 0.0));
-	}
-
-	/**
-	 * Test is mine0_1.
-	 */
-	@Test
-	public void testIsMine0_1() {
-		// (x>=0) && (y >= 0) && (x <1 ) && (y<1 );
-		assertTrue(rd.isMine(0.0, 1.0));
-	}
-
-	/**
-	 * Test is mine1_0.
-	 */
-	@Test
-	public void testIsMine1_0() {
-		// (x>=0) && (y >= 0) && (x <1 ) && (y<1 );
-		assertTrue(rd.isMine(1.0, 0.0));
-	}
-
-	/**
-	 * Test is mine range0_1_0_1.
-	 */
-	@Test
-	public void testIsMineRange0_1_0_1() {
-		// (x>=0) && (y >= 0) && (x <1 ) && (y<1 );
-		double step = 1.0 / loopTest;
-		double i = 0.0;
-		while (i < 1) {
-			double j = 0.0;
-			while (j < 1) {
-				assertTrue(rd.isMine(i, j));
-				j += step;
-			}
-			i += step;
-		}
-
-	}
-
-	/**
-	 * Test is mine negative range1_0_0_1.
-	 */
-	@Test
-	public void testIsMineNegativeRange1_0_0_1() {
-		// (x>=0) && (y >= 0) && (x <1 ) && (y<1 );
-		double step = 1.0 / loopTest;
-		double i = -1.0;
-		while (i < 0) {
-			double j = 0.0;
-			while (j < 1) {
-				assertFalse(rd.isMine(i, j));
-				j += step;
-			}
-			i += step;
-		}
-
-	}
-
-
-	/**
-	 * Test add agents null.
-	 */
-	@Test
-	public void testAddAgentsNull() {
+	public void setUp() {
 		
-		EntryAgent<Double2D> e = null;
-		assertFalse(rd.addAgents(e));
-
+		own_x =	own_y=100;
+		down_x = down_y = 300;
+		
+		rd = new RegionDouble(own_x,own_y,down_x,down_y);
+	
 	}
 
-	/**
-	 * Test add agents.
-	 */
 	@Test
-	public void testAddAgents() {
-		RemotePositionedAgent<Double2D> c = null;
-		Double2D f = null;
-		EntryAgent<Double2D> e = new EntryAgent<Double2D>(c, f);
-		assertFalse(rd.addAgents(e));
-	}
+	public void test_in_isMine(){
+		for(double i=own_x; i<down_x; i+=0.1){
+			for(double j=own_y; j<down_y; j+=0.1){
 
-	/**
-	 * Test add agents verify.
-	 */
-	@Test
-	public void testAddAgentsVerify(){
-		RemotePositionedAgent<Double2D> c = new DFlocker();
-		Double2D f = new Double2D(0, 0);
-		EntryAgent<Double2D> e = new EntryAgent<Double2D>(c, f);
-		rd.addAgents(e);
-		assertEquals(e, rd.get(c.getId()));
-	}
-
-	// clone
-	/**
-	 * Test clone.
-	 */
-	@Test
-	public void testClone() {
-
-		RegionDouble clone = (RegionDouble) rd.clone();
-
-		assertEquals(rd, clone);
-	}
-
-	/**
-	 * Test clone with entry.
-	 */
-	@Test
-	public void testCloneWithEntry() {
-		rd.clear();
-		RemotePositionedAgent<Double2D> c = new DFlocker();
-		Double2D f = new Double2D();
-		EntryAgent<Double2D> e = new EntryAgent<Double2D>(c, f);
-		rd.addAgents(e);
-		RegionDouble clone = null;
-		try {
-			clone = (RegionDouble) rd.clone(); // per poter funzionare bisogna implementare il metodo equals 
-											   // alla classe Region ed Entry -> implica che ogni RemotePositionedAgent deve implementare il metodo equals
-
-		} catch (NullPointerException err) {
-			fail("clone fail");
+				assertTrue("in_isMine error for position "+i+"-"+j,rd.isMine(i, j));
+			}
 		}
-
-		//assertEquals("incorrect copy of entry", e, clone);
-		assertEquals("incorrect copy of entry", rd, clone);
 	}
 	
-	/**
-	 * Test clone with entry.
-	 */
 	@Test
-	public void testCloneWithMultipleEntries() {
-		Double2D f = new Double2D(10.0,22.0);
-		RemotePositionedAgent<Double2D> c = new DFlocker();
-		c.setId("fake");
-		EntryAgent<Double2D> e = new EntryAgent<Double2D>(c, f);
-		rd.addAgents(e);
-		f= new Double2D(10.0,11.0);
-		e = new EntryAgent<Double2D>(c, f);
-		rd.addAgents(e);
-		RegionDouble clone = null;
-		try {
-			clone = (RegionDouble) rd.clone(); // per poter funzionare bisogna implementare il metodo equals 
-											   // alle classi Region ed Entry -> implica che ogni RemotePositionedAgent deve implementare il metodo equals
+	public void test_out_isMine(){
+		for(double i=0; i<own_x; i+=0.1){
+			for(double j=0; j<own_y; j+=0.1){
 
-		} catch (NullPointerException err) {
-			fail("clone fail");
+				assertFalse("out_isMine error for position "+i+"-"+j,rd.isMine(i, j));
+			}
 		}
-
-		//assertEquals("incorrect copy of entry", e, clone);
-		assertEquals("incorrect copy of entry", rd, clone);
+		
+		for(double i=down_x; i<down_x+100; i+=0.1){
+			for(double j=down_y; j<down_y+100; j+=0.1){
+				assertFalse("out_isMine error for position "+i+"-"+j,rd.isMine(i, j));
+			}
+		}
 	}
+	
+	
+	@Test
+	public void test_addAgents(){
+		EntryAgent<Double2D> agent = null;
+		assertFalse("addAgent error, you should not add a null agent",rd.addAgents(agent));
+		agent = new EntryAgent<Double2D>(null, null);
+		assertFalse("addAgent error, you should not add a null agent",rd.addAgents(agent));
+		RemotePositionedAgent<Double2D> fakeAgent = new DFlocker();
+		fakeAgent.setId("fakeID");
+		agent = new EntryAgent<Double2D>(fakeAgent, null);
+		assertFalse("addAgent error, you should not add a EntryAgent with null Position",rd.addAgents(agent));
+		agent = new EntryAgent<Double2D>(null, new Double2D());
+		assertFalse("addAgent error, you should not add a EntryAgent with null RemotePositionedAgent",rd.addAgents(agent));
+		
+		agent = new EntryAgent<Double2D>(fakeAgent, new Double2D());
+		assertTrue("addAgent error, you should not add a EntryAgent with null RemotePositionedAgent",rd.addAgents(agent));
+		
+		//add the same agent to check regiondouble size (adding the same agent twice should not have effect)
+		rd.addAgents(agent);
+		rd.addAgents(agent);
+		rd.addAgents(agent);
+		assertTrue("AddAgent error: Add the same agent should not increase the regiondouble size",rd.size()==1);
+		
+		assertEquals("The agent added doesn't match",agent, rd.get(agent.r.getId()));
+	}
+	
+	@Test
+	public void test_add100Agents(){
+		
+		RemotePositionedAgent<Double2D> fakeAgent=null;
+		EntryAgent<Double2D> agent = null;
+		Double2D pos;
+		for(int i=0; i<100; i++){
+			fakeAgent = new DFlocker();
+			fakeAgent.setId("fakeID-"+i);
+			pos= new Double2D(i, i);
+			agent = new EntryAgent<Double2D>(fakeAgent, pos);
+			rd.addAgents(agent);
+		}
+		assertTrue("AddAgent error: the regiondouble size should be 100",rd.size()==100);
+		
+	}
+	
+	@Test
+	public void test_clone(){
+		int size= 100;
+		RemotePositionedAgent<Double2D> fakeAgent=null;
+		EntryAgent<Double2D> agent = null;
+		Double2D pos;
+		HashMap<String,EntryAgent> excpectesAgents= new HashMap<>();
+		for(int i=0; i<size; i++){
+			fakeAgent = new DFlocker();
+			fakeAgent.setId("fakeID-"+i);
+			pos= new Double2D(i, i);
+			agent = new EntryAgent<Double2D>(fakeAgent, pos);
+			rd.addAgents(agent);
+			excpectesAgents.put(agent.r.getId(),agent);
+		}
+		
+		RegionDouble cloned = (RegionDouble) rd.clone();
+		for( EntryAgent e: cloned.values()){
+			assertTrue(excpectesAgents.containsKey(e.r.getId()));
+			assertTrue(excpectesAgents.get(e.r.getId()).equals(e));
+		}
+		
+	}
+	
 }

@@ -11,6 +11,7 @@ import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DXY;
+import it.isislab.dmason.sim.field.continuous.DContinuousNonUniform;
 import it.isislab.dmason.test.sim.engine.util.StubDistributedState;
 
 // TODO: Auto-generated Javadoc
@@ -359,7 +360,219 @@ public class DContinuousGrid2DFactoryTester {
 			DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
 			fail("Illegal value : id should not be negative");
 		}catch(DMasonException negativeIDException){
-			assertTrue("Illegal value : id should not be negative",negativeIDException.equals("Illegal value : id should not be negative"));
+			assertTrue("Illegal value : id should not be negative",negativeIDException.getMessage().equals("Illegal value : id should not be negative"));
+			try{
+				id=Integer.MAX_VALUE;
+				DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+				fail("Illegal value : id exceeds Integer MAX value");
+			}catch(DMasonException maxIDValueException){
+				assertTrue("Illegal value : id exceeds Integer MAX value",maxIDValueException.getMessage().equals("Illegal value : id exceeds Integer MAX value"));
+			}
 		}
-	}	
+	}
+	
+	
+	@Test
+	public void test_pValueCreateDContinuous2DNonUniform(){
+		MODE = DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
+		P=Integer.MIN_VALUE;
+		try{
+			DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+			fail("Illegal value : id should not be negative");
+		}catch(DMasonException negativePException){
+			assertTrue("Illegal value : P should not be negative",negativePException.getMessage().equals("Illegal value : P should not be negative"));
+			try{
+				P=Integer.MAX_VALUE;
+				DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+				fail("Illegal value : P exceeds Integer MAX value");
+			}catch(DMasonException maxPValueException){
+				assertTrue("Illegal value : P exceeds Integer MAX value",maxPValueException.getMessage().equals("Illegal value : P exceeds Integer MAX value"));
+			}
+		}
+	}
+	
+	
+	@Test
+	public void test_discretizationValueCreateDContinuous2DNonUniform(){
+			MODE = DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
+		try{
+			discretization = Double.MIN_VALUE; //Discretization min double value
+
+			DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+			fail("FAIL Illegal value : discretization exceeds Double MIN value");
+		}catch(DMasonException minvalueException){
+			assertTrue("Illegal value : discretization exceeds Double MIN value",minvalueException.getMessage().equals("Illegal value : discretization exceeds Double MIN value"));
+			try{
+				discretization = Double.MAX_VALUE; //Discretization max double value
+				DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+				fail("FAIL Illegal value : discretization value exceeds Double MAX value");
+
+			}catch(DMasonException maxvalueException){
+				assertTrue("Illegal value : discretization value exceeds Double MAX value",maxvalueException.getMessage().equals("Illegal value : discretization value exceeds Double MAX value"));
+				try{
+					discretization = -1; //Discretization min double value
+					DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+					fail("FAIL Illegal value : discretization exceeds Double MIN value");
+				}catch(DMasonException negativeException){
+					assertTrue("Illegal value : discretization exceeds Double MIN value",negativeException.getMessage().equals("Illegal value : discretization exceeds Double MIN value"));
+				}
+			}
+		}
+	}
+
+	@Test
+	public void test_widthValueCreateDContinuous2DNonUniform(){
+		MODE = DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
+		try{
+			width = Integer.MIN_VALUE; //width negative value
+			DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+			fail("Fail Illegal value: Field exceeds Double MIN value");
+		}catch(DMasonException negativeWidthException){
+			assertTrue("Illegal value: Field exceeds Double MIN value",negativeWidthException.getMessage().equals("Illegal value: Field exceeds Double MIN value"));
+			try{
+				width = Double.MIN_VALUE; //width min double value
+				DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+				fail("Fail Illegal value: Field exceeds Double MIN value");
+			}catch(DMasonException minDoubleWidthException){
+				assertTrue("Illegal value: Field exceeds Double MIN value",minDoubleWidthException.getMessage().equals("Illegal value: Field exceeds Double MIN value"));
+				try{
+					width = Double.MAX_VALUE; //width max double value
+					DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+					fail("Fail Illegal value : width value exceeds Double MAX value");
+				}catch(DMasonException maxDoubleWidthException){
+					assertTrue("Illegal value : width value exceeds Double MAX value",maxDoubleWidthException.getMessage().equals("Illegal value : width value exceeds Double MAX value"));
+					try{
+						width = 0; //width zero value
+						DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+						fail("Fail Illegal value: Field exceeds Double MIN value");
+					}catch(DMasonException zeroWidthException){
+						assertTrue("Illegal value: Field exceeds Double MIN value",zeroWidthException.getMessage().equals("Illegal value: Field exceeds Double MIN value"));
+					}
+				}
+			}
+		}
+	}
+
+	@Test
+	public void test_heightValueCreateDContinuous2DNonUniform(){
+		MODE = DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
+		try{
+			height = Integer.MIN_VALUE;//height negative value
+			DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+			fail("Fail Illegal value: Field exceeds Double MIN value");
+		}catch(DMasonException negativeHeightException){
+			assertTrue("Illegal value: Field exceeds Double MIN value",negativeHeightException.getMessage().equals("Illegal value: Field exceeds Double MIN value"));
+			try{
+				height =Double.MIN_VALUE;//height min double value
+				DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+				fail("Fail Illegal value: Field exceeds Double MIN value");
+			}catch(DMasonException minDoubleHeightException){
+				assertTrue("Illegal value: Field exceeds Double MIN value",minDoubleHeightException.getMessage().equals("Illegal value: Field exceeds Double MIN value"));
+				try{
+					height =Double.MAX_VALUE;//height max double value
+					DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+					fail("Fail Illegal value : height value exceeds Double MAX value");
+				}catch(DMasonException maxDoubleHeightException){
+					assertTrue("Illegal value : height value exceeds Double MAX value",maxDoubleHeightException.getMessage().equals("Illegal value : height value exceeds Double MAX value"));
+					try{
+						height =0;//height zero value
+						DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+						fail("Fail Illegal value: Field exceeds Double MIN value");
+					}catch(DMasonException zeroHeightException){
+						assertTrue("Illegal value: Field exceeds Double MIN value",zeroHeightException.getMessage().equals("Illegal value: Field exceeds Double MIN value"));
+					}
+				}
+			}
+		}
+	}
+	@Test
+	public void test_simStateValueCreateDContinuous2DNonUniform(){
+		MODE = DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
+		try{
+			sm=null;
+			DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+			fail("Fail Illegal value : SimState is null");
+		}catch(DMasonException nullSimStateException){
+
+			assertTrue("Illegal value : SimState is null",nullSimStateException.getMessage().equals("Illegal value : SimState is null"));
+		}
+	}
+
+	@Test
+	public void test_maxDistanceValueCreateDContinuous2DNonUniform(){
+		MODE = DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
+		
+		try{
+			max_distance = Integer.MIN_VALUE;//max_distance negative value
+			DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+			fail("Fail Illegal value, max_distance value must be greater than 0");
+		}catch(DMasonException negativeAOIException){
+			assertTrue("Illegal value, max_distance value must be greater than 0",negativeAOIException.getMessage().equals("Illegal value, max_distance value must be greater than 0"));
+			try{
+				max_distance = 0;//max_distance zero value
+				DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+				fail("Fail Illegal value, max_distance value must be greater than 0");
+			}catch(DMasonException minIntAOIException){
+				assertTrue("Illegal value, max_distance value must be greater than 0",minIntAOIException.getMessage().equals("Illegal value, max_distance value must be greater than 0"));
+			}
+		}
+	}
+	
+	@Test
+	public void test_modeValueCreateDContinuous2DNonUniform(){
+		MODE = DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
+		try{
+			MODE = Integer.MIN_VALUE;//MODE negative value
+			DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+			fail("Fail Illegal Distribution Mode");
+		}catch(DMasonException negativeModeException){
+			assertTrue("Illegal Distribution Mode",negativeModeException.getMessage().equals("Illegal Distribution Mode"));
+			try{
+				MODE = Integer.MAX_VALUE;//MODE max int value
+				DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+				fail("Fail Illegal Distribution Mode");
+			}catch(DMasonException maxIntModeException){
+				assertTrue("Illegal Distribution Mode",maxIntModeException.getMessage().equals("Illegal Distribution Mode"));
+			}
+		}
+	}
+	
+	
+	@Test
+	public void test_nameValueCreateDContinuous2DNonUniform(){
+		MODE = DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
+		try{
+			name = null;//name null value
+			DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+			fail("Fail Illegal value : name should not be null");
+		}catch(DMasonException nullNameException){
+			assertTrue("Illegal value : name should not be null",nullNameException.getMessage().equals("Illegal value : name should not be null"));
+		}
+	}
+	
+	@Test
+	public void test_topicPrefixValueCreateDContinuous2DNonUniform(){
+		MODE = DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
+		try{
+			topicPrefix = null;//name null value
+			DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+			fail("Fail Illegal value : topicPrefix should not be null");
+		}catch(DMasonException nullTopicPrefixException){
+			assertTrue("Illegal value : topicPrefix should not be null",nullTopicPrefixException.getMessage().equals("Illegal value : topicPrefix should not be null"));
+		}
+	}
+	
+	@Test
+	public void test_CreateDContinuous2DNonUniform(){
+		MODE = DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
+		try{
+			dcon = DContinuousGrid2DFactory.createDContinuous2DNonUniform(discretization, width, height, sm, max_distance, id,P, MODE, name, topicPrefix, isToroidal);
+			assertTrue("Class cast exception",(dcon instanceof DContinuousNonUniform));
+			DContinuousNonUniform dconUni = (DContinuousNonUniform)dcon;
+			assertArrayEquals("fields don't match",new Object[]{discretization, width, height,sm, max_distance, isToroidal},
+					new Object[]{dconUni.discretization, dconUni.width, dconUni.height,dconUni.sm, dconUni.AOI, isToroidal});
+		}catch(DMasonException e){
+			fail("Qualcosa è andato storto");
+		}
+	}
 }
