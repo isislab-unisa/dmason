@@ -15,7 +15,6 @@ import it.isislab.dmason.sim.field.DistributedField;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DXY;
-import it.isislab.dmason.test.sim.field.continuous.DContinuousGrid2DXYTester.StubRemotePositionedAgent;
 import it.isislab.dmason.util.connection.ConnectionType;
 
 import org.junit.Before;

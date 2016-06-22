@@ -1137,6 +1137,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 
 		return thor;
 	}
+	
 	/**
 	 * 
 	 * This method insert all agents in the field and in the corresponding region,
