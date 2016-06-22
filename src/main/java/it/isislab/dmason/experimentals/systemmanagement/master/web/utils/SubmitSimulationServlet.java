@@ -117,9 +117,11 @@ public class SubmitSimulationServlet extends HttpServlet {
 
 		int connection=ConnectionType.pureActiveMQ;
 	
-		if(conType!=null && conType.equalsIgnoreCase(MPI))
+		if(conType!=null && conType.equalsIgnoreCase(MPI)){
+			connection=ConnectionType.pureMPIParallel; 
 			System.out.println("MPI setting are not implemented yet ");
-		
+		    
+		}
 		//topics
 
 		String topics[] =listParams.get("workers").split(",");
