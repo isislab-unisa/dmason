@@ -1,0 +1,25 @@
+.bottom-text {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    font-size: 20px;
+    padding-bottom: 10px;
+}
+.subtitle {
+    padding-top: 4px;
+    font-size: 16px;
+    color: #ccc;
+}
+.bookmark {
+    position: absolute;
+    bottom: -24px;
+    right: 24px;
+    fill: #4285f4;
+    height: 48px;
+    width: 48px;
+}
+.content {
+    padding: 16px 10px 16px 50px;
+}
+.indent {
+    margin-left: 60px;
+}
