@@ -11,6 +11,8 @@ public class FakePositionedAgent<E> implements RemotePositionedAgent<E>, Seriali
 	public E pos;     // Location of agents  
 	public String id; //id remote agent.An id uniquely identifies the agent in the distributed-field 
 	
+	public FakePositionedAgent(){}
+	
 	public FakePositionedAgent(DistributedState<E> state, E position){
 		int i=state.nextId();
 		this.id=state.getType().toString()+"-"+i;		

@@ -324,7 +324,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		rmap.SOUTH_OUT=new RegionDouble((own_x+width)%width,(own_y+my_height+height)%height,
 				(own_x+my_width+width)%width==0?width:(own_x+my_width+width)%width, (own_y+my_height+AOI+height)%height==0?height:(own_y+my_height+AOI+height)%height);
 
-		//if square partitioning
+		
 		if(rows==1 && columns >1){
 			numNeighbors = 6;
 			rmap.NORTH_OUT = null;

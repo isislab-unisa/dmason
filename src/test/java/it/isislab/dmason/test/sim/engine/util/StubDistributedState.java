@@ -1,6 +1,7 @@
 package it.isislab.dmason.test.sim.engine.util;
 
 import ec.util.MersenneTwisterFast;
+import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
@@ -13,6 +14,10 @@ import sim.engine.SimState;
 
 public class StubDistributedState<E> extends DistributedState<E> {
 	
+	/**
+	 * needed for addToField
+	 */
+	public DistributedField2D field;
 	public StubDistributedState() {
 		super();
 	}
@@ -27,6 +32,7 @@ public class StubDistributedState<E> extends DistributedState<E> {
 
 		super();
 		((DistributedMultiSchedule<E>) schedule).addField(field);
+		this.field = field;
 
 	}
 	
@@ -86,7 +92,12 @@ public class StubDistributedState<E> extends DistributedState<E> {
 
 	@Override
 	public void addToField(RemotePositionedAgent<E> rm, E loc) {
-		// TODO Auto-generated method stub
+		try {
+			field.setDistributedObjectLocation(loc, rm, this);
+		} catch (DMasonException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 
