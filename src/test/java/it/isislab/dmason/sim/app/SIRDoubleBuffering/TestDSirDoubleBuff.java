@@ -42,10 +42,10 @@ public class TestDSirDoubleBuff {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = 10000; 
-	private static int rows = 1; //number of rows
-	private static int columns = 2; //number of columns
+	private static int rows = 3; //number of rows
+	private static int columns = 3; //number of columns
 	private static int AOI=10; //max distance
-	private static int NUM_AGENTS=10; //number of agents
+	private static int NUM_AGENTS=1000; //number of agents
 	private static int WIDTH=400; //field width
 	private static int HEIGHT=400; //field height
 	private static int CONNECTION_TYPE=ConnectionType.pureActiveMQ;

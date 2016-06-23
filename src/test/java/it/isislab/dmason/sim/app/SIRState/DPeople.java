@@ -115,12 +115,38 @@ public class DPeople extends DistributedState<Double2D> {
 			init_connection();
 		} catch (DMasonException e) { e.printStackTrace(); }
 		
-		boolean isInfected = (random.nextDouble()<=0.3); 
 
 		DHuman f=  new DHuman(this, new Double2D(0,0), (random.nextDouble()<=0.3));
+	    	
+		int agentsToCreate=0;
+		/**
+		 * Calculate number of agents for this field 
+		 * 
+		 */
+
+		int remainder=super.NUMAGENTS%super.NUMPEERS; 
+
+		if(remainder==0){  
+			agentsToCreate= super.NUMAGENTS / super.NUMPEERS;
+		}
+
+		else if(remainder!=0 && TYPE.pos_i==0 && TYPE.pos_j==0){ 
+			agentsToCreate= (super.NUMAGENTS / super.NUMPEERS)+remainder;
+		}
+
+		else{
+			agentsToCreate= super.NUMAGENTS / super.NUMPEERS;
+		}
+
+		/*****************************************/
+        
+		//System.out.println(TYPE.pos_i+"-"+TYPE.pos_j+", agents "+agentsToCreate);
 		
-		
-		while(environment.size() != super.NUMAGENTS / super.NUMPEERS)
+
+	
+	
+	while(environment.size() != agentsToCreate/*super.NUMAGENTS / super.NUMPEERS*/)
+
 		{
 			f.setPos(environment.getAvailableRandomLocation());
 

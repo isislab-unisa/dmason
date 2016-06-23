@@ -33,6 +33,8 @@ import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
+import mpi.MPI;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

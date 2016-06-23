@@ -37,7 +37,7 @@ public class DPeople extends DistributedState<Double2D> {
 	public double gridWidth ;
 	public double gridHeight ;   
 	public int MODE;
-	
+
 	public String topicPrefix = "";
 
 
@@ -45,9 +45,9 @@ public class DPeople extends DistributedState<Double2D> {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
-	
+
+
+
 	public DPeople(GeneralParam params,String prefix)
 	{    	
 		super(params,new DistributedMultiSchedule<Double2D>(),prefix,params.getConnectionType());
@@ -101,43 +101,70 @@ public class DPeople extends DistributedState<Double2D> {
 		}
 
 	}
-	
+
 	public void start()
 	{
 		super.start();
-		
+
 		try 
 		{
 			environment = DContinuousGrid2DFactory.createDContinuous2D(8.0,gridWidth, gridHeight,this,
 					super.AOI,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,"SIR", topicPrefix,false);
 			init_connection();
 		} catch (DMasonException e) { e.printStackTrace(); }
-		
+
 		boolean isInfected = (random.nextDouble()<=0.3); 
 
 		DHuman f=  new DHuman(this, new Double2D(0,0), (random.nextDouble()<=0.3));
-		
-		
-		while(environment.size() != super.NUMAGENTS / super.NUMPEERS)
+
+		int agentsToCreate=0;
+		/**
+		 * Calculate number of agents for this field 
+		 * 
+		 */
+
+		int remainder=super.NUMAGENTS%super.NUMPEERS; 
+
+		if(remainder==0){  
+			agentsToCreate= super.NUMAGENTS / super.NUMPEERS;
+		}
+
+		else if(remainder!=0 && TYPE.pos_i==0 && TYPE.pos_j==0){ 
+			agentsToCreate= (super.NUMAGENTS / super.NUMPEERS)+remainder;
+		}
+
+		else{
+			agentsToCreate= super.NUMAGENTS / super.NUMPEERS;
+		}
+
+		/*****************************************/
+
+		//System.out.println(TYPE.pos_i+"-"+TYPE.pos_j+", agents "+agentsToCreate);
+
+
+
+
+		while(environment.size() != agentsToCreate/*super.NUMAGENTS / super.NUMPEERS*/)
+
 		{
 			f.setPos(environment.getAvailableRandomLocation());
 
 			if(environment.setObjectLocation(f, f.pos))
 			{
 				schedule.scheduleOnce(f);
-//				f= (DHuman) DistributedAgentFactory.newIstance(
-//						DHuman.class,
-//						new Class[]{SimState.class,Double2D.class,Boolean.class},
-//						new Object[]{this,new Double2D(0,0),(random.nextDouble()<=0.3)},
-//						DHumanState.class);
+				//				f= (DHuman) DistributedAgentFactory.newIstance(
+				//						DHuman.class,
+				//						new Class[]{SimState.class,Double2D.class,Boolean.class},
+				//						new Object[]{this,new Double2D(0,0),(random.nextDouble()<=0.3)},
+				//						DHumanState.class);
 				f= new DHuman(this, new Double2D(0,0), (random.nextDouble()<=0.3));
 			}
 
 		}
-		
+
 	}
-	
-	
+
+
 	@Override
 	public DistributedField<Double2D> getField() {
 		// TODO Auto-generated method stub
@@ -147,7 +174,7 @@ public class DPeople extends DistributedState<Double2D> {
 	@Override
 	public void addToField(RemotePositionedAgent<Double2D> rm, Double2D loc) {
 		environment.setObjectLocation(rm, loc);
-		
+
 	}
 
 	@Override
