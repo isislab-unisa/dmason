@@ -351,7 +351,6 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 			if(getTrigger()!=null)
 				getTrigger().publishToTriggerTopic("Simulation cell "+buggrid.cellType+" ready...");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -364,18 +363,15 @@ public /*strictfp*/ class DAntsForage extends DistributedState<Int2D>
 	}
 	@Override
 	public DistributedField2D<Int2D> getField() {
-		// TODO Auto-generated method stub
 		return buggrid;
 	}
 	@Override
 	public SimState getState() {
-		// TODO Auto-generated method stub
 		return this;
 	}
 	
 	@Override
 	public void addToField(RemotePositionedAgent<Int2D> rm, Int2D loc) {
-		// TODO Auto-generated method stub
 		buggrid.setObjectLocation(rm, loc);
 	}
 
