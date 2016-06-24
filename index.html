@@ -21,27 +21,50 @@
     <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
     <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
 
+    <link rel="import" href="bower_components/paper-drawer-panel/paper-drawer-panel.html">
+    <link rel="import" href="bower_components/paper-header-panel/paper-header-panel.html">
     <title>DMASON by isislab-unisa</title>
   </head>
 
   <body unresolved>
-  <paper-scroll-header-panel condenses keep-condensed-header header-height="256" condensed-header-height="140">
 
-      <paper-toolbar>
+  <paper-drawer-panel force-narrow >
+      <paper-scroll-header-panel drawer id="side-header-panel" fixed fill>
+          <paper-toolbar class="side-drawer">
+              <div>Control Panel</div>
+              <paper-icon-button icon="chevron-left" paper-drawer-toggle ></paper-icon-button>
+          </paper-toolbar>
+          <div class="content content-side-bar">
 
-
-          <div class="bottom indent bottom-text" self-end>
-              <div>Lorem ipsum dolor sit amet</div>
-              <div class="subtitle">Iisque perfecto dissentiet cum et</div>
+              <paper-menu >
+                  <paper-item class="selected"><a  href="index.jsp"> <iron-icon icon="icons:flip-to-front"></iron-icon><span class="span-icon">Monitoring</span></a></paper-item>
+                  <paper-item><a  href="simulations.jsp"><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></a></paper-item>
+                  <paper-item><a  href="history.jsp"><iron-icon icon="history"></iron-icon><span class="span-icon">History</span></a></paper-item>
+                  <paper-item><a href="settings.jsp"><iron-icon icon="settings"></iron-icon><span class="span-icon">Settings</span></a></paper-item>
+              </paper-menu>
           </div>
+      </paper-scroll-header-panel>
 
-      </paper-toolbar>
+      <paper-scroll-header-panel main condenses keep-condensed-header header-height="200" condensed-header-height="100">
+          <paper-toolbar flex id="mainToolBar" class="horizontal">
+              <div><paper-icon-button icon="menu" paper-drawer-toggle ></paper-icon-button></div>
+              <div class="flex"><span>DMASON Master</span></div>
+          </paper-toolbar>
 
-      <div class="content">
+          <div class="content content-main">
 
-      </div>
+                <script>
+                    var i;
+                    for(i=0; i<21;i++){
+                        $(".content-main").append("<h1>weeee</h1>")
+                    }
+                </script>
 
-  </paper-scroll-header-panel>
+
+          </div>
+      </paper-scroll-header-panel>
+
+  </paper-drawer-panel>
 
 
   </body>
