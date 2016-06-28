@@ -25,3 +25,11 @@ The repulsive and attractive forces as defined as follows:
 
 ![](https://github.com/isislab-unisa/dmason/blob/master/src/test/java/it/isislab/dmason/sim/app/DCircles/attrforce.png)
 
+The parameters **k<sub>rep</sub>** and **k<sub>attr</sub>**  are the repulsive and attractive damping terms respectively.
+
+The initial conditions of the circles model are a randomly positioned set of circle agents. The random distribution should be linear and the following parameters should be used to benchmark the model.
+
+
+**W** The width and height of the environment in which agents are placed
+
+**ρ**  The density of agents within the environment (this will dictate the fixed number of agents)
