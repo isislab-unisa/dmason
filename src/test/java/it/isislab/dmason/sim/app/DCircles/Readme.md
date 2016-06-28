@@ -8,4 +8,4 @@ The position __x__ of a circle agent ****_i_**** at a discrete time step **_t−
 
 _**x<sub>i(t+1)</sub>= x<sub>i(t)</sub> + F<sub>i</sub>**_
 
-where_ **F<sub>i</sub>**_ denotes the force exerted on agent **_i_** calculated as:
+where _**F<sub>i</sub>**_ denotes the force exerted on agent **_i_** calculated as:
