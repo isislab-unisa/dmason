@@ -21,3 +21,7 @@ The value _**d<sub>ij</sub>**_ is the distance between agent positions _**x<sub>
 
 The repulsive and attractive forces as defined as follows:
 
+![](https://github.com/isislab-unisa/dmason/blob/master/src/test/java/it/isislab/dmason/sim/app/DCircles/repforce.png) 
+
+![](https://github.com/isislab-unisa/dmason/blob/master/src/test/java/it/isislab/dmason/sim/app/DCircles/attrforce.png)
+
