@@ -33,3 +33,13 @@ The initial conditions of the circles model are a randomly positioned set of cir
 **W** The width and height of the environment in which agents are placed
 
 **ρ**  The density of agents within the environment (this will dictate the fixed number of agents)
+
+##Model Parameters
+
+
+* **k<sub>rep</sub>** The repulsive damping term. Increasing this value will encourage agents to separate
+* **k<sub>attr</sub>** The attractive damping term. Increasing this term will encourage agents to attract
+* **r** he interaction radius of the circle agents. Increasing this value will increase the communication between agents (assuming constant density)
+* **ρ** The density of agents within the environment. Increasing this value will increase the communication within the model
+* **W** The width and height of the environment in which agents are placed. Increasing the environment size is equivalent to increasing the problem size N (i.e. the number of agents) given a fixed _ρ_
+.
