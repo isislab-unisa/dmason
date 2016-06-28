@@ -183,6 +183,7 @@ public class Manager {
 		}
 	}
 
+	@SuppressWarnings("restriction")
 	public void doMain(String[] args) throws IOException, DMasonException {
 		CmdLineParser parser = new CmdLineParser(this);
 		try {
