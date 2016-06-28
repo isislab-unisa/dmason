@@ -3,5 +3,9 @@ The circles benchmark model is a benchmark model originating from FLAME and FLAM
 
 The model has been used for extensive benchmarking of the FLAME and FLAME GPU frameworks and is excellent for testing message acceleration structures for spatially distributed models.
 
-The model: 
-The position x of a circle agent i at a discrete time step t−1 is given by:
+
+The position __x__ of a circle agent ****_i_**** at a discrete time step **_t−1_** is given by:
+
+_**x<sub>i(t+1)</sub>= x<sub>i(t)</sub> + F<sub>i</sub>**_
+
+where_ **F<sub>i</sub>**_ denotes the force exerted on agent **_i_** calculated as:
