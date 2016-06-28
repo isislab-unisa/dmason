@@ -9,3 +9,8 @@ The position __x__ of a circle agent ****_i_**** at a discrete time step **_t−
 _**x<sub>i(t+1)</sub>= x<sub>i(t)</sub> + F<sub>i</sub>**_
 
 where _**F<sub>i</sub>**_ denotes the force exerted on agent **_i_** calculated as:
+
+
+The parameter _**r**_ is the homogeneous radius of the circle agent. The square Iverson bracket notation determines a condition for both the repulsive forces _**F <sup>rep</sup><sub>ij</sub>**_ and attractive 
+force _**F <sup>attr</sup><sub>ij</sub>**_ between the agent _**i**_ and a neighboring agent _**j**_ . When the condition evaluates to true it returns a value of **1** otherwise the value returned is **0** . 
+The value _**d<sub>ij</sub>**_ is the distance between agent positions _**x<sub>i</sub>**_ and _**x<sub>j</sub>**_ given by:
