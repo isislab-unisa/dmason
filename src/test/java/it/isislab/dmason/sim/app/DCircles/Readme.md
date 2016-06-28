@@ -18,3 +18,6 @@ force _**F <sup>attr</sup><sub>ij</sub>**_ between the agent _**i**_ and a neigh
 The value _**d<sub>ij</sub>**_ is the distance between agent positions _**x<sub>i</sub>**_ and _**x<sub>j</sub>**_ given by:
 
 ![](https://github.com/isislab-unisa/dmason/blob/master/src/test/java/it/isislab/dmason/sim/app/DCircles/distance.png)
+
+The repulsive and attractive forces as defined as follows:
+
