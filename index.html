@@ -8,64 +8,94 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
+      <!-- scripts -->
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="javascripts/main.js"></script>
-    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
-    <link rel="shortcut icon" type="image/png" href="images/dmason-ico.png">
+      <!-- css -->
     <link rel="import" href="stylesheets/polymer-style.html">
-    <link rel="import" href="bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
-    <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
-    <link rel="import" href="bower_components/iron-icon/iron-icon.html">
-    <link rel="import" href="bower_components/iron-icons/iron-icons.html">
-    <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
-    <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css">
 
-    <link rel="import" href="bower_components/paper-drawer-panel/paper-drawer-panel.html">
-    <link rel="import" href="bower_components/paper-header-panel/paper-header-panel.html">
-    <title>DMASON by isislab-unisa</title>
-  </head>
+      <!-- favicon -->
+      <link rel="shortcut icon" type="image/png" href="images/dmason-ico.png">
 
-  <body unresolved>
+      <link rel="import" href="bower_components/paper-header-panel/paper-header-panel.html">
+      <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
+      <link rel="import" href="bower_components/iron-icon/iron-icon.html">
+      <link rel="import" href="bower_components/iron-icons/iron-icons.html">
+      <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
+      <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
 
-  <paper-drawer-panel force-narrow >
-      <paper-scroll-header-panel drawer id="side-header-panel" fixed fill>
-          <paper-toolbar class="side-drawer">
-              <div>Control Panel</div>
-              <paper-icon-button icon="chevron-left" paper-drawer-toggle ></paper-icon-button>
-          </paper-toolbar>
-          <div class="content content-side-bar">
+      <link rel="import" href="bower_components/paper-drawer-panel/paper-drawer-panel.html">
 
-              <paper-menu >
-                  <paper-item class="selected"><a  href="index.jsp"> <iron-icon icon="icons:flip-to-front"></iron-icon><span class="span-icon">Monitoring</span></a></paper-item>
-                  <paper-item><a  href="simulations.jsp"><iron-icon icon="image:blur-on"></iron-icon><span class="span-icon">Simulations</span></a></paper-item>
-                  <paper-item><a  href="history.jsp"><iron-icon icon="history"></iron-icon><span class="span-icon">History</span></a></paper-item>
-                  <paper-item><a href="settings.jsp"><iron-icon icon="settings"></iron-icon><span class="span-icon">Settings</span></a></paper-item>
-              </paper-menu>
-          </div>
-      </paper-scroll-header-panel>
+      <title>DMASON</title>
+    </head>
 
-      <paper-scroll-header-panel main condenses keep-condensed-header header-height="200" condensed-header-height="100">
-          <paper-toolbar flex id="mainToolBar" class="horizontal">
-              <div><paper-icon-button icon="menu" paper-drawer-toggle ></paper-icon-button></div>
-              <div class="flex"><span>DMASON Master</span></div>
-          </paper-toolbar>
+    <body unresolved>
+    <paper-drawer-panel force-narrow drawer-width="200px">
+        <paper-header-panel drawer id="drawer_header_panel_side_bar" fixed mode="waterfall">
 
-          <div class="content content-main">
-
-                <script>
-                    var i;
-                    for(i=0; i<21;i++){
-                        $(".content-main").append("<h1>weeee</h1>")
-                    }
-                </script>
+            <div class="paper_header_side_bar">
+                <img src="images/dmason_logo.png" alt="dmason_logo" width="150" height="150">
+            </div>
+            <hr>
+            <div class="paper_header_content_side_bar">
 
 
-          </div>
-      </paper-scroll-header-panel>
+            </div>
+        </paper-header-panel>
 
-  </paper-drawer-panel>
+        <paper-header-panel main class="drawer_main_header_panel" mode="waterfall">
+            <div class="drawer_bookmark " onClick="open_drawer()"><span>menu</span></div>
+            <div class="drawer_main_header_panel_paper_header">
+                <paper-toolbar id="drawer_main_paper_toolbar" class="tall">
+
+                    <!--paper-icon-button class="item_menu" icon="menu" onClick="open_drawer()"></paper-icon-button-->
+                    <div class="title"></div>
+
+                    <a  class="item_menu drawer_main_paper_toolbar_title_button" href="https://github.com/isislab-unisa/dmason" target="_blank">
+                        <div class="toolbar_menu_button github_button">
+
+                            <div><span>View project on</span></div>
+                            <div><span style="font-weight: bold; font-size: 18px">GitHub</span></div>
+
+                        </div>
+                    </a>
+                    <a  class="item_menu drawer_main_paper_toolbar_title_button" href="https://github.com/isislab-unisa/dmason/archive/master.zip" target="_blank">
+
+                        <div class="toolbar_menu_button download_button">
+
+                            <div><span style="font-weight: bold; font-size: 18px">Download</span></div>
+
+                        </div>
+
+                    </a>
+                        <!--paper-button class="drawer_main_paper_toolbar_title_button"><iron-icon src="images/blacktocat.png" ></iron-icon>Source</paper-button-->
 
 
-  </body>
-</html>
+                        <span class="middle title"><img src="images/dmason_banner.png" width="400"> </span>
+                        <span class="bottom title">DMASON is a parallel version of the MASON library for writing and running simulations of Agent based simulation models.</span>
+
+                </paper-toolbar>
+            </div>
+
+            <div class="content_main">
+
+                  <script>
+                      var i;
+                      for(i=0; i<21;i++){
+                          $(".content_main").append("<h1>weeee</h1>")
+                      }
+                  </script>
+
+
+            </div>
+        </paper-header-panel>
+
+    </paper-drawer-panel>
+
+
+    </body>
+  </html>
+

@@ -1,26 +1,123 @@
-.content {
-    padding: 16px 10px 16px 50px;
+body {
+    color: white;
+    width: 100%;
+    height: 100%;
+    background-image: url("../images/body-bg.jpg");
+    background-repeat: repeat;
 }
 
-#paperDrawerPanel {
+
+#drawer_header_panel_side_bar{
+    width: 200px;
+    height: 100%;
+    margin:0;
+    z-index: 0;
+}
+.paper_header_side_bar {
+    padding: 20px;
+    width: 160px;
+    height: 160px;
+    background-color: #D73D32;
+}
+.paper_header_content_side_bar {
+    margin:10px;
+}
+
+.drawer_main_header_panel_paper_header{
+    width: 100%;
+    height: 200px;
     background-color: #D73D32;
 }
 
-.red .paper-header {
-    //background-color: #D73D32;
-    background-color: yellow;
+.content_main{
+    margin-left: 50px;
+
+    color: black;
+    width: 100%;
 }
 
-.paper-header {
-    height: 60px;
-    font-size: 16px;
-    line-height: 60px;
-    padding: 0 10px;
-    color: white;
-    transition: height 0.2s;
+.drawer_bookmark{
+    position: absolute;
+    width: 50px;
+    height: 100px;
+    margin-left: -10px;
+    margin-top:300px;
+    text-transform: uppercase;
+    z-index: 99;
+    background-color: #D73D32;
+    cursor:pointer;
+    position: fixed;
+   border-radius: 0 50% 50% 0;
+    -ms-transition: margin-left 0.5s; /* IE 9 */
+    -webkit-transition: margin-left 0.5s; /* Chrome, Safari, Opera */
+    transition: margin-left 0.5s;
+}
+.drawer_bookmark > span{
+    color:white;
+    margin-top:38px;
+    -ms-transform: rotate(-90deg); /* IE 9 */
+    -webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
+    transform: rotate(-90deg);
+    float:left;
 }
 
+.drawer_bookmark:hover{
+    margin-left:0px;
 
-.drawer_content {
-    height: 2000px;
+}
+
+.drawer_main_paper_toolbar_title_button{
+
+   text-align: center;
+   margin:5px;
+   cursor: pointer;
+}
+
+.toolbar_menu_button {
+    margin-top:40px;
+    width:202px;
+    height: 80px;
+}
+
+.github_button{
+    padding-top:20px;
+    padding-left:20px;
+    text-align: center;
+    font-size: 14px;
+    background-image: url("../images/github-button.png");
+    background-repeat: no-repeat;
+}
+
+.download_button {
+    padding-top:20px;
+    padding-left:20px;
+    text-align: center;
+    font-size: 14px;
+    background-image: url("../images/download-button_white.png");
+    background-repeat: no-repeat;
+}
+
+.drawer_main_paper_toolbar_title_button > iron-icon {
+    min-width:200px;
+    max-width: 220px;
+    max-height: 80px;
+}
+.drawer_main_paper_toolbar_title_button:hover{
+   -webkit-transform: scale(1.1);
+    transform: scale(1.1);
+}
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.item_menu{
+
+    transition: -webkit-transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.item_menu:hover > iron-icon {
+    -webkit-transform: scale(1.2);
+    transform: scale(1.2);
 }
