@@ -1,5 +1,5 @@
-$(function(){window.location="under_construction/pacman-master/index.html"});
-/*
+//$(function(){window.location="under_construction/pacman-master/index.html"});
+
 $( function() {
         var drawer = document.querySelector("paper-drawer-panel");
 
@@ -9,12 +9,12 @@ $( function() {
                 drawer.togglePanel();
                 console.log("panel");
             });
-
+/*
         drawer.addEventListener("iron-select", function (e) {
             $("#drawer_popup_bookmark").hide();
             drawer.openDrawer();
             console.log("select");
-        });
+        });*/
     }
 );
 
@@ -22,4 +22,4 @@ $( function() {
 function open_drawer(){
 
     document.querySelector("paper-drawer-panel").openDrawer();
-}*/
+}
