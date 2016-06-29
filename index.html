@@ -2,98 +2,19 @@
 <html>
   <head>
     <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
 
       <!-- scripts -->
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="javascripts/main.js"></script>
-    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="javascripts/dummy_main.js"></script>
 
-      <!-- css -->
-    <link rel="import" href="stylesheets/polymer-style.html">
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css">
 
       <!-- favicon -->
       <link rel="shortcut icon" type="image/png" href="images/dmason-ico.png">
-
-      <link rel="import" href="bower_components/paper-header-panel/paper-header-panel.html">
-      <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
-      <link rel="import" href="bower_components/iron-icon/iron-icon.html">
-      <link rel="import" href="bower_components/iron-icons/iron-icons.html">
-      <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
-      <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
-
-      <link rel="import" href="bower_components/paper-drawer-panel/paper-drawer-panel.html">
 
       <title>DMASON</title>
     </head>
 
     <body unresolved>
-    <paper-drawer-panel force-narrow drawer-width="200px">
-        <paper-header-panel drawer id="drawer_header_panel_side_bar" fixed mode="waterfall">
-
-            <div class="paper_header_side_bar">
-                <img src="images/dmason_logo.png" alt="dmason_logo" width="150" height="150">
-            </div>
-            <hr>
-            <div class="paper_header_content_side_bar">
-
-
-            </div>
-        </paper-header-panel>
-
-        <paper-header-panel main class="drawer_main_header_panel" mode="waterfall">
-            <div id="drawer_popup_bookmark" class="drawer_bookmark" onClick="open_drawer()"><span>menu</span></div>
-            <div class="drawer_main_header_panel_paper_header">
-                <paper-toolbar id="drawer_main_paper_toolbar" class="tall">
-
-                    <!--paper-icon-button class="item_menu" icon="menu" onClick="open_drawer()"></paper-icon-button-->
-                    <div class="title"></div>
-
-                    <a  class="item_menu drawer_main_paper_toolbar_title_button" href="https://github.com/isislab-unisa/dmason" target="_blank">
-                        <div class="toolbar_menu_button github_button">
-
-                            <div><span>View project on</span></div>
-                            <div><span style="font-weight: bold; font-size: 18px">GitHub</span></div>
-
-                        </div>
-                    </a>
-                    <a  class="item_menu drawer_main_paper_toolbar_title_button" href="https://github.com/isislab-unisa/dmason/archive/master.zip" target="_blank">
-
-                        <div class="toolbar_menu_button download_button">
-
-                            <div><span style="font-weight: bold; font-size: 18px">Download</span></div>
-
-                        </div>
-
-                    </a>
-                        <!--paper-button class="drawer_main_paper_toolbar_title_button"><iron-icon src="images/blacktocat.png" ></iron-icon>Source</paper-button-->
-
-
-                        <span class="middle title"><img src="images/dmason_banner.png" width="400"> </span>
-                        <span class="bottom title">DMASON is a parallel version of the MASON library for writing and running simulations of Agent based simulation models.</span>
-
-                </paper-toolbar>
-            </div>
-
-            <div class="content_main">
-
-                  <script>
-                      var i;
-                      for(i=0; i<21;i++){
-                          $(".content_main").append("<h1>weeee</h1>")
-                      }
-                  </script>
-
-
-            </div>
-        </paper-header-panel>
-
-    </paper-drawer-panel>
 
 
     </body>
