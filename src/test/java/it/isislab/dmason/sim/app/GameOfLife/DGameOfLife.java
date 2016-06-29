@@ -88,6 +88,7 @@ public class DGameOfLife extends DistributedState<Int2D> {
 		this.MODE=params.getMode();
 		gridWidth=params.getWidth();
 		gridHeight=params.getHeight();
+		this.topicPrefix=prefix;
 	}
 
 	@Deprecated

@@ -89,7 +89,7 @@ public class TestDGameOfLife {
 				}
 				else
 				{
-					DGameOfLife sim = new DGameOfLife(genParam,simParams,topicPrefix); 
+					DGameOfLife sim = new DGameOfLife(genParam,topicPrefix); 
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}
