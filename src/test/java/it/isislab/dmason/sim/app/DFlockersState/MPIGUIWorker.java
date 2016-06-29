@@ -93,7 +93,7 @@ public class MPIGUIWorker {
 		genParam.setIp("");
 		genParam.setPort("");
 
-		state=new DFlockersWithUI(genParam);
+		state=new DFlockersWithUI(genParam,"");
 		MPI.COMM_WORLD.barrier();
 		((Console)state.createController()).pressPause();
 		

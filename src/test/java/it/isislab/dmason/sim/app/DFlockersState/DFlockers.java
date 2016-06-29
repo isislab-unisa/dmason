@@ -103,19 +103,20 @@ public class DFlockers extends DistributedState<Double2D>
 	public static String topicPrefix = "";
 
 
-	public DFlockers(GeneralParam params)
-	{    	
-		super(params,new DistributedMultiSchedule<Double2D>(),topicPrefix,params.getConnectionType());
-		this.MODE=params.getMode();
-		gridWidth=params.getWidth();
-		gridHeight=params.getHeight();
-
-	}
+//	public DFlockers(GeneralParam params)
+//	{    	
+//		super(params,new DistributedMultiSchedule<Double2D>(),topicPrefix,params.getConnectionType());
+//		this.MODE=params.getMode();
+//		gridWidth=params.getWidth();
+//		gridHeight=params.getHeight();
+//
+//	}
 
 
 	public DFlockers(GeneralParam params,String prefix)
 	{    	
 		super(params,new DistributedMultiSchedule<Double2D>(),topicPrefix,params.getConnectionType());
+		this.topicPrefix=prefix;
 		this.MODE=params.getMode();
 		gridWidth=params.getWidth();
 		gridHeight=params.getHeight();

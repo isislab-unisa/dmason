@@ -58,6 +58,7 @@ public class DPeople extends DistributedState<Double2D> {
 		this.gridHeight=params.getHeight();
 	}
 
+	
 	public DPeople(GeneralParam params,List<EntryParam<String, Object>> simParams, String prefix)
 	{    	
 		super(params,new DistributedMultiSchedule<Double2D>(), prefix,params.getConnectionType());

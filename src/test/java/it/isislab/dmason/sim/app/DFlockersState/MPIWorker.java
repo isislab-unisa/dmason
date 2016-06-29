@@ -108,13 +108,13 @@ public class MPIWorker {
 		DFlockersWithUI simgui=null;
 		if(MPI.COMM_WORLD.getRank()==0)
 		{
-			 simgui =new DFlockersWithUI(genParam);
+			 simgui =new DFlockersWithUI(genParam,"");
 			
 			gui=true;
 		}
 		else
 		{
-			state=new DFlockers(genParam);
+			state=new DFlockers(genParam,"");
 			
 		}
 		
