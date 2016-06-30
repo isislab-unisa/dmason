@@ -1,7 +1,42 @@
-<style is="custom-style">
+    <style is="custom-style">
 
     paper-toolbar {
-        --paper-toolbar-background: inerith;
+        --paper-toolbar-background: #D73D32;
+
+    }
+    .align_vertical{
+        @apply(--layout-vertical);
+    }
+    .align_vertical_center{
+
+        @apply(--layout-vertical);
+        @apply(--layout-center);
     }
 
-</style>
+    .flex{
+        @apply(--layout-flex);
+    }
+    .download_zip_icon{
+        --iron-icon-width:60px;
+        --iron-icon-height:60px;
+    }
+
+    .github_icon {
+        --iron-icon-width:30px;
+        --iron-icon-height:30px;
+    }
+
+    .align_horizontal_center{
+       @apply(--layout-horizontal);
+       @apply(--layout-center);
+    }
+
+    .align_horizontal{
+         @apply(--layout-horizontal);
+    }
+
+
+
+
+
+    </style>
