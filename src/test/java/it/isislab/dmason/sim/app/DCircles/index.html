@@ -17,16 +17,16 @@ By IsisLab
 
 <h1 id="model-description">Model Description</h1>
 
-<p>The position <script type="math/tex">x</script> of a circle agent <script type="math/tex">i</script> at a discrete time step <script type="math/tex">t - 1</script> is given by;</p>
+<p>The position <script type="math/tex">x</script> of a circle agent <script type="math/tex">i</script> at a discrete time step <script type="math/tex">t - 1</script> is given by:</p>
 
 <script type="math/tex; mode=display">x_{i(t+1)} = x_{i(t)} + F_{i}</script>
 
-<p>where <script type="math/tex">F_{i}</script> denotes the force exerted on agent <script type="math/tex">i</script> calculated as;</p>
+<p>where <script type="math/tex">F_{i}</script> denotes the force exerted on agent <script type="math/tex">i</script> calculated as:</p>
 
 <script type="math/tex; mode=display">% <![CDATA[
 F_{i} = \sum\limits_{i \neq j} F_{ij}^{rep}[d_{ij} - 2 < 0] + F_{ij}^{att}[d_{ij} - 2r > 0] %]]></script>
 
-<p>The parameter <script type="math/tex">r</script> is the homogeneous radius of the circle agent. The square Iverson bracket notation determines a condition for both the repulsive force <script type="math/tex">F_{ij}^{rep}</script> and attractive force <script type="math/tex">F_{ij}^{att}</script> between the agent <script type="math/tex">i</script> and a neighbouring agent <script type="math/tex">j</script>. When the condition evaluates to true it returns a value of <script type="math/tex">1</script> otherwise it is <script type="math/tex">0</script>. The value <script type="math/tex">d_{ij}</script> is the distance between agent positions <script type="math/tex">x_{i}</script> and <script type="math/tex">x_{j}</script> given by;</p>
+<p>The parameter <script type="math/tex">r</script> is the homogeneous radius of the circle agent. The square Iverson bracket notation determines a condition for both the repulsive force <script type="math/tex">F_{ij}^{rep}</script> and attractive force <script type="math/tex">F_{ij}^{att}</script> between the agent <script type="math/tex">i</script> and a neighbouring agent <script type="math/tex">j</script>. When the condition evaluates to true it returns a value of <script type="math/tex">1</script> otherwise it is <script type="math/tex">0</script>. The value <script type="math/tex">d_{ij}</script> is the distance between agent positions <script type="math/tex">x_{i}</script> and <script type="math/tex">x_{j}</script> given by:</p>
 
 <script type="math/tex; mode=display"> d_{ij} = \sqrt{ (x_{j} - x_{i})^2 } </script>
 
