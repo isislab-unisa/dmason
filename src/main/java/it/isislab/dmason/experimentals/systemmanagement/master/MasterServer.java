@@ -164,13 +164,14 @@ public class MasterServer implements MultiServerInterface{
 		this.counterAckSimRcv=new HashMap<Integer,AtomicInteger>();
 		//waiting for workers connection	
 
-		//copy json in mason directory and after read value
+		//copy json in dmason main directory if not exist a previous version and after read value
 		Thread t=new Thread(new Runnable() {
 			
 			@Override
 			public void run() {
 		
 				try {
+					if(!new File(jsonIdFile).exists())
 					DMasonFileSystem.copyFolder(new File(JSON_ID_PATH), new File(jsonIdFile));
 				} catch (IOException e1) {
 					e1.printStackTrace();
