@@ -35,67 +35,6 @@
     </head>
 
     <body unresolved>
-    <!--paper-drawer-panel force-narrow drawer-width="200px">
-        <paper-header-panel drawer id="drawer_header_panel_side_bar" fixed mode="waterfall">
-
-            <div class="paper_header_side_bar">
-
-            </div>
-            <hr>
-            <div class="paper_header_content_side_bar">
-
-
-            </div>
-        </paper-header-panel>
-
-        <paper-header-panel main mode="waterfall">
-
-            <div class="drawer_main_header_panel_paper_header">
-                <paper-toolbar id="drawer_main_paper_toolbar" class="tall">
-
-                    <paper-icon-button class="item_menu" icon="menu" onClick="open_drawer()"></paper-icon-button>
-                    <div class="title"></div>
-
-                    <a  class="item_menu drawer_main_paper_toolbar_title_button" href="https://github.com/isislab-unisa/dmason" target="_blank">
-                        <div class="toolbar_menu_button github_button">
-
-                            <div><span>View project on</span></div>
-                            <div><span style="font-weight: bold; font-size: 18px">GitHub</span></div>
-
-                        </div>
-                    </a>
-                    <a  class="item_menu drawer_main_paper_toolbar_title_button" href="https://github.com/isislab-unisa/dmason/archive/master.zip" target="_blank">
-
-                        <div class="toolbar_menu_button download_button">
-
-                            <div><span style="font-weight: bold; font-size: 18px">Download</span></div>
-
-                        </div>
-
-                    </a>
-
-
-
-                        <span class="middle title layout horizontal center"><h1>D.MAS<iron-icon class="dmason" src="images/dmason-ico.png"></iron-icon>N</h1></span>
-                        <span class="bottom title">DMASON is a parallel version of the MASON library for writing and running simulations of Agent based simulation models.</span>
-
-                </paper-toolbar>
-            </div>
-
-            <div class="content_main">
-
-                  <script>
-                      var i;
-                      for(i=0; i<21;i++){
-                          $(".content_main").append("<h1>weeee</h1>")
-                      }
-                  </script>
-
-
-            </div>
-        </paper-header-panel>
-
-    </paper-drawer-panel-->
     <paper-drawer-panel force-narrow drawer-width="200px">
         <paper-header-panel drawer>
             <!--paper-toolbar class="medium-tall">
@@ -115,7 +54,7 @@
                 </div>
 
                 <div class="title align_horizontal_center">
-                    <div><img class="dmason" src="images/dmason_banner.png" width="300"></div>
+                    <div><img class="dmason" src="images/dmason_banner_2.png" width="300"></div>
                     <!--div><h1 style="font-size: 54px;">D.MASON</h1></div-->
                 </div>
                 <div class="item_menu">
@@ -143,21 +82,28 @@
             </paper-toolbar>
             <div class="content_main">
                 <div class="content_resized">
-                    <p>DMASON is a parallel version of the MASON library for writing and running simulations of Agent based simulation models.</p>
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <p>DMASON is a parallel version of the MASON library for writing and running simulations of Agent based simulation models.</p>
 
-                    <p>Agent-based simulation models are an increasingly popular tool for research and management in many,
-                        different and diverse ﬁelds. In executing such simulations the “speed” is one of the most general and important issues.
-                        The traditional answer to this issue is to invest resources in deploying a dedicated installation of dedicated computers.
-                        D-MASON is a parallel version of the MASON, a library for writing and running Agent-Based simulations.
-                        D-MASON is designed to harness unused PCs for increased performances.</p>
+                                <p>Agent-based simulation models are an increasingly popular tool for research and management in many,
+                                    different and diverse ﬁelds. In executing such simulations the “speed” is one of the most general and important issues.
+                                    The traditional answer to this issue is to invest resources in deploying a dedicated installation of dedicated computers.
+                                    D-MASON is a parallel version of the MASON, a library for writing and running Agent-Based simulations.
+                                    D-MASON is designed to harness unused PCs for increased performances.</p>
 
-                    <h3>Why Distributed MASON?</h3>
-                    <p>
-                        Among the motivations to our focus on distributing the simulation on several machines, we can underline how the need for efficiency among the Agent-Based modeling tools is well recognized in literature: many reviews of state-of-the-art frameworks place “speed” upfront as one of the most general and important issues. While a consistent work has been done to allow the distribution of agents on several computing nodes, our approach here is different in principle: we want to introduce the distribution at the framework level, so that the scientists that use the framework (domain experts but with limited knowledge of computer programming and systems) can be unaware of such distribution.
-                    </p>
-
+                                <h3>Why Distributed MASON?</h3>
+                                <p>
+                                    Among the motivations to our focus on distributing the simulation on several machines, we can underline how the need for efficiency among the Agent-Based modeling tools is well recognized in literature: many reviews of state-of-the-art frameworks place “speed” upfront as one of the most general and important issues. While a consistent work has been done to allow the distribution of agents on several computing nodes, our approach here is different in principle: we want to introduce the distribution at the framework level, so that the scientists that use the framework (domain experts but with limited knowledge of computer programming and systems) can be unaware of such distribution.
+                                </p>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <footer class="footer align_horizontal_center">
+                <div class="footer">
                     <table class="footer_table">
                         <tbody>
                         <tr>
@@ -168,7 +114,7 @@
                         </tr>
                         </tbody>
                     </table>
-                </footer>
+                </div>
             </div>
         </paper-header-panel>
     </paper-drawer-panel>
