@@ -97,6 +97,7 @@ public class MasterServer implements MultiServerInterface{
 	//path directories 
 	private static String dmasonDirectory=System.getProperty("user.dir")+File.separator+"dmason";
 	private static final String masterDirectoryFolder=dmasonDirectory+File.separator+"master";
+	private static final String jsonIdFile=masterDirectoryFolder+File.separator+"simid.json";
 	private static final String masterTemporaryFolder=masterDirectoryFolder+File.separator+"temporary";
 	private static final String masterHistoryFolder=masterDirectoryFolder+File.separator+"history";
 	private static final String simulationsDirectoriesFolder=masterDirectoryFolder+File.separator+"simulations";
@@ -141,12 +142,15 @@ public class MasterServer implements MultiServerInterface{
 		conn=new ConnectionNFieldsWithActiveMQAPI();
 		parser=new JSONParser();
 
+		
 		DMasonFileSystem.make(masterDirectoryFolder);// master
 		DMasonFileSystem.make(masterTemporaryFolder);//temp folder
 		DMasonFileSystem.make(masterHistoryFolder); //master/history
 		DMasonFileSystem.make(masterExampleJarsFolder);//master/jars/examples
 		DMasonFileSystem.make(masterCustomJarsFolder);//master/jars/customs
 		DMasonFileSystem.make(simulationsDirectoriesFolder+File.separator+"jobs"); //master/simulations/jobs
+		
+		
 		this.loadProperties();
 		loadJarsExample();
 
@@ -160,7 +164,29 @@ public class MasterServer implements MultiServerInterface{
 		this.counterAckSimRcv=new HashMap<Integer,AtomicInteger>();
 		//waiting for workers connection	
 
-		//	this.IDSimulation=new AtomicInteger(0);
+		//copy json in mason directory and after read value
+		Thread t=new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+		
+				try {
+					DMasonFileSystem.copyFolder(new File(JSON_ID_PATH), new File(jsonIdFile));
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				
+			}
+		});
+		
+		t.start();
+		try {
+			t.join();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		
+		
 		this.readJSONLastID();
 
 		simulationsList=new HashMap<Integer,Simulation>();
@@ -236,10 +262,9 @@ public class MasterServer implements MultiServerInterface{
 	private void readJSONLastID(){
 
 		try {
-			Object obj=parser.parse(new FileReader(JSON_ID_PATH));
+			Object obj=parser.parse(new FileReader(jsonIdFile));
 			JSONObject jsonID=(JSONObject)obj;
 			String id=(String) jsonID.get("simid");
-			//System.out.println(id);
 			this.IDSimulation=new AtomicInteger(Integer.parseInt(id));
 		} 
 		catch (Exception e) {e.printStackTrace();}
@@ -607,7 +632,7 @@ public class MasterServer implements MultiServerInterface{
 
 		HashMap<String,Integer> slotsForWorkers=new HashMap<String,Integer>();
 		synchronized (this) {
-			//riempo hashmap con topic-numcell per i worker della sim
+			//set number of cells for all worker identified by their topic
 			for(String topicToFind: topicWorkers ){
 				String numcells=listAllWorkers.get(topicToFind).split(",")[0].split(":")[1];
 				slotsForWorkers.put(topicToFind, Integer.parseInt(numcells));
@@ -844,7 +869,7 @@ public class MasterServer implements MultiServerInterface{
 		try {
 			JSONObject jsonID=new JSONObject();
 			jsonID.put("simid", simid);
-			FileWriter jsonFile=new FileWriter(JSON_ID_PATH);
+			FileWriter jsonFile=new FileWriter(jsonIdFile);
 			jsonFile.write(jsonID.toJSONString());
 			jsonFile.close();
 
@@ -1109,7 +1134,7 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-
+     
 	/**
 	 * Send a log request to workers for a simulation with a given id 
 	 * @param idSimulation the id of Simulation
@@ -1158,7 +1183,6 @@ public class MasterServer implements MultiServerInterface{
 		try {
 			t.join();
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -1262,7 +1286,7 @@ public class MasterServer implements MultiServerInterface{
 
 	/***************************************************************************************************/
 	/**
-	 * TESTING CLUSTER SECTION
+	 * TESTING CLUSTER SECTION.
 	 ***************************************************************************************************/
 	/** insert in start method 
 	 * @param id id of simulation
