@@ -135,7 +135,7 @@ public class Worker implements Observer {
 			this.TOPIC_WORKER_ID="WORKER-"+WORKER_IP+"-"+new UID(); 
 			/************************************************
 			 * @author miccar
-			 * character ":" cause error in windows folder creation
+			 * character ":" causes folder creation error on operating system Windows like  
 			 * YOU MUST NOT DELETE FOLLOWING LINE OF CODE 
 			 */
 			TOPIC_WORKER_ID=TOPIC_WORKER_ID.replace(":", "");
@@ -149,8 +149,7 @@ public class Worker implements Observer {
 			availableport=new FindAvailablePort(1000, 3000); //find an available port on a fixed range <x,y> on nodes-> for Socket node -send ->master 
 			this.PORT_COPY_LOG=availableport.getPortAvailable(); //socket communication with master (server side, used for logs)
 			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP)); //create server for socket communication 
-
-			conn.addObserver(this); //EXPERIMENTAL 
+			conn.addObserver(this); //observer on connection status
 			
 			connectToMessageBroker();
 
@@ -176,18 +175,21 @@ public class Worker implements Observer {
 		System.out.println("connected.");
 	}
 	
+	
 	/**
-	 * EXPERIMENTAL
+	 * listener for connection status 
 	 */
+	@Override
 	public void update(Observable obs, Object arg) {
 
 		if (obs==conn){
 			if(!conn.isConnected()){
-				this.gira.set(false);;
-				this.simulationList=new HashMap< /*idsim*/Integer, Simulation>();
-				this.slotsNumber=slotsNumberBackup;
+				this.gira.set(false);//interrupt loop of topic publish 
+				this.simulationList=new HashMap< /*idsim*/Integer, Simulation>(); //reset hashmap of simulations
+				this.slotsNumber=slotsNumberBackup; //reset default slot number
 			}
 			if(conn.isConnected()){
+				//on reconnection launch new istance of worker
 				conn=null;					
 				new Worker(IP_ACTIVEMQ,PORT_ACTIVEMQ, slotsNumber);
 			}
@@ -198,7 +200,8 @@ public class Worker implements Observer {
 	}
 	/**
 	 * 
-	 * Send info to master 
+	 * Class for sending information to master 
+	 * on topic 
 	 *
 	 */
 	class MasterLostChecker extends Thread{
@@ -595,7 +598,7 @@ public class Worker implements Observer {
 
 
 
-
+        
 		public synchronized void stopThread()
 		{
 			run=false;
@@ -630,7 +633,7 @@ public class Worker implements Observer {
 
 	/**
 	 * Create a new sim execution process    
-	 * @param sim
+	 * @param sim the simulation object
 	 */
 	@SuppressWarnings("serial")
 	private synchronized void createNewSimulationProcess(Simulation sim){
