@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -99,7 +100,7 @@ public class Worker implements Observer {
 	final Condition waitMaster  = lock.newCondition(); 
 	final Lock lockconnection = new ReentrantLock();
 	final Condition waitconnection  = lockconnection.newCondition(); 
-
+    AtomicBoolean gira=new AtomicBoolean(false);
 
 	//Socket for log services
 	protected Socket sock=null;
@@ -125,7 +126,7 @@ public class Worker implements Observer {
 			LOGGER.setUseParentHandlers(false);  
 			LOGGER.info("LOGGER ENABLE");
 			//
-
+            gira.set(true);
 			this.IP_ACTIVEMQ=ipMaster;
 			this.PORT_ACTIVEMQ=portMaster;
 			this.conn=new ConnectionNFieldsWithActiveMQAPI();
@@ -144,11 +145,13 @@ public class Worker implements Observer {
 			this.TOPIC_WORKER_ID=""+TOPIC_WORKER_ID.hashCode(); //my topic
 			simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 			this.slotsNumber=slots;
+			this.slotsNumberBackup=slots;
 			availableport=new FindAvailablePort(1000, 3000); //find an available port on a fixed range <x,y> on nodes-> for Socket node -send ->master 
 			this.PORT_COPY_LOG=availableport.getPortAvailable(); //socket communication with master (server side, used for logs)
 			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP)); //create server for socket communication 
 
 			conn.addObserver(this); //EXPERIMENTAL 
+			
 			connectToMessageBroker();
 
 		} catch (Exception e) {e.printStackTrace();}
@@ -179,24 +182,14 @@ public class Worker implements Observer {
 	public void update(Observable obs, Object arg) {
 
 		if (obs==conn){
-			System.exit(0); 
 			if(!conn.isConnected()){
+				this.gira.set(false);;
 				this.simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 				this.slotsNumber=slotsNumberBackup;
-				System.out.println("Waiting master connection ..."); 
 			}
 			if(conn.isConnected()){
-				try {
-
-					System.out.println("wco");
-					conn.unsubscribe(MANAGEMENT);
-					conn.createTopic(MANAGEMENT, 1);
-					conn.unsubscribe(MANAGEMENT);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
+				conn=null;					
+				new Worker(IP_ACTIVEMQ,PORT_ACTIVEMQ, slotsNumber);
 			}
 
 		}
@@ -215,7 +208,7 @@ public class Worker implements Observer {
 		@Override
 		public void run() {
 
-			while(true){
+			while(gira.get()){
 				try {
 					Thread.sleep(new Random().nextInt(3)*1000 );
 					getConnection().publishToTopic(getInfoWorker().toString(), MANAGEMENT,"WORKER");
