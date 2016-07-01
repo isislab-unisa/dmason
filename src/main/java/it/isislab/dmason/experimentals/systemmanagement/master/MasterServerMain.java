@@ -77,9 +77,15 @@ public class MasterServerMain {
 			//5. Setting the handler and starting the Server
 			server.setHandler(ctx);
 		}
-		//Launch activeMq server
+		
+		/**
+		 * Launch embedded activeMQ server 
+		 * comment below two lines to launch external ActiveMQ 
+		 * */
 		ActiveMQStarter amqS = new ActiveMQStarter();		
 		amqS.startActivemq();
+		/********************************/
+		
 		
 		if(!enableUI){
 			ms = new MasterServer();
