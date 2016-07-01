@@ -169,6 +169,10 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 		
 	}
 	
+	/**
+	 * Method doesn't close a connection
+	 * @deprecated
+	 */
 	public void close() throws JMSException
 	{
 		pubSession.close();
