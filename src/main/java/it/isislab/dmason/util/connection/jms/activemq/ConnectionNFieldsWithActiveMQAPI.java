@@ -20,7 +20,6 @@ package it.isislab.dmason.util.connection.jms.activemq;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -29,7 +28,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Set;
-
 import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
@@ -41,7 +39,6 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
-
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQTopicPublisher;
@@ -518,11 +515,26 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	public void transportInterupted() {
 		// Notify observers of change
 		
-		isConnected = false;
-		publishers = new HashMap<String, ActiveMQTopicPublisher>();
-		contObj = new HashMap<String, MyHashMap>();
-		subscribers = new HashMap<String, ActiveMQTopicSubscriber>();
-		topics = new HashMap<String, ActiveMQTopic>();
+		Thread j=new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				isConnected = false;
+				publishers = new HashMap<String, ActiveMQTopicPublisher>();
+				contObj = new HashMap<String, MyHashMap>();
+				subscribers = new HashMap<String, ActiveMQTopicSubscriber>();
+				topics = new HashMap<String, ActiveMQTopic>();
+				
+			}
+		});
+		
+		j.start();
+		try {
+			j.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		setChanged();
 		notifyObservers();
 		
@@ -531,10 +543,13 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 
 	@Override
 	public void transportResumed() {
-		
 		isConnected = true;
-		 // Notify observers of change
+		
 	    setChanged();
 	    notifyObservers();
+	}
+
+	public HashMap<String, ActiveMQTopic> getTopics() {
+		return topics;
 	}
 }
