@@ -37,12 +37,22 @@
     <body unresolved>
     <paper-drawer-panel force-narrow drawer-width="200px">
         <paper-header-panel drawer>
-            <!--paper-toolbar class="medium-tall">
-                <div><span>The Website</span></div>
-            </paper-toolbar -->
+            <!--paper-toolbar id="drawer_toolbar">
+                <div class="align_horizontal_center" style="width: 100%; font-size: 22px; font-weight: bold">
+
+
+                </div>
+
+            </paper-toolbar-->
 
             <div class="paper_header_content_side_bar">
+                <div class="align_vertical">
+                    <div><paper-icon-button id="close_drawer_button" paper-drawer-toggle icon="close"></paper-icon-button></div>
+                    <div class="spacer"></div>
+                    <div>
 
+                    </div>
+                </div>
 
             </div>
         </paper-header-panel>
@@ -57,36 +67,33 @@
                     <div><img class="dmason" src="images/dmason_banner_2.png" width="300"></div>
                     <!--div><h1 style="font-size: 54px;">D.MASON</h1></div-->
                 </div>
-                <div class="item_menu">
-                    <a href="https://github.com/isislab-unisa/dmason" target="_blank">
-                        <div class="align_horizontal_center header_toolbar_button_container">
+                <a href="https://github.com/isislab-unisa/dmason" target="_blank">
+                <div class="item_menu align_horizontal_center_justified">
+                        <div class="align_horizontal_center">
                             <div><img src="images/blacktocat.png"></div>
                             <div class="align_vertical_center">
                                 <div><span>View project on</span></div>
                                 <div><span><b>GitHub</b></span></div>
                             </div>
                         </div>
-                    </a>
                 </div>
-                <div class="item_menu">
-                    <a href="https://github.com/isislab-unisa/dmason/archive/master.zip" target="_blank">
-                        <div class="align_horizontal_center header_toolbar_button_container ">
-                            <div><img class="download_zip_icon" src="images/download_zip.png" width="50" height="50"></div>
+                </a>
+                <a href="https://github.com/isislab-unisa/dmason/archive/master.zip" target="_blank">
+                    <div class="item_menu align_horizontal_center_justified">
+                        <div class="align_horizontal_center">
+                            <div><img src="images/download_zip.png" width="50" height="50"></div>
                             <div><span>Download</span></div>
                         </div>
-                    </a>
-                </div>
-
+                    </div>
+                </a>
 
 
             </paper-toolbar>
-            <div class="content_main">
-                <div class="content_resized">
-                    <table>
-                        <tbody>
-                        <tr>
-                            <td>
-                                <p>DMASON is a parallel version of the MASON library for writing and running simulations of Agent based simulation models.</p>
+            <div class="content_main align_vertical">
+                <div class="content_resized aling_vertical_center flex">
+                    <div>
+
+                                <p><b>DMASON</b> is a parallel version of the <i>MASON</i> library for writing and running simulations of Agent based simulation models.</p>
 
                                 <p>Agent-based simulation models are an increasingly popular tool for research and management in many,
                                     different and diverse ﬁelds. In executing such simulations the “speed” is one of the most general and important issues.
@@ -96,25 +103,24 @@
 
                                 <h3>Why Distributed MASON?</h3>
                                 <p>
-                                    Among the motivations to our focus on distributing the simulation on several machines, we can underline how the need for efficiency among the Agent-Based modeling tools is well recognized in literature: many reviews of state-of-the-art frameworks place “speed” upfront as one of the most general and important issues. While a consistent work has been done to allow the distribution of agents on several computing nodes, our approach here is different in principle: we want to introduce the distribution at the framework level, so that the scientists that use the framework (domain experts but with limited knowledge of computer programming and systems) can be unaware of such distribution.
+                                    Among the motivations to our focus on distributing the simulation on several machines,
+                                    we can underline how the need for efficiency among the Agent-Based modeling tools is well recognized in literature:
+                                    many reviews of state-of-the-art frameworks place “speed” upfront as one of the most general and important issues.
+                                    While a consistent work has been done to allow the distribution of agents on several computing nodes, our approach here is different in principle:
+                                    we want to introduce the distribution at the framework level, so that the scientists that use the framework (domain experts but with limited knowledge
+                                    of computer programming and systems) can be unaware of such distribution.
                                 </p>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+
+                    </div>
+
                 </div>
-                <div class="footer">
-                    <table class="footer_table">
-                        <tbody>
-                        <tr>
-                            <td style="width:60px;vertical-align:middle"><a href="http://www.unisa.it/" target="_blank"><img alt="Università degli Studi di Salerno" src="images/unisa.gif" border="0"></a></td>
-                            <td style="width:60px;vertical-align:middle"><a href="http://www.di.unisa.it/" target="_blank"><img alt="Dipartimento di Informatica" src="images/DI_logo.png" border="0" width="380"></a></td>
-                            <td style="width:60px;vertical-align:middle"><a href="http://www.isislab.it/" target="_blank"><img alt="ISISLab" src="images/isislab_logo.jpg" border="0"></a></td>
-                            <td style="width:60px;vertical-align:middle"><a href="http://cs.gmu.edu/~eclab/projects/mason/" target="_blank"><img alt="MASON University" src="images/mason.png" height="19" width="200" border="0"></a></td>
-                        </tr>
-                        </tbody>
-                    </table>
+                <div class="align_horizontal_justified footer">
+                    <div><a href="http://www.unisa.it/" target="_blank"><img alt="Università degli Studi di Salerno" src="images/unisa.gif" border="0"></a></div>
+                    <div><a href="http://www.di.unisa.it/" target="_blank"><img alt="Dipartimento di Informatica" src="images/DI_logo.png" border="0" width="380"></a></div>
+                    <div><a href="http://www.isislab.it/" target="_blank"><img alt="ISISLab" src="images/isislab_logo.jpg" border="0"></a></div>
+                    <div class="align_horizontal_center"><div><a href="http://cs.gmu.edu/~eclab/projects/mason/" target="_blank"><img alt="MASON University" src="images/mason.png" height="19" width="200" border="0"></a></div></div>
                 </div>
+
             </div>
         </paper-header-panel>
     </paper-drawer-panel>

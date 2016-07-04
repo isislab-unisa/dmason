@@ -1,7 +1,3 @@
-
-
-
- function open_drawer(){
-
- document.querySelector("paper-drawer-panel").openDrawer();
- }
+function open_drawer(){
+  document.querySelector("paper-drawer-panel").togglePanel();
+}

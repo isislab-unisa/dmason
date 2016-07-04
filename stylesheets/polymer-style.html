@@ -1,38 +1,62 @@
     <style is="custom-style">
 
-    paper-toolbar {
-        --paper-toolbar-background: #D73D32;
+
+
+    paper-drawer-panel {
+    --paper-drawer-panel-drawer-container: {
+         background-color: #D73D32;
+        opacity: 0.9;
+        };
+    }
+
+   #close_drawer_button {
+        --paper-icon-button-ink-color: white;
+
+    }
+
+
+    #drawer_main_paper_toolbar{
+    --paper-toolbar-background: #D73D32;
 
     }
     .align_vertical{
-        @apply(--layout-vertical);
+    @apply(--layout-vertical);
     }
     .align_vertical_center{
 
-        @apply(--layout-vertical);
-        @apply(--layout-center);
+    @apply(--layout-vertical);
+    @apply(--layout-center);
     }
 
     .flex{
-        @apply(--layout-flex);
+    @apply(--layout-flex);
     }
     .download_zip_icon{
-        --iron-icon-width:60px;
-        --iron-icon-height:60px;
+    --iron-icon-width:60px;
+    --iron-icon-height:60px;
     }
 
     .github_icon {
-        --iron-icon-width:30px;
-        --iron-icon-height:30px;
+    --iron-icon-width:30px;
+    --iron-icon-height:30px;
     }
 
     .align_horizontal_center{
-       @apply(--layout-horizontal);
-       @apply(--layout-center);
+    @apply(--layout-horizontal);
+    @apply(--layout-center);
     }
 
+    .align_horizontal_justified{
+    @apply(--layout-horizontal);
+    @apply(--layout-justified);
+    }
+
+    .align_horizontal_center_justified{
+    @apply(--layout-horizontal);
+    @apply(--layout-center-justified);
+    }
     .align_horizontal{
-         @apply(--layout-horizontal);
+     @apply(--layout-horizontal);
     }
 
 
