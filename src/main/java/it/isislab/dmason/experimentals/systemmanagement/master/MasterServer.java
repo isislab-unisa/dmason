@@ -112,15 +112,12 @@ public class MasterServer implements MultiServerInterface{
 	protected ServerSocket welcomeSocket;
 
 	//info 
-	//protected HashMap<String/*IDprefixOfWorker*/,String/*MyIDTopicprefixOfWorker*/> topicIdWorkers;
-	protected HashMap<Integer,AtomicInteger> counterAckSimRcv;// number of ack received <simrcv> 
+	protected HashMap<Integer,AtomicInteger> counterAckSimRcv;// number of ack received of <simrcv> 
 	private HashMap<String,String> infoWorkers;
-	private HashMap<String,Integer> ttlinfoWorkers;
-	private HashMap<Integer,Simulation> simulationsList; //list simulation <ID,Simulation>
+	private HashMap<String,Integer> ttlinfoWorkers;//list of connected workers with time to live updated if it is still alive 
+	private HashMap<Integer,Simulation> simulationsList; //list of simulations <ID,Simulation> 
 	private AtomicInteger IDSimulation; // generate an unique id for a simulation 
-	private FindAvailablePort availableport;
-
-	//copy logs
+	private FindAvailablePort availableport; // for socket server 
 	private HashMap<String /*workertopicforrequest*/, Address /*portcopyLog*/> workerListForCopyLogs=new HashMap<String,Address>();
 
 
@@ -135,14 +132,15 @@ public class MasterServer implements MultiServerInterface{
 
 		//comment below line to enable Logger 
 		LOGGER.setUseParentHandlers(false);  
-		//
 		LOGGER.info("LOGGER ENABLE");
-
+        //
+		 
 		startProperties = new Properties();
 		conn=new ConnectionNFieldsWithActiveMQAPI();
 		parser=new JSONParser();
 
 		
+		//create dmason file system for master
 		DMasonFileSystem.make(masterDirectoryFolder);// master
 		DMasonFileSystem.make(masterTemporaryFolder);//temp folder
 		DMasonFileSystem.make(masterHistoryFolder); //master/history
@@ -151,20 +149,19 @@ public class MasterServer implements MultiServerInterface{
 		DMasonFileSystem.make(simulationsDirectoriesFolder+File.separator+"jobs"); //master/simulations/jobs
 		
 		
-		this.loadProperties();
-		loadJarsExample();
+		this.loadProperties(); 
+		loadJarsExample(); //load jar of example 
 
 
-		//topicPrefix of connected workers  
-		//	this.topicIdWorkers=new HashMap<String,String>();
-		//this.topicIdWorkersForSimulation=new HashMap<>();
 		this.infoWorkers=new HashMap<String,String>();
 		this.ttlinfoWorkers=new HashMap<String,Integer>();
-		//support_infoWorkers = new HashMap<>();
 		this.counterAckSimRcv=new HashMap<Integer,AtomicInteger>();
-		//waiting for workers connection	
 
-		//copy json in dmason main directory if not exist a previous version and after read value
+		/**
+		 * Copy json with id for a new simulation in dmason main directory 
+		 * if not exist a previous version of file. Each simulation have an unique identifier
+		 * This file contains an auto-increment identifier for simulation    
+		*/
 		Thread t=new Thread(new Runnable() {
 			
 			@Override
@@ -187,10 +184,12 @@ public class MasterServer implements MultiServerInterface{
 			e1.printStackTrace();
 		}
 		
-		
+		//read the value of next id for a new simulation
 		this.readJSONLastID();
 
 		simulationsList=new HashMap<Integer,Simulation>();
+		
+		/*Find an available port in this range [1000,3000] of ports */
 		try {
 			availableport=new FindAvailablePort(1000, 3000);
 			DEFAULT_PORT_COPY_SERVER=availableport.getPortAvailable();
@@ -202,9 +201,10 @@ public class MasterServer implements MultiServerInterface{
 			e.printStackTrace();
 		}
 
-		this.createConnection();
-		this.createInitialTopic();
+		this.createConnection();//create connection with activemq server
+		this.createInitialTopic();//start communication with workers
 
+		/*start time to live mechanism for connected workers */
 		new TTLWorker().start();
 
 	}
