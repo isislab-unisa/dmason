@@ -79,9 +79,9 @@ import javax.jms.Message;
 public class Worker implements Observer {
 
 
-	private String IP_ACTIVEMQ="";   
-	private String PORT_ACTIVEMQ="";
-	private int PORT_COPY_LOG;
+	private String IP_ACTIVEMQ="";/*ip activemq */
+	private String PORT_ACTIVEMQ="";/*port activemq*/
+	private int PORT_COPY_LOG; /*port for local socket server*/
 	private int  slotsNumber=0; //number of available slots(cells of a field in dmason)
 	private static int slotsNumberBackup=0; // a copy backup of slots number value for reconnection 
 	private static final String MANAGEMENT="DMASON-MANAGEMENT";
@@ -89,18 +89,18 @@ public class Worker implements Observer {
 	private static  String workerDirectory; // worker main directory
 	private static  String simulationsDirectories; // list of simulations' folder
 	private String TOPIC_WORKER_ID=""; // worker's topic , worker write in this topic (publish) for all communication           
-	private static String WORKER_IP="127.0.0.1";
-	private int DEFAULT_COPY_SERVER_PORT=1414;
-	private HashMap< Integer, Simulation> simulationList; //simulations' list of this worker
+	private static String WORKER_IP="127.0.0.1";//local ip of node 
+	private int DEFAULT_COPY_SERVER_PORT=1414; /*default port of master node for copy log file*/
+	private HashMap< Integer, Simulation> simulationList; //List of simulation executed on this worker
 	private SimpleDateFormat sdf=null;
 	private ConnectionNFieldsWithActiveMQAPI conn=null;
-	private FindAvailablePort availableport;
+	private FindAvailablePort availableport; 
 	private boolean MASTER_ACK=false;
 	final Lock lock = new ReentrantLock();
 	final Condition waitMaster  = lock.newCondition(); 
 	final Lock lockconnection = new ReentrantLock();
 	final Condition waitconnection  = lockconnection.newCondition(); 
-    AtomicBoolean gira=new AtomicBoolean(false);
+    private AtomicBoolean gira=new AtomicBoolean(false);
 
 	//Socket for log services
 	protected Socket sock=null;
@@ -145,7 +145,7 @@ public class Worker implements Observer {
 			this.TOPIC_WORKER_ID=""+TOPIC_WORKER_ID.hashCode(); //my topic
 			simulationList=new HashMap< /*idsim*/Integer, Simulation>();
 			this.slotsNumber=slots;
-			this.slotsNumberBackup=slots;
+			slotsNumberBackup=slots; //for reconnection
 			availableport=new FindAvailablePort(1000, 3000); //find an available port on a fixed range <x,y> on nodes-> for Socket node -send ->master 
 			this.PORT_COPY_LOG=availableport.getPortAvailable(); //socket communication with master (server side, used for logs)
 			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP)); //create server for socket communication 
