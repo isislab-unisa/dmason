@@ -77,12 +77,12 @@ import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
 public class MasterServer implements MultiServerInterface{
 	private static final Integer TTL = 30000;
 	//ActivemQ settings file, default 127.0.0.1:61616 otherwise you have to change config.properties file
-	private static final String PROPERTIES_FILE_PATH="resources/systemmanagement/master/conf/config.properties";
-
-	private static final String JSON_ID_PATH="resources/systemmanagement/master/conf/simid.json";
+	private static final String PROPERTIES_FILE_PATH="resources"+File.separator+"systemmanagement"+File.separator+"master"+File.separator+"conf"+File.separator+"config.properties";
+    
+	private static final String JSON_ID_PATH="resources"+File.separator+"systemmanagement"+File.separator+"master"+File.separator+"conf"+File.separator+"simid.json";
 
 	//example jars path from resources dmason main path 
-	private static final String JARS_EXAMPLE_PATH="resources/examples";
+	private static final String JARS_EXAMPLE_PATH="resources"+File.separator+"examples";
 
 	private JSONParser parser=null;
 
