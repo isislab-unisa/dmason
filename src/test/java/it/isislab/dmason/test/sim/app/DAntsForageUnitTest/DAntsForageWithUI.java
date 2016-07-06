@@ -54,8 +54,8 @@ public class DAntsForageWithUI extends GUIState
     	name=String.valueOf(args[7])+""+(String.valueOf(args[8]));
     }*/
     
-    public DAntsForageWithUI(GeneralParam args) { 
-    	super(new DAntsForage(args)); 
+    public DAntsForageWithUI(GeneralParam args, String prefix) { 
+    	super(new DAntsForage(args,prefix)); 
     	name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
     }
     

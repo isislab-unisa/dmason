@@ -52,6 +52,7 @@ public class TestDAntsForage {
 	private static int HEIGHT=300; //field height
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
+	private static final String PREFIX="antstest";// simulation unique topic identifier
 
 
 	private static int MODE =DistributedField2D.UNIFORM_PARTITIONING_MODE;
@@ -132,7 +133,7 @@ public class TestDAntsForage {
 				genParam.setIp(ip);
 				genParam.setPort(port);
 
-				DAntsForage sim = new DAntsForage(genParam); 
+				DAntsForage sim = new DAntsForage(genParam, PREFIX); 
 				worker a = new worker(sim);
 				myWorker.add(a);
 

@@ -52,9 +52,9 @@ public class DParticlesWithUI extends GUIState
     	name=String.valueOf(args[7])+""+(String.valueOf(args[8]));
     }*/
     
-    public DParticlesWithUI(GeneralParam args) 
+    public DParticlesWithUI(GeneralParam args,String prefix) 
     { 
-    	super(new DParticles(args));
+    	super(new DParticles(args,prefix));
     	name=String.valueOf(args.getI())+""+(String.valueOf(args.getJ()));
     }
     

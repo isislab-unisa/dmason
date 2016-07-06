@@ -142,13 +142,13 @@ public /*strictfp*/ class DAntsForage extends StubDistributedState<Int2D>
 
 	}
 
-	public DAntsForage(GeneralParam params)
+	public DAntsForage(GeneralParam params, String prefix)
 	{ 
-		super(params,new DistributedMultiSchedule<Int2D>(),topicPrefix,ConnectionType.fakeUnitTestJMS);
+		super(params,new DistributedMultiSchedule<Int2D>(),prefix,ConnectionType.fakeUnitTestJMS);
 		this.MODE=params.getMode();
 		GRID_WIDTH=params.getWidth();
 		GRID_HEIGHT=params.getHeight();
-
+        topicPrefix=prefix;
 		numAnts = params.getNumAgents();
 
 

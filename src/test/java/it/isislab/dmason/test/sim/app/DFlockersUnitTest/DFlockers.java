@@ -120,10 +120,10 @@ public class DFlockers extends StubDistributedState<Double2D>
      * Il costruttore utilizzato per effettuare una simulazione tramite la connessione fake.
      * viene passato all'interno di super un new DistributedStateConnectionFake()
      * */
-    public DFlockers(GeneralParam params)
+    public DFlockers(GeneralParam params, String prefix)
     {    	
-    	super(params,new DistributedMultiSchedule<Double2D>(),topicPrefix,ConnectionType.fakeUnitTestJMS);
-    	
+    	super(params,new DistributedMultiSchedule<Double2D>(),prefix,ConnectionType.fakeUnitTestJMS);
+    	this.topicPrefix=prefix;
     	this.MODE=params.getMode();
     	gridWidth=params.getWidth();
     	gridHeight=params.getHeight();

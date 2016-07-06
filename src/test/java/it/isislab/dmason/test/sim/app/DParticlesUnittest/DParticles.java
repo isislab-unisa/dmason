@@ -68,12 +68,13 @@ public class DParticles extends StubDistributedState<Int2D> {
 		
 	}
 
-	public DParticles(GeneralParam params)
+	public DParticles(GeneralParam params,String prefix)
 	{    	
-		super(params,new DistributedMultiSchedule<Int2D>(),topicPrefix,ConnectionType.fakeUnitTestJMS);
+		super(params,new DistributedMultiSchedule<Int2D>(),prefix,ConnectionType.fakeUnitTestJMS);
 		this.MODE=params.getMode();
 		gridWidth=params.getWidth();
 		gridHeight=params.getHeight();
+		topicPrefix=prefix;
 		//((DistributedMultiSchedule)schedule).setThresholdMerge(1);
 		//((DistributedMultiSchedule)schedule).setThresholdSplit(5);
 

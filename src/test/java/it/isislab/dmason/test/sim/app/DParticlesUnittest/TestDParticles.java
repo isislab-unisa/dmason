@@ -60,7 +60,7 @@ public class TestDParticles {
 	private static String port; //port of activemq
 
 	private static int MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;
-
+	private static final String PREFIX="particletest";// simulation unique topic identifier
 
 	ArrayList<DParticle> initial_agents = new ArrayList<DParticle>();
 	ArrayList<DParticle> end_agents = new ArrayList<DParticle>();
@@ -138,7 +138,7 @@ public class TestDParticles {
 				genParam.setIp(ip);
 				genParam.setPort(port);
 
-				DParticles sim = new DParticles(genParam); 
+				DParticles sim = new DParticles(genParam,PREFIX); 
 				worker a = new worker(sim);
 				myWorker.add(a);
 

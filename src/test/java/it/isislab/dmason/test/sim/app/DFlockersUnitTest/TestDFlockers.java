@@ -52,6 +52,7 @@ public class TestDFlockers {
 	private static int HEIGHT; //field height
 	private static String ip; //ip of activemq
 	private static String port; //port of activemq
+	private static final String PREFIX="flocktest";// simulation unique topic identifier
 
 	
 	private static int MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;
@@ -126,7 +127,7 @@ public class TestDFlockers {
 				genParam.setIp(ip);
 				genParam.setPort(port);
 			
-					DFlockers sim = new DFlockers(genParam); 
+					DFlockers sim = new DFlockers(genParam,PREFIX); 
 					worker a = new worker(sim);
 					myWorker.add(a);
 				
