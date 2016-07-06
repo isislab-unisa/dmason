@@ -50,6 +50,8 @@ a {
     color: inherit;
 }
 
+
+
 .item_menu{
   margin: 5px 5px 5px 5px;
   width:160px;
@@ -68,6 +70,7 @@ a {
 
 .footer{
     margin:5px;
+    height: 100px;
 }
 
 .spacer{
@@ -82,3 +85,10 @@ a {
 .hidden {
     display: none;
 }
+
+ ul {
+    font-size: 18px;
+}
+ ul li {
+     margin-bottom: 1em;
+ }
