@@ -100,7 +100,7 @@ public class Worker implements Observer {
 	final Condition waitMaster  = lock.newCondition(); 
 	final Lock lockconnection = new ReentrantLock();
 	final Condition waitconnection  = lockconnection.newCondition(); 
-    private AtomicBoolean gira=new AtomicBoolean(false);
+    private AtomicBoolean publishInfo=new AtomicBoolean(false);
 
 	//Socket for log services
 	protected Socket sock=null;
@@ -126,7 +126,7 @@ public class Worker implements Observer {
 			LOGGER.setUseParentHandlers(false);  
 			LOGGER.info("LOGGER ENABLE");
 			//
-            gira.set(true);
+            publishInfo.set(true);
 			this.IP_ACTIVEMQ=ipMaster;
 			this.PORT_ACTIVEMQ=portMaster;
 			this.conn=new ConnectionNFieldsWithActiveMQAPI();
@@ -184,7 +184,7 @@ public class Worker implements Observer {
 
 		if (obs==conn){
 			if(!conn.isConnected()){
-				this.gira.set(false);//interrupt loop of topic publish 
+				this.publishInfo.set(false);//interrupt loop of topic publish 
 				this.simulationList=new HashMap< /*idsim*/Integer, Simulation>(); //reset hashmap of simulations
 				this.slotsNumber=slotsNumberBackup; //reset default slot number
 			}
@@ -211,7 +211,7 @@ public class Worker implements Observer {
 		@Override
 		public void run() {
 
-			while(gira.get()){
+			while(publishInfo.get()){
 				try {
 					Thread.sleep(new Random().nextInt(3)*1000 );
 					getConnection().publishToTopic(getInfoWorker().toString(), MANAGEMENT,"WORKER");
