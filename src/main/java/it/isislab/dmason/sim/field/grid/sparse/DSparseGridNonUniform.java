@@ -190,7 +190,7 @@ public class DSparseGridNonUniform extends DSparseGrid2D implements TraceableFie
 		globals = new VisualizationUpdateMap<String, Object>();
 		globalsNames = new ArrayList<String>();
 		globalsMethods = new ArrayList<Method>();
-		GlobalParametersHelper.buildGlobalsList((DistributedState)sm, ((ConnectionJMS)((DistributedState)sm).getCommunicationVisualizationConnection()), topicPrefix, globalsNames, globalsMethods);
+		//GlobalParametersHelper.buildGlobalsList((DistributedState)sm, ((ConnectionJMS)((DistributedState)sm).getCommunicationVisualizationConnection()), topicPrefix, globalsNames, globalsMethods);
 	}
 
 	/**

@@ -152,7 +152,11 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 
 
 	private ZoomArrayList<EntryNum<Double, Int2D>> tmp_zoom=new ZoomArrayList<EntryNum<Double, Int2D>>();
-	private int width,height;
+	
+
+	public int width;
+
+	public int height;
 
 
 

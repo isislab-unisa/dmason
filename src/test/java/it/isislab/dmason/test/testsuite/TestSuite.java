@@ -7,15 +7,11 @@ import it.isislab.dmason.test.sim.engine.DistributedStateConnectionJMSTester;
 import it.isislab.dmason.test.sim.field.CellTypeTester;
 import it.isislab.dmason.test.sim.field.continuous.DContinuousGrid2DFactoryTester;
 import it.isislab.dmason.test.sim.field.continuous.DContinuousGrid2DXYTester;
-import it.isislab.dmason.test.sim.field.continuous.loadbalanced.DContinuousGrid2DXYLBTester;
 import it.isislab.dmason.test.sim.field.continuous.region.RegionDoubleTester;
-import it.isislab.dmason.test.sim.field.continuous.thin.DContinuousGrid2DXYThinTester;
 import it.isislab.dmason.test.sim.field.grid.numeric.DDoubleGrid2DFactoryTester;
 import it.isislab.dmason.test.sim.field.grid.numeric.DDoubleGrid2DXYTester;
 import it.isislab.dmason.test.sim.field.grid.numeric.DIntGrid2DFactoryTester;
 import it.isislab.dmason.test.sim.field.grid.numeric.DIntGrid2DXYTester;
-import it.isislab.dmason.test.sim.field.grid.numeric.loadbalanced.DDoubleGrid2DXYLBTester;
-import it.isislab.dmason.test.sim.field.grid.numeric.loadbalanced.DIntGrid2DXYLBTester;
 import it.isislab.dmason.test.sim.field.grid.numeric.region.RegionDoubleNumericTester;
 import it.isislab.dmason.test.sim.field.grid.numeric.region.RegionIntegerNumericTester;
 import it.isislab.dmason.test.sim.field.grid.numeric.thin.DDoubleGrid2DXYThinTester;
@@ -23,7 +19,6 @@ import it.isislab.dmason.test.sim.field.grid.numeric.thin.DIntGrid2DXYThinTester
 import it.isislab.dmason.test.sim.field.grid.region.RegionIntegerTester;
 import it.isislab.dmason.test.sim.field.grid.sparse.DSparse2DFactoryTester;
 import it.isislab.dmason.test.sim.field.grid.sparse.DSparseGrid2DXYTester;
-import it.isislab.dmason.test.sim.field.grid.sparse.loadbalanced.DSparseGrid2DXYLBTester;
 import it.isislab.dmason.test.sim.field.grid.sparse.thin.DSparseGrid2DXYThinTester;
 import it.isislab.dmason.test.sim.field.support.field2D.UpdateMapTester;
 
@@ -66,23 +61,12 @@ import org.junit.runners.Suite.SuiteClasses;
 	DIntGrid2DXYTester.class,
 	DDoubleGrid2DXYTester.class,
 
-	/*****Distrubuted Fields Load Balancing ****************/
-	DSparseGrid2DXYLBTester.class,		
-	DContinuousGrid2DXYLBTester.class,		
-	DIntGrid2DXYLBTester.class,
-	DDoubleGrid2DXYLBTester.class,
-
 	/*******Regions**************/
 	RegionIntegerTester.class,		
 	RegionDoubleTester.class,
 	RegionDoubleNumericTester.class,
 	RegionIntegerNumericTester.class,	
 
-	/*******Thin Distributed Fields**************/
-	DSparseGrid2DXYThinTester.class,
-	DContinuousGrid2DXYThinTester.class,
-	DIntGrid2DXYThinTester.class,
-	DDoubleGrid2DXYThinTester.class		
 })
 public class TestSuite{
 

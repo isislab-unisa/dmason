@@ -2,19 +2,14 @@ package it.isislab.dmason.test.sim.field.continuous.region;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
-import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
-import com.thoughtworks.xstream.io.xml.DocumentWriter;
 
 import sim.util.Double2D;
-import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.sim.engine.RemotePositionedAgent;
 import it.isislab.dmason.sim.field.continuous.region.RegionDouble;
 import it.isislab.dmason.sim.field.support.field2D.EntryAgent;
@@ -33,7 +28,7 @@ public class RegionDoubleTester {
 
 	/** The rd. */
 	RegionDouble rd;
-	double own_x,own_y,down_x,down_y;
+	double upl_xx,upl_yy,down_xx,down_yy;
 
 	/*
 	 * Sets the up.
@@ -44,17 +39,25 @@ public class RegionDoubleTester {
 	@Before
 	public void setUp() {
 		
-		own_x =	own_y=100;
-		down_x = down_y = 300;
+		upl_xx = upl_yy=100;
+		down_xx = down_yy = 300;
 		
-		rd = new RegionDouble(own_x,own_y,down_x,down_y);
+		rd = new RegionDouble(upl_xx,upl_yy,down_xx,down_yy);
 	
 	}
 
 	@Test
+	public void test_constructor_fields(){
+		assertTrue(upl_xx == rd.upl_xx);
+		assertTrue(upl_yy == rd.upl_xx);
+		assertTrue(down_xx == rd.down_xx);
+		assertTrue(down_yy == rd.down_yy);
+	}
+	
+	@Test
 	public void test_in_isMine(){
-		for(double i=own_x; i<down_x; i+=0.1){
-			for(double j=own_y; j<down_y; j+=0.1){
+		for(double i=upl_xx; i<down_xx; i+=0.1){
+			for(double j=upl_yy; j<down_yy; j+=0.1){
 
 				assertTrue("in_isMine error for position "+i+"-"+j,rd.isMine(i, j));
 			}
@@ -63,15 +66,15 @@ public class RegionDoubleTester {
 	
 	@Test
 	public void test_out_isMine(){
-		for(double i=0; i<own_x; i+=0.1){
-			for(double j=0; j<own_y; j+=0.1){
+		for(double i=0; i<upl_xx; i+=0.1){
+			for(double j=0; j<upl_yy; j+=0.1){
 
 				assertFalse("out_isMine error for position "+i+"-"+j,rd.isMine(i, j));
 			}
 		}
 		
-		for(double i=down_x; i<down_x+100; i+=0.1){
-			for(double j=down_y; j<down_y+100; j+=0.1){
+		for(double i=down_xx; i<down_xx+100; i+=0.1){
+			for(double j=down_yy; j<down_yy+100; j+=0.1){
 				assertFalse("out_isMine error for position "+i+"-"+j,rd.isMine(i, j));
 			}
 		}

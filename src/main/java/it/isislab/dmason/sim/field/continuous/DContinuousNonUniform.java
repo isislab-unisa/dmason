@@ -194,7 +194,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 		globals = new VisualizationUpdateMap<String, Object>();
 		globalsNames = new ArrayList<String>();
 		globalsMethods = new ArrayList<Method>();
-		GlobalParametersHelper.buildGlobalsList((DistributedState)sm, ((ConnectionJMS)((DistributedState)sm).getCommunicationVisualizationConnection()), topicPrefix, globalsNames, globalsMethods);
+		//GlobalParametersHelper.buildGlobalsList((DistributedState)sm, ((ConnectionJMS)((DistributedState)sm).getCommunicationVisualizationConnection()), topicPrefix, globalsNames, globalsMethods);
 	}
 	private QuadTree myCell;
 	/**
@@ -346,9 +346,9 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 	@SuppressWarnings("rawtypes")
 	public synchronized boolean synchro() 
 	{
-
-		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
+		/*ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
+		
 		// If there is any viewer, send a snap
 		if(conn!=null &&((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
@@ -366,7 +366,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 					isTracingGraphics);
 			currentTime = sm.schedule.getTime();
 		}
-
+*/
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
@@ -389,6 +389,8 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 
 
 		ArrayList<String> actualVar=null;
+	/*
+	 
 		if(conn!=null)
 			actualVar=((DistributedState<?>)sm).upVar.getAllGlobalVarForStep(sm.schedule.getSteps());
 		//upVar.getAllGlobalVarForStep(sm.schedule.getSteps()-1);
@@ -413,7 +415,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 					globalsMethods);
 
 		}
-
+*/
 		// Publish the regions to correspondent topics for the neighbors
 		publishRegions(connWorker);
 
@@ -425,6 +427,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 		// -------------------------------------------------------------------
 
 		// Update ZoomViewer (if any)
+		/*
 		if(conn!=null &&
 				((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 		{
@@ -436,7 +439,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-		}
+		}*/
 		return true;
 	}
 	/**

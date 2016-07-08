@@ -118,6 +118,8 @@ public class DDoubleGridNonUniform extends DDoubleGrid2D implements TraceableFie
 	private int numNeighbors;
 	private QuadTree myCell;
 
+	public int width;
+	public int height;
 
 	public DDoubleGridNonUniform(int width, int height, SimState sm, int aoi, int id, int P, double initialGridValue, String name, String prefix) {
 		super(width, height,initialGridValue);
@@ -150,7 +152,7 @@ public class DDoubleGridNonUniform extends DDoubleGrid2D implements TraceableFie
 		globals = new VisualizationUpdateMap<String, Object>();
 		globalsNames = new ArrayList<String>();
 		globalsMethods = new ArrayList<Method>();
-		GlobalParametersHelper.buildGlobalsList((DistributedState)sm, ((ConnectionJMS)((DistributedState)sm).getCommunicationVisualizationConnection()), topicPrefix, globalsNames, globalsMethods);
+		//GlobalParametersHelper.buildGlobalsList((DistributedState)sm, ((ConnectionJMS)((DistributedState)sm).getCommunicationVisualizationConnection()), topicPrefix, globalsNames, globalsMethods);
 	}
 
 
@@ -280,9 +282,10 @@ public class DDoubleGridNonUniform extends DDoubleGrid2D implements TraceableFie
 	public synchronized boolean synchro() 
 	{
 
-		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
+		//ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
 		// If there is any viewer, send a snap
+		/*
 		if(conn!=null &&((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
 			GlobalInspectorHelper.synchronizeInspector(
@@ -298,7 +301,7 @@ public class DDoubleGridNonUniform extends DDoubleGrid2D implements TraceableFie
 					tracingFields,
 					isTracingGraphics);
 			currentTime = sm.schedule.getTime();
-		}
+		}*/
 
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
@@ -323,6 +326,7 @@ public class DDoubleGridNonUniform extends DDoubleGrid2D implements TraceableFie
 
 
 		ArrayList<String> actualVar=null;
+		/*
 		if(conn!=null)
 			actualVar=((DistributedState<?>)sm).upVar.getAllGlobalVarForStep(sm.schedule.getSteps());
 		//upVar.getAllGlobalVarForStep(sm.schedule.getSteps()-1);
@@ -346,7 +350,7 @@ public class DDoubleGridNonUniform extends DDoubleGrid2D implements TraceableFie
 					actualVar,
 					globalsMethods);
 
-		}
+		}*/
 
 		// Publish the regions to correspondent topics for the neighbors
 		publishRegions(connWorker);
@@ -359,6 +363,7 @@ public class DDoubleGridNonUniform extends DDoubleGrid2D implements TraceableFie
 		// -------------------------------------------------------------------
 
 		// Update ZoomViewer (if any)
+		/*
 		if(conn!=null &&
 				((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 		{
@@ -370,7 +375,7 @@ public class DDoubleGridNonUniform extends DDoubleGrid2D implements TraceableFie
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-		}
+		}*/
 		return true;
 	}
 

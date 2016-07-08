@@ -68,12 +68,22 @@ public class DDoubleGrid2DFactory {
 	{
 		if(width <=0 ) throw new DMasonException("Width cannot be less than zero");
 		if(height <=0 ) throw new DMasonException("Height cannot be less than zero");
-		if(width >=Integer.MAX_VALUE ) throw new DMasonException("Width cannot exceed the maximum integer value");
-		if(height >=Integer.MAX_VALUE ) throw new DMasonException("Height cannot exceed the maximum integer value");
+		if(width >=Integer.MAX_VALUE ) throw new DMasonException("Illegal value : width value exceeds Integer MAX value");
+		if(height >=Integer.MAX_VALUE ) throw new DMasonException("Illegal value : height value exceeds Integer MAX value");
+		if(sm==null) throw new DMasonException("Illegal value : SimState is null");
 		if(max_distance <=0 ) throw new DMasonException("Illegal value, max_distance value must be greater than 0");
-		if(rows <=0 ) throw new DMasonException("Rows cannot be less than zero");
-		if(columns <=0 ) throw new DMasonException("Columns cannot be less than zero");
+		if(max_distance>=width ){throw new DMasonException(String.format("Illegal value : max_distance (%d) value exceded width(%d) value",max_distance,width));}
+		if(i<0){throw new DMasonException("Illegal value : celltype_i value should not be negative");}
+		if(i>=Integer.MAX_VALUE){throw new DMasonException("Illegal value : celltype_i exceeds Integer MAX value");}
+		if(j<0){throw new DMasonException("Illegal value : celltype_j value should not be negative");}
+		if(j>=Integer.MAX_VALUE){throw new DMasonException("Illegal value : celltype_j exceeds Integer MAX value");}
+		if(rows <=0){throw new DMasonException("Illegal value : rows value must be greater than 0");}
+		if(rows >= Integer.MAX_VALUE){throw new DMasonException("Illegal value : rows exceeds Integer MAX value");}
+		if(columns<=0){throw new DMasonException("Illegal value : columns value must be greater than 0");}
+		if(columns >= Integer.MAX_VALUE){throw new DMasonException("Illegal value : columns exceeds Integer MAX value");}
 		if(rows==1 && columns==1){throw new DMasonException("Illegal value : field partitioning with one row and one column is not defined");}
+		if(name == null){throw new DMasonException("Illegal value : name should not be null");}
+		if(topicPrefix == null){throw new DMasonException("Illegal value : topicPrefix should not be null");}
 		
 		if(MODE==DistributedField2D.UNIFORM_PARTITIONING_MODE)
 		{
@@ -122,6 +132,19 @@ public class DDoubleGrid2DFactory {
 
 	public static final DDoubleGrid2D createDDoubleGrid2DNonUniform(int width, int height,SimState sm,int aoi, int id,int P, int MODE, double initialGridValue, boolean fixed, String name, String topicPrefix, boolean isToroidal)throws DMasonException
 	{	
+		if(width <=0 ) throw new DMasonException("Width cannot be less than zero");
+		if(height <=0 ) throw new DMasonException("Height cannot be less than zero");
+		if(width >=Integer.MAX_VALUE ) throw new DMasonException("Illegal value : width value exceeds Integer MAX value");
+		if(height >=Integer.MAX_VALUE ) throw new DMasonException("Illegal value : height value exceeds Integer MAX value");
+		if(sm==null) throw new DMasonException("Illegal value : SimState is null");
+		if(aoi <=0 ) throw new DMasonException("Illegal value, max_distance value must be greater than 0");
+		if(aoi>=width ){throw new DMasonException(String.format("Illegal value : max_distance (%d) value exceded width(%d) value",aoi,width));}
+		if(id <0){throw new DMasonException("Illegal value : id should not be negative");}
+		if(id >=Integer.MAX_VALUE){throw new DMasonException("Illegal value : id exceeds Integer MAX value");}
+		if(P <0){throw new DMasonException("Illegal value : P should not be negative");}
+		if(P >=Integer.MAX_VALUE){throw new DMasonException("Illegal value : P exceeds Integer MAX value");}
+		if(name == null){throw new DMasonException("Illegal value : name should not be null");}
+		if(topicPrefix == null){throw new DMasonException("Illegal value : topicPrefix should not be null");}
 		if(MODE == DistributedField2D.NON_UNIFORM_PARTITIONING_MODE)
 		{
 			DistributedField2D field = new DDoubleGridNonUniform(width, height, sm, aoi, id, P, initialGridValue,name, topicPrefix);
@@ -130,7 +153,12 @@ public class DDoubleGrid2DFactory {
 				((DistributedMultiSchedule)((DistributedState)sm).schedule).addField(field);
 			
 			return (DDoubleGrid2D)field;
-		}return null;
+		}else 
+		{
+			throw new DMasonException("Illegal Distribution Mode");
+			
+		}
+
 	}
 
 	/**
