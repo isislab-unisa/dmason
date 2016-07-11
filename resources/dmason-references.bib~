@@ -20,11 +20,12 @@
 
 
 @inproceedings{cordasco:on,
-	Author= {Antelmi A., Cordasco G., Spagnuolo C., and Vicidomini L.},
-	BookTitle= {Euro-Par 2015: Parallel Processing Workshops: Euro-Par 2015 International Workshops, Vienna, Austria, August 24-25, 2015, Revised Selected Papers},
-	Pages= {367--378},
-	Title= {On Evaluating Graph Partitioning Algorithms for Distributed Agent Based Models on Networks},
-	Year={2015}}
+Author= {Antelmi A., Cordasco G., Spagnuolo C., and Vicidomini L.},
+
+bookTitle= {Euro-Par 2015: Parallel Processing Workshops: Euro-Par 2015 International Workshops, Vienna, Austria, August 24-25, 2015, Revised Selected Papers},
+pages= {367--378},
+Title= {On Evaluating Graph Partitioning Algorithms for Distributed Agent Based Models on Networks},
+year={2015}}
 
 @inproceedings{cordasco:exploiting,
 	Author = {Gennaro Cordasco and Francesco Milone and Carmine Spagnuolo and Luca Vicidomini},

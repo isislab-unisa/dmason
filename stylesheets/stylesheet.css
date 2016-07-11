@@ -4,6 +4,7 @@ body {
     height: 100%;
     background-image: url("../images/body-bg.jpg");
     background-repeat: repeat;
+    font-family: "Arial, Helvetica, sans-serif";
 }
 
 
@@ -71,6 +72,15 @@ a {
 .footer{
     margin:5px 20px;
     height: 100px;
+}
+
+.short_bio{
+    color: rgba(0, 0, 0, 0.57);
+    font-size: 16px;
+    margin-left:10px;
+}
+.short_bio > span > a {
+    text-decoration: underline;
 }
 
 .spacer{

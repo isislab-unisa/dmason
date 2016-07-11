@@ -54,9 +54,9 @@
                     <div class="horizontal-section">
                         <paper-menu id="sidebar_menu" selected="0">
                             <paper-icon-item href="#home" onclick="switch_content(this)" style="text-align: left"><iron-icon icon="home" item-icon></iron-icon>Home</paper-icon-item>
-                            <paper-icon-item href="https://github.com/isislab-unisa/dmason/wiki" onclick="switch_content(this)"><iron-icon icon="book" item-icon></iron-icon>Documentation</paper-icon-item>
+                            <paper-icon-item href="https://github.com/isislab-unisa/dmason/wiki" onclick="switch_content(this)"><iron-icon icon="book" item-icon></iron-icon>Wiki (GitHub)</paper-icon-item>
                             <paper-icon-item href="#publications" onclick="switch_content(this)"><iron-icon icon="editor:insert-drive-file" item-icon></iron-icon>Publications</paper-icon-item>
-                            <paper-icon-item href="#contacts" onclick="switch_content(this)"><iron-icon icon="communication:contact-mail" item-icon></iron-icon>Contacts</paper-icon-item>
+                            <paper-icon-item href="#about" onclick="switch_content(this)"><iron-icon icon="communication:contact-mail" item-icon></iron-icon>About</paper-icon-item>
 
                         </paper-menu>
                     </div>
@@ -72,8 +72,8 @@
                 </div>
 
                 <div class="title align_horizontal_center">
-                    <div><img class="dmason" src="images/dmason_banner_2.png" width="300"></div>
-                    <!--div><h1 style="font-size: 54px;">D.MASON</h1></div-->
+                    <div><img class="dmason" src="images/dmason-ico.png" width="40" heigth="40"></div>
+                    <div><h1 style="font-size: 54px;">DMASON</h1></div>
                 </div>
                 <a href="https://github.com/isislab-unisa/dmason" target="_blank">
                 <div class="item_menu align_horizontal_center_justified">
@@ -105,8 +105,8 @@
                         <p>Agent-based simulation models are an increasingly popular tool for research and management in many,
                             different and diverse ﬁelds. In executing such simulations the “speed” is one of the most general and important issues.
                             The traditional answer to this issue is to invest resources in deploying a dedicated installation of dedicated computers.
-                            D-MASON is a parallel version of the MASON, a library for writing and running Agent-Based simulations.
-                            D-MASON is designed to harness unused PCs for increased performances.</p>
+                            DMASON is a parallel version of the MASON, a library for writing and running Agent-Based simulations.
+                            DMASON is designed to harness unused PCs for increased performances.</p>
 
                         <h3>Why Distributed MASON?</h3>
                         <p>
@@ -126,6 +126,8 @@
                                 </ul>
                             <h2> Conferences </h2>
                                 <ul>
+                                    <li>"<b>Toward the new version of D-MASON: Efficiency, Effectiveness and Correctness in Parallel and Distributed Agent-based Simulations</b>" with Cordasco G., Spagnuolo C. and Scarano V. In Proc. of 1st IEEE Workshop on Parallel and Distributed Processing for Computational Social Systems. IEEE International Parallel & Distributed Processing Symposium (IPDPS), Chicago Hyatt Regency, Chicago, Illinois USA, May 23-27 2016.</li>
+                                    <li>"<b>On Evaluating Graph Partitioning Algorithms for Distributed Agent Based Models on Networks</b>" with Alessia Antelmi, Carmine Spagnuolo and Luca Vicidomini. In Proc. of 3rd Workshop on Parallel and Distributed Agent-Based Simulations (PADABS2015).  August 24, Vienna, 2015."</li>
                                     <li>"<b>Exploiting D-MASON on Parallel Platforms: A Novel Communication Strategy</b>" with Gennaro Cordasco, Francesco Milone, Carmine Spagnuolo and Luca Vicidomini . In Proc. of Euro-Par Workshops, PADABS 2014 2st Workshop on Parallel and Distributed Agent-Based Simulations. Porto, Portugal Aug 25, 2014.</li>
                                     <li>"<b>Communication strategies in Distributed Agent-Based Simulations: the experience with D-MASON</b>" with Gennaro Cordasco, Ada Mancuso, Francesco Milone, Carmine Spagnuolo. In Proc. of Euro-Par Workshops, PADABS 2013 1st Workshop on Parallel and Distributed Agent-Based Simulations. Aachen, Germany Aug 26, 2013.</li>
                                     <li>"<b>Designing Computational Steering Facilities for Distributed Agent Based Simulations</b>" with Rosario De Chiara, Francesco Raia, Vittorio Scarano, Carmine Spagnuolo and Luca Vicidomini. In Proc. of ACM SIGSIM Conference on Principles of Advanced Discrete Simulation (PADS2013). Montreal, Canada. May 19-22, 2013.</li>
@@ -138,7 +140,7 @@
                             </ul>
 
                     </div>
-                    <div id="#contacts" class="hidden">
+                    <div id="#about" class="hidden">
                         <h1>Contacts</h1>
                         <div class="align_vertical">
                             <div><h3>Please report any issues on <a href="https://github.com/isislab-unisa/dmason/issues" style="text-decoration: underline" target="_blank">GitHub</a> page</h3></div>
@@ -149,23 +151,66 @@
                                 <div><a href="https://groups.google.com/forum/#!forum/dmason" target="_blank"><img src="images/g-groups.png" width="64" height="64"></a></div><div style="margin-left: 6px;"><span><a href="https://groups.google.com/forum/#!forum/dmason" target="_blank">DMASON Google Group</a></span></div>
                             </div>
                             <div><hr></div>
-                            <div><h5>Contact a human</h5></div>
-                            <div class="align_horizontal_center">
-                                <div><img src="images/email.png" width="64" height="64"></div>
-                                <div style="margin-left: 6px;" class="align_vertical">
-                                    <div><a href="mailto:%67%65n%6E%61ro.co%72d%61sco@un%69na2%2Eit">Gennaro Cordasco</a></div>
-                                    <div><a href="mailto:%76%69tsca@d%69a.%75ni%73a%2Ei%74">Vittorio Scarano</a></div>
-                                    <div><a href="mailto:cspagnuolo@unisa.it">Carmine Spagnuolo</a></div>
-                                    <div><a href="mailto:%6Cvi%63idom%69ni%40u%6Eisa%2Ei%74">Luca Vicidomini</a></div>
+                            <div><h5>Team project members</h5></div>
+                            <div class="align_vertical">
+                                <!--div><img src="images/email.png" width="64" height="64"></div-->
+                                <div style="margin-left: 6px;" class="align_horizontal_center">
+                                    <div><a href="mailto:mcarillo@unisa.it">Michele Carillo (2)</a></div>
+                                    <div class="short_bio"><span>Research Fellow</span></div>
                                 </div>
-                            </div>
+                                <div style="margin-left: 6px;" class="align_horizontal_center">
+                                    <div><a href="mailto:%67%65n%6E%61ro.co%72d%61sco@un%69na2%2Eit">Gennaro Cordasco (1)</a></div>
+                                    <div class="short_bio"><span>Assistant professor</span></div>
+                                </div>
+                                <div style="margin-left: 6px;" class="align_horizontal_center">
+                                    <div><a href="mailto:%76%69tsca@d%69a.%75ni%73a%2Ei%74">Vittorio Scarano (2)</a></div>
+                                    <div class="short_bio"><span>Associate professor</span></div>
 
+                                </div>
+                                <div style="margin-left: 6px;" class="align_horizontal_center">
+                                    <div><a href="mailto:fserrapica@unisa.it">Flavio Serrapica (2)</a></div>
+                                    <div class="short_bio"><span>Research Fellow</span></div>
+                                </div>
+                                <div style="margin-left: 6px;" class="align_horizontal_center">
+                                    <div><a href="mailto:cspagnuolo@unisa.it">Carmine Spagnuolo (2)</a></div>
+                                    <div class="short_bio"><span>Ph.D. Student</span></div>
+                                </div>
+                                <div style="margin-left: 6px;" class="align_horizontal_center">
+                                    <div><a href="mailto:%6Cvi%63idom%69ni%40u%6Eisa%2Ei%74">Luca Vicidomini (2)</a></div>
+                                    <div class="short_bio"><span>Research Fellow</span></div>
+                                </div>
+
+
+
+                            </div>
+                            <div><h5>Collaborators</h5></div>
+                            <div class="align_vertical">
+                                <div style="margin-left: 6px;" class="align_horizontal_center">
+                                    <div><a href="mailto:pszufe@gmail.com">Przemysław Szufel (3)</a></div>
+                                    <div class="short_bio"><span>Assistant professor</span></div>
+                                </div>
+
+                            </div>
+                            <!--div class="spacer"></div-->
+                            <div><hr></div>
+                            <div style="margin-left: 6px;" class="align_horizontal_center">
+                                <div>(1)</div>
+                                <div class="short_bio"><span><a href="http://193.206.101.111/Dipartimento.aspx?id=20" target="_blank">Dipartimento di Psicologia</a> of the <a href="http://www.unina2.it/" target="_blank">Seconda Università degli studi di Napoli</a></span></div>
+                            </div>
+                            <div style="margin-left: 6px;" class="align_horizontal_center">
+                                <div>(2)</div>
+                                <div class="short_bio"><span><a href="http://www.di.unisa.it/" target="_blank">Dipartimento di Informatica</a> of the <a href="http://www.unisa.it" target="_blank">Università degli Studi di Salerno</a></span></div>
+                            </div>
+                            <div style="margin-left: 6px;" class="align_horizontal_center">
+                                <div>(3)</div>
+                                <div class="short_bio"><span><a href="http://www.sgh.waw.pl/" target="_blank">Warsaw School of Economics</a></span></div>
+                            </div>
                             <div class="spacer"></div>
                         </div>
                     </div>
 
                 </div>
-                <div class="align_horizontal_justified footer">
+                <!--div class="align_horizontal_justified footer">
                     <div class="align_horizontal_center">
                         <div>
                             <a href="http://www.unisa.it/" target="_blank"><img alt="Università degli Studi di Salerno" src="images/unisa.gif" border="0"></a></div>
@@ -187,7 +232,7 @@
                             </a>
                         </div>
                     </div>
-                </div>
+                </div-->
 
             </div>
         </paper-header-panel>
