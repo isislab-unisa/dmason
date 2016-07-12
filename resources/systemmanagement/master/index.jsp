@@ -96,6 +96,7 @@
 
                 </div>
                 <paper-fab id="add-simulation-to-worker-buttom" icon="add" onclick="open_dialog_setting_new_simulation()"></paper-fab>
+                <paper-fab id="shutdown-worker-button" icon="settings-power" onclick="shutdown()"></paper-fab>
                 <paper-toast id="miss-worker-selection">You should select some workers before to assign them a partitioning</paper-toast>
 
                 <paper-dialog id="add-simulation-paper-dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>

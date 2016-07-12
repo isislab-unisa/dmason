@@ -119,4 +119,12 @@
         <servlet-name> LoadExampleSimulationsServlet</servlet-name>
         <url-pattern>/getJarsList</url-pattern>
     </servlet-mapping>
+        <servlet id="shutdownWorkers">
+        <servlet-name> ShutdownWorkersServlet</servlet-name>
+        <servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.ShutdownWorkersServlet</servlet-class>
+	</servlet>
+    <servlet-mapping>
+        <servlet-name> ShutdownWorkersServlet</servlet-name>
+        <url-pattern>/shutdownWorkers</url-pattern>
+    </servlet-mapping>
 </web-app>

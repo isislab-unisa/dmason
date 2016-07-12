@@ -1020,6 +1020,16 @@ public class MasterServer implements MultiServerInterface{
 		}
 
 	}
+	
+	/**
+	 * Shutdown command for workers on cluster
+	 */
+	public void shutdownAllWorkers(){
+	
+		for(String topic:infoWorkers.keySet()){
+			getConnection().publishToTopic("", topic, "shutdown");
+		}
+	}
 
 	/**
 	 * Create history folder for a finished or stopped simulation 

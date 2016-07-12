@@ -571,4 +571,8 @@ function get_history_info(result){
     scp.listSimHistory = list;
 }
 
-
+function shutdown() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'shutdownWorkers', true);
+    xhr.send(null);
+}

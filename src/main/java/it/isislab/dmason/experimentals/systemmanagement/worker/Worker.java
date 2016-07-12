@@ -324,9 +324,12 @@ public class Worker implements Observer {
 					o=parseMessage(msg);
 					final MyHashMap map=(MyHashMap) o;
 
+					if(map.containsKey("shutdown")){
+						shutdownWorker();
+					}
 
 					// request of a storage a new simulation
-					if(map.containsKey("newsim")){
+					else if(map.containsKey("newsim")){
 
 						Simulation sim=(Simulation)map.get("newsim");
 						createNewSimulationProcess(sim);
@@ -906,6 +909,18 @@ public class Worker implements Observer {
 
 	}
 
+	
+	private void shutdownWorker(){
+		
+		getConnection().publishToTopic("", TOPIC_WORKER_ID, "desconnect");
+		try {
+			Thread.sleep(4000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.exit(0);
+	}
 
 
 
