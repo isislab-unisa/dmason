@@ -1023,7 +1023,7 @@ public class MasterServer implements MultiServerInterface{
 	
 	/**
 	 * Shutdown command for workers on cluster
-	 * @param toShutdown list of topic identifier of worker 
+	 * @param toShutdown list of topics identifier of worker 
 	 */
 	public void shutdownAllWorkers(String [] toShutdown){
 	
