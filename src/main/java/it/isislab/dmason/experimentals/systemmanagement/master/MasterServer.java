@@ -1023,10 +1023,11 @@ public class MasterServer implements MultiServerInterface{
 	
 	/**
 	 * Shutdown command for workers on cluster
+	 * @param toShutdown list of topic identifier of worker 
 	 */
-	public void shutdownAllWorkers(){
+	public void shutdownAllWorkers(String [] toShutdown){
 	
-		for(String topic:infoWorkers.keySet()){
+		for(String topic:toShutdown){
 			getConnection().publishToTopic("", topic, "shutdown");
 		}
 	}
