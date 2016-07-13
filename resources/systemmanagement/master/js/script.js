@@ -572,7 +572,39 @@ function get_history_info(result){
 }
 
 function shutdown() {
+
+    var workerID= new Array();
+    var num_slots = 0;
+    var num_workers = $('.grid-item-selected').length;
+    var id="";
+    var workers='{ "list":[';
+    if(num_workers==0){
+        alert("Select worker to shutdown ");
+        return;
+    }
+    if(num_workers){
+        $('.grid-item-selected').each(function(index) {
+            id = $(this).attr("id");
+            //console.log(id);
+
+            workerID[index] = id;
+            workers+='{"id":"'+id+'"},';
+        });
+        console.log(workerID);
+    }
+    workers=workers.substring(0,workers.length-1);
+    workers+=']}';
+    
+
+   /* $.ajax({
+        type:"get",
+        url:"shutdownWorkers",
+        dataType:"JSON",
+        data:{topics:JSON.stringify(workers)}
+    });*/
+
+
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'shutdownWorkers', true);
+    xhr.open('GET', 'shutdownWorkers?topics='.concat(workerID), true);
     xhr.send(null);
 }
