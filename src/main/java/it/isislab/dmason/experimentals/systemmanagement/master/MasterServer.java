@@ -34,6 +34,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -78,7 +79,7 @@ public class MasterServer implements MultiServerInterface{
 	private static final Integer TTL = 30000;
 	//ActivemQ settings file, default 127.0.0.1:61616 otherwise you have to change config.properties file
 	private static final String PROPERTIES_FILE_PATH="resources"+File.separator+"systemmanagement"+File.separator+"master"+File.separator+"conf"+File.separator+"config.properties";
-    
+
 	private static final String JSON_ID_PATH="resources"+File.separator+"systemmanagement"+File.separator+"master"+File.separator+"conf"+File.separator+"simid.json";
 
 	//example jars path from resources dmason main path 
@@ -115,6 +116,13 @@ public class MasterServer implements MultiServerInterface{
 	protected HashMap<Integer,AtomicInteger> counterAckSimRcv;// number of ack received of <simrcv> 
 	private HashMap<String,String> infoWorkers;
 	private HashMap<String,Integer> ttlinfoWorkers;//list of connected workers with time to live updated if it is still alive 
+	public HashMap<String, Integer> getTtlinfoWorkers() {
+		return ttlinfoWorkers;
+	}
+
+
+
+
 	private HashMap<Integer,Simulation> simulationsList; //list of simulations <ID,Simulation> 
 	private AtomicInteger IDSimulation; // generate an unique id for a simulation 
 	private FindAvailablePort availableport; // for socket server 
@@ -133,13 +141,13 @@ public class MasterServer implements MultiServerInterface{
 		//comment below line to enable Logger 
 		LOGGER.setUseParentHandlers(false);  
 		LOGGER.info("LOGGER ENABLE");
-        //
-		 
+		//
+
 		startProperties = new Properties();
 		conn=new ConnectionNFieldsWithActiveMQAPI();
 		parser=new JSONParser();
 
-		
+
 		//create dmason file system for master
 		DMasonFileSystem.make(masterDirectoryFolder);// master
 		DMasonFileSystem.make(masterTemporaryFolder);//temp folder
@@ -147,8 +155,8 @@ public class MasterServer implements MultiServerInterface{
 		DMasonFileSystem.make(masterExampleJarsFolder);//master/jars/examples
 		DMasonFileSystem.make(masterCustomJarsFolder);//master/jars/customs
 		DMasonFileSystem.make(simulationsDirectoriesFolder+File.separator+"jobs"); //master/simulations/jobs
-		
-		
+
+
 		this.loadProperties(); 
 		loadJarsExample(); //load jar of example 
 
@@ -161,34 +169,34 @@ public class MasterServer implements MultiServerInterface{
 		 * Copy json with id for a new simulation in dmason main directory 
 		 * if not exist a previous version of file. Each simulation have an unique identifier
 		 * This file contains an auto-increment identifier for simulation    
-		*/
+		 */
 		Thread t=new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
-		
+
 				try {
 					if(!new File(jsonIdFile).exists())
-					DMasonFileSystem.copyFolder(new File(JSON_ID_PATH), new File(jsonIdFile));
+						DMasonFileSystem.copyFolder(new File(JSON_ID_PATH), new File(jsonIdFile));
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
-				
+
 			}
 		});
-		
+
 		t.start();
 		try {
 			t.join();
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
-		
+
 		//read the value of next id for a new simulation
 		this.readJSONLastID();
 
 		simulationsList=new HashMap<Integer,Simulation>();
-		
+
 		/*Find an available port in this range [1000,3000] of ports */
 		try {
 			availableport=new FindAvailablePort(1000, 3000);
@@ -211,11 +219,11 @@ public class MasterServer implements MultiServerInterface{
 
 
 
-    /**
-     * 
-     * Check info from workers still alive 
-     *
-     */
+	/**
+	 * 
+	 * Check info from workers still alive 
+	 *
+	 */
 	class TTLWorker extends Thread{
 		@Override
 		public void run() {
@@ -290,9 +298,13 @@ public class MasterServer implements MultiServerInterface{
 						try {
 							o=parseMessage(msg);
 							MyHashMap map=(MyHashMap) o;
+							if(map.containsKey("disconnect")){
+								ttlinfoWorkers.put(topic, 0);
+
+							}
 
 							//sim(id) downloaded from the worker
-							if(map.containsKey("simrcv")){
+							else if(map.containsKey("simrcv")){
 								int id=(int) map.get("simrcv");
 								AtomicInteger value=getCounterAckSimRcv().get(id);
 								int temp=value.incrementAndGet();
@@ -985,7 +997,7 @@ public class MasterServer implements MultiServerInterface{
 			//LOGGER.info("send start command to "+workerTopic+"   "+getTopicIdForSimulation());
 			this.getConnection().publishToTopic(iDSimToExec, workerTopic, "start");
 		}
-		
+
 		//waitEndSim(idSimulation); simulation timer
 	}
 
@@ -1020,17 +1032,32 @@ public class MasterServer implements MultiServerInterface{
 		}
 
 	}
-	
+
 	/**
 	 * Shutdown command for workers on cluster
 	 * @param toShutdown list of topics identifier of worker 
 	 */
-	public void shutdownAllWorkers(String [] toShutdown){
-	
+	public synchronized boolean shutdownAllWorkers(ArrayList<String> toShutdown){
+
 		for(String topic:toShutdown){
 			getConnection().publishToTopic("", topic, "shutdown");
 		}
+
+		HashSet<String> toremove=new HashSet<>(toShutdown);
+		HashSet<String> check=null;
+		while(true){
+			check=new HashSet<String>(getInfoWorkers().keySet());
+			if(check.containsAll(toremove)){
+				break;
+			}
+			check=new HashSet<String>();
+		}
+
+		return true;
+
 	}
+
+
 
 	/**
 	 * Create history folder for a finished or stopped simulation 
@@ -1146,7 +1173,7 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 
-     
+
 	/**
 	 * Send a log request to workers for a simulation with a given id 
 	 * @param idSimulation the id of Simulation

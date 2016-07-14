@@ -90,7 +90,15 @@
                             <span>Loading workers list.....</span>
                         </div>
 
+
                 </paper-dialog>
+                 <paper-dialog id="shutdown_workers_dialog"  entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal>
+                    <div class="layout horizontal center">
+                        <paper-spinner class="multi" active alt="Shutdown selected workers"></paper-spinner>
+                        <span>Shutdown selected workers...</span>
+                    </div>
+                </paper-dialog>
+
                 <div class="grid-monitoring" id="workers">
                     <div class=\"grid-sizer-monitoring\"></div>
 
@@ -98,6 +106,7 @@
                 <paper-fab id="add-simulation-to-worker-buttom" icon="add" onclick="open_dialog_setting_new_simulation()"></paper-fab>
                 <paper-fab id="shutdown-worker-button" icon="settings-power" onclick="shutdown()"></paper-fab>
                 <paper-toast id="miss-worker-selection">You should select some workers before to assign them a partitioning</paper-toast>
+                <paper-toast id="miss-worker-shutdown">You need select some workers before shutdown them</paper-toast>
 
                 <paper-dialog id="add-simulation-paper-dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
                     <div class="layout vertical center">

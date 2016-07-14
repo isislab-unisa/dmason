@@ -578,10 +578,7 @@ function shutdown() {
     var num_workers = $('.grid-item-selected').length;
     var id="";
     var workers='{ "list":[';
-    if(num_workers==0){
-        alert("Select worker to shutdown ");
-        return;
-    }
+
     if(num_workers){
         $('.grid-item-selected').each(function(index) {
             id = $(this).attr("id");
@@ -591,20 +588,29 @@ function shutdown() {
             workers+='{"id":"'+id+'"},';
         });
         console.log(workerID);
+        workers=workers.substring(0,workers.length-1);
+        workers+=']}';
     }
-    workers=workers.substring(0,workers.length-1);
-    workers+=']}';
-    
+    else{
+        document.querySelector('#miss-worker-shutdown').open();
+        return;
+    }
 
-   /* $.ajax({
-        type:"get",
+
+
+    open_dialog_by_ID('shutdown_workers_dialog');
+
+    $.ajax({
         url:"shutdownWorkers",
-        dataType:"JSON",
-        data:{topics:JSON.stringify(workers)}
-    });*/
+        data:{topics:JSON.stringify(workers)},
+        success:function (result) {
+            close_dialog_by_ID('shutdown_workers_dialog');
+
+        }
+    });
 
 
-    var xhr = new XMLHttpRequest();
+  /*  var xhr = new XMLHttpRequest();
     xhr.open('GET', 'shutdownWorkers?topics='.concat(workerID), true);
-    xhr.send(null);
+    xhr.send(null);*/
 }
