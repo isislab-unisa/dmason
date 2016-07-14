@@ -117,7 +117,6 @@ public class MasterServer implements MultiServerInterface{
 	private HashMap<String,String> infoWorkers;
 	private HashMap<String,Integer> ttlinfoWorkers;//list of connected workers with time to live updated if it is still alive 
 	
-	private static boolean releaseForReconnection=false; //allow no blocking master if a shutdown workers failure occur  
 	
 	
 
@@ -1035,7 +1034,7 @@ public class MasterServer implements MultiServerInterface{
 
 	/**
 	 * Shutdown command for workers on cluster 
-	 * if something wrong during publish or other, timeOut function
+	 * if something wrong during publish or other, waitingTime
 	 * allows to release resource
 	 * @param toShutdown list of topics identifier of worker 
 	 */
@@ -1045,13 +1044,15 @@ public class MasterServer implements MultiServerInterface{
 			getConnection().publishToTopic("", topic, "shutdown");
 		}
 		
-		releaseForReconnection=true;
 		
-		timeOut();
+		
+		long start=System.currentTimeMillis();
+		long waitingTime=10000; 
 		
 		HashSet<String> toremove=new HashSet<>(toShutdown);
 		HashSet<String> check=null;
-		while(releaseForReconnection){
+		
+		while((System.currentTimeMillis()-start) < waitingTime  ){
 			check=new HashSet<String>(getInfoWorkers().keySet());
 			if(check.containsAll(toremove)){
 				break;
@@ -1059,19 +1060,17 @@ public class MasterServer implements MultiServerInterface{
 			check=new HashSet<String>();
 		}
 
+		try {
+			Thread.sleep(3000);//for graphic ui
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		return true;
 
 	}
 
 	
-	private void timeOut(){
-		try {
-			Thread.sleep(6000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		releaseForReconnection=false;
-	};
 
 
 	/**
