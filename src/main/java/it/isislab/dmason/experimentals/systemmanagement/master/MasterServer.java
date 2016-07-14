@@ -116,10 +116,10 @@ public class MasterServer implements MultiServerInterface{
 	protected HashMap<Integer,AtomicInteger> counterAckSimRcv;// number of ack received of <simrcv> 
 	private HashMap<String,String> infoWorkers;
 	private HashMap<String,Integer> ttlinfoWorkers;//list of connected workers with time to live updated if it is still alive 
-	public HashMap<String, Integer> getTtlinfoWorkers() {
-		return ttlinfoWorkers;
-	}
-
+	
+	private static boolean releaseForReconnection=false; //allow no blocking master if a shutdown workers failure occur  
+	
+	
 
 
 
@@ -994,7 +994,7 @@ public class MasterServer implements MultiServerInterface{
 		int iDSimToExec=simulationToExec.getSimID();
 		LOGGER.info("Start command received for simulation with id "+idSimulation);
 		for(String workerTopic : simulationToExec.getTopicList()){
-			//LOGGER.info("send start command to "+workerTopic+"   "+getTopicIdForSimulation());
+			//LOGGER.info("send start command to "+workerTopic+"   "+getTopicIdForSimulation());wait
 			this.getConnection().publishToTopic(iDSimToExec, workerTopic, "start");
 		}
 
@@ -1043,9 +1043,15 @@ public class MasterServer implements MultiServerInterface{
 			getConnection().publishToTopic("", topic, "shutdown");
 		}
 
+		
+		releaseForReconnection=true;
+		
+		
+		timeOut();
+		
 		HashSet<String> toremove=new HashSet<>(toShutdown);
 		HashSet<String> check=null;
-		while(true){
+		while(releaseForReconnection){
 			check=new HashSet<String>(getInfoWorkers().keySet());
 			if(check.containsAll(toremove)){
 				break;
@@ -1057,6 +1063,15 @@ public class MasterServer implements MultiServerInterface{
 
 	}
 
+	
+	private void timeOut(){
+		try {
+			Thread.sleep(6000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		releaseForReconnection=false;
+	};
 
 
 	/**
