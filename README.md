@@ -74,57 +74,6 @@ After that you must put the output data in the `repository` folder of DMASON Git
 		<version>18</version>
 	</dependency>
 
-# DMASON on cluster
-To run DMASON on cluster, you can follow these steps 
-
-
-### Configure Java Development Kit 8 as default on all cluster's nodes
-Download Java SE Development Kit 8 from oracle site. You can follow this instructions https://github.com/serfla/jdk-cluster-installer to set JDK 8 as default. 
-Repeat this operation for all nodes of clusters.
-
-### Generate DMASON's jar
-
-Run maven install of DMASON project. Under **target** folder you can find the following files:
-- *DMASON-3.1.jar*
-- *resources* folder
- 
-You can create a folder called DMASON with these files. Now you copy this folder on all nodes of cluster. 
-
-### Configure Activemq
-
-On master node editing Apache ActivemQ configuration file 'resources/systemmanagement/master/conf/config.properties' in order to set ip and port of Apache ActivemQ:
-- set ip   (default is 127.0.0.1), the same ip of master node
-- set port (default is 61616)
-
-### Run DMASON on cluster
-
-On master node open a terminal e launch this command to start the master node
-
-```sh
-$ java -jar DMASON-3.1.jar -m master
-```
-In your web browser enter the address *http://127.0.0.1:8080* to start a Web UI of system management, if master node is on 127.0.0.1. You have to use latest version of *Google Chrome* or *Firefox* as web browser.   
-
-Now, to start the slaves node you can open a new terminal on the master node and launch this command
-
-```sh
-#M is the max number of available cells that the slave nodes can execute
-$ java -jar DMASON-3.1.jar -m worker -ip <ipactivemq> -p <portactivemq> -h <ipslave1 ipslave2 ... ipslaveN> -ns <M>
-```
-or you can launch this command on each slave node 
-
-```sh
-#M is the max number of available cells that the slave node can execute
-$ java -jar DMASON-3.1.jar -m worker -ip <ipactivemQ> -p <portActivemq> -ns M
-```
-
-where M is the max number of available cells that the slave nodes can execute.
-
-#Release notes
-
-### Apache ActiveMQ notes
-
-Please use the Apache ActiveMQ [5.13.3] (http://activemq.apache.org/activemq-5133-release.html) version, or version greater than or equal to 5.12.2.
 
 ### License
 Copyright ISISLab, 2016 Università degli Studi di Salerno.
