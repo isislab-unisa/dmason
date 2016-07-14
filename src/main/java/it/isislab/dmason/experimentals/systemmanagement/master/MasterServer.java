@@ -1034,7 +1034,9 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 	/**
-	 * Shutdown command for workers on cluster
+	 * Shutdown command for workers on cluster 
+	 * if something wrong during publish or other, timeOut function
+	 * allows to release resource
 	 * @param toShutdown list of topics identifier of worker 
 	 */
 	public synchronized boolean shutdownAllWorkers(ArrayList<String> toShutdown){
@@ -1042,10 +1044,8 @@ public class MasterServer implements MultiServerInterface{
 		for(String topic:toShutdown){
 			getConnection().publishToTopic("", topic, "shutdown");
 		}
-
 		
 		releaseForReconnection=true;
-		
 		
 		timeOut();
 		
