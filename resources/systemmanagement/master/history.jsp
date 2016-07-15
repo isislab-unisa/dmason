@@ -23,6 +23,7 @@
         <script src="js/script.js"></script>
 
         <!-- Import element -->
+        <link rel="import" href="bower_components/paper-fab/paper-fab.html">
         <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
         <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
         <link rel="import" href="bower_components/paper-drawer-panel/paper-drawer-panel.html">
@@ -35,7 +36,7 @@
         <link rel="import" href="bower_components/paper-spinner/paper-spinner.html">
         <link rel="import" href="bower_components/neon-animation/animations/scale-up-animation.html">
         <link rel="import" href="bower_components/neon-animation/animations/fade-out-animation.html">
-
+        <link rel="import" href="bower_components/paper-toast/paper-toast.html">
 
         <link rel="import" href="bower_components/iron-icons/iron-icons.html">
         <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
@@ -64,7 +65,6 @@
         </paper-menu>
         </div>
         </paper-scroll-header-panel>
-
         <paper-scroll-header-panel main fixed>
         <paper-toolbar flex id="mainToolBar">
         <paper-icon-button icon="menu" paper-drawer-toggle ></paper-icon-button>
@@ -85,6 +85,7 @@
         </paper-scroll-header-panel>
 
         </paper-drawer-panel>
-
+        <paper-fab id="delete-history-button" icon="cancel" onclick="deleteHistory()"></paper-fab>
+        <paper-toast id="miss-history-delete">You need select some Simulations to delete</paper-toast>
         </body>
         </html>

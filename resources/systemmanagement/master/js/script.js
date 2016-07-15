@@ -614,3 +614,9 @@ function shutdown() {
     xhr.open('GET', 'shutdownWorkers?topics='.concat(workerID), true);
     xhr.send(null);*/
 }
+
+function deleteHistory() {
+
+    document.querySelector('#miss-history-delete').open();
+    return;
+}
