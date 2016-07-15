@@ -914,7 +914,7 @@ public class Worker implements Observer {
 		
 		getConnection().publishToTopic("", TOPIC_WORKER_ID, "desconnect");
 		try {
-			Thread.sleep(4000);
+			Thread.sleep(1500);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
