@@ -1055,13 +1055,14 @@ public class MasterServer implements MultiServerInterface{
 		while((System.currentTimeMillis()-start) < waitingTime  ){
 			check=new HashSet<String>(getInfoWorkers().keySet());
 			if(check.containsAll(toremove)){
+				System.out.println("entro");
 				break;
 			}
 			check=new HashSet<String>();
 		}
 
 		try {
-			Thread.sleep(3000);//for graphic ui
+			Thread.sleep(1000);//for graphic ui
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
