@@ -43,7 +43,6 @@ public class ShutdownWorkersServlet extends HttpServlet {
 		}
 
 		if(masterServer.shutdownAllWorkers(topics)){
-			System.out.println("ok");
 			resp.setStatus(HttpServletResponse.SC_OK);
 		}
 		} catch (ParseException e) {
