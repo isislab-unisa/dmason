@@ -297,13 +297,13 @@ public class MasterServer implements MultiServerInterface{
 						try {
 							o=parseMessage(msg);
 							MyHashMap map=(MyHashMap) o;
-							if(map.containsKey("disconnect")){
-								ttlinfoWorkers.put(topic, 0);
+							//if(map.containsKey("disconnect")){
+								//ttlinfoWorkers.put(topic, 0);
 
-							}
+							//}
 
 							//sim(id) downloaded from the worker
-							else if(map.containsKey("simrcv")){
+							 if(map.containsKey("simrcv")){
 								int id=(int) map.get("simrcv");
 								AtomicInteger value=getCounterAckSimRcv().get(id);
 								int temp=value.incrementAndGet();
@@ -1042,30 +1042,33 @@ public class MasterServer implements MultiServerInterface{
 
 		for(String topic:toShutdown){
 			getConnection().publishToTopic("", topic, "shutdown");
+			ttlinfoWorkers.put(topic, 1000);
 		}
 		
 		
 		
 		long start=System.currentTimeMillis();
-		long waitingTime=10000; 
+		long maxWaitingTime=1000*toShutdown.size(); 
 		
 		HashSet<String> toremove=new HashSet<>(toShutdown);
-		HashSet<String> check=null;
 		
-		while((System.currentTimeMillis()-start) < waitingTime  ){
-			check=new HashSet<String>(getInfoWorkers().keySet());
-			if(check.containsAll(toremove)){
-				System.out.println("entro");
-				break;
-			}
-			check=new HashSet<String>();
-		}
-
+		
+				HashSet<String> check=null;		
+				while((System.currentTimeMillis()-start) < maxWaitingTime  ){
+					check=new HashSet<String>(getInfoWorkers().keySet());
+					if(check.containsAll(toremove)){
+						System.out.println("entro");
+						break;
+					}
+					check=new HashSet<String>();
+				}
+		
 		try {
-			Thread.sleep(1000);//for graphic ui
+			Thread.sleep(3000);
 		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}		
 		
 		return true;
 

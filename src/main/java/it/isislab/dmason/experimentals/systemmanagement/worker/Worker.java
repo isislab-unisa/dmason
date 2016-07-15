@@ -912,13 +912,24 @@ public class Worker implements Observer {
 	
 	private void shutdownWorker(){
 		
-		getConnection().publishToTopic("", TOPIC_WORKER_ID, "disconnect");
+		Thread v=new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				getConnection().publishToTopic("", TOPIC_WORKER_ID, "disconnect");
+				
+			}
+		});
+		v.start();
 		try {
-			Thread.sleep(1500);
+			v.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	
+		
+		
 		System.exit(0);
 	}
 
