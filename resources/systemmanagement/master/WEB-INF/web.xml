@@ -127,4 +127,20 @@
         <servlet-name> ShutdownWorkersServlet</servlet-name>
         <url-pattern>/shutdownWorkers</url-pattern>
     </servlet-mapping>
+    <servlet id="cleanHistory">
+        <servlet-name>CleanHistoryServlet</servlet-name>
+        <servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.CleanHistoryServlet</servlet-class>
+	</servlet>
+    <servlet-mapping>
+        <servlet-name>CleanHistoryServlet</servlet-name>
+        <url-pattern>/cleanHistory</url-pattern>
+    </servlet-mapping>
+        <servlet id="cleanSelectedHistory">
+        <servlet-name>CleanSelectedHistoryServlet</servlet-name>
+        <servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.CleanSelectedHistoryServlet</servlet-class>
+	</servlet>
+    <servlet-mapping>
+        <servlet-name>CleanSelectedHistoryServlet</servlet-name>
+        <url-pattern>/cleanSelectedHistory</url-pattern>
+    </servlet-mapping>
 </web-app>

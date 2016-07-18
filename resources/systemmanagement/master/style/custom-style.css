@@ -66,6 +66,11 @@ body{ color:black;}
     cursor: pointer;
 }
 
+.cleanAllHistory{
+    font-size: small;
+    cursor: pointer;
+}
+
 .span-icon{
     margin-left:10px;
 }

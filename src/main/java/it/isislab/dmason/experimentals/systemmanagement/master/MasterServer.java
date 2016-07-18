@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -48,6 +49,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.scheduling.concurrent.DefaultManagedAwareThreadFactory;
 
 import it.isislab.dmason.experimentals.systemmanagement.utils.ClientSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
@@ -1075,7 +1077,60 @@ public class MasterServer implements MultiServerInterface{
 	}
 
 	
-
+    /**
+     * Delete history for a list of simultion
+     * @param paths simulation path list to delete
+     * @return true if files are deleted
+     */
+	public synchronized boolean deleteHistory(List<String> paths){
+		Thread delete=new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				for (String pathname : paths) {
+					DMasonFileSystem.delete(new File(pathname));
+				}
+				
+			}
+		});
+		
+		delete.start();
+		try {
+			delete.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Delete all files in the history folder
+	 * @return true if files are deleted
+	 */
+	public synchronized boolean deleteHistoryFolder(){
+		Thread delete=new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+					DMasonFileSystem.delete(new File(masterHistoryFolder));
+					
+			}
+		});
+		
+		delete.start();
+		try {
+			delete.join();
+		DMasonFileSystem.make(masterHistoryFolder);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		return true;
+	}
+	
+	
 
 	/**
 	 * Create history folder for a finished or stopped simulation 

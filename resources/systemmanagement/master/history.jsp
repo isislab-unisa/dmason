@@ -37,7 +37,6 @@
         <link rel="import" href="bower_components/neon-animation/animations/scale-up-animation.html">
         <link rel="import" href="bower_components/neon-animation/animations/fade-out-animation.html">
         <link rel="import" href="bower_components/paper-toast/paper-toast.html">
-
         <link rel="import" href="bower_components/iron-icons/iron-icons.html">
         <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
         <link rel="import" href="bower_components/iron-image/iron-image.html">
@@ -66,17 +65,18 @@
         </div>
         </paper-scroll-header-panel>
         <paper-scroll-header-panel main fixed>
-        <paper-toolbar flex id="mainToolBar">
-        <paper-icon-button icon="menu" paper-drawer-toggle ></paper-icon-button>
-        <span>DMASON Master</span>
-        </paper-toolbar>
+        	<paper-toolbar flex id="mainToolBar" class="horizontal">
+        	 <div><paper-icon-button icon="menu" paper-drawer-toggle ></paper-icon-button></div>
+              <div class="flex"><span>DMASON Master</span></div>
+              <div onclick="cleanHistory()" class="cleanAllHistory"><paper-icon-button icon="select-all"></paper-icon-button><span>Clean all history</span></div>
+        	</paper-toolbar>
 
         <div class="content content-main">
             <paper-dialog opened id="load_history_dialog"  entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal>
 
                 <div class="layout horizontal center">
                     <paper-spinner class="multi" active alt="Loading history"></paper-spinner>
-                    <span>Loading history.....</span>
+                    <span>Loading history...</span>
                 </div>
 
             </paper-dialog>
@@ -85,7 +85,7 @@
         </paper-scroll-header-panel>
 
         </paper-drawer-panel>
-        <paper-fab id="delete-history-button" icon="cancel" onclick="deleteHistory()"></paper-fab>
+        <paper-fab id="delete-history-button" icon="cancel" onclick="cleanSelectedHistory()"></paper-fab>
         <paper-toast id="miss-history-delete">You need select some Simulations to delete</paper-toast>
         </body>
         </html>

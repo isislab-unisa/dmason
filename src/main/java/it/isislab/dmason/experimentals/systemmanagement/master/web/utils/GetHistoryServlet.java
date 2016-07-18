@@ -42,12 +42,16 @@ public class GetHistoryServlet extends HttpServlet {
 
 	/**
 	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
+	 * 
 	 * @author Michele Carillo
 	 * @author Carmine Spagnuolo
 	 * @author Flavio Serrapica
 	 *
 	 */
-	private static final long serialVersionUID = 1L;
+
 	MasterServer myServer =null;
 
 

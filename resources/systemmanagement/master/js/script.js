@@ -615,8 +615,75 @@ function shutdown() {
     xhr.send(null);*/
 }
 
-function deleteHistory() {
+/**
+ * Delete history for selected simulation
+ * #miss-history-delete'
+ */
+function cleanSelectedHistory() {
 
-    document.querySelector('#miss-history-delete').open();
-    return;
+
+    var pathList= new Array();
+    var simToDelete = $('.grid-item-history-selected').length;
+    var path="";
+    var jsonPaths='{ "paths":[';
+    var scope = document.querySelector('sim-history-grid[id="sim_history_grid"]');
+
+    if(simToDelete){
+        $('.grid-item-history-selected').each(function(index) {
+            var myid=$(this).attr("id");
+
+            scope.listSimHistory.forEach(function (arrayItem) {
+                var ifd=arrayItem.simID;
+                if(ifd==myid){
+                    path=arrayItem.simLogZipFile;
+                }
+
+            });
+            path=path.substring(0,path.lastIndexOf("/"));
+            pathList[index] = path;
+            jsonPaths+='{"path":"'+path+'"},';
+
+
+        });
+        jsonPaths=jsonPaths.substring(0,jsonPaths.length-1);
+        jsonPaths+=']}';
+        console.log(jsonPaths);
+    }
+    else{
+        document.querySelector('#miss-history-delete').open();
+        return;
+    }
+
+
+      open_dialog_by_ID('load_history_dialog');
+
+    $.ajax({
+         url:"cleanSelectedHistory",
+        data:{paths:JSON.stringify(jsonPaths)},
+        success:function (result) {
+            close_dialog_by_ID('load_history_dialog');
+
+        }
+    });
+
+
+}
+
+
+
+/**
+ * Delete all history files on file system
+ */
+function cleanHistory(){
+
+
+    open_dialog_by_ID("load_history_dialog");
+
+    $.ajax({
+        url:"cleanHistory",
+        success:function (result) {
+            close_dialog_by_ID("load_history_dialog");
+            location.reload();
+        }
+    });
 }
