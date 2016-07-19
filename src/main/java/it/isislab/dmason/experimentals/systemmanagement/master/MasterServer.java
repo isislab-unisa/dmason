@@ -1048,7 +1048,6 @@ public class MasterServer implements MultiServerInterface{
 		}
 		
 		
-		
 		long start=System.currentTimeMillis();
 		long maxWaitingTime=1000*toShutdown.size(); 
 		
@@ -1059,16 +1058,14 @@ public class MasterServer implements MultiServerInterface{
 				while((System.currentTimeMillis()-start) < maxWaitingTime  ){
 					check=new HashSet<String>(getInfoWorkers().keySet());
 					if(check.containsAll(toremove)){
-						System.out.println("entro");
 						break;
 					}
 					check=new HashSet<String>();
 				}
-		
+				infoWorkers=new HashMap<String,String>();
 		try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
 		

@@ -121,7 +121,7 @@ public class Worker implements Observer {
 	public Worker(String ipMaster,String portMaster, int slots) {
 
 		try {
-
+            System.out.println("Starting worker "+InetAddress.getLocalHost().getHostName());
 			//comment following  line to enable Logger 
 			LOGGER.setUseParentHandlers(false);  
 			LOGGER.info("LOGGER ENABLE");
@@ -165,11 +165,11 @@ public class Worker implements Observer {
 	 */
 	private void connectToMessageBroker() throws UnknownHostException, IOException
 	{
+	    
 		System.out.println("Waiting for connection to Message Broker..");
 		this.createConnection();
 
 		System.out.println("Waiting master connection ..."); 
-
 		this.startMasterComunication();
 
 		System.out.println("connected.");
@@ -912,6 +912,7 @@ public class Worker implements Observer {
 	
 	private void shutdownWorker(){
 		
+		publishInfo.set(false);
 		Thread v=new Thread(new Runnable() {
 			
 			@Override
@@ -924,12 +925,14 @@ public class Worker implements Observer {
 		try {
 			v.join();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	
-		
-		
+		try {
+			System.out.println("Shutdown worker "+InetAddress.getLocalHost().getHostName());
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
 		System.exit(0);
 	}
 
