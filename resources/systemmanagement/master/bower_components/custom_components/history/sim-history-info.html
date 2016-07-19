@@ -12,7 +12,6 @@
                 display: block;
             }
             .download-button-container{
-                cursor: pointer;
                 @apply(--layout-horizontal);
                 @apply(--layout-center);
             }
@@ -41,12 +40,13 @@
             </table>
         </div>
         <div>
-            <div class="download-button-container" on-click="downloadLog">
-                <form id="download_log_history_form"method="POST" action="/downloadLogs?path={{sim.simLogZipFile}}">
-                    <paper-icon-button icon="file-download" raised></paper-icon-button>
-                <span>Download Logs</span>
-
-                </form>
+            <div class="download-button-container" >
+                <div on-click="downloadLog" style="cursor: pointer">
+                    <form id="download_log_history_form" method="POST" action="/downloadLogs?path={{sim.simLogZipFile}}">
+                        <paper-icon-button icon="file-download" raised></paper-icon-button>
+                    <span>Download Logs</span>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

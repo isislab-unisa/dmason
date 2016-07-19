@@ -41,6 +41,8 @@
         <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
         <link rel="import" href="bower_components/iron-image/iron-image.html">
         <link rel="import" href="bower_components/iron-icons/image-icons.html">
+        <link rel="import" href="bower_components/iron-icons/editor-icons.html">
+        <link rel="import" href="bower_components/paper-badge/paper-badge.html">
 
 
         <link rel="import" href="bower_components/custom_components/history/sim-history-grid.html">
@@ -80,12 +82,19 @@
                 </div>
 
             </paper-dialog>
-            <sim-history-grid id="sim_history_grid"></sim-history-grid>
+            <template is="dom-bind" id="workbench_template">
+                <neon-animated-pages id="history_animated_pages" selected="0">
+
+                    <sim-history-grid id="sim_history_grid"></sim-history-grid>
+                    <workbench></workbench>
+                </neon-animated-pages>
+            </template>
         </div>
         </paper-scroll-header-panel>
 
         </paper-drawer-panel>
         <paper-fab id="delete-history-button" icon="cancel" onclick="cleanSelectedHistory()"></paper-fab>
+        <paper-fab id="go_to_workbenck" icon="editor:insert-chart"></paper-fab>
         <paper-toast id="miss-history-delete">You need select some Simulations to delete</paper-toast>
         </body>
         </html>

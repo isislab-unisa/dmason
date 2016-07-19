@@ -94,14 +94,20 @@ e
         select: function (event) {
 
             var target=event.target;
+
+            if($(target).prop("id").toLowerCase() == "download_log_history_form"){
+                return;
+            }
             if(event.target.tagName.toLowerCase() == "sim-history-info")
                 event.target.className+=" .grid-item-history-selected";
             else{
-                target=$(target).parent();
 
                while($(target).prop("tagName").toLowerCase()!="sim-history-info"){
 
                     target=$(target).parent();
+                   if($(target).prop("id").toLowerCase() == "download_log_history_form"){
+                       return;
+                   }
                 }
                 target=$(target).parent();
                 if($(target).hasClass("grid-item-history-selected"))
@@ -109,13 +115,6 @@ e
                 else
                     $(target).addClass("grid-item-history-selected");
             }
-
-          /*  $("grid-item-history-selected").each(
-                    function(index,element){
-                        $(element).remove();
-                    }
-            );*/
-
 
         }
 

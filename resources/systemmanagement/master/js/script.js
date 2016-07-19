@@ -687,3 +687,5 @@ function cleanHistory(){
         }
     });
 }
+
+
