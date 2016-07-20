@@ -52,7 +52,7 @@ continuously moves in south-east direction.
 | _**I**_| initial configuration matrix, the starting configuration is a matrix of 0 and 1, where 0 is dead cell and 1 is alife cell|
 | _**F**_| final configuration matrix, the ending configuration is a matrix of 0 and 1, where 0 is dead cell and 1 is alife cell|
 
-## Suggested Benchmark
+## Suggested Benchmarks Description
 
 By construction the glider assumes the same shape each four steps, but moves of one cell in south-east direction. 
 Hence at the end of `100` time step the bottom-right of the glider, in the initial configuration as shown above in the pattern, reaches the position (29,29) .
@@ -70,7 +70,7 @@ Simulations are executed on a cluster with 16 nodes. Each node has the following
 * RAM : 256GB 
 * Network : adapter Intel Corporation I350 Gigabit
 
-### Results
+## Benchmarks Results
 
 #### Problem Scale
 
@@ -109,6 +109,10 @@ ___
 
 ___
 
-## Benchmark Authors
+## Benchmarks Authors
 
+Problem Scale, Node Scale, Communication Scale:
+
+- NAME - ROLE - EMAIL
+- NAME - ROLE - EMAIL
 - NAME - ROLE - EMAIL
