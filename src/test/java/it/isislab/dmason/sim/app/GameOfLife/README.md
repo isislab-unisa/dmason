@@ -78,6 +78,8 @@ Simulations are executed on a cluster with 16 nodes. Each node has the following
 
 ![Communication scale Results](CommunicationScale.png) 
 
-## Reference Implementation
+## Benchmark Authors
 
-A reference implementation is provided as part of the [DMASON](https://github.com/isislab-unisa/dmason/tree/master/src/test/java/it/isislab/dmason/sim/app/GameOfLife).
+- NAME - ROLE - EMAIL
+- 
+GRAZIE
