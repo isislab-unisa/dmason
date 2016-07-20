@@ -16,10 +16,6 @@
             .download-button-container{
                 cursor: pointer;
             }
-            paper-fab{
-                background: #D73D32;
-
-            }
 
         </style>
     <div class="layout vertical">
@@ -48,7 +44,7 @@
             <div class="layout horizontal end-justified">
                 <div  on-click="downloadLog" class=".download-button-container">
                     <form id="download_log_history_form" method="POST" action="/downloadLogs?path={{sim.simLogZipFile}}">
-                        <paper-fab icon="save"></paper-fab>
+                        <paper-fab style="background-color: #D73D32;" icon="save"></paper-fab>
                     </form>
                 </div>
             </div>
