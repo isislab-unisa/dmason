@@ -11,14 +11,19 @@
             :host {
                 display: block;
             }
+
+
             .download-button-container{
-                @apply(--layout-horizontal);
-                @apply(--layout-center);
+                cursor: pointer;
+            }
+            paper-fab{
+                background: #D73D32;
+
             }
 
         </style>
     <div class="layout vertical">
-        <div>
+        <div class="flex">
             <table>
                 <tr><td><span>ID:</span></td><td><span>{{sim.simID}}</span></td></tr>
                 <tr><td><span>Name:</span></td><td><span>{{sim.simName}}</span></td></tr>
@@ -39,12 +44,11 @@
                 <tr><td><span>Steps:</span></td><td><span>{{sim.simStepNumber}}</span></td></tr>
             </table>
         </div>
-        <div>
-            <div class="download-button-container" >
-                <div on-click="downloadLog" style="cursor: pointer">
+        <div >
+            <div class="layout horizontal end-justified">
+                <div  on-click="downloadLog" class=".download-button-container">
                     <form id="download_log_history_form" method="POST" action="/downloadLogs?path={{sim.simLogZipFile}}">
-                        <paper-icon-button icon="file-download" raised></paper-icon-button>
-                    <span>Download Logs</span>
+                        <paper-fab icon="save"></paper-fab>
                     </form>
                 </div>
             </div>
