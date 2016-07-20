@@ -19,7 +19,6 @@ package it.isislab.dmason.sim.app.GameOfLife;
 
 import java.util.List;
 
-
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
@@ -35,82 +34,76 @@ import sim.engine.SimState;
 import sim.portrayal.grid.FastValueGridPortrayal2D;
 import sim.util.Int2D;
 
-/**
- * 
- * @author Michele Carillo
- * @author Carmine Spagnuolo
- * @author Flavio Serrapica
- *
- */
 public class DGameOfLife extends DistributedState<Int2D> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public DIntGrid2D grid = null;
-	public DSparseGrid2D core =null;
+	public DSparseGrid2D core = null;
 	protected FastValueGridPortrayal2D p;
 
 	private String topicPrefix = "";
-	
+
 	/**
 	 * field Width
 	 */
-	public int gridWidth ;
+	public int gridWidth;
 	/**
 	 * field Height
 	 */
-	public int gridHeight ;
-	
+	public int gridHeight;
+
 	public int MODE;
-		
-	public static final int[][] b_heptomino = new int[][]
-		    {{0, 1, 1},
-		         {1, 1, 0},
-		         {0, 1, 1},
-		         {0, 0, 1}};
-	
+
+	public static final int[][] b_heptomino = new int[][] { 
+		{ 0, 0, 0, 0, 0 }, 
+		{ 0, 0, 1, 0, 0 }, 
+		{ 0, 0, 0, 1, 0 },
+		{ 0, 1, 1, 1, 0 }, 
+		{ 0, 0, 0, 0, 0 } };
+
 	/**
 	 * empty costructor for Serialize
 	 */
-	public DGameOfLife() { super();}
-	
-	
+	public DGameOfLife() {
+		super();
+	}
+
 	/**
 	 * Constructor
-	 * @param params simulation parameters
-	 * @param prefix unique id for simulation in activemq communication
+	 * 
+	 * @param params
 	 */
 	public DGameOfLife(GeneralParam params, String prefix) {
 		super(params, new DistributedMultiSchedule<Int2D>(), prefix, params.getConnectionType());
-		this.MODE=params.getMode();
-		gridWidth=params.getWidth();
-		gridHeight=params.getHeight();
-		this.topicPrefix=prefix;
+		this.MODE = params.getMode();
+		gridWidth = params.getWidth();
+		gridHeight = params.getHeight();
+		this.topicPrefix = prefix;
 	}
 
-	@Deprecated
-	public DGameOfLife(GeneralParam params,List<EntryParam<String, Object>> simParams, String prefix)
-	{
-		super(params,new DistributedMultiSchedule<Int2D>(), prefix,params.getConnectionType());
-		this.topicPrefix = prefix; 
-		this.MODE=params.getMode();
-		gridWidth=params.getWidth();
-		gridHeight=params.getHeight();
-		
+	public DGameOfLife(GeneralParam params, List<EntryParam<String, Object>> simParams, String prefix) {
+		super(params, new DistributedMultiSchedule<Int2D>(), prefix, params.getConnectionType());
+		this.topicPrefix = prefix;
+		this.MODE = params.getMode();
+		gridWidth = params.getWidth();
+		gridHeight = params.getHeight();
+
 		for (EntryParam<String, Object> entryParam : simParams) {
 
 			try {
 				this.getClass().getDeclaredField(entryParam.getParamName()).set(this, entryParam.getParamValue());
 			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoSuchFieldException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -121,68 +114,81 @@ public class DGameOfLife extends DistributedState<Int2D> {
 			try {
 				System.out.println(this.getClass().getDeclaredField(entryParam.getParamName()).get(this));
 			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoSuchFieldException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
 		}
 	}
-	
-	void seedGrid()
-	{
-		// we stick a b_heptomino in the center of the grid
-		Int2D loc = new Int2D((int)Math.floor((grid.own_x+grid.my_width)/2), (int)Math.floor((grid.own_y+grid.my_height)/2));
-		for(int x=0;x<b_heptomino.length;x++)
-			for(int y=0;y<b_heptomino[x].length;y++)
-				grid.field [loc.x+x][loc.y+y]=	b_heptomino[x][y];
-	}
-	
-	
-	@Override
-	public void start()
-	{
-		super.start();
-		
-		try 
-		{
-			grid = DIntGrid2DFactory.createDIntGrid2D(gridWidth, gridHeight, this, super.AOI, TYPE.pos_i,TYPE.pos_j, super.rows,super.columns,MODE, 0, false, "gameoflife", topicPrefix, true);
-			core = DSparseGrid2DFactory.createDSparseGrid2D(gridWidth, gridHeight, this, super.AOI, TYPE.pos_i, TYPE.pos_j, super.rows, super.columns, MODE, "gameoflifeCore", topicPrefix, true);
-			init_connection();
-		} catch (DMasonException e) { e.printStackTrace(); }
-		
-		seedGrid();
-		DCellAgent a = new DCellAgent(this,core.getAvailableRandomLocation());
-		if(core.setObjectLocation(a, a.pos)) schedule.scheduleOnce(a);		
-	}
-	
-	/**
-	 * 
-	 */
-	public DistributedField2D getField() {
-		return core;
+
+	void seedGrid() {		
+		//min density
+		if(grid.own_x==0 && grid.own_y==0){
+			Int2D loc = new Int2D(0, 0);
+			for (int x = 0; x < b_heptomino.length; x++)
+				for (int y = 0; y < b_heptomino[x].length; y++)
+					grid.field[loc.x + x][loc.y + y] = b_heptomino[x][y];
+		}
+			
+		//max density
+//		for (int i = 0; i < grid.getHeight()/5; i++) {
+//			for (int j = 0; j < grid.getWidth()/5; j++) {		
+//				Int2D loc = new Int2D(5*i,5*j);
+//				for (int x = 0; x < b_heptomino.length; x++)
+//					for (int y = 0; y < b_heptomino[x].length; y++)
+//						grid.field[loc.x + x][loc.y + y] = b_heptomino[x][y];
+//			}
+//		}
 	}
 
-	/**
-	 * 
-	 */
-	public void addToField(RemotePositionedAgent rm, Int2D loc) {
-		core.setObjectLocation(rm, loc);
+	@Override
+	public void start() {
+		super.start();
+		System.out.println("Start Inizio");
+
+		try {
+			grid = DIntGrid2DFactory.createDIntGrid2D(gridWidth, gridHeight, this, super.AOI, TYPE.pos_i, TYPE.pos_j,
+					super.rows, super.columns, MODE, 0, false, "gameoflife", topicPrefix, true);
+			core = DSparseGrid2DFactory.createDSparseGrid2D(gridWidth, gridHeight, this, super.AOI, TYPE.pos_i,
+					TYPE.pos_j, super.rows, super.columns, MODE, "gameoflifeCore", topicPrefix, true);
+			init_connection();
+		} catch (DMasonException e) {
+			e.printStackTrace();
 		}
 
-	/**
-	 * 
-	 */
+		seedGrid();
+		DCellAgent a = new DCellAgent(this, core.getAvailableRandomLocation());
+		if (core.setObjectLocation(a, a.pos))
+			schedule.scheduleOnce(a);
+	}
+
+	@Override
+	public DistributedField2D getField() {
+		return grid;
+	}
+	
+
+	@Override
+	public void addToField(RemotePositionedAgent rm, Int2D loc){
+		core.setObjectLocation(rm, loc);
+	}
+
+	@Override
 	public SimState getState() {
+		// TODO Auto-generated method stub
 		return this;
 	}
-		
-	public static void main(String[] args)
-	{
+
+	public static void main(String[] args) {
 		doLoop(DGameOfLife.class, args);
 		System.exit(0);
 	}
