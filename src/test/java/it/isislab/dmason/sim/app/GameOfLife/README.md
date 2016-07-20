@@ -72,14 +72,32 @@ Simulations are executed on a cluster with 16 nodes. Each node has the following
 
 ## Results
 
+| W = H  | Time (minutes) |
+|---|---|
+| 1440000 | 0.21258 |
+| 5760000 | 0.78802 |
+| 14440000 | 3.761067 |
+| 36000000 | 6.469733 |
+
 ![Problem scale Results](ProblemScale.png) 
+
+| N  | Time Max P (minutes) | Time Min P (minutes) |
+|---|---|---|
+| 4 | 43.95 | 44.22 |
+| 9 | 15.29 | 15.6 |
+| 16 | 6.26 | 6.47 |
+| 25 | 4.49 | 5.49 |
 
 ![Node scale Results](NodeScale.png) 
 
+| AOI  | Time (minutes) |
+|---|---|
+| 1 | 6.46973 |
+| 2 | 6.4841 |
+| 4 | 6.740067 |
+| 8 | 7.001883 |
 ![Communication scale Results](CommunicationScale.png) 
 
-## Benchmark Authors
+## Reference Implementation
 
-- NAME - ROLE - EMAIL
-- 
-GRAZIE
+A reference implementation is provided as part of the [DMASON](https://github.com/isislab-unisa/dmason/tree/master/src/test/java/it/isislab/dmason/sim/app/GameOfLife).
