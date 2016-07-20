@@ -70,7 +70,9 @@ Simulations are executed on a cluster with 16 nodes. Each node has the following
 * RAM : 256GB 
 * Network : adapter Intel Corporation I350 Gigabit
 
-## Results
+### Results
+
+#### Problem Scale
 
 | W = H  | Time (minutes) |
 |---|---|
@@ -80,6 +82,9 @@ Simulations are executed on a cluster with 16 nodes. Each node has the following
 | 36000000 | 6.469733 |
 
 ![Problem scale Results](images/ProblemScale.png) 
+___
+
+#### Node Scale
 
 | N  | Time Max P (minutes) | Time Min P (minutes) |
 |---|---|---|
@@ -89,6 +94,9 @@ Simulations are executed on a cluster with 16 nodes. Each node has the following
 | 25 | 4.49 | 5.49 |
 
 ![Node scale Results](images/NodeScale.png) 
+___
+
+#### Communication Scale
 
 | AOI  | Time (minutes) |
 |---|---|
@@ -96,8 +104,11 @@ Simulations are executed on a cluster with 16 nodes. Each node has the following
 | 2 | 6.4841 |
 | 4 | 6.740067 |
 | 8 | 7.001883 |
+
 ![Communication scale Results](images/CommunicationScale.png) 
 
-## Reference Implementation
+___
 
-A reference implementation is provided as part of the [DMASON](https://github.com/isislab-unisa/dmason/tree/master/src/test/java/it/isislab/dmason/sim/app/GameOfLife).
+## Benchmark Authors
+
+- NAME - ROLE - EMAIL
