@@ -24,8 +24,7 @@ The universe of the Game of Life is an infinite two-dimensional orthogonal grid 
 The initial pattern constitutes the seed of the system. The first generation is created by applying the above rules simultaneously to every cell in the seed—births and deaths occur simultaneously, and the discrete moment at which this happens is sometimes called a tick (in other words, each generation is a pure function of the preceding one). The rules continue to be applied repeatedly to create further generations.
 
 ####References:
-* [https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life)
-* [Gardner, Martin (October 1970). Mathematical Games – The fantastic combinations of John Conway's new solitaire game "life". Scientific American 223.](Gardner, Martin (October 1970). Mathematical Games – The fantastic combinations of John Conway's new solitaire game "life". Scientific American 223.)
+* [Game of Life - Wikipedia](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life)
 
 ### Why this model?
 
@@ -33,10 +32,9 @@ As described above, the game is completely deterministic and embarrassingly para
 
 ## Initial Conditions
 
-The initial conditions of the GOL model is a matrix of 0 (dead cell) and 1 (alive cell), for instance the Glider 
-, shown in following picture
+The initial conditions of the GOL model is a matrix of 0 (dead cell) and 1 (alive cell), for instance the Glider wrapped by a frame of dead cells, shown in following picture:
 
-![Glider image](images/glider.gif) 
+![Pattern](pattern.png) 
 
 continuously moves in south-east direction. 
 
@@ -48,24 +46,37 @@ continuously moves in south-east direction.
 | _**W**_  		| the width of the matrix field|
 | _**H**_ 		| the height of the matrix field|
 | _**S**_ 		| number of discrete steps to be performed|
+| _**P**_		| density of matrix, number of patterns (showed above)|
+| _**N**_		| numbers of workers|
+| _**AOI**_		| area of interest for each agent|
 | _**I**_| initial configuration matrix, the starting configuration is a matrix of 0 and 1, where 0 is dead cell and 1 is alife cell|
 | _**F**_| final configuration matrix, the ending configuration is a matrix of 0 and 1, where 0 is dead cell and 1 is alife cell|
 
-##Suggested Benchmark
+## Suggested Benchmark
 
-On a `2000 x 1000` field, we position the Glider (initial conditions) on the top-left (0,0) of the matrix field.
-		
-		 0, 1, 0 
-		 0, 0, 1 
-		 1, 1, 1
-		 
-		 
-By construction the glider assumes the same shape each four steps, but moves of one cell in south-east direction. Hence at the end of `7987` time step it reaches the bottom-right of the field.
+By construction the glider assumes the same shape each four steps, but moves of one cell in south-east direction. 
+Hence at the end of `100` time step the bottom-right of the glider, in the initial configuration as shown above in the pattern, reaches the position (29,29) .
 
 | Benchmark Name  | Description   | Parameter Values |
 |---|---|---|
-| Correctness | Benchmark to test the correctness of the model implementation. The correctness is checked verifing  that, starting with the given initial configuration and performing a certain amount of simulation steps the final configuration corresponds with a given final configuration. | _**W**_=`2000`, _**H**_=`1000`, _**S**_= `7987`,  _**I**_= a single glider positioned on the top-left of the field, _**F**_= a single glider matrix postioned on the bottom-right of the field|
+| Problem scale | This benchmark will test the simulators ability to handle greater problem size. | _**W**_ϵ{`1200`, `2400`, `4800`, `6000`}, _**H**_=_**W**_, _**S**_= `100`, _**N**_=`16`=`4*4`, _**AOI**_=`1`, _**ρ**_=`1`, _**I**_= a single pattern positioned on the top-left of the field, _**F**_= a single glider, in the initial configuration as shown above in the pattern, whose bottom-right is on position (29,29)|
+| Node scale | Benchmark to test the increasing number of processors on a fixed model size. This benchmark tests the scalability of a particular simulator and is not suitable for evaluation between simulators. | _**N**_ϵ{`4`, `9`, `16`, `25`}, _**H**_=_**W**_=`6000`, _**S**_= `100`, _**AOI**_=`1`, _**ρ**_ϵ{`1`, `1440000`}, _**I**_= a single pattern positioned on the top-left of the field for ρ=`1` and matrix filled by pattern for ρ=`1440000`, _**F**_= a single glider, in the initial configuration as shown above in the pattern, whose bottom-right is on position (29,29) for ρ=`1` and matrix filled by pattern for ρ=`1440000` exactly as in the initial configuration|
+| Communication scale | This benchmark will test the simulators ability to handle increasing communication between agents given a fixed problem size and fixed number of processors, by increasing the size of each agents neighbourhood. | _**AOI**_ϵ{`1`, `2`, `4`, `8`}, _**H**_=_**W**_=`6000`, _**S**_= `100`, _**N**_=`16`=`4*4`, _**ρ**_=`1`, _**I**_= a single pattern positioned on the top-left of the field, _**F**_= a single glider, in the initial configuration as shown above in the pattern, whose bottom-right is on position (29,29)|
 
+## Hardware configuration
+
+Simulations are executed on a cluster with 16 nodes. Each node has the following hardware configuration: 
+* CPU : 2xIntel(R) Xeon(R) CPU E5-2680 @ 2.70GHz(#core 16, #threads 32)
+* RAM : 256GB 
+* Network : adapter Intel Corporation I350 Gigabit
+
+## Results
+
+![Problem scale Results](ProblemScale.png) 
+
+![Node scale Results](NodeScale.png) 
+
+![Communication scale Results](CommunicationScale.png) 
 
 ## Reference Implementation
 
