@@ -113,6 +113,6 @@ ___
 
 Problem Scale, Node Scale, Communication Scale:
 
-- NAME - ROLE - EMAIL
-- NAME - ROLE - EMAIL
-- NAME - ROLE - EMAIL
+* Alessia Antelmi - Tester - aless.antelmi@gmail.com
+* Martina Garofalo - Tester - margar1994@gmail.com
+* Maria Angela Pellegrino - Tester - mariaangelapellegrino94@gmail.com
