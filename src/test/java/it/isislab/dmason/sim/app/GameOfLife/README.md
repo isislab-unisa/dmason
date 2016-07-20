@@ -34,7 +34,7 @@ As described above, the game is completely deterministic and embarrassingly para
 
 The initial conditions of the GOL model is a matrix of 0 (dead cell) and 1 (alive cell), for instance the Glider wrapped by a frame of dead cells, shown in following picture:
 
-![Pattern](pattern.png) 
+![Pattern](images/pattern.png) 
 
 continuously moves in south-east direction. 
 
@@ -79,7 +79,7 @@ Simulations are executed on a cluster with 16 nodes. Each node has the following
 | 14440000 | 3.761067 |
 | 36000000 | 6.469733 |
 
-![Problem scale Results](ProblemScale.png) 
+![Problem scale Results](images/ProblemScale.png) 
 
 | N  | Time Max P (minutes) | Time Min P (minutes) |
 |---|---|---|
@@ -88,7 +88,7 @@ Simulations are executed on a cluster with 16 nodes. Each node has the following
 | 16 | 6.26 | 6.47 |
 | 25 | 4.49 | 5.49 |
 
-![Node scale Results](NodeScale.png) 
+![Node scale Results](images/NodeScale.png) 
 
 | AOI  | Time (minutes) |
 |---|---|
@@ -96,7 +96,7 @@ Simulations are executed on a cluster with 16 nodes. Each node has the following
 | 2 | 6.4841 |
 | 4 | 6.740067 |
 | 8 | 7.001883 |
-![Communication scale Results](CommunicationScale.png) 
+![Communication scale Results](images/CommunicationScale.png) 
 
 ## Reference Implementation
 
