@@ -22,15 +22,10 @@ import it.isislab.dmason.sim.field.DistributedField2D;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-
-import edu.cmu.graphchi.apps.recommendations.CircleOfTrustSalsa;
 
 /**
  * A class to create a Simulation in DMason

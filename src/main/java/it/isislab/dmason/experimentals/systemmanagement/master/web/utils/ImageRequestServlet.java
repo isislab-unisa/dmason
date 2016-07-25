@@ -5,24 +5,16 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.bouncycastle.jce.provider.JDKKeyFactory.RSA;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
 import it.isislab.dmason.experimentals.systemmanagement.master.MasterServer;
 import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.RemoteSnap;
-import it.isislab.dmason.util.connection.MyHashMap;
-import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
+
 
 public class ImageRequestServlet extends HttpServlet {
 

@@ -12,6 +12,10 @@ import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 
 public class StartViewerServlet extends HttpServlet {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	MasterServer masterServer=null;
 	
 	@Override
