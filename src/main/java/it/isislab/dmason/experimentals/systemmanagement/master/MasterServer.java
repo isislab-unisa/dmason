@@ -991,9 +991,9 @@ public class MasterServer implements MultiServerInterface{
 	
 	
 	/**
-	 * 
-	 * @param simID
-	 * @param command startViewer/stopViewer
+	 * Send request to all workers to request snapshot 
+	 * @param simID unique identifier for simulation
+	 * @param command type of command startViewer/stopViewer 
 	 */
 	public void showImage(int simID, String command){
 		for (String topic: getSimulationsList().get(simID).getTopicList()){
@@ -1007,7 +1007,8 @@ public class MasterServer implements MultiServerInterface{
 	 * Shutdown command for workers on cluster 
 	 * if something wrong during publish or other, waitingTime
 	 * allows to release resource
-	 * @param toShutdown list of topics identifier of worker 
+	 * @param toShutdown list of topics identifier of worker
+	 * @return true if correct, false otherwise 
 	 */
 	public synchronized boolean shutdownAllWorkers(ArrayList<String> toShutdown){
 
