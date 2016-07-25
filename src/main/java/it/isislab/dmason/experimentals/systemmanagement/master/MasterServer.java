@@ -58,7 +58,6 @@ import it.isislab.dmason.experimentals.systemmanagement.utils.ZipDirectory;
 import it.isislab.dmason.experimentals.systemmanagement.utils.loader.DMasonClassLoader;
 import it.isislab.dmason.experimentals.systemmanagement.worker.Worker;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
-import it.isislab.dmason.experimentals.util.visualization.globalviewer.RemoteSnap;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
