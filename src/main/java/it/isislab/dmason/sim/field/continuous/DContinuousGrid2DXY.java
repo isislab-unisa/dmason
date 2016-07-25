@@ -19,6 +19,7 @@ package it.isislab.dmason.sim.field.continuous;
 
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.sim.field.support.globals.GlobalInspectorHelper;
+import it.isislab.dmason.experimentals.sim.field.support.globals.GlobalParametersHelper;
 import it.isislab.dmason.experimentals.util.visualization.globalviewer.VisualizationUpdateMap;
 import it.isislab.dmason.experimentals.util.visualization.zoomviewerapp.ZoomArrayList;
 import it.isislab.dmason.nonuniform.QuadTree;
@@ -537,6 +538,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 
 		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
+		/*
 		// If there is any viewer, send a snap
 		if(conn!=null &&((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
@@ -553,8 +555,24 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 					tracingFields,
 					isTracingGraphics);
 			currentTime = sm.schedule.getTime();
-		}
+		}*/
 
+		if(isTracingGraphics){
+			GlobalInspectorHelper.synchronizeInspector(
+					(DistributedState<?>)sm,
+					(ConnectionJMS)connWorker,
+					topicPrefix,
+					cellType,
+					(int)own_x,
+					(int)own_y,
+					currentTime,
+					currentBitmap,
+					currentStats,
+					tracingFields,
+					isTracingGraphics);
+			currentTime = sm.schedule.getTime();
+		}
+		
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
@@ -834,6 +852,9 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	 */
 	private boolean setAgents(RemotePositionedAgent<Double2D> rm,Double2D location)
 	{
+		if(isTracingGraphics)
+			GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
+		
 		if(rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(location.x,location.y))
 		{
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)

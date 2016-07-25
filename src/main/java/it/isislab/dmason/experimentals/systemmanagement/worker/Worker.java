@@ -18,6 +18,7 @@
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
 
+import it.isislab.dmason.experimentals.systemmanagement.utils.CircularQueue;
 import it.isislab.dmason.experimentals.systemmanagement.utils.ClientSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.FindAvailablePort;
@@ -26,9 +27,11 @@ import it.isislab.dmason.experimentals.systemmanagement.utils.Simulation;
 import it.isislab.dmason.experimentals.systemmanagement.utils.ZipDirectory;
 import it.isislab.dmason.experimentals.systemmanagement.utils.loader.DMasonClassLoader;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
+import it.isislab.dmason.experimentals.util.visualization.globalviewer.RemoteSnap;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
+import it.isislab.dmason.sim.field.TraceableField;
 import it.isislab.dmason.util.connection.Address;
 import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
@@ -326,7 +329,20 @@ public class Worker implements Observer {
 
 					if(map.containsKey("shutdown")){
 						shutdownWorker();
-					}
+					}else
+						
+						if (map.containsKey("startViewer")){
+							int id = (int)map.get("startViewer");
+						
+							startProcessImagesForSim(id);
+							
+						}else
+							if (map.containsKey("stopViewer")){
+								int id = (int)map.get("stopViewer");
+								
+								stopProcessImagesForSim(id);
+
+							}
 
 					// request of a storage a new simulation
 					else if(map.containsKey("newsim")){
@@ -395,6 +411,20 @@ public class Worker implements Observer {
 		});
 	}
 
+	
+	private synchronized void startProcessImagesForSim(int id){
+		System.out.println("ricevo richiesta immagine "+id);
+		for(CellExecutor cexe:executorThread.get(id))
+		{
+			((TraceableField) cexe.dis.getField()).trace("-GRAPHICS");
+		}
+	}
+	private synchronized void stopProcessImagesForSim(int id){
+		for(CellExecutor cexe:executorThread.get(id))
+		{
+			((TraceableField) cexe.dis.getField()).untrace("-GRAPHICS");
+		}
+	}
 
 	private HashMap<Integer,ArrayList<CellExecutor>> executorThread=new HashMap<Integer,ArrayList<CellExecutor>>();
 
@@ -429,7 +459,9 @@ public class Worker implements Observer {
 				getSimulationList().get(id).setStatus(Simulation.STARTED);
 				for(CellExecutor cexe:executorThread.get(id))
 				{
+					
 					cexe.restartThread();
+					
 				}
 
 				return;
@@ -468,7 +500,48 @@ public class Worker implements Observer {
 						executorThread.get(simulation.getSimID()).add(celle);
 						celle.startSimulation();
 						getConnection().publishToTopic(simulation.getSimID(),"SIMULATION_READY"+simulation.getSimID(), "cellready");
+						
+						if(celle.masterCell){
+							getConnection().createTopic(simulation.getTopicPrefix()+"GRAPHICS", 1);
+							try {
+								getConnection().subscribeToTopic(simulation.getTopicPrefix()+"GRAPHICS");
+								getConnection().asynchronousReceive(simulation.getTopicPrefix()+"GRAPHICS", new MyMessageListener() {
 
+									@Override
+									public void onMessage(Message msg) {
+										Object o;
+										try {
+											o = parseMessage(msg);
+
+											MyHashMap map=(MyHashMap) o;
+
+										
+											for( Object obj : map.values()){
+												RemoteSnap rs = (RemoteSnap)obj;
+												if(getSimulationList().get(id).getSnapshots().get(rs.step)==null)
+													//imgs = new ArrayList<>();
+													getSimulationList().get(id).getSnapshots().put(rs.step,new ArrayList<>());
+												
+												
+												getSimulationList().get(id).getSnapshots().get(rs.step).add(rs);
+												
+											
+											}
+											
+											
+										} catch (JMSException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+									}
+								});
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}else{
+							getConnection().createTopic(simulation.getTopicPrefix()+"GRAPHICS", 1);
+						}
 					}
 
 					getConnection().createTopic("SIMULATION_"+simulation.getSimID(), 1);
@@ -508,6 +581,7 @@ public class Worker implements Observer {
 		for(CellExecutor cexe:executorThread.get(sim_id))
 		{
 			cexe.pauseThread();
+			((TraceableField)cexe.dis.getField()).untrace("-GRAPHICS");
 		}
 		getSimulationList().get(sim_id).setStatus(Simulation.PAUSED);
 		getSimulationList().get(sim_id).setEndTime(System.currentTimeMillis());
@@ -547,9 +621,11 @@ public class Worker implements Observer {
 			dis=makeSimulationWithNewLoader( params, prefix, jar_pathname);
 			dis.setOutputStream(out);
 			this.masterCell=master_cell;
+			
 		}
 
 		public void startSimulation(){
+			
 			dis.start();
 
 		}
@@ -577,6 +653,7 @@ public class Worker implements Observer {
 				if(masterCell)
 				{   
 					getSimulationList().get(sim_id).setStep(i);
+					
 					getConnection().publishToTopic(getSimulationList().get(sim_id),"SIMULATION_"+sim_id, "workerstatus");
 				}
 				dis.schedule.step(dis);
@@ -646,6 +723,9 @@ public class Worker implements Observer {
 		getSimulationList().put(sim.getSimID(),sim);
 		String createTopicSimReady="SIMULATION_READY"+sim.getSimID();
 		getConnection().createTopic(createTopicSimReady, 1);
+		
+//		getConnection().createTopic(sim.getTopicPrefix()+"GRAPHICS", 1);
+		
 		try {
 			getConnection().subscribeToTopic(createTopicSimReady);
 		} catch (Exception e1) {e1.printStackTrace();}

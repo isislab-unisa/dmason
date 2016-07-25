@@ -32,10 +32,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -49,8 +49,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.springframework.scheduling.concurrent.DefaultManagedAwareThreadFactory;
-
 import it.isislab.dmason.experimentals.systemmanagement.utils.ClientSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.FindAvailablePort;
@@ -60,6 +58,7 @@ import it.isislab.dmason.experimentals.systemmanagement.utils.ZipDirectory;
 import it.isislab.dmason.experimentals.systemmanagement.utils.loader.DMasonClassLoader;
 import it.isislab.dmason.experimentals.systemmanagement.worker.Worker;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
+import it.isislab.dmason.experimentals.util.visualization.globalviewer.RemoteSnap;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
@@ -116,13 +115,8 @@ public class MasterServer implements MultiServerInterface{
 
 	//info 
 	protected HashMap<Integer,AtomicInteger> counterAckSimRcv;// number of ack received of <simrcv> 
-	private HashMap<String,String> infoWorkers;
+	private HashMap<String,String> infoWorkers;// basic information on workers node
 	private HashMap<String,Integer> ttlinfoWorkers;//list of connected workers with time to live updated if it is still alive 
-	
-	
-	
-
-
 
 	private HashMap<Integer,Simulation> simulationsList; //list of simulations <ID,Simulation> 
 	private AtomicInteger IDSimulation; // generate an unique id for a simulation 
@@ -299,13 +293,9 @@ public class MasterServer implements MultiServerInterface{
 						try {
 							o=parseMessage(msg);
 							MyHashMap map=(MyHashMap) o;
-							//if(map.containsKey("disconnect")){
-								//ttlinfoWorkers.put(topic, 0);
-
-							//}
 
 							//sim(id) downloaded from the worker
-							 if(map.containsKey("simrcv")){
+							if(map.containsKey("simrcv")){
 								int id=(int) map.get("simrcv");
 								AtomicInteger value=getCounterAckSimRcv().get(id);
 								int temp=value.incrementAndGet();
@@ -833,44 +823,6 @@ public class MasterServer implements MultiServerInterface{
 		}
 
 
-
-
-
-		//
-		//		String path_jar_file=pathJar;
-		//		try{
-		//			JarFile jar=new JarFile(new File(path_jar_file));
-		//			Enumeration e=jar.entries();
-		//			File file  = new File(path_jar_file);
-		//			URL url = file.toURL(); 
-		//			URL[] urls = new URL[]{url};
-		//			ClassLoader cl = new URLClassLoader(urls);
-		//			Class distributedState=null;
-		//
-		//			while(e.hasMoreElements()){
-		//
-		//				JarEntry je=(JarEntry)e.nextElement();
-		//				if(!je.getName().contains(".class")) continue;
-		//
-		//				InputStream input = jar.getInputStream(je);
-		//
-		//				Class c=cl.loadClass(je.getName().replaceAll("/", ".").replaceAll(".class", ""));
-		//
-		//				if(c.getSuperclass().equals(DistributedState.class))
-		//					distributedState=c;
-		//
-		//			}
-		//			if(distributedState==null) return false;
-		//			JarClassLoader cload = new JarClassLoader(new URL("jar:file://"+path_jar_file+"!/"));
-		//
-		//			cload.addToClassPath();
-		//
-		//			return true;
-		//		} catch (Exception e){
-		//			e.printStackTrace();
-		//		}
-		//		return false;
-
 	}
 
 	/**
@@ -949,11 +901,14 @@ public class MasterServer implements MultiServerInterface{
 									s_master.setStartTime(s.getStartTime());
 								}
 								if(s_master.getStep() < s.getStep()){
+									
 									s_master.setStep(s.getStep());
+									s_master.setSnapshots(s.getSnapshots());
 								}
-
+								
 								s_master.setStatus(s.getStatus());
-
+							
+								
 								if(s.getStatus().equals(Simulation.FINISHED) || s.getStatus().equals(Simulation.STOPPED)){
 
 									LOGGER.info("Received FINISHED for "+s.getSimID());
@@ -968,7 +923,6 @@ public class MasterServer implements MultiServerInterface{
 					} catch (JMSException e) {e.printStackTrace();}
 				}
 			});
-
 
 		} catch (Exception e1) {e1.printStackTrace();}
 
@@ -999,7 +953,7 @@ public class MasterServer implements MultiServerInterface{
 			this.getConnection().publishToTopic(iDSimToExec, workerTopic, "start");
 		}
 
-		//waitEndSim(idSimulation); simulation timer
+		//waitEndSim(idSimulation); //method at the end of this class, a timer for end a simulation
 	}
 
 
@@ -1033,7 +987,22 @@ public class MasterServer implements MultiServerInterface{
 		}
 
 	}
-
+ 
+	
+	
+	/**
+	 * 
+	 * @param simID
+	 * @param command startViewer/stopViewer
+	 */
+	public void showImage(int simID, String command){
+		for (String topic: getSimulationsList().get(simID).getTopicList()){
+			
+			getConnection().publishToTopic(simID, topic, command);
+		}
+	}
+	
+	
 	/**
 	 * Shutdown command for workers on cluster 
 	 * if something wrong during publish or other, waitingTime
@@ -1046,51 +1015,51 @@ public class MasterServer implements MultiServerInterface{
 			getConnection().publishToTopic("", topic, "shutdown");
 			ttlinfoWorkers.put(topic, 1000);
 		}
-		
-		
+
+
 		long start=System.currentTimeMillis();
 		long maxWaitingTime=1000*toShutdown.size(); 
-		
+
 		HashSet<String> toremove=new HashSet<>(toShutdown);
-		
-		
-				HashSet<String> check=null;		
-				while((System.currentTimeMillis()-start) < maxWaitingTime  ){
-					check=new HashSet<String>(getInfoWorkers().keySet());
-					if(check.containsAll(toremove)){
-						break;
-					}
-					check=new HashSet<String>();
-				}
-				infoWorkers=new HashMap<String,String>();
+
+
+		HashSet<String> check=null;		
+		while((System.currentTimeMillis()-start) < maxWaitingTime  ){
+			check=new HashSet<String>(getInfoWorkers().keySet());
+			if(check.containsAll(toremove)){
+				break;
+			}
+			check=new HashSet<String>();
+		}
+		infoWorkers=new HashMap<String,String>();
 		try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}		
-		
+
 		return true;
 
 	}
 
-	
-    /**
-     * Delete history for a list of simultion
-     * @param paths simulation path list to delete
-     * @return true if files are deleted
-     */
+
+	/**
+	 * Delete history for a list of simultion
+	 * @param paths simulation path list to delete
+	 * @return true if files are deleted
+	 */
 	public synchronized boolean deleteHistory(List<String> paths){
 		Thread delete=new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				for (String pathname : paths) {
 					DMasonFileSystem.delete(new File(pathname));
 				}
-				
+
 			}
 		});
-		
+
 		delete.start();
 		try {
 			delete.join();
@@ -1098,36 +1067,36 @@ public class MasterServer implements MultiServerInterface{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Delete all files in the history folder
 	 * @return true if files are deleted
 	 */
 	public synchronized boolean deleteHistoryFolder(){
 		Thread delete=new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
-					DMasonFileSystem.delete(new File(masterHistoryFolder));
-					
+				DMasonFileSystem.delete(new File(masterHistoryFolder));
+
 			}
 		});
-		
+
 		delete.start();
 		try {
 			delete.join();
-		DMasonFileSystem.make(masterHistoryFolder);
+			DMasonFileSystem.make(masterHistoryFolder);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
+
 		return true;
 	}
-	
-	
+
+
 
 	/**
 	 * Create history folder for a finished or stopped simulation 

@@ -58,6 +58,7 @@ public class GlobalInspectorHelper
 	 */
 	public static void synchronizeInspector(DistributedState<?> sim, ConnectionJMS connection, String topicPrefix, CellType cellId, int x, int y, double currentTime, BufferedImage currentSnap, HashMap<String, Object> currentStats, List<String> tracingFields, boolean traceGraphics)
 	{
+		
 		RemoteSnap snap = new RemoteSnap(cellId, sim.schedule.getSteps() - 1, currentTime);
 		
 		// Pack the bitmap (if enabled) into RemoteSnap, then clear the bitmap buffer 
@@ -86,7 +87,8 @@ public class GlobalInspectorHelper
 			snap.stats = currentStats;
 			snap.x = x;
 			snap.y = y;
-			connection.publishToTopic(snap, topicPrefix + "GRAPHICS", "GRAPHICS");
+			connection.publishToTopic(snap, topicPrefix + "GRAPHICS", "GRAPHICS+cellId");
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

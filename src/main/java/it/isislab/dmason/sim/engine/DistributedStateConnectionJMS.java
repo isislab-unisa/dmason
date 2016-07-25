@@ -185,6 +185,17 @@ public class DistributedStateConnectionJMS<E> {
 			init_spatial_connection();
 		if(((DistributedMultiSchedule<E>)dm.schedule).fieldsNetwork.size()>0)
 			init_network_connection();
+	
+		//FOR GRAPHIC TESTING 
+		
+		try {
+			connectionJMS.createTopic(topicPrefix+"GRAPHICS", 1);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 	private  ReentrantLock lock;
 	private  Condition block;

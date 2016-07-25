@@ -122,7 +122,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         </div>
 
-         <neon-animated-pages id="system_info" class="dinamic_container" selected="0">
+         <neon-animated-pages id="system_info" class="dinamic_container" selected="0" on-iron-select="startViewer" on-iron-deselect="stopViewer">
                  <div id="card" class="card">
                      <div class="simulation-container">
                          <paper-card id="sim_info" heading="Simulation Info">
@@ -152,8 +152,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </div>
 
 
-                <div id="sim_viewer" class="card">
-
+                <div id="sim_viewer" class="card" >
+                    <table id="viewer_grid"></table>
                 </div>
 
          </neon-animated-pages>
@@ -186,7 +186,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         'hero': this.$.card,
                         'ripple': this.$.fixed
                     }
-                }
+                },
+                viewer:{type: Boolean}
             },
 
             animationConfig: {
@@ -231,7 +232,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             else{
                 scope.entryAnimation = 'slide-from-left-animation';
                 scope.exitAnimation = 'slide-right-animation';
-                scope.selected =0;
+                //scope.selected =0;
+                scope.selectPrevious();
             }
         },
         go_next: function(){
@@ -239,7 +241,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             if(scope.selected!=1){
                 scope.entryAnimation = 'slide-from-right-animation';
                 scope.exitAnimation = 'slide-left-animation';
-                scope.selected = 1;
+                scope.selectNext();
             }
         },
         _onItemClick: function(event) {
@@ -257,6 +259,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this.$.download_log_form.submit();
         },
 
+        startViewer: function(){
+            console.log("ha funziontato 2 "+this.$.system_info.selected);
+            if(this.$.system_info.selected == 1){
+                $.ajax({
+                    url:"viewer",
+                    data:"id="+this.sim.id+"&cmd=startViewer",
+                    success: function(result){
+                            
+                    }});
+        },
+        stopViewer: function(){
+            console.log("ha funziontato");
+            if(this.$.system_info.selected == 0)
+                $.ajax({
+                    url:"viewer",
+                    data:"id="+this.sim.id+"&cmd=stopViewer",
+                    });
+        },
         AVGCPUWorkLoad: function (sim) {
 
             Highcharts.setOptions({

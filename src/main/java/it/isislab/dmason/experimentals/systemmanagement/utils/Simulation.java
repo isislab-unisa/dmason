@@ -16,14 +16,21 @@
  */
 package it.isislab.dmason.experimentals.systemmanagement.utils;
 
+import it.isislab.dmason.experimentals.util.visualization.globalviewer.RemoteSnap;
 import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+
+import edu.cmu.graphchi.apps.recommendations.CircleOfTrustSalsa;
 
 /**
  * A class to create a Simulation in DMason
@@ -67,7 +74,7 @@ public class Simulation implements Serializable{
 	public static final String PAUSED="PAUSED";
 	public static final String STOPPED="STOPPED";
 	private String simulationStatus=CREATED; //play,pause,stop
-
+	private ConcurrentHashMap<Long, ArrayList<RemoteSnap>> snapshots;
 
 	public Simulation() {}
 
@@ -106,6 +113,7 @@ public class Simulation implements Serializable{
 		this.numStep=stepsnumber;
 		this.execFileName=execSimNAme;
 		this.cellTypeList=new ArrayList<CellType>();
+		snapshots = new ConcurrentHashMap<>(100);
 
 	}
 
@@ -144,7 +152,7 @@ public class Simulation implements Serializable{
 		this.cellTypeList=new ArrayList<CellType>();
 		this.P=p;
 		this.numCells= P;
-
+		snapshots = new ConcurrentHashMap<>(100);
 
 	}
 
@@ -530,12 +538,21 @@ public class Simulation implements Serializable{
 		cellTypeList=list;
 
 	}
-
+	
+	public ConcurrentHashMap<Long, ArrayList<RemoteSnap>> getSnapshots(){
+		
+		return snapshots;
+	}
+	
+	public void setSnapshots(ConcurrentHashMap<Long, ArrayList<RemoteSnap>> snapshots) {
+		this.snapshots = snapshots;
+	}
 
 	/**
 	 * toString method for Simulation in json format
 	 *
 	 */
+	@Override
 	public String toString() {
 		if(mode==DistributedField2D.UNIFORM_PARTITIONING_MODE) //UNIFORM
 			return "{\"name\":\"" + simName + "\","
@@ -571,6 +588,7 @@ public class Simulation implements Serializable{
 					+ "\"status\":\""+simulationStatus+"\"}";
 
 	}
+
 
 	
 

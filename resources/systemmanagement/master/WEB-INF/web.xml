@@ -143,4 +143,20 @@
         <servlet-name>CleanSelectedHistoryServlet</servlet-name>
         <url-pattern>/cleanSelectedHistory</url-pattern>
     </servlet-mapping>
+    <servlet id="requestImage">
+        <servlet-name>ImageRequestServlet</servlet-name>
+        <servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.ImageRequestServlet</servlet-class>
+	</servlet>
+    <servlet-mapping>
+        <servlet-name>ImageRequestServlet</servlet-name>
+        <url-pattern>/requestImage</url-pattern>
+    </servlet-mapping>
+    <servlet id="Viewer">
+        <servlet-name>StartViewerServlet</servlet-name>
+        <servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.StartViewerServlet</servlet-class>
+	</servlet>
+    <servlet-mapping>
+        <servlet-name>StartViewerServlet</servlet-name>
+        <url-pattern>/viewer</url-pattern>
+    </servlet-mapping>
 </web-app>
