@@ -481,7 +481,7 @@ public class MasterServer implements MultiServerInterface{
 
 	/**
 	 * 
-	 * Create zip of simulation's files
+	 * Create zip of simulation files
 	 * 
 	 * @param sim_id simulation id of simulation 
 	 * @return true if the copy is completed
@@ -1173,7 +1173,7 @@ public class MasterServer implements MultiServerInterface{
 		}
 
 
-		//start process to copy simulation's file in /master/history
+		//start process to copy simulation files in /master/history
 		Thread t=new Thread(new Runnable() {
 
 			@Override
