@@ -90,7 +90,7 @@ public class Worker implements Observer {
 	private static String dmasonDirectory=System.getProperty("user.dir")+File.separator+"dmason";
 	private static  String workerDirectory; // worker main directory
 	private static  String simulationsDirectories; // list of simulations' folder
-	private String TOPIC_WORKER_ID=""; // worker's topic , worker write in this topic (publish) for all communication           
+	private String TOPIC_WORKER_ID=""; // worker topic , worker write in this topic (publish) for all communication           
 	private static String WORKER_IP="127.0.0.1";//local ip of node 
 	private int DEFAULT_COPY_SERVER_PORT=1414; /*default port of master node for copy log file*/
 	private HashMap< Integer, Simulation> simulationList; //List of simulation executed on this worker
