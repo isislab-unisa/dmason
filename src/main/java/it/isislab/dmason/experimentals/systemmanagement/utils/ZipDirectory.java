@@ -37,7 +37,7 @@ import java.util.zip.ZipOutputStream;
 public class ZipDirectory {
 
 	static List<String> fileList;
-	
+
 	private static  String SOURCE_FOLDER = "";
 
 	public static boolean createZipDirectory(String zipFileToCreate, String folderToZip){
@@ -105,9 +105,9 @@ public class ZipDirectory {
 		}
 
 		if(node.isDirectory()){
-			
+
 			String[] subNote = node.list(new FilenameFilter() {
-				
+
 				@Override
 				public boolean accept(File dir, String name) {
 					// TODO Auto-generated method stub
@@ -177,29 +177,14 @@ public class ZipDirectory {
 			zis.close();
 
 			System.out.println("Done unzip");
-            return true;
-            
+			return true;
+
 		}catch(IOException ex){
 			ex.printStackTrace(); 
 		}
 		return false;
 	}    
 
-
-	//TESTING
-	public static void main(String[] args) {
-		String folderToZip="/home/user/Desktop/worker/04-03-16-15_33/simulations/gvsbhscbhd1/out";
-		String pathZip="/home/user/git/dmason/dmason/master/simulations/miasim/runs/-1043054413.zip";
-		String pathUnzip="/home/user/Desktop/outputZip";
-
-		//if(ZipDirectory.createZipDirectory(pathZip, folderToZip)) System.out.println("finished");
-		if(ZipDirectory.unZipDirectory(pathZip, pathUnzip)) System.out.println("finished");
-		//ZipDirectory zipp=new ZipDirectory(pathZip, pathTozip);
-		//zipp.zipDirectory(pathZip);
-		//File file=new File(pathTozip);
-		//ZipDirectory.zipDirectory(file, pathZip);
-		//ZipDirectory.unZip(pathZip, pathUnzip);
-	}
 
 }
 
