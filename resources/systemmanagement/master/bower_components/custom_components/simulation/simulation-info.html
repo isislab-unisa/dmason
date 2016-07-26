@@ -61,6 +61,10 @@
             click: '_onClick'
         },
 
+        observers: [
+                'fireSimulation(sim)'
+        ],
+
         _onClick: function(event) {
             if(this.sim.status.toLowerCase()=="created")
                 return;
@@ -82,6 +86,14 @@
                 tile: target,
                 data: this.sim
             });
+        },
+
+        fireSimulation: function(sim){ // this event updates simulation info also in full-size-page-with-card component
+            this.fire('update-sim-event', {
+                tile: document.querySelector('dom-module[id="simulation-info"]'),
+                data: sim
+            });
         }
+
     });
 </script>

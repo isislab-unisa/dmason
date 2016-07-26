@@ -87,7 +87,8 @@
         <div class="content content-main">
             <template is="dom-bind" id="simulations">
                 <neon-animated-pages id="pages" selected="0">
-                        <animated-grid id="list_simulations" on-tile-click="_onTileClick" ></animated-grid>
+                        <animated-grid id="list_simulations" on-tile-click="_onTileClick" on-update-sim-event="_onUpdateSimEvent"></animated-grid>
+                        <!--animated-grid id="list_simulations" on-tile-click="_onTileClick"></animated-grid-->
                         <fullsize-page-with-card id="fullsize_card" on-go-back="_onFullsizeClick">
                         </fullsize-page-with-card>
                 </neon-animated-pages>
@@ -117,6 +118,11 @@
 
             this.$['fullsize-card'].listFile =lf;
             this.$.pages.selected = 1;*/
+        };
+
+
+        scope._onUpdateSimEvent = function(event){
+            this.$['fullsize_card'].sim =event.detail.data;
         };
         scope._onFullsizeClick = function(event){
              this.$.pages.selected = 0;

@@ -127,7 +127,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                      <div class="simulation-container">
                          <paper-card id="sim_info" heading="Simulation Info">
                              <div class="card-content">
-                                 <simulation-info sim="{{sim}}"></simulation-info>
+                                 <simulation-info id="sim_info_resume" sim="{{sim}}" ></simulation-info>
                              </div>
                          </paper-card>
                          <div class="flex">
@@ -186,8 +186,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         'hero': this.$.card,
                         'ripple': this.$.fixed
                     }
-                },
-                viewer:{type: Boolean}
+                }
+            },
+
+            viewer:{
+                type: Boolean
             },
 
             animationConfig: {
@@ -222,13 +225,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         observers:[
                 'AVGCPUWorkLoad(sim)'
         ],
+
         go_back:function(){
             var scope = document.querySelector('neon-animated-pages [id="system_info"]');
-            if(scope.selected==0){
-                if(refreshIntervalId)
-                    clearInterval(refreshIntervalId);
+            if(scope.selected==0)
                 this.fire('go-back');
-            }
+
             else{
                 scope.entryAnimation = 'slide-from-left-animation';
                 scope.exitAnimation = 'slide-right-animation';
@@ -260,24 +262,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         startViewer: function(){
-            console.log("ha funziontato 2 "+this.$.system_info.selected);
-            if(this.$.system_info.selected == 1){
+
+            if(this.$.system_info.selected == 1) {
                 $.ajax({
-                    url:"viewer",
-                    data:"id="+this.sim.id+"&cmd=startViewer",
-                    success: function(result){
-                            
-                    }});
+                    url: "viewer",
+                    data: "id=" + this.sim.id + "&cmd=startViewer",
+                    success: function (result) {
+                        this.viewer = true;
+                    }
+                });
+            }
         },
         stopViewer: function(){
-            console.log("ha funziontato");
+
             if(this.$.system_info.selected == 0)
                 $.ajax({
                     url:"viewer",
                     data:"id="+this.sim.id+"&cmd=stopViewer",
-                    });
+                    success: function(result){
+                        this.viewer = false;
+                    }});
         },
+        take_snapshot: function (viewer){
+            if(viewer){
+                $.ajax({
+                    url:"requestImage",
+                    data:"id="+this.sim.id+"&step="+this.sim.step,
+                    success: function(result){
+
+                    }});
+            }
+        },
+
         AVGCPUWorkLoad: function (sim) {
+
+
 
             Highcharts.setOptions({
                 global : {
@@ -404,34 +423,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     // Add some life
                     function (chart) {
                         if (!chart.renderer.forExport) {
-                            refreshIntervalId=  setInterval(function () {
-                                var point = chart.series[0].points[0],
-                                        newVal;
+                           /* refreshIntervalId=  setInterval(function () {*/
 
-                                        $.ajax({
-                                          url:"getWorkersInfoBySimID",
-                                          data:"id="+sim.id,
-                                          success: function(result){
+                                    var point = chart.series[0].points[0],
+                                            newVal;
 
-                                              var obj=[];
-                                              if(result.length>0)
-                                                  obj = JSON.parse(result);
-                                              if(obj.hasOwnProperty('workers')){
+                                    $.ajax({
+                                        url: "getWorkersInfoBySimID",
+                                        data: "id=" + sim.id,
+                                        success: function (result) {
 
-                                                  var cpu_avg=0;
-                                                  for(var w,i=0; w=obj.workers[i]; i++){
+                                            var obj = [];
+                                            if (result.length > 0)
+                                                obj = JSON.parse(result);
+                                            if (obj.hasOwnProperty('workers')) {
 
-                                                        cpu_avg+= w.cpuLoad;
-                                                  }
-                                                  newVal = Math.floor(cpu_avg/obj.workers.length);
+                                                var cpu_avg = 0;
+                                                for (var w, i = 0; w = obj.workers[i]; i++) {
 
-                                              }else{
-                                                  newVal = point.y;
-                                              }
-                                              point.update(newVal);
-                                          }
-                                        });
-                            }, 1000);
+                                                    cpu_avg += w.cpuLoad;
+                                                }
+                                                newVal = Math.floor(cpu_avg / obj.workers.length);
+
+                                            } else {
+                                                newVal = point.y;
+                                            }
+                                            point.update(newVal);
+                                        }
+                                    });
+                           /* }, 1000);*/
                         }
             });
 
