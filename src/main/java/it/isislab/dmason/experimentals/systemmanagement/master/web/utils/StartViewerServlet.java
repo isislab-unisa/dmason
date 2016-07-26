@@ -43,6 +43,7 @@ public class StartViewerServlet extends HttpServlet {
 		}
 
 		masterServer.showImage(Integer.parseInt(idSimulation),command);
+		resp.setStatus(HttpServletResponse.SC_OK);
 	}
 
 	

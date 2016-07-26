@@ -108,6 +108,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 @apply(--layout-center);
             }
 
+             #sim_viewer{
+                 overflow: scroll;
+             }
+              #viewer_grid{
+                  border:0;
+              }
+
+
+
+
+
 
         </style>
      <div class="layout vertical center-justified">
@@ -153,7 +164,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
                 <div id="sim_viewer" class="card" >
-                    <table id="viewer_grid"></table>
+                    <table id="viewer_grid" cellspacing="0"></table>
                 </div>
 
          </neon-animated-pages>
@@ -264,36 +275,66 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         startViewer: function(){
 
             if(this.$.system_info.selected == 1) {
+                   console.log(this.sim);
+                var that = this;
                 $.ajax({
                     url: "viewer",
                     data: "id=" + this.sim.id + "&cmd=startViewer",
                     success: function (result) {
-                        this.viewer = true;
+                        console.log("ho fatto partire il viewer")
+                        that.viewer = true;
+                         viewerTimeOut = setInterval(function(){that.take_snapshot(that.viewer)}, 1000);
                     }
                 });
             }
         },
         stopViewer: function(){
 
-            if(this.$.system_info.selected == 0)
+            if(this.$.system_info.selected == 0) {
+                var that = this;
                 $.ajax({
-                    url:"viewer",
-                    data:"id="+this.sim.id+"&cmd=stopViewer",
-                    success: function(result){
-                        this.viewer = false;
-                    }});
+                    url: "viewer",
+                    data: "id=" + this.sim.id + "&cmd=stopViewer",
+                    success: function (result) {
+                        that.viewer = false;
+                        clearInterval(viewerTimeOut);
+                    }
+                });
+            }
         },
         take_snapshot: function (viewer){
             if(viewer){
+                var that = this;
                 $.ajax({
                     url:"requestImage",
                     data:"id="+this.sim.id+"&step="+this.sim.step,
                     success: function(result){
-
+                          that._updateviewerGrid(result);
                     }});
             }
         },
 
+        _updateviewerGrid: function(result){
+            var rows = this.sim.rows;
+            var cols = this.sim.columns;
+            var r,c;
+            var grid = $("#viewer_grid");
+            $(grid).empty();
+            var snapshot = JSON.parse(result);
+
+            var imgs = snapshot["snapshot"]["step"];
+
+            for(r=0; r<rows; r++){
+                var tr = $("<tr></tr>");
+                for(c=0; c<cols; c++){
+                    var celltype = r+"-"+c;
+                    var base64 =  imgs[celltype];
+                    console.log(base64);
+                      tr.append("<td><img src=\"data:image/png;base64,"+base64+"\"></td>");
+                }
+                grid.append(tr);
+            }
+        },
         AVGCPUWorkLoad: function (sim) {
 
 

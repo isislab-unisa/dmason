@@ -23,7 +23,7 @@ public class ImageRequestServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.setContentType("application/json;charset=UTF-8");
+		resp.setContentType("text/plain;charset=UTF-8");
 		if(req.getServletContext().getAttribute("masterServer")==null){
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
@@ -50,27 +50,32 @@ public class ImageRequestServlet extends HttpServlet {
 
 		PrintWriter p = resp.getWriter();
 
+		/**
+		 * snapshot:{
+		 * 		"step":{
+		 *			"cellid": "base64code" 			
+		 * 			.
+		 * 			.	
+		 * 			.
+		 * 		}
+		 * }
+		 */
 
-		JSONArray snaps = new JSONArray();
+		
 		JSONObject img = new JSONObject();
 		JSONObject j_step = new JSONObject();
-		JSONArray steps = new JSONArray();
 
 		ArrayList<RemoteSnap> list = s.getSnapshots().get(key);
 		for(RemoteSnap rs : list){
-			img = new JSONObject();
-			img.put("cellID", rs.i+"-"+rs.j);
-			img.put("base64",Base64.getEncoder().encodeToString(rs.image));
-			snaps.add(img);
+			img.put(rs.i+"-"+rs.j,Base64.getEncoder().encodeToString(rs.image));
 		}
 		j_step = new JSONObject();
 
-		j_step.put("img", snaps);
-		j_step.put("step", key);
-		steps.add(j_step);
+		j_step.put("step",img);
+		
 
 		JSONObject snapshot = new JSONObject();
-		snapshot.put("snapshot", steps);
+		snapshot.put("snapshot", j_step);
 
 		StringWriter out = new StringWriter();
 
