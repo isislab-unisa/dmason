@@ -61,18 +61,20 @@ public class ImageRequestServlet extends HttpServlet {
 		 * }
 		 */
 
-		
+
 		JSONObject img = new JSONObject();
 		JSONObject j_step = new JSONObject();
-
 		ArrayList<RemoteSnap> list = s.getSnapshots().get(key);
-		for(RemoteSnap rs : list){
-			img.put(rs.i+"-"+rs.j,Base64.getEncoder().encodeToString(rs.image));
+		
+		if(list !=null){
+			for(RemoteSnap rs : list){
+				img.put(rs.i+"-"+rs.j,Base64.getEncoder().encodeToString(rs.image));
+			}
 		}
 		j_step = new JSONObject();
 
 		j_step.put("step",img);
-		
+
 
 		JSONObject snapshot = new JSONObject();
 		snapshot.put("snapshot", j_step);
@@ -80,8 +82,8 @@ public class ImageRequestServlet extends HttpServlet {
 		StringWriter out = new StringWriter();
 
 		snapshot.writeJSONString(out);						
-
 		String jsonText = out.toString();
+		
 		System.out.println(jsonText);
 		p.print(jsonText);
 		p.close();

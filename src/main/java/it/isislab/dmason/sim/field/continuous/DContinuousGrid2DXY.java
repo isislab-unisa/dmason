@@ -852,11 +852,15 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	 */
 	private boolean setAgents(RemotePositionedAgent<Double2D> rm,Double2D location)
 	{
-		if(isTracingGraphics)
-			GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
+		
 		
 		if(rmap.NORTH_WEST_MINE!=null && rmap.NORTH_WEST_MINE.isMine(location.x,location.y))
 		{
+			
+			if(isTracingGraphics)/*system management viewer*/
+				GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
+			
+			
 			if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 				tmp_zoom.add(rm);
 			if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
@@ -870,6 +874,11 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		else
 			if(rmap.NORTH_EAST_MINE!=null && rmap.NORTH_EAST_MINE.isMine(location.x,location.y))
 			{
+				
+				
+				if(isTracingGraphics)/*systemmanagement viewer*/
+					GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
+				
 				if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 					tmp_zoom.add(rm);
 				if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
@@ -882,6 +891,11 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 			else
 				if(rmap.SOUTH_WEST_MINE!=null && rmap.SOUTH_WEST_MINE.isMine(location.x,location.y))
 				{
+					
+					
+					if(isTracingGraphics)/*systemmanagement visualizator*/
+						GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
+					
 					if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 						tmp_zoom.add(rm);
 					if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
@@ -894,6 +908,12 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 				else
 					if(rmap.SOUTH_EAST_MINE!=null && rmap.SOUTH_EAST_MINE.isMine(location.x,location.y))
 					{
+						
+						
+						if(isTracingGraphics)/*systemmanagement visualizator*/
+							GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
+						
+						
 						if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 							tmp_zoom.add(rm);
 						if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
@@ -906,6 +926,10 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 					else
 						if(rmap.WEST_MINE != null && rmap.WEST_MINE.isMine(location.x,location.y))
 						{
+							
+							if(isTracingGraphics)/*systemmanagement visualizator*/
+								GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
+							
 							if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 								tmp_zoom.add(rm);
 							if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
@@ -916,6 +940,10 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 						else
 							if(rmap.EAST_MINE != null && rmap.EAST_MINE.isMine(location.x,location.y))
 							{
+								
+								if(isTracingGraphics)/*systemmanagement visualizator*/
+									GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
+								
 								if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 									tmp_zoom.add(rm);
 								if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
@@ -926,6 +954,10 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 							else
 								if(rmap.NORTH_MINE != null && rmap.NORTH_MINE.isMine(location.x,location.y))
 								{
+									if(isTracingGraphics)/*systemmanagement visualizator*/
+										GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
+									
+									
 									if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 										tmp_zoom.add(rm);
 									if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
@@ -936,6 +968,10 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 								else
 									if(rmap.SOUTH_MINE != null && rmap.SOUTH_MINE.isMine(location.x,location.y))
 									{
+										
+										if(isTracingGraphics)/*systemmanagement visualizator*/
+											GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
+										
 										if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 											tmp_zoom.add(rm);
 										if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
@@ -946,8 +982,12 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 									else
 										if(myfield.isMine(location.x,location.y))
 										{
+											if(isTracingGraphics)/*systemmanagement visualizator*/
+												GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
+											
 											if(((DistributedMultiSchedule)sm.schedule).monitor.ZOOM)
 												tmp_zoom.add(rm);
+											
 											if(((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 												GlobalInspectorHelper.updateBitmap(currentBitmap, rm, location, own_x, own_y);
 											return myfield.addAgents(new EntryAgent<Double2D>(rm, location));
