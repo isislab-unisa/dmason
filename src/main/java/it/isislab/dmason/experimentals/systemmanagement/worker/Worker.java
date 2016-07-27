@@ -216,6 +216,7 @@ public class Worker implements Observer {
 			while(publishInfo.get()){
 				try {
 					Thread.sleep(new Random().nextInt(3)*1000 );
+					if(getConnection().getTopicList().contains(MANAGEMENT))
 					getConnection().publishToTopic(getInfoWorker().toString(), MANAGEMENT,"WORKER");
 				} catch (Exception e) {e.printStackTrace();}
 			}
@@ -412,7 +413,7 @@ public class Worker implements Observer {
 
 	
 	private synchronized void startProcessImagesForSim(int id){
-		System.out.println("ricevo richiesta immagine "+id);
+		//System.out.println("ricevo richiesta immagine "+id);
 		for(CellExecutor cexe:executorThread.get(id))
 		{
 			((TraceableField) cexe.dis.getField()).trace("-GRAPHICS");
@@ -1072,7 +1073,7 @@ public class Worker implements Observer {
 	public void setIpActivemq(String iP) {IP_ACTIVEMQ = iP;}
 	public String getPortActivemq() {return PORT_ACTIVEMQ;}
 	public void setPortActivemq(String port) {PORT_ACTIVEMQ = port;}
-	public ConnectionNFieldsWithActiveMQAPI getConnection() {return conn;}
+	public synchronized ConnectionNFieldsWithActiveMQAPI getConnection() {return conn;}
 	public String getSimulationsDirectories() {return simulationsDirectories;}
 	public synchronized Integer getSlotsNumber(){return slotsNumber;}
 	public synchronized int setSlotsNumuber(int slots){return this.slotsNumber=slots;}

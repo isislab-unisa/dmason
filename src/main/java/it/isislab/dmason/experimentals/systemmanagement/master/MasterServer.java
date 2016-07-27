@@ -946,6 +946,7 @@ public class MasterServer implements MultiServerInterface{
 
 		Simulation simulationToExec=getSimulationsList().get(idSimulation);
 		int iDSimToExec=simulationToExec.getSimID();
+		System.out.println("Start simulation with id "+idSimulation);
 		LOGGER.info("Start command received for simulation with id "+idSimulation);
 		for(String workerTopic : simulationToExec.getTopicList()){
 			//LOGGER.info("send start command to "+workerTopic+"   "+getTopicIdForSimulation());wait

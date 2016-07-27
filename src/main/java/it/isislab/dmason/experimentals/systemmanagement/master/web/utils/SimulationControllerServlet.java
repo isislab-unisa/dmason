@@ -51,8 +51,6 @@ public class SimulationControllerServlet extends HttpServlet {
 		String id = (String)req.getParameter("id");
 		String op = (String)req.getParameter("op");
 
-		System.out.println(id);
-		System.out.println(op);
 
 		if(id != null && op!=null){
 			int i = Integer.parseInt(id);
