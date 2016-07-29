@@ -666,6 +666,42 @@ Add new package kway. (07/09/2015)
 	        ├── Partitioner.java
 	        └── PartitionManager.java
 		
-    
+
+### System Management
+
+- Realization of a Web User interface for managing and submitting simulations on DMASON  
+- Rebuild the comunication layer between Master and Workers 
+
+### Documentation
+
+- About DMASON
+- how to build source from Eclipse
+- How to run DMASON from Eclipse or Jar file.
+- How to run DMASON on cluster 
+- Simulation section: here are described the model and the main features useful for massive tests for Flockers,Ant foraging, Particle and SIR (susceptible,infected and recovered) simulations
+- From MASON to DMASON: guide to how to make a distribute simulation, with a code description example (from Particle to D-Particle) 
+- System Management: Description of Web UI, all features are described in the section  
+- 
+- Benchmarks: a strong scalability testing was made. In this section is described the cluster configuration and the tests made.
+- Testing Simulation: expones what features must be tested after made changing
+
+### Site
+- New D-MASON site created with Polymer web components (Google material style) on https://isislab-unisa.github.io/dmason/
+- All documentation has been forwarded to GitHub wiki
+
+### Project
+- Javadoc autogenerate while compiling the source with maven
+- A Readme file has been created for each simulation model
+- A configuration file has been created to set ActivemQ ip and port  
+
+## TODO LIST
+- Workers reconnection (beta version has been created) 
+- Simulation Viewer for uniform field partitioning (beta version has been created) 
+- Include communication with MPI in System Management 
+- Ultimate JUnit Testing
+- Distributed 3D Fields  
+
+
+
 For more details see the [README.md](https://github.com/isislab-unisa/dmason/blob/master/src/main/java/it/isislab/dmason/sim/field/network/kway/README.md) file.                       
 		     
