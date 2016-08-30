@@ -34,6 +34,7 @@ import sim.display.GUIState;
  */
 public class MPIGUIWorker {
 
+	
 	public static void main(String[] args) throws MPIException, IOException {
 		/*
 		 * Args
