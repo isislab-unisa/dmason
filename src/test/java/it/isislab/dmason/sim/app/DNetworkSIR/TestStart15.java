@@ -69,7 +69,8 @@ public class TestStart15 {
 				}
 			}
 		}
-
+		String graph_path="resources/app/DNetworkSIR2015/facebook_network/facebook_combined.graph";
+		String part_path="resources/app/DNetworkSIR2015/facebook_network/METIS/facebook_combined.graph.part.4";
 		ArrayList<worker> myWorker = new ArrayList<worker>();
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
@@ -81,14 +82,14 @@ public class TestStart15 {
 				genParam.setPort(port);
 				if((i==0 && j==0))
 				{
-					VertexesWithUI15 sim =new VertexesWithUI15(genParam,"resources/app/DNetworkSIR2015/uk_network/uk.graph",
-							"resources/app/DNetworkSIR2015/uk_network/4/Metis/uk.graph.part.4");
+					VertexesWithUI15 sim =new VertexesWithUI15(genParam,graph_path,part_path
+							);
 					((Console)sim.createController()).pressPause();
 				}
 				else
 				{
-					Vertexes15 sim = new Vertexes15(genParam,"resources/app/DNetworkSIR2015/uk_network/uk.graph",
-							"resources/app/DNetworkSIR2015/uk_network/4/Metis/uk.graph.part.4");
+					Vertexes15 sim = new Vertexes15(genParam,graph_path,
+							part_path);
 					worker a = new worker(sim);
 					myWorker.add(a);
 				}
