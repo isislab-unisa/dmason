@@ -34,7 +34,6 @@ import sim.display.GUIState;
  */
 public class MPIGUIWorker {
 
-	
 	public static void main(String[] args) throws MPIException, IOException {
 		/*
 		 * Args
@@ -44,6 +43,7 @@ public class MPIGUIWorker {
 		 * 3 ROW
 		 * 4 COL
 		 * 5 NUM_AGENTS
+		 
 		 */
 		/*Debug*/
 
