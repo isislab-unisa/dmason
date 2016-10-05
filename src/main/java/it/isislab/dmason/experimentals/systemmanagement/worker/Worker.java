@@ -151,7 +151,7 @@ public class Worker implements Observer {
 			availableport=new FindAvailablePort(1000, 3000); //find an available port on a fixed range <x,y> on nodes-> for Socket node -send ->master 
 			this.PORT_COPY_LOG=availableport.getPortAvailable(); //socket communication with master (server side, used for logs)
 			welcomeSocket = new ServerSocket(PORT_COPY_LOG,1000,InetAddress.getByName(WORKER_IP)); //create server for socket communication 
-			conn.addObserver(this); //observer on connection status
+			getConnection().addObserver(this); //observer on connection status
 			
 			connectToMessageBroker();
 
@@ -185,12 +185,12 @@ public class Worker implements Observer {
 	public void update(Observable obs, Object arg) {
 
 		if (obs==conn){
-			if(!conn.isConnected()){
+			if(!getConnection().isConnected()){
 				this.publishInfo.set(false);//interrupt loop of topic publish 
 				this.simulationList=new HashMap< /*idsim*/Integer, Simulation>(); //reset hashmap of simulations
 				this.slotsNumber=slotsNumberBackup; //reset default slot number
 			}
-			if(conn.isConnected()){
+			if(getConnection().isConnected()){
 				//on reconnection launch new istance of worker
 				conn=null;					
 				new Worker(IP_ACTIVEMQ,PORT_ACTIVEMQ, slotsNumber);
@@ -231,16 +231,16 @@ public class Worker implements Observer {
 	private void startMasterComunication() {
 
 		try {
-			conn.createTopic(MANAGEMENT, 1);
-			conn.subscribeToTopic(MANAGEMENT);			
-			conn.createTopic(TOPIC_WORKER_ID,1); 
-			conn.subscribeToTopic(TOPIC_WORKER_ID);
+			getConnection().createTopic(MANAGEMENT, 1);
+			getConnection().subscribeToTopic(MANAGEMENT);			
+			getConnection().createTopic(TOPIC_WORKER_ID,1); 
+			getConnection().subscribeToTopic(TOPIC_WORKER_ID);
 			listenerForMasterComunication();
 		} 
 		catch (Exception e1) {e1.printStackTrace();}
 
 		new MasterLostChecker().start();
-		conn.asynchronousReceive(MANAGEMENT, new MyMessageListener() {
+		getConnection().asynchronousReceive(MANAGEMENT, new MyMessageListener() {
 			@Override
 			public void onMessage(Message msg) {
 
@@ -304,7 +304,7 @@ public class Worker implements Observer {
 	 */
 	private boolean createConnection(){
 		Address address=new Address(this.getIpActivemq(), this.getPortActivemq());
-		return conn.setupConnection(address);
+		return getConnection().setupConnection(address);
 
 	}
 
