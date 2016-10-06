@@ -242,9 +242,9 @@ public class Simulation implements Serializable{
 		
 		String diff = "";
 		Date start=new Date(this.getStartTime());
-		SimpleDateFormat df = new SimpleDateFormat("dHH:mm:ss");
+		//SimpleDateFormat df = new SimpleDateFormat("dHH:mm:ss");
 		Date end=new Date(this.getEndTime());
-		SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+		//SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
 		
         long timeDiff = Math.abs(end.getTime() - start.getTime());
         
