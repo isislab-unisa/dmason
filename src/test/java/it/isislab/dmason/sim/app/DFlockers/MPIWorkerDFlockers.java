@@ -7,6 +7,7 @@ import it.isislab.dmason.util.connection.ConnectionType;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mpi.MPI;
@@ -52,17 +53,18 @@ public class MPIWorkerDFlockers {
 		MPI.InitThread(args, MPI.THREAD_MULTIPLE);
 		int NUM_STEP=Integer.parseInt(args[6]);
 		DistributedState<?> state=null;
-		int agent_number=Integer.parseInt(args[5])/(Integer.parseInt(args[3])*Integer.parseInt(args[4]));
+
+
 		GeneralParam genParam = new GeneralParam(
 				/*width*/Integer.parseInt(args[0]),
 				/*height*/Integer.parseInt(args[1]),
 				/*maxDistance*/Integer.parseInt(args[2]),
 				/*rows*/Integer.parseInt(args[3]),
 				/*columns*/Integer.parseInt(args[4]),
-				/*numAgents*/agent_number,
+				/*numAgents*/Integer.parseInt(args[5]),
 				/*mode*/DistributedField2D.UNIFORM_PARTITIONING_MODE,
 				ConnectionType.pureMPIParallel);
-				//ConnectionType.pureMPIGather);
+
 		/**
 		 This works when the number of processes = row * col, 
 		 only for DSparseGrid2DFactory.SQUARE_DISTRIBUTION_MODE
@@ -81,19 +83,20 @@ public class MPIWorkerDFlockers {
 		genParam.setIp("172.16.142.107");
 		genParam.setPort("61616");
 		boolean gui=false;
+
 		DFlockersWithUI simgui=null;
-//		if(MPI.COMM_WORLD.getRank()==0)
-//		{
-//			simgui =new DFlockersWithUI(genParam);
-//			
-//			gui=true;
-//		}
-//		else
+		//		if(MPI.COMM_WORLD.getRank()==0)
+		//		{
+		//			simgui =new DFlockersWithUI(genParam);
+		//			
+		//			gui=true;
+		//		}
+		//		else
 		{
 			state=new DFlockers(genParam,"");
-			
+
 		}
-		
+
 		MPI.COMM_WORLD.barrier();
 		if(!gui)
 		{
@@ -101,7 +104,7 @@ public class MPIWorkerDFlockers {
 			if(logOn)
 				if(MPI.COMM_WORLD.getRank()==0)
 				{
-					printParams(args, agent_number);
+					//printParams(args, agent_number);
 					System.out.println("Prepare simulation.");
 				}
 			/*End (1)*/
@@ -130,11 +133,44 @@ public class MPIWorkerDFlockers {
 			/*End (2)*/
 			//MPI.COMM_WORLD.barrier();
 
+//			if(logOn){ /*test simulation for "x" minutes*/
+//				Thread v=new Thread(new Runnable() {
+//
+//					@Override
+//					public void run() {
+//						long start=System.currentTimeMillis();
+//						long nowTime=0;
+//						int minutes=5;
+//						boolean check=true;
+//						while(check){
+//							nowTime=System.currentTimeMillis();
+//							long checkTime=nowTime-start;				
+//							if(checkTime> minutes*60*1000) { 
+//								check=false;
+//							}
+//						}	
+//						System.out.println(new Date(start)+"||||"+new Date(nowTime)); 
+//						System.exit(0);
+//					}
+//				});
+//
+//
+//				v.start();
+//
+//			}
+
+
+
+
+
+
 			int STEP=NUM_STEP;
+			/*create output file for */
+			//state.setOutputStream(new PrintStream("rango"+MPI.COMM_WORLD.getRank()+".txt"));
 			while(NUM_STEP!=0)
 			{
 				/*Debug: you can omit this code (3) */
-				if(MPI.COMM_WORLD.getRank()==0 && logOn && NUM_STEP%50==0)
+				if(MPI.COMM_WORLD.getRank()==0 && logOn)
 				{
 					System.out.print(STEP-NUM_STEP+" . ");
 				}
@@ -142,11 +178,13 @@ public class MPIWorkerDFlockers {
 				state.schedule.step(state);
 				NUM_STEP--;
 
+
 			}
 			/*Debug: you can omit this code (4) */
 			if(MPI.COMM_WORLD.getRank()==0 && logOn)
 			{
 				print.print(System.currentTimeMillis()-start_time);
+
 				System.out.println("end Simulation");
 				try{
 					print.close();
