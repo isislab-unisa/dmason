@@ -199,6 +199,7 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
 		/**
 		 * TESTING CLUSTER
 		 */
+//      System.setErr(flock.out);/*ERR  to file*/
 //		long time = System.currentTimeMillis()- startTime ;	
 //		if( ( time>=(1*30*1000) ) && stampa==true){
 //			
