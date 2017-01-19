@@ -205,22 +205,38 @@ public class DistributedStateConnectionJMS<E> {
 		block=lock.newCondition();
 		
 		try {
+
 			for(ORIENTATION neighbors:q.neighborhood.keySet())
 			{
+				//System.err.println(this.TYPE+" crea "+ topicPrefix+q.ID + neighbors);
 				connectionJMS.createTopic(topicPrefix+q.ID + neighbors,
 						schedule.fields2D
 						.size());	
 				
-				for(QuadTree neighbor:q.neighborhood.get(neighbors))
+//				for(QuadTree neighbor:q.neighborhood.get(neighbors))
+//				{
+//					System.err.println(this.TYPE+" si sottoscrive a  "+topicPrefix+neighbor.ID+QuadTree.swapOrientation(neighbors));
+//					connectionJMS.subscribeToTopic(topicPrefix+neighbor.ID+QuadTree.swapOrientation(neighbors));
+//					UpdaterThreadForListener u1 = new UpdaterThreadForListener(
+//					connectionJMS,topicPrefix+neighbor.ID+QuadTree.swapOrientation(neighbors),schedule.fields2D, listeners);
+//					u1.start();
+//				}
+
+			}
+			
+			for(ORIENTATION neighbors:q.toSubscribe.keySet())
+			{
+				
+				for(QuadTree neighbor:q.toSubscribe.get(neighbors))
 				{
-					connectionJMS.subscribeToTopic(topicPrefix+neighbor.ID+QuadTree.swapOrientation(neighbors));
+					//System.err.println(this.TYPE+" si sottoscrive a  "+topicPrefix+neighbor.ID+(neighbors));
+					connectionJMS.subscribeToTopic(topicPrefix+neighbor.ID+(neighbors));
 					UpdaterThreadForListener u1 = new UpdaterThreadForListener(
-					connectionJMS,topicPrefix+neighbor.ID+QuadTree.swapOrientation(neighbors),schedule.fields2D, listeners);
+					connectionJMS,topicPrefix+neighbor.ID+(neighbors),schedule.fields2D, listeners);
 					u1.start();
 				}
 
 			}
-
 			connectionJMS.publishToTopic("READY "+q.ID, "CONNECTIONS_CREATED", "");	
 
 			while(!CONNECTIONS_CREATED)

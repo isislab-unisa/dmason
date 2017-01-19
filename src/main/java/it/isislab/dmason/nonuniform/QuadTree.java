@@ -19,7 +19,9 @@ package it.isislab.dmason.nonuniform;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -129,6 +131,7 @@ public class QuadTree implements Comparable<QuadTree>{
 	private static double ROOT_HEIGHT;
 
 	public HashMap<ORIENTATION, ArrayList<QuadTree>> neighborhood = new HashMap<QuadTree.ORIENTATION, ArrayList<QuadTree>>();
+	public HashMap<ORIENTATION, ArrayList<QuadTree>> toSubscribe = new HashMap<QuadTree.ORIENTATION, ArrayList<QuadTree>>();
 
 	private int subtreeObjectsSize;
 
@@ -355,7 +358,7 @@ public class QuadTree implements Comparable<QuadTree>{
 				log.warn("The obtained partitioning is not possible with discretization= "+root.discretization+", level="+root.level+" and number of processors="+P);
 				return;
 			}
-			//NOW THE VALUE OF P IS AT MOST P+2
+			//NOW THE NUMBER OF LEAF IS AT MOST P+2
 		}else{
 			TreeSet<QuadTree> parents=new TreeSet<QuadTree>(findLeafParent(leafs));
 			int number_leafs=leafs.size();
@@ -380,6 +383,7 @@ public class QuadTree implements Comparable<QuadTree>{
 			log.info("Correctness merge:"+checkMinMaxSplitMerge(root));
 			while(number_leafs != P)
 			{
+				
 				refinePartition(root);
 				number_leafs--;
 			}
@@ -387,6 +391,93 @@ public class QuadTree implements Comparable<QuadTree>{
 		printQuadTree(root, 0);
 		computeNeighborhood(root,isToroidal);
 
+	}
+	private static final void computeNeighborhood2(QuadTree root, boolean isToroidal)
+	{
+		class Ntype{
+			ORIENTATION or;
+			QuadTree node;
+			public Ntype(ORIENTATION or, QuadTree node) {
+				super();
+				this.or = or;
+				this.node = node;
+			}
+			
+		}
+		ArrayList<QuadTree> leafs=new ArrayList<QuadTree>(findLeafs(root));
+		
+		HashMap<QuadTree,ArrayList<Ntype>> allneigh=new HashMap<QuadTree,ArrayList<Ntype>>();
+		
+		for (QuadTree leaf1 : leafs) {
+			for (QuadTree leaf2 : leafs) {
+
+				if(!leaf1.equals(leaf2))
+				{
+					if(isWestNeighbor(leaf1, leaf2,isToroidal))
+					{
+						ArrayList<Ntype> npart=allneigh.get(leaf1)==null?new ArrayList<Ntype>():allneigh.get(leaf1);
+						npart.add(new Ntype(ORIENTATION.W,leaf2));
+						allneigh.put(leaf1, npart);
+					}
+					if(isEastNeighbor(leaf1, leaf2,isToroidal))
+					{
+						ArrayList<Ntype> npart=allneigh.get(leaf1)==null?new ArrayList<Ntype>():allneigh.get(leaf1);
+						npart.add(new Ntype(ORIENTATION.E,leaf2));
+						allneigh.put(leaf1, npart);
+					}
+					if(isNorthNeighbor(leaf1, leaf2,isToroidal))
+					{
+						ArrayList<Ntype> npart=allneigh.get(leaf1)==null?new ArrayList<Ntype>():allneigh.get(leaf1);
+						npart.add(new Ntype(ORIENTATION.N,leaf2));
+						allneigh.put(leaf1, npart);
+					}
+					if(isSouthNeighbor(leaf1, leaf2,isToroidal))
+					{
+						ArrayList<Ntype> npart=allneigh.get(leaf1)==null?new ArrayList<Ntype>():allneigh.get(leaf1);
+						npart.add(new Ntype(ORIENTATION.S,leaf2));
+						allneigh.put(leaf1, npart);
+					}
+					if(isNorthWestNeighbor(leaf1, leaf2,isToroidal))
+					{
+						ArrayList<Ntype> npart=allneigh.get(leaf1)==null?new ArrayList<Ntype>():allneigh.get(leaf1);
+						npart.add(new Ntype(ORIENTATION.NW,leaf2));
+						allneigh.put(leaf1, npart);
+						
+						
+					}
+					if(isSouthEastNeighbor(leaf1, leaf2,isToroidal))
+					{
+						ArrayList<Ntype> npart=allneigh.get(leaf1)==null?new ArrayList<Ntype>():allneigh.get(leaf1);
+						npart.add(new Ntype(ORIENTATION.SE,leaf2));
+						allneigh.put(leaf1, npart);
+					}
+					if(isNorthEastNeighbor(leaf1, leaf2,isToroidal))
+					{
+					
+						ArrayList<Ntype> npart=allneigh.get(leaf1)==null?new ArrayList<Ntype>():allneigh.get(leaf1);
+						npart.add(new Ntype(ORIENTATION.NE,leaf2));
+						allneigh.put(leaf1, npart);
+					}
+					if(isSouthWestNeighbor(leaf1, leaf2,isToroidal))
+					{
+						ArrayList<Ntype> npart=allneigh.get(leaf1)==null?new ArrayList<Ntype>():allneigh.get(leaf1);
+						npart.add(new Ntype(ORIENTATION.SW,leaf2));
+						allneigh.put(leaf1, npart);
+					}
+				}
+			}
+		}
+		
+		for(QuadTree node: allneigh.keySet())
+		{
+			ArrayList<Ntype> ns = allneigh.get(node);
+			for(Ntype nt : ns)
+			{
+				ArrayList<QuadTree> npart=node.neighborhood.get(nt.or)==null?new ArrayList<QuadTree>():node.neighborhood.get(nt.or);
+				npart.add(nt.node);
+				node.neighborhood.put(nt.or, npart);
+			}
+		}
 	}
 	/**
 	 * Calculate the neighborhood
@@ -403,53 +494,90 @@ public class QuadTree implements Comparable<QuadTree>{
 
 				if(!leaf1.equals(leaf2))
 				{
-					if(isWestNeighbor(leaf1, leaf2,isToroidal))
+					
+					if(isWestNeighbor(leaf1, leaf2,isToroidal)) 
 					{
 						ArrayList<QuadTree> npart=leaf1.neighborhood.get(ORIENTATION.W)==null?new ArrayList<QuadTree>():leaf1.neighborhood.get(ORIENTATION.W);
 						npart.add(leaf2);
 						leaf1.neighborhood.put(ORIENTATION.W,npart);
+						
+						ArrayList<QuadTree> npart2=leaf2.toSubscribe.get(ORIENTATION.W)==null?new ArrayList<QuadTree>():leaf2.toSubscribe.get(ORIENTATION.W);
+						npart2.add(leaf1);
+						leaf2.toSubscribe.put(ORIENTATION.W,npart2);
+						
+						
 					}
 					if(isEastNeighbor(leaf1, leaf2,isToroidal))
 					{
 						ArrayList<QuadTree> npart=leaf1.neighborhood.get(ORIENTATION.E)==null?new ArrayList<QuadTree>():leaf1.neighborhood.get(ORIENTATION.E);
 						npart.add(leaf2);
 						leaf1.neighborhood.put(ORIENTATION.E,npart);
+						
+						ArrayList<QuadTree> npart2=leaf2.toSubscribe.get(ORIENTATION.E)==null?new ArrayList<QuadTree>():leaf2.toSubscribe.get(ORIENTATION.E);
+						npart2.add(leaf1);
+						leaf2.toSubscribe.put(ORIENTATION.E,npart2);
 					}
 					if(isNorthNeighbor(leaf1, leaf2,isToroidal))
 					{
 						ArrayList<QuadTree> npart=leaf1.neighborhood.get(ORIENTATION.N)==null?new ArrayList<QuadTree>():leaf1.neighborhood.get(ORIENTATION.N);
 						npart.add(leaf2);
 						leaf1.neighborhood.put(ORIENTATION.N,npart);
+						
+						ArrayList<QuadTree> npart2=leaf2.toSubscribe.get(ORIENTATION.N)==null?new ArrayList<QuadTree>():leaf2.toSubscribe.get(ORIENTATION.N);
+						npart2.add(leaf1);
+						leaf2.toSubscribe.put(ORIENTATION.N,npart2);
 					}
 					if(isSouthNeighbor(leaf1, leaf2,isToroidal))
 					{
 						ArrayList<QuadTree> npart=leaf1.neighborhood.get(ORIENTATION.S)==null?new ArrayList<QuadTree>():leaf1.neighborhood.get(ORIENTATION.S);
 						npart.add(leaf2);
 						leaf1.neighborhood.put(ORIENTATION.S,npart);
+						
+						ArrayList<QuadTree> npart2=leaf2.toSubscribe.get(ORIENTATION.S)==null?new ArrayList<QuadTree>():leaf2.toSubscribe.get(ORIENTATION.S);
+						npart2.add(leaf1);
+						leaf2.toSubscribe.put(ORIENTATION.S,npart2);
 					}
 					if(isNorthWestNeighbor(leaf1, leaf2,isToroidal))
 					{
 						ArrayList<QuadTree> npart=leaf1.neighborhood.get(ORIENTATION.NW)==null?new ArrayList<QuadTree>():leaf1.neighborhood.get(ORIENTATION.NW);
 						npart.add(leaf2);
 						leaf1.neighborhood.put(ORIENTATION.NW,npart);
+						
+						ArrayList<QuadTree> npart2=leaf2.toSubscribe.get(ORIENTATION.NW)==null?new ArrayList<QuadTree>():leaf2.toSubscribe.get(ORIENTATION.NW);
+						npart2.add(leaf1);
+						leaf2.toSubscribe.put(ORIENTATION.NW,npart2);
+						
 					}
 					if(isSouthEastNeighbor(leaf1, leaf2,isToroidal))
 					{
 						ArrayList<QuadTree> npart=leaf1.neighborhood.get(ORIENTATION.SE)==null?new ArrayList<QuadTree>():leaf1.neighborhood.get(ORIENTATION.SE);
 						npart.add(leaf2);
 						leaf1.neighborhood.put(ORIENTATION.SE,npart);
+						
+						ArrayList<QuadTree> npart2=leaf2.toSubscribe.get(ORIENTATION.SE)==null?new ArrayList<QuadTree>():leaf2.toSubscribe.get(ORIENTATION.SE);
+						npart2.add(leaf1);
+						leaf2.toSubscribe.put(ORIENTATION.SE,npart2);
 					}
 					if(isNorthEastNeighbor(leaf1, leaf2,isToroidal))
 					{
+						
 						ArrayList<QuadTree> npart=leaf1.neighborhood.get(ORIENTATION.NE)==null?new ArrayList<QuadTree>():leaf1.neighborhood.get(ORIENTATION.NE);
 						npart.add(leaf2);
 						leaf1.neighborhood.put(ORIENTATION.NE,npart);
+						
+						ArrayList<QuadTree> npart2=leaf2.toSubscribe.get(ORIENTATION.NE)==null?new ArrayList<QuadTree>():leaf2.toSubscribe.get(ORIENTATION.NE);
+						npart2.add(leaf1);
+						leaf2.toSubscribe.put(ORIENTATION.NE,npart2);
 					}
 					if(isSouthWestNeighbor(leaf1, leaf2,isToroidal))
 					{
 						ArrayList<QuadTree> npart=leaf1.neighborhood.get(ORIENTATION.SW)==null?new ArrayList<QuadTree>():leaf1.neighborhood.get(ORIENTATION.SW);
 						npart.add(leaf2);
 						leaf1.neighborhood.put(ORIENTATION.SW,npart);
+						
+						ArrayList<QuadTree> npart2=leaf2.toSubscribe.get(ORIENTATION.SW)==null?new ArrayList<QuadTree>():leaf2.toSubscribe.get(ORIENTATION.SW);
+						npart2.add(leaf1);
+						leaf2.toSubscribe.put(ORIENTATION.SW,npart2);
 					}
 				}
 			}
@@ -460,6 +588,8 @@ public class QuadTree implements Comparable<QuadTree>{
 		return (((l1.getY1() == l2.getY2()) || (isToroidal && (l1.getY1() == 0 && l2.getY2() == ROOT_WIDTH))) 
 				&& (((l1.getX1() <= l2.getX1()) && (l1.getX2() >= l2.getX2())) || ((l1.getX1() >= l2.getX1()) && (l1.getX2() <= l2.getX2()))));
 	}
+	
+	
 	private static final boolean isSouthNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
 	{
 		return isNorthNeighbor(l2, l1,isToroidal);
@@ -479,21 +609,73 @@ public class QuadTree implements Comparable<QuadTree>{
 
 	private static final boolean isNorthWestNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
 	{
-		return (l1.getX1() == l2.getX2()) && (l1.getY1() == l2.getY2())  || (isToroidal && (((l1.getX1()%ROOT_WIDTH) == (l2.getX2()%ROOT_WIDTH)) && ((l1.getY1()%ROOT_HEIGHT) == (l2.getY2()%ROOT_HEIGHT))));
+		if (!isToroidal &&  l1.getX1()-1==0) return false;
+		if (!isToroidal &&  l1.getY1()-1==0) return false;
+		
+		
+		
+		double px=((l1.getX1()-1)+ROOT_WIDTH)%ROOT_WIDTH;
+		double py=((l1.getY1()-1)+ROOT_HEIGHT)%ROOT_HEIGHT;
+		
+		return contains(l2,px,py);
+		
+		
+		
+	//	return (l1.getX1() == l2.getX2()) && (l1.getY1() == l2.getY2())  || (isToroidal && (((l1.getX1()%ROOT_WIDTH) == (l2.getX2()%ROOT_WIDTH)) && ((l1.getY1()%ROOT_HEIGHT) == (l2.getY2()%ROOT_HEIGHT))));
 	}
+		
+	
+		
 	private static final boolean isSouthEastNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
 	{
-		return isNorthWestNeighbor(l2, l1, isToroidal);
+		if (!isToroidal &&  l1.getX2()+1==ROOT_WIDTH) return false;
+		if (!isToroidal &&  l1.getY2()+1==ROOT_HEIGHT) return false;
+		
+		
+		
+		double px=((l1.getX2()+1)+ROOT_WIDTH)%ROOT_WIDTH;
+		double py=((l1.getY2()+1)+ROOT_HEIGHT)%ROOT_HEIGHT;
+		
+		return contains(l2,px,py);
+		
 	}
+	
+	
+	
+	
 	private static final boolean isSouthWestNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
 	{
-		return (l1.getX1() == l2.getX2()) && (l1.getY2() == l2.getY1()) || (isToroidal && (((l1.getX1()%ROOT_WIDTH) == (l2.getX2()%ROOT_WIDTH)) && ((l1.getY2()%ROOT_HEIGHT) == (l2.getY1()%ROOT_HEIGHT))));
+		if (!isToroidal &&  l1.getX1()-1==0) return false;
+		if (!isToroidal &&  l1.getY2()+1==ROOT_HEIGHT) return false;
+				
+		double px=((l1.getX1()-1)+ROOT_WIDTH)%ROOT_WIDTH;
+		double py=((l1.getY2()+1)+ROOT_HEIGHT)%ROOT_HEIGHT;
+		
+		return contains(l2,px,py);
+		
+		
+	//	return (l1.getX1() == l2.getX2()) && (l1.getY2() == l2.getY1()) || (isToroidal && (((l1.getX1()%ROOT_WIDTH) == (l2.getX2()%ROOT_WIDTH)) && ((l1.getY2()%ROOT_HEIGHT) == (l2.getY1()%ROOT_HEIGHT))));
 	}
 	private static final boolean isNorthEastNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
 	{
-		return isSouthWestNeighbor(l2, l1, isToroidal);
+		if (!isToroidal &&  l1.getX2()+1==ROOT_WIDTH) return false;
+		if (!isToroidal &&  l1.getY1()-1==0) return false;
+		
+		
+		
+		double px=((l1.getX2()+1)+ROOT_WIDTH)%ROOT_WIDTH;
+		double py=((l1.getY1()-1)+ROOT_HEIGHT)%ROOT_HEIGHT;
+		
+		return contains(l2,px,py);
 	}
 
+	
+	
+	private static final boolean contains(QuadTree l, double x, double y){
+		return (x>=l.getX1() && x<= l.getX2() && y>= l.getY1() && y<= l.getY2());
+	}
+	
+	
 	//	private static final boolean isNorthWestNeighbor(QuadTree l1, QuadTree l2, boolean isToroidal)
 	//	{
 	//  		return quadTreeContainsPoint(l2, 
@@ -618,8 +800,21 @@ public class QuadTree implements Comparable<QuadTree>{
 				break;
 			}
 		}
+		List<Object> asList = Arrays.asList(mergeable.toArray());
+		Collections.sort(asList,new Comparator<Object>() {
 
-		return mergeable.pollFirst();
+			@Override
+			public int compare(Object o1, Object o2) {
+				BinaryNode b1= (BinaryNode)o1;
+				BinaryNode b2= (BinaryNode)o2;
+				int size1= b1.node1.objects.size()+b1.node2.objects.size();
+				int size2= b2.node1.objects.size()+b2.node2.objects.size();
+				// TODO Auto-generated method stub
+				return Integer.compare(size1,size2);
+			}
+		});
+
+		return (BinaryNode)asList.get(0);//mergeable.pollFirst();
 	}
 	private static  boolean isSpaceSplittable(QuadTree node)
 	{
@@ -689,6 +884,13 @@ public class QuadTree implements Comparable<QuadTree>{
 			if(toAdd && !parents.contains(leaf.parent)) parents.add(leaf.parent);
 
 		}
+		Collections.sort(parents,new Comparator<QuadTree>() {
+
+			@Override
+			public int compare(QuadTree o1, QuadTree o2) {
+				return Integer.compare(o1.objects.size(), o2.objects.size());
+			}
+		});
 
 		return parents;
 	}
@@ -729,7 +931,6 @@ public class QuadTree implements Comparable<QuadTree>{
 		QuadTree[] neighbors=node.getNeighbors();
 		if(neighbors[0]==null && neighbors[1]==null && neighbors[2]==null && neighbors[3]==null)
 		{
-			//			System.out.println(node.ID+" "+node.getObjects().size());
 			return 1;
 		}
 
@@ -860,7 +1061,7 @@ public class QuadTree implements Comparable<QuadTree>{
 		if(level!=0){
 			for(int i=0;i<level-1;i++)
 				System.out.print("|\t");
-			System.out.println("|-------"+root.ID+" ["+root.getObjects().size()+" "+root.orientation+"]");
+			System.out.println("|-------"+root.ID+" ["+root.getObjects().size()+" "+root.orientation+"]" + root.getX1()+" "+root.getY1()+" "+root.getX2()+" "+root.getY2()+" ");
 
 		}
 		else

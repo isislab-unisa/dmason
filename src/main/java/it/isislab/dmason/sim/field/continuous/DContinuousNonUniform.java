@@ -162,16 +162,17 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 			}
 		}
 
-		if(checkAgentDuplication)
-		{
-			try {
-				fileDup = new FileOutputStream("99) "+cellType+".txt");
-				psDup = new PrintStream(fileDup);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		// non funziona inseriamo agenti su una hash per id
+		//		if(checkAgentDuplication)
+		//		{
+		//			try {
+		//				fileDup = new FileOutputStream("99) "+cellType+".txt");
+		//				psDup = new PrintStream(fileDup);
+		//			} catch (FileNotFoundException e) {
+		//				// TODO Auto-generated catch block
+		//				e.printStackTrace();
+		//			}
+		//		}
 
 		numAgents=0;
 
@@ -205,9 +206,20 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 	{		
 		if(cell.length > 1 ) return false; 
 		myCell=cell[0];
-		for(ORIENTATION neighbors:cell[0].neighborhood.keySet())
+		
+		/* CHANGE
+		 * for(ORIENTATION neighbors:cell[0].neighborhood.keySet())
 		{
 			for(QuadTree neighbor:cell[0].neighborhood.get(neighbors))
+			{
+				numNeighbors++;
+			}
+		}
+		 * */
+		
+		for(ORIENTATION neighbors: cell[0].toSubscribe.keySet())
+		{
+			for(QuadTree neighbor: cell[0].toSubscribe.get(neighbors))
 			{
 				numNeighbors++;
 			}
@@ -332,7 +344,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 			String errorMessage = String.format(myCell.ID+"] Agent %s tried to set position (%f, %f): out of boundaries on cell %s. (ex OH MY GOD!)",
 					rm.getId(), location.x, location.y, cellType);
 
-			logger.severe( errorMessage );
+			System.err.println( errorMessage );
 		}
 
 		return false;
@@ -348,7 +360,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 	{
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
 		/*ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
-		
+
 		// If there is any viewer, send a snap
 		if(conn!=null &&((DistributedMultiSchedule)((DistributedState)sm).schedule).numViewers.getCount()>0)
 		{
@@ -366,7 +378,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 					isTracingGraphics);
 			currentTime = sm.schedule.getTime();
 		}
-*/
+		 */
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
 		// -------------------------------------------------------------------
@@ -389,8 +401,8 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 
 
 		ArrayList<String> actualVar=null;
-	/*
-	 
+		/*
+
 		if(conn!=null)
 			actualVar=((DistributedState<?>)sm).upVar.getAllGlobalVarForStep(sm.schedule.getSteps());
 		//upVar.getAllGlobalVarForStep(sm.schedule.getSteps()-1);
@@ -415,7 +427,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 					globalsMethods);
 
 		}
-*/
+		 */
 		// Publish the regions to correspondent topics for the neighbors
 		publishRegions(connWorker);
 
