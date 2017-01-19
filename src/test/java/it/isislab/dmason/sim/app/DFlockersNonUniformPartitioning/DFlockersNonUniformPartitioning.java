@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.swing.JOptionPane;
+
 import it.isislab.dmason.annotation.BatchAnnotation;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
@@ -258,9 +260,33 @@ public class DFlockersNonUniformPartitioning extends DistributedState<Double2D>
 		for(int i=0;i< (P*unbalace);i++)
 			processors.add(new Processor(r.nextDouble()*width, r.nextDouble()*height));
 
+		
+		
+		
 		DFlockerNonUniformPartitioning f=new DFlockerNonUniformPartitioning(this,new Double2D(0,0));
 		for(int i=0;i< (P*unbalace);i++)
 		{
+			
+			
+//			int agentsToCreate=0;
+//			
+//
+//			int remainder=super.NUMAGENTS%(P*unbalace); 
+//			
+//			if(remainder==0){  
+//				agentsToCreate= this.NUMAGENTS/(P*unbalace);
+//			}
+//
+//			else if(remainder!=0 && TYPE.pos_i==0 && TYPE.pos_j==0){ 
+//				agentsToCreate= (this.NUMAGENTS/(P*unbalace))+remainder;
+//			}
+//
+//			else{
+//				agentsToCreate= this.NUMAGENTS/(P*unbalace);
+//			}
+//			
+			//System.out.println(TYPE+" agents num "+agentsToCreate);
+			
 			for(int x=0;x<this.NUMAGENTS/(P*unbalace);x++)
 			{
 				Color c=new Color(

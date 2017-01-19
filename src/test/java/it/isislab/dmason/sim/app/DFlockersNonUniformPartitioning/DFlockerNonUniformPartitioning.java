@@ -172,7 +172,7 @@ public class DFlockerNonUniformPartitioning extends RemoteFlockNonUniformPartiti
 		final DFlockersNonUniformPartitioning flock = (DFlockersNonUniformPartitioning)state;
 		pos = flock.flockers.getObjectLocation(this);
 		
-		
+//		
 //		if(state.schedule.getSteps()==0){
 //			System.out.println("START-"+this.id);
 //			//flock.out.println("STEP1-"+this.id);
@@ -182,14 +182,13 @@ public class DFlockerNonUniformPartitioning extends RemoteFlockNonUniformPartiti
 //			System.out.println("END-"+this.id);
 //		}
 //		
-		
-		
-				
-		
+//		
+//		
+//				
+//		
 		
 		if (dead) return;
     	
-		///System.out.println(flock.flockers.my_width);
 		
 		Bag b = getNeighbors((DistributedState)state);
 		Double2D avoid = avoidance(b,flock.flockers);

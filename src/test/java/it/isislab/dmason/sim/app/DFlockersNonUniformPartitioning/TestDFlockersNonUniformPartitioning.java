@@ -42,11 +42,11 @@ public class TestDFlockersNonUniformPartitioning {
 
 	private static boolean graphicsOn=false; //with or without graphics?
 	private static int numSteps = Integer.MAX_VALUE; //only graphicsOn=false
-	private static int P=9;
+	private static int P=3;
 	private static int AOI=10; //max distance
-	private static int NUM_AGENTS=2000; //number of agents
-	private static int WIDTH=400; //field width
-	private static int HEIGHT=400; //field height
+	private static int NUM_AGENTS=1000; //number of agents
+	private static int WIDTH=500; //field width
+	private static int HEIGHT=500; //field height
 	private static int CONNECTION_TYPE=ConnectionType.pureActiveMQ;
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
@@ -70,7 +70,6 @@ public class TestDFlockersNonUniformPartitioning {
 				int i=0;
 				while(i!=numSteps)
 				{
-					System.out.println(i);
 					ds.schedule.step(ds);
 					i++;
 				}
