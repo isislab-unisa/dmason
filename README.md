@@ -9,7 +9,7 @@ Among the motivations to our focus on distributing the simulation on several mac
 ### Changelog DMASON 3.2
 1. [Changelog list](https://github.com/isislab-unisa/dmason/blob/master/CHANGELOG.md)
 
-# Compiling DMASON from src/ to target/ using Apache Maven
+# Build DMASON
 
     $ mvn clean package
 
