@@ -1,4 +1,4 @@
-function load_tiles_monitoring(){
+function load_tiles_monitoring() {
     $('.grid-monitoring').masonry({
             itemSelector: '.grid-item-monitoring',
             columnWidth: '.grid-sizer-monitoring',
@@ -7,7 +7,7 @@ function load_tiles_monitoring(){
     );
 }
 
-function load_tiles_settings(){
+function load_tiles_settings() {
     $('.grid-settings').masonry({
             itemSelector: '.grid-item-settings',
             columnWidth: '.grid-sizer-settings',
@@ -16,7 +16,7 @@ function load_tiles_settings(){
     );
 }
 
-function load_tiles_history(){
+function load_tiles_history() {
     $('.grid-settings').masonry({
             itemSelector: '.grid-item-history',
             columnWidth: '.grid-sizer-history',
@@ -25,22 +25,20 @@ function load_tiles_history(){
     );
 }
 
-
-
-function open_dialog_setting_new_simulation(){
-    var workerID= new Array();
+function open_dialog_setting_new_simulation() {
+    var workerID = new Array();
     var num_slots = 0;
     var num_workers = $('.grid-item-selected').length;
-    var id="";
-    if(num_workers){
-        $('.grid-item-selected').each(function(index){
-            id =  $(this).attr("id");
+    var id = "";
+    if (num_workers) {
+        $('.grid-item-selected').each(function(index) {
+            id = $(this).attr("id");
             //console.log(id);
 
             workerID[index] = id;
             $(this).removeClass("grid-item-selected");
             slot = $("#w-slots-"+id).text();
-            slot = slot.substring(slot.indexOf(":")+1,slot.length);
+            slot = slot.substring(slot.indexOf(":") + 1, slot.length);
             num_slots += parseInt(slot.trim());
         });
 
@@ -48,32 +46,27 @@ function open_dialog_setting_new_simulation(){
         $("#head_num_slots").text(num_slots);
         //passing worker selected
         var node = document.createElement("input");
-        node.setAttribute("id","workerList");
-        node.setAttribute("name","workers");
-        node.setAttribute("value",workerID);
+        node.setAttribute("id", "workerList");
+        node.setAttribute("name", "workers");
+        node.setAttribute("value", workerID);
         node.style.display = "none";
         $("#sendSimulationForm").append(node);
-    }else{
+    } else {
         document.querySelector('#miss-worker-selection').open();
         return;
     }
     //resetForm();
     open_dialog_by_ID("add-simulation-paper-dialog");
-
 }
 
-function open_dialog_by_ID(id_paper_dialog){
-
-
+function open_dialog_by_ID(id_paper_dialog) {
     var dialog = document.getElementById(id_paper_dialog);
     if (dialog) {
         dialog.open();
     }
 }
 
-function close_dialog_by_ID(id_paper_dialog){
-
-
+function close_dialog_by_ID(id_paper_dialog) {
     var dialog = document.getElementById(id_paper_dialog);
     if (dialog) {
         dialog.close();
@@ -81,42 +74,55 @@ function close_dialog_by_ID(id_paper_dialog){
 }
 
 $(
-    function(){
+    function() {
         //console.log(window.location.pathname)
-        if(window.location.pathname=="/" || window.location.pathname=="/index.jsp"){
-            setInterval(function(){
-                loadWorkers();
-                if($('#load_workers_dialog').prop("opened"))close_dialog_by_ID("load_workers_dialog");
-                load_tiles_monitoring();
-            },1000);
+        if (window.location.pathname == "/" || window.location.pathname == "/index.jsp") {
+            setInterval(
+                function () {
+                    loadWorkers();
+                    if($('#load_workers_dialog').prop("opened"))close_dialog_by_ID("load_workers_dialog");
+                    load_tiles_monitoring();
+                },
+                1000
+            );
 
             //loadJarsList();
-        }
-        else
-        if(window.location.pathname=="/simulations.jsp") {
-
-            setTimeout(function () {
-                setInterval(function () {
-                    update_simulation_info();
-                }, 1000);
-            }, 5000);
-        }else if(window.location.pathname=="/history.jsp") {
-
-            setTimeout(function () {
-                setInterval(function () {
-                    if($('#load_history_dialog').prop("opened"))close_dialog_by_ID("load_history_dialog");
-                    update_history_info();
-                    load_tiles_history();
-                }, 1000);
-            }, 5000);
+        } else if (window.location.pathname == "/simulations.jsp") {
+            setTimeout(
+                function () {
+                    setInterval(
+                        function () {
+                            update_simulation_info();
+                        },
+                        1000
+                    );
+                },
+                5000
+            );
+        } else if (window.location.pathname == "/history.jsp") {
+            setTimeout(
+                function () {
+                    setInterval(
+                        function () {
+                            if ($('#load_history_dialog').prop("opened")) {
+                                close_dialog_by_ID("load_history_dialog");
+                            }
+                            update_history_info();
+                            load_tiles_history();
+                        },
+                        1000
+                    );
+                },
+                5000
+            );
         }
 
     }
 );
 
-var progress,repeat,maxRepeat,animating;
+var progress, repeat, maxRepeat, animating;
 
-function open_file_chooser(){
+function open_file_chooser() {
     $('#simulation-jar-chooser').click();
 }
 
@@ -145,29 +151,31 @@ function startProgress() {
     }
 }
 
-function loadWorkers(){
-    $.ajax({url:"getWorkers",
-        success: function(result){
+function loadWorkers() {
+    $.ajax({
+        url:"getWorkers",
+        success: function(result) {
             _loadWorkers(result);
-        }});
+        }
+    });
 }
 //var history="";
-function _loadWorkers(_message){
+function _loadWorkers(_message) {
 
-    var message=_message;
-    var grid=document.getElementById("workers");
+    var message = _message;
+    var grid = document.getElementById("workers");
     // var tiles="<div class=\"grid-sizer-monitoring\"></div>";
 
-    var obj =[];
+    var obj = [];
 
     //console.log(message);
-    if(message.length>0)
+    if (message.length>0)
         obj = JSON.parse(message);
 
     var w;
     var old_list = [];
-    $(grid).children('div').each(function(){
-        if($(this).attr("id")){
+    $(grid).children('div').each(function () {
+        if ($(this).attr("id")) {
             // console.log("aggiungo "+$(this).attr("id"));
             old_list["\'w-"+$(this).attr("id")+"\'"] = $(this);
         }
@@ -178,10 +186,10 @@ function _loadWorkers(_message){
         for (i = 0; i < obj.workers.length; i++) {
             w = obj.workers[i];
             var curNode = document.getElementById(w.workerID);
-            if(!curNode){
+            if (!curNode) {
                 node = $("<div id="+w.workerID+" class=\"grid-item-monitoring\" onclick=\"selectItem(this)\"></div>");
                 // node.append($("<div class=\"worker-system-info\"><span>Worker ID: "+ w.workerID+"</span></div>"));
-                node.append($("<div class=\"worker-system-info\"><span id=\"w-cpu-"+w.workerID+"\">CPU:"+w.cpuLoad+" %</span></div>"));
+                node.append($("<div class=\"worker-system-info\"><span id=\"w-cpu-"+w.workerID+"\">CPU: "+w.cpuLoad+" %</span></div>"));
                 node.append($("<div class=\"worker-system-info\"><span>Heap:</span></div>"));
                 node.append($("<div class=\"worker-system-info\"><span id=\"w-max-heap-"+w.workerID+"\" class=\"tab\">Max "+w.maxHeap+" MB</span></div>"));
                 node.append($("<div class=\"worker-system-info\"><span id=\"w-heap-avaiable-"+w.workerID+"\" class=\"tab\">Free "+w.availableheapmemory+" MB</span></div>"));
@@ -190,11 +198,10 @@ function _loadWorkers(_message){
                 node.append($("<div class=\"worker-system-info\"><span id=\"w-slots-"+w.workerID+"\">Slots: "+ w.slots+"</span></div>"));
 
                 $(grid).append(node);
-
-            }else{
+            } else {
                 //console.log(w.workerID);
                 delete old_list["\'w-"+w.workerID+"\'"];
-                $("#w-cpu-"+w.workerID).text("CPU:"+w.cpuLoad+" %");
+                $("#w-cpu-"+w.workerID).text("CPU: "+w.cpuLoad+" %");
                 $("w-max-heap-"+w.workerID).text("Max "+w.maxHeap+" MB</span></div>");
                 $("#w-heap-avaiable-"+w.workerID).text("Free "+w.availableheapmemory+" MB");
                 $("#w-heap-use-"+w.workerID).text("Used "+w.busyheapmemory+" MB");
@@ -202,29 +209,29 @@ function _loadWorkers(_message){
             }
 
             /*
-             tiles+="<div id="+w.workerID+" class=\"grid-item-monitoring\" onclick=\"selectItem(this)\">"
+             tiles += "<div id="+w.workerID+" class=\"grid-item-monitoring\" onclick=\"selectItem(this)\">"
              +"<div class=\"worker-system-info\"><span>Worker ID: "+i+"</span></div>"
-             +"<div class=\"worker-system-info\"><span>CPU:"+w.cpuLoad+" %</span></div>"
+             +"<div class=\"worker-system-info\"><span>CPU: "+w.cpuLoad+" %</span></div>"
              +"<div class=\"worker-system-info\"><span>JVM RAM: Free "+w.availableheapmemory+"  MB Used "+w.busyheapmemory+"  MB</span></div>"
              +"<div class=\"worker-system-info\"><span>IP: "+w.ip+"</span></div>"
              +"<div class=\"worker-system-info\"><span>#Simulations</span></div>"
              +"</div>";*/
         }
     }
-    if (Object.keys(old_list).length > 0)
+    if (Object.keys(old_list).length > 0) {
         for (id in old_list) {
-
             $(old_list[id]).remove();
         }
+    }
 
     // grid.innerHTML=tiles;
     load_tiles_monitoring();
 }
 
-function selectAllWorkers(){
-    var grid=document.getElementById("workers");
-    $(grid).children("div").each(function(){
-        if($(this).hasClass("grid-item-monitoring")){
+function selectAllWorkers() {
+    var grid = document.getElementById("workers");
+    $(grid).children("div").each(function () {
+        if($(this).hasClass("grid-item-monitoring")) {
             //console.log($(this).attr("id"));
             selectItem($(this));
         }
@@ -232,19 +239,18 @@ function selectAllWorkers(){
 }
 
 
-function selectItem(element){
-    if($(element).hasClass("grid-item-selected"))
+function selectItem(element) {
+    if ($(element).hasClass("grid-item-selected")) {
         $(element).removeClass("grid-item-selected");
-    else
+    } else {
         $(element).addClass("grid-item-selected");
-
+    }
 }
 
-
-function change_partitioning_input_params(element){
-    var buttonName =$(element).attr("name");
+function change_partitioning_input_params(element) {
+    var buttonName = $(element).attr("name");
     //console.log(buttonName);
-    switch (buttonName){
+    switch (buttonName) {
         case "uniform":
             $("#form_cells").attr("disabled",true);
             $("#form_row").attr("disabled",false);
@@ -258,16 +264,16 @@ function change_partitioning_input_params(element){
     }
 
 }
-function _validate_params(element){
+function _validate_params(element) {
     var current_element = $(element);
     var paper_input_container = current_element.children()[0];
     var id = current_element.attr("id");
     var value = document.querySelector("#"+id).value;
     var submit_btn = document.querySelector("#submit_btn");
-    if(value)
+    if (value) {
         value = parseInt(value);
-
-    if(value===0){
+    }
+    if (value===0) {
         paper_input_container.invalid = true;
         submit_btn.disabled = true;
         return false;
@@ -275,125 +281,115 @@ function _validate_params(element){
 
     paper_input_container.invalid =false;
     submit_btn.disabled = false;
-
-
-
 }
 
-function _validate_slots(element){
+function _validate_slots(element) {
     var current_element = $(element);
     //console.log("ci sono!");
     var  slots = ($("#head_num_slots").text()).trim();
-    if(slots)
+    if (slots) {
         slots = parseInt(slots);
+    }
     //console.log("Available slots "+slots);
 
-    var row_element   = $("#form_row");
-    var cols_element  = $("#form_col");
+    var row_element = $("#form_row");
+    var cols_element = $("#form_col");
     var cells_element = $("#form_cells");
 
     var paper_input_container = current_element.children()[0];
 
-    var row = document.querySelector("#"+row_element.attr("id")).value;
-    var cols = document.querySelector("#"+cols_element.attr("id")).value;
-    var cells = document.querySelector("#"+cells_element.attr("id")).value;
+    var row = document.querySelector("#" + row_element.attr("id")).value;
+    var cols = document.querySelector("#" + cols_element.attr("id")).value;
+    var cells = document.querySelector("#" + cells_element.attr("id")).value;
 
 
     var id = current_element.attr("id");
 
     var value = document.querySelector("#"+id).value;
     var cur_slot = (value)?parseInt(value):1;
-    console.log("Id element "+id+" input value "+value+" cur_slot "+cur_slot);
+    console.log("Id element " + id + " input value " + value + " cur_slot " + cur_slot);
 
     var submit_btn = document.querySelector("#submit_btn");
 
-    if(cur_slot > slots || cur_slot==0){
-
+    if (cur_slot > slots || cur_slot == 0) {
         paper_input_container.invalid = true;
 
         submit_btn.disabled = true;
         return false;
-    }
-    else{
-
-        switch (id){
+    } else {
+        switch (id) {
             case "form_row":
-                if(cols){
+                if (cols) {
                     var int_val = parseInt(cols);
-                    cur_slot *=int_val;
-                    if(cur_slot > slots || cur_slot==0){
-                        paper_input_container.invalid =true;
+                    cur_slot *= int_val;
+                    if (cur_slot > slots || cur_slot == 0) {
+                        paper_input_container.invalid = true;
                         submit_btn.disabled = true;
                         return false;
                     }
                 }
                 break;
             case "form_cells":
-                if(cells){
-                    var int_val=parseInt(cells);
-                    if(int_val > slots || cur_slot==0){
-                        paper_input_container.invalid =true;
+                if (cells) {
+                    var int_val = parseInt(cells);
+                    if (int_val > slots || cur_slot == 0) {
+                        paper_input_container.invalid = true;
                         submit_btn.disabled = true;
                         return false;
                     }
                 }
                 break;
             case "form_col":
-                if(row){
+                if (row) {
                     var int_val = parseInt(row);
-                    cur_slot *=int_val;
-                    if(cur_slot > slots || cur_slot==0){
-                        paper_input_container.invalid =true;
+                    cur_slot *= int_val;
+                    if (cur_slot > slots || cur_slot == 0) {
+                        paper_input_container.invalid = true;
                         submit_btn.disabled = true;
                         return false;
                     }
                 }
                 break;
         }
-        paper_input_container.invalid =false;
+        paper_input_container.invalid = false;
         submit_btn.disabled = false;
-
     }
-
 }
 
-function submitForm(){
-
+function submitForm() {
     var form = document.getElementById("sendSimulationForm");
-    if(!checkForm(form)){
+    if (!checkForm(form)) {
         return;
     }
 
     startProgress();
 
-        $(form).unbind('submit').bind("submit",_OnsubmitSimulation);
-        form.submit();
-
+    $(form).unbind('submit').bind("submit",_OnsubmitSimulation);
+    form.submit();
 }
 
-function checkForm(form){
-
+function checkForm(form) {
     var error_toast_message = document.querySelector("#missing_settings");
     var jarFile = $("#simulation-jar-chooser").val();
     var exampleSim = document.querySelector("#exampleSimulation").selectedItemLabel;
     var partitioning = document.querySelector("#partitioning").selected;
 
-    if(!partitioning){
+    if (!partitioning) {
         $(error_toast_message).text("You should select a partitioning");
         error_toast_message.open();
         return false;
     }
-    if(!jarFile && !exampleSim){
+    if (!jarFile && !exampleSim) {
         $(error_toast_message).text("You should select an example simulation or submit a simulation jar");
         error_toast_message.open();
         return false;
     }
     var success = true;
-    $("#sendSimulationForm paper-input").each(function(n,paper_input){
-        if(paper_input.id.startsWith("form_")){
-            if(paper_input.value==""){
+    $("#sendSimulationForm paper-input").each(function(n, paper_input) {
+        if (paper_input.id.startsWith("form_")) {
+            if (paper_input.value == "") {
 
-                switch (paper_input.label.toLowerCase()){
+                switch (paper_input.label.toLowerCase()) {
                     case "cells":
                         if (partitioning.toLowerCase() == 'non-uniform') {
                             $(error_toast_message).text("You should fill " + paper_input.label);
@@ -420,13 +416,9 @@ function checkForm(form){
                         error_toast_message.open();
                         success=false;
                 }
-
-
                 return;
-
             }
         }
-
     });
     return success;
 }
@@ -446,7 +438,6 @@ function _OnsubmitSimulation(event) {
         formData.append(myPaperRadioGroup.id, myPaperRadioGroup.selected);
     }
 
-
     var myDropDownMenuSampleSim = document.getElementById('exampleSimulation');
     if (!myDropDownMenuSampleSim.selectedItem) {
         formData.append(myDropDownMenuSampleSim.id, "");
@@ -460,13 +451,13 @@ function _OnsubmitSimulation(event) {
     }
 
     $.ajax({
-        url:"submitSimulation",
-        type:'POST',
-        data:formData,
+        url: "submitSimulation",
+        type: 'POST',
+        data: formData,
         cache: false,
         contentType: false,
         processData: false,
-        success: function(result){
+        success: function(result) {
             //remove input tag added previusly
             var dialog = document.getElementById("add-simulation-paper-dialog");
             maxRepeat =0;
@@ -485,86 +476,87 @@ function resetForm() {
     progress = document.querySelector('paper-progress');
     progress.style.display = "none";
     document.querySelector("#submit_btn").disabled = false;
-
-
 }
 
-
-function update_simulation_info(){
+function update_simulation_info() {
     $.ajax({
-        url:"simulationList",
-        success: function(result){
+        url: "simulationList",
+        success: function(result) {
             _update_sim_info(result);
         }
     });
 }
 
-function _update_sim_info(_message){
+function _update_sim_info(_message) {
     var scp = document.querySelector('template[is="dom-bind"]');
-    var message=_message;
-    var obj =[];
+    var message = _message;
+    var obj = [];
     //console.log(message);
-    if(message.length>0)
+    if (message.length > 0) {
         obj = JSON.parse(message);
-
-    if(obj.hasOwnProperty('simulations')){
+    }
+    if (obj.hasOwnProperty('simulations')) {
         scp.$.list_simulations.listItem = obj.simulations;
-    }else{
+    } else {
         scp.$.list_simulations.listItem = obj;
     }
-
 }
 
 
-function getListFile(sim_id){
+function getListFile(sim_id) {
     $.ajax({
-        url:"requestForLog",
-        data:{id:sim_id},
-        success: function(result){
+        url: "requestForLog",
+        data: {id:sim_id},
+        success: function(result) {
             _getListFile(result);
-
         }
     });
 }
 
-function _getListFile(result){
-    if(!result) return;
+function _getListFile(result) {
+    if (!result) {
+        return;
+    }
     var list_file = JSON.parse(result);
-    if(!list_file.hasOwnProperty("files")) return;
+    if (!list_file.hasOwnProperty("files")) {
+        return;
+    }
 
     var scp = document.querySelector('template[is="dom-bind"]');
-    var list =[];
-    for(var f, i=0; f = list_file.files[i]; i++){
+    var list = [];
+    for (var f, i=0; f = list_file.files[i]; i++) {
             //console.log(f);
             list[i] = f;
     }
     close_dialog_by_ID("load_sim_log_file");
     var scp = document.querySelector('template[is="dom-bind"]');
-    scp.$.fullsize_card.listFile =list;
+    scp.$.fullsize_card.listFile = list;
 
     scp.$.pages.selected = 1;
-
 }
 
-
-function update_history_info(){
+function update_history_info() {
     $.ajax({
-        url:"getHistoryFolderList",
-        success: function(result){
+        url: "getHistoryFolderList",
+        success: function(result) {
             get_history_info(result);
             close_dialog_by_ID("load_history_dialog");
         }
     });
 }
 
-function get_history_info(result){
-    if(!result) return;
+function get_history_info(result) {
+    if (!result) {
+        return;
+    }
     var list_sim = JSON.parse(result);
-    if(!list_sim.hasOwnProperty("history")) return;
+    if (!list_sim.hasOwnProperty("history")) {
+        return;
+    }
 
     var scp = document.querySelector("#sim_history_grid");
-    var list =[];
-    for(var f, i=0; f = list_sim.history[i]; i++){
+    var list = [];
+    for (var f, i = 0; f = list_sim.history[i]; i++) {
         //console.log(f);
         list[i] = f;
     }
@@ -572,14 +564,13 @@ function get_history_info(result){
 }
 
 function shutdown() {
-
-    var workerID= new Array();
+    var workerID = new Array();
     var num_slots = 0;
     var num_workers = $('.grid-item-selected').length;
-    var id="";
+    var id = "";
     var workers='{ "list":[';
 
-    if(num_workers){
+    if (num_workers) {
         $('.grid-item-selected').each(function(index) {
             id = $(this).attr("id");
             //console.log(id);
@@ -588,27 +579,25 @@ function shutdown() {
             workers+='{"id":"'+id+'"},';
         });
         console.log(workerID);
-        workers=workers.substring(0,workers.length-1);
-        workers+=']}';
-    }
-    else{
+        workers = workers.substring(0,workers.length-1);
+        workers += ']}';
+    } else {
         document.querySelector('#miss-worker-shutdown').open();
         return;
     }
 
-
-
     open_dialog_by_ID('shutdown_workers_dialog');
 
     $.ajax({
-        url:"shutdownWorkers",
-        data:{topics:JSON.stringify(workers)},
-        success:function (result) {
+        url: "shutdownWorkers",
+        data: {
+            topics: JSON.stringify(workers)
+        },
+        success: function (result) {
             close_dialog_by_ID('shutdown_workers_dialog');
 
         }
     });
-
 
   /*  var xhr = new XMLHttpRequest();
     xhr.open('GET', 'shutdownWorkers?topics='.concat(workerID), true);
@@ -620,72 +609,58 @@ function shutdown() {
  * #miss-history-delete'
  */
 function cleanSelectedHistory() {
-
-
-    var pathList= new Array();
+    var pathList = new Array();
     var simToDelete = $('.grid-item-history-selected').length;
-    var path="";
-    var jsonPaths='{ "paths":[';
+    var path = "";
+    var jsonPaths = '{ "paths":[';
     var scope = document.querySelector('sim-history-grid[id="sim_history_grid"]');
 
-    if(simToDelete){
+    if (simToDelete) {
         $('.grid-item-history-selected').each(function(index) {
-            var myid=$(this).attr("id");
+            var myid = $(this).attr("id");
 
             scope.listSimHistory.forEach(function (arrayItem) {
-                var ifd=arrayItem.simID;
-                if(ifd==myid){
-                    path=arrayItem.simLogZipFile;
+                var ifd = arrayItem.simID;
+                if (ifd == myid) {
+                    path = arrayItem.simLogZipFile;
                 }
-
             });
-            path=path.substring(0,path.lastIndexOf("/"));
+            path = path.substring(0, path.lastIndexOf("/"));
             pathList[index] = path;
-            jsonPaths+='{"path":"'+path+'"},';
-
-
+            jsonPaths += '{"path":"'+path+'"},';
         });
-        jsonPaths=jsonPaths.substring(0,jsonPaths.length-1);
-        jsonPaths+=']}';
+        jsonPaths = jsonPaths.substring(0,jsonPaths.length - 1);
+        jsonPaths += ']}';
         console.log(jsonPaths);
-    }
-    else{
+    } else {
         document.querySelector('#miss-history-delete').open();
         return;
     }
 
-
-      open_dialog_by_ID('load_history_dialog');
+    open_dialog_by_ID('load_history_dialog');
 
     $.ajax({
-         url:"cleanSelectedHistory",
-        data:{paths:JSON.stringify(jsonPaths)},
-        success:function (result) {
+        url: "cleanSelectedHistory",
+        data: {
+            paths:JSON.stringify(jsonPaths)
+        },
+        success: function (result) {
             close_dialog_by_ID('load_history_dialog');
-
         }
     });
-
-
 }
-
-
 
 /**
  * Delete all history files on file system
  */
-function cleanHistory(){
-
-
+function cleanHistory() {
     open_dialog_by_ID("load_history_dialog");
 
     $.ajax({
-        url:"cleanHistory",
-        success:function (result) {
+        url: "cleanHistory",
+        success: function (result) {
             close_dialog_by_ID("load_history_dialog");
             location.reload();
         }
     });
 }
-
-
