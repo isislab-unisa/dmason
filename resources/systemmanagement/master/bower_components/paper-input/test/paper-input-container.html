@@ -1,5 +1,6 @@
 <!doctype html>
 <!--
+@license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
@@ -102,6 +103,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
+  <test-fixture id="required-validate">
+    <template>
+      <paper-input-container>
+        <label id="l">label</label>
+        <input is="iron-input" id="i" required>
+      </paper-input-container>
+    </template>
+  </test-fixture>
+
   <letters-only></letters-only>
 
   <test-fixture id="auto-validate-validator">
@@ -128,6 +138,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var style = getComputedStyle(node);
       return style.transform || style.webkitTransform;
     }
+
+    suite('basic', function() {
+      test('can be created imperatively', function() {
+        var container = document.createElement('paper-input-container');
+        var input = document.createElement('input', 'iron-input');
+        input.className = 'paper-input-input';
+        input.id = 'input';
+
+        var label = document.createElement('label');
+        label.innerHTML = 'label';
+
+        Polymer.dom(container).appendChild(label);
+        Polymer.dom(container).appendChild(input);
+
+        document.body.appendChild(container);
+        assert.isOk(container);
+        document.body.removeChild(container);
+      });
+    });
 
     suite('label position', function() {
 
@@ -224,6 +253,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
       });
 
+      test('focused class added to input content', function(done) {
+        var container = fixture('basic');
+        var input = Polymer.dom(container).querySelector('#i');
+        var inputContent = Polymer.dom(container.root).querySelector('.input-content');
+        assert.isFalse(inputContent.classList.contains('focused'), 'input content does not have class "focused" when input is not focused');
+        MockInteractions.focus(input);
+        requestAnimationFrame(function() {
+          assert.isTrue(inputContent.classList.contains('focused'), 'input content has class "focused" when input is focused');
+          done();
+        });
+      });
+
     });
 
     suite('validation', function() {
@@ -272,6 +313,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isTrue(container.invalid, 'invalid is true');
         assert.isTrue(inputContent.classList.contains('is-invalid'), 'label has invalid styling when input is invalid');
         assert.isTrue(line.classList.contains('is-invalid'), 'underline has invalid styling when input is invalid');
+      });
+
+      test('styled when the input is manually validated and required', function() {
+        var container = fixture('required-validate');
+        var input = Polymer.dom(container).querySelector('#i');
+        var inputContent = Polymer.dom(container.root).querySelector('.input-content');
+        assert.isFalse(container.invalid, 'invalid is false');
+        input.validate();
+        assert.isTrue(container.invalid, 'invalid is true');
+        assert.isTrue(inputContent.classList.contains('is-invalid'), 'input content has is-invalid class');
       });
 
     });

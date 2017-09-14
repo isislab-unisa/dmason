@@ -2,7 +2,8 @@
   "name": "master",
   "homepage": "https://github.com/isislab-unisa/dmason",
   "authors": [
-    "Flavio Serrapica <flavio.serrapica@gmail.com>"
+    "Flavio Serrapica <flavio.serrapica@gmail.com>",
+    "Simone Bisogno <s.bisogno90@gmail.com>" 
   ],
   "description": "",
   "main": "",
@@ -17,14 +18,18 @@
     "tests"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.2.0",
-    "iron-elements": "PolymerElements/iron-elements#~1.0.7",
-    "paper-elements": "PolymerElements/paper-elements#~1.0.7",
-    "gold-elements": "PolymerElements/gold-elements#~1.0.1",
-    "neon-elements": "PolymerElements/neon-elements#~1.0.0",
-    "google-map": "GoogleWebComponents/google-map#~1.1.8",
-    "elements": "*",
-    "masonry": "~4.0.0",
-    "neon-animation": "PolymerElements/neon-animation#~1.1.0"
+    "polymer": "*",
+    "web-animations-js": "*",
+    "webcomponentsjs": "0.7.24",
+    "iron-elements": "*",
+    "iron-flex-layout": "*",
+    "paper-elements": "*",
+    "gold-elements": "*",
+    "neon-elements": "*",
+    "google-map": "*",
+    "masonry": "*",
+    "neon-animation": "*",
+    "app-layout": "*",
+    "highcharts": "^5.0.14"
   }
 }

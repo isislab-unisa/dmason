@@ -4,7 +4,7 @@
 <head>
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
   <title>Google Map Poly demo</title>
-  <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
   <link rel="import" href="../google-map.html">
   <link rel="import" href="../google-map-poly.html">
   <style>
@@ -21,7 +21,15 @@
 </head>
 <body class="fullbleed">
 
-<google-map latitude="41.876" longitude="-87.624" zoom="11" kml="http://googlemaps.github.io/js-v2-samples/ggeoxml/cta.kml"></google-map>
+<template is="dom-bind">
+  <google-map latitude="41.876" longitude="-87.624" zoom="11" kml="http://googlemaps.github.io/js-v2-samples/ggeoxml/cta.kml" api-key="[[apiKey]]"></google-map>
+</template>
 
+<script>
+if (location.origin === 'https://user-content-dot-custom-elements.appspot.com') {
+  var t = document.querySelector('template');
+  t.apiKey = 'AIzaSyD3E1D9b-Z7ekrT3tbhl_dy8DCXuIuDDRc'; // TODO: update to your own API Key!
+}
+</script>
 </body>
 </html>

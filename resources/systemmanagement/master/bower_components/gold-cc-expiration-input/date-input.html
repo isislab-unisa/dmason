@@ -8,6 +8,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-a11y-keys-behavior/iron-a11y-keys-behavior.html">
 <link rel="import" href="../iron-input/iron-input.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../iron-validatable-behavior/iron-validatable-behavior.html">
@@ -18,37 +19,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="date-validator.html">
 
 <dom-module id="date-input">
-
-  <style>
-    span {
-      @apply(--paper-input-container-font);
-      opacity: 0.33;
-      text-align: center;
-    }
-
-    input {
-      position: relative; /* to make a stacking context */
-      outline: none;
-      box-shadow: none;
-      padding: 0;
-      width: 100%;
-      background: transparent;
-      border: none;
-      color: var(--paper-input-container-input-color, --primary-text-color);
-      text-align: center;
-
-      @apply(--layout-flex);
-      @apply(--paper-font-subhead);
-      @apply(--paper-input-container-input);
-    }
-
-    .container {
-      @apply(--layout-horizontal);
-    }
-
-  </style>
-
   <template>
+    <style>
+      span {
+        @apply(--paper-input-container-font);
+        opacity: 0.33;
+        text-align: center;
+      }
+
+      input[is="iron-input"] {
+        position: relative; /* to make a stacking context */
+        outline: none;
+        box-shadow: none;
+        padding: 0;
+        width: 100%;
+        background: transparent;
+        border: none;
+        color: var(--paper-input-container-input-color, --primary-text-color);
+        text-align: center;
+
+        @apply(--layout-flex);
+        @apply(--paper-font-subhead);
+        @apply(--paper-input-container-input);
+      }
+
+      .container {
+        @apply(--layout-horizontal);
+      }
+    </style>
+
     <date-validator id="validator"></date-validator>
 
     <span aria-hidden id="monthLabel" hidden>Month</span>
@@ -56,6 +55,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <div class="container">
       <input is="iron-input"
+          id="expirationMonth"
           aria-labelledby$="[[_computeAriaLabel(ariaLabelPrefix,'monthLabel')]]"
           required$="[[required]]"
           maxlength="2"
@@ -69,7 +69,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           invalid="{{invalid}}"
           autofocus$="[[autofocus]]"
           inputmode$="[[inputmode]]"
-          placeholder$="[[placeholder]]"
           readonly$="[[readonly]]">
       <span>/</span>
       <input is="iron-input"
@@ -85,9 +84,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type="tel"
           disabled$="[[disabled]]"
           invalid="{{invalid}}"
-          autofocus$="[[autofocus]]"
           inputmode$="[[inputmode]]"
-          placeholder$="[[placeholder]]"
           readonly$="[[readonly]]">
     </div>
   </template>
@@ -100,6 +97,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     is: 'date-input',
 
     behaviors: [
+      Polymer.IronA11yKeysBehavior,
       Polymer.IronValidatableBehavior
     ],
 
@@ -116,14 +114,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        * The month component of the date displayed.
        */
       month: {
-        type: String
+        type: String,
+        value: ''
       },
 
       /**
        * The year component of the date displayed.
        */
       year: {
-        type: String
+        type: String,
+        value: ''
       },
 
       /**
@@ -141,21 +141,58 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       ariaLabelPrefix: {
         type:String
-      }
+      },
 
+      /**
+       * Set to true to disable the month and year input elements.
+       */
+      disabled: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * Set to true to autofocus the month input element.
+       */
+      autofocus: {
+        type: Boolean
+      },
+
+      /**
+       * Bound to the month and year input elements' `inputmode` property.
+       */
+      inputmode: {
+        type: String
+      },
+
+      /**
+       * Set to true to mark the month and year inputs as not editable.
+       */
+      readonly: {
+        type: Boolean,
+        value: false
+      }
+    },
+
+    keyBindings: {
+      '/': '_selectYear'
     },
 
     observers: [
-      '_computeDate(month,year)'
+      '_computeDate(month, year)'
     ],
+
+    _selectYear: function() {
+      this.$.expirationYear.focus();
+    },
 
     _computeDate: function(month, year) {
       // Months are 0-11.
       this.date = {month: month, year: year};
       this.fire('dateChanged', this.date);
       // Advance cursor to year after month entry
-      if (month.length === 2) {
-        this.$.expirationYear.focus();
+      if (month && month.length === 2) {
+        this._selectYear();
       }
     },
 
@@ -172,6 +209,5 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     _computeAriaLabel: function(dateLabel, monthLabel) {
       return dateLabel + ' ' + monthLabel;
     }
-
   });
 </script>

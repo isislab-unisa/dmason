@@ -22,6 +22,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../test-fixture/test-fixture.html">
   <link rel="import" href="../paper-tooltip.html">
   <link rel="import" href="test-button.html">
+  <link rel="import" href="test-icon.html">
 
 </head>
 <style>
@@ -43,6 +44,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     width: 200px;
   }
 
+  [hidden] {
+    display: none;
+  }
 </style>
 
 <body>
@@ -89,6 +93,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
+  <test-fixture id="custom-with-content">
+    <template>
+      <test-icon>Tooltip text</test-icon>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="no-offset-parent">
+    <template>
+      <div>
+        <div id="target"></div>
+        <paper-tooltip for="target" animation-delay="0" hidden></paper-tooltip>
+      </div>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="manual-mode">
+    <template>
+      <div>
+        <div id="target"></div>
+        <paper-tooltip for="target" manual-mode>Text</paper-tooltip>
+      </div>
+    </template>
+  </test-fixture>
+
   <script>
     function isHidden(element) {
       var rect = element.getBoundingClientRect();
@@ -118,6 +146,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         MockInteractions.focus(target);
         assert.isFalse(isHidden(actualTooltip));
+      });
+
+      test('tooltip doesn\'t throw an exception if it has no offsetParent', function() {
+        var f = fixture('no-offset-parent');
+        var target = f.querySelector('#target');
+        var tooltip = f.querySelector('paper-tooltip');
+
+        var actualTooltip = Polymer.dom(tooltip.root).querySelector('#tooltip');
+        assert.isTrue(isHidden(actualTooltip));
+        tooltip.updatePosition();
+        tooltip.show();
+
+        // Doesn't get shown since there's no position computed.
+        assert.isTrue(isHidden(actualTooltip));
       });
 
       test('tooltip is positioned correctly (bottom)', function() {
@@ -340,6 +382,65 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           done();
         }, 200);
       });
+
+      test('tooltip ignores events in manual-mode', function() {
+        var f = fixture('manual-mode');
+
+        var tooltip = f.querySelector('paper-tooltip');
+        assert.isTrue(tooltip.manualMode);
+
+        tooltip.show();
+        assert.isTrue(tooltip._showing);
+
+        sinon.spy(tooltip, 'hide');
+
+        tooltip.fire('mouseenter');
+
+        var target = f.querySelector('#target');
+        target.dispatchEvent(new CustomEvent('mouseenter'));
+        target.dispatchEvent(new CustomEvent('focus'));
+        target.dispatchEvent(new CustomEvent('mouseleave'));
+        target.dispatchEvent(new CustomEvent('blur'));
+        target.dispatchEvent(new CustomEvent('tap'));
+
+        expect(tooltip.hide.callCount).to.be.equal(0);
+      });
+
+      test('changing manual-mode toggles event listeners', function() {
+        var f = fixture('manual-mode');
+
+        var tooltip = f.querySelector('paper-tooltip');
+        assert.isTrue(tooltip.manualMode);
+
+        sinon.spy(tooltip, '_addListeners');
+        sinon.spy(tooltip, '_removeListeners');
+        expect(tooltip._addListeners.callCount).to.be.equal(0);
+        expect(tooltip._removeListeners.callCount).to.be.equal(0);
+
+        tooltip.manualMode = false;
+        expect(tooltip._addListeners.callCount).to.be.equal(1);
+        expect(tooltip._removeListeners.callCount).to.be.equal(0);
+
+        tooltip.manualMode = true;
+        expect(tooltip._addListeners.callCount).to.be.equal(1);
+        expect(tooltip._removeListeners.callCount).to.be.equal(1);
+      });
+
+      test('changing for= re-targets event listeners', function() {
+        var f = fixture('dynamic');
+        var tooltip = f.querySelector('paper-tooltip');
+
+        sinon.spy(tooltip, '_addListeners');
+        sinon.spy(tooltip, '_removeListeners');
+
+        expect(tooltip._removeListeners.callCount).to.be.equal(0);
+        expect(tooltip._addListeners.callCount).to.be.equal(0);
+
+        tooltip.for = 'target';
+
+        expect(tooltip._removeListeners.callCount).to.be.equal(1);
+        expect(tooltip._addListeners.callCount).to.be.equal(1);
+      });
     });
 
     suite('tooltip is inside a custom element', function() {
@@ -386,6 +487,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
     });
 
+    suite('tooltip is inside a custom element with content', function() {
+      var f, tooltip, target;
+
+      setup(function() {
+        f = fixture('custom-with-content');
+        target = f.$.icon;
+        tooltip = f.$.iconTooltip;
+      });
+
+      test('tooltip is shown when target is focused', function() {
+        var actualTooltip = Polymer.dom(tooltip.root).querySelector('#tooltip');
+        assert.isTrue(isHidden(actualTooltip));
+
+        MockInteractions.focus(target);
+        assert.isFalse(isHidden(actualTooltip));
+      });
+
+      test('tooltip is positioned correctly', function() {
+        var actualTooltip = Polymer.dom(tooltip.root).querySelector('#tooltip');
+        assert.isTrue(isHidden(actualTooltip));
+
+        MockInteractions.focus(target);
+        assert.isFalse(isHidden(actualTooltip));
+
+        var divRect = target.getBoundingClientRect();
+        expect(divRect.width).to.be.equal(100);
+        expect(divRect.height).to.be.equal(20);
+
+        var contentRect = tooltip.getBoundingClientRect();
+        expect(contentRect.width).to.be.equal(70);
+        expect(contentRect.height).to.be.equal(30);
+
+        // The target div width is 100, and the tooltip width is 70, and
+        // it's centered. The height of the target div is 20, and the
+        // tooltip is 14px below.
+        expect(contentRect.left).to.be.equal((100 - 70)/2);
+        expect(contentRect.top).to.be.equal(20 + 14);
+
+        // Also check the math, just in case.
+        expect(contentRect.left).to.be.equal((divRect.width - contentRect.width)/2);
+        expect(contentRect.top).to.be.equal(divRect.height + tooltip.offset);
+      });
+    });
+
     suite('a11y', function() {
       test('has aria role "tooltip"', function() {
         var f = fixture('basic');
@@ -394,11 +539,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isTrue(tooltip.getAttribute('role') == 'tooltip');
       });
 
-      a11ySuite('basic');
-      a11ySuite('fitted');
-      a11ySuite('no-text');
-      a11ySuite('dynamic');
-      a11ySuite('custom');
+      var ignoredRules = ['roleTooltipRequiresDescribedby'];
+
+      a11ySuite('basic', ignoredRules);
+      a11ySuite('fitted', ignoredRules);
+      a11ySuite('no-text', ignoredRules);
+      a11ySuite('dynamic', ignoredRules);
+      a11ySuite('custom', ignoredRules);
     });
   </script>
 </body>

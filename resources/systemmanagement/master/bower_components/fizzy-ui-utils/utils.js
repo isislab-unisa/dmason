@@ -1,19 +1,18 @@
 /**
- * Fizzy UI utils v2.0.0
+ * Fizzy UI utils v2.0.5
  * MIT license
  */
 
 /*jshint browser: true, undef: true, unused: true, strict: true */
 
 ( function( window, factory ) {
-  /*global define: false, module: false, require: false */
-  'use strict';
   // universal module definition
+  /*jshint strict: false */ /*globals define, module, require */
 
   if ( typeof define == 'function' && define.amd ) {
     // AMD
     define( [
-      'matches-selector/matches-selector'
+      'desandro-matches-selector/matches-selector'
     ], function( matchesSelector ) {
       return factory( window, matchesSelector );
     });
@@ -61,7 +60,8 @@ utils.makeArray = function( obj ) {
   if ( Array.isArray( obj ) ) {
     // use object if already an array
     ary = obj;
-  } else if ( obj && typeof obj.length == 'number' ) {
+  } else if ( obj && typeof obj == 'object' &&
+    typeof obj.length == 'number' ) {
     // convert nodeList to array
     for ( var i=0; i < obj.length; i++ ) {
       ary.push( obj[i] );
@@ -85,7 +85,7 @@ utils.removeFrom = function( ary, obj ) {
 // ----- getParent ----- //
 
 utils.getParent = function( elem, selector ) {
-  while ( elem != document.body ) {
+  while ( elem.parentNode && elem != document.body ) {
     elem = elem.parentNode;
     if ( matchesSelector( elem, selector ) ) {
       return elem;
@@ -171,8 +171,10 @@ utils.debounceMethod = function( _class, methodName, threshold ) {
 // ----- docReady ----- //
 
 utils.docReady = function( callback ) {
-  if ( document.readyState == 'complete' ) {
-    callback();
+  var readyState = document.readyState;
+  if ( readyState == 'complete' || readyState == 'interactive' ) {
+    // do async to allow for other scripts to run. metafizzy/flickity#441
+    setTimeout( callback );
   } else {
     document.addEventListener( 'DOMContentLoaded', callback );
   }
@@ -220,7 +222,7 @@ utils.htmlInit = function( WidgetClass, namespace ) {
       }
       // initialize
       var instance = new WidgetClass( elem, options );
-      // make available via $().data('layoutname')
+      // make available via $().data('namespace')
       if ( jQuery ) {
         jQuery.data( elem, namespace, instance );
       }

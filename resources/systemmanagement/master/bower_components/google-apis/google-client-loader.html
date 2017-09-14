@@ -35,11 +35,6 @@ For loading `gapi.client` libraries
 
 @demo
 -->
-<dom-module id="google-client-loader">
-  <template>
-    <google-js-api on-js-api-load="_loadClient"></google-js-api>
-  </template>
-</dom-module>
 
 <script>
   (function() {
@@ -115,13 +110,16 @@ For loading `gapi.client` libraries
         }
       },
 
+      hostAttributes: {
+        hidden: true // remove from rendering tree.
+      },
+
       // Used to fix events potentially being fired multiple times by
       // iron-jsonp-library.
       _waiting: false,
 
       /**
        * Returns the loaded API.
-       * @type gapi.client
        */
       get api() {
         if (window.gapi && window.gapi.client &&
@@ -137,6 +135,15 @@ For loading `gapi.client` libraries
        */
       get auth() {
         return gapi.auth;
+      },
+
+      ready: function() {
+        this._loader = document.createElement('google-js-api');
+        this.listen(this._loader, 'js-api-load', '_loadClient');
+      },
+
+      detached: function() {
+        this.unlisten(this._loader, 'js-api-load', '_loadClient');
       },
 
       _loadClient: function() {
@@ -204,7 +211,7 @@ For loading `gapi.client` libraries
                 this._createSelfRemovingListener(this.errorEventName));
           // Did we get an error when we tried to load this API before?
           } else if (_statuses[this.name] == 'error') {
-            this._fireError();
+            this._fireError(null);
           // Otherwise, looks like we're loading a new API.
           } else {
             var root;
