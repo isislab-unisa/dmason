@@ -19,6 +19,7 @@ package it.isislab.dmason.sim.app.GameOfLife;
 
 import java.util.ArrayList;
 
+import it.isislab.dmason.experimentals.systemmanagement.utils.activemq.ActiveMQStarter;
 import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 import it.isislab.dmason.sim.engine.DistributedState;
@@ -39,7 +40,7 @@ public class TestDGameOfLife {
 	private static int rows = 1; //number of rows
 	private static int columns = 2; //number of columns
 	private static int AOI=1; //max distance
-	private static int NUM_AGENTS=20; //number of agents
+	private static int NUM_AGENTS=1000000; //number of agents
 	private static int WIDTH=200; //field width
 	private static int HEIGHT=200; //field height
 	private static int CONNECTION_TYPE=ConnectionType.pureActiveMQ;
@@ -52,7 +53,9 @@ public class TestDGameOfLife {
 	
 	
 	public static void main(String[] args) 
-	{	System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");	
+	{	ActiveMQStarter s=new ActiveMQStarter();
+	s.startActivemq();
+		System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");	
 		class worker extends Thread
 		{
 			private DistributedState ds;
@@ -72,6 +75,7 @@ public class TestDGameOfLife {
 			}
 		}
 
+		
 		ArrayList<worker> myWorker = new ArrayList<worker>();
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
