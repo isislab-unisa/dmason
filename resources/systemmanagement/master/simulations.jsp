@@ -54,7 +54,7 @@
         <link rel="import" href="bower_components/paper-radio-group/paper-radio-group.html">
         <link rel="import" href="bower_components/paper-input/paper-input.html">
         <link rel="import" href="bower_components/paper-progress/paper-progress.html">
-        <link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">"
+        <link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
         <link rel="import" href="bower_components/paper-spinner/paper-spinner.html">
 
         <link rel="import" href="bower_components/iron-icons/iron-icons.html">

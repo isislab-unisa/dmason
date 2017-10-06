@@ -42,7 +42,7 @@
         <link rel="import" href="bower_components/paper-fab/paper-fab.html">
         <link rel="import" href="bower_components/paper-toast/paper-toast.html">
         <link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
-        <link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">"
+        <link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
         <link rel="import" href="bower_components/paper-button/paper-button.html">
         <link rel="import" href="bower_components/paper-radio-button/paper-radio-button.html">
         <link rel="import" href="bower_components/paper-radio-group/paper-radio-group.html">
