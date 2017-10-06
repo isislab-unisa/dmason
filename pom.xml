@@ -5,7 +5,7 @@
 
 	<groupId>it.isislab</groupId>
 	<artifactId>DMASON</artifactId>
-	<version>3.1</version>
+	<version>3.2</version>
 	<name>DMASON</name>
 	<url>http://www.dmason.org/</url>
 	<description>DMASON is a parallel version of the MASON library for writing and running simulations of Agent based simulation models.</description>
@@ -22,7 +22,6 @@
 	</licenses>
 
 	<repositories>
-
 		<repository>
 			<id>sonatype.org</id>
 			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
@@ -31,7 +30,6 @@
 			<id>sauronsoftware-github</id>
 			<url>https://raw.github.com/Takuto88/sauronsoftware-maven/master/releases</url>
 		</repository>
-
 		<repository>
 			<id>it.isislab.dmason</id>
 			<url>https://github.com/isislab-unisa/dmason/raw/master/repository</url>
@@ -62,6 +60,7 @@
 			<artifactId>jetty-webapp</artifactId>
 			<version>9.2.11.v20150529</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-annotations</artifactId>
@@ -74,8 +73,8 @@
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>apache-jsp</artifactId>
 			<version>9.2.11.v20150529</version>
-
 		</dependency>
+
 		<dependency>
 			<groupId>args4j</groupId>
 			<artifactId>args4j</artifactId>
@@ -83,7 +82,6 @@
 		</dependency>
 
 		<!-- JSTL Dependency -->
-
 		<dependency>
 			<groupId>jstl</groupId>
 			<artifactId>jstl</artifactId>
@@ -96,12 +94,14 @@
 			<version>2.6.0</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
@@ -113,21 +113,25 @@
 			<artifactId>mason.18.jar</artifactId>
 			<version>18</version>
 		</dependency>
+
 		<dependency>
 			<groupId>it.isislab.dmason</groupId>
 			<artifactId>mpi_18.8.jar</artifactId>
 			<version>18</version>
 		</dependency>
+
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
 			<version>3.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>it.isislab.dmason</groupId>
 			<artifactId>portfolio.jar</artifactId>
 			<version>18</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
@@ -140,15 +144,11 @@
 			<version>5.13.3</version>
 		</dependency>
 
-
-
 		<dependency>
 			<groupId>org.fusesource</groupId>
 			<artifactId>sigar</artifactId>
 			<version>1.6.4</version>
 		</dependency>
-
-
 
 		<!-- old conf > <groupId>org.apache.activemq</groupId> <artifactId>activemq-all</artifactId> 
 			<version>5.5.1</version> </dependency> <dependency> <groupId>log4j</groupId> 
@@ -159,17 +159,18 @@
 			<artifactId>jgrapht-core</artifactId>
 			<version>0.9.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht-ext</artifactId>
 			<version>0.9.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>it.sauronsoftware</groupId>
 			<artifactId>ftp4j</artifactId>
 			<version>1.7.2</version>
 		</dependency>
-
 
 		<!-- old conf dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-log4j12</artifactId> 
 			<version>1.5.6</version> </dependency -->
@@ -177,55 +178,69 @@
 		<dependency>
 			<groupId>com.jcraft</groupId>
 			<artifactId>jsch</artifactId>
-			<version>0.1.53</version>
+			<version>0.1.54</version>
 		</dependency>
-
 
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib-nodep</artifactId>
 			<version>3.1</version>
 		</dependency>
+
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
 		</dependency>
+
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>1.7</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.2.2</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
 			<version>1.4.3</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>16.0.1</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.ftpserver</groupId>
 			<artifactId>ftpserver-core</artifactId>
 			<version>1.0.5</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.ftpserver</groupId>
 			<artifactId>ftplet-api</artifactId>
 			<version>1.0.5</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.graphchi</groupId>
 			<artifactId>graphchi-java_2.10</artifactId>
 			<version>0.2.1</version>
 		</dependency>
+
+		<!-- Amazon AWS SDK dependency -->
+		<dependency>
+		    <groupId>com.amazonaws</groupId>
+		    <artifactId>aws-java-sdk</artifactId>
+		    <version>1.11.106</version>
+	  	</dependency>
 	</dependencies>
 
 	<build>
@@ -236,6 +251,7 @@
 					<include>**/*</include>
 				</includes>
 			</resource>
+
 			<resource>
 				<directory>src/test/java</directory>
 				<includes>
@@ -243,6 +259,7 @@
 				</includes>
 			</resource>
 		</resources>
+
 		<plugins>
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -267,6 +284,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
@@ -281,6 +299,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>2.7</version>
@@ -305,6 +324,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -341,6 +361,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -349,7 +370,11 @@
 					<execution>
 						<id>attach-javadocs</id>
 						<configuration>
-						     <excludePackageNames>it.isislab.dmason.experimentals.sim.*:it.isislab.dmason.experimentals.tools.*:it.isislab.dmason.experimentals.util.*</excludePackageNames>
+						    <excludePackageNames>
+						        it.isislab.dmason.experimentals.sim.*:
+						        it.isislab.dmason.experimentals.tools.*:
+						        it.isislab.dmason.experimentals.util.*
+						    </excludePackageNames>
 							<outputDirectory>${project.build.directory}/javadoc</outputDirectory>
 							<stylesheetfile>${basedir}/resources/javadoc-style/stylesheet.css</stylesheetfile>
 						</configuration>
