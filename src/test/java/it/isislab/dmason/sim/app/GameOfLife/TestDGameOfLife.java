@@ -36,11 +36,11 @@ import sim.display.Console;
  */
 public class TestDGameOfLife {
 	private static boolean graphicsOn=true; //with or without graphics?
-	private static int numSteps = 100; //only graphicsOn=false
+	private static int numSteps = 1000000; //only graphicsOn=false
 	private static int rows = 1; //number of rows
 	private static int columns = 2; //number of columns
 	private static int AOI=1; //max distance
-	private static int NUM_AGENTS=1000000; //number of agents
+	private static int NUM_AGENTS=800; //number of agents
 	private static int WIDTH=200; //field width
 	private static int HEIGHT=200; //field height
 	private static int CONNECTION_TYPE=ConnectionType.pureActiveMQ;
@@ -54,7 +54,7 @@ public class TestDGameOfLife {
 	
 	public static void main(String[] args) 
 	{	ActiveMQStarter s=new ActiveMQStarter();
-	s.startActivemq();
+	    s.startActivemq();
 		System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");	
 		class worker extends Thread
 		{
@@ -68,7 +68,6 @@ public class TestDGameOfLife {
 				int i=0;
 				while(i!=numSteps)
 				{
-					//System.out.println(i);
 					ds.schedule.step(ds);
 					i++;
 				}

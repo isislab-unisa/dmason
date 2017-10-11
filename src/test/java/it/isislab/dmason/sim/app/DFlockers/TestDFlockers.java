@@ -138,11 +138,11 @@ import sim.display.Console;
 
 import java.util.ArrayList;
 public class TestDFlockers {
-    private static int numSteps = 3000; //only graphicsOn=false
+    private static int numSteps = 300000; //only graphicsOn=false
     private static int rows = 2; //number of rows
-    private static int columns = 2; //number of columns
+    private static int columns = 1; //number of columns
     private static int AOI=10; //max distance
-    private static int NUM_AGENTS=20000; //number of agents
+    private static int NUM_AGENTS=500; //number of agents
     private static int WIDTH=200; //field width
     private static int HEIGHT=200; //field height
     private static String ip="127.0.0.1"; //ip of activemq
