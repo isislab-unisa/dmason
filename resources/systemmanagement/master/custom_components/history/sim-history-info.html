@@ -1,0 +1,67 @@
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+
+<dom-module id="sim-history-info">
+    <template>
+        <style >
+            :host {
+                display: block;
+            }
+
+
+            .download-button-container{
+                cursor: pointer;
+            }
+
+        </style>
+    <div class="layout vertical">
+        <div class="flex">
+            <table>
+                <tr><td><span>ID:</span></td><td><span>{{sim.simID}}</span></td></tr>
+                <tr><td><span>Name:</span></td><td><span>{{sim.simName}}</span></td></tr>
+                <tr><td><span>Width:</span></td><td><span>{{sim.simWidth}}</span></td></tr>
+                <tr><td><span>Height:</span></td><td><span>{{sim.simHeight}}</span></td></tr>
+                <tr><td><span>Rows:</span></td><td><span>{{sim.simRows}}</span></td></tr>
+                <tr><td><span>Columns:</span></td><td><span>{{sim.simColumns}}</span></td></tr>
+                <tr><td><span>AOI:</span></td><td><span>{{sim.simAOI}}</span></td></tr>
+                <tr><td><span>Partitioning:</span></td><td><span>{{sim.simPartitioning}}</span></td></tr>
+                <tr><td><span>Num. of Cells:</span></td><td><span>{{sim.simNumCells}}</span></td></tr>
+                <tr><td><span>Num. of Worker:</span></td><td><span>{{sim.simNumWorkers}}</span></td></tr>
+                <tr><td><span>Num. of Agents:</span></td><td><span>{{sim.simNumAgents}}</span></td></tr>
+                <tr><td><span>Start:</span></td><td><span>{{sim.simStartTime}}</span></td></tr>
+                <tr><td><span>End:</span></td><td><span>{{sim.simEndTime}}</span></td></tr>
+                <tr><td><span>Time:</span></td><td><span>{{sim.simTime}} (H:M:S)</span></td></tr>
+                <tr><td><span>TimeInMillis:</span></td><td><span>{{sim.simTimeAsMillis}} ms</span></td></tr>
+                <tr><td><span>Status:</span></td><td><span>{{sim.simStatus}}</span></td></tr>
+                <tr><td><span>Steps:</span></td><td><span>{{sim.simStepNumber}}</span></td></tr>
+            </table>
+        </div>
+        <div >
+            <div class="layout horizontal end-justified">
+                <div  on-click="downloadLog" class=".download-button-container">
+                    <form id="download_log_history_form" method="POST" action="/downloadLogs?path={{sim.simLogZipFile}}">
+                        <paper-fab style="border:1px solid black; background-color: #D73D32;" icon="save"></paper-fab>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: 'sim-history-info',
+
+
+        properties: {
+            sim:{
+                type: Object
+            }
+        },
+        downloadLog: function(event){
+            this.$.download_log_history_form.submit();
+        },
+    });
+</script>

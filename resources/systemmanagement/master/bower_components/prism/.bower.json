@@ -16,6 +16,7 @@
     "**/.*",
     "img",
     "templates",
+    "tests",
     "CNAME",
     "*.html",
     "style.css",
@@ -26,14 +27,14 @@
     "utopia.js",
     "code.js"
   ],
-  "version": "1.3.0",
-  "_release": "1.3.0",
+  "version": "1.7.0",
+  "_release": "1.7.0",
   "_resolution": {
     "type": "version",
-    "tag": "v1.3.0",
-    "commit": "ad97b23be583f01e84ec5f17197d2c2b109ca7d0"
+    "tag": "v1.7.0",
+    "commit": "43fcb680fa0b6c37dd8f69b67f2dc8fcaccd5af6"
   },
-  "_source": "git://github.com/LeaVerou/prism.git",
+  "_source": "https://github.com/LeaVerou/prism.git",
   "_target": "*",
   "_originalSource": "prism"
 }

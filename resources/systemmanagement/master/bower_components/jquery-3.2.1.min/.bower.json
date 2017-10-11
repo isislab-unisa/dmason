@@ -1,0 +1,13 @@
+{
+  "name": "jquery-3.2.1.min",
+  "_cacheHeaders": {
+    "ETag": "W/\"58d026fb-15283\"",
+    "Last-Modified": "Mon, 20 Mar 2017 19:01:15 GMT",
+    "Content-Type": "application/javascript; charset=utf-8"
+  },
+  "_release": "e-tag:W/\"58d026f",
+  "main": "index.js",
+  "_source": "https://code.jquery.com/jquery-3.2.1.min.js",
+  "_target": "*",
+  "_originalSource": "https://code.jquery.com/jquery-3.2.1.min.js"
+}

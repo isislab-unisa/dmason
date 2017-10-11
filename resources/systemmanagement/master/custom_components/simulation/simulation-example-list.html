@@ -1,0 +1,75 @@
+
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+
+
+<dom-module id="simulation-example-list">
+    <template>
+
+        <paper-dropdown-menu id="exampleSimulation" label="Select">
+            <paper-menu class="dropdown-content">
+                <template is="dom-if" if="{{examples}}">
+                    <paper-item id="examplesJarlist"  disabled >Examples</paper-item>
+                    <template is="dom-repeat" items="{{examples}}" as="example">
+                        <paper-item name="{{example.name}}" label="{{example.path}}">{{example.name}}</paper-item>
+                    </template>
+                </template>
+                <template is="dom-if" if="{{customs}}">
+                    <paper-item id="customsJarlist"  disabled> Customs</paper-item>
+                    <template is="dom-repeat" items="{{customs}}" as="custom">
+                        <paper-item name="{{custom.name}}" label="{{custom.path}}">{{custom.name}}</paper-item>
+                    </template>
+                </template>
+            </paper-menu>
+        </paper-dropdown-menu>
+
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: 'simulation-example-list',
+
+        properties: {
+            customs:{
+                type: Array
+
+            },
+            examples:{
+                type:Array
+                //value: [{ name: 'Bob' ,  path: 'Doug' } ]
+            }
+
+        },
+        attached: function(){
+                    var scope = this;
+                    $.ajax({
+                        url:"getJarsList",
+                        success: function(result){
+                            scope._loadJarList(result);
+                        }
+                    });
+
+             },
+
+
+        _loadJarList: function (result){
+        if(!result) return;
+        var list_jar = JSON.parse(result);
+        if(!list_jar.hasOwnProperty("jars")) return;
+
+        var examplesList=list_jar.jars[0];
+        var customsList=list_jar.jars[1];
+
+       
+        if(examplesList.examples.length>0)
+            this.examples=examplesList.examples;
+
+        if(customsList.customs.length>0)
+            this.customs=customsList.customs;
+    }
+
+    });
+</script>

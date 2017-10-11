@@ -11,14 +11,11 @@
         'ev-emitter/ev-emitter',
         'get-size/get-size'
       ],
-      function( EvEmitter, getSize ) {
-        return factory( window, EvEmitter, getSize );
-      }
+      factory
     );
   } else if ( typeof module == 'object' && module.exports ) {
     // CommonJS - Browserify, Webpack
     module.exports = factory(
-      window,
       require('ev-emitter'),
       require('get-size')
     );
@@ -26,13 +23,12 @@
     // browser global
     window.Outlayer = {};
     window.Outlayer.Item = factory(
-      window,
       window.EvEmitter,
       window.getSize
     );
   }
 
-}( window, function factory( window, EvEmitter, getSize ) {
+}( window, function factory( EvEmitter, getSize ) {
 'use strict';
 
 // ----- helpers ----- //
@@ -60,13 +56,14 @@ var transitionEndEvent = {
   transition: 'transitionend'
 }[ transitionProperty ];
 
-// cache all vendor properties
-var vendorProperties = [
-  transformProperty,
-  transitionProperty,
-  transitionProperty + 'Duration',
-  transitionProperty + 'Property'
-];
+// cache all vendor properties that could have vendor prefix
+var vendorProperties = {
+  transform: transformProperty,
+  transition: transitionProperty,
+  transitionDuration: transitionProperty + 'Duration',
+  transitionProperty: transitionProperty + 'Property',
+  transitionDelay: transitionProperty + 'Delay'
+};
 
 // -------------------------- Item -------------------------- //
 
@@ -136,13 +133,16 @@ proto.getPosition = function() {
   var isOriginTop = this.layout._getOption('originTop');
   var xValue = style[ isOriginLeft ? 'left' : 'right' ];
   var yValue = style[ isOriginTop ? 'top' : 'bottom' ];
+  var x = parseFloat( xValue );
+  var y = parseFloat( yValue );
   // convert percent to pixels
   var layoutSize = this.layout.size;
-  var x = xValue.indexOf('%') != -1 ?
-    ( parseFloat( xValue ) / 100 ) * layoutSize.width : parseInt( xValue, 10 );
-  var y = yValue.indexOf('%') != -1 ?
-    ( parseFloat( yValue ) / 100 ) * layoutSize.height : parseInt( yValue, 10 );
-
+  if ( xValue.indexOf('%') != -1 ) {
+    x = ( x / 100 ) * layoutSize.width;
+  }
+  if ( yValue.indexOf('%') != -1 ) {
+    y = ( y / 100 ) * layoutSize.height;
+  }
   // clean up 'auto' or other non-integer values
   x = isNaN( x ) ? 0 : x;
   y = isNaN( y ) ? 0 : y;
@@ -205,9 +205,7 @@ proto._transitionTo = function( x, y ) {
   var curX = this.position.x;
   var curY = this.position.y;
 
-  var compareX = parseInt( x, 10 );
-  var compareY = parseInt( y, 10 );
-  var didNotMove = compareX === this.position.x && compareY === this.position.y;
+  var didNotMove = x == this.position.x && y == this.position.y;
 
   // save end position
   this.setPosition( x, y );
@@ -250,8 +248,8 @@ proto.goTo = function( x, y ) {
 proto.moveTo = proto._transitionTo;
 
 proto.setPosition = function( x, y ) {
-  this.position.x = parseInt( x, 10 );
-  this.position.y = parseInt( y, 10 );
+  this.position.x = parseFloat( x );
+  this.position.y = parseFloat( y );
 };
 
 // ----- transition ----- //
@@ -280,7 +278,7 @@ proto._nonTransition = function( args ) {
  *   @param {Boolean} isCleaning - removes transition styles after transition
  *   @param {Function} onTransitionEnd - callback
  */
-proto._transition = function( args ) {
+proto.transition = function( args ) {
   // redirect to nonTransition if no transition duration
   if ( !parseFloat( this.layout.options.transitionDuration ) ) {
     this._nonTransition( args );
@@ -326,8 +324,7 @@ function toDashedAll( str ) {
   });
 }
 
-var transitionProps = 'opacity,' +
-  toDashedAll( vendorProperties.transform || 'transform' );
+var transitionProps = 'opacity,' + toDashedAll( transformProperty );
 
 proto.enableTransition = function(/* style */) {
   // HACK changing transitionProperty during a transition
@@ -345,16 +342,18 @@ proto.enableTransition = function(/* style */) {
   //   prop = vendorProperties[ prop ] || prop;
   //   transitionValues.push( toDashedAll( prop ) );
   // }
+  // munge number to millisecond, to match stagger
+  var duration = this.layout.options.transitionDuration;
+  duration = typeof duration == 'number' ? duration + 'ms' : duration;
   // enable transition styles
   this.css({
     transitionProperty: transitionProps,
-    transitionDuration: this.layout.options.transitionDuration
+    transitionDuration: duration,
+    transitionDelay: this.staggerDelay || 0
   });
   // listen for transition end event
   this.element.addEventListener( transitionEndEvent, this, false );
 };
-
-proto.transition = Item.prototype[ transitionProperty ? '_transition' : '_nonTransition' ];
 
 // ----- events ----- //
 
@@ -424,12 +423,20 @@ proto._removeStyles = function( style ) {
 
 var cleanTransitionStyle = {
   transitionProperty: '',
-  transitionDuration: ''
+  transitionDuration: '',
+  transitionDelay: ''
 };
 
 proto.removeTransitionStyles = function() {
   // remove transition
   this.css( cleanTransitionStyle );
+};
+
+// ----- stagger ----- //
+
+proto.stagger = function( delay ) {
+  delay = isNaN( delay ) ? 0 : delay;
+  this.staggerDelay = delay + 'ms';
 };
 
 // ----- show/hide/remove ----- //

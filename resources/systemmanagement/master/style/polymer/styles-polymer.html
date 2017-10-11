@@ -1,57 +1,50 @@
 <style is="custom-style">
-
-
  /*   :root {
         --coloretoolbar: #D73D32;
         --coloregriglie: #E2726A; /*var(--coloregriglie);
   }*/
 
-
-    html,body {
+    html, body {
         background-color: white;
-        font-family:sans-serif;
-
-
+        font-family: sans-serif;
     }
 
-
-    paper-toolbar{
+    app-toolbar {
         background-color: #D73D32;
         color: white;
         font-size: x-large;
     }
 
-    .side-drawer{
+    /* Menù drawer laterale */
+    app-drawer-layout:not([narrow]) [drawer-toggle] {
+        display: none;
+    }
 
+    app-drawer {
+        --app-drawer-scrim-background: rgba(255, 255, 255, 0.6);
+        /*--app-drawer-content-container: {
+            background-color: #D73D32;
+        }*/
+    }
+
+    .side-drawer {
         height: 50px;
     }
 
-
-
-    paper-button.undo-button{
-        background-color: transparent ;
-    }
-
-    paper-menu{
+    paper-menu {
         --paper-menu-background-color: transparent;
         --paper-menu-color: black;
     }
 
-    paper-item#examplesJarlist{
-        color:red!important;
-    }
-
-    paper-item {
-        color: black;
+    paper-item#examplesJarlist {
+        color: red !important;
     }
 
     paper-listbox {
         background-color: #29292d;
-
     }
 
-
-
+    /* deprecato */
     paper-scroll-header-panel {
         position: absolute;
         top: 0;
@@ -60,27 +53,123 @@
         left: 0;
     }
 
-    paper-scroll-header-panel .content-side-bar {
-             padding: 8px;
-             background-color:white ;
-             height: 100%;
-             overflow: visible;
+    paper-scroll-header-panel.content-side-bar {
+        padding: 8px;
+        background-color: white;
+        height: 100%;
+        overflow: visible;
     }
-    paper-scroll-header-panel .content-main {
+
+    paper-scroll-header-panel.content-main {
         padding: 8px;
         background-color: transparent;
     }
 
-
-
-    #add-simulation-paper-dialog{
-
-   background: white;
-        color:black;
+    /* Bottoni */
+    paper-button.undo-button {
+        background-color: transparent;
     }
 
-    paper-button{
-        background: #e2726a ;
+    paper-button {
+        background: #e2726a;
+    }
+
+    paper-button:hover {
+        color: white;
+    }
+
+    paper-icon-button {
+        --paper-icon-button-ink-color: white;
+    }
+
+    /* Elementi drawer */
+    paper-item {
+        color: white;
+    }
+
+    paper-item:hover {
+        color: black;
+        background-color: white;
+        font-weight: bold;
+    }
+
+    paper-item.selected {
+        font-weight: bold;
+        background: #D73D32;
+    }
+    
+    paper-item.selected > a > span.span-icon,
+    paper-item.selected > a > iron-icon {
+        color: white;
+    }
+
+    paper-progress {
+        display: none;
+        width: 100%;
+        margin: 10px 0px;
+        --paper-progress-container-color:#427FED;
+    }
+
+    paper-dialog#list-simulations-paper-dialog {
+        width: 50%;
+        height: 80%;
+    }
+
+    paper-dialog#list-simulations-paper-dialog > paper-dialog-scrollable {
+        width: auto;
+        height: auto;
+    }
+
+    paper-card {
+        background-color: transparent;
+        height: 100%;
+        width: 100%;
+    }
+
+    paper-dropdown-menu {
+        width: 200px;
+    }
+
+    paper-checkbox {
+        --paper-checkbox-unchecked-color: black;
+        --paper-checkbox-checked-background-color: #427FED;
+        --paper-checkbox-checked-color: #427FED;
+    }
+
+    paper-radio-button {
+        --paper-radio-button-checked-color: #427FED;
+    }
+
+    paper-listbox {
+        --paper-listbox-background-color: gray;
+        --paper-listbox-color: white;
+    }
+
+    paper-spinner {
+        margin: 2px;
+    }
+
+    paper-spinner.multi {
+        --paper-spinner-layer-1-color: #D73D32;
+        --paper-spinner-layer-2-color: #D73D32;
+        --paper-spinner-layer-3-color: #D73D32;
+        --paper-spinner-layer-4-color: #D73D32;
+    }
+
+    paper-input {
+        --paper-input-container-color: #333333;
+        --paper-input-container-focus-color: black;
+    }
+
+    /* deprecato */
+    neon-animated-pages {
+        height: 96%;
+    }
+
+    /* Elementi personalizzati (ID, classi) */
+    #add-simulation-paper-dialog {
+        background: white;
+        color: black;
     }
 
     #add-simulation-to-worker-buttom {
@@ -90,130 +179,49 @@
         background-color: #D73D32;
     }
 
-    #shutdown-worker-button{
-        position:fixed;
-        bottom:25px;
+    #shutdown-worker-button {
+        position: fixed;
+        bottom: 25px;
         right: 20px;
         background-color: #D73D32;
-
     }
 
- #delete-history-button{
-     position:fixed;
-     bottom:25px;
-     right: 20px;
-     color: white;
-     background-color: #D73D32;
-
- }
-
- #go_to_workbenck{
-     position:fixed;
-     bottom:25px;
-     right: 100px;
-     color: white;
-     background-color: #D73D32;
-     display: none;
- }
-
-    paper-item:hover{
-        background-color:white;
-        font-weight: bold;
-
-
-    }
-
-    paper-item.selected{
-        font-weight: bold;
-        background: #D73D32;
-    }
-
-    paper-progress {
-        display: none;
-        width: 100%;
-        margin:10px 0px;
-        --paper-progress-container-color:#427FED;
-    }
-
-
-    paper-dialog#list-simulations-paper-dialog{
-        width:50% ;
-        height: 80%;
-    }
-
-    paper-dialog#list-simulations-paper-dialog > paper-dialog-scrollable {
-        width: auto;
-        height: auto;
-    }
-    paper-card{
-        background-color: transparent;
-        height: 100%;
-        width: 100%;
-    }
-
-    paper-dropdown-menu {
-        width: 200px;
-
-
-    }
-
-
-    paper-checkbox {
-        --paper-checkbox-unchecked-color: black;
-
-        --paper-checkbox-checked-background-color: #427FED;
-        --paper-checkbox-checked-color:#427FED;
-    }
-
-    paper-radio-button{
-        --paper-radio-button-checked-color:#427FED;
-    }
-
-    paper-button:hover {
+    #delete-history-button {
+        position: fixed;
+        bottom: 25px;
+        right: 20px;
         color: white;
+        background-color: #D73D32;
     }
 
-
-    neon-animated-pages {
-        height: 96%;
+    #go_to_workbenck {
+        position: fixed;
+        bottom: 25px;
+        right: 100px;
+        color: white;
+        background-color: #D73D32;
+        display: none;
     }
 
-    paper-listbox{
-        --paper-listbox-background-color:gray;
-        --paper-listbox-color:white;
-    }
-
-    paper-spinner{
-        margin: 2px;
-
-    }
-    paper-spinner.multi {
-        --paper-spinner-layer-1-color: black;
-        --paper-spinner-layer-2-color: black;
-        --paper-spinner-layer-3-color: black;
-        --paper-spinner-layer-4-color: black;
-    }
-
-    paper-input{
-        --paper-input-container-color:  black;
-        --paper-input-container-focus-color: black;
-
-
-    }
-
-    #workbench{
+    #workbench {
         width: 90%;
         height: 90%;
         margin-top:2%;
         background-color: white;
 
         position: absolute;
-        z-index:99;
+        z-index: 99;
     }
 
-    .history_header_panel{
+    .history_header_panel {
         width: 100%;
         height: 60px;
         background-color: #D73D32;
     }
 </style>
+<!-- HTML Import of stylesheet is deprecated, please refer to https://goo.gl/EGXzpw -->
+<script>
+    var importDoc = document.currentScript.ownerDocument;
+    var style = importDoc.querySelector('style');
+    document.head.appendChild(style);
+</script>

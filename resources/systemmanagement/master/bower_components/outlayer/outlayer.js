@@ -1,5 +1,5 @@
 /*!
- * Outlayer v2.0.0
+ * Outlayer v2.1.1
  * the brains and guts of a layout library
  * MIT license
  */
@@ -348,9 +348,21 @@ proto._getItemLayoutPosition = function( /* item */ ) {
  * @param {Array} queue
  */
 proto._processLayoutQueue = function( queue ) {
-  queue.forEach( function( obj ) {
-    this._positionItem( obj.item, obj.x, obj.y, obj.isInstant );
+  this.updateStagger();
+  queue.forEach( function( obj, i ) {
+    this._positionItem( obj.item, obj.x, obj.y, obj.isInstant, i );
   }, this );
+};
+
+// set stagger from option in milliseconds number
+proto.updateStagger = function() {
+  var stagger = this.options.stagger;
+  if ( stagger === null || stagger === undefined ) {
+    this.stagger = 0;
+    return;
+  }
+  this.stagger = getMilliseconds( stagger );
+  return this.stagger;
 };
 
 /**
@@ -360,11 +372,12 @@ proto._processLayoutQueue = function( queue ) {
  * @param {Number} y - vertical position
  * @param {Boolean} isInstant - disables transitions
  */
-proto._positionItem = function( item, x, y, isInstant ) {
+proto._positionItem = function( item, x, y, isInstant, i ) {
   if ( isInstant ) {
     // if not transition, just set CSS
     item.goTo( x, y );
   } else {
+    item.stagger( i * this.stagger );
     item.moveTo( x, y );
   }
 };
@@ -708,7 +721,9 @@ proto.reveal = function( items ) {
   if ( !items || !items.length ) {
     return;
   }
-  items.forEach( function( item ) {
+  var stagger = this.updateStagger();
+  items.forEach( function( item, i ) {
+    item.stagger( i * stagger );
     item.reveal();
   });
 };
@@ -722,7 +737,9 @@ proto.hide = function( items ) {
   if ( !items || !items.length ) {
     return;
   }
-  items.forEach( function( item ) {
+  var stagger = this.updateStagger();
+  items.forEach( function( item, i ) {
+    item.stagger( i * stagger );
     item.hide();
   });
 };
@@ -885,6 +902,31 @@ function subclass( Parent ) {
   SubClass.prototype.constructor = SubClass;
 
   return SubClass;
+}
+
+// ----- helpers ----- //
+
+// how many milliseconds are in each unit
+var msUnits = {
+  ms: 1,
+  s: 1000
+};
+
+// munge time-like parameter into millisecond number
+// '0.4s' -> 40
+function getMilliseconds( time ) {
+  if ( typeof time == 'number' ) {
+    return time;
+  }
+  var matches = time.match( /(^\d*\.?\d*)(\w*)/ );
+  var num = matches && matches[1];
+  var unit = matches && matches[2];
+  if ( !num.length ) {
+    return 0;
+  }
+  num = parseFloat( num );
+  var mult = msUnits[ unit ] || 1;
+  return num * mult;
 }
 
 // ----- fin ----- //

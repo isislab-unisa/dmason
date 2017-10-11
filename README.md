@@ -4,12 +4,12 @@ DMASON is a parallel version of the [MASON](http://cs.gmu.edu/~eclab/projects/ma
 Agent-based simulation models are an increasingly popular tool for research and management in many, different and diverse ﬁelds. In executing such simulations the “speed” is one of the most general and important issues. The traditional answer to this issue is to invest resources in deploying a dedicated installation of dedicated computers. D-MASON is a parallel version of the MASON, a library for writing and running Agent-Based simulations. D-MASON is designed to harness unused PCs for increased performances.
 
 ## Why Distributed MASON?
-
 Among the motivations to our focus on distributing the simulation on several machines, we can underline how the need for efficiency among the Agent-Based modeling tools is well recognized in literature: many reviews of state-of-the-art frameworks place “speed” upfront as one of the most general and important issues. While a consistent work has been done to allow the distribution of agents on several computing nodes, our approach here is different in principle: we want to introduce the distribution at the framework level, so that the scientists that use the framework (domain experts but with limited knowledge of computer programming and systems) can be unaware of such distribution.
 
-### Changelog DMASON 3.0.2
+### Changelog DMASON 3.2
 1. [Changelog list](https://github.com/isislab-unisa/dmason/blob/master/CHANGELOG.md)
-#Compiling DMASON from src/ to target/ using Apache Maven
+
+# Build DMASON
 
     $ mvn clean package
 
@@ -56,11 +56,10 @@ Generate build without runs test suite:
 
 	$ mvn -Dmaven.test.skip=true clean package 
 
-#Contributors
+# Contributors
 This section is intended for those who want to contribute this project.  You can ask us more informations and how to contribute at [isislab.unisa@gmail.com](isislab.unisa@gmail.com)([www.isislab.it](http://www.isislab.it)) or on [GitHub](https://github.com/isislab-unisa).
 
-##Add additional library to repository
-
+## Add additional library to repository
 If you need a library not included in the DMASON repo, you can add it by including the Maven dependency in the `pom.xml`. If the library is 3rd-Party and is not available on public repository, you can put in the DMASON repository.
 The first step is generate the dependency Maven data, in the fallowing there is an example of that using the `MASON` library:
 
@@ -76,7 +75,7 @@ After that you must put the output data in the `repository` folder of DMASON Git
 
 
 ### License
-Copyright ISISLab, 2016 Università degli Studi di Salerno.
+Copyright ISISLab, 2017 Università degli Studi di Salerno.
 
 Licensed under the Apache License, Version 2.0 (the "License"); You may not use this file except in compliance with the License.
 You may obtain a copy of the License at

@@ -27,15 +27,14 @@ information on the API.
  -->
 
 <script>
-
   Polymer({
-
     is: 'google-map-search',
 
     properties: {
-
       /**
        * The Google map object.
+       *
+       * @type google.maps.Map
        */
       map: {
         type: Object,
@@ -152,14 +151,12 @@ information on the API.
         if (this.types && typeof this.types == 'string') {
           var types = this.types.split(' ');
         }
-
-        if (!this.globalSearch) {
-          var bounds = this.map.getBounds();
-        } else if (this.radius) {
+        if (this.radius) {
           var radius = this.radius;
           var location = this.location ? this.location : this.map.getCenter();
+        } else if (!this.globalSearch) {
+          var bounds = this.map.getBounds();
         }
-
         places.textSearch({
           query: this.query,
           types: types,
@@ -172,6 +169,7 @@ information on the API.
 
     /**
      * Fetches details for a given place.
+     *
      * @param {String} placeId The place id.
      * @return {Promise} place The place information.
      */
