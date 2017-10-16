@@ -90,7 +90,7 @@ public class DCircle extends RemoteCircle<Double2D> {
 
 				y +=(distance==0)?0:(force * separation_distance * (other.pos.y - pos.y))/distance;
 				if(Double.isNaN(x) || Double.isNaN(y))
-					System.err.println("ollooooooc");
+					System.err.println("ERROR NOT A NUMBER");
 			}
 		}
 		Double2D oldpos = pos;
