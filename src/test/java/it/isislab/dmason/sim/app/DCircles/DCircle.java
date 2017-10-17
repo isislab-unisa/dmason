@@ -43,8 +43,8 @@ public class DCircle extends RemoteCircle<Double2D> {
 	/**
 	 * The interaction radius of the circle agents. Increasing this value will increase the communication between agents (assuming constant density)
 	 */
-	static double RADIUS = 2;
-	//Bag neighbors = null;
+	static double RADIUS = 7;
+	//Bag neighbors = null;5fino a 4x4//// 4x8(3)
 
 	public DCircle(){}
 	

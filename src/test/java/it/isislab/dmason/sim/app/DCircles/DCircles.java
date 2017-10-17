@@ -39,12 +39,12 @@ public class DCircles extends DistributedState<Double2D> {
 	/**
 	 * it's used for creating circle agents
 	 */
-	public static final double DIAMETER = 4;
+	public static final double DIAMETER = 20;
 
 	protected DContinuousGrid2D circles = null;
 
 	private String topicPrefix = "";
-	
+
 	/**
 	 * field Width
 	 */
@@ -53,16 +53,16 @@ public class DCircles extends DistributedState<Double2D> {
 	 * field Height
 	 */
 	public double gridHeight ;
-	
+
 	public int MODE;
-	
+
 	public ContinuousPortrayal2D p;
-	
+
 	/**
 	 * empty costructor for Serialize
 	 */
 	public DCircles() { super();}
-	
+
 	/**
 	 * Constructor 
 	 * @param params
@@ -82,7 +82,7 @@ public class DCircles extends DistributedState<Double2D> {
 		this.topicPrefix = prefix;
 		gridWidth=params.getWidth();
 		gridHeight=params.getHeight();
-		 
+
 		for (EntryParam<String, Object> entryParam : simParams) {
 
 			try {
@@ -123,7 +123,7 @@ public class DCircles extends DistributedState<Double2D> {
 
 		}
 	}
-	
+
 	@Override
 	public void start()
 	{
@@ -132,28 +132,38 @@ public class DCircles extends DistributedState<Double2D> {
 		   Next, we need to know what will be the circle center.
 		   For calculating the radius, basically we take the half of smaller side (in this case we don't worry about double values, because the filed supports double coordinates).
 		   During the casual position generation, the agent's location will be regenerate until it is within the circle area.
-		*/
-		
+		 */
+
 		Double2D center = new Double2D(gridWidth/2, gridHeight/2);
 		double radius = (gridWidth < gridHeight)?gridWidth/2:gridHeight/2;
+
+
+
 		Double2D loc = null;
 		try 
 		{
 			circles = DContinuousGrid2DFactory.createDContinuous2D(8.0,gridWidth, gridHeight,this,
 					super.AOI,TYPE.pos_i,TYPE.pos_j,super.rows,super.columns,MODE,"circles", topicPrefix,false);
+
 			init_connection();
+
 		} catch (DMasonException e) { e.printStackTrace(); }
-		
+
 		DCircle f=new DCircle(this,new Double2D(0,0));
 
 		while(circles.size() != super.NUMAGENTS / super.NUMPEERS)
-		{
+		{   
 			//circular positions distribution 
 			loc = circles.getAvailableRandomLocation();
 			//if the position is not within the radius, recalculate it
-			while(DCircle.euclideanDistance(center, loc) > radius)
-				loc = circles.getAvailableRandomLocation();
+			/*System.out.println(DCircle.euclideanDistance(center, loc) +"\\\\"+radius);*/
 			
+			/*while(DCircle.euclideanDistance(center, loc) > radius) {
+			
+			loc = circles.getAvailableRandomLocation();
+			System.out.println(DCircle.euclideanDistance(center, loc));
+			} 
+			*/
 			f.setPos(loc);
 
 			if(circles.setObjectLocation(f, f.pos))
@@ -167,7 +177,7 @@ public class DCircles extends DistributedState<Double2D> {
 				f= new DCircle(this,new Double2D(0,0));
 			}
 		}
-		
+
 	}
 	@Override
 	public DistributedField2D getField() {
@@ -186,7 +196,7 @@ public class DCircles extends DistributedState<Double2D> {
 		return this;
 	}
 
-	
+
 	public static void main(String[] args)
 	{
 		doLoop(DCircles.class, args);
