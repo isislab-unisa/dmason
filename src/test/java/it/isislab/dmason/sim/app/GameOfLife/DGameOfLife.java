@@ -166,9 +166,19 @@ public class DGameOfLife extends DistributedState<Int2D> {
 		}
 
 		seedGrid();
-		DCellAgent a = new DCellAgent(this, core.getAvailableRandomLocation());
-		if (core.setObjectLocation(a, a.pos))
+//		DCellAgent a = new DCellAgent(this, core.getAvailableRandomLocation());
+//		if (core.setObjectLocation(a, a.pos))
+//			schedule.scheduleOnce(a);
+		
+		
+		DCellAgent a=new DCellAgent(this, new Int2D(0,0));
+		a.setPos(core.getAvailableRandomLocation());
+		
+		if(core.setObjectLocation(a, a.pos)) {
 			schedule.scheduleOnce(a);
+		}
+		
+		
 	}
 
 	@Override

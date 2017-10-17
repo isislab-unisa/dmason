@@ -99,7 +99,7 @@ public class DGameOfLifeWithUI extends GUIState {
 		super.init(c);
 
 		// make the displayer
-		display = new Display2D(600,600,this);
+		display = new Display2D(1000,1000,this);
 		display.setBackdrop(Color.WHITE);
 
 		displayFrame = display.createFrame();

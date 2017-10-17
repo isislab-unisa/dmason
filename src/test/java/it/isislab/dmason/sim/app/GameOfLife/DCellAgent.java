@@ -35,7 +35,8 @@ public class DCellAgent extends RemoteCellAgent<Int2D> {
 
 	@Override
 	public void step(SimState state) {
-
+        
+		
 		DGameOfLife tut = (DGameOfLife) state;
 		int count = 0;
 		int width = tut.grid.my_width;

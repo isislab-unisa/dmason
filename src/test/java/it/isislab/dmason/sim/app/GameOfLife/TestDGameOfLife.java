@@ -35,14 +35,14 @@ import sim.display.Console;
  *
  */
 public class TestDGameOfLife {
-	private static boolean graphicsOn=true; //with or without graphics?
-	private static int numSteps = 1000000; //only graphicsOn=false
-	private static int rows = 1; //number of rows
-	private static int columns = 2; //number of columns
+	private static boolean graphicsOn=false; //with or without graphics?
+	private static int numSteps = 100; //only graphicsOn=false
+	private static int rows = 4; //number of rows
+	private static int columns = 8; //number of columns
 	private static int AOI=1; //max distance
-	private static int NUM_AGENTS=800; //number of agents
-	private static int WIDTH=200; //field width
-	private static int HEIGHT=200; //field height
+	private static int NUM_AGENTS=2; //number of agents
+	private static int WIDTH=3200; //field width
+	private static int HEIGHT=3200; //field height
 	private static int CONNECTION_TYPE=ConnectionType.pureActiveMQ;
 	private static String ip="127.0.0.1"; //ip of activemq
 	private static String port="61616"; //port of activemq
