@@ -78,7 +78,6 @@ import com.jcraft.jsch.SftpException;
 
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.model.LocalInstanceState;
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.LocalInstanceStateManager;
-import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.VersionChooser;
 
 /**
  * 
