@@ -49,84 +49,98 @@
         <link rel="import" href="bower_components/paper-input/paper-input.html">
         <link rel="import" href="bower_components/paper-progress/paper-progress.html">
         <link rel="import" href="bower_components/paper-card/paper-card.html">
+        <link rel="import" href="bower_components/paper-tooltip/paper-tooltip.html">
+        <link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
+        <link rel="import" href="bower_components/paper-tabs/paper-tab.html">
 
         <link rel="import" href="bower_components/iron-icons/iron-icons.html">
         <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout-classes.html">
         <link rel="import" href="bower_components/iron-image/iron-image.html">
         <link rel="import" href="bower_components/iron-icons/image-icons.html">
+        <link rel="import" href="bower_components/iron-pages/iron-pages.html">
     </head>
-
     <body unresolved onload="load_tiles_settings()">
         <!-- Testata pagina -->
-        <app-header reveals fixed slot="header">
-            <app-toolbar flex id="mainToolBar" class="horizontal">
-                <paper-icon-button icon="menu" onclick="drawer.toggle()" drawer-toggle></paper-icon-button>
-                <div class="flex" spacer main-title><span>DMASON Master</span></div>
-            </app-toolbar>
-        </app-header>
+        <jsp:include page="fragments/header.jsp">
+			<jsp:param name="page" value="settings" />
+		</jsp:include>
 
         <!-- Corpo pagina -->
-        <div class="content content-main">
-            <div class="grid-settings" id="workers">
-                <script>
-                    var grid = document.getElementById("workers");
-                    var tiles = "<div class=\"grid-sizer-settings\"></div>";
-                    for (i = 0; i < 1; i++) {
-                        tiles += "<div class=\"grid-item-settings\" style=\"margin: 8px 0 0 8px;\">"
-                        + "<paper-card image=\"images/Apache-activemq-logo.png\">"
-                        + "<div class=\"card-content\" >"
-                        + "<paper-input label=\"192.168.0.1\" auto-validate pattern=\"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$\" error-message=\"Wrong IP format!\"></paper-input>"
-                        + "<paper-input label=\"80\" auto-validate pattern=\"^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$\" error-message=\"Wrong port range!\"></paper-input>"
-                        + "</div>"
-                        + "<div class=\"card-actions\" style=\"border-style: none;\">"
-                        + "<paper-button raised style=\"float:right;\" disabled><iron-icon icon=\"check\"></iron-icon>&nbsp;Set</paper-button>"
-                        + "</div>"
-                        + "</paper-card>"
-                        + "</div>";
-                    }
-                    grid.innerHTML = tiles;
-                </script>
+        <!--<paper-tabs selected="{{selected}}">
+            <paper-tab>Apache MQ</paper-tab>
+            <paper-tab>Amazon AWS</paper-tab>
+            <paper-tab>Microsoft Azure</paper-tab>
+        </paper-tabs>-->
+
+        <!--<iron-pages selected="{{selected}}">--><!-- TODO rimuovere paper-tabs e iron-pages -->
+            <div class="content content-main">
+                <div class="grid-settings" id="workers">
+                    <%-- Apache ActiveMQ card --%>
+                    <paper-card heading="Apache ActiveMQ" class="grid-item-settings">
+                        <div class="card-image">
+                            <img src="images/activemq-logo.png" alt="Apache ActiveMQ"></img>
+                        </div>
+                        <div class="card-content">
+                            <paper-input id="activemqip" label="Server IP" auto-validate pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$" error-message="Wrong IP format!"></paper-input>
+                            <paper-tooltip for="activemqip" position="bottom" animation-delay="0" offset="1">Specify an Apache ActiveMQ server IP</paper-tooltip>
+                            <paper-input id="activemqport" label="Access port" auto-validate pattern="^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$" error-message="Wrong port range!"></paper-input>
+                            <paper-tooltip for="activemqport" position="bottom" animation-delay="0" offset="1">Specify an access port for ActiveMQ server</paper-tooltip>
+                        </div>
+                        <div class="card-actions">
+                            <div class="horizontal justified">
+                                <paper-button class="card-button" disabled><iron-icon icon="check"></iron-icon>&nbsp;Set</paper-button>
+                            </div>
+                        </div>
+                    </paper-card>
+                    <%-- Amazon AWS EC2 card --%>
+                    <paper-card heading="Amazon AWS EC2" class="grid-item-settings">
+                        <div class="card-image">
+                            <img src="images/amazonwebservices-logo.svg" alt="Amazon AWS logo"></img>
+                        </div>
+                        <div class="card-content">
+                            <paper-input id="region" label="Region" auto-validate pattern="[a-z]{2}-[a-z]{4,5}-[0-9]{1}" error-message="Wrong region format!"></paper-input>
+                            <paper-tooltip for="region" position="bottom" animation-delay="0" offset="1">Specify an Amazon AWS region</paper-tooltip>
+                            <paper-input id="pubkey" label="Public API Key" auto-validate pattern="" error-message="Wrong public API key!"></paper-input>
+                            <paper-tooltip for="pubkey" position="bottom" animation-delay="0" offset="1">Specify the public key associated to the Amazon account</paper-tooltip>
+                            <paper-input id="prikey" label="Private API Key" auto-validate pattern="" error-message="Wrong private API key!"></paper-input>
+                            <paper-tooltip for="prikey" position="bottom" animation-delay="0" offset="1">Specify the private key associated to the Amazon account</paper-tooltip>
+                        </div>
+                        <div class="card-actions">
+                            <div class="horizontal justified">
+                                <paper-button class="card-button" disabled><iron-icon icon="check"></iron-icon>&nbsp;Set</paper-button>
+                            </div>
+                        </div>
+                    </paper-card>
+                    <%-- Microsoft Azure card --%>
+                    <paper-card heading="Microsoft Azure" class="grid-item-settings">
+                        <div class="card-image">
+                            <img src="images/microsoftazure.svg" alt="Microsoft Azure"></img>
+                        </div>
+                        <div class="card-content">
+                            <p style="color: dimgray;">Coming soon!</p>
+                        </div>
+                        <div class="card-actions">
+                            <div class="horizontal justified">
+                                <paper-button class="card-button" disabled><iron-icon icon="check"></iron-icon>&nbsp;Set</paper-button>
+                            </div>
+                        </div>
+                    </paper-card>
+                </div>
             </div>
-        </div>
+        <!--</iron-pages>-->
+
+        <!--<script>
+            var pages = document.querySelector('iron-pages');
+            var tabs = document.querySelector('paper-tabs');
+
+            tabs.addEventListener('iron-select', function() { 
+                pages.selected = tabs.selected;
+            });
+        </script>-->
 
         <!-- menu laterale a scorrimento -->
-		<app-drawer id="drawer" slot="drawer" swipe-open>
-            <app-header-layout id="side-header-panel" fixed fill>
-                <!-- header del drawer -->
-                <app-toolbar class="side-drawer">
-                    <div style="margin-right:5px;">Control Panel</div>
-                    <paper-icon-button icon="chevron-left" onclick="drawer.toggle()"></paper-icon-button>
-                </app-toolbar>
-                <!-- menu drawer -->
-                <nav class="content content-side-bar">
-                    <paper-menu selected="3">
-                        <paper-item>
-                            <a href="index.jsp">
-                                <iron-icon icon="icons:flip-to-front" item-icon slot="item-icon"></iron-icon>
-                                <span class="span-icon">Monitoring</span>
-                            </a>
-                        </paper-item>
-                        <paper-item>
-                            <a href="simulations.jsp">
-                                <iron-icon icon="image:blur-on" item-icon slot="item-icon"></iron-icon>
-                                <span class="span-icon">Simulations</span>
-                            </a>
-                        </paper-item>
-                        <paper-item>
-                            <a href="history.jsp">
-                                <iron-icon icon="history" item-icon slot="item-icon"></iron-icon>
-                                <span class="span-icon">History</span>
-                            </a>
-                        </paper-item>
-                        <paper-item class="selected">
-                            <a href="settings.jsp">
-                                <iron-icon icon="settings" item-icon slot="item-icon"></iron-icon>
-                                <span class="span-icon">Settings</span>
-                            </a>
-                        </paper-item>
-                    </paper-menu>
-                <nav>
-            </app-header-layout>
-        </app-drawer>
+        <jsp:include page="fragments/drawer.jsp">
+            <jsp:param name="pageSelected" value="3" />
+        </jsp:include>
     </body>
 </html>

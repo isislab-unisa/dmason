@@ -8,6 +8,7 @@ body {
     color: black;
 }
 
+/* ---- grids ---- */
 .grid-monitoring,
 .grid-settings {
     background: transparent;
@@ -25,29 +26,22 @@ body {
 
 /* ---- grid-item ---- */
 .grid-sizer-monitoring,
-.grid-item-monitoring
-{
+.grid-item-monitoring {
     width: 250px;
     height: 250px;
 }
 
 .grid-sizer-settings,
-.grid-item-settings
-{
+.grid-item-settings {
     width: 300px;
     height: 300px;
+    margin: 10px 0 0 10px;
 }
 
-.grid-item-settings{
-    width: 300px;
-    height: 300px;
+.grid-item-settings {
     float: left;
-    background-color: white;
-    border: 2px solid #0c3308;
-    border-color: hsla(0, 0%, 0%, 0.5);
-    border-radius: 5px;
-    font-size: large;
-    position: relative;
+    height: auto;
+    min-height: 300px;
 }
 
 .grid-item-monitoring {
@@ -116,4 +110,34 @@ body {
 a {
     text-decoration: none !important;
     color: black !important;
+}
+
+/* card layout */
+.card-image {
+    overflow: hidden;
+    padding: 5px;
+    text-align: center;
+}
+
+.card-image > img {
+    max-height: 125px;
+    margin: 0 auto;
+    max-width: 285px;
+}
+
+.card-actions {
+    border-style: none;
+    background-color: #D73D32;
+}
+
+.card-button {
+    background-color: #D73D32 !important;
+}
+
+.horizontal {
+    @apply --layout-horizontal;
+}
+
+.justified {
+    @apply --layout-justified;
 }

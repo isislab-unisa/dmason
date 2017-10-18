@@ -56,15 +56,9 @@
     </head>
     <body unresolved>
 		<!-- Testata pagina -->
-		<app-header reveals fixed slot="header">
-            <app-toolbar flex id="mainToolBar" class="horizontal">
-                <paper-icon-button icon="menu" onclick="drawer.toggle()" drawer-toggle></paper-icon-button>
-                <div class="flex" spacer main-title><span>DMASON Master</span></div>
-                <div onclick="cleanHistory()" class="cleanAllHistory">
-                    <paper-icon-button icon="select-all"></paper-icon-button><span>Clean all history</span>
-                </div>
-            </app-toolbar>
-        </app-header>
+		<jsp:include page="fragments/header.jsp">
+			<jsp:param name="page" value="history" />
+		</jsp:include>
 
         <!-- Corpo pagina -->
         <div class="content content-main">
@@ -84,44 +78,9 @@
         </div>
 
 		<!-- menu laterale a scorrimento -->
-		<app-drawer id="drawer" slot="drawer" swipe-open>
-            <app-header-layout id="side-header-panel" fixed fill>
-                <!-- header del drawer -->
-                <app-toolbar class="side-drawer">
-                    <div style="margin-right:5px;">Control Panel</div>
-                    <paper-icon-button icon="chevron-left" onclick="drawer.toggle()"></paper-icon-button>
-                </app-toolbar>
-                <!-- menu drawer -->
-                <nav class="content content-side-bar">
-                    <paper-menu selected="2">
-                        <paper-item>
-                            <a href="index.jsp">
-                                <iron-icon icon="icons:flip-to-front" item-icon slot="item-icon"></iron-icon>
-                                <span class="span-icon">Monitoring</span>
-                            </a>
-                        </paper-item>
-                        <paper-item>
-                            <a href="simulations.jsp">
-                                <iron-icon icon="image:blur-on" item-icon slot="item-icon"></iron-icon>
-                                <span class="span-icon">Simulations</span>
-                            </a>
-                        </paper-item>
-                        <paper-item class="selected">
-                            <a href="history.jsp">
-                                <iron-icon icon="history" item-icon slot="item-icon"></iron-icon>
-                                <span class="span-icon">History</span>
-                            </a>
-                        </paper-item>
-                        <paper-item>
-                            <a href="settings.jsp">
-                                <iron-icon icon="settings" item-icon slot="item-icon"></iron-icon>
-                                <span class="span-icon">Settings</span>
-                            </a>
-                        </paper-item>
-                    </paper-menu>
-                <nav>
-            </app-header-layout>
-        </app-drawer>
+        <jsp:include page="fragments/drawer.jsp">
+            <jsp:param name="pageSelected" value="2" />
+        </jsp:include>
 
         <!-- Bottoni in fondo e messaggi di avviso -->
         <paper-fab id="delete-history-button" icon="cancel" onclick="cleanSelectedHistory()"></paper-fab>
