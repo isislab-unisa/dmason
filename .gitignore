@@ -6,6 +6,7 @@
 .classpath
 .DS_Store
 .idea/*
+.vscode
 /logs
 /resources/app/test-network
 *~
