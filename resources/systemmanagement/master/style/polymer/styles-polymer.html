@@ -40,10 +40,6 @@
         color: red !important;
     }
 
-    paper-listbox {
-        background-color: #29292d;
-    }
-
     /* deprecato */
     paper-scroll-header-panel {
         position: absolute;
@@ -121,7 +117,7 @@
     }
 
     paper-card.grid-item-settings {
-        background-color: transparent;
+        background-color: #FFF;
 
         --paper-card-header: {
             background-color: #D73D32;
@@ -136,6 +132,12 @@
         width: 200px;
     }
 
+    paper-dropdown-menu#region {
+        width: 100%;
+        margin: auto;
+        display: block;
+    }
+
     paper-checkbox {
         --paper-checkbox-unchecked-color: black;
         --paper-checkbox-checked-background-color: #427FED;
@@ -147,7 +149,28 @@
     }
 
     paper-listbox {
+        background-color: #29292d;
         --paper-listbox-background-color: gray;
+        --paper-listbox-color: white;
+    }
+
+    #regionlist {
+        min-width: 250px;
+        max-height: 350px;
+        background-color: white;
+        --paper-listbox-background-color: dimgray;
+        --paper-listbox-color: #333333;
+    }
+
+    #regionlist > paper-item {
+        color: #333333;
+    }
+
+    #regionlist > paper-item.disabled {
+        font-weight: bold;
+        background-color: #D73D32;
+        color: white;
+        --paper-listbox-background-color: #D73D32;
         --paper-listbox-color: white;
     }
 

@@ -116,6 +116,16 @@ $(
                 },
                 5000
             );
+        } else if (window.location.pathname == "/settings.jsp") {
+            setTimeout(
+                function () {
+                    loadSettings();
+                    if ($("#load_settings_dialog").prop("opened")) {
+                        close_dialog_by_ID("load_settings_dialog");
+                    }
+                },
+                4000
+            );
         }
     }
 );
@@ -139,6 +149,7 @@ function nextProgress() {
     }
     requestAnimationFrame(nextProgress);
 }
+
 function startProgress() {
     repeat = 0;
     maxRepeat = 20, animating = false;
@@ -239,7 +250,6 @@ function selectAllWorkers() {
     });
 }
 
-
 function selectItem(element) {
     if ($(element).hasClass("grid-item-selected")) {
         $(element).removeClass("grid-item-selected");
@@ -265,6 +275,7 @@ function change_partitioning_input_params(element) {
     }
 
 }
+
 function _validate_params(element) {
     var current_element = $(element);
     var paper_input_container = current_element.children()[0];
@@ -503,7 +514,6 @@ function _update_sim_info(_message) {
     }
 }
 
-
 function getListFile(sim_id) {
     $.ajax({
         url: "requestForLog",
@@ -663,5 +673,97 @@ function cleanHistory() {
             close_dialog_by_ID("load_history_dialog");
             location.reload();
         }
+    });
+}
+
+$().ready(function () {
+//    $(loadSettings); // done in a previous function
+    $("#setactivemq").click(updateActiveMQSettings);
+    $("#setamazonaws").click(updateAmazonAWSSettings);
+});
+
+function loadSettings() {
+    $.post(
+        "getSettings",
+        function (data) {
+            if (data == null) {
+                console.warn("No setting has been retrieved!");
+                return;
+            //} else {
+            //    console.log("Settings successfully retrieved!")
+            }
+
+            // ectract data
+            var activeMQIp = data.activeMQSettings.ip;
+            var activeMQPort = data.activeMQSettings.port;
+            //console.log("ActiveMQ location: " + activeMQIp + ":" + activeMQPort);
+            var amazonAWSPriKey = data.amazonAWSSettings.priKey;
+            var amazonAWSPubKey = data.amazonAWSSettings.pubKey;
+            var amazonAWSRegion = data.amazonAWSSettings.region;
+            //console.log("Amazon AWS region: " + amazonAWSRegion);
+
+            // show ActiveMQ settings
+            $("#activemqip").val(activeMQIp);
+            $("#activemqport").val(activeMQPort);
+
+            // show Amazon AWS settings
+            $("#region").val(amazonAWSRegion);
+            $("#pubkey").val(amazonAWSPubKey);
+            $("#prikey").val(amazonAWSPriKey);
+        }
+    )
+    .fail(function () {
+        console.error("Error while retrieving current settings!");
+    });
+}
+
+function updateActiveMQSettings() {
+    var ip = $("#activemqip").val();
+    var port = $("#activemqport").val();
+    //console.log("ActiveMQ IP:port " + ip + ":" + port);
+
+    if (ip == "" || port == "") {
+        console.warn("Please provide IP and port of ActiveMQ server!");
+        return;
+    }
+
+    // send POST request to server
+    $.post(
+        "updateSettings",
+        {
+            "setting": "activemq",
+            "activemqip": ip,
+            "activemqport": port
+        }
+    )
+    .fail(function () {
+        console.error("Error while sending Active MQ data!");
+    });
+}
+
+function updateAmazonAWSSettings() {
+    var region = $("#region").val();
+    var pubkey = $("#pubkey").val();
+    var prikey = $("#prikey").val();
+    console.log("Region: " + region);
+
+    // check parameters emptiness
+    if (region == "" || pubkey == "" || prikey == "") {
+        console.warn("Please provide region, public key and private key for Amazon AWS!");
+        return;
+    }
+
+    // send POST request to server
+    $.post(
+        "updateSettings",
+        {
+            "setting": "amazonaws",
+            "region": region,
+            "pubkey": pubkey,
+            "prikey": prikey
+        }
+    )
+    .fail(function () {
+        console.error("Error while sending Amazon AWS data!");
     });
 }
