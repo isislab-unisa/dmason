@@ -241,6 +241,21 @@
 		    <artifactId>aws-java-sdk</artifactId>
 		    <version>1.11.106</version>
 	  	</dependency>
+
+		<!-- Apache Commons Configuration -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-configuration2</artifactId>
+			<version>2.2</version>
+		</dependency>
+
+		<!-- Apache Commons BeanUtils -->
+		<!-- required by Apache Commons Configuration -->
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.9.3</version>
+		</dependency>
 	</dependencies>
 
 	<build>

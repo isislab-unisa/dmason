@@ -17,14 +17,16 @@
 package it.isislab.dmason.experimentals.systemmanagement.utils.activemq;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.usage.SystemUsage;
 import org.apache.activemq.usage.TempUsage;
 import org.apache.activemq.usage.UsageCapacity;
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 
 /**
@@ -37,70 +39,67 @@ import org.apache.activemq.usage.UsageCapacity;
  *
  */
 public class ActiveMQStarter {
+	private BrokerService broker = null;
+	private Configuration startConfig = null;
+	private String IP_ACTIVEMQ;
+	private String PORT_ACTIVEMQ;
 
-	
-	private  BrokerService broker=null;
-	private  Properties startProperties = null;
-	private  String IP_ACTIVEMQ;
-	private  String PORT_ACTIVEMQ;
+	// ActiveMQ settings file, default 127.0.0.1:61616 otherwise you have to change config.properties file
+	private static final String PROPERTIES_FILE_PATH = "resources/systemmanagement/master/conf/config.properties";
 
-	//ActivemQ settings file, default 127.0.0.1:61616 otherwise you have to change config.properties file
-	private static final String PROPERTIES_FILE_PATH="resources/systemmanagement/master/conf/config.properties";
-	
 	/**
 	 * Embedded starter for ActivemQ
 	 */
-	public ActiveMQStarter(){
-		startProperties = new Properties();
+	public ActiveMQStarter() {
 		broker = new BrokerService();
-		InputStream input=null;
-		//load params from properties file 
-		try {
-			input=new FileInputStream(PROPERTIES_FILE_PATH);	
-			startProperties.load(input);
-			IP_ACTIVEMQ=startProperties.getProperty("ipmaster");
-			PORT_ACTIVEMQ=startProperties.getProperty("portmaster");
-			System.out.println(IP_ACTIVEMQ +" "+PORT_ACTIVEMQ);
-			
-			
 
-		} catch (IOException e2) {
-			System.err.println(e2.getMessage());
-		}finally{
-			try {input.close();
-			} catch (IOException e) {
-				System.err.println(e.getMessage());
-				}
-			}
+		// use Apache Commons Configuration to
+		// extract configuration from properties file
+		Parameters params = new Parameters();
+		FileBasedConfigurationBuilder<FileBasedConfiguration> builder =
+				new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)
+				.configure(
+						params.properties().setFileName(PROPERTIES_FILE_PATH)
+				);
+		try
+		{
+			startConfig = builder.getConfiguration();
+		}
+		catch (ConfigurationException e)
+		{
+			System.err.println(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
+		}
+		final String PROPERTY_PREFIX = "activemq".concat(".");
+		IP_ACTIVEMQ = startConfig.getString(PROPERTY_PREFIX.concat("ipmaster"));
+		PORT_ACTIVEMQ = startConfig.getString(PROPERTY_PREFIX.concat("portmaster"));
+		System.out.println(IP_ACTIVEMQ + " " + PORT_ACTIVEMQ);
 	}
-	
 
 	/**
 	 * Start ActivemQ service
 	 */
-	public void startActivemq(){
-		
-		String address="tcp://"+IP_ACTIVEMQ+":"+PORT_ACTIVEMQ;
+	public void startActivemq() {
+		String address = "tcp://" + IP_ACTIVEMQ + ":" + PORT_ACTIVEMQ;
 		try {
-			/*code to set ActivemQ configuration 
+			/* code to set ActivemQ configuration 
 			for tempUsage property a big value can cause error 
-			for node with low disk space*/ 
+			for node with low disk space */ 
 
-			String os=System.getProperty("os.name").toLowerCase();
-			File rootFileSystem=null;;
+			String os = System.getProperty("os.name").toLowerCase();
+			File rootFileSystem = null;;
 
-			Long val=new Long(1000000000);
+			Long val = new Long(1000000000);
 
-			if(os.contains("linux")){
-				rootFileSystem=new File("/");
-				val=new Long(rootFileSystem.getFreeSpace()/2); 
-			}else if(os.contains("windows")){
+			if (os.contains("linux")) {
+				rootFileSystem = new File("/");
+				val = new Long(rootFileSystem.getFreeSpace()/2); 
+			} else if(os.contains("windows")) {
 				//
 				System.out.println("windows system using 1Gb for tempUsage");
 			}
 
-			TempUsage usage=new TempUsage();
-			UsageCapacity c=broker.getSystemUsage().getTempUsage().getLimiter();
+			TempUsage usage = new TempUsage();
+			UsageCapacity c = broker.getSystemUsage().getTempUsage().getLimiter();
 			c.setLimit(val);
 			usage.setLimiter(c);
 			SystemUsage su = broker.getSystemUsage();
@@ -109,13 +108,14 @@ public class ActiveMQStarter {
 			/*     end code for tempUsage setting    */
 			broker.addConnector(address);
 			broker.start();
-			
-			
-		} catch (Exception e1) {e1.printStackTrace();}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 	}
+
 	// start ActivemQ
 	public static void main(String[] args) {
-		ActiveMQStarter activemq=new ActiveMQStarter();
+		ActiveMQStarter activemq = new ActiveMQStarter();
 		activemq.startActivemq();
 	}
 }
