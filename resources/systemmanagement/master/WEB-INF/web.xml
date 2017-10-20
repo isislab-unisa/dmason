@@ -159,4 +159,20 @@
         <servlet-name>StartViewerServlet</servlet-name>
         <url-pattern>/viewer</url-pattern>
     </servlet-mapping>
+    <servlet id="updateSettings">
+    	<servlet-name>UpdateSettingsServlet</servlet-name>
+    	<servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.UpdateSettingsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+    	<servlet-name>UpdateSettingsServlet</servlet-name>
+    	<url-pattern>/updateSettings</url-pattern>
+    </servlet-mapping>
+    <servlet id="getSettings">
+    	<servlet-name>GetSettingsServlet</servlet-name>
+    	<servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.GetSettingsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+    	<servlet-name>GetSettingsServlet</servlet-name>
+    	<url-pattern>/getSettings</url-pattern>
+    </servlet-mapping>
 </web-app>
