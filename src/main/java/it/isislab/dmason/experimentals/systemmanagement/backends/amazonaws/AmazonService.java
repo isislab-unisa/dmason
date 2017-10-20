@@ -171,11 +171,12 @@ public class AmazonService
 	/**
 	 * This method creates a new instance into the specified group.
 	 * 
-	 * @param groupName
-	 * @param clusterType
-	 * @return result
-	 * @throws IOException 
-	 * @throws FileNotFoundException 
+	 * @param groupName - 
+	 * @param clusterType - 
+	 * @param maxNumberInstances - 
+	 * @return result - 
+	 * @throws IOException - An error occurred while accessing the file
+	 * @throws FileNotFoundException - Local instances file has not been found 
 	 */
 	public static RunInstancesResult createInstance(String groupName, String clusterType, int maxNumberInstances)
 			throws FileNotFoundException, IOException
@@ -224,8 +225,8 @@ public class AmazonService
 	 * This method creates a key pair to access the cluster associated to
 	 * {@link #ec2} client.
 	 * 
-	 * @throws IOException
-	 * @throws FileNotFoundException
+	 * @throws IOException - An error occurred while accessing the file
+	 * @throws FileNotFoundException - The key pair file has not been found
 	 */
 	public static void createKeyPair()
 			throws IOException, FileNotFoundException
@@ -368,14 +369,13 @@ public class AmazonService
 	 * This method executes a remote command on a ChannelExec channel
 	 * and returns a status code.
 	 * 
-	 * @param channel - The channel where the command has to be executed
-	 * @param in - The input stream for the channel
+	 * @param session - The session to use for command execution
 	 * @param command - The command to execute on the remote channel
 	 * @param printRemoteOutput - Toggle remote console
 	 * @return exitStatus - Exit status for the command
-	 * @throws JSchException
-	 * @throws IOException
-	 * @throws InterruptedException
+	 * @throws JSchException - An error occurred while creating or accessing a secure shell object
+	 * @throws IOException - An error occurred while accessing the file
+	 * @throws InterruptedException - A thread has been interrupted while running
 	 */
 	public static int executeCommand(Session session, String command, boolean printRemoteOutput)
 			throws JSchException, IOException, InterruptedException
@@ -424,8 +424,8 @@ public class AmazonService
 	 * 
 	 * @param instanceId - The ID of the instance
 	 * @param username - The username on the instance
+	 * @param forceNewSession - Determine whether reuse current session (<code>false</code>) or discard it (<code>true</code>)
 	 * @return session - The session for instance specified by ID.
-	 * @throws JSchException
 	 */
 	public static Session getSession(String instanceId, String username, boolean forceNewSession)
 	{
@@ -556,8 +556,6 @@ public class AmazonService
 		LOGGER.info("Local instances state map is ready!");
 	}
 
-
-
 	/**
 	 * 
 	 * This helper method deals with loading properties from a specified
@@ -678,12 +676,12 @@ public class AmazonService
 	 * This method processes remote input from a console and
 	 * returns its status code.
 	 * 
-	 * @param channel
-	 * @param in
-	 * @param printOutput
+	 * @param channel - 
+	 * @param in - 
+	 * @param printOutput - 
 	 * @return exitStatus - The exit status of the console
-	 * @throws IOException
-	 * @throws InterruptedException
+	 * @throws IOException - An error occurred while accessing the file
+	 * @throws InterruptedException - A thread has been interrupted while running
 	 */
 	private static int readRemoteInput(ChannelExec channel, InputStream in, boolean printOutput)
 			throws IOException
@@ -728,8 +726,8 @@ public class AmazonService
 	 * This method reboots an existing running instance
 	 * by specifying its ID as parameter.
 	 * 
-	 * @param instanceID
-	 * @return
+	 * @param instanceID - The instance ID of the instance to reboot
+	 * @return Reboot instance result
 	 */
 	public static RebootInstancesResult rebootInstance(String instanceID)
 	{
@@ -860,8 +858,8 @@ public class AmazonService
 	 * This method starts an existing instance by specifying
 	 * its ID as parameter.
 	 * 
-	 * @param instanceId
-	 * @return result
+	 * @param instanceId - The instance ID of the instance to start
+	 * @return start instance result
 	 */
 	public static StartInstancesResult startInstance(String instanceId)
 	{
@@ -912,8 +910,8 @@ public class AmazonService
 	 * This method stops an existing running instance
 	 * by specifying its ID as parameter.
 	 * 
-	 * @param instanceID
-	 * @return
+	 * @param instanceID - The instance ID of the instance to stop
+	 * @return stop instance result
 	 */
 	public static StopInstancesResult stopInstance(String instanceID)
 	{
@@ -998,8 +996,8 @@ public class AmazonService
 	 * This method terminates an existing running instance
 	 * by specifying its ID as parameter.
 	 * 
-	 * @param instanceID
-	 * @return
+	 * @param instanceID - The instance ID of the instance to terminate
+	 * @return terminate instance status
 	 */
 	public static TerminateInstancesResult terminateInstance(String instanceID)
 	{
