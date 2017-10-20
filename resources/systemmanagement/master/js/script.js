@@ -10,8 +10,7 @@ function load_tiles_monitoring() {
 function load_tiles_settings() {
     $('.grid-settings').masonry({
             itemSelector: '.grid-item-settings',
-            columnWidth: '.grid-sizer-settings',
-            percentPosition: true
+            columnWidth: 315
         }
     );
 }
@@ -31,7 +30,7 @@ function open_dialog_setting_new_simulation() {
     var num_workers = $('.grid-item-selected').length;
     var id = "";
     if (num_workers) {
-        $('.grid-item-selected').each(function(index) {
+        $('.grid-item-selected').each(function (index) {
             id = $(this).attr("id");
             //console.log(id);
 
@@ -80,7 +79,9 @@ $(
             setInterval(
                 function () {
                     loadWorkers();
-                    if($('#load_workers_dialog').prop("opened"))close_dialog_by_ID("load_workers_dialog");
+                    if ($('#load_workers_dialog').prop("opened")) {
+                        close_dialog_by_ID("load_workers_dialog");
+                    }
                     load_tiles_monitoring();
                 },
                 1000
@@ -116,7 +117,6 @@ $(
                 5000
             );
         }
-
     }
 );
 
@@ -153,12 +153,13 @@ function startProgress() {
 
 function loadWorkers() {
     $.ajax({
-        url:"getWorkers",
-        success: function(result) {
+        url: "getWorkers",
+        success: function (result) {
             _loadWorkers(result);
         }
     });
 }
+
 //var history="";
 function _loadWorkers(_message) {
 
@@ -181,7 +182,7 @@ function _loadWorkers(_message) {
         }
     });
 
-    if(obj.hasOwnProperty('workers')){
+    if (obj.hasOwnProperty('workers')) {
 
         for (i = 0; i < obj.workers.length; i++) {
             w = obj.workers[i];
@@ -224,7 +225,7 @@ function _loadWorkers(_message) {
         }
     }
 
-    // grid.innerHTML=tiles;
+    // grid.innerHTML = tiles;
     load_tiles_monitoring();
 }
 
@@ -273,13 +274,13 @@ function _validate_params(element) {
     if (value) {
         value = parseInt(value);
     }
-    if (value===0) {
+    if (value === 0) {
         paper_input_container.invalid = true;
         submit_btn.disabled = true;
         return false;
     }
 
-    paper_input_container.invalid =false;
+    paper_input_container.invalid = false;
     submit_btn.disabled = false;
 }
 
@@ -364,7 +365,7 @@ function submitForm() {
 
     startProgress();
 
-    $(form).unbind('submit').bind("submit",_OnsubmitSimulation);
+    $(form).unbind('submit').bind("submit", _OnsubmitSimulation);
     form.submit();
 }
 
@@ -385,7 +386,7 @@ function checkForm(form) {
         return false;
     }
     var success = true;
-    $("#sendSimulationForm paper-input").each(function(n, paper_input) {
+    $("#sendSimulationForm paper-input").each(function (n, paper_input) {
         if (paper_input.id.startsWith("form_")) {
             if (paper_input.value == "") {
 
@@ -394,27 +395,27 @@ function checkForm(form) {
                         if (partitioning.toLowerCase() == 'non-uniform') {
                             $(error_toast_message).text("You should fill " + paper_input.label);
                             error_toast_message.open();
-                            success=false;
+                            success = false;
                         }
                         break;
                     case "rows":
                         if (partitioning.toLowerCase() == 'uniform') {
                             $(error_toast_message).text("You should fill " + paper_input.label);
                             error_toast_message.open();
-                            success=false;
+                            success = false;
                         }
                         break;
                     case "columns":
                         if (partitioning.toLowerCase() == 'uniform') {
                             $(error_toast_message).text("You should fill " + paper_input.label);
                             error_toast_message.open();
-                            success=false;
+                            success = false;
                         }
                         break;
                     default:
                         $(error_toast_message).text("You should fill " + paper_input.label);
                         error_toast_message.open();
-                        success=false;
+                        success = false;
                 }
                 return;
             }
@@ -457,7 +458,7 @@ function _OnsubmitSimulation(event) {
         cache: false,
         contentType: false,
         processData: false,
-        success: function(result) {
+        success: function (result) {
             //remove input tag added previusly
             var dialog = document.getElementById("add-simulation-paper-dialog");
             maxRepeat =0;
@@ -481,7 +482,7 @@ function resetForm() {
 function update_simulation_info() {
     $.ajax({
         url: "simulationList",
-        success: function(result) {
+        success: function (result) {
             _update_sim_info(result);
         }
     });
@@ -507,7 +508,7 @@ function getListFile(sim_id) {
     $.ajax({
         url: "requestForLog",
         data: {id:sim_id},
-        success: function(result) {
+        success: function (result) {
             _getListFile(result);
         }
     });
@@ -538,7 +539,7 @@ function _getListFile(result) {
 function update_history_info() {
     $.ajax({
         url: "getHistoryFolderList",
-        success: function(result) {
+        success: function (result) {
             get_history_info(result);
             close_dialog_by_ID("load_history_dialog");
         }
@@ -571,12 +572,12 @@ function shutdown() {
     var workers='{ "list":[';
 
     if (num_workers) {
-        $('.grid-item-selected').each(function(index) {
+        $('.grid-item-selected').each(function (index) {
             id = $(this).attr("id");
             //console.log(id);
 
             workerID[index] = id;
-            workers+='{"id":"'+id+'"},';
+            workers += '{"id":"' + id + '"},';
         });
         console.log(workerID);
         workers = workers.substring(0,workers.length-1);
@@ -616,7 +617,7 @@ function cleanSelectedHistory() {
     var scope = document.querySelector('sim-history-grid[id="sim_history_grid"]');
 
     if (simToDelete) {
-        $('.grid-item-history-selected').each(function(index) {
+        $('.grid-item-history-selected').each(function (index) {
             var myid = $(this).attr("id");
 
             scope.listSimHistory.forEach(function (arrayItem) {
@@ -627,9 +628,9 @@ function cleanSelectedHistory() {
             });
             path = path.substring(0, path.lastIndexOf("/"));
             pathList[index] = path;
-            jsonPaths += '{"path":"'+path+'"},';
+            jsonPaths += '{"path":"' + path + '"},';
         });
-        jsonPaths = jsonPaths.substring(0,jsonPaths.length - 1);
+        jsonPaths = jsonPaths.substring(0, jsonPaths.length - 1);
         jsonPaths += ']}';
         console.log(jsonPaths);
     } else {

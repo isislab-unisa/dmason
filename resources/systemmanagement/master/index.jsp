@@ -67,15 +67,9 @@
 	</head>
 	<body unresolved>
 		<!-- Testata pagina -->
-		<app-header reveals fixed slot="header">
-			<app-toolbar flex id="mainToolBar" class="horizontal">
-				<paper-icon-button icon="menu" onclick="drawer.toggle()" drawer-toggle></paper-icon-button>
-				<div class="flex" spacer main-title><span>DMASON Master</span></div>
-				<div onclick="selectAllWorkers()" class="selectAllWorker">
-					<paper-icon-button icon="select-all"></paper-icon-button><span>Select all workers</span>
-				</div>
-			</app-toolbar>
-		</app-header>
+		<jsp:include page="fragments/header.jsp">
+			<jsp:param name="page" value="index" />
+		</jsp:include>
 
 		<!-- Import bean MasterServer -->
 		<jsp:useBean id="masterServer" class="it.isislab.dmason.experimentals.systemmanagement.master.MasterServer" scope="application"/>
@@ -84,7 +78,7 @@
 		<div class="content content-main">
 			<!-- Griglia nodi lavoratori -->
 			<div class="grid-monitoring" id="workers">
-				<div class=\"grid-sizer-monitoring\"></div>
+				<div class=\"grid-sizer-monitoring\"></div><%-- populated by script --%>
 			</div>
 
 			<!-- Loader caricamento e spegnimento nodi lavoratori -->
@@ -101,12 +95,15 @@
 					<span style="margin-left:5px;">Shutdown selected workers...</span>
 				</div>
 			</paper-dialog>
-	
+
 			<!-- Bottoni in fondo e messaggi di avviso -->
-			<paper-fab id="add-simulation-to-worker-buttom" icon="add" onclick="open_dialog_setting_new_simulation()"></paper-fab>
+			<paper-fab class="fab" id="add-aws-instance" icon="dns" onclick="alert('hi!')"></paper-fab>
+			<paper-toast id="miss-aws-instance">Lorem ipsum dolor sit amet</paper-toast>
+
+			<paper-fab class="fab" id="add-simulation-to-worker-buttom" icon="add" onclick="open_dialog_setting_new_simulation()"></paper-fab>
 			<paper-toast id="miss-worker-selection">You should select some workers before to assign them a partitioning.</paper-toast>
 
-			<paper-fab id="shutdown-worker-button" icon="settings-power" onclick="shutdown()"></paper-fab>
+			<paper-fab class="fab" id="shutdown-worker-button" icon="settings-power" onclick="shutdown()"></paper-fab>
 			<paper-toast id="miss-worker-shutdown">You need select some workers before shutdown them.</paper-toast>
 
 			<!-- Pannello aggiunta nuova simulazione -->
@@ -214,43 +211,8 @@
         </div>
 
 		<!-- menu laterale a scorrimento -->
-		<app-drawer id="drawer" slot="drawer" swipe-open>
-			<app-header-layout id="side-header-panel" fixed fill>
-				<!-- header del drawer -->
-				<app-toolbar class="side-drawer">
-					<div style="margin-right:5px;">Control Panel</div>
-					<paper-icon-button icon="chevron-left" onclick="drawer.toggle()"></paper-icon-button>
-				</app-toolbar>
-				<!-- menu drawer -->
-				<nav class="content content-side-bar">
-					<paper-menu selected="0">
-						<paper-item class="selected">
-							<a href="index.jsp">
-								<iron-icon icon="icons:flip-to-front" item-icon slot="item-icon"></iron-icon>
-								<span class="span-icon">Monitoring</span>
-							</a>
-						</paper-item>
-						<paper-item>
-							<a href="simulations.jsp">
-								<iron-icon icon="image:blur-on" item-icon slot="item-icon"></iron-icon>
-								<span class="span-icon">Simulations</span>
-							</a>
-						</paper-item>
-						<paper-item>
-							<a href="history.jsp">
-								<iron-icon icon="history" item-icon slot="item-icon"></iron-icon>
-								<span class="span-icon">History</span>
-							</a>
-						</paper-item>
-						<paper-item>
-							<a href="settings.jsp">
-								<iron-icon icon="settings" item-icon slot="item-icon"></iron-icon>
-								<span class="span-icon">Settings</span>
-							</a>
-						</paper-item>
-					</paper-menu>
-				<nav>
-			</app-header-layout>
-		</app-drawer>
+		<jsp:include page="fragments/drawer.jsp">
+			<jsp:param name="pageSelected" value="0" />
+		</jsp:include>
 	</body>
 </html>

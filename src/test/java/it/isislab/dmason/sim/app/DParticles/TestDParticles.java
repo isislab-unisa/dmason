@@ -42,6 +42,7 @@ import sim.display.Console;
  */
 public class TestDParticles {
 
+	private static boolean graphic=false;
 	private static int numSteps = 300000; //only graphicsOn=false
     private static int rows = 4; //number of rows
     private static int columns = 4; //number of columns
@@ -91,7 +92,7 @@ public class TestDParticles {
         			genParam.setPort(port);
         			ArrayList<EntryParam<String, Object>> simParams=new ArrayList<EntryParam<String, Object>>();
         			
-        			if(i==0 && j==0)
+        			if(i==0 && j==0 || graphic)
     				{
     					DParticlesWithUI sim =new DParticlesWithUI(genParam,simParams,topicPrefix);
     					((Console)sim.createController()).pressPause();

@@ -66,12 +66,12 @@
     }
 
     /* Bottoni */
-    paper-button.undo-button {
-        background-color: transparent;
+    paper-button {
+        background-color: #E2726A;
     }
 
-    paper-button {
-        background: #e2726a;
+    paper-button.undo-button {
+        background-color: transparent;
     }
 
     paper-button:hover {
@@ -120,10 +120,16 @@
         height: auto;
     }
 
-    paper-card {
+    paper-card.grid-item-settings {
         background-color: transparent;
-        height: 100%;
-        width: 100%;
+
+        --paper-card-header: {
+            background-color: #D73D32;
+        };
+        --paper-card-header-text: {
+            color: white;
+            font-size: 20px;
+        };
     }
 
     paper-dropdown-menu {
@@ -166,24 +172,35 @@
         height: 96%;
     }
 
+    /* paper tabs */
+    paper-tabs {
+        background-color: #E2726A;
+        --paper-tabs-selection-bar-color: #D73D32;
+        color: white;
+    }
+
     /* Elementi personalizzati (ID, classi) */
     #add-simulation-paper-dialog {
         background: white;
         color: black;
     }
 
-    #add-simulation-to-worker-buttom {
-        position: fixed;
+	.fab {
+		position: fixed;
         bottom: 25px;
-        right: 90px;
         background-color: #D73D32;
+	}
+
+    #add-aws-instance {
+        right: 160px;
+    }
+
+    #add-simulation-to-worker-buttom {
+        right: 90px;
     }
 
     #shutdown-worker-button {
-        position: fixed;
-        bottom: 25px;
         right: 20px;
-        background-color: #D73D32;
     }
 
     #delete-history-button {

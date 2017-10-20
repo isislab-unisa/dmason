@@ -37,10 +37,6 @@ import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
-
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
@@ -82,21 +78,21 @@ import com.jcraft.jsch.SftpException;
 
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.model.LocalInstanceState;
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.LocalInstanceStateManager;
-import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.VersionChooser;
 
 /**
  * 
- * Main class for connecting to Amazon AWS
+ * Main class for connecting to EC2 service of Amazon AWS.
  * 
  * @author Simone Bisogno
  * 
  */
-public class AmazonService // FIXME sort access descriptor for methods
+public class AmazonService
 {
 	// static variables
 	/**
 	 * The AMI is the Amazon Machine Image chosen to remotely instantiate.
-	 * There are several kind of AMI and they all have an ID:
+	 * There are several kind of AMI and they all have an ID, here some
+	 * examples:
 	 * <ul>
 	 *     <li><strong>ami-cd0f5cb6</strong>: Ubuntu Server 16.04 LTS HVM</lI>
 	 *     <li><strong>ami-52a0c53b</strong>: StarCluster <code>?</code></li>
@@ -125,14 +121,14 @@ public class AmazonService // FIXME sort access descriptor for methods
 	private static Properties startProperties;
 
 	// constants
-	private static final int CONNECTION_TIMEOUT = 15000; // 15s
+	public static final int CONNECTION_TIMEOUT = 15000; // 15s
 	public static final String GROUP_PREFIX = "isislab-";
 	private static final Logger LOGGER = Logger.getGlobal();
 	private static final String MY_KEY = "dmason-key";
 	private static final String PROPERTIES_FILE_PATH = "resources" + File.separator +
 			"systemmanagement" + File.separator + "master" + File.separator + "conf" +
 			File.separator + "config.properties";
-	private static final int SESSION_TIMEOUT = 30000; // 30s
+	public static final int SESSION_TIMEOUT = 30000; // 30s
 
 	/**
 	 * This method creates an AmazonEC2Client instance.
@@ -381,7 +377,7 @@ public class AmazonService // FIXME sort access descriptor for methods
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private static int executeCommand(Session session, String command, boolean printRemoteOutput)
+	public static int executeCommand(Session session, String command, boolean printRemoteOutput)
 			throws JSchException, IOException, InterruptedException
 	{
 		ChannelExec channel = (ChannelExec) session.openChannel("exec");
@@ -431,7 +427,7 @@ public class AmazonService // FIXME sort access descriptor for methods
 	 * @return session - The session for instance specified by ID.
 	 * @throws JSchException
 	 */
-	private static Session getSession(String instanceId, String username, boolean forceNewSession)
+	public static Session getSession(String instanceId, String username, boolean forceNewSession)
 	{
 		Session session = null;
 		String publicDns = getDns(instanceId);
@@ -560,136 +556,7 @@ public class AmazonService // FIXME sort access descriptor for methods
 		LOGGER.info("Local instances state map is ready!");
 	}
 
-	/**
-	 * 
-	 * @param instanceId
-	 */
-	public static void installDMason(String instanceId)
-	{
-		// check if DMASON is already installed on required instance machine
-		LocalInstanceState localInstanceState = AmazonService.localInstances.get(instanceId);
 
-		// check if instance is running
-		if (localInstanceState != null && !localInstanceState.isRunning())
-		{
-			LOGGER.warning("Instance " + instanceId + " is not running!");
-			return;
-		}
-
-		// check if instance has already DMASON installed
-		Session session = null;
-		if (localInstanceState.isReady())
-		{
-			LOGGER.warning("DMASON is already installed on instance " + instanceId + "!");
-			return;
-		}
-
-		LOGGER.info("Installing DMASON on instance " + instanceId + "...");
-
-		// establish a ssh session
-		LOGGER.info("Establishing a new session...");
-		try
-		{
-			session = AmazonService.getSession(instanceId, AmazonService.amiUser, false); // username is set according to AMI
-			session.connect(AmazonService.SESSION_TIMEOUT);
-			int exitStatus = 0;
-
-			// check if DMASON is installed already
-			// if 'target' folder exists, maven built DMASON already
-			final String LOG_FILE_NAME = "ls.log";
-			LOGGER.info("Check if DMASON is remotely installed...");
-			exitStatus = AmazonService.executeCommand(
-					session,
-					"ls isislab/dmason/target/ > " + LOG_FILE_NAME, // in case of ls error, an empty file gets generated
-					true);
-			LOGGER.info("Remote check completed!");
-			LOGGER.info("Connection returned " + exitStatus);
-			session.disconnect();
-			AmazonService.retrieveFile(instanceId, "", "", LOG_FILE_NAME);
-			File logFile = new File(LOG_FILE_NAME);
-			if (logFile.length() > 0)
-			{
-				// mark DMASON installed for instance in local map and return control
-				localInstanceState.setReady(true);
-				AmazonService.localInstances.put(instanceId, localInstanceState);
-				LOGGER.warning("DMASON was already installed on instance " + instanceId + "!");
-				return;
-			}
-
-			// re-establish session because of SFTP request
-			session = getSession(instanceId, AmazonService.amiUser, false);
-			session.connect();
-
-			// update remote repositories
-			LOGGER.info("Update repositories...");
-			exitStatus = executeCommand(session, "sudo apt-get update -q -y", true);
-			LOGGER.info("Remote repositories have been updated!");
-			LOGGER.info("Connection returned " + exitStatus);
-
-			// install Java Development Kit
-			LOGGER.info("Installing Java Development Kit...");
-			exitStatus = executeCommand(session, "sudo apt-get install default-jdk -q -y", true); // -q quiet -y assert-all
-			LOGGER.info("Connection returned " + exitStatus);
-			exitStatus = executeCommand(session, "dpkg --get-selections | grep jdk", true);
-			LOGGER.info("Java Development Kit has been installed!");
-			LOGGER.info("Connection returned " + exitStatus);
-
-			// install maven
-			LOGGER.info("Installing Maven...");
-			exitStatus = executeCommand(session, "sudo apt-get install maven -y", true);
-			LOGGER.info("Maven has been installed!");
-			LOGGER.info("Connection returned " + exitStatus);
-
-			// install DMASON
-			LOGGER.info("Downloading DMASON...");
-			exitStatus = executeCommand(
-					session,
-					"mkdir isislab" + ";" +
-					"cd isislab/" + ";" +
-					"git clone https://github.com/isislab-unisa/dmason.git",
-					true
-			);
-			LOGGER.info("DMASON has been downloaded to instance " + instanceId + "!");
-			LOGGER.info("Connection returned " + exitStatus);
-
-			// compile DMASON in 'maven' folder
-			LOGGER.info("Compiling DMASON...");
-			exitStatus = executeCommand(
-					session,
-					"cd ~/isislab/dmason/" + ";" + // every connection starts from home directory
-					"mvn -Dmaven.test.skip=true clean package",
-					true
-			); // skip tests
-			LOGGER.info("DMASON has been compiled and is ready to run!");
-			LOGGER.info("Connection returned " + exitStatus);
-		}
-		catch (JSchException jsce)
-		{
-			LOGGER.severe(jsce.getClass().getSimpleName() + ": " + jsce.getMessage() + ".");
-		}
-		catch (IOException | InterruptedException e)
-		{
-			LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
-		}
-		finally
-		{
-			// close secure session
-			if (session != null && session.isConnected())
-			{
-				session.disconnect();
-
-				// discard session: this is a workaround for packet loss closing session after a SFTP channel connection
-				localInstanceState.setSession(null);
-				AmazonService.localInstances.put(instanceId, localInstanceState);
-			}
-		}
-
-		// marking instance as DMASON-ready
-		localInstanceState.setReady(true);
-		AmazonService.localInstances.put(instanceId, localInstanceState);
-
-		LOGGER.info("DMASON installation has been completed!");
-	} // end installDMason(String, String)
 
 	/**
 	 * 
@@ -735,7 +602,7 @@ public class AmazonService // FIXME sort access descriptor for methods
 		}
 	}
 
-	public void persistInstanceStates()
+	public static void persistInstanceStates()
 			throws FileNotFoundException, IOException
 	{
 		LocalInstanceStateManager.saveLocalInstanceStates(AmazonService.localInstances);
@@ -990,158 +857,6 @@ public class AmazonService // FIXME sort access descriptor for methods
 	}
 
 	/**
-	 * 
-	 * @param instanceId
-	 * @param isMaster
-	 * @param numWorkers 
-	 */
-	public static void startDMason(String instanceId, boolean isMaster, int numWorkers)
-	{
-		LocalInstanceState localInstanceState = AmazonService.localInstances.get(instanceId);
-
-		// check if instance is running
-		if (localInstanceState != null && !localInstanceState.isRunning())
-		{
-			LOGGER.warning("Instance " + instanceId + " is not running!");
-			return;
-		}
-
-		// check if instance has got DMASON installed
-		if (!localInstanceState.isReady())
-		{
-			LOGGER.warning("DMASON is not installed on instance " + instanceId + "!");
-			return;
-		}
-
-		// check if selected instance is already running DMASON
-		if (localInstanceState.isBusy())
-		{
-			if (localInstanceState.isMaster())
-			{
-				LOGGER.warning(
-						"DMASON is already running on " + instanceId +
-						" as master at http://" + localInstanceState.getDns() +
-						":8080 !"
-				);
-			}
-			else
-			{
-				LOGGER.warning(
-						"DMASON is already running on " + instanceId +
-						" as slave at http://" + localInstanceState.getDns() +
-						":8080 !"
-				);
-			}
-			return;
-		}
-		LOGGER.info("Running DMASON on " + localInstanceState.getDns() + "...");
-
-		// establish a ssh session
-		LOGGER.info("");
-		Session session = null;
-		try {
-			session = getSession(instanceId, AmazonService.amiUser, false); // username is set according to AMI
-			session.connect(AmazonService.SESSION_TIMEOUT); // 30s timeout
-			int exitStatus = 0;
-			final String DMASON_ABS_PATH = "~/isislab/dmason/target/";
-			final String version = VersionChooser.extract(); // determine which DMASON version is running
-
-			// check if actually DMASON is running on instance
-			// if remote 'ps x' output contains 'java' then skip start command
-			final String LOG_FILE_NAME = "ps.log";
-			LOGGER.info("Check if DMASON is already running...");
-			exitStatus = executeCommand(
-					session,
-					"ps x | grep 'java -jar DMASON' | grep -v 'grep' > " + LOG_FILE_NAME, // in case of ls error, an empty file gets generated
-					true);
-			LOGGER.info("");
-			LOGGER.info("Connection returned " + exitStatus);
-			session.disconnect();
-			retrieveFile(instanceId, "", "", LOG_FILE_NAME);
-			File logFile = new File(LOG_FILE_NAME);
-			if (logFile.length() > 0)
-			{
-				localInstanceState.setBusy(true);
-				AmazonService.localInstances.put(instanceId, localInstanceState);
-				LOGGER.warning(
-						"DMASON was already running on instance " + instanceId +
-						" as master at http://" + localInstanceState.getDns() +
-						":8080 !"
-				);
-				return;
-			}
-
-			// update selected instance state on local map
-			// local instance status gets updated before time because
-			// remote command blocks execution
-			localInstanceState.setBusy(true);
-			localInstanceState.setMaster(isMaster);
-			AmazonService.localInstances.put(instanceId, localInstanceState);
-			if (isMaster)
-			{
-				LOGGER.info("DMASON is running as master on http://" + localInstanceState.getDns() + ":8080 !");
-			}
-			else
-			{
-				LOGGER.info("DMASON is running as worker on http://" + localInstanceState.getDns() + ":8080 !");
-			}
-
-			// re-establish session because of SFTP request
-			session = getSession(instanceId, AmazonService.amiUser, false);
-			session.connect();
-
-			// 
-			if (isMaster)
-			{
-				LOGGER.info("Running as master...");
-				exitStatus = executeCommand(
-						session,
-						"cd " + DMASON_ABS_PATH + ";" +
-						"java -jar DMASON-" + version + ".jar -m master",
-						false
-				);
-				LOGGER.info("Connection returned " + exitStatus);
-			}
-			else
-			{
-				LOGGER.info("Running as worker...");
-				exitStatus = executeCommand(
-						session,
-						"cd " + DMASON_ABS_PATH + ";" +
-						"java -jar DMASON-" + version + ".jar -m worker -ns " + numWorkers,
-						false
-				);
-				LOGGER.info("Connection returned " + exitStatus);
-			}
-		}
-		catch (JSchException jsce)
-		{
-			LOGGER.severe(jsce.getClass().getSimpleName() + ": " + jsce.getMessage() + ".");
-			return;
-		}
-		catch (ParserConfigurationException | SAXException e)
-		{
-			LOGGER.severe(
-					e.getClass().getSimpleName() + ": " + e.getMessage() + ".\n" +
-					"Unable to retrieve DMASON version!"
-			);
-			return;
-		}
-		catch (IOException | InterruptedException e)
-		{
-			LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
-		}
-		finally
-		{
-			// close session
-			if (session != null && session.isConnected())
-			{
-				session.disconnect();
-			}
-		}
-	} // end startDMason(String, String)
-
-	/**
 	 * This method starts an existing instance by specifying
 	 * its ID as parameter.
 	 * 
@@ -1191,107 +906,7 @@ public class AmazonService // FIXME sort access descriptor for methods
 		LOGGER.info("Instance " + instanceId + " has been started!");
 
 		return result;
-	}
-
-	public static void stopDMason(String instanceId)
-	{
-		LocalInstanceState localInstanceState = AmazonService.localInstances.get(instanceId);
-
-		// check if selected instance is running DMASON
-		if (!localInstanceState.isRunning())
-		{
-			LOGGER.info("Instance " + instanceId + " is not running!");
-			return;
-		}
-
-		if (!localInstanceState.isReady())
-		{
-			LOGGER.warning("DMASON is not installed on instance " + instanceId);
-			return;
-		}
-
-		if (!localInstanceState.isBusy())
-		{
-			LOGGER.warning("DMASON is not running on instance " + instanceId);
-			return;
-		}
-
-		LOGGER.info("Stopping DMASON on " + localInstanceState.getDns() + "...");
-
-		// establish a ssh session
-		Session session = null;
-		try
-		{
-			session = getSession(instanceId, AmazonService.amiUser, false); // username is set according to AMI
-			session.connect(AmazonService.SESSION_TIMEOUT); // 30s timeout
-			int exitStatus = 0;
-
-			// check if actually DMASON is running on instance
-			// if remote 'ps x' output does not contains 'java' then skip stop command
-			final String LOG_FILE_NAME = "ps.log";
-			LOGGER.info("Check if DMASON is running...");
-			exitStatus = executeCommand(
-					session,
-					"ps x | grep 'java -jar DMASON' | grep -v 'grep' > " + LOG_FILE_NAME, // in case of ls error, an empty file gets generated
-					true);
-			LOGGER.info("");
-			LOGGER.info("Connection returned " + exitStatus);
-			session.disconnect();
-			retrieveFile(instanceId, "", "", LOG_FILE_NAME);
-			File logFile = new File(LOG_FILE_NAME);
-			if (logFile.length() == 0)
-			{
-				// mark DMASON running for instance in local map and return control
-				localInstanceState.setBusy(false);
-				AmazonService.localInstances.put(instanceId, localInstanceState);
-				LOGGER.warning("DMASON was not running on instance " + instanceId + "!");
-				return;
-			}
-
-			// re-establish session because of SFTP request
-			session = getSession(instanceId, AmazonService.amiUser, false);
-			session.connect();
-
-			LOGGER.info("Running as master...");
-			exitStatus = executeCommand(
-					session,
-					"pkill java",
-					true
-			);
-			LOGGER.info("Connection returned " + exitStatus);
-
-		}
-		catch(JSchException jsce)
-		{
-			LOGGER.severe(jsce.getClass().getSimpleName() + ": " + jsce.getMessage() + ".");
-			return;
-		}
-		catch (IOException | InterruptedException e)
-		{
-			LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
-		}
-		finally
-		{
-			if (session != null && session.isConnected())
-			{
-				// close the session
-				session.disconnect();
-			}
-		}
-
-		// save current status for selected instance
-		localInstanceState.setRunning(false);
-		AmazonService.localInstances.put(instanceId, localInstanceState);
-		try
-		{
-			LocalInstanceStateManager.saveLocalInstanceStates(AmazonService.localInstances);
-		}
-		catch (IOException e)
-		{
-			LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
-		}
-		LOGGER.info("Stopped DMASON on " + localInstanceState.getDns() + "!");
-	}
+	} // end startInstance(String) method
 
 	/**
 	 * This method stops an existing running instance
