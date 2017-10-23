@@ -22,7 +22,6 @@ import org.eclipse.jetty.webapp.WebAppContext;
 
 import it.isislab.dmason.experimentals.systemmanagement.utils.activemq.ActiveMQStarter;
 
-
 /**
  * Main class for System Management Master Server 
  * 
@@ -32,10 +31,11 @@ import it.isislab.dmason.experimentals.systemmanagement.utils.activemq.ActiveMQS
  *
  */
 public class MasterServerMain {
-
 	private boolean enableUI = false;
-	public static MasterServer ms=null;
-	
+	public static MasterServer ms = null;
+
+	// constants
+	private static final String CONTEXT_PATH = "resources/systemmanagement/master";
 
 	public MasterServerMain() {
 		enableUI = true;
@@ -44,40 +44,48 @@ public class MasterServerMain {
 	public MasterServerMain(boolean WebUI) {
 		this.enableUI = WebUI;
 	}
-	
-	public MasterServer getMasterServer(){ return ms;} 
-	
-	public void start(){
-		
+
+	public MasterServer getMasterServer() {
+		return ms;
+	} 
+
+	public void start() {
         //set params of jvm
-		
-		
+
 		// 1. Creating the server on port 8080
 		Server server = null;
-		if(enableUI){
+		if (enableUI) {
 			server = new Server(8080);
-			ServletContextHandler handler =new ServletContextHandler(server,"resources/systemmanagement/master");	
+			ServletContextHandler handler = new ServletContextHandler(server, CONTEXT_PATH);	
 			server.setHandler(handler);	
-			
+
 			// 2. Creating the WebAppContext for the created content
 			WebAppContext ctx = new WebAppContext();
-			ctx.setResourceBase("resources/systemmanagement/master");
+			ctx.setResourceBase(CONTEXT_PATH);
 			ctx.setContextPath("/");
-	
-			//3. Including the JSTL jars for the webapp.
-			ctx.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",".*/[^/]*jstl.*\\.jar$");
-	
-			//4. Enabling the Annotation based configuration
+
+			// 4. Enabling the Annotation based configuration
 			org.eclipse.jetty.webapp.Configuration.ClassList classlist = org.eclipse.jetty.webapp.Configuration.ClassList.setServerDefault(server);
-			classlist.addAfter("org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration", "org.eclipse.jetty.plus.webapp.PlusConfiguration");
-			classlist.addBefore("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration");
-	
-			
-	
-			//5. Setting the handler and starting the Server
+			classlist.addBefore(
+					"org.eclipse.jetty.webapp.JettyWebXmlConfiguration",
+					"org.eclipse.jetty.annotations.AnnotationConfiguration"
+					);
+			classlist.addAfter(
+					"org.eclipse.jetty.webapp.FragmentConfiguration",
+					"org.eclipse.jetty.plus.webapp.EnvConfiguration",
+					"org.eclipse.jetty.plus.webapp.PlusConfiguration"
+			);
+
+			// 3. Including the JSTL jars for the webapp.
+			ctx.setAttribute(
+					"org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",
+					".*/[^/]*jstl.*\\.jar$"
+			);
+
+			// 5. Setting the handler and starting the Server
 			server.setHandler(ctx);
 		}
-		
+
 		/**
 		 * Launch embedded activeMQ server 
 		 * comment below two lines to launch external ActiveMQ 
@@ -86,27 +94,25 @@ public class MasterServerMain {
 		amqS.startActivemq();
 		/********************************/
 		
-		
-		if(!enableUI){
+		if (!enableUI) {
 			ms = new MasterServer();
 		}
-		
-		if(enableUI){
+
+		if (enableUI) {
 			try {
-				if(server != null){
+				if (server != null) {
 					server.start();
 					server.join();
-				}else{
-					System.err.println("Someting was wrong");
+				} else {
+					System.err.println("Something was wrong!");
 					System.exit(-1);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-
 	}
-	
+
 	public static void main(String[] args) {
 		//System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*"); version under 5.12.2
 		MasterServerMain msm = new MasterServerMain(); 
