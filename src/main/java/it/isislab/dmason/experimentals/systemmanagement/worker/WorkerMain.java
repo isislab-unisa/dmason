@@ -16,7 +16,6 @@
  */
 package it.isislab.dmason.experimentals.systemmanagement.worker;
 
-
 /**
  * Main class for Worker
  * 
@@ -26,20 +25,13 @@ package it.isislab.dmason.experimentals.systemmanagement.worker;
  *
  */
 public class WorkerMain {
-
-
-
 	public static void main(String[] args) throws Exception {
-		System.setProperty("java.library.path","./resources/sigar");
-		//System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
-		
-		String ip =args[0]; 
-		String port=args[1];
-	
-	   new Worker(ip, port,Integer.parseInt(args[2]));
-		
-		
-		
-	}
+		System.setProperty("java.library.path", "./resources/sigar");
+//		System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
 
+		String ip = args[0]; 
+		String port = args[1];
+
+		new Worker(ip, port, Integer.parseInt(args[2]));
+	}
 }

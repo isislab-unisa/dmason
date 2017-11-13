@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
  *
  */
 public class RemoveSimulationServlet extends HttpServlet {
-
 	/**
 	 * 
 	 */
@@ -41,18 +40,17 @@ public class RemoveSimulationServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/plain;charset=UTF-8");
-		if(req.getServletContext().getAttribute("masterServer")==null)
+		if (req.getServletContext().getAttribute("masterServer") == null)
 			return;
-		
+
 		masterServer = (MasterServer) req.getServletContext().getAttribute("masterServer");
-		
-		int id= Integer.parseInt(req.getParameter("id"));
+
+		int id = Integer.parseInt(req.getParameter("id"));
 		masterServer.removeSimulationProcessByID(id);
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doPost(req, resp);
 	}
 

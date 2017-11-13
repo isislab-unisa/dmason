@@ -53,6 +53,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
 import it.isislab.dmason.experimentals.systemmanagement.utils.ClientSocketCopy;
 import it.isislab.dmason.experimentals.systemmanagement.utils.DMasonFileSystem;
 import it.isislab.dmason.experimentals.systemmanagement.utils.FindAvailablePort;
@@ -77,71 +78,69 @@ import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
  * @author Michele Carillo
  * @author Carmine Spagnuolo
  * @author Flavio Serrapica
- *
+ * 
  */
-public class MasterServer implements MultiServerInterface{
+public class MasterServer implements MultiServerInterface {
 	private static final Integer TTL = 30000;
-	//ActivemQ settings file, default 127.0.0.1:61616 otherwise you have to change config.properties file
-	private static final String PROPERTIES_FILE_PATH="resources"+File.separator+"systemmanagement"+File.separator+"master"+File.separator+"conf"+File.separator+"config.properties";
+	// ActivemQ settings file, default 127.0.0.1:61616 otherwise you have to change config.properties file
+	private static final String PROPERTIES_FILE_PATH = "resources" + File.separator + "systemmanagement" +
+			File.separator + "master" + File.separator + "conf" + File.separator + "config.properties";
 
-	private static final String JSON_ID_PATH="resources"+File.separator+"systemmanagement"+File.separator+"master"+File.separator+"conf"+File.separator+"simid.json";
+	private static final String JSON_ID_PATH = "resources" + File.separator + "systemmanagement" +
+			File.separator + "master" + File.separator + "conf" + File.separator + "simid.json";
 
-	//example jars path from resources dmason main path 
-	private static final String JARS_EXAMPLE_PATH="resources"+File.separator+"examples";
+	// example jars path from resources dmason main path 
+	private static final String JARS_EXAMPLE_PATH = "resources" + File.separator + "examples";
 
-	private JSONParser parser=null;
+	private JSONParser parser = null;
 
-	//connection and topic
-	private static final String MANAGEMENT="DMASON-MANAGEMENT";
-	private  String IP_ACTIVEMQ="";
-	private  String PORT_ACTIVEMQ="";
+	// connection and topic
+	private static final String MANAGEMENT = "DMASON-MANAGEMENT";
+	private  String IP_ACTIVEMQ = "";
+	private  String PORT_ACTIVEMQ = "";
 	private int DEFAULT_PORT_COPY_SERVER;
 	private Configuration startConfig = null;
 	private ConnectionNFieldsWithActiveMQAPI conn = null;
 
-	//path directories 
-	private static String dmasonDirectory=System.getProperty("user.dir")+File.separator+"dmason";
-	private static final String masterDirectoryFolder=dmasonDirectory+File.separator+"master";
-	private static final String jsonIdFile=masterDirectoryFolder+File.separator+"simid.json";
-	private static final String masterTemporaryFolder=masterDirectoryFolder+File.separator+"temporary";
-	private static final String masterHistoryFolder=masterDirectoryFolder+File.separator+"history";
-	private static final String simulationsDirectoriesFolder=masterDirectoryFolder+File.separator+"simulations";
-	private static final String masterSimulationsJarsFolder=masterDirectoryFolder+File.separator+"jars";
-	private static final String masterExampleJarsFolder=masterSimulationsJarsFolder+File.separator+"examples";
-	private static final String masterCustomJarsFolder=	masterSimulationsJarsFolder+File.separator+"customs";
+	// path directories 
+	private static String dmasonDirectory = System.getProperty("user.dir") + File.separator + "dmason";
+	private static final String masterDirectoryFolder = dmasonDirectory + File.separator + "master";
+	private static final String jsonIdFile = masterDirectoryFolder + File.separator + "simid.json";
+	private static final String masterTemporaryFolder = masterDirectoryFolder + File.separator + "temporary";
+	private static final String masterHistoryFolder = masterDirectoryFolder + File.separator + "history";
+	private static final String simulationsDirectoriesFolder = masterDirectoryFolder + File.separator + "simulations";
+	private static final String masterSimulationsJarsFolder = masterDirectoryFolder + File.separator + "jars";
+	private static final String masterExampleJarsFolder = masterSimulationsJarsFolder + File.separator + "examples";
+	private static final String masterCustomJarsFolder = masterSimulationsJarsFolder + File.separator + "customs";
 
-
-
-	//copyserver for socket
-	protected Socket sock=null;
+	// copyserver for socket
+	protected Socket sock = null;
 	protected ServerSocket welcomeSocket;
 
-	//info 
-	protected HashMap<Integer,AtomicInteger> counterAckSimRcv;// number of ack received of <simrcv> 
-	private HashMap<String,String> infoWorkers;// basic information on workers node
-	private HashMap<String,Integer> ttlinfoWorkers;//list of connected workers with time to live updated if it is still alive 
+	// info 
+	protected HashMap<Integer, AtomicInteger> counterAckSimRcv;// number of ack received of <simrcv> 
+	private HashMap<String, String> infoWorkers;// basic information on workers node
+	private HashMap<String, Integer> ttlinfoWorkers;//list of connected workers with time to live updated if it is still alive 
 
-	private HashMap<Integer,Simulation> simulationsList; //list of simulations <ID,Simulation> 
+	private HashMap<Integer, Simulation> simulationsList; //list of simulations <ID,Simulation> 
 	private AtomicInteger IDSimulation; // generate an unique id for a simulation 
 	private FindAvailablePort availableport; // for socket server 
-	private HashMap<String /*workertopicforrequest*/, Address /*portcopyLog*/> workerListForCopyLogs=new HashMap<String,Address>();
+	private HashMap<String /*workertopicforrequest*/, Address /*portcopyLog*/> workerListForCopyLogs = new HashMap<String, Address>();
 
 
-	/// INTERNAL LOGGER FOR DEBUG 
-	private static final Logger LOGGER=Logger.getLogger(Worker.class.getName()); //show constructor to enable Logger
-
+	// INTERNAL LOGGER FOR DEBUG 
+	private static final Logger LOGGER = Logger.getLogger(Worker.class.getName()); //show constructor to enable Logger
 
 	/**
 	 * Master Server constructor
 	 */
-	public MasterServer(){
-
-		//comment below line to enable Logger 
-		LOGGER.setUseParentHandlers(false);  
+	public MasterServer() {
+		// comment below line to enable Logger 
+		LOGGER.setUseParentHandlers(false); // TODO uncomment to disable simulation result logging
 		LOGGER.info("LOGGER ENABLE");
 		//
 
-//		startProperties = new Properties();
+		//		startProperties = new Properties();
 		Parameters params = new Parameters();
 		FileBasedConfigurationBuilder<FileBasedConfiguration> builder =
 				new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)
@@ -159,20 +158,20 @@ public class MasterServer implements MultiServerInterface{
 		conn = new ConnectionNFieldsWithActiveMQAPI();
 		parser = new JSONParser();
 
-		//create dmason file system for master
+		// create dmason file system for master
 		DMasonFileSystem.make(masterDirectoryFolder); // master
-		DMasonFileSystem.make(masterTemporaryFolder); //temp folder
-		DMasonFileSystem.make(masterHistoryFolder); //master/history
-		DMasonFileSystem.make(masterExampleJarsFolder); //master/jars/examples
-		DMasonFileSystem.make(masterCustomJarsFolder); //master/jars/customs
+		DMasonFileSystem.make(masterTemporaryFolder); // temp folder
+		DMasonFileSystem.make(masterHistoryFolder); // master/history
+		DMasonFileSystem.make(masterExampleJarsFolder); // master/jars/examples
+		DMasonFileSystem.make(masterCustomJarsFolder); // master/jars/customs
 		DMasonFileSystem.make(simulationsDirectoriesFolder + File.separator + "jobs"); //master/simulations/jobs
 
 		this.loadProperties(); 
-		loadJarsExample(); //load jar of example 
+		loadJarsExample(); // load jar of example 
 
-		this.infoWorkers=new HashMap<String,String>();
-		this.ttlinfoWorkers=new HashMap<String,Integer>();
-		this.counterAckSimRcv=new HashMap<Integer,AtomicInteger>();
+		this.infoWorkers = new HashMap<String, String>();
+		this.ttlinfoWorkers = new HashMap<String, Integer>();
+		this.counterAckSimRcv = new HashMap<Integer, AtomicInteger>();
 
 		/**
 		 * Copy json with id for a new simulation in dmason main directory 
@@ -183,7 +182,7 @@ public class MasterServer implements MultiServerInterface{
 			@Override
 			public void run() {
 				try {
-					if(!new File(jsonIdFile).exists())
+					if (!new File(jsonIdFile).exists())
 						DMasonFileSystem.copyFolder(new File(JSON_ID_PATH), new File(jsonIdFile));
 				} catch (IOException e1) {
 					e1.printStackTrace();
@@ -198,75 +197,68 @@ public class MasterServer implements MultiServerInterface{
 			e1.printStackTrace();
 		}
 
-		//read the value of next id for a new simulation
+		// read the value of next id for a new simulation
 		this.readJSONLastID();
 
-		simulationsList=new HashMap<Integer,Simulation>();
+		simulationsList = new HashMap<Integer, Simulation>();
 
-		/*Find an available port in this range [1000,3000] of ports */
+		/* Find an available port in this range [1000,3000] of ports */
 		try {
-			availableport=new FindAvailablePort(1000, 3000);
-			DEFAULT_PORT_COPY_SERVER=availableport.getPortAvailable();
-			//LOGGER.info("copy server start on port "+DEFAULT_PORT_COPY_SERVER);
-			welcomeSocket = new ServerSocket(DEFAULT_PORT_COPY_SERVER,1000,InetAddress.getByName(this.IP_ACTIVEMQ));
+			availableport = new FindAvailablePort(1000, 3000);
+			DEFAULT_PORT_COPY_SERVER = availableport.getPortAvailable();
+//			LOGGER.info("copy server start on port " + DEFAULT_PORT_COPY_SERVER);
+			welcomeSocket = new ServerSocket(DEFAULT_PORT_COPY_SERVER, 1000, InetAddress.getByName(this.IP_ACTIVEMQ));
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		this.createConnection();//create connection with activemq server
-		this.createInitialTopic();//start communication with workers
+		this.createConnection(); // create connection with activemq server
+		this.createInitialTopic(); // start communication with workers
 
-		/*start time to live mechanism for connected workers */
+		/* start time to live mechanism for connected workers */
 		new TTLWorker().start();
-
 	}
-
-
 
 	/**
 	 * 
 	 * Check info from workers still alive 
 	 *
 	 */
-	class TTLWorker extends Thread{
+	class TTLWorker extends Thread {
 		@Override
 		public void run() {
-			while(true)
+			while (true)
 			{
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
-
 					e.printStackTrace();
 				}
-				synchronized (this) {
 
-					List<String> toRemove=new ArrayList<String>();
-					for(String workerid:ttlinfoWorkers.keySet())
+				synchronized (this) {
+					List<String> toRemove = new ArrayList<String>();
+					for (String workerid: ttlinfoWorkers.keySet())
 					{
-						Integer ttl=ttlinfoWorkers.get(workerid);
-						ttl-=100;
-						if(ttl <= 0)
+						Integer ttl = ttlinfoWorkers.get(workerid);
+						ttl -= 100;
+						if (ttl <= 0)
 						{
 							toRemove.add(workerid);
 						}
-						ttlinfoWorkers.put(workerid,ttl);
-
+						ttlinfoWorkers.put(workerid, ttl);
 					}
-					for(String workerid:toRemove)
+
+					for (String workerid: toRemove)
 					{
 						infoWorkers.remove(workerid);
 						ttlinfoWorkers.remove(workerid);
-
 					}
-
 				}
 			}
 		}
 	}
-
 
 	/**
 	 * Set what is the next id available from master folder 
@@ -274,43 +266,40 @@ public class MasterServer implements MultiServerInterface{
 	 * You can manage this id from file
 	 * from json file /conf/simid.json
 	 */
-	private void readJSONLastID(){
-
+	private void readJSONLastID() {
 		try {
-			Object obj=parser.parse(new FileReader(jsonIdFile));
-			JSONObject jsonID=(JSONObject)obj;
-			String id=(String) jsonID.get("simid");
-			this.IDSimulation=new AtomicInteger(Integer.parseInt(id));
+			Object obj = parser.parse(new FileReader(jsonIdFile));
+			JSONObject jsonID = (JSONObject) obj;
+			String id = (String) jsonID.get("simid");
+			this.IDSimulation = new AtomicInteger(Integer.parseInt(id));
 		} 
 		catch (Exception e) {e.printStackTrace();}
 	}
-
 
 	/**
 	 * Open a asynchronous receive listener on  topic
 	 * @param topic of Worker
 	 */
-	private void listenOnTopicWorker(String topic){
-
-		Thread listenerThread=new Thread(new Runnable() {
-
+	private void listenOnTopicWorker(String topic) {
+		Thread listenerThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				getConnection().asynchronousReceive(topic, new MyMessageListener() {
+					private static final long serialVersionUID = 1L;
 
-					//messages received from workers
+					// messages received from workers
 					public void onMessage(Message msg) {
 						Object o;
 						try {
-							o=parseMessage(msg);
-							MyHashMap map=(MyHashMap) o;
+							o = parseMessage(msg);
+							MyHashMap map = (MyHashMap) o;
 
-							//sim(id) downloaded from the worker
-							if(map.containsKey("simrcv")){
+							// sim(id) downloaded from the worker
+							if (map.containsKey("simrcv")) {
 								int id = (int) map.get("simrcv");
 								AtomicInteger value = getCounterAckSimRcv().get(id);
 								int temp = value.incrementAndGet();
-								getCounterAckSimRcv().put(id, new AtomicInteger(temp));//used as a flag, i'm sure that all jars have been downloaded
+								getCounterAckSimRcv().put(id, new AtomicInteger(temp)); // used as a flag, i'm sure that all jars have been downloaded
 
 							}
 							else
@@ -320,13 +309,12 @@ public class MasterServer implements MultiServerInterface{
 									LOGGER.info("start copy of logs for sim id " + simID);
 									downloadLogsForSimulationByID(simID, topic, false);
 								}
-								else
-									// response to master logs req(when a sim is stopped )
-									if (map.containsKey("loghistory")) {
-										int simID = (int) map.get("loghistory");
-										LOGGER.info("start copy of logs history for sim id " + simID);
-										downloadLogsForSimulationByID(simID, topic ,true);
-									}
+								// response to master logs req(when a sim is stopped )
+								else if (map.containsKey("loghistory")) {
+									int simID = (int) map.get("loghistory");
+									LOGGER.info("start copy of logs history for sim id " + simID);
+									downloadLogsForSimulationByID(simID, topic, true);
+								}
 						} catch (JMSException e) {
 							e.printStackTrace();
 						}
@@ -334,6 +322,7 @@ public class MasterServer implements MultiServerInterface{
 				});
 			}
 		});
+
 		listenerThread.start();
 	}
 
@@ -341,35 +330,35 @@ public class MasterServer implements MultiServerInterface{
 	 * Set initial configuration 
 	 * 
 	 */
-	private void createInitialTopic(){
+	private void createInitialTopic() {
 		try {
 			conn.createTopic(MANAGEMENT, 1);
 			conn.subscribeToTopic(MANAGEMENT);
 
 			(new Thread(){
 				public void run() {
-
-					conn.asynchronousReceive(MANAGEMENT,new MyMessageListener() {
+					conn.asynchronousReceive(MANAGEMENT, new MyMessageListener() {
+						private static final long serialVersionUID = 1L;
 
 						@Override
 						public void onMessage(Message msg) {
 							Object o;
 							try {
-								o=parseMessage(msg);
-								MyHashMap map=(MyHashMap) o;
+								o = parseMessage(msg);
+								MyHashMap map = (MyHashMap) o;
 
-								if(map.containsKey("WORKER")){
+								if (map.containsKey("WORKER")) {
 
 									synchronized (this) {
-										String info=(String) map.get("WORKER");
+										String info = (String) map.get("WORKER");
 										info.replace("{", "");
 										info.replace("}", "");
-										String[] ainfo=info.split(":");
+										String[] ainfo = info.split(":");
 										String ID = ainfo[ainfo.length-1].replace("\"", "");
-										ID=ID.replace("}", "");
-										conn.publishToTopic(DEFAULT_PORT_COPY_SERVER, MANAGEMENT, "WORKER-ID-"+ID);
+										ID = ID.replace("}", "");
+										conn.publishToTopic(DEFAULT_PORT_COPY_SERVER, MANAGEMENT, "WORKER-ID-" + ID);
 
-										if(!infoWorkers.containsKey(ID)){
+										if (!infoWorkers.containsKey(ID)) {
 											processInfoForCopyLog(info,ID);
 											getConnection().createTopic(ID, 1);
 											try {
@@ -380,10 +369,7 @@ public class MasterServer implements MultiServerInterface{
 										infoWorkers.put(ID, info);
 										ttlinfoWorkers.put(ID, TTL);
 									}
-
-
 								} 
-
 							} catch (JMSException e) {
 								e.printStackTrace();
 							}
@@ -401,7 +387,7 @@ public class MasterServer implements MultiServerInterface{
 	 * Connection on ActivemQ
 	 * @return true id connection is created
 	 */
-	private boolean createConnection(){
+	private boolean createConnection() {
 		Address address = new Address(IP_ACTIVEMQ, PORT_ACTIVEMQ);
 		return conn.setupConnection(address);
 	}
@@ -425,18 +411,22 @@ public class MasterServer implements MultiServerInterface{
 	 * @param topicOfWorker my topic for this worker
 	 * @param removeSimulation true if is a history req, false otherwise
 	 */
-	private synchronized void downloadLogsForSimulationByID(int simID, String topicOfWorker, boolean removeSimulation){
+	private synchronized void downloadLogsForSimulationByID(int simID, String topicOfWorker, boolean removeSimulation) {
 		Simulation sim = getSimulationsList().get(simID);
+		if (sim == null) { // TODO check
+			LOGGER.warning("Simulation " + simID + " has not been found!");
+			return;
+		}
 		String folderCopy = sim.getSimulationFolder() + File.separator + "runs";
-		String fileCopy = folderCopy + File.separator+topicOfWorker + ".zip";
+		String fileCopy = folderCopy + File.separator + topicOfWorker + ".zip";
 		Address address = workerListForCopyLogs.get(topicOfWorker);
 		String iplog = address.getIPaddress().replace("\"", "");
 		int port = Integer.parseInt(address.getPort());
 
 		Socket clientSocket;
 		try {
-			//LOGGER.info("Download from "+iplog+":"+port);
-			clientSocket = new Socket( iplog ,port );
+//			LOGGER.info("Download from " + iplog + ":" + port);
+			clientSocket = new Socket(iplog, port); // FIXME check whether IP is reachable
 			Thread tr = null;
 			tr = new Thread(new ClientSocketCopy(clientSocket, fileCopy));
 			tr.start(); 			
@@ -458,12 +448,13 @@ public class MasterServer implements MultiServerInterface{
 				getConnection().publishToTopic(simID, topicOfWorker, "simrm");
 				getSimulationsList().get(simID).getTopicList().remove(topicOfWorker);
 
-				//i must know last process of history download to start remove process  
-				if(getSimulationsList().get(simID).getTopicList().size() == 0){
+				// i must know last process of history download to start remove process  
+				if (getSimulationsList().get(simID).getTopicList().size() == 0) {
 					removeSimulationProcessByID(simID);
 				}
 			}	
 		} catch (Exception e) {
+			Logger.getGlobal().severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
 			e.printStackTrace();
 		}
 	}
@@ -489,20 +480,20 @@ public class MasterServer implements MultiServerInterface{
 	 * @param info info to process 
 	 * @param topicOfWorker unique worker identifier
 	 */
-	private synchronized void processInfoForCopyLog(String info,String topicOfWorker) {
-		//parse message to get ip e port for logs
+	private synchronized void processInfoForCopyLog(String info, String topicOfWorker) {
+		// parse message to get ip e port for logs
 		String [] split = info.split(",");
 
-		String iPaddress = "";
+		String ipAddress = "";
 		String port = "";
 
 		for (String x: split) {
 			if (x.contains("ip")) 
-				iPaddress = x.split(":")[1];
+				ipAddress = x.split(":")[1];
 			if (x.contains("portcopylog"))
 				port = x.split(":")[1];
 		}
-		Address address = new Address(iPaddress, port);
+		Address address = new Address(ipAddress, port);
 		workerListForCopyLogs.put(topicOfWorker, address);
 	}
 
@@ -512,7 +503,7 @@ public class MasterServer implements MultiServerInterface{
 	 * @param simID name of directory to create
 	 * @param simName name of folder
 	 */
-	public void createSimulationDirectoryByID(String simName,int simID) {
+	public void createSimulationDirectoryByID(String simName, int simID) {
 		String createNameFolder = simName + simID;
 		String simpath = simulationsDirectoriesFolder + File.separator + createNameFolder + File.separator + "runs";
 		String jarPath = simulationsDirectoriesFolder + File.separator + createNameFolder + File.separator + "jar";
@@ -525,7 +516,7 @@ public class MasterServer implements MultiServerInterface{
 	 * Delete a directory for a simulation
 	 * @param simID name of a directory to delete
 	 */
-	public synchronized void removeSimulationProcessByID(int simID){
+	public synchronized void removeSimulationProcessByID(int simID) {
 		String status = getSimulationsList().get(simID).getStatus();
 		if (status.equals(Simulation.CREATED)) {
 			for (String topic: getSimulationsList().get(simID).getTopicList())
@@ -549,17 +540,16 @@ public class MasterServer implements MultiServerInterface{
 	 * @param stopParam number of accept to do
 	 */
 	private boolean invokeCopyServer(String jarFile, int stopParam) {
-
 		int checkControl = stopParam;
-
 		int counter = 0;
+
 		try {
 			ArrayList<Thread> threads = new ArrayList<Thread>();
 			Thread t = null;
 			while (counter < checkControl) {
-				//System.out.println("open stream " + jarFile );
+//				System.out.println("open stream " + jarFile );
 				sock = welcomeSocket.accept();
-				//System.out.println("esco della accept");
+//				System.out.println("esco della accept");
 				counter++;
 				t = new Thread(new ServerSocketCopy(sock, jarFile));
 				t.start();
@@ -569,7 +559,6 @@ public class MasterServer implements MultiServerInterface{
 				a.join();
 			}
 			return true;
-
 		} 
 		catch (UnknownHostException e) {e.printStackTrace();}
 		catch (IOException e) {
@@ -607,10 +596,9 @@ public class MasterServer implements MultiServerInterface{
 	 *
 	 */
 	private HashMap<String, Integer> slotsAvailableForSimWorker(ArrayList<String> topicWorkers, HashMap<String, String> listAllWorkers) {
-
-		HashMap<String,Integer> slotsForWorkers = new HashMap<String,Integer>();
+		HashMap<String, Integer> slotsForWorkers = new HashMap<String, Integer>();
 		synchronized (this) {
-			//set number of cells for all worker identified by their topic
+			// set number of cells for all worker identified by their topic
 			for (String topicToFind: topicWorkers) {
 				String numcells = listAllWorkers.get(topicToFind).split(",")[0].split(":")[1];
 				slotsForWorkers.put(topicToFind, Integer.parseInt(numcells));
@@ -626,7 +614,7 @@ public class MasterServer implements MultiServerInterface{
 	 * @param simul Simulation to execute
 	 * 
 	 */
-	private HashMap<String, List<CellType>> assignCellsToWorkers(HashMap<String, Integer> slots,Simulation simul) {
+	private HashMap<String, List<CellType>> assignCellsToWorkers(HashMap<String, Integer> slots, Simulation simul) {
 		HashMap<String/*idtopic*/, List<CellType>> workerlist = new HashMap<String, List<CellType>>(); 
 
 		int mode = simul.getMode();
@@ -641,7 +629,7 @@ public class MasterServer implements MultiServerInterface{
 		if (mode == DistributedField2D.UNIFORM_PARTITIONING_MODE) {  
 			workerlist = divideForUniform(rows,cols,slots,workerlist,assignedLP);
 
-		} else if (mode == DistributedField2D.NON_UNIFORM_PARTITIONING_MODE) { //non uniform
+		} else if (mode == DistributedField2D.NON_UNIFORM_PARTITIONING_MODE) { // non uniform
 			workerlist = divideForNonUniform( LP, slots, workerlist,assignedLP);
 		}				
 
@@ -659,12 +647,13 @@ public class MasterServer implements MultiServerInterface{
 	 * @param assignedLP number of slots
 	 * @return an hashmap with cells to execute for each worker
 	 */
-	private HashMap<String/*idtopic*/, List<CellType>> divideForUniform(int rows,int cols,HashMap<String, Integer> slots,HashMap<String/*idtopic*/, List<CellType>> workerlist, int assignedLP){
+	private HashMap<String/*idtopic*/, List<CellType>> divideForUniform(int rows, int cols, HashMap<String, Integer> slots, HashMap<String/*idtopic*/, List<CellType>> workerlist, int assignedLP) {
 		ArrayList<String> workerID = new ArrayList<String>(slots.keySet());
 		int w = 0;
 		int lastIndex = -1;
 		boolean goNext = false;
-		for (int i=0; i < rows; i++) {
+
+		for (int i = 0; i < rows; i++) {
 			goNext = false;
 			lastIndex = -1;
 
@@ -672,7 +661,7 @@ public class MasterServer implements MultiServerInterface{
 				if (slots.get(workerID.get(w)) > 0)
 				{
 					slots.put(workerID.get(w), slots.get(workerID.get(w))-1);
-					List<CellType> cells=workerlist.get(workerID.get(w))==null?new ArrayList<CellType>():workerlist.get(workerID.get(w));
+					List<CellType> cells = workerlist.get(workerID.get(w)) == null ? new ArrayList<CellType>() : workerlist.get(workerID.get(w));
 					cells.add(new CellType(i,j));
 					workerlist.put(workerID.get(w),cells);
 					assignedLP--;
@@ -686,10 +675,10 @@ public class MasterServer implements MultiServerInterface{
 				else {
 					if (lastIndex == w)
 						System.err.println("errore"); 
-					//	throw new DMasonException("Error! Not enough slots on the workers for the given partitioning.");
+					//					throw new DMasonException("Error! Not enough slots on the workers for the given partitioning.");
 					if (lastIndex == -1) lastIndex = w;
 				}
-				w = (w+1)%slots.size();
+				w = (w + 1) % slots.size();
 				if (assignedLP < 1) break;
 			}
 		}
@@ -704,12 +693,12 @@ public class MasterServer implements MultiServerInterface{
 	 * @param assignedLP
 	 * @return an hashmap with cells to execute for each worker
 	 */
-	private HashMap<String/*idtopic*/, List<CellType>> divideForNonUniform(int LP,HashMap<String, Integer> slots,HashMap<String/*idtopic*/, List<CellType>> workerlist, int assignedLP){
-
+	private HashMap<String/*idtopic*/, List<CellType>> divideForNonUniform(int LP, HashMap<String, Integer> slots, HashMap<String/*idtopic*/, List<CellType>> workerlist, int assignedLP) {
 		ArrayList<String> workerID = new ArrayList<String>(slots.keySet());
 		int w = 0;
 		int lastIndex = -1;
 		boolean goNext = false;
+
 		for (int i=0; i < LP; i++) {
 			goNext = false;
 			lastIndex = -1;
@@ -717,7 +706,7 @@ public class MasterServer implements MultiServerInterface{
 			if (slots.get(workerID.get(w)) > 0)
 			{
 				slots.put(workerID.get(w), slots.get(workerID.get(w))-1);
-				List<CellType> cells=workerlist.get(workerID.get(w))==null?new ArrayList<CellType>():workerlist.get(workerID.get(w));
+				List<CellType> cells = workerlist.get(workerID.get(w)) == null ? new ArrayList<CellType>() : workerlist.get(workerID.get(w));
 				cells.add(new CellType(0,i));
 				workerlist.put(workerID.get(w),cells);
 				assignedLP--;
@@ -730,7 +719,7 @@ public class MasterServer implements MultiServerInterface{
 			else {
 				if (lastIndex == w)
 					System.err.println("Error! Not enough slots on the workers for the given partitioning.");
-				if (lastIndex == -1) lastIndex=w;
+				if (lastIndex == -1) lastIndex = w;
 			}
 			w = (w+1)%slots.size();
 			if (assignedLP < 1) break;
@@ -768,14 +757,14 @@ public class MasterServer implements MultiServerInterface{
 			}
 			if (distributedState == null) return false;
 
-			Class<?> urlClass = aUrlCL.getClass();//URLClassLoader.class;////
+			Class<?> urlClass = aUrlCL.getClass(); //URLClassLoader.class;////
 
 			Method method = urlClass.getDeclaredMethod("addURL", new Class[]{URL.class});
 			method.setAccessible(true);
 			method.invoke(aUrlCL, new Object[]{url});;
 
 			Class<?> simClass = aUrlCL.loadClass(distributedState.getName());
-			Constructor constr = simClass.getConstructor(new Class[]{ GeneralParam.class ,String.class});
+			Constructor<?> constr = simClass.getConstructor(new Class[]{ GeneralParam.class ,String.class});
 			return true;
 		} catch (Exception e){
 			System.err.println("JAR CORRUPTED, export as a Jar File and not as a runnable jar file");
@@ -809,7 +798,7 @@ public class MasterServer implements MultiServerInterface{
 		final Simulation simul = sim;
 
 		getSimulationsList().put(simul.getSimID(), simul);
-		HashMap<String, Integer> slotsAvalaible = slotsAvailableForSimWorker(simul.getTopicList(),infoWorkers);
+		HashMap<String, Integer> slotsAvalaible = slotsAvailableForSimWorker(simul.getTopicList(), infoWorkers);
 		HashMap<String, List<CellType>> assignmentToworkers = assignCellsToWorkers(slotsAvalaible, simul);
 
 		if (assignmentToworkers == null) {return false;}
@@ -826,10 +815,11 @@ public class MasterServer implements MultiServerInterface{
 		if (!validateSimulationJar(pathJar)) return false;
 
 		try {
-			getConnection().createTopic("SIMULATION_"+sim.getSimID(), 1);
-			getConnection().subscribeToTopic("SIMULATION_"+sim.getSimID());
+			getConnection().createTopic("SIMULATION_" + sim.getSimID(), 1);
+			getConnection().subscribeToTopic("SIMULATION_" + sim.getSimID());
 
-			conn.asynchronousReceive("SIMULATION_"+sim.getSimID(), new MyMessageListener() {
+			conn.asynchronousReceive("SIMULATION_" + sim.getSimID(), new MyMessageListener() {
+				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void onMessage(Message msg) {
@@ -857,7 +847,7 @@ public class MasterServer implements MultiServerInterface{
 
 								if (s.getStatus().equals(Simulation.FINISHED) || s.getStatus().equals(Simulation.STOPPED)) {
 									LOGGER.info("Received FINISHED for " + s.getSimID());
-									if (s_master.getEndTime()<s.getEndTime()) {
+									if (s_master.getEndTime() < s.getEndTime()) {
 										getSimulationsList().get(s.getSimID()).setEndTime(s.getEndTime());
 									}
 								}
@@ -888,11 +878,11 @@ public class MasterServer implements MultiServerInterface{
 		int iDSimToExec = simulationToExec.getSimID();
 		System.out.println("Start simulation with id " + idSimulation);
 		LOGGER.info("Start command received for simulation with id " + idSimulation);
-		for(String workerTopic : simulationToExec.getTopicList()){
-			//LOGGER.info("send start command to " + workerTopic + "   " + getTopicIdForSimulation());wait
+		for (String workerTopic : simulationToExec.getTopicList()) {
+//			LOGGER.info("send start command to " + workerTopic + "   " + getTopicIdForSimulation());wait
 			this.getConnection().publishToTopic(iDSimToExec, workerTopic, "start");
 		}
-		//waitEndSim(idSimulation); //method at the end of this class, a timer for end a simulation
+//		waitEndSim(idSimulation); // method at the end of this class, a timer for end a simulation
 	}
 
 	/**
@@ -942,25 +932,25 @@ public class MasterServer implements MultiServerInterface{
 	 * @return true if correct, false otherwise 
 	 */
 	public synchronized boolean shutdownAllWorkers(ArrayList<String> toShutdown) {
-		for (String topic:toShutdown) {
+		for (String topic: toShutdown) {
 			getConnection().publishToTopic("", topic, "shutdown");
 			ttlinfoWorkers.put(topic, 1000);
 		}
 
 		long start = System.currentTimeMillis();
-		long maxWaitingTime = 1000*toShutdown.size(); 
+		long maxWaitingTime = 1000 * toShutdown.size(); 
 
-		HashSet<String> toremove = new HashSet<>(toShutdown);
+		HashSet<String> toRemove = new HashSet<>(toShutdown);
+		HashSet<String> check = null;
 
-
-		HashSet<String> check = null;		
-		while ((System.currentTimeMillis()-start) < maxWaitingTime) {
+		while ((System.currentTimeMillis() - start) < maxWaitingTime) {
 			check = new HashSet<String>(getInfoWorkers().keySet());
-			if (check.containsAll(toremove)) {
+			if (check.containsAll(toRemove)) {
 				break;
 			}
 			check = new HashSet<String>();
 		}
+
 		infoWorkers = new HashMap<String, String>();
 		try {
 			Thread.sleep(3000);
@@ -1027,7 +1017,7 @@ public class MasterServer implements MultiServerInterface{
 	 * @return if the copy is completed
 	 */
 	private boolean createCopyInHistory(String src, int simid) {
-		String pathHistory = masterHistoryFolder + File.separator+getSimulationsList().get(simid).getSimName() + simid;
+		String pathHistory = masterHistoryFolder + File.separator + getSimulationsList().get(simid).getSimName() + simid;
 		Simulation s = getSimulationsList().get(simid);
 
 		Thread c = new Thread(new Runnable() {
@@ -1044,33 +1034,34 @@ public class MasterServer implements MultiServerInterface{
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				props.put("simID", 				""+s.getSimID());
-				props.put("simName", 			""+s.getSimName());
-				props.put("simWidth", 			""+s.getWidth());
-				props.put("simHeight", 			""+s.getHeight());
+				props.put("simID", 				"" + s.getSimID());
+				props.put("simName", 			"" + s.getSimName());
+				props.put("simWidth", 			"" + s.getWidth());
+				props.put("simHeight", 			"" + s.getHeight());
 
 				if (s.getMode() == DistributedField2D.UNIFORM_PARTITIONING_MODE) {
-					props.put("simRows", 			""+s.getRows());
-					props.put("simColumns", 		""+s.getColumns());
+					props.put("simRows", 			"" + s.getRows());
+					props.put("simColumns", 		"" + s.getColumns());
 				}
 				else if (s.getMode() == DistributedField2D.NON_UNIFORM_PARTITIONING_MODE) {
 					props.put("simRows", 			"-");
 					props.put("simColumns", 		"-");
 				}
-				props.put("simNumAgents", 		""+s.getNumAgents());
-				props.put("simAOI", 			""+s.getAoi());
-				props.put("simStartTime", 		""+s.getStartTimeAsDate());
-				props.put("simEndTime", 		""+s.getEndTimeAsDate());
-				props.put("simTime", ""+s.getSimTimeAsDate());
-				props.put("simTimeAsMillis", ""+s.getSimTime());
-				props.put("simStepNumber", 		""+(s.getStep()+1)+"/"+s.getNumberStep());
-				props.put("simNumCells", 		""+s.getNumCells());
-				props.put("simStatus", 			""+s.getStatus());
-				props.put("simNumWorkers",		""+s.getNumWorkers());
-				props.put("simPartitioning", 	(s.getMode()==0)?"uniform":"non-uniform");
-				props.put("simLogZipFile",		pathHistory+File.separator+s.getSimName()+"_history.zip");
+				props.put("simNumAgents", 		"" + s.getNumAgents());
+				props.put("simAOI", 			"" + s.getAoi());
+				props.put("simStartTime", 		"" + s.getStartTimeAsDate());
+				props.put("simEndTime", 		"" + s.getEndTimeAsDate());
+				props.put("simTime",			"" + s.getSimTimeAsDate());
+				props.put("simTimeAsMillis",	"" + s.getSimTime());
+				props.put("simStepNumber", 		"" + (s.getStep()+1)+"/"+s.getNumberStep());
+				props.put("simNumCells", 		"" + s.getNumCells());
+				props.put("simStatus", 			"" + s.getStatus());
+				props.put("simNumWorkers",		"" + s.getNumWorkers());
+				props.put("simPartitioning", 	(s.getMode() == 0) ? "uniform" : "non-uniform");
+				props.put("simLogZipFile",		pathHistory + File.separator + s.getSimName() + "_history.zip");
+
 				try {
-					props.store(f, "Resume for sim "+s.getSimName());
+					props.store(f, "Resume for sim " + s.getSimName());
 					f.flush();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -1133,7 +1124,7 @@ public class MasterServer implements MultiServerInterface{
 		ArrayList<String> topicWorkers = simulationForLog.getTopicList();
 
 		for (String topic :topicWorkers) {
-			getConnection().publishToTopic(simulationForLog.getSimID(), topic, typeReq/*"logreq"*/);
+			getConnection().publishToTopic(simulationForLog.getSimID(), topic, typeReq /*"logreq"*/);
 			LOGGER.info("send " + typeReq + "to " + topic);
 		}
 
@@ -1255,6 +1246,7 @@ public class MasterServer implements MultiServerInterface{
 	/**
 	 * TESTING CLUSTER SECTION.
 	 ***************************************************************************************************/
+
 	/** insert in start method 
 	 * @param id id of simulation
 	 */
@@ -1276,5 +1268,5 @@ public class MasterServer implements MultiServerInterface{
 				}
 			}
 		}).start();
-	}/*********END**TESTING**CLUSTER**SECTION********************/
+	} /*********END**TESTING**CLUSTER**SECTION********************/
 }

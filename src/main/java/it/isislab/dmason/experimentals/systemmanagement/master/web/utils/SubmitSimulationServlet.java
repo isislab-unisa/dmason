@@ -43,162 +43,138 @@ import it.isislab.dmason.util.connection.ConnectionType;
  *
  */
 public class SubmitSimulationServlet extends HttpServlet {
-
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	MasterServer server=null;
-	final static String ACTIVEMQ="ActiveMQ";
-	final static String MPI="MPI";
+	MasterServer server = null;
+	final static String ACTIVEMQ = "ActiveMQ";
+	final static String MPI = "MPI";
 	HashMap<String,String> listParams = null;
-
-
-
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
 		resp.setContentType("text/plain;charset=UTF-8");
-		if(req.getServletContext().getAttribute("masterServer")==null)
+		if (req.getServletContext().getAttribute("masterServer") == null)
 			return;
 
-		server =(MasterServer)  req.getServletContext().getAttribute("masterServer");
+		server = (MasterServer) req.getServletContext().getAttribute("masterServer");
 		listParams = new HashMap<>();
 
 		/*if*****************only for new jar upload ***********************************************/
-		
+
 		FileItem jarSim = null;
 
-		if(!ServletFileUpload.isMultipartContent(req)){
+		if (!ServletFileUpload.isMultipartContent(req)) {
 			return;
-		}
-		else{
+		} else {
 			FileItemFactory itemFact = new DiskFileItemFactory();
 			ServletFileUpload upload = new ServletFileUpload(itemFact);
-			try{
+			try {
 				List<FileItem> items = upload.parseRequest(req);
 
-				for(FileItem item : items) {
-					if(!item.isFormField()){
+				for (FileItem item: items) {
+					if (!item.isFormField()) {
 						jarSim = item;
-						//item.write(file);
-						//System.out.println("hai sottomesso un file "+jarSim);
-					}else{
-						//System.out.println(item.getFieldName()+" "+item.getString());
+//						item.write(file);
+//						System.out.println("hai sottomesso un file " + jarSim);
+					} else {
+//						System.out.println(item.getFieldName() + " " + item.getString());
 						listParams.put(item.getFieldName(), item.getString());
 					}
 				}
-			}catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
 		}
 		/********************************************************************/
 
 		/**else ************************************************/
-		
-		//PARAMETERS FROM CLIENT		
-		String simName= listParams.get("simName");
-		int rows= (listParams.get("rows")!=null)?Integer.parseInt(listParams.get("rows")):0 ;
-		int columns=	(listParams.get("cols")!=null)?Integer.parseInt(listParams.get("cols")):0;
-		int aoi=	Integer.parseInt(listParams.get("aoi"));
-		int width=	Integer.parseInt(listParams.get("width"));
-		int height=	Integer.parseInt(listParams.get("height"));
-		int numAgent=Integer.parseInt(listParams.get("numAgents"));
-		long numStep= Long.parseLong(listParams.get("step"));
-		String conType= listParams.get("connectionType");
+
+		// PARAMETERS FROM CLIENT		
+		String simName = listParams.get("simName");
+		int rows = (listParams.get("rows") != null) ? Integer.parseInt(listParams.get("rows")) : 0;
+		int columns = (listParams.get("cols") != null) ? Integer.parseInt(listParams.get("cols")) : 0;
+		int aoi = Integer.parseInt(listParams.get("aoi"));
+		int width = Integer.parseInt(listParams.get("width"));
+		int height = Integer.parseInt(listParams.get("height"));
+		int numAgent = Integer.parseInt(listParams.get("numAgents"));
+		long numStep = Long.parseLong(listParams.get("step"));
+		String conType = listParams.get("connectionType");
 		String modeType = listParams.get("partitioning");
-		int cells= (listParams.get("cells")!=null)?Integer.parseInt(listParams.get("cells")):-1;
-		int mode = (modeType.equals("uniform"))?DistributedField2D.UNIFORM_PARTITIONING_MODE: DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
+		int cells = (listParams.get("cells") != null) ? Integer.parseInt(listParams.get("cells")) : -1;
+		int mode = (modeType.equals("uniform")) ? DistributedField2D.UNIFORM_PARTITIONING_MODE : DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
 		String exampleSimulation = listParams.get("exampleSimulation");
-		//connection
 
-		int connection=ConnectionType.pureActiveMQ;
-	
-		if(conType!=null && conType.equalsIgnoreCase(MPI)){
-			connection=ConnectionType.pureMPIParallel; 
+		// connection
+		int connection = ConnectionType.pureActiveMQ;
+
+		if (conType != null && conType.equalsIgnoreCase(MPI)) {
+			connection = ConnectionType.pureMPIParallel; 
 			System.out.println("MPI setting are not implemented yet ");
-		    
 		}
-		//topics
 
-		String topics[] =listParams.get("workers").split(",");
-		ArrayList< String> topicList=new ArrayList<String>();
-		switch(mode){
+		// topics
+		String topics[] = listParams.get("workers").split(",");
+		ArrayList<String> topicList = new ArrayList<String>();
+		switch (mode) {
 			case DistributedField2D.UNIFORM_PARTITIONING_MODE:
 				int numCell = rows * columns;
-				if(numCell < topics.length){
+				if (numCell < topics.length) {
 					for (int i = 0; i < numCell; i++) {
 						topicList.add(topics[i]);
 					}
-				}else{
+				} else {
 					for(String x: topics) 
 						topicList.add(x);
 				}
 				break;
 			case DistributedField2D.NON_UNIFORM_PARTITIONING_MODE:
-				if(cells < topics.length){
+				if (cells < topics.length) {
 					for (int i = 0; i < cells; i++) {
 						topicList.add(topics[i]);
 					}
-				}else{
+				} else {
 					for(String x: topics) 
 						topicList.add(x);
 				}
-					
 				break;
 		}
-		
 
-		int simId=server.getKeySim().incrementAndGet();
-		String simPath=server.getSimulationsDirectories()+File.separator+simName+simId;
-		
+		int simId = server.getKeySim().incrementAndGet();
+		String simPath = server.getSimulationsDirectories() + File.separator + simName + simId;
+
 		server.createSimulationDirectoryByID(simName, simId);
-		
-		
 
-		String simPathJar=simPath+File.separator+"jar";
-		String jarSimName ="";
-		
-		if(exampleSimulation!="" && jarSim.getName().equals("")){
+		String simPathJar = simPath + File.separator + "jar";
+		String jarSimName = "";
+
+		if (exampleSimulation != "" && jarSim.getName().equals("")) {
 			File f = new File(exampleSimulation);
-			jarSimName=f.getName();
+			jarSimName = f.getName();
 			FileUtils.copyFileToDirectory(f, new File(simPathJar));
-		}
-		else
-		{
+		} else {
 			// for new sim, must copy this jar in 
-			server.copyJarOnDirectory(simPathJar,jarSim);
-			jarSimName=jarSim.getName();
-		
+			server.copyJarOnDirectory(simPathJar, jarSim);
+			jarSimName = jarSim.getName();
 		}
-		
-		
-		Simulation sim=null;
-		
-		
-		if(mode==DistributedField2D.UNIFORM_PARTITIONING_MODE)
-			sim =new Simulation(simName, simPath,simPathJar+File.separator+jarSimName ,rows, columns, aoi, width, height, numAgent, numStep, mode, connection);
+
+		Simulation sim = null;
+
+		if (mode == DistributedField2D.UNIFORM_PARTITIONING_MODE)
+			sim = new Simulation(simName, simPath, simPathJar + File.separator+jarSimName, rows, columns, aoi, width, height, numAgent, numStep, mode, connection);
 		else
-			sim=new Simulation(simName, simPath, simPathJar+File.separator+jarSimName, cells, aoi, width, height, numAgent, numStep, mode, connection);	
-		
+			sim = new Simulation(simName, simPath, simPathJar + File.separator+jarSimName, cells, aoi, width, height, numAgent, numStep, mode, connection);	
+
 		sim.setTopicList(topicList);
 		sim.setNumWorkers(topicList.size());
 		sim.setSimID(simId);
-		sim.setTopicPrefix(simName+"-"+simId);
+		sim.setTopicPrefix(simName + "-" + simId);
 
-
-		if(server.submitSimulation(sim)){
+		if (server.submitSimulation(sim)) {
 			resp.setStatus(HttpServletResponse.SC_OK);
 		}
-
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		doGet(req, resp);
 	}
-
 }
