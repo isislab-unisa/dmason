@@ -176,4 +176,12 @@
     	<servlet-name>GetSettingsServlet</servlet-name>
     	<url-pattern>/getSettings</url-pattern>
     </servlet-mapping>
+    <servlet id="instantiateEC2Workers">
+    	<servlet-name>InstantiateEC2WorkersServlet</servlet-name>
+    	<servlet-class>it.isislab.dmason.experimentals.systemmanagement.master.web.utils.InstantiateEC2WorkersServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+    	<servlet-name>InstantiateEC2WorkersServlet</servlet-name>
+    	<url-pattern>/instantiateEC2Workers</url-pattern>
+    </servlet-mapping>
 </web-app>
