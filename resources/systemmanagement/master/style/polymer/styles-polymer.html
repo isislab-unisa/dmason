@@ -74,6 +74,10 @@
         color: white;
     }
 
+    paper-button#dismiss_toast {
+        background-color: transparent;
+    }
+
     paper-icon-button {
         --paper-icon-button-ink-color: white;
     }
@@ -116,7 +120,9 @@
         height: auto;
     }
 
-    paper-card.grid-item-settings {
+    /* Paper cards */
+    paper-card,
+    .grid-item-settings {
         background-color: #FFF;
 
         --paper-card-header: {
@@ -126,6 +132,10 @@
             color: white;
             font-size: 20px;
         };
+    }
+
+    #workers-stats {
+        margin: 20px 8px 8px 20px;
     }
 
     paper-dropdown-menu {
@@ -258,8 +268,14 @@
         height: 60px;
         background-color: #D73D32;
     }
+
+    /* error paper-toast */
+    #error_message {
+        --paper-toast-background-color: #D73D32;
+        --paper-toast-color: white;
+    }
 </style>
-<!-- HTML Import of stylesheet is deprecated, please refer to https://goo.gl/EGXzpw -->
+
 <script>
     var importDoc = document.currentScript.ownerDocument;
     var style = importDoc.querySelector('style');

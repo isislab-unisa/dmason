@@ -1,4 +1,3 @@
-
 * {
     box-sizing: border-box;
 }
@@ -6,6 +5,31 @@
 body {
     margin: 0 0 8px 0;
     color: black;
+}
+
+/* JavaScript check */
+#noJS {
+	margin: 0 auto;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	padding: 5px 15px 5px 15px;
+	width: 50%;
+	background-color: rgba(255, 0, 0, 0.2);
+}
+
+#noJS h2 {
+	color: #AA0000;
+	text-align: center;
+}
+
+#noJS p {
+	color: #660000;
+	text-align: justify;
+}
+
+#noJS #jslogo {
+	float: left;
+	margin: 5px 15px 5px 5px;
 }
 
 /* ---- grids ---- */
