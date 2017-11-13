@@ -1,3 +1,12 @@
+/**
+ * JavaScript checker
+ */
+$(document).ready(function () {
+    $("#noJS").hide();
+    $("#container").show();
+    $("#noJS").remove();
+});
+
 function load_tiles_monitoring() {
     $('.grid-monitoring').masonry({
             itemSelector: '.grid-item-monitoring',
@@ -36,14 +45,15 @@ function open_dialog_setting_new_simulation() {
 
             workerID[index] = id;
             $(this).removeClass("grid-item-selected");
-            slot = $("#w-slots-"+id).text();
+            slot = $("#w-slots-" + id).text();
             slot = slot.substring(slot.indexOf(":") + 1, slot.length);
             num_slots += parseInt(slot.trim());
         });
 
         $("#head_sel_works").text(num_workers);
         $("#head_num_slots").text(num_slots);
-        //passing worker selected
+
+        // passing worker selected
         var node = document.createElement("input");
         node.setAttribute("id", "workerList");
         node.setAttribute("name", "workers");
@@ -54,6 +64,7 @@ function open_dialog_setting_new_simulation() {
         document.querySelector('#miss-worker-selection').open();
         return;
     }
+
     //resetForm();
     open_dialog_by_ID("add-simulation-paper-dialog");
 }
@@ -73,7 +84,7 @@ function close_dialog_by_ID(id_paper_dialog) {
 }
 
 $(
-    function() {
+    function () {
         //console.log(window.location.pathname)
         if (window.location.pathname == "/" || window.location.pathname == "/index.jsp") {
             setInterval(
@@ -87,6 +98,12 @@ $(
                 1000
             );
 
+            setTimeout(
+                function () {
+                    updateWorkerStats();
+                },
+                4000
+            );
             //loadJarsList();
         } else if (window.location.pathname == "/simulations.jsp") {
             setTimeout(
@@ -147,6 +164,7 @@ function nextProgress() {
         }
         progress.value = progress.min;
     }
+
     requestAnimationFrame(nextProgress);
 }
 
@@ -157,7 +175,7 @@ function startProgress() {
     progress = document.querySelector('paper-progress');
     progress.value = progress.min;
     if (!animating) {
-        progress.style.display="block";
+        progress.style.display = "block";
         nextProgress();
     }
 }
@@ -169,6 +187,8 @@ function loadWorkers() {
             _loadWorkers(result);
         }
     });
+
+    updateWorkerStats();
 }
 
 //var history="";
@@ -243,11 +263,13 @@ function _loadWorkers(_message) {
 function selectAllWorkers() {
     var grid = document.getElementById("workers");
     $(grid).children("div").each(function () {
-        if($(this).hasClass("grid-item-monitoring")) {
+        if ($(this).hasClass("grid-item-monitoring")) {
             //console.log($(this).attr("id"));
             selectItem($(this));
         }
     });
+
+    updateWorkerStats();
 }
 
 function selectItem(element) {
@@ -256,31 +278,33 @@ function selectItem(element) {
     } else {
         $(element).addClass("grid-item-selected");
     }
+
+    updateWorkerStats();
 }
 
 function change_partitioning_input_params(element) {
     var buttonName = $(element).attr("name");
     //console.log(buttonName);
+
     switch (buttonName) {
         case "uniform":
-            $("#form_cells").attr("disabled",true);
-            $("#form_row").attr("disabled",false);
-            $("#form_col").attr("disabled",false);
+            $("#form_cells").attr("disabled", true);
+            $("#form_row").attr("disabled", false);
+            $("#form_col").attr("disabled", false);
             break;
         case "non-uniform":
-            $("#form_cells").attr("disabled",false);
-            $("#form_row").attr("disabled",true);
-            $("#form_col").attr("disabled",true);
+            $("#form_cells").attr("disabled", false);
+            $("#form_row").attr("disabled", true);
+            $("#form_col").attr("disabled", true);
             break;
     }
-
 }
 
 function _validate_params(element) {
     var current_element = $(element);
     var paper_input_container = current_element.children()[0];
     var id = current_element.attr("id");
-    var value = document.querySelector("#"+id).value;
+    var value = document.querySelector("#" + id).value;
     var submit_btn = document.querySelector("#submit_btn");
     if (value) {
         value = parseInt(value);
@@ -317,8 +341,8 @@ function _validate_slots(element) {
 
     var id = current_element.attr("id");
 
-    var value = document.querySelector("#"+id).value;
-    var cur_slot = (value)?parseInt(value):1;
+    var value = document.querySelector("#" + id).value;
+    var cur_slot = (value) ? parseInt(value) : 1;
     console.log("Id element " + id + " input value " + value + " cur_slot " + cur_slot);
 
     var submit_btn = document.querySelector("#submit_btn");
@@ -381,67 +405,77 @@ function submitForm() {
 }
 
 function checkForm(form) {
+    var error_toast = document.querySelector('#error_message');
     var error_toast_message = document.querySelector("#missing_settings");
     var jarFile = $("#simulation-jar-chooser").val();
     var exampleSim = document.querySelector("#exampleSimulation").selectedItemLabel;
     var partitioning = document.querySelector("#partitioning").selected;
 
     if (!partitioning) {
-        $(error_toast_message).text("You should select a partitioning");
-        error_toast_message.open();
+        $(error_toast_message).text("You should select a partitioning.");
+        error_toast.open();
         return false;
     }
+
     if (!jarFile && !exampleSim) {
-        $(error_toast_message).text("You should select an example simulation or submit a simulation jar");
-        error_toast_message.open();
+        $(error_toast_message).text("You should select an example simulation or submit a simulation jar.");
+        error_toast.open();
         return false;
     }
+
     var success = true;
     $("#sendSimulationForm paper-input").each(function (n, paper_input) {
         if (paper_input.id.startsWith("form_")) {
             if (paper_input.value == "") {
-
                 switch (paper_input.label.toLowerCase()) {
                     case "cells":
                         if (partitioning.toLowerCase() == 'non-uniform') {
-                            $(error_toast_message).text("You should fill " + paper_input.label);
-                            error_toast_message.open();
+                            $(error_toast_message).html(
+                                "You should fill the <strong>" + paper_input.label + "</strong> field."
+                            );
+                            error_toast.open();
                             success = false;
                         }
                         break;
                     case "rows":
                         if (partitioning.toLowerCase() == 'uniform') {
-                            $(error_toast_message).text("You should fill " + paper_input.label);
-                            error_toast_message.open();
+                            $(error_toast_message).html(
+                                "You should fill the <strong>" + paper_input.label + "</strong> field."
+                            );
+                            error_toast.open();
                             success = false;
                         }
                         break;
                     case "columns":
                         if (partitioning.toLowerCase() == 'uniform') {
-                            $(error_toast_message).text("You should fill " + paper_input.label);
-                            error_toast_message.open();
+                            $(error_toast_message).html(
+                                "You should fill the <strong>" + paper_input.label + "</strong> field."
+                            );
+                            error_toast.open();
                             success = false;
                         }
                         break;
                     default:
-                        $(error_toast_message).text("You should fill " + paper_input.label);
-                        error_toast_message.open();
+                        $(error_toast_message).html(
+                            "You should fill the <strong>" + paper_input.label + "</strong> field."
+                        );
+                        error_toast.open();
                         success = false;
                 }
+
                 return;
             }
         }
     });
+
     return success;
 }
 
 function _OnsubmitSimulation(event) {
-
     var form = document.querySelector('form[is="iron-form"]');
-
     var formData = new FormData(form);
 
-    //Workaround by https://github.com/rnicholus/ajax-form/issues/63
+    // Workaround by https://github.com/rnicholus/ajax-form/issues/63
 
     var myPaperRadioGroup = document.getElementById('partitioning');
     if (!myPaperRadioGroup.selected) {
@@ -470,13 +504,13 @@ function _OnsubmitSimulation(event) {
         contentType: false,
         processData: false,
         success: function (result) {
-            //remove input tag added previusly
+            // remove input tag added previously
             var dialog = document.getElementById("add-simulation-paper-dialog");
-            maxRepeat =0;
+            maxRepeat = 0;
             $("#workerList").remove();
             resetForm();
             dialog.close();
-            window.location="simulations.jsp";
+            window.location = "simulations.jsp";
         }
     });
 }
@@ -504,6 +538,7 @@ function _update_sim_info(_message) {
     var message = _message;
     var obj = [];
     //console.log(message);
+
     if (message.length > 0) {
         obj = JSON.parse(message);
     }
@@ -517,7 +552,7 @@ function _update_sim_info(_message) {
 function getListFile(sim_id) {
     $.ajax({
         url: "requestForLog",
-        data: {id:sim_id},
+        data: {id: sim_id},
         success: function (result) {
             _getListFile(result);
         }
@@ -535,7 +570,7 @@ function _getListFile(result) {
 
     var scp = document.querySelector('template[is="dom-bind"]');
     var list = [];
-    for (var f, i=0; f = list_file.files[i]; i++) {
+    for (var f, i = 0; f = list_file.files[i]; i++) {
             //console.log(f);
             list[i] = f;
     }
@@ -676,6 +711,7 @@ function cleanHistory() {
     });
 }
 
+// attach settings update logic to settings.jsp paper cards
 $().ready(function () {
 //    $(loadSettings); // done in a previous function
     $("#setactivemq").click(updateActiveMQSettings);
@@ -766,4 +802,109 @@ function updateAmazonAWSSettings() {
     .fail(function () {
         console.error("Error while sending Amazon AWS data!");
     });
+}
+
+function updateWorkerStats() {
+    var tot_workers = $(".grid-item-monitoring").length;
+    var num_workers = $(".grid-item-selected").length;
+    var num_slots = 0;
+    var id = "";
+
+    //console.log(num_workers + " workers available!");
+    //console.log("Selected " + num_workers + " workers!");
+
+    if (num_workers) {
+        // test code for values insertion
+        $('.grid-item-selected').each(function (index) {
+            id = $(this).attr("id");
+            slot = $("#w-slots-" + id).text();
+            slot = slot.substring(slot.indexOf(":") + 1, slot.length);
+            num_slots += parseInt(slot.trim());
+        });
+        
+        //console.log("Selected " + num_slots + " total slots!");
+    }
+    
+    // update fields in index.jsp
+    /*var app = document.querySelector('#workersstats');
+    app.data = [
+        {id: 0, available: tot_workers, selected: num_workers, selectedslots: num_slots}
+    ];
+    app.toFixedOne = function (value) {
+        return value.toFixed(1);
+    };
+    app.toPercentage = function (value) {
+        return Math.round(value * 10000)/100 + '%';
+    };*/
+}
+
+function validateEC2WorkerRequest() {
+    var error_toast = $("error_message");
+    var error_toast_message = $("missing_settings");
+
+    var ec2Type = $("#instancetype").val();
+    var ec2TypeDescription = "";
+    var numInstances = $("#numinstances").val();
+    var price = 0.0;
+
+    if (ec2Type == null || ec2Type == "") {
+        $(error_toast_message).text(
+            "You should select a EC2 instance type."
+        );
+        error_toast.open();
+        return false;
+    }
+    if (numInstances == null || numInstances == 0) {
+        $(error_toast_message).text(
+            "You should specify a number of EC2 instances to run."
+        );
+        error_toast.open();
+        return false;
+    }
+
+    console.log("Request for " + numInstances + " EC2 instance of " + ec2Type + " type");
+    return true;
+}
+
+function requestEC2Worker() {
+    var form = $("#createEC2Worker");
+
+    if (!validateEC2WorkerRequest()) {
+        console.warn("New EC2 worker request is invalid or incomplete!");
+        return;
+    }
+
+    startProgress(); // TODO check if it works as expected
+
+    $(form).unbind("submit").bind("submit", _onSubmitEC2WorkerRequest);
+    form.submit();
+}
+
+function _onSubmitEC2WorkerRequest(event) {
+    var form = document.querySelector('form[is="iron-form"]');
+    var formData = new FormData(form);
+
+    // send the request to instantiation servlet
+    $.ajax({
+        url: "instantiateEC2Workers",
+        type: "POST",
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function (data, textStatus, jqXHR) {
+            console.info(data + "\nstatus: " + textStatus + ".")
+            resetEC2RequestForm();
+            document.getElementById("add-ec2-node-dialog").close();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error(textStatus + ": " + errorThrown + ".");
+        }
+    });
+}
+
+function resetEC2RequestForm() {
+    document.querySelector("#createEC2Worker").reset();
+    progress = document.querySelector('paper-progress');
+    progress.style.display = "none";
 }
