@@ -25,7 +25,8 @@
 		<link rel="import" href="bower_components/paper-input/paper-textarea.html">
 		<link rel="import" href="bower_components/paper-listbox/paper-listbox.html">
         <link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
-        <link rel="import" href="bower_components/paper-tabs/paper-tab.html">
+		<link rel="import" href="bower_components/paper-tabs/paper-tab.html">
+		<link rel="import" href="bower_components/paper-toggle-button/paper-toggle-button.html">
         <link rel="import" href="bower_components/paper-tooltip/paper-tooltip.html">
 	</head>
 
@@ -55,9 +56,7 @@
 			</paper-card>--%><%-- TODO reenable workers stats --%>
 
 			<%-- Workers grid --%>
-			<div class="grid-monitoring" id="workers">
-				<div class=\"grid-sizer-monitoring\"></div><%-- populated by script --%>
-			</div>
+			<div id="workers" class="grid-monitoring"></div><%-- populated by script --%>
 
 			<%-- Workers nodes loading --%>
 			<paper-dialog opened id="load_workers_dialog"  entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal>

@@ -52,7 +52,7 @@ body {
 .grid-sizer-monitoring,
 .grid-item-monitoring {
     width: 250px;
-    height: 250px;
+    margin: 10px 0 0 10px;
 }
 
 .grid-sizer-settings,
@@ -69,19 +69,9 @@ body {
 }
 
 .grid-item-monitoring {
-    width: 230px;
-    height: 190px;
     float: left;
-    background-color: #B8C4CC;
-    border-radius: 15px;
-    border: 2px solid;
-    border-color:  hsla(0, 0%, 0%, 0.5);
-    font-size: large;
-    padding: 10px;
-    position: relative;
-    color: black;
-    margin-top: 20px;
-    margin-left: 20px;
+    height: auto;
+    min-height: 260px;
 }
 
 .selectAllWorker {
@@ -106,6 +96,7 @@ body {
     margin-left:1em;
 }
 
+/* TODO edit according to paper-card */
 .grid-item-monitoring:hover {
     background-color: #fff;
     color: black;
@@ -113,6 +104,7 @@ body {
     border-color: black;
 }
 
+/* TODO edit according to paper-card */
 .grid-item-selected {
     background-color: #fff;
     color: black;
