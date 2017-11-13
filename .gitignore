@@ -14,7 +14,5 @@
 /activemq-data
 /dmason
 resources/systemmanagement/master/conf/simid.json
-resources/systemmanagement/master/bower_components/elements/.bower.json
-resources/systemmanagement/master/bower_components/get-size/.bower.json
-resources/systemmanagement/master/bower_components/masonry/.bower.json
-resources/systemmanagement/master/bower_components/outlayer/.bower.json
+resources/systemmanagement/master/bower_components
+
