@@ -3,7 +3,7 @@
   "homepage": "https://github.com/isislab-unisa/dmason",
   "authors": [
     "Flavio Serrapica <flavio.serrapica@gmail.com>",
-    "Simone Bisogno <s.bisogno90@gmail.com>" 
+    "Simone Bisogno (trainee) <s.bisogno90@gmail.com>"
   ],
   "description": "",
   "main": "",
@@ -18,9 +18,10 @@
     "tests"
   ],
   "dependencies": {
+    "jquery": "^3.2.1",
     "polymer": "*",
     "web-animations-js": "*",
-    "webcomponentsjs": "0.7.24",
+    "webcomponentsjs": "^0.7.24",
     "iron-elements": "*",
     "iron-flex-layout": "*",
     "paper-elements": "*",
@@ -31,5 +32,8 @@
     "neon-animation": "*",
     "app-layout": "*",
     "highcharts": "^5.0.14"
+  },
+  "resolutions": {
+    "webcomponentsjs": "0.7.24"
   }
 }
