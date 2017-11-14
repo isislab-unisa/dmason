@@ -10,8 +10,7 @@ $(document).ready(function () {
 function load_tiles_monitoring() {
     $('.grid-monitoring').masonry({
             itemSelector: '.grid-item-monitoring',
-            columnWidth: '.grid-sizer-monitoring',
-            percentPosition: true
+            columnWidth: 250
         }
     );
 }
@@ -38,6 +37,7 @@ function open_dialog_setting_new_simulation() {
     var num_slots = 0;
     var num_workers = $('.grid-item-selected').length;
     var id = "";
+
     if (num_workers) {
         $('.grid-item-selected').each(function (index) {
             id = $(this).attr("id");
@@ -196,56 +196,63 @@ function _loadWorkers(_message) {
 
     var message = _message;
     var grid = document.getElementById("workers");
-    // var tiles="<div class=\"grid-sizer-monitoring\"></div>";
+    // var tiles = "<div class=\"grid-sizer-monitoring\"></div>";
 
     var obj = [];
 
     //console.log(message);
-    if (message.length>0)
+    if (message.length > 0)
         obj = JSON.parse(message);
 
     var w;
     var old_list = [];
     $(grid).children('div').each(function () {
         if ($(this).attr("id")) {
-            // console.log("aggiungo "+$(this).attr("id"));
-            old_list["\'w-"+$(this).attr("id")+"\'"] = $(this);
+            // console.log("aggiungo " + $(this).attr("id"));
+            old_list["\'w-" + $(this).attr("id") + "\'"] = $(this);
         }
     });
 
     if (obj.hasOwnProperty('workers')) {
-
         for (i = 0; i < obj.workers.length; i++) {
             w = obj.workers[i];
             var curNode = document.getElementById(w.workerID);
             if (!curNode) {
-                node = $("<div id="+w.workerID+" class=\"grid-item-monitoring\" onclick=\"selectItem(this)\"></div>");
-                // node.append($("<div class=\"worker-system-info\"><span>Worker ID: "+ w.workerID+"</span></div>"));
-                node.append($("<div class=\"worker-system-info\"><span id=\"w-cpu-"+w.workerID+"\">CPU: "+w.cpuLoad+" %</span></div>"));
-                node.append($("<div class=\"worker-system-info\"><span>Heap:</span></div>"));
-                node.append($("<div class=\"worker-system-info\"><span id=\"w-max-heap-"+w.workerID+"\" class=\"tab\">Max "+w.maxHeap+" MB</span></div>"));
-                node.append($("<div class=\"worker-system-info\"><span id=\"w-heap-avaiable-"+w.workerID+"\" class=\"tab\">Free "+w.availableheapmemory+" MB</span></div>"));
-                node.append($("<div class=\"worker-system-info\"><span id=\"w-heap-used-"+w.workerID+"\" class=\"tab\">Used "+w.busyheapmemory+" MB</span></div>"));
-                node.append($("<div class=\"worker-system-info\"><span id=\"w-ip-"+w.workerID+"\">IP: "+w.ip+"</span></div>"));
-                node.append($("<div class=\"worker-system-info\"><span id=\"w-slots-"+w.workerID+"\">Slots: "+ w.slots+"</span></div>"));
+//                node = $("<div id=" + w.workerID + " class=\"grid-item-monitoring\" onclick=\"selectItem(this)\"></div>");
+                node = $("<paper-card id=" + w.workerID + " class=\"grid-item-monitoring\" heading=\"Worker " + w.workerID + "\"></paper-card>");
+                nodeContent = $("<div class=\"card-content\"></div>");
+                nodeActions = $("<div class=\"card-actions\"></div>");
 
+//              nodeContent.append($("<div class=\"worker-system-info\"><span>Worker ID: " + w.workerID + "</span></div>"));
+                nodeContent.append($("<div class=\"worker-system-info\"><span id=\"w-cpu-" + w.workerID + "\">CPU: " + w.cpuLoad + " %</span></div>"));
+                nodeContent.append($("<div class=\"worker-system-info\"><span>Heap:</span></div>"));
+                nodeContent.append($("<div class=\"worker-system-info\"><span id=\"w-max-heap-" + w.workerID + "\" class=\"tab\">Max " + w.maxHeap + " MB</span></div>"));
+                nodeContent.append($("<div class=\"worker-system-info\"><span id=\"w-heap-avaiable-" + w.workerID + "\" class=\"tab\">Free " + w.availableheapmemory + " MB</span></div>"));
+                nodeContent.append($("<div class=\"worker-system-info\"><span id=\"w-heap-used-" + w.workerID + "\" class=\"tab\">Used " + w.busyheapmemory + " MB</span></div>"));
+                nodeContent.append($("<div class=\"worker-system-info\"><span id=\"w-ip-" + w.workerID + "\">IP: " + w.ip + "</span></div>"));
+                nodeContent.append($("<div class=\"worker-system-info\"><span id=\"w-slots-" + w.workerID + "\">Slots: " + w.slots + "</span></div>"));
+
+                nodeActions.append($("<paper-toggle-button disabled></paper-toggle-button>"));
+
+                $(node).append(nodeContent);
+                $(node).append(nodeActions);
                 $(grid).append(node);
             } else {
-                //console.log(w.workerID);
-                delete old_list["\'w-"+w.workerID+"\'"];
-                $("#w-cpu-"+w.workerID).text("CPU: "+w.cpuLoad+" %");
-                $("w-max-heap-"+w.workerID).text("Max "+w.maxHeap+" MB</span></div>");
-                $("#w-heap-avaiable-"+w.workerID).text("Free "+w.availableheapmemory+" MB");
-                $("#w-heap-use-"+w.workerID).text("Used "+w.busyheapmemory+" MB");
-                $("#w-slots-"+w.workerID).text("Slots: "+ w.slots);
+                // console.log(w.workerID);
+                delete old_list["\'w-" + w.workerID + "\'"];
+                $("#w-cpu-" + w.workerID).text("CPU: " + w.cpuLoad + " %");
+                $("w-max-heap-" + w.workerID).text("Max " + w.maxHeap + " MB</span></div>");
+                $("#w-heap-avaiable-" + w.workerID).text("Free " + w.availableheapmemory + " MB");
+                $("#w-heap-use-" + w.workerID).text("Used " + w.busyheapmemory + " MB");
+                $("#w-slots-" + w.workerID).text("Slots: " + w.slots);
             }
 
             /*
-             tiles += "<div id="+w.workerID+" class=\"grid-item-monitoring\" onclick=\"selectItem(this)\">"
-             +"<div class=\"worker-system-info\"><span>Worker ID: "+i+"</span></div>"
-             +"<div class=\"worker-system-info\"><span>CPU: "+w.cpuLoad+" %</span></div>"
-             +"<div class=\"worker-system-info\"><span>JVM RAM: Free "+w.availableheapmemory+"  MB Used "+w.busyheapmemory+"  MB</span></div>"
-             +"<div class=\"worker-system-info\"><span>IP: "+w.ip+"</span></div>"
+             tiles += "<div id=" + w.workerID + " class=\"grid-item-monitoring\" onclick=\"selectItem(this)\">"
+             +"<div class=\"worker-system-info\"><span>Worker ID: " + i + "</span></div>"
+             +"<div class=\"worker-system-info\"><span>CPU: " + w.cpuLoad + " %</span></div>"
+             +"<div class=\"worker-system-info\"><span>JVM RAM: Free " + w.availableheapmemory + " MB Used " + w.busyheapmemory + " MB</span></div>"
+             +"<div class=\"worker-system-info\"><span>IP: " + w.ip + "</span></div>"
              +"<div class=\"worker-system-info\"><span>#Simulations</span></div>"
              +"</div>";*/
         }

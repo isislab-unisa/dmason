@@ -1,0 +1,10 @@
+<div id="{{workerID}}" class="grid-item-monitoring" onclick="selectItem(this)">
+    <div class="worker-system-info"><span>Worker ID: {{workerID}}</span></div>
+    <div class="worker-system-info"><span id="w-cpu-{{workerID}}">CPU: {{workerCPU}}</span></div>
+    <div class="worker-system-info"><span>Heap:</span></div>
+    <div class="worker-system-info"><span id="w-max-heap-{{workerID}}" class="tab">Max {{workerMaxMB}} MB</span></div>
+    <div class="worker-system-info"><span id="w-heap-avaiable-{{workerID}}" class="tab">Free {{workerFreeMB}} MB</span></div>
+    <div class="worker-system-info"><span id="w-heap-used-{{workerID}}" class="tab">Used {{workerUsedMB}} MB</span></div>
+    <div class="worker-system-info"><span id="w-ip-{{workerID}}">IP: {{workerIP}}</span></div>
+    <div class="worker-system-info"><span id="w-slots-{{workerID}}">Slots: {{workerSlots}}</span></div>
+</div>
