@@ -400,29 +400,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-			<!--<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.6.0</version>
-				<executions>
-					<execution> Eclipse reports an error because of specified phase, 'generate-sources', yet it works
-						<id>exec-bower-install</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-						<configuration>
-							<executable>bower</executable> retrieve front-end dependencies at build time
-							<workingDirectory>resources/systemmanagement/master</workingDirectory>
-							<arguments>
-								<argument>install</argument>
-								<argument>--save</argument>
-							</arguments>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>-->
 		</plugins>
 	</build>
 </project>
