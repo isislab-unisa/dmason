@@ -45,15 +45,18 @@
 		<%-- Page body --%>
 		<div class="content content-main">
 			<%-- Workers quick stats --%>
-			<%--<paper-card heading="Workers statistics" id="workers-stats">
+			<paper-card heading="Workers statistics" id="workers-stats" style="float: left;">
 				<div class="card-content">
-					<paper-datatable id="workersstats" data="{{data}}">
-						<paper-datatable-column header="Available workers" property="available" align="center" type="Number" tooltip="The total number of running workers"></paper-datatable-column>
-						<paper-datatable-column header="Selected workers" property="selected" align="center" type="Number" tooltip="The number of selected workers"></paper-datatable-column>
-						<paper-datatable-column header="Selected slots from selected workers" property="selectedslots" align="center" type="Number" tooltip="The total number of slots for selected workers"></paper-datatable-column>
-					</paper-datatable>
+					<div id="workersstats" data="{{data}}">
+						<div>Available workers: <span id="availableworkers">0</span></div>
+						<paper-tooltip for="availableworkers">The total number of running workers</paper-tooltip>
+						<div>Selected workers: <span id="selectedworkers">0</span></div>
+						<paper-tooltip for="selectedworkers">The number of selected workers</paper-tooltip>
+						<div>Selected slots: <span id="selectedslots">0</span></div>
+						<paper-tooltip for="selectedslots">The total number of slots for selected workers</paper-tooltip>
+					</div>
 				</div>
-			</paper-card>--%><%-- TODO reenable workers stats --%>
+			</paper-card>
 
 			<%-- Workers grid --%>
 			<div id="workers" class="grid-monitoring"></div><%-- populated by script --%>

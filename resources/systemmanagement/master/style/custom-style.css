@@ -69,6 +69,7 @@ body {
 }
 
 .grid-item-monitoring {
+    background-color: #E6A0A0 !important;
     float: left;
     height: auto;
     min-height: 260px;
@@ -93,23 +94,31 @@ body {
 }
 
 .tab {
-    margin-left:1em;
+    margin-left: 1em;
 }
 
 /* TODO edit according to paper-card */
 .grid-item-monitoring:hover {
-    background-color: #fff;
-    color: black;
-    border: 2px solid;
-    border-color: black;
+    background-color: #FFF !important;
+
+    --paper-card-header: { /* TODO check */
+        background-color: #E6A0A0 !important;
+    };
+    --paper-card-header-text: {
+        color: #333 !important;
+    };
 }
 
 /* TODO edit according to paper-card */
 .grid-item-selected {
-    background-color: #fff;
-    color: black;
-    border:2px solid ;
-    border-color: black;
+    background-color: #E6A0A0 !important;
+
+    --paper-card-header: {
+        background-color: #D73D32 !important;
+    };
+    --paper-card-header-text: {
+        color: #666 !important;
+    };
 }
 
 .worker-system-info {

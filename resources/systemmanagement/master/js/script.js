@@ -219,7 +219,7 @@ function _loadWorkers(_message) {
             var curNode = document.getElementById(w.workerID);
             if (!curNode) {
 //                node = $("<div id=" + w.workerID + " class=\"grid-item-monitoring\" onclick=\"selectItem(this)\"></div>");
-                node = $("<paper-card id=" + w.workerID + " class=\"grid-item-monitoring\" heading=\"Worker " + w.workerID + "\"></paper-card>");
+                node = $("<paper-card id=" + w.workerID + " class=\"grid-item-monitoring\" heading=\"Worker " + w.workerID + "\" onclick=\"selectItem(this)\"></paper-card>");
                 nodeContent = $("<div class=\"card-content\"></div>");
                 nodeActions = $("<div class=\"card-actions\"></div>");
 
@@ -232,7 +232,7 @@ function _loadWorkers(_message) {
                 nodeContent.append($("<div class=\"worker-system-info\"><span id=\"w-ip-" + w.workerID + "\">IP: " + w.ip + "</span></div>"));
                 nodeContent.append($("<div class=\"worker-system-info\"><span id=\"w-slots-" + w.workerID + "\">Slots: " + w.slots + "</span></div>"));
 
-                nodeActions.append($("<paper-toggle-button disabled></paper-toggle-button>"));
+                nodeActions.append($("<paper-toggle-button class=\"toggle\" noink></paper-toggle-button>"));
 
                 $(node).append(nodeContent);
                 $(node).append(nodeActions);
@@ -280,10 +280,19 @@ function selectAllWorkers() {
 }
 
 function selectItem(element) {
+    // if the element has got the 'grid-item-selected' class already
+    // it gets removed, otherwise it gets added
+    $(element).toggleClass("grid-item-selected");
+
+    // toggle the worker switch as well
+    var toggle = $(element).find(".toggle")[0]; // extract toggle from element
+
     if ($(element).hasClass("grid-item-selected")) {
-        $(element).removeClass("grid-item-selected");
+        // toggle
+        toggle.checked = true;
     } else {
-        $(element).addClass("grid-item-selected");
+        // untoggle
+        toggle.checked = false;
     }
 
     updateWorkerStats();
@@ -817,8 +826,7 @@ function updateWorkerStats() {
     var num_slots = 0;
     var id = "";
 
-    //console.log(num_workers + " workers available!");
-    //console.log("Selected " + num_workers + " workers!");
+    //console.log("Selected " + num_workers + " of " + tot_workers + " workers!");
 
     if (num_workers) {
         // test code for values insertion
@@ -833,16 +841,9 @@ function updateWorkerStats() {
     }
     
     // update fields in index.jsp
-    /*var app = document.querySelector('#workersstats');
-    app.data = [
-        {id: 0, available: tot_workers, selected: num_workers, selectedslots: num_slots}
-    ];
-    app.toFixedOne = function (value) {
-        return value.toFixed(1);
-    };
-    app.toPercentage = function (value) {
-        return Math.round(value * 10000)/100 + '%';
-    };*/
+    $("#availableworkers").val(tot_workers); // TODO check why value doesn't get updated
+    $("#selectedworkers").val(num_workers);
+    $("#selectedslots").val(num_slots);
 }
 
 function validateEC2WorkerRequest() {
