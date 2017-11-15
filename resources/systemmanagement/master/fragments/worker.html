@@ -1,16 +1,18 @@
-<paper-card id="{{workerID}}" class="grid-item-monitoring" heading="Worker {{workerID}}" onclick="selectItem(this)">
+<paper-card id="{{:workerID}}" class="grid-item-monitoring" heading="Worker {{:workerID}}" onclick="selectItem(this)">
     <div class="card-content">
-        <div class="worker-system-info"><span>Worker ID: {{workerID}}</span></div>
-        <div class="worker-system-info"><span id="w-cpu-{{workerID}}">CPU: {{workerCPU}}</span></div>
+        <div class="worker-system-info"><span>Worker ID: {{:workerID}}</span></div>
+        <div class="worker-system-info"><span id="w-cpu-{{:workerID}}">CPU: {{:workerCPU}}</span></div>
         <div class="worker-system-info"><span>Heap:</span></div>
-        <div class="worker-system-info"><span id="w-max-heap-{{workerID}}" class="tab">Max {{workerMaxMB}} MB</span></div>
-        <div class="worker-system-info"><span id="w-heap-avaiable-{{workerID}}" class="tab">Free {{workerFreeMB}} MB</span></div>
-        <div class="worker-system-info"><span id="w-heap-used-{{workerID}}" class="tab">Used {{workerUsedMB}} MB</span></div>
-        <div class="worker-system-info"><span id="w-ip-{{workerID}}">IP: {{workerIP}}</span></div>
-        <div class="worker-system-info"><span id="w-slots-{{workerID}}">Slots: {{workerSlots}}</span></div>
+        <div class="worker-system-info"><span id="w-max-heap-{{:workerID}}" class="tab">Max {{:workerMaxMB}} MB</span></div>
+        <div class="worker-system-info"><span id="w-heap-available-{{:workerID}}" class="tab">Free {{:workerFreeMB}} MB</span></div>
+        <div class="worker-system-info"><span id="w-heap-used-{{:workerID}}" class="tab">Used {{:workerUsedMB}} MB</span></div>
+        <div class="worker-system-info"><span id="w-ip-{{:workerID}}">IP: {{:workerIP}}</span></div>
+        <div class="worker-system-info"><span id="w-slots-{{:workerID}}">Slots: {{:workerSlots}}</span></div>
     </div>
 
     <div class="card-actions">
-        <paper-toggle-button class=\"toggle\" noink></paper-toggle-button>
+        <div>
+            <paper-toggle-button class=\"toggle\" noink></paper-toggle-button>
+        </div>
     </div>
 </paper-card>

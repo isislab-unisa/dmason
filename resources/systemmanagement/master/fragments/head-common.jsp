@@ -13,8 +13,8 @@
         <%-- jQuery --%>
         <script src="bower_components/jquery/dist/jquery.min.js"></script>
 
-        <%-- Custom Scripts --%>
-        <script src="js/script.js"></script>
+        <%-- jsRender -->
+		<script src="bower_components/jsrender/jsrender.min.js"></script>
 
         <%-- Common imports --%>
         <jsp:include page="../fragments/iron-common.jsp"></jsp:include>
@@ -29,3 +29,6 @@
 
         <%-- Custom CSS --%>
         <link rel="stylesheet" type="text/css" href="style/custom-style.css">
+
+        <%-- Custom Scripts --%>
+        <script src="js/script.js"></script>

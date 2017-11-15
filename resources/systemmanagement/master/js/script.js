@@ -218,31 +218,30 @@ function _loadWorkers(_message) {
             w = obj.workers[i];
             var curNode = document.getElementById(w.workerID);
             if (!curNode) {
-//                node = $("<div id=" + w.workerID + " class=\"grid-item-monitoring\" onclick=\"selectItem(this)\"></div>");
-                node = $("<paper-card id=" + w.workerID + " class=\"grid-item-monitoring\" heading=\"Worker " + w.workerID + "\" onclick=\"selectItem(this)\"></paper-card>");
-                nodeContent = $("<div class=\"card-content\"></div>");
-                nodeActions = $("<div class=\"card-actions\"></div>");
+                var workerData = {
+                    workerID: w.workerID,
+                    workerCPU: w.cpuLoad,
+                    workerMaxMB: w.maxHeap,
+                    workerFreeMB: w.availableheapmemory,
+                    workerUsedMB: w.busyheapmemory,
+                    workerSlots: w.slots
+                }
 
-//              nodeContent.append($("<div class=\"worker-system-info\"><span>Worker ID: " + w.workerID + "</span></div>"));
-                nodeContent.append($("<div class=\"worker-system-info\"><span id=\"w-cpu-" + w.workerID + "\">CPU: " + w.cpuLoad + " %</span></div>"));
-                nodeContent.append($("<div class=\"worker-system-info\"><span>Heap:</span></div>"));
-                nodeContent.append($("<div class=\"worker-system-info\"><span id=\"w-max-heap-" + w.workerID + "\" class=\"tab\">Max " + w.maxHeap + " MB</span></div>"));
-                nodeContent.append($("<div class=\"worker-system-info\"><span id=\"w-heap-avaiable-" + w.workerID + "\" class=\"tab\">Free " + w.availableheapmemory + " MB</span></div>"));
-                nodeContent.append($("<div class=\"worker-system-info\"><span id=\"w-heap-used-" + w.workerID + "\" class=\"tab\">Used " + w.busyheapmemory + " MB</span></div>"));
-                nodeContent.append($("<div class=\"worker-system-info\"><span id=\"w-ip-" + w.workerID + "\">IP: " + w.ip + "</span></div>"));
-                nodeContent.append($("<div class=\"worker-system-info\"><span id=\"w-slots-" + w.workerID + "\">Slots: " + w.slots + "</span></div>"));
-
-                nodeActions.append($("<paper-toggle-button class=\"toggle\" noink></paper-toggle-button>"));
-
-                $(node).append(nodeContent);
-                $(node).append(nodeActions);
-                $(grid).append(node);
+                // retrieve, populate and inject worker template
+                $.get("../fragments/worker.html", function (value) {
+                    console.log("Extracting template...");
+                    workerTemplate = $.templates(value); // TODO check why it doesn't work
+                    console.log("Template extracted!");
+                    var html = workerTemplate.render(workerData);
+                    console.log(html);
+                    $(grid).html(html);
+                });
             } else {
                 // console.log(w.workerID);
                 delete old_list["\'w-" + w.workerID + "\'"];
                 $("#w-cpu-" + w.workerID).text("CPU: " + w.cpuLoad + " %");
-                $("w-max-heap-" + w.workerID).text("Max " + w.maxHeap + " MB</span></div>");
-                $("#w-heap-avaiable-" + w.workerID).text("Free " + w.availableheapmemory + " MB");
+                $("#w-max-heap-" + w.workerID).text("Max " + w.maxHeap + " MB");
+                $("#w-heap-available-" + w.workerID).text("Free " + w.availableheapmemory + " MB");
                 $("#w-heap-use-" + w.workerID).text("Used " + w.busyheapmemory + " MB");
                 $("#w-slots-" + w.workerID).text("Slots: " + w.slots);
             }
@@ -839,11 +838,11 @@ function updateWorkerStats() {
         
         //console.log("Selected " + num_slots + " total slots!");
     }
-    
+
     // update fields in index.jsp
-    $("#availableworkers").val(tot_workers); // TODO check why value doesn't get updated
-    $("#selectedworkers").val(num_workers);
-    $("#selectedslots").val(num_slots);
+    $("#availableworkers").find("span").text(tot_workers); // automatically updates the first value in array
+    $("#selectedworkers").find("span").text(num_workers);
+    $("#selectedslots").find("span").text(num_slots);
 }
 
 function validateEC2WorkerRequest() {

@@ -48,11 +48,11 @@
 			<paper-card heading="Workers statistics" id="workers-stats" style="float: left;">
 				<div class="card-content">
 					<div id="workersstats" data="{{data}}">
-						<div>Available workers: <span id="availableworkers">0</span></div>
+						<div id="availableworkers">Available workers: <span>0</span></div>
 						<paper-tooltip for="availableworkers">The total number of running workers</paper-tooltip>
-						<div>Selected workers: <span id="selectedworkers">0</span></div>
+						<div id="selectedworkers">Selected workers: <span>0</span></div>
 						<paper-tooltip for="selectedworkers">The number of selected workers</paper-tooltip>
-						<div>Selected slots: <span id="selectedslots">0</span></div>
+						<div id="selectedslots">Selected slots: <span>0</span></div>
 						<paper-tooltip for="selectedslots">The total number of slots for selected workers</paper-tooltip>
 					</div>
 				</div>
