@@ -83,21 +83,36 @@ function close_dialog_by_ID(id_paper_dialog) {
     }
 }
 
+var dynInterval = 1000; // default delay 1s
+function loadWorkersDynamicInterval() {
+    var slider = document.querySelector("#update-speed");
+    setTimeout(
+        function () {
+            loadWorkers();
+            if ($('#load_workers_dialog').prop("opened")) {
+                close_dialog_by_ID("load_workers_dialog");
+            }
+
+            load_tiles_monitoring();
+            dynInterval = slider.value;
+            if (!dynInterval) {
+                // set 1s interval while slider object loads
+                dynInterval = 1000;
+            }
+            loadWorkersDynamicInterval();
+        },
+        dynInterval
+    );
+}
+
 $(
     function () {
         //console.log(window.location.pathname)
         if (window.location.pathname == "/" || window.location.pathname == "/index.jsp") {
-            setInterval(
-                function () {
-                    loadWorkers();
-                    if ($('#load_workers_dialog').prop("opened")) {
-                        close_dialog_by_ID("load_workers_dialog");
-                    }
-                    load_tiles_monitoring();
-                },
-                1000
-            );
+            loadWorkersDynamicInterval();
 
+            // update worker stats when
+            // new workers spawn or die
             setTimeout(
                 function () {
                     updateWorkerStats();
@@ -191,73 +206,74 @@ function loadWorkers() {
     updateWorkerStats();
 }
 
-//var history="";
+//var history = "";
 function _loadWorkers(_message) {
-
     var message = _message;
-    var grid = document.getElementById("workers");
-    // var tiles = "<div class=\"grid-sizer-monitoring\"></div>";
+    var grid = $("#workers");
 
-    var obj = [];
-
+    // parse workers from JSON message
     //console.log(message);
+    var obj = [];
     if (message.length > 0)
         obj = JSON.parse(message);
 
-    var w;
+    // collect existing workers cards in page
     var old_list = [];
-    $(grid).children('div').each(function () {
-        if ($(this).attr("id")) {
-            // console.log("aggiungo " + $(this).attr("id"));
+    $(grid).children("div").each(function () { // TODO check why function doesn't get executed
+        console.log("for each on grid children");
+        var i = 0;
+        console.log("element id: " + $(this).attr("id"));
+        if ($(this).attr("id") && $(this).attr("id") != "workers-stats") { // add existing worker card into old_list
+            console.log("aggiungo " + $(this).attr("id"));
             old_list["\'w-" + $(this).attr("id") + "\'"] = $(this);
+            console.log("Added the " + ++i + "° element");
         }
     });
 
-    if (obj.hasOwnProperty('workers')) {
+    // check whether the received object has an array of workers
+    var w;
+    if (obj.hasOwnProperty("workers")) {
+        // add a new card for new workers
+        // or update existing ones with new data
         for (i = 0; i < obj.workers.length; i++) {
             w = obj.workers[i];
             var curNode = document.getElementById(w.workerID);
-            if (!curNode) {
+            if (!curNode) { // there is no node associated to worker ID
+                console.log("curNode for " + w.workerID + ": " + curNode);
+                console.log("creating new node for " + w.workerID + "...");
+
+                // prepare worker data for template injection
                 var workerData = {
                     workerID: w.workerID,
                     workerCPU: w.cpuLoad,
                     workerMaxMB: w.maxHeap,
                     workerFreeMB: w.availableheapmemory,
                     workerUsedMB: w.busyheapmemory,
+                    workerIP: w.ip,
                     workerSlots: w.slots
                 }
 
                 // retrieve, populate and inject worker template
                 $.get("../fragments/worker.html", function (value) {
-                    console.log("Extracting template...");
-                    workerTemplate = $.templates(value); // TODO check why it doesn't work
-                    console.log("Template extracted!");
+                    workerTemplate = $.templates(value);
                     var html = workerTemplate.render(workerData);
-                    console.log(html);
-                    $(grid).html(html);
+                    $(grid).append(html);
                 });
-            } else {
-                // console.log(w.workerID);
+            } else { // update existing worker node
+                // console.log("Updating worker " + w.workerID + "...");
                 delete old_list["\'w-" + w.workerID + "\'"];
-                $("#w-cpu-" + w.workerID).text("CPU: " + w.cpuLoad + " %");
-                $("#w-max-heap-" + w.workerID).text("Max " + w.maxHeap + " MB");
-                $("#w-heap-available-" + w.workerID).text("Free " + w.availableheapmemory + " MB");
-                $("#w-heap-use-" + w.workerID).text("Used " + w.busyheapmemory + " MB");
-                $("#w-slots-" + w.workerID).text("Slots: " + w.slots);
+                $("#w-cpu-" + w.workerID).children(".worker-data").text(w.cpuLoad);
+                $("#w-max-heap-" + w.workerID).children(".worker-data").text(w.maxHeap);
+                $("#w-heap-available-" + w.workerID).children(".worker-data").text(w.availableheapmemory);
+                $("#w-heap-use-" + w.workerID).children(".worker-data").text(w.busyheapmemory);
+                $("#w-slots-" + w.workerID).children(".worker-data").text(w.slots);
             }
-
-            /*
-             tiles += "<div id=" + w.workerID + " class=\"grid-item-monitoring\" onclick=\"selectItem(this)\">"
-             +"<div class=\"worker-system-info\"><span>Worker ID: " + i + "</span></div>"
-             +"<div class=\"worker-system-info\"><span>CPU: " + w.cpuLoad + " %</span></div>"
-             +"<div class=\"worker-system-info\"><span>JVM RAM: Free " + w.availableheapmemory + " MB Used " + w.busyheapmemory + " MB</span></div>"
-             +"<div class=\"worker-system-info\"><span>IP: " + w.ip + "</span></div>"
-             +"<div class=\"worker-system-info\"><span>#Simulations</span></div>"
-             +"</div>";*/
         }
     }
+
     if (Object.keys(old_list).length > 0) {
         for (id in old_list) {
+            console.log("Removing " + id  + " from old_list...");
             $(old_list[id]).remove();
         }
     }

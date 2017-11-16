@@ -24,6 +24,7 @@
 		<link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 		<link rel="import" href="bower_components/paper-input/paper-textarea.html">
 		<link rel="import" href="bower_components/paper-listbox/paper-listbox.html">
+		<link rel="import" href="bower_components/paper-slider/paper-slider.html">
         <link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
 		<link rel="import" href="bower_components/paper-tabs/paper-tab.html">
 		<link rel="import" href="bower_components/paper-toggle-button/paper-toggle-button.html">
@@ -44,22 +45,34 @@
 
 		<%-- Page body --%>
 		<div class="content content-main">
-			<%-- Workers quick stats --%>
-			<paper-card heading="Workers statistics" id="workers-stats" style="float: left;">
-				<div class="card-content">
-					<div id="workersstats" data="{{data}}">
-						<div id="availableworkers">Available workers: <span>0</span></div>
-						<paper-tooltip for="availableworkers">The total number of running workers</paper-tooltip>
-						<div id="selectedworkers">Selected workers: <span>0</span></div>
-						<paper-tooltip for="selectedworkers">The number of selected workers</paper-tooltip>
-						<div id="selectedslots">Selected slots: <span>0</span></div>
-						<paper-tooltip for="selectedslots">The total number of slots for selected workers</paper-tooltip>
-					</div>
-				</div>
-			</paper-card>
-
 			<%-- Workers grid --%>
-			<div id="workers" class="grid-monitoring"></div><%-- populated by script --%>
+			<div id="workers" class="grid-monitoring">
+					<%-- Workers quick stats --%>
+					<paper-card heading="Workers statistics" id="workers-stats" style="float: left;">
+						<div class="card-content">
+							<div id="workersstats">
+								<div id="availableworkers">Available workers: <span>0</span></div>
+								<paper-tooltip for="availableworkers">The total number of running workers</paper-tooltip>
+								<div id="selectedworkers">Selected workers: <span>0</span></div>
+								<paper-tooltip for="selectedworkers">The number of selected workers</paper-tooltip>
+								<div id="selectedslots">Selected slots: <span>0</span></div>
+								<paper-tooltip for="selectedslots">The total number of slots for selected workers</paper-tooltip>
+							</div>
+							<div id="grid-settings">
+								<label>Workers update speed</label>
+								<paper-slider id="update-speed" class="red" min="500" max="1500" step="500" value="1000" secondary-progress="1000" pin snaps></paper-slider>
+								<paper-tooltip for="update-speed">
+									<p>Update speed for workers information update:</p>
+									<ul>
+										<li><strong>500</strong> for fast update (every half second);</li>
+										<li><strong>1000</strong> for normal update (every second).</li>
+										<li><strong>1500</strong> for slow update (every second and a half).</li>
+									</ul>
+								</paper-tooltip>
+							</div>
+						</div>
+					</paper-card>
+			</div><%-- populated by script --%>
 
 			<%-- Workers nodes loading --%>
 			<paper-dialog opened id="load_workers_dialog"  entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal>

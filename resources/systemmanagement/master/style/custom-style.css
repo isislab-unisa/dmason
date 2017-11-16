@@ -32,6 +32,11 @@ body {
 	margin: 5px 15px 5px 5px;
 }
 
+#workers-stats {
+    min-width: 250px;
+    margin: 10px 0 0 10px;
+}
+
 /* ---- grids ---- */
 .grid-monitoring,
 .grid-settings {
