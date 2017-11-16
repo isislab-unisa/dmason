@@ -13,7 +13,7 @@
         <%-- jQuery --%>
         <script src="bower_components/jquery/dist/jquery.min.js"></script>
 
-        <%-- jsRender -->
+        <%-- jsRender --%>
 		<script src="bower_components/jsrender/jsrender.min.js"></script>
 
         <%-- Common imports --%>
