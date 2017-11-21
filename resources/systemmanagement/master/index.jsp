@@ -58,15 +58,16 @@
 								<div id="selectedslots">Selected slots: <span>0</span></div>
 								<paper-tooltip for="selectedslots">The total number of slots for selected workers</paper-tooltip>
 							</div>
+							<hr />
 							<div id="grid-settings">
 								<label>Workers update speed</label>
-								<paper-slider id="update-speed" class="red" min="500" max="1500" step="500" value="1000" secondary-progress="1000" pin snaps></paper-slider>
+								<paper-slider id="update-speed" class="red" min="1000" max="3000" step="500" value="3000" secondary-progress="2000" pin snaps></paper-slider>
 								<paper-tooltip for="update-speed">
 									<p>Update speed for workers information update:</p>
 									<ul>
-										<li><strong>500</strong> for fast update (every half second);</li>
-										<li><strong>1000</strong> for normal update (every second).</li>
-										<li><strong>1500</strong> for slow update (every second and a half).</li>
+										<li><strong>1000</strong> for fast update (every half second);</li>
+										<li><strong>2000</strong> for normal update (every second).</li>
+										<li><strong>3000</strong> for slow update (every second and a half).</li>
 									</ul>
 								</paper-tooltip>
 							</div>

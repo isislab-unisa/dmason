@@ -10,7 +10,7 @@ $(document).ready(function () {
 function load_tiles_monitoring() {
     $('.grid-monitoring').masonry({
             itemSelector: '.grid-item-monitoring',
-            columnWidth: 250
+            columnWidth: 265
         }
     );
 }
@@ -33,7 +33,7 @@ function load_tiles_history() {
 }
 
 function open_dialog_setting_new_simulation() {
-    var workerID = new Array();
+    var workerIDs = [];
     var num_slots = 0;
     var num_workers = $('.grid-item-selected').length;
     var id = "";
@@ -43,7 +43,7 @@ function open_dialog_setting_new_simulation() {
             id = $(this).attr("id");
             //console.log(id);
 
-            workerID[index] = id;
+            workerIDs[index] = id;
             $(this).removeClass("grid-item-selected");
             slot = $("#w-slots-" + id).text();
             slot = slot.substring(slot.indexOf(":") + 1, slot.length);
@@ -57,7 +57,7 @@ function open_dialog_setting_new_simulation() {
         var node = document.createElement("input");
         node.setAttribute("id", "workerList");
         node.setAttribute("name", "workers");
-        node.setAttribute("value", workerID);
+        node.setAttribute("value", workerIDs);
         node.style.display = "none";
         $("#sendSimulationForm").append(node);
     } else {
@@ -83,25 +83,34 @@ function close_dialog_by_ID(id_paper_dialog) {
     }
 }
 
-var dynInterval = 1000; // default delay 1s
+var dynDelay = 750; // default delay 0.75s
 function loadWorkersDynamicInterval() {
     var slider = document.querySelector("#update-speed");
     setTimeout(
         function () {
+            // retrieve existing workers data
             loadWorkers();
+
+            // close loader
             if ($('#load_workers_dialog').prop("opened")) {
                 close_dialog_by_ID("load_workers_dialog");
             }
 
+            // use Masonry on workers grid
             load_tiles_monitoring();
-            dynInterval = slider.value;
-            if (!dynInterval) {
-                // set 1s interval while slider object loads
-                dynInterval = 1000;
+
+            // retrieve update speed value
+            dynDelay = slider.value;
+            if (!dynDelay) {
+                // set 0.75s interval while slider object loads
+                dynDelay = 750;
             }
+
+            // this last call lets setTimeout() with variable
+            // to act like a setInterval() with variable delay
             loadWorkersDynamicInterval();
         },
-        dynInterval
+        dynDelay
     );
 }
 
@@ -119,6 +128,7 @@ $(
                 },
                 4000
             );
+
             //loadJarsList();
         } else if (window.location.pathname == "/simulations.jsp") {
             setTimeout(
@@ -140,6 +150,7 @@ $(
                             if ($('#load_history_dialog').prop("opened")) {
                                 close_dialog_by_ID("load_history_dialog");
                             }
+
                             update_history_info();
                             load_tiles_history();
                         },
@@ -152,6 +163,7 @@ $(
             setTimeout(
                 function () {
                     loadSettings();
+
                     if ($("#load_settings_dialog").prop("opened")) {
                         close_dialog_by_ID("load_settings_dialog");
                     }
@@ -198,6 +210,7 @@ function startProgress() {
 function loadWorkers() {
     $.ajax({
         url: "getWorkers",
+
         success: function (result) {
             _loadWorkers(result);
         }
@@ -214,19 +227,19 @@ function _loadWorkers(_message) {
     // parse workers from JSON message
     //console.log(message);
     var obj = [];
-    if (message.length > 0)
+    if (message.length > 0) {
         obj = JSON.parse(message);
+    }
 
     // collect existing workers cards in page
     var old_list = [];
-    $(grid).children("div").each(function () { // TODO check why function doesn't get executed
-        console.log("for each on grid children");
-        var i = 0;
-        console.log("element id: " + $(this).attr("id"));
-        if ($(this).attr("id") && $(this).attr("id") != "workers-stats") { // add existing worker card into old_list
-            console.log("aggiungo " + $(this).attr("id"));
-            old_list["\'w-" + $(this).attr("id") + "\'"] = $(this);
-            console.log("Added the " + ++i + "° element");
+    var k = 0;
+    $(grid).children("paper-card").each(function () {
+        var nodeId = $(this).attr("id");
+        if (nodeId && nodeId != "workers-stats") { // add existing worker card into old_list
+            old_list["\'w-" + nodeId + "\'"] = $(this);
+//        } else if (nodeId == "workers-stats") {
+//            console.info("skip #workers-stats");
         }
     });
 
@@ -238,10 +251,7 @@ function _loadWorkers(_message) {
         for (i = 0; i < obj.workers.length; i++) {
             w = obj.workers[i];
             var curNode = document.getElementById(w.workerID);
-            if (!curNode) { // there is no node associated to worker ID
-                console.log("curNode for " + w.workerID + ": " + curNode);
-                console.log("creating new node for " + w.workerID + "...");
-
+            if (!curNode && !old_list["\'w-" + w.workerID + "\'"]) { // there is no node associated to worker ID
                 // prepare worker data for template injection
                 var workerData = {
                     workerID: w.workerID,
@@ -253,28 +263,40 @@ function _loadWorkers(_message) {
                     workerSlots: w.slots
                 }
 
-                // retrieve, populate and inject worker template
-                $.get("../fragments/worker.html", function (value) {
-                    workerTemplate = $.templates(value);
-                    var html = workerTemplate.render(workerData);
-                    $(grid).append(html);
+                // retrieve and populate worker template
+                var html;
+                // this call must be synchronous or else callbacks
+                // containing the same node will cumulate and insert
+                // it several times
+                $.ajax({
+                    url: "../fragments/worker.html",
+                    async: false, // DO NOT MAKE ASYNC
+                    success: function (value) {
+                        var workerTemplate = $.templates(value);
+                        html = workerTemplate.render(workerData);
+
+                        // inject populated worker template
+                        $(grid).append(html);
+                    }
                 });
+
             } else { // update existing worker node
                 // console.log("Updating worker " + w.workerID + "...");
                 delete old_list["\'w-" + w.workerID + "\'"];
+
                 $("#w-cpu-" + w.workerID).children(".worker-data").text(w.cpuLoad);
                 $("#w-max-heap-" + w.workerID).children(".worker-data").text(w.maxHeap);
                 $("#w-heap-available-" + w.workerID).children(".worker-data").text(w.availableheapmemory);
                 $("#w-heap-use-" + w.workerID).children(".worker-data").text(w.busyheapmemory);
                 $("#w-slots-" + w.workerID).children(".worker-data").text(w.slots);
-            }
-        }
-    }
+            } // end if ... else ...
+        } // end for
+    } // end if
 
-    if (Object.keys(old_list).length > 0) {
-        for (id in old_list) {
-            console.log("Removing " + id  + " from old_list...");
-            $(old_list[id]).remove();
+    // remove old existing nodes from grid
+    if (old_list.length > 0) {
+        for (var i = 0; i < old_list.length; i++) {
+            $(old_list[i]).remove();
         }
     }
 
@@ -284,7 +306,7 @@ function _loadWorkers(_message) {
 
 function selectAllWorkers() {
     var grid = document.getElementById("workers");
-    $(grid).children("div").each(function () {
+    $(grid).children("paper-card").each(function () { // workers are paper-card elements
         if ($(this).hasClass("grid-item-monitoring")) {
             //console.log($(this).attr("id"));
             selectItem($(this));
@@ -323,6 +345,7 @@ function change_partitioning_input_params(element) {
             $("#form_row").attr("disabled", false);
             $("#form_col").attr("disabled", false);
             break;
+
         case "non-uniform":
             $("#form_cells").attr("disabled", false);
             $("#form_row").attr("disabled", true);
@@ -641,52 +664,58 @@ function get_history_info(result) {
 }
 
 function shutdown() {
-    var workerID = new Array();
+    var workerIDs = [];
     var num_slots = 0;
     var num_workers = $('.grid-item-selected').length;
     var id = "";
-    var workers='{ "list":[';
+    var workers = '{ "list": [';
 
+    // check whether workers have been selected
     if (num_workers) {
         $('.grid-item-selected').each(function (index) {
             id = $(this).attr("id");
-            //console.log(id);
+            //console.log("Shutting worker " + id + " down...");
 
-            workerID[index] = id;
-            workers += '{"id":"' + id + '"},';
+            workerIDs[index] = id;
+            workers += '{"id": "' + id + '"},';
         });
-        console.log(workerID);
-        workers = workers.substring(0,workers.length-1);
+        //console.log(workerIDs);
+        workers = workers.substring(0, workers.length - 1);
         workers += ']}';
     } else {
         document.querySelector('#miss-worker-shutdown').open();
         return;
     }
 
+    // show a loader about the shutdown
     open_dialog_by_ID('shutdown_workers_dialog');
 
+    // remote request for workers shutdown
     $.ajax({
         url: "shutdownWorkers",
         data: {
             topics: JSON.stringify(workers)
         },
         success: function (result) {
-            close_dialog_by_ID('shutdown_workers_dialog');
+            // remove worker cards from grid
+            for (var i = 0; i < workerIDs.length; i++) {
+//                console.log("Removing worker " + workerIDs[i] + " from grid...");
+                $("#" + workerIDs[i]).remove();
+//                console.log("Worker " + workerIDs[i] + " removed!");
+            }
 
+            updateWorkerStats()
+            close_dialog_by_ID('shutdown_workers_dialog');
         }
     });
-
-  /*  var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'shutdownWorkers?topics='.concat(workerID), true);
-    xhr.send(null);*/
-}
+} // end shutdown()
 
 /**
  * Delete history for selected simulation
  * #miss-history-delete'
  */
 function cleanSelectedHistory() {
-    var pathList = new Array();
+    var pathList = [];
     var simToDelete = $('.grid-item-history-selected').length;
     var path = "";
     var jsonPaths = '{ "paths":[';
@@ -862,8 +891,8 @@ function updateWorkerStats() {
 }
 
 function validateEC2WorkerRequest() {
-    var error_toast = $("error_message");
-    var error_toast_message = $("missing_settings");
+    var error_toast = document.getElementById("error_message");
+    var error_toast_message = document.getElementById("missing_settings");
 
     var ec2Type = $("#instancetype").val();
     var ec2TypeDescription = "";
@@ -885,7 +914,7 @@ function validateEC2WorkerRequest() {
         return false;
     }
 
-    console.log("Request for " + numInstances + " EC2 instance of " + ec2Type + " type");
+    //console.log("Request for " + numInstances + " EC2 instance of " + ec2Type + " type");
     return true;
 }
 
@@ -904,25 +933,24 @@ function requestEC2Worker() {
 }
 
 function _onSubmitEC2WorkerRequest(event) {
-    var form = document.querySelector('form[is="iron-form"]');
-    var formData = new FormData(form);
+    var instanceType = $("#instancetype").val();
+    var numInstances = $("#numinstances").val();
 
     // send the request to instantiation servlet
-    $.ajax({
-        url: "instantiateEC2Workers",
-        type: "POST",
-        data: formData,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: function (data, textStatus, jqXHR) {
-            console.info(data + "\nstatus: " + textStatus + ".")
+    $.post(
+        "instantiateEC2Workers",
+        {
+            "instancetype": instanceType,
+            "numinstances": numInstances
+        } 
+    )
+    .done(function (data, textStatus, jqXHR) {
+            //console.info(data + "\nstatus: " + textStatus + ".")
             resetEC2RequestForm();
             document.getElementById("add-ec2-node-dialog").close();
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
+    })
+    .fail(function (jqXHR, textStatus, errorThrown) {
             console.error(textStatus + ": " + errorThrown + ".");
-        }
     });
 }
 
