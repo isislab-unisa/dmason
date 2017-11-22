@@ -45,6 +45,10 @@ function open_dialog_setting_new_simulation() {
 
             workerIDs[index] = id;
             $(this).removeClass("grid-item-selected");
+            // untoggle the toggle as well
+            var toggle = $(this).find(".toggle")[0]; // extract toggle from element
+            toggle.checked = false;
+
             slot = $("#w-slots-" + id).text();
             slot = slot.substring(slot.indexOf(":") + 1, slot.length);
             num_slots += parseInt(slot.trim());
@@ -114,95 +118,121 @@ function loadWorkersDynamicInterval() {
     );
 }
 
-$(
-    function () {
-        //console.log(window.location.pathname)
-        if (window.location.pathname == "/" || window.location.pathname == "/index.jsp") {
-            loadWorkersDynamicInterval();
+$(function () {
+    //console.log(window.location.pathname)
+    if (window.location.pathname == "/" || window.location.pathname == "/index.jsp") {
+        // load active workers details
+        loadWorkersDynamicInterval();
 
-            // update worker stats when
-            // new workers spawn or die
-            setTimeout(
-                function () {
-                    updateWorkerStats();
-                },
-                4000
-            );
+        // update worker stats when
+        // new workers spawn or die
+        setTimeout(
+            function () {
+                updateWorkerStats();
+            },
+            4000
+        );
 
-            //loadJarsList();
-        } else if (window.location.pathname == "/simulations.jsp") {
-            setTimeout(
-                function () {
-                    setInterval(
-                        function () {
-                            update_simulation_info();
-                        },
-                        1000
-                    );
-                },
-                5000
-            );
-        } else if (window.location.pathname == "/history.jsp") {
-            setTimeout(
-                function () {
-                    setInterval(
-                        function () {
-                            if ($('#load_history_dialog').prop("opened")) {
-                                close_dialog_by_ID("load_history_dialog");
-                            }
+        //loadJarsList();
+    } else if (window.location.pathname == "/simulations.jsp") {
+        setTimeout(
+            function () {
+                setInterval(
+                    function () {
+                        update_simulation_info();
+                    },
+                    1000
+                );
+            },
+            5000
+        );
+    } else if (window.location.pathname == "/history.jsp") {
+        setTimeout(
+            function () {
+                setInterval(
+                    function () {
+                        if ($('#load_history_dialog').prop("opened")) {
+                            close_dialog_by_ID("load_history_dialog");
+                        }
 
-                            update_history_info();
-                            load_tiles_history();
-                        },
-                        1000
-                    );
-                },
-                5000
-            );
-        } else if (window.location.pathname == "/settings.jsp") {
-            setTimeout(
-                function () {
-                    loadSettings();
+                        update_history_info();
+                        load_tiles_history();
+                    },
+                    1000
+                );
+            },
+            5000
+        );
+    } else if (window.location.pathname == "/settings.jsp") {
+        setTimeout(
+            function () {
+                loadSettings();
 
-                    if ($("#load_settings_dialog").prop("opened")) {
-                        close_dialog_by_ID("load_settings_dialog");
-                    }
-                },
-                4000
-            );
-        }
+                if ($("#load_settings_dialog").prop("opened")) {
+                    close_dialog_by_ID("load_settings_dialog");
+                }
+            },
+            4000
+        );
     }
-);
+});
 
-var progress, repeat, maxRepeat, animating;
+/**
+ * This variable is associated to the submit simulation form
+ * and is the same for its different events like loading a
+ * simulation from external jar or submitting form.
+ */
+var simProgress;
 
 function open_file_chooser() {
+    // prompt the file chooser dialog
     $('#simulation-jar-chooser').click();
+
+    //console.log("retrieving paper-progress and buttons...");
+    simProgress = document.getElementById("simulation-progress");
+    var simButton = document.getElementById("simulation-jar-chooser-button");
+    
+    // attach event for paper-progress
+    $("#simulation-jar-chooser").change( function () {
+        //console.log("starting the loader...");
+        startProgress(simProgress, simButton);
+    });
 }
 
+/* paper-progress global variables */
+var globalProgress, globalButton;
+var repeat, maxRepeat = 5, animating = false, tempButton;
+
 function nextProgress() {
+    //console.info("received button from startProgress: " + button);
     animating = true;
-    if (progress.value < progress.max) {
-        progress.value += (progress.step || 1);
+
+    if (globalProgress.value < globalProgress.max) {
+        globalProgress.value += (globalProgress.step || 1);
     } else {
         if (++repeat >= maxRepeat) {
             animating = false;
+            globalButton.disabled = false;
             return;
         }
-        progress.value = progress.min;
+
+        globalProgress.value = globalProgress.min;
     }
 
     requestAnimationFrame(nextProgress);
 }
 
-function startProgress() {
+function startProgress(progress, button) {
+    // assign parameters to global variables
+    globalProgress = progress;
+    globalButton = button;
+    //console.log("starting progress...");
     repeat = 0;
-    maxRepeat = 20, animating = false;
 
-    progress = document.querySelector('paper-progress');
-    progress.value = progress.min;
+    globalProgress.value = globalProgress.min;
+    globalButton.disabled = true; // disable submit button during progress
     if (!animating) {
-        progress.style.display = "block";
+        //console.info("passing button to nextProgress: " + button);
         nextProgress();
     }
 }
@@ -210,13 +240,10 @@ function startProgress() {
 function loadWorkers() {
     $.ajax({
         url: "getWorkers",
-
         success: function (result) {
             _loadWorkers(result);
         }
     });
-
-    updateWorkerStats();
 }
 
 //var history = "";
@@ -302,6 +329,7 @@ function _loadWorkers(_message) {
 
     // grid.innerHTML = tiles;
     load_tiles_monitoring();
+    updateWorkerStats();
 }
 
 function selectAllWorkers() {
@@ -452,7 +480,10 @@ function submitForm() {
         return;
     }
 
-    startProgress();
+    // get the submit button and
+    // start the progress animation
+    submitSimulationButton = document.getElementById("submit_btn");
+    startProgress(simProgress, submitSimulationButton);
 
     $(form).unbind('submit').bind("submit", _OnsubmitSimulation);
     form.submit();
@@ -926,7 +957,10 @@ function requestEC2Worker() {
         return;
     }
 
-    startProgress(); // TODO check if it works as expected
+    // activating the loader
+    var ec2Progress; // TODO assign values if upper ones work
+    var ec2Button;
+    startProgress(ec2Progress, ec2Button); // TODO check if it works as expected
 
     $(form).unbind("submit").bind("submit", _onSubmitEC2WorkerRequest);
     form.submit();

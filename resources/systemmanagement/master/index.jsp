@@ -48,7 +48,7 @@
 			<%-- Workers grid --%>
 			<div id="workers" class="grid-monitoring">
 					<%-- Workers quick stats --%>
-					<paper-card heading="Workers statistics" id="workers-stats" style="float: left;">
+					<paper-card heading="Workers statistics" id="workers-stats" style="float: left;"><%-- ignored by populator script --%>
 						<div class="card-content">
 							<div id="workersstats">
 								<div id="availableworkers">Available workers: <span>0</span></div>
@@ -65,9 +65,9 @@
 								<paper-tooltip for="update-speed">
 									<p>Update speed for workers information update:</p>
 									<ul>
-										<li><strong>1000</strong> for fast update (every half second);</li>
-										<li><strong>2000</strong> for normal update (every second).</li>
-										<li><strong>3000</strong> for slow update (every second and a half).</li>
+										<li><strong>1000</strong> for fast update (every second);</li>
+										<li><strong>2000</strong> for normal update (every two seconds).</li>
+										<li><strong>3000</strong> for slow update (every three seconds).</li>
 									</ul>
 								</paper-tooltip>
 							</div>
@@ -118,8 +118,9 @@
                                 <tr>
                                     <td>
                                         <span>Select an external simulation</span><br />
-                                        <paper-button raised class="custom" onclick='open_file_chooser()'>Upload<iron-icon icon="file-upload"></iron-icon></paper-button>
-                                        <input type="file" class="hidden" id="simulation-jar-chooser" name="simExe">
+                                        <paper-button id="simulation-jar-chooser-button" raised class="custom" onclick='open_file_chooser()'>Upload<iron-icon icon="file-upload"></iron-icon></paper-button>
+										<input type="file" class="hidden" id="simulation-jar-chooser" name="simExe" accept=".jar,.zip">
+										<paper-tooltip for="simulation-jar-chooser-button">You can upload simulations as JAR file or ZIP archive.</paper-tooltip>
 	                                </td>
                                     <td></td>
                                     <td>
@@ -135,7 +136,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-									<td colspan="3"><paper-progress class="red"></paper-progress></td>
+									<td colspan="3"><paper-progress id="simulation-progress" class="red"></paper-progress></td>
 								</tr>
                                 <tr>
                                     <td colspan="2" style="text-align:center; text-transform: uppercase;"><span>Partitioning</span></td>
@@ -216,6 +217,8 @@
 						<paper-tab>On demand</paper-tab>
 						<paper-tab>Spot</paper-tab>
 					</paper-tabs>
+
+					<paper-progress class="red"></paper-progress>
 
 					<iron-pages selected="{{selected}}">
 						<%-- On Demand settings --%>
