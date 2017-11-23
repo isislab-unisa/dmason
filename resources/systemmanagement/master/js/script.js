@@ -186,6 +186,8 @@ var simProgress;
 
 function open_file_chooser() {
     // prompt the file chooser dialog
+    // by clicking the 'Browse' button
+    // of hidden input field
     $('#simulation-jar-chooser').click();
 
     //console.log("retrieving paper-progress and buttons...");
@@ -193,15 +195,15 @@ function open_file_chooser() {
     var simButton = document.getElementById("simulation-jar-chooser-button");
     
     // attach event for paper-progress
-    $("#simulation-jar-chooser").change( function () {
+    $("#simulation-jar-chooser").change(function () {
         //console.log("starting the loader...");
-        startProgress(simProgress, simButton);
+        //startProgress(simProgress, simButton);
     });
 }
 
 /* paper-progress global variables */
 var globalProgress, globalButton;
-var repeat, maxRepeat = 5, animating = false, tempButton;
+var repeat, maxRepeat = 10, animating = false, tempButton;
 
 function nextProgress() {
     //console.info("received button from startProgress: " + button);
@@ -321,7 +323,7 @@ function _loadWorkers(_message) {
     } // end if
 
     // remove old existing nodes from grid
-    if (old_list.length > 0) {
+    if (Object.keys(old_list).length > 0) {
         for (var i = 0; i < old_list.length; i++) {
             $(old_list[i]).remove();
         }
@@ -581,7 +583,7 @@ function _OnsubmitSimulation(event) {
         formData.append(myCheckBoxConnection.id, "mpi");
     }
 
-    $.ajax({
+    var request = $.ajax({
         url: "submitSimulation",
         type: 'POST',
         data: formData,
@@ -596,6 +598,13 @@ function _OnsubmitSimulation(event) {
             resetForm();
             dialog.close();
             window.location = "simulations.jsp";
+        },
+        error: function (xhr, status, error) {
+            var error_toast = document.getElementById("error_message");
+            var error_toast_message = document.getElementById("missing_settings");
+
+            $(error_toast_message).text("Error while sending the simulation request!");
+            error_toast.open();
         }
     });
 }

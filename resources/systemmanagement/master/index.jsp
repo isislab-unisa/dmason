@@ -117,10 +117,10 @@
                             <table>
                                 <tr>
                                     <td>
-                                        <span>Select an external simulation</span><br />
-                                        <paper-button id="simulation-jar-chooser-button" raised class="custom" onclick='open_file_chooser()'>Upload<iron-icon icon="file-upload"></iron-icon></paper-button>
+                                        <label for="simulation-jar-chooser-button">Select an external simulation</label><br />
+                                        <paper-button id="simulation-jar-chooser-button" raised class="custom" onclick='open_file_chooser()'>Upload&nbsp;<iron-icon icon="file-upload"></iron-icon></paper-button>
 										<input type="file" class="hidden" id="simulation-jar-chooser" name="simExe" accept=".jar,.zip">
-										<paper-tooltip for="simulation-jar-chooser-button">You can upload simulations as JAR file or ZIP archive.</paper-tooltip>
+										<paper-tooltip for="simulation-jar-chooser-button">You can upload simulations as JAR files or ZIP archives.</paper-tooltip>
 	                                </td>
                                     <td></td>
                                     <td>
