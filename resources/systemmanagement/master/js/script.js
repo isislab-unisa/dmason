@@ -374,12 +374,21 @@ function change_partitioning_input_params(element) {
             $("#form_cells").attr("disabled", true);
             $("#form_row").attr("disabled", false);
             $("#form_col").attr("disabled", false);
+            $("#form_dep").attr("disabled", true);
             break;
 
         case "non-uniform":
             $("#form_cells").attr("disabled", false);
             $("#form_row").attr("disabled", true);
             $("#form_col").attr("disabled", true);
+            $("#form_dep").attr("disabled", true);
+            break;
+
+        case "three-dim":
+            $("#form_cells").attr("disabled", true);
+            $("#form_row").attr("disabled", false);
+            $("#form_col").attr("disabled", false);
+            $("#form_dep").attr("disabled", false);
             break;
     }
 }
@@ -414,14 +423,15 @@ function _validate_slots(element) {
 
     var row_element = $("#form_row");
     var cols_element = $("#form_col");
+    var dep_element = $("#form_dep");
     var cells_element = $("#form_cells");
 
     var paper_input_container = current_element.children()[0];
 
     var row = document.querySelector("#" + row_element.attr("id")).value;
     var cols = document.querySelector("#" + cols_element.attr("id")).value;
+    var depth = document.querySelector("#" + dep_element.attr("id")).value;
     var cells = document.querySelector("#" + cells_element.attr("id")).value;
-
 
     var id = current_element.attr("id");
 
@@ -464,6 +474,17 @@ function _validate_slots(element) {
                     var int_val = parseInt(row);
                     cur_slot *= int_val;
                     if (cur_slot > slots || cur_slot == 0) {
+                        paper_input_container.invalid = true;
+                        submit_btn.disabled = true;
+                        return false;
+                    }
+                }
+                break;
+            case "form_dep":
+                if (depth) {
+                    var int_val = parseInt(depth);
+                    cur_slot *= int_val;
+                    if (cir_slot > slots || cur_slot == 0) {
                         paper_input_container.invalid = true;
                         submit_btn.disabled = true;
                         return false;

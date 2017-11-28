@@ -145,8 +145,9 @@
                                 <tr>
                                     <td colspan="2" style="text-align:center">
                                         <paper-radio-group id="partitioning" selected="uniform">
-                                            <paper-radio-button required name="uniform" onclick="change_partitioning_input_params(this)"><span>Uniform  <iron-icon icon="view-module"></iron-icon></span></paper-radio-button>
-                                            <paper-radio-button required name="non-uniform" onclick="change_partitioning_input_params(this)"> <span>Non-Uniform <iron-icon icon="view-quilt"></iron-icon></span></paper-radio-button>
+                                            <paper-radio-button required name="uniform" onclick="change_partitioning_input_params(this)"><span>Uniform&nbsp;<iron-icon icon="view-module"></iron-icon></span></paper-radio-button>
+											<paper-radio-button required name="non-uniform" onclick="change_partitioning_input_params(this)"><span>Non-Uniform&nbsp;<iron-icon icon="view-quilt"></iron-icon></span></paper-radio-button>
+											<paper-radio-button required name="three-dim" onclick="change_partitioning_input_params(this)"><span>3D&nbsp;<iron-icon icon="3d-rotation"></iron-icon></span></paper-radio-button>
                                         </paper-radio-group>
                                     </td>
                                     <td><paper-checkbox id="connectionType" class="layout horizontal center" disabled>enable MPI boost</paper-checkbox></td>
@@ -179,20 +180,29 @@
                                         <paper-input id="form_col" class="submit_work_form" name="cols" label="Columns" allowed-pattern="[0-9]" error-message="R x C value either it exceeds available slots or it is zero!" onInput="_validate_slots(this)"></paper-input>
                                     </td>
                                     <td>
-										<paper-input id="form_aoi" class="submit_work_form" name="aoi" label="Area of interest" allowed-pattern="[0-9]" error-message="Illegal value" onInput="_validate_params(this)"></paper-input>
+										<paper-input id="form_dep" class="submit_work_form" name="depth" label="Depth" allowed-pattern="[0-9]" error-message="R x C x D value either exceeds available slots or is zero!" onInput="_validate_slots(this)"></paper-input>
 									</td>
                                 </tr>
                                 <tr>
-                                    <td>
-                                      	<paper-input id="form_width" class="submit_work_form" name="width" label="Width" allowed-pattern="[0-9]" error-message="Illegal value" onInput="_validate_params(this)"></paper-input>
+									<td>
+										<paper-input id="form_width" class="submit_work_form" name="width" label="Width" allowed-pattern="[0-9]" error-message="Illegal value" onInput="_validate_params(this)"></paper-input>
 									</td>
                                     <td>
-                                       	<paper-input id="form_height" class="submit_work_form" name="height" label="Height" allowed-pattern="[0-9]" error-message="Illegal value" onInput="_validate_params(this)"></paper-input>
+										<paper-input id="form_height" class="submit_work_form" name="height" label="Height" allowed-pattern="[0-9]" error-message="Illegal value" onInput="_validate_params(this)"></paper-input>
                                     </td>
                                     <td>
-                                       	<paper-input id="form_numAgents" class="submit_work_form" name="numAgents" label="Number of Agents" allowed-pattern="[0-9]" error-message="Illegal value" onInput="_validate_params(this)"></paper-input>
-	                                </td>
-                                </tr>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<paper-input id="form_aoi" class="submit_work_form" name="aoi" label="Area of interest" allowed-pattern="[0-9]" error-message="Illegal value" onInput="_validate_params(this)"></paper-input>
+									</td>
+									<td>
+										<paper-input id="form_numAgents" class="submit_work_form" name="numAgents" label="Number of Agents" allowed-pattern="[0-9]" error-message="Illegal value" onInput="_validate_params(this)"></paper-input>
+									</td>
+									<td>
+									</td>
+								</tr>
                                 <tr>
                                 	<td></td>
                                     <td colspan="2" style="text-align:right; padding-top:50px;">
