@@ -66,42 +66,13 @@ public class InstantiateEC2WorkersServlet
 	private void newEC2Instance(HttpServletRequest request, HttpServletResponse response)
 	{
 		response.setContentType("text/plain;charset=UTF-8");
-		Map<String, String> listParams = new HashMap<>();
 
-		// extract form data from FormData object
-		if (!ServletFileUpload.isMultipartContent(request))
-		{
-			LOGGER.warning("Request did not contain a multipart content.");
-			return;
-		}
-		else
-		{
-			LOGGER.info("Processing request...");
-			FileItemFactory itemFact = new DiskFileItemFactory();
-			ServletFileUpload upload = new ServletFileUpload(itemFact);
-			try
-			{
-				LOGGER.info("Parsing form fields...");
-				List<FileItem> items = upload.parseRequest(request);
-
-				for (FileItem item: items)
-				{
-					LOGGER.info(item.getFieldName() + ": " + item.getString());
-					listParams.put(item.getFieldName(), item.getString());
-				}
-			}
-			catch (Exception e)
-			{
-				LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
-			}
-			LOGGER.info("Request processing ended!");
-		}
-
-		String ec2Type = listParams.get("instancetype");
+		// extract data from request
+		String ec2Type = request.getParameter("instancetype");
 		int numInstances = 0;
 		try
 		{
-			Integer.parseInt(listParams.get("numinstances"));
+			numInstances = Integer.parseInt(request.getParameter("numinstances"));
 		}
 		catch (NumberFormatException e)
 		{
