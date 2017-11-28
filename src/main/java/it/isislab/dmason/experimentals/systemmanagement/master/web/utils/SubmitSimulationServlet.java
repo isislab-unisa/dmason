@@ -70,6 +70,7 @@ public class SubmitSimulationServlet extends HttpServlet {
 			try {
 				List<FileItem> items = upload.parseRequest(req);
 
+				System.out.println(items);
 				for (FileItem item: items) {
 					if (!item.isFormField()) {
 						jarSim = item;
