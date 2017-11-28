@@ -484,7 +484,7 @@ function _validate_slots(element) {
                 if (depth) {
                     var int_val = parseInt(depth);
                     cur_slot *= int_val;
-                    if (cir_slot > slots || cur_slot == 0) {
+                    if (cur_slot > slots || cur_slot == 0) {
                         paper_input_container.invalid = true;
                         submit_btn.disabled = true;
                         return false;
