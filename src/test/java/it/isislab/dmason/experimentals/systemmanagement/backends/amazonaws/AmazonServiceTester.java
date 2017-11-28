@@ -35,7 +35,7 @@ import com.amazonaws.services.ec2.model.RunInstancesResult;
 
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.AmazonService;
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.model.LocalInstanceState;
-import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.DRemoteManager;
+import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.DMasonRemoteManager;
 
 /**
  * @author Simone Bisogno
@@ -256,7 +256,7 @@ public class AmazonServiceTester
 			{
 				try
 				{
-					DRemoteManager.installDMason(instanceId);
+					DMasonRemoteManager.installDMason(instanceId);
 					installed = true;
 				}
 				catch (Exception e)
@@ -298,7 +298,7 @@ public class AmazonServiceTester
 						{
 							LOGGER.severe(e.getClass().getName() + ": " + e.getMessage() + ".");
 						}
-						DRemoteManager.startDMason(INSTANCE_ID, true, 1);
+						DMasonRemoteManager.startDMason(INSTANCE_ID, false);
 					}
 				}
 			);
@@ -308,7 +308,7 @@ public class AmazonServiceTester
 			// stop DMASON on instance
 			CONSOLE.print("\nPress ENTER to stop DMASON on instance " + instanceId);
 			ask();
-			DRemoteManager.stopDMason(instanceId);
+			DMasonRemoteManager.stopDMason(instanceId);
 			startDMASONThread.interrupt();
 
 			// test restart instance
