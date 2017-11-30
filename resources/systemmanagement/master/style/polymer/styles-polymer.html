@@ -97,19 +97,25 @@
         font-weight: bold;
         background: #D73D32;
     }
-    
+
     paper-item.selected > a > span.span-icon,
     paper-item.selected > a > iron-icon {
         color: white;
     }
 
+    /* paper progress */
     paper-progress {
-        display: none;
         width: 100%;
         margin: 10px 0px;
-        --paper-progress-container-color:#427FED;
+        --paper-progress-container-color: #CCC;
     }
 
+    paper-progress.red {
+        --paper-progress-active-color: #D73D32;
+        --paper-progress-secondary-color: #E2726A;
+    }
+
+    /* paper-dialog */
     paper-dialog#list-simulations-paper-dialog {
         width: 50%;
         height: 80%;
@@ -134,8 +140,15 @@
         };
     }
 
-    #workers-stats {
-        margin: 20px 8px 8px 20px;
+    /* Paper sliders */
+    paper-slider.red {
+        --paper-slider-knob-start-border-color: #D73D32;
+        --paper-slider-knob-color: #D73D32;
+        --paper-slider-active-color: #D73D32;
+        --paper-slider-secondary-color: #E6A0A0;
+        --paper-slider-pin-start-color: #D73D32;
+        --paper-slider-pin-color: #D73D32;
+        --paper-slider-markers-color: #333;
     }
 
     paper-dropdown-menu {
@@ -150,12 +163,12 @@
 
     paper-checkbox {
         --paper-checkbox-unchecked-color: black;
-        --paper-checkbox-checked-background-color: #427FED;
-        --paper-checkbox-checked-color: #427FED;
+        --paper-checkbox-checked-background-color: #D73D32 !important;
+        --paper-checkbox-checked-color: #D73D32 !important;
     }
 
     paper-radio-button {
-        --paper-radio-button-checked-color: #427FED;
+        --paper-radio-button-checked-color: #D73D32 !important;
     }
 
     paper-listbox {
@@ -184,15 +197,16 @@
         --paper-listbox-color: white;
     }
 
+    /* paper spinner */
     paper-spinner {
         margin: 2px;
     }
 
     paper-spinner.multi {
         --paper-spinner-layer-1-color: #D73D32;
-        --paper-spinner-layer-2-color: #D73D32;
+        --paper-spinner-layer-2-color: #E2726A;
         --paper-spinner-layer-3-color: #D73D32;
-        --paper-spinner-layer-4-color: #D73D32;
+        --paper-spinner-layer-4-color: #E2726A;
     }
 
     paper-input {
@@ -210,6 +224,14 @@
         background-color: #E2726A;
         --paper-tabs-selection-bar-color: #D73D32;
         color: white;
+    }
+
+    /* paper toggle button */
+    paper-toggle-button {
+        --paper-toggle-button-unchecked-bar-color:  #E2726A;
+        --paper-toggle-button-checked-bar-color:  #E2726A;
+        --paper-toggle-button-checked-button-color:  #FF8800;
+        --paper-toggle-button-checked-ink-color: #E2726A;
     }
 
     /* Elementi personalizzati (ID, classi) */

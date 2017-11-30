@@ -60,10 +60,11 @@ public class LocalInstanceState
 	 * @param id - The instance ID.
 	 * @param dns - The instance DNS name.
 	 */
-	public LocalInstanceState(String id, String dns)
+	public LocalInstanceState(String id, String dns, String type)
 	{
 		this.id = id;
 		this.dns = dns;
+		this.type = type;
 		this.masterDns = null; // master DNS instance has to refer if worker
 		this.running = false; // instance running state
 		this.ready = false; // instance has got DMASON installed
@@ -93,6 +94,16 @@ public class LocalInstanceState
 	public String getDns()
 	{
 		return dns;
+	}
+
+	/**
+	 * 
+	 * @return Instance type.
+	 * @see #type
+	 */
+	public String getType()
+	{
+		return type;
 	}
 
 	/**
@@ -198,6 +209,17 @@ public class LocalInstanceState
 	public void setDns(String dns)
 	{
 		this.dns = dns;
+		updateLastEditTime();
+	}
+
+	/**
+	 * 
+	 * @param type - New instance type.
+	 * @See #type
+	 */
+	public void setType(String type)
+	{
+		this.type = type;
 		updateLastEditTime();
 	}
 
@@ -339,6 +361,10 @@ public class LocalInstanceState
 	 * Instance DNS name.
 	 */
 	private String dns;
+	/**
+	 * Instance type.
+	 */
+	private String type;
 	/**
 	 * If instance is running DMASON as worker,
 	 * this is the master DNS.

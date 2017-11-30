@@ -119,7 +119,7 @@ public class Worker implements Observer {
 		try {
             System.out.println("Starting worker " + InetAddress.getLocalHost().getHostName());
 			// comment following line to enable Logger 
-//			LOGGER.setUseParentHandlers(false); // TODO comment
+			LOGGER.setUseParentHandlers(false);
 			LOGGER.info("LOGGER ENABLE");
 
 			//
@@ -140,6 +140,8 @@ public class Worker implements Observer {
 
 			generateFolders(TOPIC_WORKER_ID); // generate folders for worker
 			this.TOPIC_WORKER_ID = "" + TOPIC_WORKER_ID.hashCode(); // my topic
+			System.out.println("ID: " + this.TOPIC_WORKER_ID + ", " + slots + " slots");
+
 			simulationList = new HashMap</*idsim*/Integer, Simulation>();
 			this.slotsNumber = slots;
 			slotsNumberBackup = slots; // for reconnection
@@ -898,7 +900,7 @@ public class Worker implements Observer {
 		}
 
 		try {
-			System.out.println("Shutdown worker " + InetAddress.getLocalHost().getHostName());
+			System.out.println("Shutdown worker " + InetAddress.getLocalHost().getHostName() + "(" + this.TOPIC_WORKER_ID + ")");
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}

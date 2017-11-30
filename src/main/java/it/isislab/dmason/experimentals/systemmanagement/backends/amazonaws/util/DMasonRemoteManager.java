@@ -38,7 +38,7 @@ import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.model
  * @author Simone Bisogno
  *
  */
-public class DRemoteManager
+public class DMasonRemoteManager
 {
 	/**
 	 * 
@@ -219,7 +219,7 @@ public class DRemoteManager
 	 * @param isMaster - A boolean determining the role of the instance
 	 * @param numWorkers - The number of workers to run on the instance
 	 */
-	public static void startDMason(String instanceId, boolean isMaster, int numWorkers)
+	public static void startDMason(String instanceId, boolean isMaster)
 	{
 		LocalInstanceState localInstanceState = AmazonService.getLocalInstances().get(instanceId);
 
@@ -328,10 +328,13 @@ public class DRemoteManager
 			else
 			{
 				LOGGER.info("Running as worker...");
+				String instanceType = localInstanceState.getType();
+				int numSlots = EC2CoresForType.getCores(instanceType);
+				LOGGER.info("Running a worker with " + numSlots + " slots...");
 				exitStatus = AmazonService.executeCommand(
 						session,
 						"cd " + DMASON_ABS_PATH + ";" +
-						"java -jar DMASON-" + version + ".jar -m worker -ns " + numWorkers,
+						"java -jar DMASON-" + version + ".jar -m worker -ns " + numSlots,
 						false
 				);
 				LOGGER.info("Connection returned " + exitStatus);

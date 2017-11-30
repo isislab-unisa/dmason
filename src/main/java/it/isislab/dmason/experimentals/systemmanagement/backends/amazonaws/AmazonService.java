@@ -202,7 +202,8 @@ public class AmazonService
 			Instance instance = instanceIterator.next();
 			String istanceID = instance.getInstanceId();
 			String instanceDns = instance.getPublicDnsName();
-			AmazonService.localInstances.put(istanceID, new LocalInstanceState(istanceID, instanceDns)); // here it creates a new local instance state
+			String instanceType = AmazonService.type;
+			AmazonService.localInstances.put(istanceID, new LocalInstanceState(istanceID, instanceDns, instanceType)); // here it creates a new local instance state
 			LOGGER.info(clusterType + " node reservation: " + istanceID);
 
 			// tag created instance
@@ -500,6 +501,7 @@ public class AmazonService
 				{
 					String instanceId = instance.getInstanceId();
 					String instanceDns = AmazonService.getDns(instanceId);
+					String instanceType = AmazonService.type;
 					String stateName = instance.getState().getName();
 					boolean isRunning = stateName.equals(InstanceStateName.Running.toString());
 					boolean terminated = stateName.equals(InstanceStateName.Terminated.toString());
@@ -507,7 +509,7 @@ public class AmazonService
 					// put in the map only non-terminated instances
 					if (!terminated)
 					{
-						LocalInstanceState localInstance = new LocalInstanceState(instanceId, instanceDns);
+						LocalInstanceState localInstance = new LocalInstanceState(instanceId, instanceDns, instanceType);
 						localInstance.setRunning(isRunning);
 						AmazonService.localInstances.put(instanceId, localInstance);						
 					}
@@ -568,6 +570,7 @@ public class AmazonService
 		try
 		{
 			// read properties file
+			LOGGER.info("Reading properties from " + PROPERTIES_FILE_PATH);
 			input = new FileInputStream(PROPERTIES_FILE_PATH);
 			if (AmazonService.startProperties == null)
 			{
@@ -576,12 +579,13 @@ public class AmazonService
 			startProperties.load(input);
 
 			// set class parameters from config file
-			AmazonService.setAmi(startProperties.getProperty("ami"));
-			AmazonService.setAmiUser(startProperties.getProperty("amiuser"));
-			AmazonService.setName(startProperties.getProperty("name"));
-			AmazonService.setRegion(startProperties.getProperty("region"));
-			AmazonService.setSize(Integer.parseInt(startProperties.getProperty("size")));
-			AmazonService.setType(startProperties.getProperty("type"));
+			final String AWS_PREFIX = "amazonaws".concat(".");
+			AmazonService.setAmi(startProperties.getProperty(AWS_PREFIX.concat("ami")));
+			AmazonService.setAmiUser(startProperties.getProperty(AWS_PREFIX.concat("amiuser")));
+			AmazonService.setName(startProperties.getProperty(AWS_PREFIX.concat("name")));
+			AmazonService.setRegion(startProperties.getProperty(AWS_PREFIX.concat("region")));
+			AmazonService.setSize(Integer.parseInt(startProperties.getProperty(AWS_PREFIX.concat("size"))));
+			AmazonService.setType(startProperties.getProperty(AWS_PREFIX.concat("type")));
 		}
 		catch (IOException e)
 		{

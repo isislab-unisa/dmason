@@ -19,6 +19,7 @@
   ],
   "dependencies": {
     "jquery": "^3.2.1",
+    "jsrender": "^0.9.89",
     "polymer": "*",
     "web-animations-js": "*",
     "webcomponentsjs": "^0.7.24",

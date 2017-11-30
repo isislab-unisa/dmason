@@ -102,7 +102,7 @@ public class MasterServer implements MultiServerInterface {
 	private Configuration startConfig = null;
 	private ConnectionNFieldsWithActiveMQAPI conn = null;
 
-	// path directories 
+	// path directories
 	private static String dmasonDirectory = System.getProperty("user.dir") + File.separator + "dmason";
 	private static final String masterDirectoryFolder = dmasonDirectory + File.separator + "master";
 	private static final String jsonIdFile = masterDirectoryFolder + File.separator + "simid.json";
@@ -118,11 +118,11 @@ public class MasterServer implements MultiServerInterface {
 	protected ServerSocket welcomeSocket;
 
 	// info 
-	protected HashMap<Integer, AtomicInteger> counterAckSimRcv;// number of ack received of <simrcv> 
-	private HashMap<String, String> infoWorkers;// basic information on workers node
-	private HashMap<String, Integer> ttlinfoWorkers;//list of connected workers with time to live updated if it is still alive 
+	protected HashMap<Integer, AtomicInteger> counterAckSimRcv; // number of ack received of <simrcv> 
+	private HashMap<String, String> infoWorkers; // basic information on workers node
+	private HashMap<String, Integer> ttlinfoWorkers; //list of connected workers with time to live updated if it is still alive 
 
-	private HashMap<Integer, Simulation> simulationsList; //list of simulations <ID,Simulation> 
+	private HashMap<Integer, Simulation> simulationsList; // list of simulations <ID,Simulation> 
 	private AtomicInteger IDSimulation; // generate an unique id for a simulation 
 	private FindAvailablePort availableport; // for socket server 
 	private HashMap<String /*workertopicforrequest*/, Address /*portcopyLog*/> workerListForCopyLogs = new HashMap<String, Address>();
