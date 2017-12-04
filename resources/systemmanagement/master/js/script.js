@@ -506,6 +506,9 @@ function submitForm() {
     // get the submit button and
     // start the progress animation
     submitSimulationButton = document.getElementById("submit_btn");
+    if (!simProgress) {
+        simProgress = document.getElementById("simulation-progress");
+    }
     startProgress(simProgress, submitSimulationButton);
 
     $(form).unbind('submit').bind("submit", _OnsubmitSimulation);
@@ -545,6 +548,7 @@ function checkForm(form) {
                             success = false;
                         }
                         break;
+
                     case "rows":
                         if (partitioning.toLowerCase() == 'uniform') {
                             $(error_toast_message).html(
@@ -554,6 +558,7 @@ function checkForm(form) {
                             success = false;
                         }
                         break;
+
                     case "columns":
                         if (partitioning.toLowerCase() == 'uniform') {
                             $(error_toast_message).html(
@@ -563,6 +568,17 @@ function checkForm(form) {
                             success = false;
                         }
                         break;
+
+                    case "depth":
+                    if (partitioning.toLowerCase() == 'three-dim') {
+                        $(error_toast_message).html(
+                            "You should fill the <strong>" + paper_input.label + "</strong> field."
+                        );
+                        error_toast.open();
+                        success = false;
+                    }
+                    break;
+
                     default:
                         $(error_toast_message).html(
                             "You should fill the <strong>" + paper_input.label + "</strong> field."

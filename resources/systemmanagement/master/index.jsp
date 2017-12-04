@@ -180,7 +180,7 @@
                                         <paper-input id="form_col" class="submit_work_form" name="cols" label="Columns" allowed-pattern="[0-9]" error-message="R x C value either it exceeds available slots or it is zero!" onInput="_validate_slots(this)"></paper-input>
                                     </td>
                                     <td>
-										<paper-input id="form_dep" class="submit_work_form" name="depth" label="Depth" allowed-pattern="[0-9]" error-message="R x C x D value either exceeds available slots or is zero!" onInput="_validate_slots(this)"></paper-input>
+										<paper-input disabled id="form_dep" class="submit_work_form" name="depth" label="Depth" allowed-pattern="[0-9]" error-message="R x C x D value either exceeds available slots or is zero!" onInput="_validate_slots(this)"></paper-input>
 									</td>
                                 </tr>
                                 <tr>
