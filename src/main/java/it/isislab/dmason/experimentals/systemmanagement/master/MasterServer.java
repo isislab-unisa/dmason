@@ -763,8 +763,8 @@ public class MasterServer implements MultiServerInterface {
 			method.setAccessible(true);
 			method.invoke(aUrlCL, new Object[]{url});;
 
-			Class<?> simClass = aUrlCL.loadClass(distributedState.getName());
-			Constructor<?> constr = simClass.getConstructor(new Class[]{ GeneralParam.class ,String.class});
+//			Class<?> simClass = aUrlCL.loadClass(distributedState.getName());
+//			Constructor<?> constr = simClass.getConstructor(new Class[]{ GeneralParam.class ,String.class});
 			return true;
 		} catch (Exception e){
 			System.err.println("JAR CORRUPTED, export as a Jar File and not as a runnable jar file");
