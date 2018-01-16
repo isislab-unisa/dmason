@@ -1149,4 +1149,10 @@ public class DSparseGrid2DYLB extends DSparseGrid2D implements TraceableField, D
 		return false;
 	}
 
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

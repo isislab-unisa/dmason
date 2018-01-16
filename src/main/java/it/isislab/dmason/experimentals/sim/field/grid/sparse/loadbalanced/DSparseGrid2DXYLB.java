@@ -5562,4 +5562,11 @@ public class DSparseGrid2DXYLB extends DSparseGrid2D implements DistributedField
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

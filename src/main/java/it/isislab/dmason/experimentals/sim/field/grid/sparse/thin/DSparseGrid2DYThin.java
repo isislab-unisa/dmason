@@ -963,4 +963,12 @@ public class DSparseGrid2DYThin extends DSparseGrid2DThin implements TraceableFi
 		return false;
 
 	}
+
+
+
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

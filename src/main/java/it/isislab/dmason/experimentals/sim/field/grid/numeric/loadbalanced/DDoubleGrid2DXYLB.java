@@ -5554,4 +5554,10 @@ public class DDoubleGrid2DXYLB extends DDoubleGrid2D implements DistributedField
 		return false;
 	}
 
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

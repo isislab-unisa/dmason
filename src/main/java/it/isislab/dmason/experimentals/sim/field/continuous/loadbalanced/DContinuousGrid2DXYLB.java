@@ -5513,4 +5513,10 @@ public class DContinuousGrid2DXYLB extends DContinuousGrid2D implements Distribu
 		return false;
 	}
 
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

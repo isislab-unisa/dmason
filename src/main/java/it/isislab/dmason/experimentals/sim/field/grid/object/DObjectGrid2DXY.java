@@ -881,5 +881,10 @@ public class DObjectGrid2DXY extends DObjectGrid2D {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 }

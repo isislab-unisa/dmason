@@ -1151,4 +1151,11 @@ public class DDoubleGrid2DYLB extends DDoubleGrid2D implements DistributedField2
 	}
 
 
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
 }

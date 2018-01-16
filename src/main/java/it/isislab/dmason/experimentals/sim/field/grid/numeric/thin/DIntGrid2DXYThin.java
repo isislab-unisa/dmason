@@ -1029,4 +1029,11 @@ public class DIntGrid2DXYThin extends DIntGrid2DThin {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

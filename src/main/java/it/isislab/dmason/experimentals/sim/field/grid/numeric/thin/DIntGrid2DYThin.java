@@ -718,4 +718,10 @@ public class DIntGrid2DYThin extends DIntGrid2DThin {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

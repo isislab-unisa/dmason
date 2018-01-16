@@ -764,4 +764,11 @@ public class DDoubleGrid2DYThin extends DDoubleGrid2DThin {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

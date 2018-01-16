@@ -5360,4 +5360,10 @@ public class DIntGrid2DXYLB extends DIntGrid2D implements DistributedField2DLB {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

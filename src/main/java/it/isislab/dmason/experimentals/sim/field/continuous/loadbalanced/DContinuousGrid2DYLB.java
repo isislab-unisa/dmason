@@ -1022,6 +1022,12 @@ public class DContinuousGrid2DYLB extends DContinuousGrid2D implements Traceable
 		return false;
 	}
 
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	
 
 

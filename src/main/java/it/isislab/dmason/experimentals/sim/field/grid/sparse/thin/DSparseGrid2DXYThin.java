@@ -1444,6 +1444,13 @@ public class DSparseGrid2DXYThin extends DSparseGrid2DThin implements TraceableF
 	}
 
 
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
 
 
 

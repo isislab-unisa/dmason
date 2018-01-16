@@ -1066,5 +1066,12 @@ public class DIntGrid2DYLB extends DIntGrid2D implements DistributedField2DLB{
 	public Bag clear() {
 		// TODO Auto-generated method stub
 		return this.clear();
+	}
+
+
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return 0;
 	}	
 }

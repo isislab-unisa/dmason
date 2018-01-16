@@ -814,4 +814,10 @@ public class DContinuousGrid2DYThin extends DContinuousGrid2DThin implements Tra
 
 	}
 
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }
