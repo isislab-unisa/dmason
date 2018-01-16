@@ -203,14 +203,14 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	
 	@Override
 	public synchronized boolean publishToTopic(Serializable object, String topicName, String key)
-	{
+	{	
 		if (!topicName.equals("") || !(object == null))
 		{
 			MyHashMap mh = contObj.get(topicName);
 			mh.put(key, object);
 			contObj.put(topicName, mh);
 			if(mh.isFull())
-			{				
+			{		
 				ActiveMQObjectMessage msg ;
 				try
 				{		
