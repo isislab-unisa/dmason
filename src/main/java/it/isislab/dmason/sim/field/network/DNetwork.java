@@ -70,6 +70,15 @@ public class DNetwork extends Network implements DistributedFieldNetwork{
 	private HashMap<String, RemoteUnpositionedAgent> toMigrate;
 	private UpdateNetworkMap updates;
 	
+	/**
+	 * Start time for
+	 */
+	private long startTime;
+	/**
+	 * 
+	 */
+	private long endTime;
+	
 
 	public DNetwork(SimState sm, int rows, int columns, int i, int j, GraphSubscribersEdgeList gprsub,String graph_id, String prefix) {
 		cellType = new CellType(i, j);
@@ -86,6 +95,7 @@ public class DNetwork extends Network implements DistributedFieldNetwork{
 		for (Integer neight : gprsub.getPublisher(my_community)) {
 			messageOnNetwork.put(neight,new RegionNetwork(neight));
 		}
+		endTime=startTime=0;
 	
 	}
 
@@ -133,6 +143,7 @@ public class DNetwork extends Network implements DistributedFieldNetwork{
 	@Override
 	public boolean synchro() {
 
+		startTime=System.currentTimeMillis();
 		// Publish the regions to correspondent topics for the neighbors
 		publishRegions();
 
@@ -155,7 +166,7 @@ public class DNetwork extends Network implements DistributedFieldNetwork{
 		}
 
 		toMigrate.clear();
-
+		endTime=System.currentTimeMillis();
 		return true;
 	}
 
@@ -266,5 +277,11 @@ public class DNetwork extends Network implements DistributedFieldNetwork{
 	public boolean createRegions(QuadTree... cell) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return endTime-startTime;
 	}
 }

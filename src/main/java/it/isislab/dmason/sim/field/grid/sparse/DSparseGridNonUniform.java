@@ -1057,4 +1057,10 @@ public class DSparseGridNonUniform extends DSparseGrid2D implements TraceableFie
 
 	}
 
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

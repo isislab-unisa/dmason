@@ -119,7 +119,14 @@ public class DIntGrid2DNonUniform extends DIntGrid2D implements TraceableField{
 	private int numNeighbors;
 	private QuadTree myCell;
 	
-	
+	/**
+	 * Start time for
+	 */
+	private long startTime;
+	/**
+	 * 
+	 */
+	private long endTime;
 	
 	
 	/**
@@ -168,6 +175,7 @@ public class DIntGrid2DNonUniform extends DIntGrid2D implements TraceableField{
 		globalsNames = new ArrayList<String>();
 		globalsMethods = new ArrayList<Method>();
 		GlobalParametersHelper.buildGlobalsList((DistributedState)sm, ((ConnectionJMS)((DistributedState)sm).getCommunicationVisualizationConnection()), topicPrefix, globalsNames, globalsMethods);
+		endTime=startTime=0;
 	}
 	
 	/**
@@ -295,7 +303,7 @@ public class DIntGrid2DNonUniform extends DIntGrid2D implements TraceableField{
 	@SuppressWarnings("rawtypes")
 	public synchronized boolean synchro() 
 	{
-
+		startTime=System.currentTimeMillis();
 		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
 		// If there is any viewer, send a snap
@@ -387,6 +395,7 @@ public class DIntGrid2DNonUniform extends DIntGrid2D implements TraceableField{
 				e1.printStackTrace();
 			}
 		}
+		endTime=System.currentTimeMillis();
 		return true;
 	}
 	
@@ -881,5 +890,11 @@ public class DIntGrid2DNonUniform extends DIntGrid2D implements TraceableField{
 			currentStats.remove(param);
 		}
 
+	}
+
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return endTime-startTime;
 	}
 }

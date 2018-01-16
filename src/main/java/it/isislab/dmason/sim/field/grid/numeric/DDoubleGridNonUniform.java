@@ -120,6 +120,15 @@ public class DDoubleGridNonUniform extends DDoubleGrid2D implements TraceableFie
 
 	public int width;
 	public int height;
+	
+	/**
+	 * Start time for
+	 */
+	private long startTime;
+	/**
+	 * 
+	 */
+	private long endTime;
 
 	public DDoubleGridNonUniform(int width, int height, SimState sm, int aoi, int id, int P, double initialGridValue, String name, String prefix) {
 		super(width, height,initialGridValue);
@@ -153,6 +162,7 @@ public class DDoubleGridNonUniform extends DDoubleGrid2D implements TraceableFie
 		globalsNames = new ArrayList<String>();
 		globalsMethods = new ArrayList<Method>();
 		//GlobalParametersHelper.buildGlobalsList((DistributedState)sm, ((ConnectionJMS)((DistributedState)sm).getCommunicationVisualizationConnection()), topicPrefix, globalsNames, globalsMethods);
+		endTime=startTime=0;
 	}
 
 
@@ -281,7 +291,7 @@ public class DDoubleGridNonUniform extends DDoubleGrid2D implements TraceableFie
 	@SuppressWarnings("rawtypes")
 	public synchronized boolean synchro() 
 	{
-
+		startTime=System.currentTimeMillis();
 		//ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
 		// If there is any viewer, send a snap
@@ -376,6 +386,7 @@ public class DDoubleGridNonUniform extends DDoubleGrid2D implements TraceableFie
 				e1.printStackTrace();
 			}
 		}*/
+		endTime=System.currentTimeMillis();
 		return true;
 	}
 
@@ -874,5 +885,12 @@ public class DDoubleGridNonUniform extends DDoubleGrid2D implements TraceableFie
 			currentStats.remove(param);
 		}
 
+	}
+
+
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return this.endTime - this.startTime;
 	}
 }

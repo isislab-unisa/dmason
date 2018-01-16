@@ -192,6 +192,15 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	protected ArrayList<Method> globalsMethods;
 
 	/**
+	 * Start time for
+	 */
+	private long startTime;
+	/**
+	 * 
+	 */
+	private long endTime;
+
+	/**
 	 * Constructor of class with paramaters:
 	 * 
 	 * @param width field's width  
@@ -510,7 +519,7 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	@Override
 	public synchronized boolean synchro() {
 
-
+		this.startTime = System.currentTimeMillis();
 		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
 
@@ -597,6 +606,10 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 				}
 			}
 		}
+		
+
+		this.endTime = System.currentTimeMillis();
+
 		return true;
 
 	}
@@ -1064,6 +1077,12 @@ public class DDoubleGrid2DXY extends DDoubleGrid2D {
 	public Bag clear() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return this.endTime - this.startTime;
 	}
 
 }

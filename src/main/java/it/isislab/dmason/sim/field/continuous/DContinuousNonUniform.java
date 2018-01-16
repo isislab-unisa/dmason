@@ -125,6 +125,8 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 	private boolean checkAgentDuplication = false;
 
 	private int numNeighbors;
+	
+	private long startTime,endTime;
 
 
 	/**
@@ -196,6 +198,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 		globalsNames = new ArrayList<String>();
 		globalsMethods = new ArrayList<Method>();
 		//GlobalParametersHelper.buildGlobalsList((DistributedState)sm, ((ConnectionJMS)((DistributedState)sm).getCommunicationVisualizationConnection()), topicPrefix, globalsNames, globalsMethods);
+		startTime=endTime=0;
 	}
 	private QuadTree myCell;
 	/**
@@ -358,6 +361,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 	@SuppressWarnings("rawtypes")
 	public synchronized boolean synchro() 
 	{
+		startTime=System.currentTimeMillis();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
 		/*ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 
@@ -452,6 +456,7 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 				e1.printStackTrace();
 			}
 		}*/
+		endTime=System.currentTimeMillis();
 		return true;
 	}
 	/**
@@ -1128,6 +1133,12 @@ public class DContinuousNonUniform extends DContinuousGrid2D implements Traceabl
 		//||(myfield.isMine(pos.x,pos.y));
 
 
+	}
+
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return endTime-startTime;
 	}
 
 

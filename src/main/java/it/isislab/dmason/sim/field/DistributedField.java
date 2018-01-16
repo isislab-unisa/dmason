@@ -76,4 +76,6 @@ public interface DistributedField<E> extends Serializable
 	
 	public  boolean createRegions(QuadTree... cell);
 	
+	public long getCommunicationTime();
+	
 }

@@ -169,6 +169,9 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	// ZOOM VIEWER -----------------------------------------------------------
 	// -----------------------------------------------------------------------
 	private ZoomArrayList<RemotePositionedAgent> tmp_zoom = new ZoomArrayList<RemotePositionedAgent>();
+	
+	private long startTime;
+	private long endTime;
 
 	/**
 	 * Constructor of class with paramaters:
@@ -221,6 +224,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 		globalsMethods = new ArrayList<Method>();
 		//ERROR GLOBAL PARAMETER
 		//GlobalParametersHelper.buildGlobalsList((DistributedState)sm, ((ConnectionJMS)((DistributedState)sm).getCommunicationVisualizationConnection()), topicPrefix, globalsNames, globalsMethods);
+		endTime=startTime=0;
 	}
 	/**
 	 * This method first calculates the upper left corner's coordinates, so the regions where the field is divided
@@ -535,7 +539,7 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 	@SuppressWarnings("rawtypes")
 	public synchronized boolean synchro() 
 	{
-
+		startTime=System.currentTimeMillis();
 		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
 		/*
@@ -645,6 +649,8 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 				}
 			}
 		}
+		
+		endTime=System.currentTimeMillis();
 		return true;
 	}
 	/**
@@ -1294,6 +1300,11 @@ public class DContinuousGrid2DXY extends DContinuousGrid2D implements TraceableF
 				||(myfield.isMine(pos.x,pos.y));
 
 
+	}
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return endTime-startTime;
 	}
 
 

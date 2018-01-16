@@ -151,6 +151,15 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	// -----------------------------------------------------------------------
 	/** Will contain globals properties */
 	public VisualizationUpdateMap<String, Object> globals = new VisualizationUpdateMap<String, Object>();
+	
+	/**
+	 * Start time for
+	 */
+	private long startTime;
+	/**
+	 * 
+	 */
+	private long endTime;
 
 	/**
 	 * Constructor of class with paramaters:
@@ -191,7 +200,7 @@ public class DIntGrid2DXY extends DIntGrid2D {
 
 		setToroidal(isToroidal);		
 		createRegions();	
-
+		endTime=startTime=0;
 	}
 
 
@@ -444,6 +453,8 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	@Override
 	public synchronized boolean synchro() {
 
+		this.startTime = System.currentTimeMillis();
+
 		ConnectionJMS conn = (ConnectionJMS)((DistributedState<?>)sm).getCommunicationVisualizationConnection();
 		Connection connWorker = (Connection)((DistributedState<?>)sm).getCommunicationWorkerConnection();
 
@@ -488,6 +499,8 @@ public class DIntGrid2DXY extends DIntGrid2D {
 		publishRegions(connWorker);
 
 		processUpdates();
+
+		this.endTime = System.currentTimeMillis();
 
 		return true;
 	}
@@ -984,5 +997,12 @@ public class DIntGrid2DXY extends DIntGrid2D {
 	public Bag clear() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return this.endTime - this.startTime;
 	}
 }
