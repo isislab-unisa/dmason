@@ -167,4 +167,10 @@ public class StubDistributedField2D<E> implements DistributedField2D<E>{
 		return false;
 	}
 
+	@Override
+	public long getCommunicationTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }
