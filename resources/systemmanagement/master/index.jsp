@@ -113,26 +113,19 @@
 
             	<paper-dialog-scrollable>
                     <div class="horizontal-section">
-                        <form is="iron-form" id="sendSimulationForm">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label for="simulation-jar-chooser-button">Select an external simulation</label><br />
-                                        <paper-button id="simulation-jar-chooser-button" raised class="custom" onclick='open_file_chooser()'>Upload&nbsp;<iron-icon icon="file-upload"></iron-icon></paper-button>
+						<form is="iron-form" id="sendSimulationForm">
+						<table>
+							<tr>
+								<td>
+										<label for="simulation-jar-chooser-button">Select an external simulation</label><br />
+										<paper-button id="simulation-jar-chooser-button" raised class="custom" onclick='open_file_chooser()'>Upload&nbsp;<iron-icon icon="file-upload"></iron-icon></paper-button>
 										<input type="file" class="hidden" id="simulation-jar-chooser" name="simExe" accept=".jar,.zip">
 										<paper-tooltip for="simulation-jar-chooser-button">You can upload simulations as JAR files or ZIP archives.</paper-tooltip>
-	                                </td>
-                                    <td></td>
+								</td>
+								<td></td>
                                     <td>
 	                                    <span>Select an example simulation</span><br />
-                                        <!--paper-dropdown-menu id="exampleSimulation" label="Select">
-                                            <paper-listbox class="dropdown-content">
-                                                <paper-item id="examplesJarlist">Examples</paper-item>
-                                                <paper-item id="customsJarlist">Customs</paper-item>
-                                           	</paper-listbox>
-                                        </paper-dropdown-menu-->
-                                      	<simulation-example-list id="loader_sims_list_example"></simulation-example-list>
-                                        <!--paper-button raised class="custom">Select<iron-icon icon="receipt"></iron-icon></paper-button-->
+                                        <simulation-example-list id="loader_sims_list_example"></simulation-example-list>
                                     </td>
                                 </tr>
                                 <tr>
@@ -211,8 +204,8 @@
 										<paper-button raised dialog-dismiss autofocus>Cancel</paper-button>
                                     </td>
 	                            </tr>
-                            </table>
-                        </form>
+							</table>
+						</form>
                     </div>
                 </paper-dialog-scrollable>
             </paper-dialog>

@@ -12,6 +12,7 @@
 
         <%-- Import paper elements --%>
         <link rel="import" href="bower_components/paper-card/paper-card.html">
+        <link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html">
         <link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
         <link rel="import" href="bower_components/paper-listbox/paper-listbox.html">
         <link rel="import" href="bower_components/paper-tooltip/paper-tooltip.html">
@@ -35,6 +36,19 @@
 
             <%-- show the card for all available settings --%>
             <div class="grid-settings" id="workers">
+                <%-- General settings --%>
+                <paper-card heading="General" class="grid-item-settings">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <paper-checkbox id="enableperftrace">Enable performance trace</paper-checkbox>
+                    </div>
+                    <div class="card-actions">
+                        <div class="horizontal justified">
+                            <paper-button id="setgeneral" class="card-button" raised><iron-icon icon="check"></iron-icon>&nbsp;Set</paper-button>
+                        </div>
+                    </div>
+                </paper-card>
+
                 <%-- Apache ActiveMQ card --%>
                 <paper-card heading="Apache ActiveMQ" class="grid-item-settings">
                     <div class="card-image">
@@ -60,30 +74,30 @@
                     </div>
                     <div class="card-content">
                         <paper-dropdown-menu id="region" label="Region" noink>
-                            <paper-listbox id="regionlist" slot="dropdown-content" class="dropdown-content" attr-for-selected="item-name">
+                            <paper-listbox id="regionlist" slot="dropdown-content" class="dropdown-content" attr-for-selected="item-name" selected={{selectedRegion}}><%-- TODO properly show menu options --%>
                                 <paper-item class="disabled" disabled>America</paper-item>
-                                <paper-item item-name="N. Virginia">us-east-1</paper-item>
-                                <paper-item item-name="Ohio">us-east-2</paper-item>
-                                <paper-item item-name="N. California">us-west-1</paper-item>
-                                <paper-item item-name="Oregon">us-west-2</paper-item>
-                                <paper-item item-name="Canada">ca-central-1</paper-item>
-                                <paper-item item-name="S&atilde;o Paulo">sa-east-1</paper-item>
+                                <paper-item item-name="us-east-1">us-east-1</paper-item><%-- N. Virginia --%>
+                                <paper-item item-name="us-east-2">Ohio</paper-item>
+                                <paper-item item-name="us-west-1">N. California</paper-item>
+                                <paper-item item-name="us-west-2">Oregon</paper-item>
+                                <paper-item item-name="ca-central-1">Canada</paper-item>
+                                <paper-item item-name="sa-east-1">S&atilde;o Paulo</paper-item>
                                 <paper-item class="disabled" disabled>Europe</paper-item>
-                                <paper-item item-name="Ireland">eu-west-1</paper-item>
-                                <paper-item item-name="Frankfurt">eu-central-1</paper-item>
-                                <paper-item item-name="London">eu-west-2</paper-item>
+                                <paper-item item-name="eu-west-1">Ireland</paper-item>
+                                <paper-item item-name="eu-central-1">Frankfurt</paper-item>
+                                <paper-item item-name="eu-west-2">London</paper-item>
                                 <paper-item class="disabled" disabled>Asia</paper-item>
-                                <paper-item item-name="Tokyo">ap-northeast-1</paper-item>
-                                <paper-item item-name="Seoul">ap-northeast-2</paper-item>
-                                <paper-item item-name="Singapore">ap-southeast-1</paper-item>
-                                <paper-item item-name="Sydney">ap-southeast-2</paper-item>
-                                <paper-item item-name="Mumbai">ap-south-1</paper-item>
+                                <paper-item item-name="ap-northeast-1">Tokyo</paper-item>
+                                <paper-item item-name="ap-northeast-2">Seoul</paper-item>
+                                <paper-item item-name="ap-southeast-1">Singapore</paper-item>
+                                <paper-item item-name="ap-southeast-2">Sydney</paper-item>
+                                <paper-item item-name="ap-south-1">Mumbai</paper-item>
                             </paper-listbox>
                         </paper-dropdown-menu>
                         <paper-tooltip for="region" position="bottom" animation-delay="0" offset="1">Specify an Amazon AWS region</paper-tooltip>
-                        <paper-input id="pubkey" label="Public API Key" auto-validate pattern="" error-message="Wrong public API key!" char-counter></paper-input>
+                        <paper-input id="pubkey" label="Public API Key" error-message="Wrong public API key!" char-counter></paper-input><%-- TODO set a pattern validation (auto-validate-pattern) --%>
                         <paper-tooltip for="pubkey" position="bottom" animation-delay="0" offset="1">Specify the public key associated to the Amazon account</paper-tooltip>
-                        <paper-input id="prikey" label="Private API Key" auto-validate pattern="" error-message="Wrong private API key!" char-counter></paper-input>
+                        <paper-input id="prikey" label="Private API Key" error-message="Wrong private API key!" char-counter></paper-input><%-- TODO set a pattern validation --%>
                         <paper-tooltip for="prikey" position="bottom" animation-delay="0" offset="1">Specify the private key associated to the Amazon account</paper-tooltip>
                     </div>
                     <div class="card-actions">

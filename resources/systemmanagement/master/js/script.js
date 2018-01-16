@@ -197,8 +197,19 @@ function open_file_chooser() {
     // attach event for paper-progress
     $("#simulation-jar-chooser").change(function () {
         //console.log("starting the loader...");
-        //startProgress(simProgress, simButton);
+        startProgress(simProgress, simButton);
     });
+
+    // make the ajax request to send the JAR file
+    var jarFile = document.getElementById("simulation-jar-chooser");
+    $.post(
+        "", // destination point
+        undefined // JAR file
+    ); // TODO chain success and error functions
+}
+
+function _sendJar() {
+
 }
 
 /* paper-progress global variables */
@@ -437,7 +448,7 @@ function _validate_slots(element) {
 
     var value = document.querySelector("#" + id).value;
     var cur_slot = (value) ? parseInt(value) : 1;
-    console.log("Id element " + id + " input value " + value + " cur_slot " + cur_slot);
+    //console.log("Id element " + id + " input value " + value + " cur_slot " + cur_slot);
 
     var submit_btn = document.querySelector("#submit_btn");
 
@@ -495,6 +506,28 @@ function _validate_slots(element) {
         paper_input_container.invalid = false;
         submit_btn.disabled = false;
     }
+}
+
+function submitJarFile() {
+    var form = document.getElementById("sendSimulationJar");
+    var jarFile = $("#simulation-jar-chooser").val();
+
+    if (!jarFile) {
+        $(error_toast_message).text("You should select an example simulation or submit a simulation jar.");
+        error_toast.open();
+        return false;
+    }
+
+    // get the submit button and
+    // start the progress animation
+    submitSimulationButton = document.getElementById("simulation-jar-chooser-button");
+    if (!simProgress) {
+        simProgress = document.getElementById("simulation-progress");
+    }
+    startProgress(simProgress, submitSimulationButton);
+
+    $(form).unbind('submit').bind("submit", _OnsubmitSimulation);
+    form.submit();
 }
 
 function submitForm() {
@@ -596,28 +629,28 @@ function checkForm(form) {
 }
 
 function _OnsubmitSimulation(event) {
-    var form = document.querySelector('form[is="iron-form"]');
+    var form = document.getElementById('sendSimulationForm');
     var formData = new FormData(form);
 
     // Workaround by https://github.com/rnicholus/ajax-form/issues/63
 
-    var myPaperRadioGroup = document.getElementById('partitioning');
-    if (!myPaperRadioGroup.selected) {
-        formData.append(myPaperRadioGroup.id, "");
+    var partitioning = document.getElementById('partitioning');
+    if (!partitioning.selected) {
+        formData.append(partitioning.id, "");
     } else {
-        formData.append(myPaperRadioGroup.id, myPaperRadioGroup.selected);
+        formData.append(partitioning.id, partitioning.selected);
     }
 
-    var myDropDownMenuSampleSim = document.getElementById('exampleSimulation');
-    if (!myDropDownMenuSampleSim.selectedItem) {
-        formData.append(myDropDownMenuSampleSim.id, "");
+    var exampleSimulation = document.getElementById('exampleSimulation');
+    if (!exampleSimulation.selectedItem) {
+        formData.append(exampleSimulation.id, "");
     } else {
-        formData.append(myDropDownMenuSampleSim.id, myDropDownMenuSampleSim.selectedItemLabel);
+        formData.append(exampleSimulation.id, exampleSimulation.selectedItemLabel);
     }
 
-    var myCheckBoxConnection = document.querySelector('#connectionType');
-    if (myCheckBoxConnection.checked) {
-        formData.append(myCheckBoxConnection.id, "mpi");
+    var connectionType = document.querySelector('#connectionType');
+    if (connectionType.checked) {
+        formData.append(connectionType.id, "mpi");
     }
 
     var request = $.ajax({
@@ -851,6 +884,7 @@ function cleanHistory() {
 // attach settings update logic to settings.jsp paper cards
 $().ready(function () {
 //    $(loadSettings); // done in a previous function
+    $("#setgeneral").click(updateGeneralSettings);
     $("#setactivemq").click(updateActiveMQSettings);
     $("#setamazonaws").click(updateAmazonAWSSettings);
 });
@@ -867,26 +901,57 @@ function loadSettings() {
             }
 
             // ectract data
+            var performanceTrace = data.generalSettings.enablePerfTrace;
+            //console.log("Performance trace: " + performanceTrace); // TODO comment after testing
+
             var activeMQIp = data.activeMQSettings.ip;
             var activeMQPort = data.activeMQSettings.port;
             //console.log("ActiveMQ location: " + activeMQIp + ":" + activeMQPort);
+
             var amazonAWSPriKey = data.amazonAWSSettings.priKey;
             var amazonAWSPubKey = data.amazonAWSSettings.pubKey;
             var amazonAWSRegion = data.amazonAWSSettings.region;
-            //console.log("Amazon AWS region: " + amazonAWSRegion);
+
+            // show general settings
+            performanceTrace = performanceTrace.toLowerCase();
+            var perfTraceCheckbox = document.querySelector("#enableperftrace");
+            if (performanceTrace == "true") {
+                perfTraceCheckbox.checked = true;
+            } else if (performanceTrace == "false") {
+                perfTraceCheckbox.checked = false;
+            } else {
+                console.error("Illegal value for performance trace setting!");
+            }
 
             // show ActiveMQ settings
             $("#activemqip").val(activeMQIp);
             $("#activemqport").val(activeMQPort);
 
             // show Amazon AWS settings
-            $("#region").val(amazonAWSRegion);
+            $("#regionlist").selectedRegion = amazonAWSRegion; // TODO make paper-dropdown-menu settable
             $("#pubkey").val(amazonAWSPubKey);
             $("#prikey").val(amazonAWSPriKey);
         }
     )
     .fail(function () {
         console.error("Error while retrieving current settings!");
+    });
+}
+
+function updateGeneralSettings() {
+    var perfTrace = document.querySelector("#enableperftrace").checked;
+    console.log("Enable performance trace: " + perfTrace);
+
+    // send POST request to server
+    $.post(
+        "updateSettings",
+        {
+            "setting": "general",
+            "enableperftrace": perfTrace
+        }
+    )
+    .fail(function () {
+        console.error("Error while sending general data!")
     });
 }
 
