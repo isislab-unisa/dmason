@@ -105,9 +105,30 @@ public class UpdateSettingsServlet
 
 		switch (chooser)
 		{
+			case "general":
+			{
+				final String PROPERTIES_PREFIX = "general".concat(".");
+				String perfTrace = request.getParameter("enableperftrace"); // TODO is a value check needed?
+
+				// persist data into file
+				LOGGER.info("Enable performance trace: " + perfTrace);
+				config.setProperty(PROPERTIES_PREFIX.concat("enableperftrace"), perfTrace);
+				try
+				{
+					builder.save();
+				}
+				catch (ConfigurationException e)
+				{
+					LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
+				}
+
+				LOGGER.info("General settings have been set!");
+				break;
+			} // end case general
+
 			case "activemq":
 			{
-				final String PROPERTIES_PREFIX = "activemq.";
+				final String PROPERTIES_PREFIX = "activemq".concat(".");
 				String ip = request.getParameter("activemqip");
 				String port = request.getParameter("activemqport");
 
@@ -137,7 +158,7 @@ public class UpdateSettingsServlet
 
 			case "amazonaws":
 			{
-				final String PROPERTIES_PREFIX = "amazonaws.";
+				final String PROPERTIES_PREFIX = "amazonaws".concat(".");
 				String region = request.getParameter("region");
 				String pubkey = request.getParameter("pubkey");
 				String prikey = request.getParameter("prikey");

@@ -76,6 +76,13 @@ public class GetSettingsServlet extends HttpServlet
 			LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
 		}
 
+		// extract general parameters
+		final String GENERAL_PREFIX = "general".concat(".");
+		final String GENERAL_ENABLEPERFTRACE = config.getString(GENERAL_PREFIX.concat("enableperftrace"));
+
+		GeneralSettings generalSettings = new GeneralSettings(GENERAL_ENABLEPERFTRACE);
+		LOGGER.info("General settings ready to be sent: " + generalSettings);
+
 		// extract ActiveMQ parameters
 		final String ACTIVEMQ_PREFIX = "activemq".concat(".");
 		final String ACTIVEMQ_IP = config.getString(ACTIVEMQ_PREFIX.concat("ipmaster"));
@@ -93,7 +100,7 @@ public class GetSettingsServlet extends HttpServlet
 		AmazonAWSSettings amazonAWSSettings = new AmazonAWSSettings(PRIKEY, PUBKEY, REGION);
 		LOGGER.info("Amazon AWS settings ready to be sent: " + amazonAWSSettings);
 
-		Settings settings = new Settings(activeMQSettings, amazonAWSSettings);
+		Settings settings = new Settings(generalSettings, activeMQSettings, amazonAWSSettings);
 		LOGGER.info("Settings ready to be sent: " + settings);
 
 		// put settings in a JSON and send them into the response object
@@ -109,7 +116,31 @@ public class GetSettingsServlet extends HttpServlet
 		}
 	} // end provideSettings(HttpServletRequest, HttpServletResponse)
 
-	// define the class modelling the JSON for ActiveMQ settings
+	// define the class modeling JSON for geenral settings
+	static class GeneralSettings
+			implements Serializable
+	{
+		// constructors
+		public GeneralSettings(String enablePerfTrace)
+		{
+			this.enablePerfTrace = enablePerfTrace;
+		}
+
+		// Object methods
+		@Override
+		public String toString()
+		{
+			return "General, performance trace: " + this.enablePerfTrace; 
+		}
+
+		// variables
+		public String enablePerfTrace;
+
+		// constants
+		public static final long serialVersionUID = 1L;
+	}
+
+	// define the class modeling the JSON ActiveMQ settings
 	static class ActiveMQSettings
 			implements Serializable
 	{
@@ -172,13 +203,21 @@ public class GetSettingsServlet extends HttpServlet
 			this.amazonAWSSettings = amazonAWSSettings;
 		}
 
+		public Settings(GeneralSettings generalSettings, ActiveMQSettings activeMQSettings, AmazonAWSSettings amazonAWSSettings)
+		{
+			this.generalSettings = generalSettings;
+			this.activeMQSettings = activeMQSettings;
+			this.amazonAWSSettings = amazonAWSSettings;
+		}
+
 		@Override
 		public String toString()
 		{
-			return "Settings " + activeMQSettings + ", " + amazonAWSSettings + "]";
+			return "Settings " + generalSettings + ", " + activeMQSettings + ", " + amazonAWSSettings + "]";
 		}
 
 		// variables
+		private GeneralSettings generalSettings;
 		private ActiveMQSettings activeMQSettings;
 		private AmazonAWSSettings amazonAWSSettings;
 
