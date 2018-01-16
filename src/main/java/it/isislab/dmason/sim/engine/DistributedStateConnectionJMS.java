@@ -87,6 +87,7 @@ public class DistributedStateConnectionJMS<E> {
 	protected int rows;
 	protected int columns;
 	protected HashMap<String, Integer> networkNumberOfSubscribersForField;
+	protected boolean perfTrace=false;
 
 	public DistributedStateConnectionJMS()
 	{
@@ -115,6 +116,7 @@ public class DistributedStateConnectionJMS<E> {
 		rows=dm.rows;
 		columns=dm.columns;
 		networkNumberOfSubscribersForField=dm.networkNumberOfSubscribersForField;
+		perfTrace=dm.isPerfTrace();
 	}
 
 //	//this is only for test
@@ -195,7 +197,13 @@ public class DistributedStateConnectionJMS<E> {
 			e.printStackTrace();
 		}
 		
-		
+		if (perfTrace) {
+			try {
+				connectionJMS.createTopic(topicPrefix+"SIM-TIME", 1);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	private  ReentrantLock lock;
 	private  Condition block;

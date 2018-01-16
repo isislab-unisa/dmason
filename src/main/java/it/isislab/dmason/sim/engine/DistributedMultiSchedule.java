@@ -28,6 +28,8 @@ import it.isislab.dmason.sim.field.CellType;
 import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.DistributedField2DLB;
 import it.isislab.dmason.sim.field.DistributedFieldNetwork;
+import it.isislab.dmason.util.connection.Connection;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,6 +75,10 @@ public class DistributedMultiSchedule<E> extends Schedule
 	private int numExt;
 	private DistributedState state;
 	private HashMap<String, ArrayList<MyCellInterface>> h;
+	
+	//timestamp
+	private long startTime=0;
+	private long endTime=0;
 
 	//thresholds for the split and the merge of the cell 
 	private double thresholdSplit;
@@ -121,6 +127,7 @@ public class DistributedMultiSchedule<E> extends Schedule
 	private QuadTree tree_partitioning;
 	private HashMap<RemotePositionedAgent<E>, DistributedField2D<E>> map_agents_on_fields=new HashMap<RemotePositionedAgent<E>, DistributedField2D<E>>();
 	private HashMap<RemotePositionedAgent<E>,E> map_agents_on_position=new HashMap<RemotePositionedAgent<E>,E>();
+	private boolean perfTrace = false; // TODO
 
 	public DistributedMultiSchedule() {
 
@@ -246,8 +253,10 @@ public class DistributedMultiSchedule<E> extends Schedule
 				monitor.ZOOM = false;
 		}
 
+		startTime = System.currentTimeMillis();
 		// Execute the simulation step
 		super.step(state);
+		endTime = System.currentTimeMillis();
 		deferredUpdates.clear();
 
 
@@ -343,6 +352,37 @@ public class DistributedMultiSchedule<E> extends Schedule
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+		}
+
+		long com_time=0;
+		
+		for(DistributedField2D<E> f : fields2D) {
+			com_time+= f.getCommunicationTime();
+		}
+		
+		for(DistributedFieldNetwork f : fieldsNetwork) {
+			com_time+=f.getCommunicationTime();
+		}
+		
+		Connection conn = (Connection) state.getCommunicationManagementConnection();
+		
+		if (state.isPerfTrace()) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(((DistributedState<?>)simstate).TYPE);
+			stringBuilder.append(",");
+			stringBuilder.append(getSteps()-1);
+			stringBuilder.append(",");
+			stringBuilder.append(getComputationTime());
+			stringBuilder.append(",");
+			stringBuilder.append(com_time); // communication time
+
+			try {
+				conn.publishToTopic(stringBuilder.toString(), state.topicPrefix+"SIM-TIME", "");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			
 		}
 
 		// Done
@@ -588,6 +628,10 @@ public class DistributedMultiSchedule<E> extends Schedule
 	}
 	public int getNumFields(){
 		return fields2D.size();
+	}
+	
+	public long getComputationTime() {
+		return endTime-startTime;
 	}
 
 }

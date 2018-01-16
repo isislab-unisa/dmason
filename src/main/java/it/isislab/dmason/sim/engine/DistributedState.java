@@ -75,6 +75,9 @@ public abstract class DistributedState<E> extends SimState {
 	protected DistributedStateConnectionJMS<E> serviceJMS;
 	protected DistributedStateConnectionMPI<E> serviceMPI;
 	
+	protected boolean perfTrace=false;
+	
+
 	public PrintStream out;
 	
 	public void setOutputStream(PrintStream out)
@@ -111,7 +114,7 @@ public abstract class DistributedState<E> extends SimState {
 		this.count_id = NUMAGENTS * TYPE.getInitialValue();
 		this.MODE = params.getMode();
 		this.topicPrefix = prefix;
-
+		this.perfTrace=params.isEnablePerfTrace();
 		
 		switch (typeOfConnection) {
 		case ConnectionType.pureActiveMQ:
@@ -265,6 +268,10 @@ public abstract class DistributedState<E> extends SimState {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public boolean isPerfTrace() {
+		return perfTrace;
 	}
 
 }
