@@ -114,15 +114,17 @@
             	<paper-dialog-scrollable>
                     <div class="horizontal-section">
 						<form is="iron-form" id="sendSimulationForm">
-						<table>
-							<tr>
-								<td>
-										<label for="simulation-jar-chooser-button">Select an external simulation</label><br />
-										<paper-button id="simulation-jar-chooser-button" raised class="custom" onclick='open_file_chooser()'>Upload&nbsp;<iron-icon icon="file-upload"></iron-icon></paper-button>
-										<input type="file" class="hidden" id="simulation-jar-chooser" name="simExe" accept=".jar,.zip">
-										<paper-tooltip for="simulation-jar-chooser-button">You can upload simulations as JAR files or ZIP archives.</paper-tooltip>
-								</td>
-								<td></td>
+							<table>
+								<tr>
+									<td colspan="2">
+										<%-- jar sending form --%>
+										<form is="iron-form" id="sendSimulationJar">
+											<label for="simulation-jar-chooser-button">Select an external simulation</label>
+											<paper-button id="simulation-jar-chooser-button" raised onclick="open_file_chooser()">Upload&nbsp;<iron-icon icon="file-upload"></iron-icon></paper-button>
+											<input type="file" class="hidden" id="simulation-jar-chooser" name="simExe" accept=".jar,.zip">
+											<paper-tooltip for="simulation-jar-chooser-button">You can upload simulations as JAR files or ZIP archives.</paper-tooltip>
+										</form>
+									</td>
                                     <td>
 	                                    <span>Select an example simulation</span><br />
                                         <simulation-example-list id="loader_sims_list_example"></simulation-example-list>
@@ -132,15 +134,21 @@
 									<td colspan="3"><paper-progress id="simulation-progress" class="red"></paper-progress></td>
 								</tr>
                                 <tr>
-                                    <td colspan="2" style="text-align:center; text-transform: uppercase;"><span>Partitioning</span></td>
-                                    <td style="text-align:center; text-transform: uppercase;"><span>extra</span></td>
+                                    <td colspan="2" style="text-align: center; text-transform: uppercase;"><span>Partitioning</span></td>
+                                    <td style="text-align: center; text-transform: uppercase;"><span>extra</span></td>
                                 </tr>
                                 <tr>
                                     <td colspan="2" style="text-align:center">
                                         <paper-radio-group id="partitioning" selected="uniform">
-                                            <paper-radio-button required name="uniform" onclick="change_partitioning_input_params(this)"><span>Uniform&nbsp;<iron-icon icon="view-module"></iron-icon></span></paper-radio-button>
-											<paper-radio-button required name="non-uniform" onclick="change_partitioning_input_params(this)"><span>Non-Uniform&nbsp;<iron-icon icon="view-quilt"></iron-icon></span></paper-radio-button>
-											<paper-radio-button required name="three-dim" onclick="change_partitioning_input_params(this)"><span>3D&nbsp;<iron-icon icon="3d-rotation"></iron-icon></span></paper-radio-button>
+                                            <paper-radio-button required name="uniform" onclick="change_partitioning_input_params(this)">
+												<span>Uniform&nbsp;<iron-icon icon="view-module"></iron-icon></span>
+											</paper-radio-button>
+											<paper-radio-button required name="non-uniform" onclick="change_partitioning_input_params(this)">
+												<span>Non-Uniform&nbsp;<iron-icon icon="view-quilt"></iron-icon></span>
+											</paper-radio-button>
+											<paper-radio-button required name="three-dim" onclick="change_partitioning_input_params(this)">
+												<span>3D&nbsp;<iron-icon icon="image:filter-none"></iron-icon></span>
+											</paper-radio-button>
                                         </paper-radio-group>
                                     </td>
                                     <td><paper-checkbox id="connectionType" class="layout horizontal center" disabled>enable MPI boost</paper-checkbox></td>
@@ -199,15 +207,19 @@
                                 <tr>
                                 	<td></td>
                                     <td colspan="2" style="text-align:right; padding-top:50px;">
-                                        <paper-button raised onclick="resetForm(event)">Reset</paper-button>
-										<paper-button id="submit_btn" raised onclick="submitForm()" dialog-confirm>Submit</paper-button>
-										<paper-button raised dialog-dismiss autofocus>Cancel</paper-button>
+                                        
                                     </td>
 	                            </tr>
 							</table>
 						</form>
                     </div>
-                </paper-dialog-scrollable>
+				</paper-dialog-scrollable>
+
+				<div >
+					<paper-button raised onclick="resetForm(event)">Reset</paper-button>
+					<paper-button id="submit_btn" raised onclick="submitForm()" dialog-confirm>Submit</paper-button>
+					<paper-button raised dialog-dismiss autofocus>Cancel</paper-button>
+				</div>
             </paper-dialog>
 
 			<%-- New EC2 node panel --%>
@@ -260,7 +272,7 @@
 						</div>
 
 						<%-- Spot settings --%>
-						<div>
+						<div style="padding: 5px;">
 							<pre style="color: #666;">Coming soon!</pre>
 							<paper-button raised dialog-dismiss autofocus>Cancel</paper-button>						
 						</div>
