@@ -75,7 +75,7 @@ After that you must put the output data in the `repository` folder of DMASON Git
 
 
 ### License
-Copyright ISISLab, 2017 Università degli Studi di Salerno.
+Copyright ISISLab, 2018 Università degli Studi di Salerno.
 
 Licensed under the Apache License, Version 2.0 (the "License"); You may not use this file except in compliance with the License.
 You may obtain a copy of the License at

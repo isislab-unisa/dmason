@@ -1,14 +1,7 @@
 # Changelog DMASON 3.2
 
-### 1. Updated bower dependencies
-In order to make front-end usable again, experimental library `polymer` has been udpated to version 2; while deprecated Paper layout has been dropped leaving room for App layout, `webcomponentsjs` library has been updated to 0.7.24 (version 1 doesn't currently work with some browsers).
-`custom_components` folder has been extracted from `bower_components` to keep it separated from third-part bower components.
-
-### 2 Updated front-end
-JSPs, scripts and style have been updated in order to make front-end usable again by any web browser.
-
-### 3. Updated `README.md` and `CHANGELOG.md`
-Markdown files have been updated in order to be properly shown in GitHub (according to updated [GFM specs](https://github.github.com/gfm/)).
+### 1. Add Performance tracing option for simulations
+A new option in Settings is available to enable performance tracing for running simulations: when enabled, it is shown into workers consoles as a 3-tuple (type,step,computation\_time,communication\_time).
 
 ## TODO LIST
 - Workers reconnection (beta version has been created) 
