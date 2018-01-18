@@ -25,7 +25,7 @@ import com.jcraft.jsch.Session;
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.LocalInstanceStateManager;
 
 /**
- * 
+ *
  * The class <code>LocalInstanceState</code> maps instance state and other
  * metadata:
  * <ul>
@@ -42,7 +42,7 @@ import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.
  * </ul>
  * All parameters but <em>instance session</em> are persisted into a file as a serialized stream by <code>{@link LocalInstanceStateManager}</code>.<br>
  * Setter methods invocation automatically update last edit time.
- * 
+ *
  * @author Simone Bisogno
  *
  */
@@ -51,14 +51,15 @@ public class LocalInstanceState
 {
 	// constructors
 	/**
-	 * 
+	 *
 	 * <code>LocalInstanceState</code> constructor takes as parameters instance
 	 * ID and DNS name.<br>All boolean parameters are initialized as
 	 * <strong><code>false</code></strong>, session as <strong><code>null</code></strong>
 	 * and last edit time as current construction time.
-	 * 
+	 *
 	 * @param id - The instance ID.
 	 * @param dns - The instance DNS name.
+	 * @param type - The instance type.
 	 */
 	public LocalInstanceState(String id, String dns, String type)
 	{
@@ -77,7 +78,7 @@ public class LocalInstanceState
 
 	// getters
 	/**
-	 * 
+	 *
 	 * @return Instance ID.
 	 * @see #id
 	 */
@@ -87,7 +88,7 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Instance DNS name.
 	 * @see #dns
 	 */
@@ -97,7 +98,7 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Instance type.
 	 * @see #type
 	 */
@@ -107,7 +108,7 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Master DNS name.
 	 * @see #masterDns
 	 */
@@ -117,7 +118,7 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Instance running status.
 	 * @see #running
 	 */
@@ -127,7 +128,7 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @return DMASON installation status on instance.
 	 * @see #ready
 	 */
@@ -137,7 +138,7 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @return DMASON running status on instance
 	 * @see #busy
 	 */
@@ -147,7 +148,7 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Instance role (<em>master</em> or <em>worker</em>)
 	 * 		according to DMASON execution.
 	 * @see #master
@@ -158,7 +159,7 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Instance termination status.
 	 * @see #terminated
 	 */
@@ -168,7 +169,7 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Instance session.
 	 * @see #session
 	 * @see Session
@@ -179,7 +180,7 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Instance last edit time.
 	 * @see #lastEditTime
 	 * @see LocalDateTime
@@ -191,7 +192,7 @@ public class LocalInstanceState
 
 	// setters
 	/**
-	 * 
+	 *
 	 * @param id - Instance new ID.
 	 * @see #id
 	 */
@@ -202,7 +203,7 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @param dns - New instance DNS name.
 	 * @see #dns
 	 */
@@ -213,9 +214,9 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @param type - New instance type.
-	 * @See #type
+	 * @see #type
 	 */
 	public void setType(String type)
 	{
@@ -224,7 +225,7 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @param masterDns - New Instance master DNS name.
 	 * @see #masterDns
 	 */
@@ -235,7 +236,7 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @param running - New instance running state.
 	 * @see #running
 	 */
@@ -246,7 +247,7 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @param ready - New instance DMASON installation state.
 	 * @see #ready
 	 */
@@ -257,7 +258,7 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @param isBusy - New instance DMASON running state.
 	 * @see #busy
 	 */
@@ -268,7 +269,7 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @param isMaster - New instance DMASON role.
 	 * @see #master
 	 */
@@ -293,7 +294,7 @@ public class LocalInstanceState
 	}
 
 	/**
-	 * 
+	 *
 	 * @param session - New instance session.
 	 * @see #session
 	 */
