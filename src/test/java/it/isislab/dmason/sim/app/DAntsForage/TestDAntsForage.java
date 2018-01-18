@@ -16,6 +16,7 @@
  */
 package it.isislab.dmason.sim.app.DAntsForage;
 
+import it.isislab.dmason.experimentals.systemmanagement.utils.activemq.ActiveMQStarter;
 import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 /*
@@ -60,6 +61,8 @@ public class TestDAntsForage {
 	
 	public static void main(String[] args) 
 	{	
+		ActiveMQStarter c=new ActiveMQStarter();
+		c.startActivemq();
 		System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
 		class worker extends Thread
 		{
