@@ -513,7 +513,7 @@ function submitJarFile() {
     var jarFile = $("#simulation-jar-chooser").val();
 
     if (!jarFile) {
-        $(error_toast_message).text("You should select a simulation jar first.");
+        $(error_toast_message).text("You should select an example simulation or submit a simulation jar first.");
         error_toast.open();
         return false;
     }
@@ -544,7 +544,7 @@ function submitForm() {
     }
     startProgress(simProgress, submitSimulationButton);
 
-    $(form).unbind('submit').bind("submit", _onSubmitJar);
+    $(form).unbind('submit').bind("submit", _OnsubmitSimulation); // TODO finalize _onSubmitJar() function
     form.submit();
 }
 
