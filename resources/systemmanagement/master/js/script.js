@@ -1112,7 +1112,7 @@ function _onSubmitEC2WorkerRequest(event) {
     .done(function (data, textStatus, jqXHR) {
             //console.info(data + "\nstatus: " + textStatus + ".")
             resetEC2RequestForm();
-            document.getElementById("add-ec2-node-dialog").close();
+            document.getElementById("addEC2NodeDialog").close();
     })
     .fail(function (jqXHR, textStatus, errorThrown) {
             console.error(textStatus + ": " + errorThrown + ".");

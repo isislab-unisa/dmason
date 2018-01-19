@@ -92,7 +92,7 @@
 			</paper-dialog>
 
 			<%-- Bottom buttons and warnings --%>
-			<paper-fab id="add-aws-instance" class="fab" icon="dns" onclick="open_dialog_by_ID('add-ec2-node-dialog')"></paper-fab>
+			<paper-fab id="add-aws-instance" class="fab" icon="dns" onclick="open_dialog_by_ID('addEC2NodeDialog')"></paper-fab>
 			<paper-tooltip for="add-aws-instance" position="top">Instantiate a new Amazon AWS node</paper-tooltip>
 			<paper-toast id="miss-aws-instance">Problem while instantiating an EC2 instance.</paper-toast>
 
@@ -223,7 +223,7 @@
             </paper-dialog>
 
 			<%-- New EC2 node panel --%>
-			<paper-dialog id="add-ec2-node-dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal with-backdrop>
+			<paper-dialog id="addEC2NodeDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal with-backdrop>
 				<div class="layout vertical center">
 					<h1>Create EC2 instance worker</h1>
 				</div>
@@ -262,11 +262,6 @@
 									<div style="margin: 8px 0;">
 										<p style="color: #666;">To edit EC2 region, go to <strong><a href="settings.jsp">Settings</strong></a> and change the <em>Region</em> option.</p>
 									</div>
-									<div style="margin: 8px 0;">
-										<paper-button raised onclick="resetForm(event)">Reset</paper-button>
-										<paper-button id="submit_btn" raised onclick="requestEC2Worker()" dialog-confirm>Submit</paper-button>
-										<paper-button raised dialog-dismiss autofocus>Cancel</paper-button>
-									</div>
 								</div>
 							</form>
 						</div>
@@ -274,18 +269,36 @@
 						<%-- Spot settings --%>
 						<div style="padding: 5px;">
 							<pre style="color: #666;">Coming soon!</pre>
-							<paper-button raised dialog-dismiss autofocus>Cancel</paper-button>						
+							<%--<paper-button raised dialog-dismiss autofocus>Cancel</paper-button>--%>						
 						</div>
 			        </iron-pages>
 				</paper-dialog-scrollable>
 
+				<%-- action buttons --%>
+				<div style="margin: 8px 0;">
+					<paper-button raised onclick="resetForm(event)">Reset</paper-button>
+					<paper-button id="submit_btn" raised dialog-confirm>Submit</paper-button><%--  onclick="requestEC2Worker()" --%>
+					<paper-button raised dialog-dismiss autofocus>Cancel</paper-button>
+				</div>
+
 				<%-- iron-page selection logic for tabs --%>
-				<script>
+				<script>// TODO move into script file
 					var pages = document.querySelector('iron-pages');
 					var tabs = document.querySelector('paper-tabs');
 
 					tabs.addEventListener('iron-select', function() { 
 						pages.selected = tabs.selected;
+
+						// TODO add logic to change 'Submit' function event
+						if (pages.selected == 0) { // it is 'On demand' form
+							console.log("Selected page " + pages.selected + ", it should be 'On demand'");
+							$("#submit_btn").click(requestEC2Worker); // TODO check if this works
+						} else if (pages.selected == 1) { // it is 'Spot' form
+							console.log("Selected page " + pages.selected + ", it should be 'Spot'");
+							$("#submkit_btn").click(alert("no endpoint available for Spot instances yet!"));
+						} else { // what form is even this?
+							console.error("Invalid page " + pages.selected + "!");
+						}
 					});
 				</script>
 			</paper-dialog>
