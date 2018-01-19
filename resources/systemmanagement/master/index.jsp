@@ -118,12 +118,12 @@
 								<tr>
 									<td colspan="2">
 										<%-- jar sending form --%>
-										<form is="iron-form" id="sendSimulationJar">
+										<%--<form is="iron-form" id="sendSimulationJar">--%>
 											<label for="simulation-jar-chooser-button">Select an external simulation</label>
 											<paper-button id="simulation-jar-chooser-button" raised onclick="open_file_chooser()">Upload&nbsp;<iron-icon icon="file-upload"></iron-icon></paper-button>
 											<input type="file" class="hidden" id="simulation-jar-chooser" name="simExe" accept=".jar,.zip">
 											<paper-tooltip for="simulation-jar-chooser-button">You can upload simulations as JAR files or ZIP archives.</paper-tooltip>
-										</form>
+										<%--</form>--%>
 									</td>
                                     <td>
 	                                    <span>Select an example simulation</span><br />
