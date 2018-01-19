@@ -31,17 +31,17 @@ import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.Amazo
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.model.LocalInstanceState;
 
 /**
- * 
+ *
  * The <code>DREmoteManager</code> class deals with instructions to remote
  * EC2 instances on Amazon AWS to install, run and stop DMASON.
- * 
+ *
  * @author Simone Bisogno
  *
  */
 public class DMasonRemoteManager
 {
 	/**
-	 * 
+	 *
 	 * The <strong><code>installDMason(String)</code></strong> method deals
 	 * with installing DMASON on the EC2 instance specified by given <code>
 	 * instanceId</code> parameter.<br>
@@ -53,7 +53,7 @@ public class DMasonRemoteManager
 	 * the <code>LocalInstanceState</code> object with given ID and by
 	 * remotely checking if the <em><code>isislab/dmason/target</code></em>
 	 * folder exists.
-	 * 
+	 *
 	 * @param instanceId - The ID of the instance where DMASON will be
 	 * 		installed
 	 */
@@ -202,7 +202,7 @@ public class DMasonRemoteManager
 	} // end installDMason(String, String)
 
 	/**
-	 * 
+	 *
 	 * The <strong><code>startDMason(String, boolean, int)</code></strong>
 	 * method deals with running DMASON on the EC2 instance specified by
 	 * given <code>instanceId</code> parameter.<br>
@@ -212,12 +212,11 @@ public class DMasonRemoteManager
 	 * processes.<br>
 	 * The method can run DMASON on the instance with <em>master</em> or <em>
 	 * worker</em> role; in the latter case, the number of workers can be
-	 * specified. 
-	 * 
+	 * specified.
+	 *
 	 * @param instanceId - The ID of the instance where DMASON will be
 	 * 		installed
 	 * @param isMaster - A boolean determining the role of the instance
-	 * @param numWorkers - The number of workers to run on the instance
 	 */
 	public static void startDMason(String instanceId, boolean isMaster)
 	{
@@ -313,7 +312,7 @@ public class DMasonRemoteManager
 			session = AmazonService.getSession(instanceId, AmazonService.getAmiUser(), false);
 			session.connect();
 
-			// 
+			//
 			if (isMaster)
 			{
 				LOGGER.info("Running as master...");
@@ -368,7 +367,7 @@ public class DMasonRemoteManager
 	} // end startDMason(String, String)
 
 	/**
-	 * 
+	 *
 	 * The <strong><code>stopDMason(String)</code></strong> method deals with
 	 * stopping DMASON running on the EC2 instance specified by given <code>
 	 * instanceId</code> parameter.<br>
@@ -376,7 +375,7 @@ public class DMasonRemoteManager
 	 * DMASOn execution by checking the <code>LocalInstanceState</code>
 	 * object with given ID and by remotely checking the list of running
 	 * processes.<br>
-	 * 
+	 *
 	 * @param instanceId - The ID of the instance where DMASON will be
 	 * 		installed
 	 */

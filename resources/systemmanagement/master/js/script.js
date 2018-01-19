@@ -513,7 +513,7 @@ function submitJarFile() {
     var jarFile = $("#simulation-jar-chooser").val();
 
     if (!jarFile) {
-        $(error_toast_message).text("You should select an example simulation or submit a simulation jar.");
+        $(error_toast_message).text("You should select a simulation jar first.");
         error_toast.open();
         return false;
     }
@@ -526,7 +526,7 @@ function submitJarFile() {
     }
     startProgress(simProgress, submitSimulationButton);
 
-    $(form).unbind('submit').bind("submit", _OnsubmitSimulation);
+    $(form).unbind("submit").bind("submit", _OnsubmitSimulation);
     form.submit();
 }
 
@@ -544,8 +544,28 @@ function submitForm() {
     }
     startProgress(simProgress, submitSimulationButton);
 
-    $(form).unbind('submit').bind("submit", _OnsubmitSimulation);
+    $(form).unbind('submit').bind("submit", _onSubmitJar);
     form.submit();
+}
+
+function _onSubmitJar(event) {
+    var form = document.getElementById("sendSimulationJar");
+    var jarFile; // extract JAR file from form
+
+    var request = $.ajax({
+        url: "", // TODO define backend JAR management
+        type: "POST",
+        data: {
+            formType: "jar",
+            jar: jarFile
+        },
+        success: function(result) {
+            // TODO show some confirmation message
+        },
+        error: function (xhr, status, error) {
+            // TODO show error notification
+        }
+    });
 }
 
 function checkForm(form) {
@@ -928,7 +948,7 @@ function loadSettings() {
             $("#activemqport").val(activeMQPort);
 
             // show Amazon AWS settings
-            $("#regionlist").selectedRegion = amazonAWSRegion; // TODO make paper-dropdown-menu settable
+            $("#curregion").val(amazonAWSRegion); // as today, paper-dropdown-menu is unsettable
             $("#pubkey").val(amazonAWSPubKey);
             $("#prikey").val(amazonAWSPriKey);
         }

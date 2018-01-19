@@ -63,10 +63,12 @@
 
     /* Bottoni */
     paper-button {
-        background-color: #E2726A;
+        color: #FFF !important;
+        background-color: #D73D32;
     }
 
     paper-button.undo-button {
+        color: #000 !important;
         background-color: transparent;
     }
 
@@ -297,9 +299,3 @@
         --paper-toast-color: white;
     }
 </style>
-
-<script>
-    var importDoc = document.currentScript.ownerDocument;
-    var style = importDoc.querySelector('style');
-    document.head.appendChild(style);
-</script>

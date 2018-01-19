@@ -35,7 +35,7 @@
             </paper-dialog>
 
             <%-- show the card for all available settings --%>
-            <div class="grid-settings" id="workers">
+            <div class="grid-settings" id="settings">
                 <%-- General settings --%>
                 <paper-card heading="General" class="grid-item-settings">
                     <div class="card-image"></div>
@@ -44,7 +44,7 @@
                     </div>
                     <div class="card-actions">
                         <div class="horizontal justified">
-                            <paper-button id="setgeneral" class="card-button" raised><iron-icon icon="check"></iron-icon>&nbsp;Set</paper-button>
+                            <paper-button id="setgeneral" raised><iron-icon icon="check"></iron-icon>&nbsp;Set</paper-button>
                         </div>
                     </div>
                 </paper-card>
@@ -62,7 +62,7 @@
                     </div>
                     <div class="card-actions">
                         <div class="horizontal justified">
-                            <paper-button id="setactivemq" class="card-button" raised><iron-icon icon="check"></iron-icon>&nbsp;Set</paper-button>
+                            <paper-button id="setactivemq" raised><iron-icon icon="check"></iron-icon>&nbsp;Set</paper-button>
                         </div>
                     </div>
                 </paper-card>
@@ -73,28 +73,30 @@
                         <img src="images/amazonwebservices-logo.svg" alt="Amazon AWS logo"></img>
                     </div>
                     <div class="card-content">
+                        <paper-tooltip for="curregion" position="bottom" animation-delay="0" offset="1">Current EC2 region</paper-tooltip>
+                        <paper-input id="curregion" label="Current region" readonly></paper-input>
                         <paper-dropdown-menu id="region" label="Region" noink>
-                            <paper-listbox id="regionlist" slot="dropdown-content" class="dropdown-content" attr-for-selected="item-name" selected={{selectedRegion}}><%-- TODO properly show menu options --%>
+                            <paper-listbox id="regionlist" slot="dropdown-content" class="dropdown-content" attr-for-selected="item-name" selected={{selectedRegion}}><%-- TODO automatically populate menu --%>
                                 <paper-item class="disabled" disabled>America</paper-item>
                                 <paper-item item-name="us-east-1">us-east-1</paper-item><%-- N. Virginia --%>
-                                <paper-item item-name="us-east-2">Ohio</paper-item>
-                                <paper-item item-name="us-west-1">N. California</paper-item>
-                                <paper-item item-name="us-west-2">Oregon</paper-item>
-                                <paper-item item-name="ca-central-1">Canada</paper-item>
-                                <paper-item item-name="sa-east-1">S&atilde;o Paulo</paper-item>
+                                <paper-item item-name="us-east-2">us-east-2</paper-item><%-- Ohio --%>
+                                <paper-item item-name="us-west-1">us-west-1</paper-item><%-- N. California --%>
+                                <paper-item item-name="us-west-2">us-west-2</paper-item><%-- Oregon --%>
+                                <paper-item item-name="ca-central-1">ca-central-1</paper-item><%-- Canada --%>
+                                <paper-item item-name="sa-east-1">sa-east-1</paper-item><%-- S&atilde;o Paulo --%>
                                 <paper-item class="disabled" disabled>Europe</paper-item>
-                                <paper-item item-name="eu-west-1">Ireland</paper-item>
-                                <paper-item item-name="eu-central-1">Frankfurt</paper-item>
-                                <paper-item item-name="eu-west-2">London</paper-item>
+                                <paper-item item-name="eu-west-1">eu-west-1</paper-item><%-- Ireland --%>
+                                <paper-item item-name="eu-central-1">eu-central-1</paper-item><%-- Frankfurt --%>
+                                <paper-item item-name="eu-west-2">eu-west-2</paper-item><%-- London --%>
                                 <paper-item class="disabled" disabled>Asia</paper-item>
-                                <paper-item item-name="ap-northeast-1">Tokyo</paper-item>
-                                <paper-item item-name="ap-northeast-2">Seoul</paper-item>
-                                <paper-item item-name="ap-southeast-1">Singapore</paper-item>
-                                <paper-item item-name="ap-southeast-2">Sydney</paper-item>
-                                <paper-item item-name="ap-south-1">Mumbai</paper-item>
+                                <paper-item item-name="ap-northeast-1">ap-northeast-1</paper-item><%-- Tokyo --%>
+                                <paper-item item-name="ap-northeast-2">ap-northeast-2</paper-item><%-- Seoul --%>
+                                <paper-item item-name="ap-southeast-1">ap-southeast-1</paper-item><%-- Singapore --%>
+                                <paper-item item-name="ap-southeast-2">ap-southeast-2</paper-item><%-- Sydney --%>
+                                <paper-item item-name="ap-south-1">ap-south-1</paper-item><%-- Mumbai --%>
                             </paper-listbox>
                         </paper-dropdown-menu>
-                        <paper-tooltip for="region" position="bottom" animation-delay="0" offset="1">Specify an Amazon AWS region</paper-tooltip>
+                        <paper-tooltip for="region" position="bottom" animation-delay="0" offset="1">Specify an EC2 region</paper-tooltip>
                         <paper-input id="pubkey" label="Public API Key" error-message="Wrong public API key!" char-counter></paper-input><%-- TODO set a pattern validation (auto-validate-pattern) --%>
                         <paper-tooltip for="pubkey" position="bottom" animation-delay="0" offset="1">Specify the public key associated to the Amazon account</paper-tooltip>
                         <paper-input id="prikey" label="Private API Key" error-message="Wrong private API key!" char-counter></paper-input><%-- TODO set a pattern validation --%>
@@ -102,7 +104,7 @@
                     </div>
                     <div class="card-actions">
                         <div class="horizontal justified">
-                            <paper-button id="setamazonaws" class="card-button" raised><iron-icon icon="check"></iron-icon>&nbsp;Set</paper-button>
+                            <paper-button id="setamazonaws" raised><iron-icon icon="check"></iron-icon>&nbsp;Set</paper-button>
                         </div>
                     </div>
                 </paper-card>
@@ -113,11 +115,11 @@
                         <img src="images/microsoftazure.svg" alt="Microsoft Azure"></img>
                     </div>
                     <div class="card-content">
-                        <p style="color: dimgray;">Coming soon!</p>
+                        <p style="color: dimgray;">Not available yet.</p>
                     </div>
                     <div class="card-actions">
                         <div class="horizontal justified">
-                            <paper-button class="card-button" raised disabled><iron-icon icon="check"></iron-icon>&nbsp;Set</paper-button>
+                            <paper-button raised disabled><iron-icon icon="check"></iron-icon>&nbsp;Set</paper-button>
                         </div>
                     </div>
                 </paper-card>--%>
