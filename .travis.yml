@@ -1,0 +1,15 @@
+#
+# Travis CI settings file
+#
+
+# Project language
+language: java
+
+# JDK to test project against
+jdk:
+  - oraclejdk8
+  - oraclejdk9
+
+# Scripts to run
+script:
+  - mvn clean package -DskipTests=true
