@@ -277,7 +277,7 @@
 				<%-- action buttons --%>
 				<div style="margin: 8px 0;">
 					<paper-button raised onclick="resetForm(event)">Reset</paper-button>
-					<paper-button id="submit_btn" raised dialog-confirm>Submit</paper-button><%--  onclick="requestEC2Worker()" --%>
+					<paper-button id="ec2_submit_btn" raised dialog-confirm>Submit</paper-button><%--  onclick="requestEC2Worker()" --%>
 					<paper-button raised dialog-dismiss autofocus>Cancel</paper-button>
 				</div>
 
@@ -292,10 +292,10 @@
 						// TODO add logic to change 'Submit' function event
 						if (pages.selected == 0) { // it is 'On demand' form
 							console.log("Selected page " + pages.selected + ", it should be 'On demand'");
-							$("#submit_btn").click(requestEC2Worker); // TODO check if this works
+							$("#ec2_submit_btn").click(requestEC2Worker); // TODO check if this works
 						} else if (pages.selected == 1) { // it is 'Spot' form
 							console.log("Selected page " + pages.selected + ", it should be 'Spot'");
-							$("#submkit_btn").click(alert("no endpoint available for Spot instances yet!"));
+							$("#ec2_submit_btn").click(alert("no endpoint available for Spot instances yet!"));
 						} else { // what form is even this?
 							console.error("Invalid page " + pages.selected + "!");
 						}

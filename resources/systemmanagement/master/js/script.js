@@ -928,6 +928,7 @@ function loadSettings() {
             var activeMQPort = data.activeMQSettings.port;
             //console.log("ActiveMQ location: " + activeMQIp + ":" + activeMQPort);
 
+            var amazonAWSSecurityGroup = data.amazonAWSSettings.securityGroup;
             var amazonAWSPriKey = data.amazonAWSSettings.priKey;
             var amazonAWSPubKey = data.amazonAWSSettings.pubKey;
             var amazonAWSRegion = data.amazonAWSSettings.region;
@@ -948,6 +949,7 @@ function loadSettings() {
             $("#activemqport").val(activeMQPort);
 
             // show Amazon AWS settings
+            $("#securitygroup").val(amazonAWSSecurityGroup);
             $("#curregion").val(amazonAWSRegion); // as today, paper-dropdown-menu is unsettable
             $("#pubkey").val(amazonAWSPubKey);
             $("#prikey").val(amazonAWSPriKey);
@@ -1000,14 +1002,15 @@ function updateActiveMQSettings() {
 }
 
 function updateAmazonAWSSettings() {
+    var securityGroup = $("#securitygroup").val();
     var region = $("#region").val();
     var pubkey = $("#pubkey").val();
     var prikey = $("#prikey").val();
     console.log("Region: " + region);
 
     // check parameters emptiness
-    if (region == "" || pubkey == "" || prikey == "") {
-        console.warn("Please provide region, public key and private key for Amazon AWS!");
+    if (securityGroup == "" || region == "" || pubkey == "" || prikey == "") {
+        console.warn("Please provide security group, region, public key and private key for Amazon AWS!");
         return;
     }
 
@@ -1016,13 +1019,15 @@ function updateAmazonAWSSettings() {
         "updateSettings",
         {
             "setting": "amazonaws",
+            "securitygroup": securityGroup,
             "region": region,
             "pubkey": pubkey,
             "prikey": prikey
         }
     )
-    .fail(function () {
+    .fail(function (jqXHR, textStatus, errorThrown) {
         console.error("Error while sending Amazon AWS data!");
+        console.error(textStatus + ": " + errorThrown + ".");
     });
 }
 
@@ -1076,7 +1081,7 @@ function validateEC2WorkerRequest() {
         return false;
     }
 
-    //console.log("Request for " + numInstances + " EC2 instance of " + ec2Type + " type");
+    console.log("Request for " + numInstances + " EC2 instance of " + ec2Type + " type");
     return true;
 }
 
@@ -1089,9 +1094,9 @@ function requestEC2Worker() {
     }
 
     // activating the loader
-    var ec2Progress; // TODO assign values if upper ones work
-    var ec2Button;
-    startProgress(ec2Progress, ec2Button); // TODO check if it works as expected
+    //var ec2Progress; // TODO assign values if upper ones work
+    //var ec2Button;
+    //startProgress(ec2Progress, ec2Button); // TODO check if it works as expected
 
     $(form).unbind("submit").bind("submit", _onSubmitEC2WorkerRequest);
     form.submit();
@@ -1110,7 +1115,7 @@ function _onSubmitEC2WorkerRequest(event) {
         } 
     )
     .done(function (data, textStatus, jqXHR) {
-            //console.info(data + "\nstatus: " + textStatus + ".")
+            console.info(data + "\nstatus: " + textStatus + ".")
             resetEC2RequestForm();
             document.getElementById("addEC2NodeDialog").close();
     })

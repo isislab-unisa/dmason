@@ -73,6 +73,8 @@
                         <img src="images/amazonwebservices-logo.svg" alt="Amazon AWS logo"></img>
                     </div>
                     <div class="card-content">
+                        <paper-tooltip for="securitygroup" position="bottom" animation-delay="0" offset="1">Security region for created instances</paper-tooltip>
+                        <paper-input id="securitygroup" label="Security group"></paper-input>
                         <paper-tooltip for="curregion" position="bottom" animation-delay="0" offset="1">Current EC2 region</paper-tooltip>
                         <paper-input id="curregion" label="Current region" readonly></paper-input>
                         <paper-dropdown-menu id="region" label="Region" noink>
