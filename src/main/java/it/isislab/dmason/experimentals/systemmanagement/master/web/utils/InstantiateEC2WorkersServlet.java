@@ -17,12 +17,19 @@
 package it.isislab.dmason.experimentals.systemmanagement.master.web.utils;
 
 import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.amazonaws.services.ec2.model.Instance;
+import com.amazonaws.services.ec2.model.RunInstancesResult;
+
+import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.AmazonService;
 
 /**
  * 
@@ -35,6 +42,7 @@ public class InstantiateEC2WorkersServlet
 	// constants
 	private static final Logger LOGGER = Logger.getGlobal();
 	private static final long serialVersionUID = 1L;
+	private static final PrintStream CONSOLE = System.out;
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -63,6 +71,12 @@ public class InstantiateEC2WorkersServlet
 
 		// extract data from request
 		String ec2Type = request.getParameter("instancetype");
+		if (ec2Type == null || ec2Type == "")
+		{
+			LOGGER.severe("EC2 type is null or invalid!");
+			return;
+		}
+
 		int numInstances = 0;
 		try
 		{
@@ -73,23 +87,24 @@ public class InstantiateEC2WorkersServlet
 			LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
 		}
 
-//		String ec2Type = request.getParameter("instancetype");
-//		if (ec2Type == null || ec2Type == "")
-//		{
-//			LOGGER.severe("EC2 type is null or invalid!");
-//			return;
-//		}
-//
-//		int numInstances = 0;
-//		try
-//		{
-//			numInstances = Integer.parseInt(request.getParameter("numinstances"));
-//		}
-//		catch (NumberFormatException e)
-//		{
-//			LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
-//		}
-
 		LOGGER.info("Received " + numInstances + " new " + ec2Type + " EC2 instance request");
+
+		// create instance on EC2
+		RunInstancesResult instancesResult = null;
+		AmazonService.boot();
+		AmazonService.setType(ec2Type);
+		try
+		{
+			instancesResult = AmazonService.createInstance(numInstances);
+		}
+		catch (IOException e)
+		{
+			LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
+		}
+		Iterator<Instance> instanceIterator = instancesResult.getReservation().getInstances().iterator();
+		while (instanceIterator.hasNext())
+		{
+			LOGGER.info("Generated instance " + instanceIterator.next().getInstanceId());
+		}
 	}
 }

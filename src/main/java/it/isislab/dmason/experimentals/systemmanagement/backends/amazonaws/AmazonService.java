@@ -102,7 +102,7 @@ public class AmazonService
 	private static String ami;
 	private static String amiUser;
 	private static boolean booted;
-	private static String name;
+	private static String groupName;
 	private static String region;
 	private static int size;
 	private static String type;
@@ -137,7 +137,7 @@ public class AmazonService
 	 */
 	public static void buildEC2Client(String aRegion)
 	{
-		ec2 = AmazonEC2ClientBuilder.standard()
+		AmazonService.ec2 = AmazonEC2ClientBuilder.standard()
 				.withRegion(aRegion)
 				.withCredentials(new ProfileCredentialsProvider())
 				.build();
@@ -155,6 +155,17 @@ public class AmazonService
 			AmazonService.buildEC2Client(AmazonService.region);
 			LOGGER.info("A new EC2 client has been created!");
 
+			// create security group and keypair
+			try
+			{
+				AmazonService.createKeyPair();
+			}
+			catch (IOException e)
+			{
+				LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
+			}
+			AmazonService.createSecurityGroup();
+
 			// initialize instance local state map
 			AmazonService.initializeLocalInstances();
 			LOGGER.info("Local instances states map populated!");
@@ -166,6 +177,23 @@ public class AmazonService
 		{
 			LOGGER.warning("Amazon Service is already booted!");
 		}
+	}
+
+	/**
+	 * This method creates a new instance into the specified group.
+	 * 
+	 * @param maxNumberInstances - The number of instances to create
+	 * @return result - 
+	 * @throws IOException - An error occurred while accessing the file
+	 * @throws FileNotFoundException - Local instances file has not been found 
+	 */
+	public static RunInstancesResult createInstance(int maxNumberInstances)
+			throws FileNotFoundException, IOException
+	{
+		String groupName = AmazonService.GROUP_PREFIX.concat(AmazonService.getGroupName());
+		String clusterType = "dmason";
+
+		return AmazonService.createInstance(groupName, clusterType, maxNumberInstances);
 	}
 
 	/**
@@ -184,8 +212,9 @@ public class AmazonService
 		RunInstancesRequest istanceRequest = new RunInstancesRequest();
 
 		// define the requested virtual machine
+		String instanceType = AmazonService.type;
 		istanceRequest.withImageId(AmazonService.ami)
-				.withInstanceType(AmazonService.type)
+				.withInstanceType(instanceType)
 				.withMinCount(1) // the minimum number of istances to launch
 				.withMaxCount(maxNumberInstances) // the maximum number of istances to launch
 				.withKeyName(AmazonService.MY_KEY)
@@ -202,7 +231,6 @@ public class AmazonService
 			Instance instance = instanceIterator.next();
 			String istanceID = instance.getInstanceId();
 			String instanceDns = instance.getPublicDnsName();
-			String instanceType = AmazonService.type;
 			AmazonService.localInstances.put(istanceID, new LocalInstanceState(istanceID, instanceDns, instanceType)); // here it creates a new local instance state
 			LOGGER.info(clusterType + " node reservation: " + istanceID);
 
@@ -211,7 +239,7 @@ public class AmazonService
 			AmazonService.tagInstance(
 					istanceID,
 					"Name",
-					numInstances + "-" + AmazonService.name + "-" + clusterType,
+					numInstances + "-" + AmazonService.groupName + "-" + clusterType,
 					AmazonService.ec2
 			);
 		}
@@ -310,11 +338,21 @@ public class AmazonService
 			catch (IOException ioe)
 			{
 				LOGGER.severe(
-						ioe.getClass().getSimpleName() + ioe.getMessage()
+						ioe.getClass().getSimpleName() + ": " + ioe.getMessage()
 				);
 			}
 		}
 	} // end createKeyPair()
+
+	/**
+	 * This method defines the security group for EC2 instances.
+	 * Group name is defined into config.properties file.
+	 * 
+	 */
+	public static void createSecurityGroup()
+	{
+		AmazonService.createSecurityGroupByClusterName(AmazonService.groupName);
+	}
 
 	/**
 	 * This method defines the security group for EC2 instances.
@@ -325,7 +363,7 @@ public class AmazonService
 	public static void createSecurityGroupByClusterName(String groupName)
 	{
 		DescribeSecurityGroupsRequest groupRequest = new DescribeSecurityGroupsRequest();
-		DescribeSecurityGroupsResult result = ec2.describeSecurityGroups(groupRequest);
+		DescribeSecurityGroupsResult result = AmazonService.ec2.describeSecurityGroups(groupRequest);
 
 		// check if group already exists
 		List<SecurityGroup> groupList = result.getSecurityGroups();
@@ -348,7 +386,7 @@ public class AmazonService
 			CreateSecurityGroupRequest csgr = new CreateSecurityGroupRequest();
 			csgr.withGroupName(groupName).withDescription("Security group " + groupName + " created on " + LocalDateTime.now() + ".");
 
-			CreateSecurityGroupResult csgresult = ec2.createSecurityGroup(csgr);
+			CreateSecurityGroupResult csgresult = AmazonService.ec2.createSecurityGroup(csgr);
 			LOGGER.info("Security group created for cluster " + groupName + " with id " + csgresult.getGroupId() + ".");
 
 			IpPermission ipPermission =	new IpPermission();
@@ -490,7 +528,7 @@ public class AmazonService
 		LOGGER.warning("Downloading available instances...");
 
 		DescribeInstancesRequest listRequest = new DescribeInstancesRequest();
-		DescribeInstancesResult result = ec2.describeInstances();
+		DescribeInstancesResult result = AmazonService.ec2.describeInstances();
 		boolean done = false;
 
 		while (!done)
@@ -582,8 +620,8 @@ public class AmazonService
 			final String AWS_PREFIX = "amazonaws".concat(".");
 			AmazonService.setAmi(startProperties.getProperty(AWS_PREFIX.concat("ami")));
 			AmazonService.setAmiUser(startProperties.getProperty(AWS_PREFIX.concat("amiuser")));
-			AmazonService.setName(startProperties.getProperty(AWS_PREFIX.concat("name")));
 			AmazonService.setRegion(startProperties.getProperty(AWS_PREFIX.concat("region")));
+			AmazonService.setGroupName(startProperties.getProperty(AWS_PREFIX.concat("securitygroup")));
 			AmazonService.setSize(Integer.parseInt(startProperties.getProperty(AWS_PREFIX.concat("size"))));
 			AmazonService.setType(startProperties.getProperty(AWS_PREFIX.concat("type")));
 		}
@@ -1068,14 +1106,14 @@ public class AmazonService
 		AmazonService.amiUser = amiUser;
 	}
 
-	public static String getName()
+	public static String getGroupName()
 	{
-		return name;
+		return groupName;
 	}
 
-	public static void setName(String name)
+	public static void setGroupName(String groupName)
 	{
-		AmazonService.name = name;
+		AmazonService.groupName = groupName;
 	}
 
 	public static String getRegion()

@@ -93,7 +93,7 @@ public class AmazonServiceTester
 //		if (AmazonService.name == null || AmazonService.name.isEmpty())
 //		{
 //			LOGGER.warning("No security group name specified with '-n' parameter!");
-//			CONSOLE.println("Setting 'dmason' as group name.");
+//			CONSOLE.println("Setting 'dmason' as security group name.");
 //			AmazonService.name = "dmason";
 //		}
 //
@@ -109,7 +109,7 @@ public class AmazonServiceTester
 		CONSOLE.println("Read properties from configuration file");
 		CONSOLE.print("AMI: " + AmazonService.getAmi() + ", ");
 		CONSOLE.print("AMI username: " + AmazonService.getAmiUser() + ", ");
-		CONSOLE.print("Name: " + AmazonService.getName() + ", ");
+		CONSOLE.print("Security group: " + AmazonService.getGroupName() + ", ");
 		CONSOLE.print("Region: " + AmazonService.getRegion() + ", ");
 		CONSOLE.print("Size: " + AmazonService.getSize() + ", ");
 		CONSOLE.println("Type: " + AmazonService.getType() + ", ");
@@ -165,7 +165,7 @@ public class AmazonServiceTester
 
 			// create security group for cluster with /usr/bin/ssh
 //			String groupName = name + (new Long(System.currentTimeMillis()).hashCode());
-			String groupName = AmazonService.GROUP_PREFIX.concat(AmazonService.getName());
+			String groupName = AmazonService.GROUP_PREFIX.concat(AmazonService.getGroupName());
 			AmazonService.createSecurityGroupByClusterName(groupName);
 
 			// create /usr/bin/ssh access
@@ -183,7 +183,7 @@ public class AmazonServiceTester
 				{
 				case "!CREATE":
 				{
-					CONSOLE.println("Start a cluster with name " + AmazonService.getName() + " of " + AmazonService.getSize() + " instance(s).");
+					CONSOLE.println("Start a cluster with name " + AmazonService.getGroupName() + " of " + AmazonService.getSize() + " instance(s).");
 					instancesResult = AmazonService.createInstance(groupName, "dmason", 1);
 					Iterator<Instance> instanceIterator = instancesResult.getReservation().getInstances().iterator();
 					while (instanceIterator.hasNext())
