@@ -96,8 +96,9 @@ public class GetSettingsServlet extends HttpServlet
 		final String PRIKEY = config.getString(AMAZONAWS_PREFIX.concat("prikey"));
 		final String PUBKEY = config.getString(AMAZONAWS_PREFIX.concat("pubkey"));
 		final String REGION = config.getString(AMAZONAWS_PREFIX.concat("region"));
+		final String SECURITY_GROUP = config.getString(AMAZONAWS_PREFIX.concat("securitygroup"));
 
-		AmazonAWSSettings amazonAWSSettings = new AmazonAWSSettings(PRIKEY, PUBKEY, REGION);
+		AmazonAWSSettings amazonAWSSettings = new AmazonAWSSettings(PRIKEY, PUBKEY, REGION, SECURITY_GROUP);
 		LOGGER.info("Amazon AWS settings ready to be sent: " + amazonAWSSettings);
 
 		Settings settings = new Settings(generalSettings, activeMQSettings, amazonAWSSettings);
@@ -170,23 +171,25 @@ public class GetSettingsServlet extends HttpServlet
 			implements Serializable
 	{
 		// constructor
-		public AmazonAWSSettings(String priKey, String pubKey, String region)
+		public AmazonAWSSettings(String priKey, String pubKey, String region, String securityGroup)
 		{
 			this.priKey = priKey;
 			this.pubKey = pubKey;
 			this.region = region;
+			this.securityGroup = securityGroup;
 		}
 
 		@Override
 		public String toString()
 		{
-			return "AmazonAWSSettings [priKey=" + priKey + ", pubKey=" + pubKey + ", region=" + region + "]";
+			return "AmazonAWSSettings [priKey=" + priKey + ", pubKey=" + pubKey + ", region=" + region + ", securityGroup=" + securityGroup + "]";
 		}
 
 		// variables
 		private String priKey;
 		private String pubKey;
 		private String region;
+		private String securityGroup;
 
 		// constants
 		private static final long serialVersionUID = 1L;

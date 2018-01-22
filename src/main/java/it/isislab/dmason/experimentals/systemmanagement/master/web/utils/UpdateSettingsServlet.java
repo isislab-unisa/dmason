@@ -56,6 +56,8 @@ public class UpdateSettingsServlet
 			throws ServletException, IOException
 	{
 		saveSettings(request);
+
+		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
 	/**
@@ -65,6 +67,8 @@ public class UpdateSettingsServlet
 			throws ServletException, IOException
 	{
 		saveSettings(request);
+
+		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
 	// helper methods
@@ -82,9 +86,9 @@ public class UpdateSettingsServlet
 		Parameters params = new Parameters();
 		FileBasedConfigurationBuilder<FileBasedConfiguration> builder =
 				new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)
-				.configure(
-						params.properties().setFileName(PROPERTIES_FILE_PATH)
-				);
+					.configure(
+							params.properties().setFileName(PROPERTIES_FILE_PATH)
+					);
 		Configuration config = null;
 		try
 		{
@@ -159,21 +163,30 @@ public class UpdateSettingsServlet
 			case "amazonaws":
 			{
 				final String PROPERTIES_PREFIX = "amazonaws".concat(".");
-				String region = request.getParameter("region");
 				String pubkey = request.getParameter("pubkey");
 				String prikey = request.getParameter("prikey");
+				String region = request.getParameter("region");
+				String securityGroup = request.getParameter("securitygroup");
 
 				// check whether parameters have been set
 				if (
-						region == null ||
 						pubkey == null ||
 						prikey == null ||
-						region.isEmpty() ||
+						region == null ||
+						securityGroup == null ||
 						pubkey.isEmpty() ||
-						prikey.isEmpty()
+						prikey.isEmpty() ||
+						region.isEmpty() ||
+						securityGroup.isEmpty()
 				)
 				{
-					LOGGER.warning("Empty values for Amazon AWS profile!");
+					LOGGER.warning(
+							"Empty values for Amazon AWS profile!\n" +
+							"Publik key: " + pubkey + ", " +
+							"Private key: " + prikey + ", " +
+							"Region: " + region + ", " +
+							"Security group: " + securityGroup + "."
+					);
 					return;
 				}
 
@@ -181,6 +194,7 @@ public class UpdateSettingsServlet
 				config.setProperty(PROPERTIES_PREFIX.concat("prikey"), prikey);
 				config.setProperty(PROPERTIES_PREFIX.concat("pubkey"), pubkey);
 				config.setProperty(PROPERTIES_PREFIX.concat("region"), region);
+				config.setProperty(PROPERTIES_PREFIX.concat("securitygroup"), securityGroup);
 				try
 				{
 					builder.save();
