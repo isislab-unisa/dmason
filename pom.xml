@@ -13,7 +13,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
-		<jetty-version>9.4.7.v20170914</jetty-version>
+		<jetty-version>9.4.8.v20171121</jetty-version>
 	</properties>
 	<licenses>
 		<license>
@@ -242,7 +242,7 @@
 		<dependency>
 		    <groupId>com.amazonaws</groupId>
 		    <artifactId>aws-java-sdk</artifactId>
-		    <version>1.11.106</version>
+		    <version>1.11.268</version>
 	  	</dependency>
 
 		<!-- Apache Commons Configuration -->
