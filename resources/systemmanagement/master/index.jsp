@@ -165,12 +165,12 @@
                                     </td>
                                     <td>
                                         <paper-input disabled id="form_cells" class="submit_work_form" name="cells" label="Cells" allowed-pattern="[0-9]" error-message="Cell value either it exceeds available slots or it is zero!" onInput="_validate_slots(this)"></paper-input>
-                                        <!--paper-dropdown-menu id="connectionType" label="Select connection" class="submit_work_form">
+                                        <%--<paper-dropdown-menu id="connectionType" label="Select connection" class="submit_work_form">
                                             <paper-listbox class="dropdown-content" selected="0">
                                                 <paper-item label="ActiveMQ">ActiveMQ</paper-item>
                                                 <paper-item label="MPI">MPI</paper-item>
                                             </paper-listbox>
-                                        </paper-dropdown-menu-->
+                                        </paper-dropdown-menu>--%>
                                     </td>
                                 </tr>
                                 <tr>
@@ -207,7 +207,7 @@
                                 <tr>
                                 	<td></td>
                                     <td colspan="2" style="text-align:right; padding-top:50px;">
-                                        
+
                                     </td>
 	                            </tr>
 							</table>
@@ -268,8 +268,10 @@
 
 						<%-- Spot settings --%>
 						<div style="padding: 5px;">
-							<pre style="color: #666;">Coming soon!</pre>
-							<%--<paper-button raised dialog-dismiss autofocus>Cancel</paper-button>--%>						
+							<paper-tooltip for="currspotpr">Current Spot price for unused EC2 computation resources</paper-tooltip>
+							<paper-input id="currspotpr" name="currspotpr" label="Current Spot price" readonly></paper-input>
+							<paper-tooltip for="currbid">Current bid for unused EC2 computation resources</paper-tooltip>
+							<paper-input id="currbid" name="currbid" label="Current bid"></paper-input>
 						</div>
 			        </iron-pages>
 				</paper-dialog-scrollable>
@@ -286,7 +288,7 @@
 					var pages = document.querySelector('iron-pages');
 					var tabs = document.querySelector('paper-tabs');
 
-					tabs.addEventListener('iron-select', function() { 
+					tabs.addEventListener('iron-select', function() {
 						pages.selected = tabs.selected;
 
 						// TODO add logic to change 'Submit' function event
