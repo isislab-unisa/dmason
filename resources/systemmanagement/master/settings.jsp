@@ -40,7 +40,8 @@
                 <paper-card heading="General" class="grid-item-settings">
                     <div class="card-image"></div>
                     <div class="card-content">
-                        <paper-checkbox id="enableperftrace">Enable performance trace</paper-checkbox>
+                        <paper-checkbox id="enableperftrace" noink>Enable performance trace</paper-checkbox>
+                        <paper-tooltip for="enableperftrace" position="bottom" animation-delay="0" offset="1">This option allows to trace running simulations performance in workers consoles</paper-tooltip>
                     </div>
                     <div class="card-actions">
                         <div class="horizontal justified">
@@ -57,6 +58,7 @@
                     <div class="card-content">
                         <paper-input id="activemqip" label="Server IP" auto-validate pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$" error-message="Wrong IP format!" char-counter maxlength="15"></paper-input>
                         <paper-tooltip for="activemqip" position="bottom" animation-delay="0" offset="1">Specify an Apache ActiveMQ server IP</paper-tooltip>
+
                         <paper-input id="activemqport" label="Access port" auto-validate pattern="^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$" error-message="Wrong port range!" char-counter maxlength="5"></paper-input>
                         <paper-tooltip for="activemqport" position="bottom" animation-delay="0" offset="1">Specify an access port for ActiveMQ server</paper-tooltip>
                     </div>
@@ -73,10 +75,29 @@
                         <img src="images/amazonwebservices-logo.svg" alt="Amazon AWS logo"></img>
                     </div>
                     <div class="card-content">
+                        <paper-input id="ec2pubkey" label="Public EC2 Console key" error-message="Wrong public EC2 Console key!" char-counter></paper-input><%-- TODO set a pattern validation ('auto-validate-pattern' attribute) --%>
+                        <paper-tooltip for="ec2pubkey" position="bottom" animation-delay="0" offset="1">Specify the public key for EC2 console</paper-tooltip>
+
+                        <paper-input id="ec2prikey" label="Private EC2 Console key" error-message="Wrong private EC2 Console key!" char-counter></paper-input><%-- TODO set a pattern validation --%>
+                        <paper-tooltip for="ec2prikey" position="bottom" animation-delay="0" offset="1">Specify the private key for EC2 console</paper-tooltip>
+
+                        <div style="padding: 10px;">
+                            <paper-checkbox id="instancekeys" name="instancekeys" noink disabled style="float: left; vertical-align: middle;">Instance keys</paper-checkbox>
+                            <paper-tooltip for="instancekeys" position="bottom" animation-delay="0" offset="1">Keys to access EC2 instance<br />While these keys allow accessing instances, the EC2 console keys allow to access the whole EC2 console.</paper-tooltip>
+
+                            <paper-fab id="loadinstancekeys" icon="file-upload" style="float: left;margin: 0 5px 0 5px;" mini></paper-fab><%-- TODO add onclick event --%>
+                            <paper-tooltip for="loadinstancekeys" position="bottom" animation-delay="0" offset="1">Load a PEM file with instance keys</paper-tooltip>
+
+                            <paper-fab id="saveinstancekeys" icon="file-download" style="float: left; margin: 0 5px 0 5px;" mini disabled></paper-fab>
+                            <paper-tooltip for="saveinstancekeys" position="bottom" animation-delay="0" offset="1">Save a PEM file with instance keys</paper-tooltip>
+                        </div>
+
+                        <paper-input id="securitygroup" label="Security group" style="clear: both;"></paper-input>
                         <paper-tooltip for="securitygroup" position="bottom" animation-delay="0" offset="1">Security region for created instances</paper-tooltip>
-                        <paper-input id="securitygroup" label="Security group"></paper-input>
-                        <paper-tooltip for="curregion" position="bottom" animation-delay="0" offset="1">Current EC2 region</paper-tooltip>
+
                         <paper-input id="curregion" label="Current region" readonly></paper-input>
+                        <paper-tooltip for="curregion" position="bottom" animation-delay="0" offset="1">Current EC2 region</paper-tooltip>
+
                         <paper-dropdown-menu id="region" label="Region" noink>
                             <paper-listbox id="regionlist" slot="dropdown-content" class="dropdown-content" attr-for-selected="item-name" selected={{selectedRegion}}><%-- TODO automatically populate menu --%>
                                 <paper-item class="disabled" disabled>America</paper-item>
@@ -99,10 +120,6 @@
                             </paper-listbox>
                         </paper-dropdown-menu>
                         <paper-tooltip for="region" position="bottom" animation-delay="0" offset="1">Specify an EC2 region</paper-tooltip>
-                        <paper-input id="pubkey" label="Public API Key" error-message="Wrong public API key!" char-counter></paper-input><%-- TODO set a pattern validation (auto-validate-pattern) --%>
-                        <paper-tooltip for="pubkey" position="bottom" animation-delay="0" offset="1">Specify the public key associated to the Amazon account</paper-tooltip>
-                        <paper-input id="prikey" label="Private API Key" error-message="Wrong private API key!" char-counter></paper-input><%-- TODO set a pattern validation --%>
-                        <paper-tooltip for="prikey" position="bottom" animation-delay="0" offset="1">Specify the private key associated to the Amazon account</paper-tooltip>
                     </div>
                     <div class="card-actions">
                         <div class="horizontal justified">

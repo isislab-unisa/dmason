@@ -4,6 +4,7 @@ package it.isislab.dmason.experimentals.systemmanagement.master.web.utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -58,6 +59,9 @@ public class GetSettingsServlet extends HttpServlet
 
 	private void provideSettings(HttpServletRequest request, HttpServletResponse response)
 	{
+		// comment or properly edit following line to enable logging
+//		LOGGER.setLevel(Level.OFF);
+
 		// use Apache Commons Configuration to
 		// edit parameters in config file
 		Parameters params = new Parameters();
@@ -91,14 +95,14 @@ public class GetSettingsServlet extends HttpServlet
 		ActiveMQSettings activeMQSettings = new ActiveMQSettings(ACTIVEMQ_IP, ACTIVEMQ_PORT);
 		LOGGER.info("ActiveMQ settings ready to be sent: " + activeMQSettings);;
 
-		// extract Amazon AWS parameters
-		final String AMAZONAWS_PREFIX = "amazonaws".concat(".");
-		final String PRIKEY = config.getString(AMAZONAWS_PREFIX.concat("prikey"));
-		final String PUBKEY = config.getString(AMAZONAWS_PREFIX.concat("pubkey"));
+		// extract Amazon EC2 parameters
+		final String AMAZONAWS_PREFIX = "ec2".concat(".");
+		final String EC2_PRIKEY = config.getString(AMAZONAWS_PREFIX.concat("consoleprikey"));
+		final String EC2_PUBKEY = config.getString(AMAZONAWS_PREFIX.concat("consolepubkey"));
 		final String REGION = config.getString(AMAZONAWS_PREFIX.concat("region"));
 		final String SECURITY_GROUP = config.getString(AMAZONAWS_PREFIX.concat("securitygroup"));
 
-		AmazonAWSSettings amazonAWSSettings = new AmazonAWSSettings(PRIKEY, PUBKEY, REGION, SECURITY_GROUP);
+		AmazonAWSSettings amazonAWSSettings = new AmazonAWSSettings(EC2_PRIKEY, EC2_PUBKEY, REGION, SECURITY_GROUP);
 		LOGGER.info("Amazon AWS settings ready to be sent: " + amazonAWSSettings);
 
 		Settings settings = new Settings(generalSettings, activeMQSettings, amazonAWSSettings);
@@ -131,7 +135,7 @@ public class GetSettingsServlet extends HttpServlet
 		@Override
 		public String toString()
 		{
-			return "General, performance trace: " + this.enablePerfTrace; 
+			return "General, performance trace: " + this.enablePerfTrace;
 		}
 
 		// variables
@@ -173,8 +177,8 @@ public class GetSettingsServlet extends HttpServlet
 		// constructor
 		public AmazonAWSSettings(String priKey, String pubKey, String region, String securityGroup)
 		{
-			this.priKey = priKey;
-			this.pubKey = pubKey;
+			this.ec2PriKey = priKey;
+			this.ec2PubKey = pubKey;
 			this.region = region;
 			this.securityGroup = securityGroup;
 		}
@@ -182,12 +186,12 @@ public class GetSettingsServlet extends HttpServlet
 		@Override
 		public String toString()
 		{
-			return "AmazonAWSSettings [priKey=" + priKey + ", pubKey=" + pubKey + ", region=" + region + ", securityGroup=" + securityGroup + "]";
+			return "AmazonAWSSettings [ec2PriKey=" + ec2PriKey + ", ec2PubKey=" + ec2PubKey + ", region=" + region + ", securityGroup=" + securityGroup + "]";
 		}
 
 		// variables
-		private String priKey;
-		private String pubKey;
+		private String ec2PriKey;
+		private String ec2PubKey;
 		private String region;
 		private String securityGroup;
 
