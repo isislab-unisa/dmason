@@ -17,8 +17,8 @@
 package it.isislab.dmason.experimentals.systemmanagement.master.web.utils;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -32,7 +32,7 @@ import com.amazonaws.services.ec2.model.RunInstancesResult;
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.AmazonService;
 
 /**
- * 
+ *
  * @author Simone Bisogno
  *
  */
@@ -42,7 +42,6 @@ public class InstantiateEC2WorkersServlet
 	// constants
 	private static final Logger LOGGER = Logger.getGlobal();
 	private static final long serialVersionUID = 1L;
-	private static final PrintStream CONSOLE = System.out;
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -52,6 +51,9 @@ public class InstantiateEC2WorkersServlet
 			throws ServletException, IOException
 	{
 		this.newEC2Instance(request, response);
+
+		// set response
+		response.setContentType("text/plain;charset=UTF-8");
 	}
 
 	/**
@@ -62,12 +64,16 @@ public class InstantiateEC2WorkersServlet
 			throws ServletException, IOException
 	{
 		this.newEC2Instance(request, response);
+
+		// set response
+		response.setContentType("text/plain;charset=UTF-8");
 	}
 
 	// helper methods
 	private void newEC2Instance(HttpServletRequest request, HttpServletResponse response)
 	{
-		response.setContentType("text/plain;charset=UTF-8");
+		// comment or properly edit following line to enable logging
+//		LOGGER.setLevel(Level.OFF);
 
 		// extract data from request
 		String ec2Type = request.getParameter("instancetype");
@@ -91,8 +97,8 @@ public class InstantiateEC2WorkersServlet
 
 		// create instance on EC2
 		RunInstancesResult instancesResult = null;
-		AmazonService.boot();
 		AmazonService.setType(ec2Type);
+		AmazonService.boot();
 		try
 		{
 			instancesResult = AmazonService.createInstance(numInstances);
