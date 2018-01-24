@@ -80,11 +80,11 @@ import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.model
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.LocalInstanceStateManager;
 
 /**
- * 
+ *
  * Main class for connecting to EC2 service of Amazon AWS.
- * 
+ *
  * @author Simone Bisogno
- * 
+ *
  */
 public class AmazonService
 {
@@ -109,13 +109,13 @@ public class AmazonService
 	private static AmazonEC2 ec2;
 	/**
 	 * The map of local instances states.
-	 * 
+	 *
 	 * @see #initializeLocalInstances()
 	 */
 	private static Map<String, LocalInstanceState> localInstances;
 	/**
 	 * Properties for <code>AmazonService</code> class.
-	 * 
+	 *
 	 * @see #loadProperties()
 	 */
 	private static Properties startProperties;
@@ -124,7 +124,7 @@ public class AmazonService
 	public static final int CONNECTION_TIMEOUT = 15000; // 15s
 	public static final String GROUP_PREFIX = "isislab-";
 	private static final Logger LOGGER = Logger.getGlobal();
-	private static final String MY_KEY = "dmason-key";
+	private static final String KEY_NAME = "dmason-key-2";
 	private static final String PROPERTIES_FILE_PATH = "resources" + File.separator +
 			"systemmanagement" + File.separator + "master" + File.separator + "conf" +
 			File.separator + "config.properties";
@@ -132,7 +132,7 @@ public class AmazonService
 
 	/**
 	 * This method creates an AmazonEC2Client instance.
-	 * 
+	 *
 	 * @param aRegion - The region in which create the client.
 	 */
 	public static void buildEC2Client(String aRegion)
@@ -181,11 +181,11 @@ public class AmazonService
 
 	/**
 	 * This method creates a new instance into the specified group.
-	 * 
+	 *
 	 * @param maxNumberInstances - The number of instances to create
-	 * @return result - 
+	 * @return result -
 	 * @throws IOException - An error occurred while accessing the file
-	 * @throws FileNotFoundException - Local instances file has not been found 
+	 * @throws FileNotFoundException - Local instances file has not been found
 	 */
 	public static RunInstancesResult createInstance(int maxNumberInstances)
 			throws FileNotFoundException, IOException
@@ -198,13 +198,13 @@ public class AmazonService
 
 	/**
 	 * This method creates a new instance into the specified group.
-	 * 
-	 * @param groupName - 
-	 * @param clusterType - 
-	 * @param maxNumberInstances - 
-	 * @return result - 
+	 *
+	 * @param groupName -
+	 * @param clusterType -
+	 * @param maxNumberInstances -
+	 * @return result -
 	 * @throws IOException - An error occurred while accessing the file
-	 * @throws FileNotFoundException - Local instances file has not been found 
+	 * @throws FileNotFoundException - Local instances file has not been found
 	 */
 	public static RunInstancesResult createInstance(String groupName, String clusterType, int maxNumberInstances)
 			throws FileNotFoundException, IOException
@@ -217,7 +217,7 @@ public class AmazonService
 				.withInstanceType(instanceType)
 				.withMinCount(1) // the minimum number of istances to launch
 				.withMaxCount(maxNumberInstances) // the maximum number of istances to launch
-				.withKeyName(AmazonService.MY_KEY)
+				.withKeyName(AmazonService.KEY_NAME)
 				.withSecurityGroups(groupName);
 
 		// request the virtual machine
@@ -253,101 +253,133 @@ public class AmazonService
 	/**
 	 * This method creates a key pair to access the cluster associated to
 	 * {@link #ec2} client.
-	 * 
+	 *
 	 * @throws IOException - An error occurred while accessing the file
 	 * @throws FileNotFoundException - The key pair file has not been found
 	 */
 	public static void createKeyPair()
 			throws IOException, FileNotFoundException
 	{
-		DescribeKeyPairsResult keyPairResult = ec2.describeKeyPairs();
+		// get a list with a single key pair
+		KeyPairInfo dmasonKeyPair = new KeyPairInfo().withKeyName(AmazonService.KEY_NAME);
+		DescribeKeyPairsResult keyPairResult = AmazonService.ec2.describeKeyPairs().withKeyPairs(dmasonKeyPair);
 
 		// check if the cluster already has a key pair
-		boolean checkKey = false;
-		for (KeyPairInfo key_pair: keyPairResult.getKeyPairs())
+		boolean existsRemoteKeyPair = false;
+		for (KeyPairInfo keyPair: keyPairResult.getKeyPairs()) // keyPairResult only has a single keypair
 		{
-			if (key_pair.getKeyName().equalsIgnoreCase(MY_KEY))
+			String keyName = keyPair.getKeyName();
+			LOGGER.info("Checking " + keyName + " in keyring...");
+			if (keyName.equalsIgnoreCase(KEY_NAME))
 			{
-				checkKey = true;
-				LOGGER.warning("Key pair for current cluster already exists.");
+				existsRemoteKeyPair = true;
+				dmasonKeyPair = keyPair;
+				LOGGER.warning("Remote key pair " + keyName + " already exists.");
 				break;
 			}
 		}
 
-		// create key pair to access cluster
-		if (!checkKey)
+		// create key pair file to access cluster
+		String keysFilePath = System.getProperty("user.home") +
+				"/.aws/" + KEY_NAME + ".pem";
+		File file = new File(keysFilePath);
+		PrintWriter filePrinter = null;
+		if (!existsRemoteKeyPair)
 		{
+			// create a new key pair on EC2
+			LOGGER.info("Create new key pair " + AmazonService.KEY_NAME + " on EC2");
+			CreateKeyPairRequest keyRequest = new CreateKeyPairRequest().withKeyName(AmazonService.KEY_NAME);
+			CreateKeyPairResult responseToCreate = AmazonService.ec2.createKeyPair(keyRequest);
+
+			// save key pair into key file
+			LOGGER.info("Saving newly created key pair " + AmazonService.KEY_NAME + "...");
+			filePrinter = new PrintWriter(file);
+			filePrinter.print(responseToCreate.getKeyPair().getKeyMaterial());
+			LOGGER.info("New keyring saved into file!");
+			filePrinter.close();
+		}
+		else
+		{
+			LOGGER.info("Key pair file has to be created!");
+
 			// create key file
-			String keysFilePath = System.getProperty("user.home") +
-						"/.aws/" + MY_KEY + ".pem";
-			File file = new File(keysFilePath);
 			if (!file.exists())
 			{
+				// request remote key pair
+				CreateKeyPairRequest keyRequest = new CreateKeyPairRequest().withKeyName(AmazonService.KEY_NAME);
+				CreateKeyPairResult responseToCreate = AmazonService.ec2.createKeyPair(keyRequest);
+
+				// write key into file
+				LOGGER.info("Creating " + AmazonService.KEY_NAME + " in " + keysFilePath + " ...");
 				file.createNewFile();
+				filePrinter = new PrintWriter(file);
+				filePrinter.print(responseToCreate.getKeyPair().getKeyMaterial());
+				filePrinter.close();
+				LOGGER.info("Created " + AmazonService.KEY_NAME + "key pair file!");
+
+				// make new file read-only
+				try
+				{
+					AmazonService.makeFileReadOnly(keysFilePath);
+				}
+				catch (IOException | IllegalStateException ioe)
+				{
+					LOGGER.severe(
+							ioe.getClass().getSimpleName() + ": " + ioe.getMessage() + "."
+					);
+				}
 			}
 			else
 			{
-				LOGGER.severe("Cannot create the key pair to access the cluster!");
-				System.exit(1);
-			}
-
-			LOGGER.info("Create new key pair ~/.aws/" + MY_KEY + ".pem");
-			CreateKeyPairRequest request = new CreateKeyPairRequest().withKeyName(MY_KEY);
-			CreateKeyPairResult responseToCreate = ec2.createKeyPair(request);
-
-			// save key into key file
-			PrintWriter print = new PrintWriter(file);
-			print.print(responseToCreate.getKeyPair().getKeyMaterial());
-			print.close();
-
-			// make file read-only
-			try
-			{
-				if (System.getProperty("os.name").contains("Windows"))
-				{
-					List<AclEntry> aclEntries = new Vector<>();
-					AclEntry aclEntry1 = AclEntry.newBuilder()
-							.setPermissions(AclEntryPermission.READ_ACL)
-							.build();
-					aclEntries.add(aclEntry1);
-					AclEntry aclEntry2 = AclEntry.newBuilder()
-							.setPermissions(AclEntryPermission.READ_ATTRIBUTES)
-							.build();
-					aclEntries.add(aclEntry2);
-					AclEntry aclEntry3 = AclEntry.newBuilder()
-							.setPermissions(AclEntryPermission.READ_DATA)
-							.build();
-					aclEntries.add(aclEntry3);
-					AclEntry aclEntry4 = AclEntry.newBuilder()
-							.setPermissions(AclEntryPermission.READ_NAMED_ATTRS)
-							.build();
-					aclEntries.add(aclEntry4);
-					
-					AclFileAttributeView view = Files.getFileAttributeView(
-							Paths.get(keysFilePath),
-							AclFileAttributeView.class
-					);
-					view.setAcl(aclEntries);
-				}
-				else
-				{
-					Runtime.getRuntime().exec("chmod 0400 " + keysFilePath);
-				}
-				LOGGER.info("Permissions to key file changed to read-only!");
-			}
-			catch (IOException ioe)
-			{
-				LOGGER.severe(
-						ioe.getClass().getSimpleName() + ": " + ioe.getMessage()
-				);
+				LOGGER.info("Key pair file for " + AmazonService.KEY_NAME + " already exists.");
 			}
 		}
 	} // end createKeyPair()
 
 	/**
+	 * @throws IOException
+	 *
+	 */
+	private static void makeFileReadOnly(String filePath)
+			throws IOException
+	{
+		if (System.getProperty("os.name").contains("Windows"))
+		{
+			List<AclEntry> aclEntries = new Vector<>();
+			AclEntry aclEntry1 = AclEntry.newBuilder()
+					.setPermissions(AclEntryPermission.READ_ACL)
+					.build();
+			aclEntries.add(aclEntry1);
+			AclEntry aclEntry2 = AclEntry.newBuilder()
+					.setPermissions(AclEntryPermission.READ_ATTRIBUTES)
+					.build();
+			aclEntries.add(aclEntry2);
+			AclEntry aclEntry3 = AclEntry.newBuilder()
+					.setPermissions(AclEntryPermission.READ_DATA)
+					.build();
+			aclEntries.add(aclEntry3);
+			AclEntry aclEntry4 = AclEntry.newBuilder()
+					.setPermissions(AclEntryPermission.READ_NAMED_ATTRS)
+					.build();
+			aclEntries.add(aclEntry4);
+
+			AclFileAttributeView view = Files.getFileAttributeView(
+					Paths.get(filePath),
+					AclFileAttributeView.class
+			);
+			view.setAcl(aclEntries);
+		}
+		else
+		{
+			Runtime.getRuntime().exec("chmod 0400 " + filePath);
+		}
+		LOGGER.info("Permissions to file " + filePath + " changed to read-only!");
+	} // end makefileReadOnly(String)
+
+	/**
 	 * This method defines the security group for EC2 instances.
 	 * Group name is defined into config.properties file.
-	 * 
+	 *
 	 */
 	public static void createSecurityGroup()
 	{
@@ -357,7 +389,7 @@ public class AmazonService
 	/**
 	 * This method defines the security group for EC2 instances.
 	 * if the specified group name doesn't exist, it gets created.
-	 * 
+	 *
 	 * @param groupName - the security group name which the instances belongs to.
 	 */
 	public static void createSecurityGroupByClusterName(String groupName)
@@ -407,7 +439,7 @@ public class AmazonService
 	/**
 	 * This method executes a remote command on a ChannelExec channel
 	 * and returns a status code.
-	 * 
+	 *
 	 * @param session - The session to use for command execution
 	 * @param command - The command to execute on the remote channel
 	 * @param printRemoteOutput - Toggle remote console
@@ -436,7 +468,7 @@ public class AmazonService
 
 	/**
 	 * This method retrieves the public DNS for an instance on a EC2 client.
-	 * 
+	 *
 	 * @param instanceId - The ID of an EC2 instance.
 	 * @return The instance public DNS
 	 */
@@ -460,7 +492,7 @@ public class AmazonService
 	/**
 	 * This method retrieves the session related to specified instance ID.
 	 * If no session is locally stored, a new one gets established.
-	 * 
+	 *
 	 * @param instanceId - The ID of the instance
 	 * @param username - The username on the instance
 	 * @param forceNewSession - Determine whether reuse current session (<code>false</code>) or discard it (<code>true</code>)
@@ -492,10 +524,12 @@ public class AmazonService
 
 			// specify private key
 			String userHome = System.getProperty("user.home");
+			boolean keyPairExists = false;
 			try
 			{
 				// set private key for session
-				jsch.addIdentity(userHome + "/.aws/" + AmazonService.MY_KEY + ".pem");
+				jsch.addIdentity(userHome + "/.aws/" + AmazonService.KEY_NAME + ".pem");
+				keyPairExists = true;
 
 				// create a ssh session
 				session = jsch.getSession(username, publicDns, 22);
@@ -503,6 +537,14 @@ public class AmazonService
 			catch (JSchException e)
 			{
 				LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
+
+				if (!keyPairExists)
+				{
+					// TODO create keypair
+					LOGGER.warning("There is no " + AmazonService.KEY_NAME + ".pem keypair, retrieving...");
+
+
+				}
 			}
 			session.setConfig("StrictHostKeyChecking", "no"); // do not look for known_hosts file
 
@@ -518,7 +560,7 @@ public class AmazonService
 	/**
 	 * This method initializes a map of existing EC2 instance local states
 	 * into the region selected in buildEC2Client(String) method.
-	 * 
+	 *
 	 * @see #buildEC2Client(String)
 	 */
 	private static void initializeLocalInstances()
@@ -549,7 +591,7 @@ public class AmazonService
 					{
 						LocalInstanceState localInstance = new LocalInstanceState(instanceId, instanceDns, instanceType);
 						localInstance.setRunning(isRunning);
-						AmazonService.localInstances.put(instanceId, localInstance);						
+						AmazonService.localInstances.put(instanceId, localInstance);
 					}
 					else
 					{
@@ -597,10 +639,10 @@ public class AmazonService
 	}
 
 	/**
-	 * 
+	 *
 	 * This helper method deals with loading properties from a specified
 	 * file path.
-	 * 
+	 *
 	 */
 	private static void loadProperties()
 	{
@@ -717,10 +759,10 @@ public class AmazonService
 	/**
 	 * This method processes remote input from a console and
 	 * returns its status code.
-	 * 
-	 * @param channel - 
-	 * @param in - 
-	 * @param printOutput - 
+	 *
+	 * @param channel -
+	 * @param in -
+	 * @param printOutput -
 	 * @return exitStatus - The exit status of the console
 	 * @throws IOException - An error occurred while accessing the file
 	 * @throws InterruptedException - A thread has been interrupted while running
@@ -767,7 +809,7 @@ public class AmazonService
 	/**
 	 * This method reboots an existing running instance
 	 * by specifying its ID as parameter.
-	 * 
+	 *
 	 * @param instanceID - The instance ID of the instance to reboot
 	 * @return Reboot instance result
 	 */
@@ -899,7 +941,7 @@ public class AmazonService
 	/**
 	 * This method starts an existing instance by specifying
 	 * its ID as parameter.
-	 * 
+	 *
 	 * @param instanceId - The instance ID of the instance to start
 	 * @return start instance result
 	 */
@@ -951,7 +993,7 @@ public class AmazonService
 	/**
 	 * This method stops an existing running instance
 	 * by specifying its ID as parameter.
-	 * 
+	 *
 	 * @param instanceID - The instance ID of the instance to stop
 	 * @return stop instance result
 	 */
@@ -1008,7 +1050,7 @@ public class AmazonService
 	/**
 	 * This method tags an existing instance with its name
 	 * and its cluster type.
-	 * 
+	 *
 	 * @param istanceId - The instance to tag
 	 * @param tag - The name of the tag
 	 * @param value - The value of the tag
@@ -1037,7 +1079,7 @@ public class AmazonService
 	/**
 	 * This method terminates an existing running instance
 	 * by specifying its ID as parameter.
-	 * 
+	 *
 	 * @param instanceID - The instance ID of the instance to terminate
 	 * @return terminate instance status
 	 */
