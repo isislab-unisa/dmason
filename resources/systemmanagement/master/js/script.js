@@ -167,12 +167,15 @@ $(function () {
         setTimeout(
             function () {
                 loadSettings();
+                //console.log("Settings loaded!");
 
                 if ($("#load_settings_dialog").prop("opened")) {
+                    //console.log("Closing loading dialog...");
                     close_dialog_by_ID("load_settings_dialog");
                 }
+                //console.log("Loading dialog closed!");
             },
-            4000
+            8000
         );
     }
 });
@@ -193,7 +196,7 @@ function open_file_chooser() {
     //console.log("retrieving paper-progress and buttons...");
     simProgress = document.getElementById("simulation-progress");
     var simButton = document.getElementById("simulation-jar-chooser-button");
-    
+
     // attach event for paper-progress
     $("#simulation-jar-chooser").change(function () {
         //console.log("starting the loader...");
@@ -906,7 +909,7 @@ $().ready(function () {
 //    $(loadSettings); // done in a previous function
     $("#setgeneral").click(updateGeneralSettings);
     $("#setactivemq").click(updateActiveMQSettings);
-    $("#setamazonaws").click(updateAmazonAWSSettings);
+    $("#setamazonaws").click(updateAmazonEC2Settings);
 });
 
 function loadSettings() {
@@ -929,8 +932,8 @@ function loadSettings() {
             //console.log("ActiveMQ location: " + activeMQIp + ":" + activeMQPort);
 
             var amazonAWSSecurityGroup = data.amazonAWSSettings.securityGroup;
-            var amazonAWSPriKey = data.amazonAWSSettings.priKey;
-            var amazonAWSPubKey = data.amazonAWSSettings.pubKey;
+            var ec2ConsolePriKey = data.amazonAWSSettings.ec2PriKey;
+            var ec2ConsolePubKey = data.amazonAWSSettings.ec2PubKey;
             var amazonAWSRegion = data.amazonAWSSettings.region;
 
             // show general settings
@@ -951,8 +954,8 @@ function loadSettings() {
             // show Amazon AWS settings
             $("#securitygroup").val(amazonAWSSecurityGroup);
             $("#curregion").val(amazonAWSRegion); // as today, paper-dropdown-menu is unsettable
-            $("#pubkey").val(amazonAWSPubKey);
-            $("#prikey").val(amazonAWSPriKey);
+            $("#ec2pubkey").val(ec2ConsolePubKey);
+            $("#ec2prikey").val(ec2ConsolePriKey);
         }
     )
     .fail(function () {
@@ -1001,15 +1004,15 @@ function updateActiveMQSettings() {
     });
 }
 
-function updateAmazonAWSSettings() {
+function updateAmazonEC2Settings() {
     var securityGroup = $("#securitygroup").val();
     var region = $("#region").val();
-    var pubkey = $("#pubkey").val();
-    var prikey = $("#prikey").val();
+    var ec2PubKey = $("#ec2pubkey").val();
+    var ec2PriKey = $("#ec2prikey").val();
     console.log("Region: " + region);
 
     // check parameters emptiness
-    if (securityGroup == "" || region == "" || pubkey == "" || prikey == "") {
+    if (securityGroup == "" || region == "" || ec2PubKey == "" || ec2PriKey == "") {
         console.warn("Please provide security group, region, public key and private key for Amazon AWS!");
         return;
     }
@@ -1018,11 +1021,11 @@ function updateAmazonAWSSettings() {
     $.post(
         "updateSettings",
         {
-            "setting": "amazonaws",
+            "setting": "amazonec2",
             "securitygroup": securityGroup,
             "region": region,
-            "pubkey": pubkey,
-            "prikey": prikey
+            "ec2pubkey": ec2PubKey,
+            "ec2prikey": ec2PriKey
         }
     )
     .fail(function (jqXHR, textStatus, errorThrown) {
@@ -1047,7 +1050,7 @@ function updateWorkerStats() {
             slot = slot.substring(slot.indexOf(":") + 1, slot.length);
             num_slots += parseInt(slot.trim());
         });
-        
+
         //console.log("Selected " + num_slots + " total slots!");
     }
 
@@ -1112,7 +1115,7 @@ function _onSubmitEC2WorkerRequest(event) {
         {
             "instancetype": instanceType,
             "numinstances": numInstances
-        } 
+        }
     )
     .done(function (data, textStatus, jqXHR) {
             console.info(data + "\nstatus: " + textStatus + ".")
