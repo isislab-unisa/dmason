@@ -40,6 +40,16 @@ import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.model
  */
 public class DMasonRemoteManager
 {
+	public static String getActiveMQIP()
+	{
+		return DMasonRemoteManager.activeMQIP;
+	}
+
+	public static String getActiveMQPort()
+	{
+		return DMasonRemoteManager.activeMQPort;
+	}
+
 	/**
 	 *
 	 * The <strong><code>installDMason(String)</code></strong> method deals
@@ -79,14 +89,53 @@ public class DMasonRemoteManager
 
 		LOGGER.info("Installing DMASON on instance " + instanceId + "...");
 
-		// establish a ssh session
-		LOGGER.info("Establishing a new session...");
+		// establish a ssh session TODO make a helper method out of this
+		LOGGER.info("Establishing a new session (instance " + instanceId + ", user " + AmazonService.getAmiUser() + ") ...");
+		session = AmazonService.getSession(instanceId, AmazonService.getAmiUser(), false); // username is set according to AMI
+		boolean isConnected = false;
+		final int MAX_ATTEMPTS = 3;
+		int attempt = 0;
+		while (!isConnected) {
+			try
+			{
+				LOGGER.info("Attempt " + ++attempt + " to connect...");
+				session.connect(AmazonService.SESSION_TIMEOUT);
+				isConnected = true;
+			}
+			catch (JSchException e)
+			{
+				LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
+
+				// check whether max number of attempts has been reached
+				if (attempt >= MAX_ATTEMPTS)
+				{
+					LOGGER.severe("Unable to connect to remote resource!");
+					return;
+				}
+
+				// 1s pause before reattempt
+				LOGGER.warning("Connection failed, retrying in 1 second...");
+				try
+				{
+					Thread.sleep(1000);
+				}
+				catch (InterruptedException ie) {
+					LOGGER.severe(ie.getClass().getSimpleName() + ": " + ie.getMessage() + ".");
+				}
+			}
+		}
+
+		// check session
+		if (session == null)
+		{
+			LOGGER.severe("No session has been retrieved! Unable to connect to remote instance!");
+			return;
+		}
+
+		// send remote commands for DMASON installation
+		int exitStatus = 0;
 		try
 		{
-			session = AmazonService.getSession(instanceId, AmazonService.getAmiUser(), false); // username is set according to AMI
-			session.connect(AmazonService.SESSION_TIMEOUT);
-			int exitStatus = 0;
-
 			// check if DMASON is installed already
 			// if 'target' folder exists, maven built DMASON already
 			final String LOG_FILE_NAME = "ls.log";
@@ -312,14 +361,15 @@ public class DMasonRemoteManager
 			session = AmazonService.getSession(instanceId, AmazonService.getAmiUser(), false);
 			session.connect();
 
-			//
+			// execute Master or Worker
+			String basicCommand = "java -jar DMASON-" + version + ".jar";
 			if (isMaster)
 			{
 				LOGGER.info("Running as master...");
 				exitStatus = AmazonService.executeCommand(
 						session,
 						"cd " + DMASON_ABS_PATH + ";" +
-						"java -jar DMASON-" + version + ".jar -m master",
+						basicCommand + " -m master",
 						false
 				);
 				LOGGER.info("Connection returned " + exitStatus);
@@ -330,10 +380,20 @@ public class DMasonRemoteManager
 				String instanceType = localInstanceState.getType();
 				int numSlots = EC2CoresForType.getCores(instanceType);
 				LOGGER.info("Running a worker with " + numSlots + " slots...");
+
+				// check whether command has to include ActiveMQ parameters
+				String command = basicCommand + " -m worker -ns " + numSlots;
+				if (!DMasonRemoteManager.activeMQIP.isEmpty() && !DMasonRemoteManager.activeMQPort.isEmpty())
+				{
+					command
+						.concat(" -ip ").concat(DMasonRemoteManager.activeMQIP)
+						.concat(" -p ").concat(DMasonRemoteManager.activeMQPort);
+				}
+
 				exitStatus = AmazonService.executeCommand(
 						session,
 						"cd " + DMASON_ABS_PATH + ";" +
-						"java -jar DMASON-" + version + ".jar -m worker -ns " + numSlots,
+						command,
 						false
 				);
 				LOGGER.info("Connection returned " + exitStatus);
@@ -365,6 +425,16 @@ public class DMasonRemoteManager
 			}
 		}
 	} // end startDMason(String, String)
+
+	public static void setActiveMQIP(String ip)
+	{
+		DMasonRemoteManager.activeMQIP = ip;
+	}
+
+	public static void setActiveMQPort(String port)
+	{
+		DMasonRemoteManager.activeMQPort = port;
+	}
 
 	/**
 	 *
@@ -478,6 +548,10 @@ public class DMasonRemoteManager
 		}
 		LOGGER.info("Stopped DMASON on " + localInstanceState.getDns() + "!");
 	} // end stopDMason(String) method
+
+	// static variables
+	private static String activeMQIP;
+	private static String activeMQPort;
 
 	// constants
 	private static final Logger LOGGER = Logger.getGlobal();
