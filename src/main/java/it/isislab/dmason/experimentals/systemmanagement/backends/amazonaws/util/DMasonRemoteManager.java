@@ -27,7 +27,7 @@ import org.xml.sax.SAXException;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.AmazonService;
+import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.EC2Service;
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.model.LocalInstanceState;
 
 /**
@@ -70,7 +70,7 @@ public class DMasonRemoteManager
 	public static void installDMason(String instanceId)
 	{
 		// check if DMASON is already installed on required instance machine
-		LocalInstanceState localInstanceState = AmazonService.getLocalInstances().get(instanceId);
+		LocalInstanceState localInstanceState = EC2Service.getLocalInstances().get(instanceId);
 
 		// check if instance is running
 		if (localInstanceState != null && !localInstanceState.isRunning())
@@ -90,8 +90,8 @@ public class DMasonRemoteManager
 		LOGGER.info("Installing DMASON on instance " + instanceId + "...");
 
 		// establish a ssh session TODO make a helper method out of this
-		LOGGER.info("Establishing a new session (instance " + instanceId + ", user " + AmazonService.getAmiUser() + ") ...");
-		session = AmazonService.getSession(instanceId, AmazonService.getAmiUser(), false); // username is set according to AMI
+		LOGGER.info("Establishing a new session (instance " + instanceId + ", user " + EC2Service.getAmiUser() + ") ...");
+		session = EC2Service.getSession(instanceId, EC2Service.getAmiUser(), false); // username is set according to AMI
 		boolean isConnected = false;
 		final int MAX_ATTEMPTS = 3;
 		int attempt = 0;
@@ -99,7 +99,7 @@ public class DMasonRemoteManager
 			try
 			{
 				LOGGER.info("Attempt " + ++attempt + " to connect...");
-				session.connect(AmazonService.SESSION_TIMEOUT);
+				session.connect(EC2Service.SESSION_TIMEOUT);
 				isConnected = true;
 			}
 			catch (JSchException e)
@@ -140,31 +140,31 @@ public class DMasonRemoteManager
 			// if 'target' folder exists, maven built DMASON already
 			final String LOG_FILE_NAME = "ls.log";
 			LOGGER.info("Check if DMASON is remotely installed...");
-			exitStatus = AmazonService.executeCommand(
+			exitStatus = EC2Service.executeCommand(
 					session,
 					"ls isislab/dmason/target/ > " + LOG_FILE_NAME, // in case of ls error, an empty file gets generated
 					true);
 			LOGGER.info("Remote check completed!");
 			LOGGER.info("Connection returned " + exitStatus);
 			session.disconnect();
-			AmazonService.retrieveFile(instanceId, "", "", LOG_FILE_NAME);
+			EC2Service.retrieveFile(instanceId, "", "", LOG_FILE_NAME);
 			File logFile = new File(LOG_FILE_NAME);
 			if (logFile.length() > 0)
 			{
 				// mark DMASON installed for instance in local map and return control
 				localInstanceState.setReady(true);
-				AmazonService.getLocalInstances().put(instanceId, localInstanceState);
+				EC2Service.getLocalInstances().put(instanceId, localInstanceState);
 				LOGGER.warning("DMASON was already installed on instance " + instanceId + "!");
 				return;
 			}
 
 			// re-establish session because of SFTP request
-			session = AmazonService.getSession(instanceId, AmazonService.getAmiUser(), false);
+			session = EC2Service.getSession(instanceId, EC2Service.getAmiUser(), false);
 			session.connect();
 
 			// update remote repositories
 			LOGGER.info("Update repositories...");
-			exitStatus = AmazonService.executeCommand(
+			exitStatus = EC2Service.executeCommand(
 					session,
 					"sudo apt-get update -q -y",
 					true
@@ -175,7 +175,7 @@ public class DMasonRemoteManager
 			// install Java Development Kit
 			// if JDK is installed already, it doesn't get installed by -y
 			LOGGER.info("Installing Java Development Kit...");
-			exitStatus = AmazonService.executeCommand(
+			exitStatus = EC2Service.executeCommand(
 					session,
 					"sudo apt-get install default-jdk -q -y", // -q quiet, -y assert-all
 					true
@@ -191,7 +191,7 @@ public class DMasonRemoteManager
 
 			// install maven
 			LOGGER.info("Installing Maven...");
-			exitStatus = AmazonService.executeCommand(
+			exitStatus = EC2Service.executeCommand(
 					session,
 					"sudo apt-get install maven -y",
 					true
@@ -201,7 +201,7 @@ public class DMasonRemoteManager
 
 			// install DMASON
 			LOGGER.info("Downloading DMASON...");
-			exitStatus = AmazonService.executeCommand(
+			exitStatus = EC2Service.executeCommand(
 					session,
 					"mkdir isislab" + ";" +
 					"cd isislab/" + ";" +
@@ -213,7 +213,7 @@ public class DMasonRemoteManager
 
 			// compile DMASON in 'maven' folder
 			LOGGER.info("Compiling DMASON...");
-			exitStatus = AmazonService.executeCommand(
+			exitStatus = EC2Service.executeCommand(
 					session,
 					"cd ~/isislab/dmason/" + ";" + // every connection starts from home directory
 					"mvn -Dmaven.test.skip=true clean package", // skip tests
@@ -239,13 +239,13 @@ public class DMasonRemoteManager
 
 				// discard session: this is a workaround for packet loss closing session after a SFTP channel connection
 				localInstanceState.setSession(null);
-				AmazonService.getLocalInstances().put(instanceId, localInstanceState);
+				EC2Service.getLocalInstances().put(instanceId, localInstanceState);
 			}
 		}
 
 		// marking instance as DMASON-ready
 		localInstanceState.setReady(true);
-		AmazonService.getLocalInstances().put(instanceId, localInstanceState);
+		EC2Service.getLocalInstances().put(instanceId, localInstanceState);
 
 		LOGGER.info("DMASON installation has been completed!");
 	} // end installDMason(String, String)
@@ -269,7 +269,7 @@ public class DMasonRemoteManager
 	 */
 	public static void startDMason(String instanceId, boolean isMaster)
 	{
-		LocalInstanceState localInstanceState = AmazonService.getLocalInstances().get(instanceId);
+		LocalInstanceState localInstanceState = EC2Service.getLocalInstances().get(instanceId);
 
 		// check if instance is running
 		if (localInstanceState != null && !localInstanceState.isRunning())
@@ -311,8 +311,8 @@ public class DMasonRemoteManager
 		// establish a ssh session
 		Session session = null;
 		try {
-			session = AmazonService.getSession(instanceId, AmazonService.getAmiUser(), false); // username is set according to AMI
-			session.connect(AmazonService.SESSION_TIMEOUT); // 30s timeout
+			session = EC2Service.getSession(instanceId, EC2Service.getAmiUser(), false); // username is set according to AMI
+			session.connect(EC2Service.SESSION_TIMEOUT); // 30s timeout
 			int exitStatus = 0;
 			final String DMASON_ABS_PATH = "~/isislab/dmason/target/";
 			final String version = VersionChooser.extract(); // determine which DMASON version is running
@@ -321,19 +321,19 @@ public class DMasonRemoteManager
 			// if remote 'ps x' output contains 'java' then skip start command
 			final String LOG_FILE_NAME = "ps.log";
 			LOGGER.info("Check if DMASON is already running...");
-			exitStatus = AmazonService.executeCommand(
+			exitStatus = EC2Service.executeCommand(
 					session,
 					"ps x | grep 'java -jar DMASON' | grep -v 'grep' > " + LOG_FILE_NAME, // in case of ls error, an empty file gets generated
 					true);
 			LOGGER.info("");
 			LOGGER.info("Connection returned " + exitStatus);
 			session.disconnect();
-			AmazonService.retrieveFile(instanceId, "", "", LOG_FILE_NAME);
+			EC2Service.retrieveFile(instanceId, "", "", LOG_FILE_NAME);
 			File logFile = new File(LOG_FILE_NAME);
 			if (logFile.length() > 0)
 			{
 				localInstanceState.setBusy(true);
-				AmazonService.getLocalInstances().put(instanceId, localInstanceState);
+				EC2Service.getLocalInstances().put(instanceId, localInstanceState);
 				LOGGER.warning(
 						"DMASON was already running on instance " + instanceId +
 						" as master at http://" + localInstanceState.getDns() +
@@ -347,7 +347,7 @@ public class DMasonRemoteManager
 			// remote command blocks execution
 			localInstanceState.setBusy(true);
 			localInstanceState.setMaster(isMaster);
-			AmazonService.getLocalInstances().put(instanceId, localInstanceState);
+			EC2Service.getLocalInstances().put(instanceId, localInstanceState);
 			if (isMaster)
 			{
 				LOGGER.info("DMASON is running as master on http://" + localInstanceState.getDns() + ":8080 !");
@@ -358,7 +358,7 @@ public class DMasonRemoteManager
 			}
 
 			// re-establish session because of SFTP request
-			session = AmazonService.getSession(instanceId, AmazonService.getAmiUser(), false);
+			session = EC2Service.getSession(instanceId, EC2Service.getAmiUser(), false);
 			session.connect();
 
 			// execute Master or Worker
@@ -366,7 +366,7 @@ public class DMasonRemoteManager
 			if (isMaster)
 			{
 				LOGGER.info("Running as master...");
-				exitStatus = AmazonService.executeCommand(
+				exitStatus = EC2Service.executeCommand(
 						session,
 						"cd " + DMASON_ABS_PATH + ";" +
 						basicCommand + " -m master",
@@ -390,7 +390,7 @@ public class DMasonRemoteManager
 						.concat(" -p ").concat(DMasonRemoteManager.activeMQPort);
 				}
 
-				exitStatus = AmazonService.executeCommand(
+				exitStatus = EC2Service.executeCommand(
 						session,
 						"cd " + DMASON_ABS_PATH + ";" +
 						command,
@@ -451,7 +451,7 @@ public class DMasonRemoteManager
 	 */
 	public static void stopDMason(String instanceId)
 	{
-		LocalInstanceState localInstanceState = AmazonService.getLocalInstances().get(instanceId);
+		LocalInstanceState localInstanceState = EC2Service.getLocalInstances().get(instanceId);
 
 		// check if selected instance is running DMASON
 		if (!localInstanceState.isRunning())
@@ -478,38 +478,38 @@ public class DMasonRemoteManager
 		Session session = null;
 		try
 		{
-			session = AmazonService.getSession(instanceId, AmazonService.getAmiUser(), false); // username is set according to AMI
-			session.connect(AmazonService.SESSION_TIMEOUT); // 30s timeout
+			session = EC2Service.getSession(instanceId, EC2Service.getAmiUser(), false); // username is set according to AMI
+			session.connect(EC2Service.SESSION_TIMEOUT); // 30s timeout
 			int exitStatus = 0;
 
 			// check if actually DMASON is running on instance
 			// if remote 'ps x' output does not contains 'java' then skip stop command
 			final String LOG_FILE_NAME = "ps.log";
 			LOGGER.info("Check if DMASON is running...");
-			exitStatus = AmazonService.executeCommand(
+			exitStatus = EC2Service.executeCommand(
 					session,
 					"ps x | grep 'java -jar DMASON' | grep -v 'grep' > " + LOG_FILE_NAME, // in case of ls error, an empty file gets generated
 					true);
 			LOGGER.info("");
 			LOGGER.info("Connection returned " + exitStatus);
 			session.disconnect();
-			AmazonService.retrieveFile(instanceId, "", "", LOG_FILE_NAME);
+			EC2Service.retrieveFile(instanceId, "", "", LOG_FILE_NAME);
 			File logFile = new File(LOG_FILE_NAME);
 			if (logFile.length() == 0)
 			{
 				// mark DMASON running for instance in local map and return control
 				localInstanceState.setBusy(false);
-				AmazonService.getLocalInstances().put(instanceId, localInstanceState);
+				EC2Service.getLocalInstances().put(instanceId, localInstanceState);
 				LOGGER.warning("DMASON was not running on instance " + instanceId + "!");
 				return;
 			}
 
 			// re-establish session because of SFTP request
-			session = AmazonService.getSession(instanceId, AmazonService.getAmiUser(), false);
+			session = EC2Service.getSession(instanceId, EC2Service.getAmiUser(), false);
 			session.connect();
 
 			LOGGER.info("Running as master...");
-			exitStatus = AmazonService.executeCommand(
+			exitStatus = EC2Service.executeCommand(
 					session,
 					"pkill java", // could it be more specific?
 					true
@@ -537,10 +537,10 @@ public class DMasonRemoteManager
 
 		// save current status for selected instance
 		localInstanceState.setRunning(false);
-		AmazonService.getLocalInstances().put(instanceId, localInstanceState);
+		EC2Service.getLocalInstances().put(instanceId, localInstanceState);
 		try
 		{
-			LocalInstanceStateManager.saveLocalInstanceStates(AmazonService.getLocalInstances());
+			LocalInstanceStateManager.saveLocalInstanceStates(EC2Service.getLocalInstances());
 		}
 		catch (IOException e)
 		{

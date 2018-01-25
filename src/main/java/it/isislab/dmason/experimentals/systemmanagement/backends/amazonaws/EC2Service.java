@@ -86,7 +86,7 @@ import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.
  * @author Simone Bisogno
  *
  */
-public class AmazonService
+public class EC2Service
 {
 	// static variables
 	/**
@@ -137,7 +137,7 @@ public class AmazonService
 	 */
 	public static void buildEC2Client(String aRegion)
 	{
-		AmazonService.ec2 = AmazonEC2ClientBuilder.standard()
+		EC2Service.ec2 = AmazonEC2ClientBuilder.standard()
 				.withRegion(aRegion)
 				.withCredentials(new ProfileCredentialsProvider())
 				.build();
@@ -145,32 +145,32 @@ public class AmazonService
 
 	public static void boot()
 	{
-		if (!AmazonService.booted)
+		if (!EC2Service.booted)
 		{
 			// load properties
-			AmazonService.loadProperties();
+			EC2Service.loadProperties();
 			LOGGER.info("Properties loaded from " + PROPERTIES_FILE_PATH + ".");
 
 			// create an EC2 client
-			AmazonService.buildEC2Client(AmazonService.region);
+			EC2Service.buildEC2Client(EC2Service.region);
 			LOGGER.info("A new EC2 client has been created!");
 
 			// create security group and keypair
 			try
 			{
-				AmazonService.createKeyPair();
+				EC2Service.createKeyPair();
 			}
 			catch (IOException e)
 			{
 				LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
 			}
-			AmazonService.createSecurityGroup();
+			EC2Service.createSecurityGroup();
 
 			// initialize instance local state map
-			AmazonService.initializeLocalInstances();
+			EC2Service.initializeLocalInstances();
 			LOGGER.info("Local instances states map populated!");
 
-			AmazonService.booted = true;
+			EC2Service.booted = true;
 			LOGGER.info("Amazon Service boot process completed!");
 		}
 		else
@@ -190,10 +190,10 @@ public class AmazonService
 	public static RunInstancesResult createInstance(int maxNumberInstances)
 			throws FileNotFoundException, IOException
 	{
-		String groupName = AmazonService.GROUP_PREFIX.concat(AmazonService.getGroupName());
+		String groupName = EC2Service.GROUP_PREFIX.concat(EC2Service.getGroupName());
 		String clusterType = "dmason";
 
-		return AmazonService.createInstance(groupName, clusterType, maxNumberInstances);
+		return EC2Service.createInstance(groupName, clusterType, maxNumberInstances);
 	}
 
 	/**
@@ -212,12 +212,12 @@ public class AmazonService
 		RunInstancesRequest istanceRequest = new RunInstancesRequest();
 
 		// define the requested virtual machine
-		String instanceType = AmazonService.type;
-		istanceRequest.withImageId(AmazonService.ami)
+		String instanceType = EC2Service.type;
+		istanceRequest.withImageId(EC2Service.ami)
 				.withInstanceType(instanceType)
 				.withMinCount(1) // the minimum number of istances to launch
 				.withMaxCount(maxNumberInstances) // the maximum number of istances to launch
-				.withKeyName(AmazonService.KEY_NAME)
+				.withKeyName(EC2Service.KEY_NAME)
 				.withSecurityGroups(groupName);
 
 		// request the virtual machine
@@ -231,16 +231,16 @@ public class AmazonService
 			Instance instance = instanceIterator.next();
 			String istanceID = instance.getInstanceId();
 			String instanceDns = instance.getPublicDnsName();
-			AmazonService.localInstances.put(istanceID, new LocalInstanceState(istanceID, instanceDns, instanceType)); // here it creates a new local instance state
+			EC2Service.localInstances.put(istanceID, new LocalInstanceState(istanceID, instanceDns, instanceType)); // here it creates a new local instance state
 			LOGGER.info(clusterType + " node reservation: " + istanceID);
 
 			// tag created instance
-			int numInstances = AmazonService.localInstances.values().size(); // size already includes created instance
-			AmazonService.tagInstance(
+			int numInstances = EC2Service.localInstances.values().size(); // size already includes created instance
+			EC2Service.tagInstance(
 					istanceID,
 					"Name",
-					numInstances + "-" + AmazonService.groupName + "-" + clusterType,
-					AmazonService.ec2
+					numInstances + "-" + EC2Service.groupName + "-" + clusterType,
+					EC2Service.ec2
 			);
 		}
 
@@ -261,8 +261,8 @@ public class AmazonService
 			throws IOException, FileNotFoundException
 	{
 		// get a list with a single key pair
-		KeyPairInfo dmasonKeyPair = new KeyPairInfo().withKeyName(AmazonService.KEY_NAME);
-		DescribeKeyPairsResult keyPairResult = AmazonService.ec2.describeKeyPairs().withKeyPairs(dmasonKeyPair);
+		KeyPairInfo dmasonKeyPair = new KeyPairInfo().withKeyName(EC2Service.KEY_NAME);
+		DescribeKeyPairsResult keyPairResult = EC2Service.ec2.describeKeyPairs().withKeyPairs(dmasonKeyPair);
 
 		// check if the cluster already has a key pair
 		boolean existsRemoteKeyPair = false;
@@ -287,12 +287,12 @@ public class AmazonService
 		if (!existsRemoteKeyPair)
 		{
 			// create a new key pair on EC2
-			LOGGER.info("Create new key pair " + AmazonService.KEY_NAME + " on EC2");
-			CreateKeyPairRequest keyRequest = new CreateKeyPairRequest().withKeyName(AmazonService.KEY_NAME);
-			CreateKeyPairResult responseToCreate = AmazonService.ec2.createKeyPair(keyRequest);
+			LOGGER.info("Create new key pair " + EC2Service.KEY_NAME + " on EC2");
+			CreateKeyPairRequest keyRequest = new CreateKeyPairRequest().withKeyName(EC2Service.KEY_NAME);
+			CreateKeyPairResult responseToCreate = EC2Service.ec2.createKeyPair(keyRequest);
 
 			// save key pair into key file
-			LOGGER.info("Saving newly created key pair " + AmazonService.KEY_NAME + "...");
+			LOGGER.info("Saving newly created key pair " + EC2Service.KEY_NAME + "...");
 			filePrinter = new PrintWriter(file);
 			filePrinter.print(responseToCreate.getKeyPair().getKeyMaterial());
 			LOGGER.info("New keyring saved into file!");
@@ -306,21 +306,21 @@ public class AmazonService
 			if (!file.exists())
 			{
 				// request remote key pair
-				CreateKeyPairRequest keyRequest = new CreateKeyPairRequest().withKeyName(AmazonService.KEY_NAME);
-				CreateKeyPairResult responseToCreate = AmazonService.ec2.createKeyPair(keyRequest);
+				CreateKeyPairRequest keyRequest = new CreateKeyPairRequest().withKeyName(EC2Service.KEY_NAME);
+				CreateKeyPairResult responseToCreate = EC2Service.ec2.createKeyPair(keyRequest);
 
 				// write key into file
-				LOGGER.info("Creating " + AmazonService.KEY_NAME + " in " + keysFilePath + " ...");
+				LOGGER.info("Creating " + EC2Service.KEY_NAME + " in " + keysFilePath + " ...");
 				file.createNewFile();
 				filePrinter = new PrintWriter(file);
 				filePrinter.print(responseToCreate.getKeyPair().getKeyMaterial());
 				filePrinter.close();
-				LOGGER.info("Created " + AmazonService.KEY_NAME + "key pair file!");
+				LOGGER.info("Created " + EC2Service.KEY_NAME + "key pair file!");
 
 				// make new file read-only
 				try
 				{
-					AmazonService.makeFileReadOnly(keysFilePath);
+					EC2Service.makeFileReadOnly(keysFilePath);
 				}
 				catch (IOException | IllegalStateException ioe)
 				{
@@ -331,7 +331,7 @@ public class AmazonService
 			}
 			else
 			{
-				LOGGER.info("Key pair file for " + AmazonService.KEY_NAME + " already exists.");
+				LOGGER.info("Key pair file for " + EC2Service.KEY_NAME + " already exists.");
 			}
 		}
 	} // end createKeyPair()
@@ -383,7 +383,7 @@ public class AmazonService
 	 */
 	public static void createSecurityGroup()
 	{
-		AmazonService.createSecurityGroupByClusterName(AmazonService.groupName);
+		EC2Service.createSecurityGroupByClusterName(EC2Service.groupName);
 	}
 
 	/**
@@ -395,7 +395,7 @@ public class AmazonService
 	public static void createSecurityGroupByClusterName(String groupName)
 	{
 		DescribeSecurityGroupsRequest groupRequest = new DescribeSecurityGroupsRequest();
-		DescribeSecurityGroupsResult result = AmazonService.ec2.describeSecurityGroups(groupRequest);
+		DescribeSecurityGroupsResult result = EC2Service.ec2.describeSecurityGroups(groupRequest);
 
 		// check if group already exists
 		List<SecurityGroup> groupList = result.getSecurityGroups();
@@ -418,7 +418,7 @@ public class AmazonService
 			CreateSecurityGroupRequest csgr = new CreateSecurityGroupRequest();
 			csgr.withGroupName(groupName).withDescription("Security group " + groupName + " created on " + LocalDateTime.now() + ".");
 
-			CreateSecurityGroupResult csgresult = AmazonService.ec2.createSecurityGroup(csgr);
+			CreateSecurityGroupResult csgresult = EC2Service.ec2.createSecurityGroup(csgr);
 			LOGGER.info("Security group created for cluster " + groupName + " with id " + csgresult.getGroupId() + ".");
 
 			IpPermission ipPermission =	new IpPermission();
@@ -458,8 +458,8 @@ public class AmazonService
 //		channel.setErrStream(System.err);
 
 		channel.setCommand(command);
-		channel.connect(AmazonService.CONNECTION_TIMEOUT);
-		int exitStatus = AmazonService.readRemoteInput(channel, in, printRemoteOutput);
+		channel.connect(EC2Service.CONNECTION_TIMEOUT);
+		int exitStatus = EC2Service.readRemoteInput(channel, in, printRemoteOutput);
 		channel.disconnect();
 		in.close();
 
@@ -475,7 +475,7 @@ public class AmazonService
 	private static String getDns(String instanceId)
 	{
 		// try to retrieve DNS name from local map
-		LocalInstanceState localInstanceState = AmazonService.localInstances.get(instanceId);
+		LocalInstanceState localInstanceState = EC2Service.localInstances.get(instanceId);
 		if (localInstanceState != null)
 		{
 			return localInstanceState.getDns();
@@ -506,10 +506,9 @@ public class AmazonService
 		// pick session for instance associated to instanceId
 		if (!forceNewSession)
 		{
-			session = AmazonService.localInstances.get(instanceId).getSession();
+			session = EC2Service.localInstances.get(instanceId).getSession();
 		}
-
-		if (forceNewSession)
+		else
 		{
 			LOGGER.warning("Existing session for instance " + instanceId + " will be discarded!");
 		}
@@ -528,7 +527,7 @@ public class AmazonService
 			try
 			{
 				// set private key for session
-				jsch.addIdentity(userHome + "/.aws/" + AmazonService.KEY_NAME + ".pem");
+				jsch.addIdentity(userHome + "/.aws/" + EC2Service.KEY_NAME + ".pem");
 				keyPairExists = true;
 
 				// create a ssh session
@@ -540,18 +539,21 @@ public class AmazonService
 
 				if (!keyPairExists)
 				{
-					// TODO create keypair
-					LOGGER.warning("There is no " + AmazonService.KEY_NAME + ".pem keypair, retrieving...");
-
-
+					LOGGER.severe("There is no " + EC2Service.KEY_NAME + ".pem keypair!\nUnable to establish a session!");
+					return null;
 				}
 			}
 			session.setConfig("StrictHostKeyChecking", "no"); // do not look for known_hosts file
+			LOGGER.info("A new session for instance " + instanceId + " has been created!");
 
 			// save session in local map
-			LocalInstanceState instanceState = AmazonService.localInstances.get(instanceId);
+			LocalInstanceState instanceState = EC2Service.localInstances.get(instanceId);
 			instanceState.setSession(session);
-			AmazonService.localInstances.put(instanceId, instanceState);
+			EC2Service.localInstances.put(instanceId, instanceState);
+		}
+		else
+		{
+			LOGGER.info("A session for " + instanceId + " already exists!");
 		}
 
 		return session;
@@ -565,12 +567,12 @@ public class AmazonService
 	 */
 	private static void initializeLocalInstances()
 	{
-		AmazonService.localInstances = new HashMap<>();
+		EC2Service.localInstances = new HashMap<>();
 
 		LOGGER.warning("Downloading available instances...");
 
 		DescribeInstancesRequest listRequest = new DescribeInstancesRequest();
-		DescribeInstancesResult result = AmazonService.ec2.describeInstances();
+		DescribeInstancesResult result = EC2Service.ec2.describeInstances();
 		boolean done = false;
 
 		while (!done)
@@ -580,8 +582,8 @@ public class AmazonService
 				for (Instance instance: reservation.getInstances())
 				{
 					String instanceId = instance.getInstanceId();
-					String instanceDns = AmazonService.getDns(instanceId);
-					String instanceType = AmazonService.type;
+					String instanceDns = EC2Service.getDns(instanceId);
+					String instanceType = EC2Service.type;
 					String stateName = instance.getState().getName();
 					boolean isRunning = stateName.equals(InstanceStateName.Running.toString());
 					boolean terminated = stateName.equals(InstanceStateName.Terminated.toString());
@@ -591,7 +593,7 @@ public class AmazonService
 					{
 						LocalInstanceState localInstance = new LocalInstanceState(instanceId, instanceDns, instanceType);
 						localInstance.setRunning(isRunning);
-						AmazonService.localInstances.put(instanceId, localInstance);
+						EC2Service.localInstances.put(instanceId, localInstance);
 					}
 					else
 					{
@@ -620,7 +622,7 @@ public class AmazonService
 			try
 			{
 				// try to write a new file: it doesn't actually write anything
-				LocalInstanceStateManager.saveLocalInstanceStates(AmazonService.localInstances);
+				LocalInstanceStateManager.saveLocalInstanceStates(EC2Service.localInstances);
 			}
 			catch (IOException e)
 			{
@@ -652,20 +654,20 @@ public class AmazonService
 			// read properties file
 			LOGGER.info("Reading properties from " + PROPERTIES_FILE_PATH);
 			input = new FileInputStream(PROPERTIES_FILE_PATH);
-			if (AmazonService.startProperties == null)
+			if (EC2Service.startProperties == null)
 			{
-				AmazonService.startProperties = new Properties();
+				EC2Service.startProperties = new Properties();
 			}
 			startProperties.load(input);
 
 			// set class parameters from config file
-			final String AWS_PREFIX = "amazonaws".concat(".");
-			AmazonService.setAmi(startProperties.getProperty(AWS_PREFIX.concat("ami")));
-			AmazonService.setAmiUser(startProperties.getProperty(AWS_PREFIX.concat("amiuser")));
-			AmazonService.setRegion(startProperties.getProperty(AWS_PREFIX.concat("region")));
-			AmazonService.setGroupName(startProperties.getProperty(AWS_PREFIX.concat("securitygroup")));
-			AmazonService.setSize(Integer.parseInt(startProperties.getProperty(AWS_PREFIX.concat("size"))));
-			AmazonService.setType(startProperties.getProperty(AWS_PREFIX.concat("type")));
+			final String AWS_PREFIX = "ec2".concat(".");
+			EC2Service.setAmi(startProperties.getProperty(AWS_PREFIX.concat("ami")));
+			EC2Service.setAmiUser(startProperties.getProperty(AWS_PREFIX.concat("amiuser")));
+			EC2Service.setRegion(startProperties.getProperty(AWS_PREFIX.concat("region")));
+			EC2Service.setGroupName(startProperties.getProperty(AWS_PREFIX.concat("securitygroup")));
+			EC2Service.setSize(Integer.parseInt(startProperties.getProperty(AWS_PREFIX.concat("size"))));
+			EC2Service.setType(startProperties.getProperty(AWS_PREFIX.concat("type")));
 		}
 		catch (IOException e)
 		{
@@ -687,7 +689,7 @@ public class AmazonService
 	public static void persistInstanceStates()
 			throws FileNotFoundException, IOException
 	{
-		LocalInstanceStateManager.saveLocalInstanceStates(AmazonService.localInstances);
+		LocalInstanceStateManager.saveLocalInstanceStates(EC2Service.localInstances);
 	}
 
 	public static void putFile(String instanceId, String localPath, String remotePath, String fileName)
@@ -713,12 +715,12 @@ public class AmazonService
 		try
 		{
 			// connect to session
-			session = getSession(instanceId, AmazonService.amiUser, true);
-			session.connect(AmazonService.SESSION_TIMEOUT);
+			session = getSession(instanceId, EC2Service.amiUser, true);
+			session.connect(EC2Service.SESSION_TIMEOUT);
 
 			// start SFTP connection through session
 			channel = (ChannelSftp) session.openChannel("sftp");
-			channel.connect(AmazonService.CONNECTION_TIMEOUT);
+			channel.connect(EC2Service.CONNECTION_TIMEOUT);
 			if (remotePath != null && !remotePath.isEmpty())
 			{
 				channel.cd(remotePath);
@@ -744,9 +746,9 @@ public class AmazonService
 				session.disconnect();
 
 				// discard session: this is a workaround for packet loss closing session after a SFTP channel connection
-				LocalInstanceState localInstanceState = AmazonService.localInstances.get(instanceId);
+				LocalInstanceState localInstanceState = EC2Service.localInstances.get(instanceId);
 				localInstanceState.setSession(null);
-				AmazonService.localInstances.put(instanceId, localInstanceState);
+				EC2Service.localInstances.put(instanceId, localInstanceState);
 			}
 		}
 
@@ -860,12 +862,12 @@ public class AmazonService
 		try
 		{
 			// retrieve session for specified instance
-			session = getSession(instanceId, AmazonService.amiUser, true);
-			session.connect(AmazonService.SESSION_TIMEOUT); // 30s timeout
+			session = getSession(instanceId, EC2Service.amiUser, true);
+			session.connect(EC2Service.SESSION_TIMEOUT); // 30s timeout
 
 			// create sftp channel
 			channel = (ChannelSftp) session.openChannel("sftp");
-			channel.connect(AmazonService.CONNECTION_TIMEOUT);
+			channel.connect(EC2Service.CONNECTION_TIMEOUT);
 			if (remotePath != null && !remotePath.isEmpty())
 			{
 				channel.cd(remotePath);
@@ -891,9 +893,9 @@ public class AmazonService
 				session.disconnect();
 
 				// discard session: this is a workaround for packet loss closing session after a SFTP channel connection
-				LocalInstanceState localInstanceState = AmazonService.localInstances.get(instanceId);
+				LocalInstanceState localInstanceState = EC2Service.localInstances.get(instanceId);
 				localInstanceState.setSession(null);
-				AmazonService.localInstances.put(instanceId, localInstanceState);
+				EC2Service.localInstances.put(instanceId, localInstanceState);
 			}
 		}
 
@@ -924,9 +926,9 @@ public class AmazonService
 		if (instance != null && instanceId.equals(instance.getInstanceId()))
 		{
 			boolean isRunning = instance.getState().getName().equals(InstanceStateName.Running.toString());
-			LocalInstanceState localInstance = AmazonService.localInstances.get(instanceId);
+			LocalInstanceState localInstance = EC2Service.localInstances.get(instanceId);
 			localInstance.setRunning(isRunning);
-			AmazonService.localInstances.put(instanceId, localInstance);
+			EC2Service.localInstances.put(instanceId, localInstance);
 		}
 		else
 		{
@@ -1121,9 +1123,9 @@ public class AmazonService
 		LOGGER.info("Instance " + instanceID + " has been stopped!");
 
 		// mark the instance as terminated in local map
-		LocalInstanceState localInstanceState = AmazonService.localInstances.get(instanceID);
+		LocalInstanceState localInstanceState = EC2Service.localInstances.get(instanceID);
 		localInstanceState.markTerminate();
-		AmazonService.localInstances.put(instanceID, localInstanceState);
+		EC2Service.localInstances.put(instanceID, localInstanceState);
 
 		return result;
 	}
@@ -1135,7 +1137,7 @@ public class AmazonService
 
 	public static void setAmi(String ami)
 	{
-		AmazonService.ami = ami;
+		EC2Service.ami = ami;
 	}
 
 	public static String getAmiUser()
@@ -1145,7 +1147,7 @@ public class AmazonService
 
 	public static void setAmiUser(String amiUser)
 	{
-		AmazonService.amiUser = amiUser;
+		EC2Service.amiUser = amiUser;
 	}
 
 	public static String getGroupName()
@@ -1155,7 +1157,7 @@ public class AmazonService
 
 	public static void setGroupName(String groupName)
 	{
-		AmazonService.groupName = groupName;
+		EC2Service.groupName = groupName;
 	}
 
 	public static String getRegion()
@@ -1165,7 +1167,7 @@ public class AmazonService
 
 	public static void setRegion(String region)
 	{
-		AmazonService.region = region;
+		EC2Service.region = region;
 	}
 
 	public static int getSize()
@@ -1175,7 +1177,7 @@ public class AmazonService
 
 	public static void setSize(int size)
 	{
-		AmazonService.size = size;
+		EC2Service.size = size;
 	}
 
 	public static String getType()
@@ -1185,7 +1187,7 @@ public class AmazonService
 
 	public static void setType(String type)
 	{
-		AmazonService.type = type;
+		EC2Service.type = type;
 	}
 
 	public static Map<String, LocalInstanceState> getLocalInstances()

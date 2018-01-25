@@ -33,7 +33,7 @@ import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
 
-import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.AmazonService;
+import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.EC2Service;
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.model.LocalInstanceState;
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.DMasonRemoteManager;
 
@@ -41,7 +41,7 @@ import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.
  * @author Simone Bisogno
  *
  */
-public class AmazonServiceTester
+public class EC2ServiceTester
 {
 	// constants
 	private static final BufferedReader BUFFER = new BufferedReader(new InputStreamReader(System.in));
@@ -56,8 +56,8 @@ public class AmazonServiceTester
 	public static void main(String[] args)
 			throws Exception
 	{
-		AmazonService.boot();
-		new AmazonServiceTester().runClient(args);
+		EC2Service.boot();
+		new EC2ServiceTester().runClient(args);
 	}
 
 	// helper methods
@@ -107,19 +107,19 @@ public class AmazonServiceTester
 
 		// test reading properties from config file
 		CONSOLE.println("Read properties from configuration file");
-		CONSOLE.print("AMI: " + AmazonService.getAmi() + ", ");
-		CONSOLE.print("AMI username: " + AmazonService.getAmiUser() + ", ");
-		CONSOLE.print("Security group: " + AmazonService.getGroupName() + ", ");
-		CONSOLE.print("Region: " + AmazonService.getRegion() + ", ");
-		CONSOLE.print("Size: " + AmazonService.getSize() + ", ");
-		CONSOLE.println("Type: " + AmazonService.getType() + ", ");
+		CONSOLE.print("AMI: " + EC2Service.getAmi() + ", ");
+		CONSOLE.print("AMI username: " + EC2Service.getAmiUser() + ", ");
+		CONSOLE.print("Security group: " + EC2Service.getGroupName() + ", ");
+		CONSOLE.print("Region: " + EC2Service.getRegion() + ", ");
+		CONSOLE.print("Size: " + EC2Service.getSize() + ", ");
+		CONSOLE.println("Type: " + EC2Service.getType() + ", ");
 		CONSOLE.println("\nPress ENTER key to continue...");
 		ask();
 
 		// test print map
 		CONSOLE.println("Listing all local instances...");
 //		Iterator<Map.Entry<String, Instance>> instancesIterator = AmazonService.instances.entrySet().iterator();
-		Iterator<String> localInstancesIdIterator = AmazonService.getLocalInstances().keySet().iterator();
+		Iterator<String> localInstancesIdIterator = EC2Service.getLocalInstances().keySet().iterator();
 		int i = 0;
 		while (localInstancesIdIterator.hasNext())
 		{
@@ -128,7 +128,7 @@ public class AmazonServiceTester
 		}
 
 		CONSOLE.println("Listing active instances...");
-		Iterator<LocalInstanceState> localInstancesIterator = AmazonService.getLocalInstances().values().iterator();
+		Iterator<LocalInstanceState> localInstancesIterator = EC2Service.getLocalInstances().values().iterator();
 		while (localInstancesIterator.hasNext())
 		{
 			LocalInstanceState localInstanceState = localInstancesIterator.next();
@@ -142,11 +142,11 @@ public class AmazonServiceTester
 		try
 		{
 			// show availability zones
-			DescribeAvailabilityZonesResult availabilityZoneResult = AmazonService.getEc2().describeAvailabilityZones();
+			DescribeAvailabilityZonesResult availabilityZoneResult = EC2Service.getEc2().describeAvailabilityZones();
 			CONSOLE.print("You have access to " + availabilityZoneResult.getAvailabilityZones().size());
 			CONSOLE.println(" Availability Zone(s).");
 
-			DescribeInstancesResult describeInstancesResult = AmazonService.getEc2().describeInstances();
+			DescribeInstancesResult describeInstancesResult = EC2Service.getEc2().describeInstances();
 			List<Reservation> reservations = describeInstancesResult.getReservations();
 			Set<Instance> instances = new HashSet<>();
 
@@ -157,7 +157,7 @@ public class AmazonServiceTester
 
 			CONSOLE.println("You have " + instances.size() + " Amazon EC2 instance(s).");
 
-			if (AmazonService.getSize() == 0)
+			if (EC2Service.getSize() == 0)
 			{
 				ERROR_CONSOLE.println("The number of instances should be greater than 0!");
 				System.exit(-1);
@@ -165,11 +165,11 @@ public class AmazonServiceTester
 
 			// create security group for cluster with /usr/bin/ssh
 //			String groupName = name + (new Long(System.currentTimeMillis()).hashCode());
-			String groupName = AmazonService.GROUP_PREFIX.concat(AmazonService.getGroupName());
-			AmazonService.createSecurityGroupByClusterName(groupName);
+			String groupName = EC2Service.GROUP_PREFIX.concat(EC2Service.getGroupName());
+			EC2Service.createSecurityGroupByClusterName(groupName);
 
 			// create /usr/bin/ssh access
-			AmazonService.createKeyPair();
+			EC2Service.createKeyPair();
 
 			RunInstancesResult instancesResult = null;
 			String option = null;
@@ -183,8 +183,8 @@ public class AmazonServiceTester
 				{
 				case "!CREATE":
 				{
-					CONSOLE.println("Start a cluster with name " + AmazonService.getGroupName() + " of " + AmazonService.getSize() + " instance(s).");
-					instancesResult = AmazonService.createInstance(groupName, "dmason", 1);
+					CONSOLE.println("Start a cluster with name " + EC2Service.getGroupName() + " of " + EC2Service.getSize() + " instance(s).");
+					instancesResult = EC2Service.createInstance(groupName, "dmason", 1);
 					Iterator<Instance> instanceIterator = instancesResult.getReservation().getInstances().iterator();
 					while (instanceIterator.hasNext())
 					{
@@ -213,7 +213,7 @@ public class AmazonServiceTester
 			try
 			{
 				// pick the first non terminated instance
-				Iterator<LocalInstanceState> localInstanceStateIterator = AmazonService.getLocalInstances().values().iterator();
+				Iterator<LocalInstanceState> localInstanceStateIterator = EC2Service.getLocalInstances().values().iterator();
 				while (localInstanceStateIterator.hasNext())
 				{
 					LocalInstanceState local = localInstanceStateIterator.next();
@@ -243,7 +243,7 @@ public class AmazonServiceTester
 			// test start instance
 			CONSOLE.println("\nPress ENTER to start the " + instanceId + " instance...");
 			ask();
-			AmazonService.startInstance(instanceId);
+			EC2Service.startInstance(instanceId);
 
 			// wait for /usr/bin/ssh connection
 //			String dns = AmazonService.instances.get(instanceId).getPublicDnsName();
@@ -273,11 +273,11 @@ public class AmazonServiceTester
 			// test remote SFTP
 			CONSOLE.print("\nPress ENTER to copy a file to instance " + instanceId);
 			ask();
-			AmazonService.putFile(instanceId, "", "", "testfile");
+			EC2Service.putFile(instanceId, "", "", "testfile");
 
 			CONSOLE.print("\nPress ENTER to copy a file from instance " + instanceId);
 			ask();
-			AmazonService.retrieveFile(instanceId, "", "", "remotefile");
+			EC2Service.retrieveFile(instanceId, "", "", "remotefile");
 
 			// start DMASON on instance as separate thread
 			CONSOLE.print("\nPress ENTER to start DMASON on instance " + instanceId);
@@ -314,17 +314,17 @@ public class AmazonServiceTester
 			// test restart instance
 			CONSOLE.print("\nPress ENTER to reboot the " + instanceId + " instance");
 			ask();
-			AmazonService.rebootInstance(instanceId);
+			EC2Service.rebootInstance(instanceId);
 
 			// test stop instance
 			CONSOLE.print("\nPress ENTER to shut the " + instanceId + " instance down");
 			ask();
-			AmazonService.stopInstance(instanceId);
+			EC2Service.stopInstance(instanceId);
 
 			// test terminate instance
 			CONSOLE.print("\nPress ENTER to terminate the " + instanceId + " instance");
 			ask();
-			AmazonService.terminateInstance(instanceId);
+			EC2Service.terminateInstance(instanceId);
 		}
 		catch (AmazonServiceException ase)
 		{

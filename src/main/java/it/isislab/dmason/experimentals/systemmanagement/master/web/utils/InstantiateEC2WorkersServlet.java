@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
 
-import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.AmazonService;
+import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.EC2Service;
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.DMasonRemoteManager;
 import it.isislab.dmason.experimentals.systemmanagement.master.MasterServer;
 import it.isislab.dmason.experimentals.systemmanagement.master.MultiServerInterface;
@@ -102,11 +102,11 @@ public class InstantiateEC2WorkersServlet
 
 		// create instance on EC2
 		RunInstancesResult instancesResult = null;
-		AmazonService.setType(ec2Type);
-		AmazonService.boot();
+		EC2Service.setType(ec2Type);
+		EC2Service.boot();
 		try
 		{
-			instancesResult = AmazonService.createInstance(numInstances);
+			instancesResult = EC2Service.createInstance(numInstances);
 		}
 		catch (IOException e)
 		{
@@ -124,7 +124,7 @@ public class InstantiateEC2WorkersServlet
 		// run remote instance(s)
 		for (String instanceId: instanceIds)
 		{
-			AmazonService.startInstance(instanceId);
+			EC2Service.startInstance(instanceId);
 		}
 
 		// install DMASON on remote instances
