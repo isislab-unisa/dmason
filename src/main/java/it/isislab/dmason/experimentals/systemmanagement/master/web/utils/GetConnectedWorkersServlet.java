@@ -26,50 +26,57 @@ import javax.servlet.http.HttpServletResponse;
 import it.isislab.dmason.experimentals.systemmanagement.master.MultiServerInterface;
 
 /**
- * 
+ *
  * @author Michele Carillo
  * @author Carmine Spagnuolo
  * @author Flavio Serrapica
  *
  */
-public class GetConnectedWorkersServlet extends HttpServlet {
-
-	/**
-	 * 
-	 */
+public class GetConnectedWorkersServlet
+		extends HttpServlet
+{
 	private static final long serialVersionUID = 1L;
-	MultiServerInterface myServer =null;
-
+	MultiServerInterface myServer = null;
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException
+	{
 		resp.setContentType("text/plain;charset=UTF-8");
-		if(req.getServletContext().getAttribute("masterServer")==null)
-			return; 	
-		
+		if (req.getServletContext().getAttribute("masterServer") == null)
+		{
+			return;
+		}
+
 		myServer = (MultiServerInterface) req.getServletContext().getAttribute("masterServer");
 		String message = "{\"workers\":[";
 		//myServer.checkAllConnectedWorkers();
-		PrintWriter p = resp.getWriter();
-		
-		int startMessageSize = message.length();
-		
-		for(String info : myServer.getInfoWorkers().values()){
-			message+=info+",";
-		}
-		if(message.length() > startMessageSize)
-			message=message.substring(0, message.length()-1)+"]}";
-		else
-			message="";
+		PrintWriter printer = resp.getWriter();
 
-		p.print(message);
-        p.close();
-	
+		int startMessageSize = message.length();
+
+		for (String info : myServer.getInfoWorkers().values())
+		{
+			message += info + ",";
+		}
+
+		if (message.length() > startMessageSize)
+		{
+			message = message.substring(0, message.length() - 1) + "]}";
+		}
+		else
+		{
+			message = "";
+		}
+
+		printer.print(message);
+        printer.close();
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException
+	{
 		doGet(req, resp);
 	}
-
 }
