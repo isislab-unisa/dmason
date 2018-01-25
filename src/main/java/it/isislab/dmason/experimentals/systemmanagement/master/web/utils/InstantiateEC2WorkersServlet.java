@@ -18,6 +18,8 @@ package it.isislab.dmason.experimentals.systemmanagement.master.web.utils;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,6 +32,9 @@ import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
 
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.AmazonService;
+import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.DMasonRemoteManager;
+import it.isislab.dmason.experimentals.systemmanagement.master.MasterServer;
+import it.isislab.dmason.experimentals.systemmanagement.master.MultiServerInterface;
 
 /**
  *
@@ -73,7 +78,7 @@ public class InstantiateEC2WorkersServlet
 	private void newEC2Instance(HttpServletRequest request, HttpServletResponse response)
 	{
 		// comment or properly edit following line to enable logging
-//		LOGGER.setLevel(Level.OFF);
+		LOGGER.setLevel(Level.ALL);
 
 		// extract data from request
 		String ec2Type = request.getParameter("instancetype");
@@ -108,9 +113,37 @@ public class InstantiateEC2WorkersServlet
 			LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
 		}
 		Iterator<Instance> instanceIterator = instancesResult.getReservation().getInstances().iterator();
+		List<String> instanceIds = new Vector<>();
 		while (instanceIterator.hasNext())
 		{
-			LOGGER.info("Generated instance " + instanceIterator.next().getInstanceId());
+			String instanceId = instanceIterator.next().getInstanceId();
+			LOGGER.info("Generated instance " + instanceId);
+			instanceIds.add(instanceId);
+		}
+
+		// run remote instance(s)
+		for (String instanceId: instanceIds)
+		{
+			AmazonService.startInstance(instanceId);
+		}
+
+		// install DMASON on remote instances
+		for (String instanceId: instanceIds)
+		{
+			DMasonRemoteManager.installDMason(instanceId);
+		}
+
+		// run DMASON as worker on remote instance
+		MasterServer server = (MasterServer) request.getServletContext().getAttribute("masterServer");
+		DMasonRemoteManager.setActiveMQIP(server.getIpActivemq());
+		DMasonRemoteManager.setActiveMQPort(server.getPortActivemq());
+		LOGGER.info(
+				"Worker(s) will connect to ActiveMQ@" + DMasonRemoteManager.getActiveMQIP() +
+				":" + DMasonRemoteManager.getActiveMQPort() + "..."
+		);
+		for (String instanceId: instanceIds)
+		{
+			DMasonRemoteManager.startDMason(instanceId, false);
 		}
 	}
 }
