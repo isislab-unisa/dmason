@@ -76,6 +76,13 @@
 			<artifactId>apache-jsp</artifactId>
 			<version>${jetty-version}</version>
 		</dependency>
+
+		<!-- Jetty Apache JSTL dependency -->
+		<!--<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>apache-jstl</artifactId>
+			<version>${jetty-version}</version>
+		</dependency>-->
 		<!-- Jetty Dependencies end here -->
 
 		<dependency>
@@ -86,9 +93,10 @@
 
 		<!-- JSTL Dependency -->
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.2</version>
+			<groupId>org.glassfish.web</groupId>
+			<artifactId>javax.servlet.jsp.jstl</artifactId>
+			<version>1.2.5-b03</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -153,8 +161,8 @@
 			<version>1.6.4</version>
 		</dependency>
 
-		<!-- old conf > <groupId>org.apache.activemq</groupId> <artifactId>activemq-all</artifactId> 
-			<version>5.5.1</version> </dependency> <dependency> <groupId>log4j</groupId> 
+		<!-- old conf > <groupId>org.apache.activemq</groupId> <artifactId>activemq-all</artifactId>
+			<version>5.5.1</version> </dependency> <dependency> <groupId>log4j</groupId>
 			<artifactId>log4j</artifactId> <version>1.2.14</version> </dependency -->
 
 		<dependency>
@@ -175,7 +183,7 @@
 			<version>1.7.2</version>
 		</dependency>
 
-		<!-- old conf dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-log4j12</artifactId> 
+		<!-- old conf dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-log4j12</artifactId>
 			<version>1.5.6</version> </dependency -->
 
 		<dependency>
