@@ -35,6 +35,7 @@ import com.amazonaws.services.ec2.model.RunInstancesResult;
 
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.EC2Service;
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.model.LocalInstanceState;
+import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.DMasonRemoteFileManager;
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.DMasonRemoteManager;
 
 /**
@@ -51,7 +52,7 @@ public class EC2ServiceTester
 
 	/**
 	 * @param args
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static void main(String[] args)
 			throws Exception
@@ -68,7 +69,7 @@ public class EC2ServiceTester
 	}
 
 	/**
-	 * 
+	 *
 	 * @param args
 	 * @throws Exception
 	 */
@@ -138,7 +139,7 @@ public class EC2ServiceTester
 			}
 		}
 
-		// 
+		//
 		try
 		{
 			// show availability zones
@@ -224,7 +225,7 @@ public class EC2ServiceTester
 						break;
 					}
 				}
-				
+
 			}
 			catch (Exception e)
 			{
@@ -273,11 +274,11 @@ public class EC2ServiceTester
 			// test remote SFTP
 			CONSOLE.print("\nPress ENTER to copy a file to instance " + instanceId);
 			ask();
-			EC2Service.putFile(instanceId, "", "", "testfile");
+			DMasonRemoteFileManager.putFile(instanceId, "", "", "testfile");
 
 			CONSOLE.print("\nPress ENTER to copy a file from instance " + instanceId);
 			ask();
-			EC2Service.retrieveFile(instanceId, "", "", "remotefile");
+			DMasonRemoteFileManager.retrieveFile(instanceId, "", "", "remotefile");
 
 			// start DMASON on instance as separate thread
 			CONSOLE.print("\nPress ENTER to start DMASON on instance " + instanceId);
@@ -298,6 +299,9 @@ public class EC2ServiceTester
 						{
 							LOGGER.severe(e.getClass().getName() + ": " + e.getMessage() + ".");
 						}
+						// TODO add activeMQ IP and port before running a worker
+						DMasonRemoteManager.setActiveMQIP("0.0.0.0");
+						DMasonRemoteManager.setActiveMQPort("61616");
 						DMasonRemoteManager.startDMason(INSTANCE_ID, false);
 					}
 				}

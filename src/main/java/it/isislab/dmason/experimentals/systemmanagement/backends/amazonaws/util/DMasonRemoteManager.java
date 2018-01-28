@@ -80,7 +80,6 @@ public class DMasonRemoteManager
 		}
 
 		// check if instance has already DMASON installed
-		Session session = null;
 		if (localInstanceState.isReady())
 		{
 			LOGGER.warning("DMASON is already installed on instance " + instanceId + "!");
@@ -89,41 +88,13 @@ public class DMasonRemoteManager
 
 		LOGGER.info("Installing DMASON on instance " + instanceId + "...");
 
-		// establish a ssh session TODO make a helper method out of this
-		LOGGER.info("Establishing a new session (instance " + instanceId + ", user " + EC2Service.getAmiUser() + ") ...");
-		session = EC2Service.getSession(instanceId, EC2Service.getAmiUser(), false); // username is set according to AMI
-		boolean isConnected = false;
-		final int MAX_ATTEMPTS = 3;
-		int attempt = 0;
-		while (!isConnected) {
-			try
-			{
-				LOGGER.info("Attempt " + ++attempt + " to connect...");
-				session.connect(EC2Service.SESSION_TIMEOUT);
-				isConnected = true;
-			}
-			catch (JSchException e)
-			{
-				LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
-
-				// check whether max number of attempts has been reached
-				if (attempt >= MAX_ATTEMPTS)
-				{
-					LOGGER.severe("Unable to connect to remote resource!");
-					return;
-				}
-
-				// 1s pause before reattempt
-				LOGGER.warning("Connection failed, retrying in 1 second...");
-				try
-				{
-					Thread.sleep(1000);
-				}
-				catch (InterruptedException ie) {
-					LOGGER.severe(ie.getClass().getSimpleName() + ": " + ie.getMessage() + ".");
-				}
-			}
-		}
+		// establish a ssh session
+		Session session = null;
+		LOGGER.info(
+				"Establishing a new session (instance " + instanceId +
+				", user " + EC2Service.getAmiUser() + ") ..."
+		);
+		session = RemoteCommand.retrieveSession(instanceId);
 
 		// check session
 		if (session == null)
@@ -140,14 +111,14 @@ public class DMasonRemoteManager
 			// if 'target' folder exists, maven built DMASON already
 			final String LOG_FILE_NAME = "ls.log";
 			LOGGER.info("Check if DMASON is remotely installed...");
-			exitStatus = EC2Service.executeCommand(
+			exitStatus = RemoteCommand.executeCommand(
 					session,
-					"ls isislab/dmason/target/ > " + LOG_FILE_NAME, // in case of ls error, an empty file gets generated
+					"ls isislab/dmason/target/ > " + LOG_FILE_NAME, // in case of ls error, empty file gets generated
 					true);
 			LOGGER.info("Remote check completed!");
 			LOGGER.info("Connection returned " + exitStatus);
 			session.disconnect();
-			EC2Service.retrieveFile(instanceId, "", "", LOG_FILE_NAME);
+			DMasonRemoteFileManager.retrieveFile(instanceId, "", "", LOG_FILE_NAME);
 			File logFile = new File(LOG_FILE_NAME);
 			if (logFile.length() > 0)
 			{
@@ -164,7 +135,7 @@ public class DMasonRemoteManager
 
 			// update remote repositories
 			LOGGER.info("Update repositories...");
-			exitStatus = EC2Service.executeCommand(
+			exitStatus = RemoteCommand.executeCommand(
 					session,
 					"sudo apt-get update -q -y",
 					true
@@ -175,7 +146,7 @@ public class DMasonRemoteManager
 			// install Java Development Kit
 			// if JDK is installed already, it doesn't get installed by -y
 			LOGGER.info("Installing Java Development Kit...");
-			exitStatus = EC2Service.executeCommand(
+			exitStatus = RemoteCommand.executeCommand(
 					session,
 					"sudo apt-get install default-jdk -q -y", // -q quiet, -y assert-all
 					true
@@ -191,7 +162,7 @@ public class DMasonRemoteManager
 
 			// install maven
 			LOGGER.info("Installing Maven...");
-			exitStatus = EC2Service.executeCommand(
+			exitStatus = RemoteCommand.executeCommand(
 					session,
 					"sudo apt-get install maven -y",
 					true
@@ -201,7 +172,7 @@ public class DMasonRemoteManager
 
 			// install DMASON
 			LOGGER.info("Downloading DMASON...");
-			exitStatus = EC2Service.executeCommand(
+			exitStatus = RemoteCommand.executeCommand(
 					session,
 					"mkdir isislab" + ";" +
 					"cd isislab/" + ";" +
@@ -213,7 +184,7 @@ public class DMasonRemoteManager
 
 			// compile DMASON in 'maven' folder
 			LOGGER.info("Compiling DMASON...");
-			exitStatus = EC2Service.executeCommand(
+			exitStatus = RemoteCommand.executeCommand(
 					session,
 					"cd ~/isislab/dmason/" + ";" + // every connection starts from home directory
 					"mvn -Dmaven.test.skip=true clean package", // skip tests
@@ -237,7 +208,8 @@ public class DMasonRemoteManager
 			{
 				session.disconnect();
 
-				// discard session: this is a workaround for packet loss closing session after a SFTP channel connection
+				// discard session: this is a workaround for
+				// packet loss closing session after a SFTP channel connection
 				localInstanceState.setSession(null);
 				EC2Service.getLocalInstances().put(instanceId, localInstanceState);
 			}
@@ -311,8 +283,8 @@ public class DMasonRemoteManager
 		// establish a ssh session
 		Session session = null;
 		try {
-			session = EC2Service.getSession(instanceId, EC2Service.getAmiUser(), false); // username is set according to AMI
-			session.connect(EC2Service.SESSION_TIMEOUT); // 30s timeout
+			session = EC2Service.getSession(instanceId, EC2Service.getAmiUser(), false); // username set according to AMI
+			session.connect(RemoteCommand.SESSION_TIMEOUT); // 30s timeout
 			int exitStatus = 0;
 			final String DMASON_ABS_PATH = "~/isislab/dmason/target/";
 			final String version = VersionChooser.extract(); // determine which DMASON version is running
@@ -321,14 +293,15 @@ public class DMasonRemoteManager
 			// if remote 'ps x' output contains 'java' then skip start command
 			final String LOG_FILE_NAME = "ps.log";
 			LOGGER.info("Check if DMASON is already running...");
-			exitStatus = EC2Service.executeCommand(
+			exitStatus = RemoteCommand.executeCommand(
 					session,
-					"ps x | grep 'java -jar DMASON' | grep -v 'grep' > " + LOG_FILE_NAME, // in case of ls error, an empty file gets generated
+					"ps x | grep 'java -jar DMASON' | grep -v 'grep' > " +
+							LOG_FILE_NAME, // in case of ls error, an empty file gets generated
 					true);
 			LOGGER.info("");
 			LOGGER.info("Connection returned " + exitStatus);
 			session.disconnect();
-			EC2Service.retrieveFile(instanceId, "", "", LOG_FILE_NAME);
+			DMasonRemoteFileManager.retrieveFile(instanceId, "", "", LOG_FILE_NAME);
 			File logFile = new File(LOG_FILE_NAME);
 			if (logFile.length() > 0)
 			{
@@ -366,7 +339,7 @@ public class DMasonRemoteManager
 			if (isMaster)
 			{
 				LOGGER.info("Running as master...");
-				exitStatus = EC2Service.executeCommand(
+				exitStatus = RemoteCommand.executeCommand(
 						session,
 						"cd " + DMASON_ABS_PATH + ";" +
 						basicCommand + " -m master",
@@ -390,7 +363,7 @@ public class DMasonRemoteManager
 						.concat(" -p ").concat(DMasonRemoteManager.activeMQPort);
 				}
 
-				exitStatus = EC2Service.executeCommand(
+				exitStatus = RemoteCommand.executeCommand(
 						session,
 						"cd " + DMASON_ABS_PATH + ";" +
 						command,
@@ -478,22 +451,23 @@ public class DMasonRemoteManager
 		Session session = null;
 		try
 		{
-			session = EC2Service.getSession(instanceId, EC2Service.getAmiUser(), false); // username is set according to AMI
-			session.connect(EC2Service.SESSION_TIMEOUT); // 30s timeout
+			session = EC2Service.getSession(instanceId, EC2Service.getAmiUser(), false); // username set according to AMI
+			session.connect(RemoteCommand.SESSION_TIMEOUT); // 30s timeout
 			int exitStatus = 0;
 
 			// check if actually DMASON is running on instance
 			// if remote 'ps x' output does not contains 'java' then skip stop command
 			final String LOG_FILE_NAME = "ps.log";
 			LOGGER.info("Check if DMASON is running...");
-			exitStatus = EC2Service.executeCommand(
+			exitStatus = RemoteCommand.executeCommand(
 					session,
-					"ps x | grep 'java -jar DMASON' | grep -v 'grep' > " + LOG_FILE_NAME, // in case of ls error, an empty file gets generated
+					"ps x | grep 'java -jar DMASON' | grep -v 'grep' > " +
+							LOG_FILE_NAME, // in case of ls error, an empty file gets generated
 					true);
 			LOGGER.info("");
 			LOGGER.info("Connection returned " + exitStatus);
 			session.disconnect();
-			EC2Service.retrieveFile(instanceId, "", "", LOG_FILE_NAME);
+			DMasonRemoteFileManager.retrieveFile(instanceId, "", "", LOG_FILE_NAME);
 			File logFile = new File(LOG_FILE_NAME);
 			if (logFile.length() == 0)
 			{
@@ -509,7 +483,7 @@ public class DMasonRemoteManager
 			session.connect();
 
 			LOGGER.info("Running as master...");
-			exitStatus = EC2Service.executeCommand(
+			exitStatus = RemoteCommand.executeCommand(
 					session,
 					"pkill java", // could it be more specific?
 					true

@@ -69,12 +69,9 @@ import com.amazonaws.services.ec2.model.StopInstancesResult;
 import com.amazonaws.services.ec2.model.Tag;
 import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
 import com.amazonaws.services.ec2.model.TerminateInstancesResult;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpException;
 
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.model.LocalInstanceState;
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.LocalInstanceStateManager;
@@ -90,7 +87,7 @@ public class EC2Service
 {
 	// static variables
 	/**
-	 * The AMI is the Amazon Machine Image chosen to remotely instantiate.
+	 * The AMI is the <i>Amazon Machine Image</i> chosen to remotely instantiate.
 	 * There are several kind of AMI and they all have an ID, here some
 	 * examples:
 	 * <ul>
@@ -114,21 +111,19 @@ public class EC2Service
 	 */
 	private static Map<String, LocalInstanceState> localInstances;
 	/**
-	 * Properties for <code>AmazonService</code> class.
+	 * Properties for <code>EC2Service</code> class.
 	 *
 	 * @see #loadProperties()
 	 */
 	private static Properties startProperties;
 
 	// constants
-	public static final int CONNECTION_TIMEOUT = 15000; // 15s
 	public static final String GROUP_PREFIX = "isislab-";
 	private static final Logger LOGGER = Logger.getGlobal();
 	private static final String KEY_NAME = "dmason-key-2";
 	private static final String PROPERTIES_FILE_PATH = "resources" + File.separator +
 			"systemmanagement" + File.separator + "master" + File.separator + "conf" +
 			File.separator + "config.properties";
-	public static final int SESSION_TIMEOUT = 30000; // 30s
 
 	/**
 	 * This method creates an AmazonEC2Client instance.
@@ -171,11 +166,11 @@ public class EC2Service
 			LOGGER.info("Local instances states map populated!");
 
 			EC2Service.booted = true;
-			LOGGER.info("Amazon Service boot process completed!");
+			LOGGER.info("Amazon EC2 Service boot process completed!");
 		}
 		else
 		{
-			LOGGER.warning("Amazon Service is already booted!");
+			LOGGER.warning("Amazon EC2 Service is already booted!");
 		}
 	}
 
@@ -239,8 +234,7 @@ public class EC2Service
 			EC2Service.tagInstance(
 					istanceID,
 					"Name",
-					numInstances + "-" + EC2Service.groupName + "-" + clusterType,
-					EC2Service.ec2
+					numInstances + "-" + EC2Service.groupName + "-" + clusterType
 			);
 		}
 
@@ -425,7 +419,7 @@ public class EC2Service
 			IpRange ipRange1 = new IpRange().withCidrIp("0.0.0.0/0"); // FIXME restrict IP interval
 			ipPermission.withIpv4Ranges(Arrays.asList(new IpRange[] {ipRange1}))
 					.withIpProtocol("tcp")
-					.withFromPort(0)
+					.withFromPort(0) // FIXME restrict port interval as needed
 					.withToPort(65535);
 
 			AuthorizeSecurityGroupIngressRequest authorizeSecurityGroupIngressRequest = new AuthorizeSecurityGroupIngressRequest();
@@ -436,34 +430,11 @@ public class EC2Service
 		}
 	} // end createSecurityGroupByClusterName(String)
 
-	/**
-	 * This method executes a remote command on a ChannelExec channel
-	 * and returns a status code.
-	 *
-	 * @param session - The session to use for command execution
-	 * @param command - The command to execute on the remote channel
-	 * @param printRemoteOutput - Toggle remote console
-	 * @return exitStatus - Exit status for the command
-	 * @throws JSchException - An error occurred while creating or accessing a secure shell object
-	 * @throws IOException - An error occurred while accessing the file
-	 * @throws InterruptedException - A thread has been interrupted while running
-	 */
-	public static int executeCommand(Session session, String command, boolean printRemoteOutput)
-			throws JSchException, IOException, InterruptedException
+	public static void discardSession(String instanceId)
 	{
-		ChannelExec channel = (ChannelExec) session.openChannel("exec");
-		channel.setInputStream(null);
-		InputStream in = channel.getInputStream();
-//		((Channel) channel).setOutputStream(System.out);
-//		channel.setErrStream(System.err);
-
-		channel.setCommand(command);
-		channel.connect(EC2Service.CONNECTION_TIMEOUT);
-		int exitStatus = EC2Service.readRemoteInput(channel, in, printRemoteOutput);
-		channel.disconnect();
-		in.close();
-
-		return exitStatus;
+		LocalInstanceState localInstanceState = EC2Service.getLocalInstances().get(instanceId);
+		localInstanceState.setSession(null);
+		EC2Service.getLocalInstances().put(instanceId, localInstanceState);
 	}
 
 	/**
@@ -527,8 +498,14 @@ public class EC2Service
 			try
 			{
 				// set private key for session
-				jsch.addIdentity(userHome + "/.aws/" + EC2Service.KEY_NAME + ".pem");
+				String keyPath =
+						userHome + File.separator +
+						".aws" + File.separator +
+						EC2Service.KEY_NAME + ".pem";
+				LOGGER.info("Retrieving private key from " + keyPath + "...");
+				jsch.addIdentity(keyPath);
 				keyPairExists = true;
+				LOGGER.info("Private key " + EC2Service.KEY_NAME + " for session has been set!");
 
 				// create a ssh session
 				session = jsch.getSession(username, publicDns, 22);
@@ -539,7 +516,9 @@ public class EC2Service
 
 				if (!keyPairExists)
 				{
-					LOGGER.severe("There is no " + EC2Service.KEY_NAME + ".pem keypair!\nUnable to establish a session!");
+					LOGGER.severe(
+							"There is no " + EC2Service.KEY_NAME + ".pem keypair!\nUnable to establish a session!"
+					);
 					return null;
 				}
 			}
@@ -692,122 +671,6 @@ public class EC2Service
 		LocalInstanceStateManager.saveLocalInstanceStates(EC2Service.localInstances);
 	}
 
-	public static void putFile(String instanceId, String localPath, String remotePath, String fileName)
-	{
-		LOGGER.info("Copying file " + localPath + "/" + fileName + " to " + remotePath + " directory of instance " + instanceId + "...");
-		String absFilePath = "";
-		boolean copied = false;
-		if (localPath != null && !localPath.isEmpty())
-		{
-			absFilePath = localPath + "/" + fileName;
-		}
-		else
-		{
-			absFilePath = fileName;
-		}
-		LOGGER.info("Full file path: " + absFilePath);
-		File localFile = new File(absFilePath);
-		Session session = null;
-		ChannelSftp channel = null;
-
-		// establish a ssh session
-		LOGGER.info("Establishing a new session...");
-		try
-		{
-			// connect to session
-			session = getSession(instanceId, EC2Service.amiUser, true);
-			session.connect(EC2Service.SESSION_TIMEOUT);
-
-			// start SFTP connection through session
-			channel = (ChannelSftp) session.openChannel("sftp");
-			channel.connect(EC2Service.CONNECTION_TIMEOUT);
-			if (remotePath != null && !remotePath.isEmpty())
-			{
-				channel.cd(remotePath);
-			}
-
-			// send file to remote location
-			channel.put(new FileInputStream(localFile), localFile.getName());
-			copied = true;
-		}
-		catch (JSchException | SftpException | IOException e)
-		{
-			LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage());
-		}
-		finally
-		{
-			// close channel and session
-			if (channel != null && channel.isConnected())
-			{
-				channel.disconnect();
-			}
-			if (session != null && session.isConnected())
-			{
-				session.disconnect();
-
-				// discard session: this is a workaround for packet loss closing session after a SFTP channel connection
-				LocalInstanceState localInstanceState = EC2Service.localInstances.get(instanceId);
-				localInstanceState.setSession(null);
-				EC2Service.localInstances.put(instanceId, localInstanceState);
-			}
-		}
-
-		if (copied)
-		{
-			LOGGER.info("Copied file " + fileName + " to " + "\"" + remotePath + "\"" + " of instance " + instanceId + ".");
-		}
-	} // end putFile(String, String, String, String)
-
-	/**
-	 * This method processes remote input from a console and
-	 * returns its status code.
-	 *
-	 * @param channel -
-	 * @param in -
-	 * @param printOutput -
-	 * @return exitStatus - The exit status of the console
-	 * @throws IOException - An error occurred while accessing the file
-	 * @throws InterruptedException - A thread has been interrupted while running
-	 */
-	private static int readRemoteInput(ChannelExec channel, InputStream in, boolean printOutput)
-			throws IOException
-	{
-		byte[] tmp = new byte[1024];
-		int exitStatus = -1;
-
-		while (true)
-		{
-			while (in.available() > 0)
-			{
-				int i = in.read(tmp, 0, 1024);
-				if (i < 0)
-				{
-					break;
-				}
-				if (printOutput)
-				{
-					System.out.print(new String(tmp, 0, i));
-				}
-			}
-
-			if (channel.isClosed())
-			{
-				exitStatus = channel.getExitStatus();
-				break;
-			}
-			try
-			{
-				Thread.sleep(500);
-			}
-			catch (InterruptedException e)
-			{
-				LOGGER.severe(e.getClass().getName() + ": " + e.getMessage() + ".");
-			}
-		}
-
-		return exitStatus;
-	}
-
 	/**
 	 * This method reboots an existing running instance
 	 * by specifying its ID as parameter.
@@ -838,71 +701,6 @@ public class EC2Service
 		LOGGER.info("Instance " + instanceID + " has been started again!");
 
 		return result;
-	}
-
-	public static void retrieveFile(String instanceId, String localPath, String remotePath, String fileName)
-	{
-		LOGGER.info("Retrieving file " + remotePath + "/" + fileName + " from " + instanceId + "...");
-		String absFilePath = "";
-		boolean retrieved = false;
-		if (localPath != null && !localPath.isEmpty())
-		{
-			absFilePath = localPath + "/" + fileName;
-		}
-		else
-		{
-			absFilePath = fileName;
-		}
-		LOGGER.info("Full file path: " + absFilePath);
-		Session session = null;
-		ChannelSftp channel = null;
-
-		// establish a ssh session
-		LOGGER.info("Establishing a new session...");
-		try
-		{
-			// retrieve session for specified instance
-			session = getSession(instanceId, EC2Service.amiUser, true);
-			session.connect(EC2Service.SESSION_TIMEOUT); // 30s timeout
-
-			// create sftp channel
-			channel = (ChannelSftp) session.openChannel("sftp");
-			channel.connect(EC2Service.CONNECTION_TIMEOUT);
-			if (remotePath != null && !remotePath.isEmpty())
-			{
-				channel.cd(remotePath);
-			}
-
-			// retrieve file from remote location
-			channel.get(remotePath.concat(fileName), localPath.concat(fileName));
-			retrieved = true;
-		}
-		catch (JSchException | SftpException e)
-		{
-			LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage());
-		}
-		finally
-		{
-			// close channel and session
-			if (channel != null && channel.isConnected())
-			{
-				channel.disconnect();
-			}
-			if (session != null && session.isConnected())
-			{
-				session.disconnect();
-
-				// discard session: this is a workaround for packet loss closing session after a SFTP channel connection
-				LocalInstanceState localInstanceState = EC2Service.localInstances.get(instanceId);
-				localInstanceState.setSession(null);
-				EC2Service.localInstances.put(instanceId, localInstanceState);
-			}
-		}
-
-		if (retrieved)
-		{
-			LOGGER.info("Retrieved file " + fileName + " from " + "\"" + remotePath + "\"" + " of instance " + instanceId + ".");
-		}
 	}
 
 	private static Instance retrieveInstance(String instanceId)
@@ -1054,11 +852,11 @@ public class EC2Service
 	 * and its cluster type.
 	 *
 	 * @param istanceId - The instance to tag
-	 * @param tag - The name of the tag
-	 * @param value - The value of the tag
+	 * @param tagName - The name of the tag
+	 * @param tagValue - The value of the tag
 	 * @param ec2Client - The client containing the instance to tag
 	 */
-	private static void tagInstance(String istanceId, String tag, String value, AmazonEC2 ec2Client)
+	private static void tagInstance(String istanceId, String tagName, String tagValue)
 	{
 		CreateTagsRequest tagRequest = new CreateTagsRequest();
 
@@ -1074,8 +872,8 @@ public class EC2Service
 
 		tagRequest = tagRequest
 				.withResources(istanceId)
-				.withTags(new Tag(tag, value));
-		ec2Client.createTags(tagRequest);
+				.withTags(new Tag(tagName, tagValue));
+		EC2Service.ec2.createTags(tagRequest);
 	}
 
 	/**
@@ -1120,7 +918,7 @@ public class EC2Service
 			}
 		}
 		while (!terminated);
-		LOGGER.info("Instance " + instanceID + " has been stopped!");
+		LOGGER.info("Instance " + instanceID + " has been terminated!");
 
 		// mark the instance as terminated in local map
 		LocalInstanceState localInstanceState = EC2Service.localInstances.get(instanceID);
@@ -1130,6 +928,7 @@ public class EC2Service
 		return result;
 	}
 
+	// getters and setters
 	public static String getAmi()
 	{
 		return ami;
