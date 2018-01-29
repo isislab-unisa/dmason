@@ -130,7 +130,7 @@ public class DMasonRemoteManager
 			}
 
 			// re-establish session because of SFTP request
-			session = EC2Service.getSession(instanceId, EC2Service.getAmiUser(), false);
+			session = EC2Service.getSession(instanceId);
 			session.connect();
 
 			// update remote repositories
@@ -152,7 +152,7 @@ public class DMasonRemoteManager
 					true
 			);
 			LOGGER.info("Connection returned " + exitStatus);
-//			exitStatus = AmazonService.executeCommand(
+//			exitStatus = RemoteCommand.executeCommand(
 //					session,
 //					"dpkg --get-selections | grep jdk",
 //					true
@@ -210,8 +210,8 @@ public class DMasonRemoteManager
 
 				// discard session: this is a workaround for
 				// packet loss closing session after a SFTP channel connection
-				localInstanceState.setSession(null);
-				EC2Service.getLocalInstances().put(instanceId, localInstanceState);
+//				localInstanceState.setSession(null);
+//				EC2Service.getLocalInstances().put(instanceId, localInstanceState);
 			}
 		}
 
@@ -283,8 +283,7 @@ public class DMasonRemoteManager
 		// establish a ssh session
 		Session session = null;
 		try {
-			session = EC2Service.getSession(instanceId, EC2Service.getAmiUser(), false); // username set according to AMI
-			session.connect(RemoteCommand.SESSION_TIMEOUT); // 30s timeout
+			session = RemoteCommand.retrieveSession(instanceId);
 			int exitStatus = 0;
 			final String DMASON_ABS_PATH = "~/isislab/dmason/target/";
 			final String version = VersionChooser.extract(); // determine which DMASON version is running
@@ -331,8 +330,7 @@ public class DMasonRemoteManager
 			}
 
 			// re-establish session because of SFTP request
-			session = EC2Service.getSession(instanceId, EC2Service.getAmiUser(), false);
-			session.connect();
+			session = RemoteCommand.retrieveSession(instanceId);
 
 			// execute Master or Worker
 			String basicCommand = "java -jar DMASON-" + version + ".jar";
@@ -451,8 +449,7 @@ public class DMasonRemoteManager
 		Session session = null;
 		try
 		{
-			session = EC2Service.getSession(instanceId, EC2Service.getAmiUser(), false); // username set according to AMI
-			session.connect(RemoteCommand.SESSION_TIMEOUT); // 30s timeout
+			session = RemoteCommand.retrieveSession(instanceId);
 			int exitStatus = 0;
 
 			// check if actually DMASON is running on instance
@@ -479,8 +476,7 @@ public class DMasonRemoteManager
 			}
 
 			// re-establish session because of SFTP request
-			session = EC2Service.getSession(instanceId, EC2Service.getAmiUser(), false);
-			session.connect();
+			session = RemoteCommand.retrieveSession(instanceId);
 
 			LOGGER.info("Running as master...");
 			exitStatus = RemoteCommand.executeCommand(

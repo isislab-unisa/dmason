@@ -64,30 +64,24 @@ public class RemoteCommand
 
 	public static Session retrieveSession(String instanceId)
 	{
-		Session session = EC2Service.getSession(
-				instanceId,
-				EC2Service.getAmiUser(), // username set according to AMI
-				false
-		);
+		LOGGER.info("retrieving session for " + instanceId + "...");
+		Session session = EC2Service.getSession(instanceId);
 		if (session == null)
 		{
 			LOGGER.severe("No session has been generated for instance " + instanceId + "!");
 			return null;
 		}
 
-		session.setPort(22); // TODO attempt to make it connect
-		boolean isConnected = false;
-		final int MAX_ATTEMPTS = 5;
+		final int MAX_ATTEMPTS = 3;
 		int attempt = 0;
 
 		// check if session was already connected or if
 		// this method managed to connect it
-		while (!session.isConnected() && !isConnected) {
+		while (!session.isConnected()) {
 			try
 			{
 				LOGGER.info("Attempt " + ++attempt + " to connect...");
 				session.connect(RemoteCommand.SESSION_TIMEOUT); // FIXME why it doesn't connect?
-				isConnected = true;
 			}
 			catch (JSchException e)
 			{
@@ -97,7 +91,7 @@ public class RemoteCommand
 				if (attempt >= MAX_ATTEMPTS)
 				{
 					LOGGER.severe("Unable to connect to remote resource!");
-					e.printStackTrace(); // TODO comment after debugging
+//					e.printStackTrace();
 					return null;
 				}
 

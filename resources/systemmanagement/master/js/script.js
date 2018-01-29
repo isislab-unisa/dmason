@@ -1118,7 +1118,7 @@ function _onSubmitEC2WorkerRequest(event) {
         }
     )
     .done(function (data, textStatus, jqXHR) {
-            console.info(data + "\nstatus: " + textStatus + ".")
+            console.info(data + "\nstatus: " + textStatus + ".");
             resetEC2RequestForm();
             document.getElementById("addEC2NodeDialog").close();
     })

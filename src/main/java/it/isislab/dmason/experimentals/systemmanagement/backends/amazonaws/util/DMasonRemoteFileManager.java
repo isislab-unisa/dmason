@@ -26,8 +26,6 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
-import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.EC2Service;
-
 /**
  * @author Bisogno Simone (05121/1177)
  *
@@ -89,7 +87,7 @@ public class DMasonRemoteFileManager
 
 				// discard session: this is a workaround for
 				// packet loss closing session after a SFTP channel connection
-				EC2Service.discardSession(instanceId);
+//				EC2Service.discardSession(instanceId);
 			}
 		}
 
@@ -125,7 +123,7 @@ public class DMasonRemoteFileManager
 		try
 		{
 			// retrieve session for specified instance
-			session = EC2Service.getSession(instanceId, EC2Service.getAmiUser(), true);
+			session = RemoteCommand.retrieveSession(instanceId);
 			session.connect(RemoteCommand.SESSION_TIMEOUT); // 30s timeout
 
 			// create sftp channel
@@ -157,7 +155,7 @@ public class DMasonRemoteFileManager
 
 				// discard session: this is a workaround for
 				// packet loss closing session after a SFTP channel connection
-				EC2Service.discardSession(instanceId);
+//				EC2Service.discardSession(instanceId);
 			}
 		}
 

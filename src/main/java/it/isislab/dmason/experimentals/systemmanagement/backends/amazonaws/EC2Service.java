@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
+//import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
@@ -430,12 +431,12 @@ public class EC2Service
 		}
 	} // end createSecurityGroupByClusterName(String)
 
-	public static void discardSession(String instanceId)
-	{
-		LocalInstanceState localInstanceState = EC2Service.getLocalInstances().get(instanceId);
-		localInstanceState.setSession(null);
-		EC2Service.getLocalInstances().put(instanceId, localInstanceState);
-	}
+//	public static void discardSession(String instanceId)
+//	{
+//		LocalInstanceState localInstanceState = EC2Service.getLocalInstances().get(instanceId);
+//		localInstanceState.setSession(null);
+//		EC2Service.getLocalInstances().put(instanceId, localInstanceState);
+//	}
 
 	/**
 	 * This method retrieves the public DNS for an instance on a EC2 client.
@@ -443,11 +444,15 @@ public class EC2Service
 	 * @param instanceId - The ID of an EC2 instance.
 	 * @return The instance public DNS
 	 */
-	private static String getDns(String instanceId)
+	public static String getDns(String instanceId)
 	{
 		// try to retrieve DNS name from local map
 		LocalInstanceState localInstanceState = EC2Service.localInstances.get(instanceId);
-		if (localInstanceState != null)
+		if (
+				localInstanceState != null &&
+				localInstanceState.getDns() != null &&
+				!localInstanceState.getDns().isEmpty()
+		)
 		{
 			return localInstanceState.getDns();
 		}
@@ -465,31 +470,57 @@ public class EC2Service
 	 * If no session is locally stored, a new one gets established.
 	 *
 	 * @param instanceId - The ID of the instance
-	 * @param username - The username on the instance
-	 * @param forceNewSession - Determine whether reuse current session (<code>false</code>) or discard it (<code>true</code>)
 	 * @return session - The session for instance specified by ID.
 	 */
-	public static Session getSession(String instanceId, String username, boolean forceNewSession)
+	public static Session getSession(String instanceId)
+	{
+		return EC2Service.getSession(instanceId, EC2Service.getAmiUser());
+	}
+
+	/**
+	 * This method retrieves the session related to specified instance ID.
+	 * If no session is locally stored, a new one gets established.
+	 *
+	 * @param instanceId - The ID of the instance
+	 * @param username - The username on the instance
+	 * @return session - The session for instance specified by ID.
+	 */
+	public static Session getSession(String instanceId, String username)
 	{
 		Session session = null;
-		String publicDns = getDns(instanceId);
-
-		// pick session for instance associated to instanceId
-		if (!forceNewSession)
+		String publicDns = EC2Service.getDns(instanceId);
+		if (publicDns == null || publicDns.isEmpty())
 		{
-			session = EC2Service.localInstances.get(instanceId).getSession();
+			LOGGER.severe("No public DNS provided!");
+			return null;
 		}
 		else
 		{
-			LOGGER.warning("Existing session for instance " + instanceId + " will be discarded!");
+			LOGGER.info("Public DNS: " + publicDns);
 		}
+		final int PORT = 22;
+
+		// pick session for instance associated to instanceId
+//		if (!forceNewSession)
+//		{
+//			session = EC2Service.localInstances.get(instanceId).getSession();
+//		}
+//		else
+//		{
+//			LOGGER.warning("Existing session for instance " + instanceId + " will be discarded!");
+//			EC2Service.localInstances.get(instanceId).setSession(null);
+//		}
 
 		// instantiate a new session
 		if (session == null)
 		{
-			LOGGER.warning("There is no existing session for instance " + instanceId + "!");
+			LOGGER.warning(
+					"There is no existing session for instance " + instanceId +
+					" on " + publicDns + "!"
+			);
 
 			// instantiate a secure shell
+			LOGGER.info("Instantiating a secure channel...");
 			JSch jsch = new JSch();
 
 			// specify private key
@@ -508,7 +539,11 @@ public class EC2Service
 				LOGGER.info("Private key " + EC2Service.KEY_NAME + " for session has been set!");
 
 				// create a ssh session
-				session = jsch.getSession(username, publicDns, 22);
+				LOGGER.info(
+						"Creating SSH session on secure channel...\n" +
+						username + "@" + publicDns + ":" + PORT
+				);
+				session = jsch.getSession(username, publicDns, PORT);
 			}
 			catch (JSchException e)
 			{
@@ -526,14 +561,26 @@ public class EC2Service
 			LOGGER.info("A new session for instance " + instanceId + " has been created!");
 
 			// save session in local map
-			LocalInstanceState instanceState = EC2Service.localInstances.get(instanceId);
-			instanceState.setSession(session);
-			EC2Service.localInstances.put(instanceId, instanceState);
+//			LocalInstanceState instanceState = EC2Service.localInstances.get(instanceId);
+//			instanceState.setSession(session);
+//			EC2Service.localInstances.put(instanceId, instanceState);
 		}
-		else
-		{
-			LOGGER.info("A session for " + instanceId + " already exists!");
-		}
+//		else
+//		{
+//			LOGGER.info("A session for " + instanceId + " already exists!");
+//		}
+
+		// check connection over session
+//		try
+//		{
+//			session.connect(RemoteCommand.SESSION_TIMEOUT);
+//			LOGGER.info("connection test over session: successful!");
+//			session.disconnect();
+//		}
+//		catch (JSchException e) {
+//			System.err.println(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");
+//			//e.printStackTrace();
+//		}
 
 		return session;
 	} // end getSession(String)
@@ -675,30 +722,33 @@ public class EC2Service
 	 * This method reboots an existing running instance
 	 * by specifying its ID as parameter.
 	 *
-	 * @param instanceID - The instance ID of the instance to reboot
+	 * @param instanceId - The instance ID of the instance to reboot
 	 * @return Reboot instance result
 	 */
-	public static RebootInstancesResult rebootInstance(String instanceID)
+	public static RebootInstancesResult rebootInstance(String instanceId)
 	{
-		LOGGER.info("Request for instance " + instanceID + " to reboot.");
-		Instance instance = retrieveInstance(instanceID);
+		// logging level
+//		LOGGER.setLevel(Level.SEVERE);
+
+		LOGGER.info("Request for instance " + instanceId + " to reboot.");
+		Instance instance = retrieveInstance(instanceId);
 
 		// check if the instance is running
 		// check if instance is already stopping
 		if (instance.getState().getName().equals(InstanceStateName.Stopped.toString()))
 		{
-			LOGGER.warning("Instance " + instanceID + " is not running!");
+			LOGGER.warning("Instance " + instanceId + " is not running!");
 			return null;
 		}
 
 		RebootInstancesRequest rebootRequest = new RebootInstancesRequest();
 
 		// define the reboot request
-		rebootRequest.withInstanceIds(instanceID);
+		rebootRequest.withInstanceIds(instanceId);
 		RebootInstancesResult result = ec2.rebootInstances(rebootRequest);
 
 		// looks like no state change occurs for rebooting
-		LOGGER.info("Instance " + instanceID + " has been started again!");
+		LOGGER.info("Instance " + instanceId + " has been started again!");
 
 		return result;
 	}
@@ -747,6 +797,9 @@ public class EC2Service
 	 */
 	public static StartInstancesResult startInstance(String instanceId)
 	{
+		// logging level
+//		LOGGER.setLevel(Level.SEVERE);
+
 		LOGGER.info("Request for instance " + instanceId + " to start.");
 		Instance instance = retrieveInstance(instanceId);
 
@@ -794,40 +847,43 @@ public class EC2Service
 	 * This method stops an existing running instance
 	 * by specifying its ID as parameter.
 	 *
-	 * @param instanceID - The instance ID of the instance to stop
+	 * @param instanceId - The instance ID of the instance to stop
 	 * @return stop instance result
 	 */
-	public static StopInstancesResult stopInstance(String instanceID)
+	public static StopInstancesResult stopInstance(String instanceId)
 	{
-		LOGGER.info("Request for instance " + instanceID + " to stop.");
-		Instance instance = retrieveInstance(instanceID);
+		// logging level
+//		LOGGER.setLevel(Level.SEVERE);
+
+		LOGGER.info("Request for instance " + instanceId + " to stop.");
+		Instance instance = retrieveInstance(instanceId);
 		String instanceState = instance.getState().getName();
 
 		// check if instance is already stopping
 		if (instanceState.equals(InstanceStateName.Stopping.toString()))
 		{
-			LOGGER.warning("Instance " + instanceID + " is already stopping");
+			LOGGER.warning("Instance " + instanceId + " is already stopping");
 			return null;
 		}
 
 		// check if instance has been already stopped
 		if (instanceState.equals(InstanceStateName.Stopped.toString()))
 		{
-			LOGGER.warning("Instance " + instanceID + " has been already stopped!");
+			LOGGER.warning("Instance " + instanceId + " has been already stopped!");
 			return null;
 		}
 
 		StopInstancesRequest stopRequest = new StopInstancesRequest();
 
 		// define the stop request
-		stopRequest.withInstanceIds(instanceID);
-		StopInstancesResult result = ec2.stopInstances(stopRequest);
+		stopRequest.withInstanceIds(instanceId);
+		StopInstancesResult result = EC2Service.ec2.stopInstances(stopRequest);
 
 		// be sure the instance is stopped
 		boolean stopped = false;
 		do
 		{
-			instance = retrieveInstance(instanceID);
+			instance = EC2Service.retrieveInstance(instanceId);
 			if (instance.getState().getName().equals(InstanceStateName.Stopped.toString()))
 			{
 				stopped = true;
@@ -842,7 +898,7 @@ public class EC2Service
 			}
 		}
 		while (!stopped);
-		LOGGER.info("Instance " + instanceID + " has been stopped!");
+		LOGGER.info("Instance " + instanceId + " has been stopped!");
 
 		return result;
 	}
@@ -880,30 +936,36 @@ public class EC2Service
 	 * This method terminates an existing running instance
 	 * by specifying its ID as parameter.
 	 *
-	 * @param instanceID - The instance ID of the instance to terminate
+	 * @param instanceId - The instance ID of the instance to terminate
 	 * @return terminate instance status
 	 */
-	public static TerminateInstancesResult terminateInstance(String instanceID)
+	public static TerminateInstancesResult terminateInstance(String instanceId)
 	{
-		Instance instance = retrieveInstance(instanceID);
+		// logging level
+//		LOGGER.setLevel(Level.SEVERE);
+
+		LOGGER.info("Request for instance " + instanceId + " to terminate.");
+		Instance instance = retrieveInstance(instanceId);
+		String instanceState = instance.getState().getName();
 
 		// check for instance not to be already terminated
-		if (instance.getState().getName().equals(InstanceStateName.Terminated.toString()))
+		if (instanceState.equals(InstanceStateName.Terminated.toString()))
 		{
-			LOGGER.warning("Instance " + instanceID + " has already been terminated!");
+			LOGGER.warning("Instance " + instanceId + " has been already terminated!");
 			return null;
 		}
 
 		TerminateInstancesRequest terminateRequest = new TerminateInstancesRequest();
 
 		// define the termination request
-		terminateRequest.withInstanceIds(instanceID);
-		TerminateInstancesResult result = ec2.terminateInstances(terminateRequest);
+		terminateRequest.withInstanceIds(instanceId);
+		TerminateInstancesResult result = EC2Service.ec2.terminateInstances(terminateRequest);
 
 		// be sure the instance is terminated
 		boolean terminated = false;
 		do
 		{
+			instance = EC2Service.retrieveInstance(instanceId);
 			if (instance.getState().getName().equals(InstanceStateName.Terminated.toString()))
 			{
 				terminated = true;
@@ -918,12 +980,12 @@ public class EC2Service
 			}
 		}
 		while (!terminated);
-		LOGGER.info("Instance " + instanceID + " has been terminated!");
+		LOGGER.info("Instance " + instanceId + " has been terminated!");
 
 		// mark the instance as terminated in local map
-		LocalInstanceState localInstanceState = EC2Service.localInstances.get(instanceID);
+		LocalInstanceState localInstanceState = EC2Service.localInstances.get(instanceId);
 		localInstanceState.markTerminate();
-		EC2Service.localInstances.put(instanceID, localInstanceState);
+		EC2Service.localInstances.put(instanceId, localInstanceState);
 
 		return result;
 	}

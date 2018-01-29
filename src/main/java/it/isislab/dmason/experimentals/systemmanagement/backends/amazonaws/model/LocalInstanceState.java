@@ -20,8 +20,9 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.amazonaws.services.ec2.model.InstanceStateName;
-import com.jcraft.jsch.Session;
+//import com.jcraft.jsch.Session;
 
+import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.EC2Service;
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.LocalInstanceStateManager;
 
 /**
@@ -72,7 +73,8 @@ public class LocalInstanceState
 		this.busy = false; // DMASON is running on instance
 		this.master = false; // instance is a Master for DMASON
 		this.terminated = false; // instance termination status
-		this.session = null; // temporary session
+//		this.session = null; // temporary session
+//		this.sessionCounter = (byte) 0;
 		this.lastEditTime = LocalDateTime.now(); // last edit time
 	}
 
@@ -94,6 +96,10 @@ public class LocalInstanceState
 	 */
 	public String getDns()
 	{
+		if (this.dns == null || this.dns.isEmpty())
+		{
+			this.dns = EC2Service.getDns(this.id);
+		}
 		return dns;
 	}
 
@@ -174,10 +180,18 @@ public class LocalInstanceState
 	 * @see #session
 	 * @see Session
 	 */
-	public Session getSession()
-	{
-		return session;
-	}
+//	public Session getSession()
+//	{
+//		this.sessionCounter += 1;
+//		if (this.sessionCounter % 3 == 0)
+//		{
+//			return null;
+//		}
+//		else
+//		{
+//			return session;
+//		}
+//	}
 
 	/**
 	 *
@@ -298,11 +312,12 @@ public class LocalInstanceState
 	 * @param session - New instance session.
 	 * @see #session
 	 */
-	public void setSession(Session session)
-	{
-		this.session = session;
-		updateLastEditTime();
-	}
+//	public void setSession(Session session)
+//	{
+//		this.session = session;
+//		this.sessionCounter = (byte) 0;
+//		updateLastEditTime();
+//	}
 
 	// Object methods
 	@Override
@@ -401,7 +416,11 @@ public class LocalInstanceState
 	 * <code>com.jcraft.jsch.{@link Session}</code> class doesn't implement
 	 * <code>{@link Serializable}</code> marker interface.
 	 */
-	private transient Session session; // Session doesn't implement Serializable ):
+//	private transient Session session; // Session doesn't implement Serializable ):
+	/**
+	 * Access counter to session.
+	 */
+//	private transient byte sessionCounter;
 	/**
 	 * Last edit time for local instance state.
 	 */
