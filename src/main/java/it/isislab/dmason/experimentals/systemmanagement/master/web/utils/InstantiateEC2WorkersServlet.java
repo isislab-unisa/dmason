@@ -34,7 +34,6 @@ import com.amazonaws.services.ec2.model.RunInstancesResult;
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.EC2Service;
 import it.isislab.dmason.experimentals.systemmanagement.backends.amazonaws.util.DMasonRemoteManager;
 import it.isislab.dmason.experimentals.systemmanagement.master.MasterServer;
-import it.isislab.dmason.experimentals.systemmanagement.master.MultiServerInterface;
 
 /**
  *
@@ -145,5 +144,7 @@ public class InstantiateEC2WorkersServlet
 		{
 			DMasonRemoteManager.startDMason(instanceId, false);
 		}
+
+		LOGGER.info("Remote request for " + numInstances + " " + ec2Type + " instances has been evaded.");
 	}
 }
