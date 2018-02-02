@@ -307,7 +307,7 @@ public class LocalInstanceState
 		updateLastEditTime();
 	}
 
-	/**
+	/* *
 	 *
 	 * @param session - New instance session.
 	 * @see #session
