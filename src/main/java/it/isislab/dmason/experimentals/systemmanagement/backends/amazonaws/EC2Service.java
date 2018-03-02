@@ -28,7 +28,9 @@ import java.nio.file.attribute.AclEntry;
 import java.nio.file.attribute.AclEntryPermission;
 import java.nio.file.attribute.AclFileAttributeView;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -38,10 +40,12 @@ import java.util.Vector;
 //import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
+import com.amazonaws.services.ec2.model.BlockDeviceMapping;
 import com.amazonaws.services.ec2.model.CreateKeyPairRequest;
 import com.amazonaws.services.ec2.model.CreateKeyPairResult;
 import com.amazonaws.services.ec2.model.CreateSecurityGroupRequest;
@@ -52,17 +56,23 @@ import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.DescribeKeyPairsResult;
 import com.amazonaws.services.ec2.model.DescribeSecurityGroupsRequest;
 import com.amazonaws.services.ec2.model.DescribeSecurityGroupsResult;
+import com.amazonaws.services.ec2.model.EbsBlockDevice;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceStateName;
 import com.amazonaws.services.ec2.model.IpPermission;
 import com.amazonaws.services.ec2.model.IpRange;
 import com.amazonaws.services.ec2.model.KeyPairInfo;
+import com.amazonaws.services.ec2.model.LaunchSpecification;
 import com.amazonaws.services.ec2.model.RebootInstancesRequest;
 import com.amazonaws.services.ec2.model.RebootInstancesResult;
+import com.amazonaws.services.ec2.model.RequestSpotInstancesRequest;
+import com.amazonaws.services.ec2.model.RequestSpotInstancesResult;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
 import com.amazonaws.services.ec2.model.SecurityGroup;
+import com.amazonaws.services.ec2.model.SpotInstanceRequest;
+import com.amazonaws.services.ec2.model.SpotPlacement;
 import com.amazonaws.services.ec2.model.StartInstancesRequest;
 import com.amazonaws.services.ec2.model.StartInstancesResult;
 import com.amazonaws.services.ec2.model.StopInstancesRequest;
@@ -753,6 +763,137 @@ public class EC2Service
 		return result;
 	}
 
+	/**
+	 * Ths method deals with requesting Spot Instances to Amazon EC2.<br />
+	 * Minimal Spot Instances request must have a number of instances and
+	 * a bid price specified. Other parameters may be whether request has
+	 * to be persistent (i.e. if after all Spot Instances associated with
+	 * it have been terminated it has to be terminated as well), whether a
+	 * persistente storage has to be used, whether Spot Instance must have
+	 * a specified duration (minutes from request submission and request
+	 * duration), whether Spot Instances have all to be in specified
+	 * Availability Zone, in some non-specified Availability Zone or just
+	 * in the same launch group.
+	 * 
+	 * @param numInstances - The number of Spot Instances to run
+	 * @param bid - The bid for Spot Instances
+	 * @param isPersistent - If <code>true</code>, Spot Instances
+	 * 			will be persistent
+	 * @param deviceName - If not null and not empty, data will be
+	 * 			persistent into specified device
+	 * @param minutesStart - If greater than zero, this will be the
+	 * 			minutes that have to pass from the moment request
+	 * 			has been made for it to be active
+	 * @param minutesExpire - If greater than <code>minutesStart</code>
+	 * 			, this will be the minutes the request is valid
+	 * @param availabilityZone - The name of Availability Zone which
+	 * 			instances will be created in
+	 * @param availabilityZoneGroup - The name of group for Spot
+	 * 			Instances that have to be created in the same non-
+	 * 			specified Availability Zone
+	 * @param launchGroup - The name of the group of Spot Instances
+	 * 			that have to be launched altogether and terminated
+	 * 			in the same fashion as well
+	 * @return result - Result for Spot Instances request
+	 */
+	public static RequestSpotInstancesResult requestSpotInstance(
+			int numInstances,
+			float bid,
+			boolean isPersistent,
+			String deviceName,
+			int minutesStart,
+			int minutesExpire,
+			String availabilityZone,
+			String availabilityZoneGroup,
+			String launchGroup
+	)
+	{
+		RequestSpotInstancesRequest request = new RequestSpotInstancesRequest();
+		LaunchSpecification specs = new LaunchSpecification();
+
+		// set bid price into request
+		request.withSpotPrice(String.valueOf(bid))
+				.withInstanceCount(Integer.valueOf(numInstances));
+
+		// determine whether request is persistent
+		if (isPersistent)
+		{
+			request.setType("persistent");
+		}
+
+		// determine whether data have to be persistent
+		if (deviceName != null && !deviceName.isEmpty())
+		{
+			// Create the block device mapping to describe the root partition.
+			BlockDeviceMapping blockDeviceMapping = new BlockDeviceMapping();
+			blockDeviceMapping.setDeviceName(deviceName);
+			
+			// Set the delete on termination flag to false.
+			EbsBlockDevice ebs = new EbsBlockDevice();
+			ebs.setDeleteOnTermination(Boolean.FALSE);
+			blockDeviceMapping.setEbs(ebs);
+			
+			// Add the block device mapping to the block list.
+			List<BlockDeviceMapping> blockList = new ArrayList<>();
+			blockList.add(blockDeviceMapping);
+			
+			// Set the block device mapping configuration in the launch specifications.
+			specs.setBlockDeviceMappings(blockList);
+		}		
+
+		// set instance duration
+		if (minutesStart > 0 && minutesExpire > minutesStart)
+		{
+			// convert minutes into milliseconds and add them to current time
+			long millisStart = System.currentTimeMillis() + (1000*60*minutesStart);
+			long millisExpire = System.currentTimeMillis() + (1000*60*minutesExpire);
+
+			// set duration into request
+			request.withValidFrom(new Date(millisStart))
+					.withValidUntil(new Date(millisExpire));
+		}
+
+		// set availability zone
+		// instances will be launched in specified Availability Zone
+		if (availabilityZone != null && !availabilityZone.isEmpty())
+		{
+			specs.setPlacement(new SpotPlacement(availabilityZone));
+		}
+		// set availability zone group
+		// instances will be launched in the same Availability Zone
+		// (a subregion of defined region)
+		else if (availabilityZoneGroup != null && !availabilityZoneGroup.isEmpty())
+		{
+			request.setAvailabilityZoneGroup(availabilityZoneGroup);
+		}
+		// set launch group
+		// instances in group will be launched together
+		// and terminate together as well, unless user intervention
+		else if (launchGroup != null && !launchGroup.isEmpty())
+		{
+			request.setLaunchGroup(launchGroup);
+		}
+
+		
+
+		// configure other request details
+		specs.withImageId(EC2Service.getAmi())
+				.withInstanceType(EC2Service.getType());
+		request.setLaunchSpecification(specs);
+
+		// send request to EC2
+		RequestSpotInstancesResult result = EC2Service.ec2.requestSpotInstances(request);
+		EC2Service.tagSpotInstancesRequest(
+				result,
+				"Name",
+				"Request-" + new Long(System.currentTimeMillis()).hashCode() + "-" + EC2Service.groupName
+		);
+		return result;
+
+		// spot instances cannot be added to local instance states map
+		// because they may not be created right after request
+	}
+
 	private static Instance retrieveInstance(String instanceId)
 	{
 		LOGGER.info("Requesting instance " + instanceId + " status...");
@@ -930,6 +1071,40 @@ public class EC2Service
 				.withResources(istanceId)
 				.withTags(new Tag(tagName, tagValue));
 		EC2Service.ec2.createTags(tagRequest);
+	}
+
+	private static void tagSpotInstancesRequest(RequestSpotInstancesResult result, String tagName, String tagValue)
+	{
+		List<SpotInstanceRequest> requestResponses = result.getSpotInstanceRequests();
+
+		// A list of request IDs to tag
+		List<String> spotInstanceRequestIds = new ArrayList<>();
+
+		// Add the request ids to the hashset, so we can
+		// determine when they hit the active state
+		for (SpotInstanceRequest requestResponse: requestResponses)
+		{
+		    LOGGER.info("Created Spot Request: " + requestResponse.getSpotInstanceRequestId());
+		    spotInstanceRequestIds.add(requestResponse.getSpotInstanceRequestId());
+		}
+
+		// wait 1 second before tagging the spot instances request
+		try
+		{
+			Thread.sleep(1000);
+		}
+		catch (InterruptedException ie)
+		{
+			LOGGER.severe(ie.getClass().getName() + ": " + ie.getMessage() + ".");
+		}
+
+		// Create the tag request
+		CreateTagsRequest createTagsRequestRequests = new CreateTagsRequest()
+				.withResources(spotInstanceRequestIds)
+				.withTags(new Tag(tagName, tagValue));
+
+		// Tag the spot request
+		EC2Service.ec2.createTags(createTagsRequestRequests);
 	}
 
 	/**
