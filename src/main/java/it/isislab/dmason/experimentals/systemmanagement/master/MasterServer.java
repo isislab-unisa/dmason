@@ -16,11 +16,14 @@
  */
 package it.isislab.dmason.experimentals.systemmanagement.master;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
@@ -37,11 +40,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.MessageListener;
 
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.FileBasedConfiguration;
@@ -99,6 +106,7 @@ public class MasterServer implements MultiServerInterface {
 	private  String IP_ACTIVEMQ = "";
 	private  String PORT_ACTIVEMQ = "";
 	private int DEFAULT_PORT_COPY_SERVER;
+	private int DEFAULT_PORT_PERF_SERVER=6666;
 	private Configuration startConfig = null;
 	private ConnectionNFieldsWithActiveMQAPI conn = null;
 
@@ -116,6 +124,16 @@ public class MasterServer implements MultiServerInterface {
 	// copyserver for socket
 	protected Socket sock = null;
 	protected ServerSocket welcomeSocket;
+
+	//socket for perftrace
+	protected Socket psock = null;
+	protected ServerSocket perfSocket;
+
+	final Lock lock = new ReentrantLock();
+	final Condition putPerf = lock.newCondition();
+
+	//performance 
+	HashMap<String,List<String>> performanceList;
 
 	// info 
 	protected HashMap<Integer, AtomicInteger> counterAckSimRcv; // number of ack received of <simrcv> 
@@ -146,7 +164,7 @@ public class MasterServer implements MultiServerInterface {
 				new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)
 				.configure(
 						params.properties().setFileName(PROPERTIES_FILE_PATH)
-				);
+						);
 		try
 		{
 			startConfig = builder.getConfiguration();
@@ -206,7 +224,7 @@ public class MasterServer implements MultiServerInterface {
 		try {
 			availableport = new FindAvailablePort(1000, 3000);
 			DEFAULT_PORT_COPY_SERVER = availableport.getPortAvailable();
-//			LOGGER.info("copy server start on port " + DEFAULT_PORT_COPY_SERVER);
+			//			LOGGER.info("copy server start on port " + DEFAULT_PORT_COPY_SERVER);
 			welcomeSocket = new ServerSocket(DEFAULT_PORT_COPY_SERVER, 1000, InetAddress.getByName(this.IP_ACTIVEMQ));
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -214,10 +232,15 @@ public class MasterServer implements MultiServerInterface {
 			e.printStackTrace();
 		}
 
+
+
+
 		this.createConnection(); // create connection with activemq server
+
+		setPerfromanceTrace();	
+
 		this.createInitialTopic(); // start communication with workers
 
-		/* start time to live mechanism for connected workers */
 		new TTLWorker().start();
 	}
 
@@ -258,6 +281,103 @@ public class MasterServer implements MultiServerInterface {
 				}
 			}
 		}
+	}
+
+	private void setPerfromanceTrace() {
+
+		try {
+			perfSocket = new ServerSocket(DEFAULT_PORT_PERF_SERVER);	
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			conn.createTopic("PERF-TRACE-TOPIC", 1);
+			conn.subscribeToTopic("PERF-TRACE-TOPIC");
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		performanceList = new HashMap<String,List<String>> ();
+		getConnection().asynchronousReceive("PERF-TRACE-TOPIC", new MyMessageListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void onMessage(Message message) {
+				// TODO Auto-generated method stub
+				lock.lock();
+				Object o;
+				try{
+					o = parseMessage(message);
+					MyHashMap map = (MyHashMap) o;
+					String tmp = map.get("").toString();
+					String[] tmpArray = tmp.split(";");
+					if (performanceList.containsKey(tmpArray[0])) {
+						performanceList.get(tmpArray[0]).add(tmpArray[1]);
+					}else {
+						List<String> tmplist = new ArrayList<String>();
+						tmplist.add(tmpArray[1]);
+						performanceList.put(tmpArray[0], tmplist);
+					}
+					putPerf.signal();
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+				lock.unlock();
+			}
+		});
+
+		Thread perfThread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+
+				Socket connectionSocket;
+				try {
+					while (true) {
+						connectionSocket = perfSocket.accept();
+						BufferedReader inFromClient =
+								new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+						DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
+						String clientSentence = inFromClient.readLine();
+						//System.out.println("Received: " + clientSentence);
+
+						String[] tmp = clientSentence.split(",");
+						StringBuilder sbtemp = new StringBuilder();
+						sbtemp.append(tmp[0]);
+						sbtemp.append(",");
+						sbtemp.append((Integer.parseInt(tmp[1])+1));
+						StringBuilder sb = new StringBuilder();
+						lock.lock();
+						while(!performanceList.containsKey(sbtemp.toString())) {
+							putPerf.await();
+						}
+						
+						for(String s : performanceList.get(clientSentence)) {
+							sb.append(s);
+							sb.append(";");
+						}
+						sb.append("\n");
+						lock.unlock();
+						
+						outToClient.writeUTF(sb.toString());  // if using a c++ client
+						//outToClient.writeBytes(sb.toString()); //if using a java client
+						
+					}
+				} catch (IOException | InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+		});
+
+		perfThread.start();
 	}
 
 	/**
@@ -309,7 +429,7 @@ public class MasterServer implements MultiServerInterface {
 									LOGGER.info("start copy of logs for sim id " + simID);
 									downloadLogsForSimulationByID(simID, topic, false);
 								}
-								// response to master logs req(when a sim is stopped )
+							// response to master logs req(when a sim is stopped )
 								else if (map.containsKey("loghistory")) {
 									int simID = (int) map.get("loghistory");
 									LOGGER.info("start copy of logs history for sim id " + simID);
@@ -425,7 +545,7 @@ public class MasterServer implements MultiServerInterface {
 
 		Socket clientSocket;
 		try {
-//			LOGGER.info("Download from " + iplog + ":" + port);
+			//			LOGGER.info("Download from " + iplog + ":" + port);
 			clientSocket = new Socket(iplog, port); // FIXME check whether IP is reachable
 			Thread tr = null;
 			tr = new Thread(new ClientSocketCopy(clientSocket, fileCopy));
@@ -547,9 +667,9 @@ public class MasterServer implements MultiServerInterface {
 			ArrayList<Thread> threads = new ArrayList<Thread>();
 			Thread t = null;
 			while (counter < checkControl) {
-//				System.out.println("open stream " + jarFile );
+				//				System.out.println("open stream " + jarFile );
 				sock = welcomeSocket.accept();
-//				System.out.println("esco della accept");
+				//				System.out.println("esco della accept");
 				counter++;
 				t = new Thread(new ServerSocketCopy(sock, jarFile));
 				t.start();
@@ -763,8 +883,8 @@ public class MasterServer implements MultiServerInterface {
 			method.setAccessible(true);
 			method.invoke(aUrlCL, new Object[]{url});;
 
-//			Class<?> simClass = aUrlCL.loadClass(distributedState.getName());
-//			Constructor<?> constr = simClass.getConstructor(new Class[]{ GeneralParam.class ,String.class});
+			//			Class<?> simClass = aUrlCL.loadClass(distributedState.getName());
+			//			Constructor<?> constr = simClass.getConstructor(new Class[]{ GeneralParam.class ,String.class});
 			return true;
 		} catch (Exception e){
 			System.err.println("JAR CORRUPTED, export as a Jar File and not as a runnable jar file");
@@ -879,10 +999,10 @@ public class MasterServer implements MultiServerInterface {
 		System.out.println("Start simulation with id " + idSimulation);
 		LOGGER.info("Start command received for simulation with id " + idSimulation);
 		for (String workerTopic : simulationToExec.getTopicList()) {
-//			LOGGER.info("send start command to " + workerTopic + "   " + getTopicIdForSimulation());wait
+			//			LOGGER.info("send start command to " + workerTopic + "   " + getTopicIdForSimulation());wait
 			this.getConnection().publishToTopic(iDSimToExec, workerTopic, "start");
 		}
-//		waitEndSim(idSimulation); // method at the end of this class, a timer for end a simulation
+		//		waitEndSim(idSimulation); // method at the end of this class, a timer for end a simulation
 	}
 
 	/**

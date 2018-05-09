@@ -368,16 +368,18 @@ public class DistributedMultiSchedule<E> extends Schedule
 		
 		if (state.isPerfTrace()) {
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append(((DistributedState<?>)simstate).TYPE);
+			stringBuilder.append(((DistributedState<?>)simstate).topicPrefix);
 			stringBuilder.append(",");
 			stringBuilder.append(getSteps()-1);
+			stringBuilder.append(";");
+			stringBuilder.append(((DistributedState<?>)simstate).TYPE);
 			stringBuilder.append(",");
 			stringBuilder.append(getComputationTime());
 			stringBuilder.append(",");
 			stringBuilder.append(com_time); // communication time
 
 			try {
-				conn.publishToTopic(stringBuilder.toString(), state.topicPrefix+"SIM-TIME", "");
+				conn.publishToTopic(stringBuilder.toString(),"PERF-TRACE-TOPIC", "");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

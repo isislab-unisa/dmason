@@ -199,7 +199,7 @@ public class DistributedStateConnectionJMS<E> {
 		
 		if (perfTrace) {
 			try {
-				connectionJMS.createTopic(topicPrefix+"SIM-TIME", 1);
+				connectionJMS.createTopic("PERF-TRACE-TOPIC", 1);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -208,6 +208,7 @@ public class DistributedStateConnectionJMS<E> {
 	private  ReentrantLock lock;
 	private  Condition block;
 	public void initNonUnfiromCommunication(QuadTree q)
+	
 	{
 		lock=new ReentrantLock();
 		block=lock.newCondition();

@@ -16,6 +16,7 @@ import it.isislab.dmason.test.sim.field.utils.StubDistributedField2D;
 import it.isislab.dmason.test.util.connection.StubConnectionJMS;
 
 
+
 /**
  * This is the DistributedStateConnectionJMS's tester.
  *
