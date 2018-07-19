@@ -44,9 +44,11 @@ public class Simulation implements Serializable{
 	private String simulationFolder;
 	private int rows;
 	private int columns;
+	private int depths;
 	private int aoi;
 	private int width;
 	private int height;
+	private int lenght;
 	private int numAgents;
 	private int mode;
 	private int connectionType;
@@ -111,6 +113,31 @@ public class Simulation implements Serializable{
 		snapshots = new ConcurrentHashMap<>(100);
 
 	}
+
+	public Simulation(String simName, String simulationFolder,String execSimNAme,
+					  int rows, int columns,int depths, int aoi, int width,
+					  int height,int lenght, int numAgent, long stepsnumber, int mode, int connection) {
+		this.simName = simName;
+		this.simulationFolder = simulationFolder;
+		this.rows = rows;
+		this.columns = columns;
+		this.depths = depths;
+		this.aoi = aoi;
+		this.width = width;
+		this.height = height;
+		this.lenght = lenght;
+		this.numAgents =numAgent;
+		this.numCells= getRows()*getColumns()*getDepths();
+		this.connectionType=connection;
+		this.topicList=new ArrayList<>();
+		this.mode = mode;
+		this.numStep=stepsnumber;
+		this.execFileName=execSimNAme;
+		this.cellTypeList=new ArrayList<CellType>();
+		snapshots = new ConcurrentHashMap<>(100);
+
+	}
+
 
 
 	/**
@@ -410,6 +437,15 @@ public class Simulation implements Serializable{
 	}
 
 
+	public int getDepths() {
+		return columns;
+	}
+
+
+	public void setDepths(int depth) {
+		this.depths = depth;
+	}
+
 	public int getColumns() {
 		return columns;
 	}
@@ -418,7 +454,6 @@ public class Simulation implements Serializable{
 	public void setColumns(int columns) {
 		this.columns = columns;
 	}
-
 
 	public int getAoi() {
 		return aoi;
@@ -447,6 +482,15 @@ public class Simulation implements Serializable{
 
 	public void setHeight(int height) {
 		this.height = height;
+	}
+
+	public int getLenght() {
+		return lenght;
+	}
+
+
+	public void setLenght(int length) {
+		this.lenght = length;
 	}
 
 

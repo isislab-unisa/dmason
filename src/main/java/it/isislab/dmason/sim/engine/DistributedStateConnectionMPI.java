@@ -2,17 +2,17 @@
  * Copyright 2016 Universita' degli Studi di Salerno
 
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 
 package it.isislab.dmason.sim.engine;
@@ -25,6 +25,9 @@ import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.DistributedFieldNetwork;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field.network.DNetwork;
+import it.isislab.dmason.sim.field3D.DistributedField3D;
+import it.isislab.dmason.sim.field3D.MessageListener3D;
+import it.isislab.dmason.sim.field3D.UpdaterThreadForListener3D;
 import it.isislab.dmason.util.connection.mpi.ConnectionMPI;
 import it.isislab.dmason.util.connection.mpi.DNetworkMPIMessageListener;
 import it.isislab.dmason.util.connection.mpi.MPInFieldsListeners;
@@ -38,14 +41,15 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.apache.http.cookie.SM;
 
 import mpi.MPIException;
 
 /**
- * 
+ *
  * @param <E>
  *            the type of locations
- *            
+ *
  * @author Michele Carillo
  * @author Ada Mancuso
  * @author Dario Mazzeo
@@ -53,14 +57,15 @@ import mpi.MPIException;
  * @author Francesco Raia
  * @author Flavio Serrapica
  * @author Carmine Spagnuolo
- * @author Luca Vicidomini       
+ * @author Luca Vicidomini
  */
 public class DistributedStateConnectionMPI<E> {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>();
+	private ArrayList<MessageListener> listeners = new ArrayList<MessageListener>(); //non viene mai usato...utile?
+	private ArrayList<MessageListener3D> listeners3D = new ArrayList<MessageListener3D>();
 	private ArrayList<DNetworkMPIMessageListener> networkListeners = new ArrayList<DNetworkMPIMessageListener>();
 	private DistributedState dm;
 	private DistributedMultiSchedule<E> schedule;
@@ -70,6 +75,7 @@ public class DistributedStateConnectionMPI<E> {
 	private int NUMPEERS;
 	private int rows;
 	private int columns;
+	private int lenghts;
 	private HashMap<String, Integer> networkNumberOfSubscribersForField;
 	private ConnectionMPI connectionMPI;
 
@@ -80,32 +86,32 @@ public class DistributedStateConnectionMPI<E> {
 		try {
 
 			switch (connectionType) {
-			case 1:
-				connectionMPI = new ConnectionNFieldsWithBcastMPIBYTE();
-				break;
-			case -1:
-				connectionMPI = new ConnectionNFieldsWithBcastMPIBYTE();
-				break;
-			case 2:
-				connectionMPI = new ConnectionNFieldsWithGatherMPIBYTE();
-				break;
-			case -2:
-				connectionMPI = new ConnectionNFieldsWithGatherMPIBYTE();
-				break;
-			case 3:
-				connectionMPI = new ConnectionNFieldsWithParallelSchedulerMPI();
-				break;
-			case -3:
-				connectionMPI = new ConnectionNFieldsWithParallelSchedulerMPI();
-				break;
-			case 4:
-				connectionMPI =  new ConnectionNFieldsWithThreadsMPI();
-				break;
-			case -4:
-				connectionMPI =  new ConnectionNFieldsWithThreadsMPI();
-				break;
-			default:
-				throw new DMasonException("No Connection Type defined.");
+				case 1:
+					connectionMPI = new ConnectionNFieldsWithBcastMPIBYTE();
+					break;
+				case -1:
+					connectionMPI = new ConnectionNFieldsWithBcastMPIBYTE();
+					break;
+				case 2:
+					connectionMPI = new ConnectionNFieldsWithGatherMPIBYTE();
+					break;
+				case -2:
+					connectionMPI = new ConnectionNFieldsWithGatherMPIBYTE();
+					break;
+				case 3:
+					connectionMPI = new ConnectionNFieldsWithParallelSchedulerMPI();
+					break;
+				case -3:
+					connectionMPI = new ConnectionNFieldsWithParallelSchedulerMPI();
+					break;
+				case 4:
+					connectionMPI =  new ConnectionNFieldsWithThreadsMPI();
+					break;
+				case -4:
+					connectionMPI =  new ConnectionNFieldsWithThreadsMPI();
+					break;
+				default:
+					throw new DMasonException("No Connection Type defined.");
 			}
 
 		} catch (MPIException e) {
@@ -123,13 +129,14 @@ public class DistributedStateConnectionMPI<E> {
 		NUMPEERS=dm.NUMPEERS;
 		rows=dm.rows;
 		columns=dm.columns;
+		lenghts=dm.lenghts;
 		networkNumberOfSubscribersForField=dm.networkNumberOfSubscribersForField;
 	}
 
 	private void init_spatial_connection() {
 		boolean toroidal_need=false;
-		for(DistributedField2D field : 
-			((DistributedMultiSchedule<E>)dm.schedule).getFields())
+		for(DistributedField2D field :
+				((DistributedMultiSchedule<E>)dm.schedule).getFields())
 		{
 			if(field.isToroidal())
 			{
@@ -144,15 +151,2053 @@ public class DistributedStateConnectionMPI<E> {
 
 	}
 
+	private void init_3Dspatial_connection(){
+		boolean toroidal_need=false;
+		for(DistributedField3D field:
+				((DistributedMultiSchedule<E>)dm.schedule).get3DFields()){
+			if(field.isToroidal()){
+				toroidal_need=true;
+				break;
+			}
+		}
+		if(toroidal_need)
+			connection3D_IS_toroidal();
+		else
+			connection3D_NO_toroidal();
+	}
+
+	protected void connection3D_NO_toroidal(){
+		if (MODE == DistributedField3D.UNIFORM_PARTITIONING_MODE) {
+			try {
+				if(lenghts==1){
+					if(rows>1 && columns==1){
+						if (TYPE.pos_i==0) {
+							connectionMPI.createTopic(topicPrefix+TYPE+"S",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDown()+"N");
+
+							MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDown()+"N",l1);
+
+
+						} else if(TYPE.pos_i==rows-1){
+							connectionMPI.createTopic(topicPrefix+TYPE+"N",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DUp()+"S");
+
+							MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DUp()+"S",l1);
+
+						}else{
+							connectionMPI.createTopic(topicPrefix+TYPE+"S",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDown()+"N");
+							MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDown()+"N",l1);
+
+							connectionMPI.createTopic(topicPrefix+TYPE+"N",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DUp()+"S");
+							MPInFieldsListeners l2 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DUp()+"S",l2);
+
+						}
+					}else if(rows==1 && columns>1){
+						if(TYPE.pos_j==0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"E",
+									((DistributedMultiSchedule) schedule).fields3D.size());
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DRight()+"W");
+
+							MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DRight()+"W", l1);
+						}else if(TYPE.pos_j==columns-1){
+							connectionMPI.createTopic(topicPrefix+TYPE+"W",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DLeft()+"E");
+
+							MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DLeft()+"E", l1);
+						}else{
+							connectionMPI.createTopic(topicPrefix+TYPE+"E",
+									((DistributedMultiSchedule) schedule).fields3D.size());
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DRight()+"W");
+
+							MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DRight()+"W", l1);
+
+							connectionMPI.createTopic(topicPrefix+TYPE+"W",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DLeft()+"E");
+
+							MPInFieldsListeners l2 = new MPInFieldsListeners(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DLeft()+"E", l2);
+						}
+					}
+					else {
+						if(TYPE.pos_i>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"N",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i<rows){
+							connectionMPI.createTopic(topicPrefix+TYPE+"S",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if (TYPE.pos_j>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"W",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_j<columns){
+							connectionMPI.createTopic(topicPrefix+TYPE+"E",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_j<columns){
+							connectionMPI.createTopic(topicPrefix+TYPE+"SE",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+
+						if(TYPE.pos_i<rows && TYPE.pos_j>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"SW",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_j>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"NW",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_j<columns){
+							connectionMPI.createTopic(topicPrefix+TYPE+"NE",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+
+						if(TYPE.pos_i>0 && TYPE.pos_j>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDiagLeftUp()+"SE");
+							MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDiagLeftUp()+"SE", l1);
+						}
+
+						if (TYPE.pos_i>0 && TYPE.pos_j<columns){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDiagRightUp()+"SW");
+							MPInFieldsListeners l2 = new MPInFieldsListeners(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDiagRightUp()+"SW", l2);
+						}
+
+						if(TYPE.pos_i<rows && TYPE.pos_j>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDiagLeftDown()+"NE");
+							MPInFieldsListeners l3 = new MPInFieldsListeners(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDiagLeftDown()+"NE", l3);
+						}
+
+						if(TYPE.pos_i<rows && TYPE.pos_j<columns){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDiagRightDown()+"NW");
+							MPInFieldsListeners l4 = new MPInFieldsListeners(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDiagRightDown()+"NW", l4);
+						}
+
+						if(TYPE.pos_i>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DUp()+"S");
+							MPInFieldsListeners l5 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DUp()+"S", l5);
+						}
+
+						if(TYPE.pos_i<rows){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDown()+"N");
+							MPInFieldsListeners l6 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDown()+"N", l6);
+						}
+
+						if(TYPE.pos_j>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DLeft()+"E");
+							MPInFieldsListeners l7 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DLeft()+"E", l7);
+						}
+
+						if(TYPE.pos_j<columns){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DRight()+"W");
+							MPInFieldsListeners l8 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DRight()+"W", l8);
+						}
+
+					}
+
+				} else {// lenghts >1
+					if(rows==1 && columns==1){
+						if(TYPE.pos_z==0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"R",
+									((DistributedMultiSchedule)dm.schedule).fields3D.size());
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DRear()+"F");
+							MPInFieldsListeners l1 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DRear()+"F", l1);
+
+						}else if(TYPE.pos_z==lenghts-1){
+							connectionMPI.createTopic(topicPrefix+TYPE+"F",
+									((DistributedMultiSchedule)dm.schedule).fields3D.size());
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DFront()+"R");
+							MPInFieldsListeners l1 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DFront()+"R", l1);
+						}else{
+							connectionMPI.createTopic(topicPrefix+TYPE+"R",
+									((DistributedMultiSchedule)dm.schedule).fields3D.size());
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DRear()+"F");
+							MPInFieldsListeners l1 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DRear()+"F", l1);
+
+							connectionMPI.createTopic(topicPrefix+TYPE+"F",
+									((DistributedMultiSchedule)dm.schedule).fields3D.size());
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DFront()+"R");
+							MPInFieldsListeners l2 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DFront()+"R", l2);
+						}
+					}else if (rows>1 && columns==1){
+
+						if(TYPE.pos_i>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"N",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i<rows){
+							connectionMPI.createTopic(topicPrefix+TYPE+"S",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_z>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"F",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_z<lenghts){
+							connectionMPI.createTopic(topicPrefix+TYPE+"R",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_z>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"NF", (
+									(DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_z<lenghts){
+							connectionMPI.createTopic(topicPrefix+TYPE+"NR",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_z>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"SF",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_z<lenghts){
+							connectionMPI.createTopic(topicPrefix+TYPE+"SR",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+
+						if(TYPE.pos_i>0 && TYPE.pos_z>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DUpFront()+"SR");
+							MPInFieldsListeners l1 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DUpFront()+"SR", l1);
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_z<lenghts){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DUpRear()+"SF");
+							MPInFieldsListeners l2 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DUpRear()+"SF", l2);
+
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_z>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDownFront()+"NR");
+							MPInFieldsListeners l3 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDownFront()+"NR", l3);
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_z<lenghts){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDownRear()+"NF");
+							MPInFieldsListeners l4 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDownRear()+"NF", l4);
+
+						}
+						if(TYPE.pos_i>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DUp()+"S");
+							MPInFieldsListeners l5 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DUp()+"S");
+
+						}
+						if(TYPE.pos_i<rows){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDown()+"N");
+							MPInFieldsListeners l6 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDown()+"N", l6);
+
+						}
+						if(TYPE.pos_z>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DFront()+"R");
+							MPInFieldsListeners l7 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DFront()+"R", l7);
+
+						}
+						if(TYPE.pos_z<lenghts){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DRear()+"F");
+							MPInFieldsListeners l8 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DRear()+"F", l8);
+
+						}
+					} else if (rows==1 && columns>1){
+						if(TYPE.pos_j>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"W",
+									((DistributedMultiSchedule) schedule).fields3D.size());
+						}
+						if(TYPE.pos_j<columns){
+							connectionMPI.createTopic(topicPrefix+TYPE+"E",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_z>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"F",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_z<lenghts){
+							connectionMPI.createTopic(topicPrefix+TYPE+"R",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_j>0 && TYPE.pos_z>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"WF",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_j>0 && TYPE.pos_z<lenghts){
+							connectionMPI.createTopic(topicPrefix+TYPE+"WR",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_j<columns && TYPE.pos_z>0 ){
+							connectionMPI.createTopic(topicPrefix+TYPE+"EF",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_j<columns && TYPE.pos_z<lenghts){
+							connectionMPI.createTopic(topicPrefix+TYPE+"ER",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+
+						if(TYPE.pos_j>0 && TYPE.pos_z>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DLeftFront()+"ER");
+							MPInFieldsListeners l1 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DLeftFront()+"ER", l1);
+
+						}
+						if(TYPE.pos_j>0 && TYPE.pos_z<lenghts){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DLeftRear()+"EF");
+							MPInFieldsListeners l2 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DLeftRear()+"EF", l2);
+
+						}
+						if(TYPE.pos_j<columns && TYPE.pos_z>0 ){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DRightFront()+"WR");
+							MPInFieldsListeners l3 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DRightFront()+"WR", l3);
+
+						}
+						if(TYPE.pos_j<columns && TYPE.pos_z<lenghts){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DRightRear()+"WF");
+							MPInFieldsListeners l4 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DRightRear()+"WF", l4);
+
+						}
+						if(TYPE.pos_j>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DLeft()+"E");
+							MPInFieldsListeners l5 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DLeft()+"E", l5);
+
+						}
+						if(TYPE.pos_j<columns){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DRight()+"W");
+							MPInFieldsListeners l6 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DRight()+"W", l6);
+
+						}
+						if(TYPE.pos_z>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DFront()+"R");
+							MPInFieldsListeners l7 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DFront()+"R", l7);
+
+						}
+						if(TYPE.pos_z<lenghts){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DRear()+"F");
+							MPInFieldsListeners l8 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DRear()+"F", l8);
+
+						}
+					} else{
+
+						if(TYPE.pos_i>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"N",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i<rows){
+							connectionMPI.createTopic(topicPrefix+TYPE+"S",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_j>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"W",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_j<columns){
+							connectionMPI.createTopic(topicPrefix+TYPE+"E",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_z>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"F",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_z<lenghts){
+							connectionMPI.createTopic(topicPrefix+TYPE+"R",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_j>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"NW",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_j<columns){
+							connectionMPI.createTopic(topicPrefix+TYPE+"NE",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_j>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"SW",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_j<columns){
+							connectionMPI.createTopic(topicPrefix+TYPE+"SE",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_z>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"NF",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_z<lenghts){
+							connectionMPI.createTopic(topicPrefix+TYPE+"NR",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_z>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"SF",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_z<lenghts){
+							connectionMPI.createTopic(topicPrefix+TYPE+"SR",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_j>0 && TYPE.pos_z>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"WF",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_j>0 && TYPE.pos_z<lenghts){
+							connectionMPI.createTopic(topicPrefix+TYPE+"WR",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_j<columns && TYPE.pos_z>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"EF",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_j<columns && TYPE.pos_z<lenghts){
+							connectionMPI.createTopic(topicPrefix+TYPE+"ER",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_j>0 && TYPE.pos_z>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"NWF",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_j>0 && TYPE.pos_z<lenghts){
+							connectionMPI.createTopic(topicPrefix+TYPE+"NWR",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_j<columns && TYPE.pos_z>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"NEF",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_j<columns && TYPE.pos_z<lenghts){
+							connectionMPI.createTopic(topicPrefix+TYPE+"NER",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_j>0 && TYPE.pos_z>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"SWF",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_j>0 && TYPE.pos_z<lenghts){
+							connectionMPI.createTopic(topicPrefix+TYPE+"SWR",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_j<columns && TYPE.pos_z>0){
+							connectionMPI.createTopic(topicPrefix+TYPE+"SEF",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_j<columns && TYPE.pos_z<lenghts){
+							connectionMPI.createTopic(topicPrefix+TYPE+"SER",
+									((DistributedMultiSchedule)schedule).fields3D.size());
+						}
+
+						if(TYPE.pos_i>0 && TYPE.pos_j>0 && TYPE.pos_z>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDiagLeftUpFront()+"SER");
+							MPInFieldsListeners l1 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDiagLeftUpFront()+"SER", l1);
+
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_j>0 && TYPE.pos_z<lenghts){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDiagLeftUpRear()+"SEF");
+							MPInFieldsListeners l2 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDiagLeftUpRear()+"SEF", l2);
+
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_j<columns && TYPE.pos_z>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDiagRightUpFront()+"SWR");
+							MPInFieldsListeners l3 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDiagRightUpFront()+"SWR", l3);
+
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_j<columns && TYPE.pos_z<lenghts){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDiagRightUpRear()+"SWF");
+							MPInFieldsListeners l4 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDiagRightUpRear()+"SWF", l4);
+
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_j>0 && TYPE.pos_z>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDiagLeftDownFront()+"NER");
+							MPInFieldsListeners l5 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDiagLeftDownFront()+"NER", l5);
+
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_j>0 && TYPE.pos_z<lenghts){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDiagLeftDownRear()+"NEF");
+							MPInFieldsListeners l6 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDiagLeftDownRear()+"NEF", l6);
+
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_j<columns && TYPE.pos_z>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDiagRightDownFront()+"NWR");
+							MPInFieldsListeners l7 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDiagRightDownFront()+"NWR", l7);
+
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_j<columns && TYPE.pos_z<lenghts){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDiagRightDownRear()+"NWF");
+							MPInFieldsListeners l8 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDiagRightDownRear()+"NWF", l8);
+
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_j>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDiagLeftUp()+"SE");
+							MPInFieldsListeners l9 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDiagLeftUp()+"SE", l9);
+
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_j<columns){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDiagRightUp()+"SW");
+							MPInFieldsListeners l10 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDiagRightUp()+"SW",l10);
+
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_j>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDiagLeftDown()+"NE");
+							MPInFieldsListeners l11 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDiagLeftDown()+"NE", l11);
+
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_j<columns){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDiagRightDown()+"NW");
+							MPInFieldsListeners l12 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDiagRightDown()+"NW", l12);
+
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_z>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DUpFront()+"SR");
+							MPInFieldsListeners l13 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DUpFront()+"SR", l13);
+						}
+						if(TYPE.pos_i>0 && TYPE.pos_z<lenghts){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DUpRear()+"SF");
+							MPInFieldsListeners l14 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DUpRear()+"SF", l14);
+
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_z>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDownFront()+"NR");
+							MPInFieldsListeners l15 = new MPInFieldsListeners(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDownFront()+"NR", l15);
+
+						}
+						if(TYPE.pos_i<rows && TYPE.pos_z<lenghts){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDownRear()+"NF");
+							MPInFieldsListeners l16 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDownRear()+"NF", l16);
+
+						}
+						if(TYPE.pos_j>0 && TYPE.pos_z>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DLeftFront()+"ER");
+							MPInFieldsListeners l17 = new MPInFieldsListeners<>(((DistributedMultiSchedule) schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DLeftFront()+"ER", l17);
+
+						}
+						if(TYPE.pos_j>0 && TYPE.pos_z<lenghts){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DLeftRear()+"EF");
+							MPInFieldsListeners l18 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DLeftRear()+"EF", l18);
+
+						}
+						if(TYPE.pos_j<columns && TYPE.pos_z>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DRightFront()+"WR");
+							MPInFieldsListeners l19 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DRightFront()+"WR", l19);
+
+						}
+						if(TYPE.pos_j<columns && TYPE.pos_z<lenghts){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DRightRear()+"WF");
+							MPInFieldsListeners l20 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DRightRear()+"WF", l20);
+
+						}
+						if(TYPE.pos_i>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DUp()+"S");
+							MPInFieldsListeners l21 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DUp()+"S", l21);
+
+						}
+						if(TYPE.pos_i<rows){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DDown()+"N");
+							MPInFieldsListeners l22 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DDown()+"N", l22);
+
+						}
+						if(TYPE.pos_j>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DLeft()+"E");
+							MPInFieldsListeners l23 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DLeft()+"E", l23);
+
+						}
+						if(TYPE.pos_j<columns){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DRight()+"W");
+							MPInFieldsListeners l24 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DRight()+"W", l24);
+
+						}
+						if(TYPE.pos_z>0){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DFront()+"R");
+							MPInFieldsListeners l25 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DFront()+"R",l25);
+
+						}
+						if(TYPE.pos_z<lenghts){
+							connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbour3DRear()+"F");
+							MPInFieldsListeners l26 = new MPInFieldsListeners<>(((DistributedMultiSchedule)schedule).fields3D);
+							connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbour3DRear()+"F", l26);
+
+						}
+					}
+				}
+
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	protected void connection3D_IS_toroidal(){
+		if (MODE == DistributedField3D.UNIFORM_PARTITIONING_MODE) {
+			int i=TYPE.pos_i; int j = TYPE.pos_j; int z=TYPE.pos_z;
+			try{
+				if(lenghts==1){
+					if(rows>1 && columns==1){
+						connectionMPI.createTopic(topicPrefix+TYPE+"N",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"S",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+//						connectionMPI.createTopic(topicPrefix+TYPE+"W",
+//								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+//						connectionMPI.createTopic(topicPrefix+TYPE+"E",
+//								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NW",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NE",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SW",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SE",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"WF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"WR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"EF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"ER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NWF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NWR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NEF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SWF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SWR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SEF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+
+
+
+						String topicN=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+lenghts)%lenghts))+"N";
+						String topicS=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+lenghts)%lenghts))+"S";
+//						String topicW=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"W";
+//						String topicE=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"E";
+
+						String topicNF=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NF";
+						String topicNW=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"NW";
+						String topicNR=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NR";
+						String topicNE=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"NE";
+						String topicSF=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SF";
+						String topicSW=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"SW";
+						String topicSR=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SR";
+						String topicSE=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"SE";
+						String topicWF=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"WF";
+						String topicWR=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"WR";
+						String topicEF=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"EF";
+						String topicER=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"ER";
+
+						String topicNWF=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NWF";
+						String topicNWR=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NWR";
+						String topicNEF=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NEF";
+						String topicNER=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NER";
+						String topicSWF=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SWF";
+						String topicSWR=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SWR";
+						String topicSEF=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SEF";
+						String topicSER=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SER";
+
+
+						connectionMPI.subscribeToTopic(topicN);
+						connectionMPI.subscribeToTopic(topicS);
+//						connectionMPI.subscribeToTopic(topicW);
+//						connectionMPI.subscribeToTopic(topicE);
+						connectionMPI.subscribeToTopic(topicNF);
+						connectionMPI.subscribeToTopic(topicNW);
+						connectionMPI.subscribeToTopic(topicNR);
+						connectionMPI.subscribeToTopic(topicNE);
+						connectionMPI.subscribeToTopic(topicSF);
+						connectionMPI.subscribeToTopic(topicSW);
+						connectionMPI.subscribeToTopic(topicSR);
+						connectionMPI.subscribeToTopic(topicSE);
+						connectionMPI.subscribeToTopic(topicWF);
+						connectionMPI.subscribeToTopic(topicWR);
+						connectionMPI.subscribeToTopic(topicER);
+						connectionMPI.subscribeToTopic(topicEF);
+						connectionMPI.subscribeToTopic(topicNWF);
+						connectionMPI.subscribeToTopic(topicNWR);
+						connectionMPI.subscribeToTopic(topicNEF);
+						connectionMPI.subscribeToTopic(topicNER);
+						connectionMPI.subscribeToTopic(topicSWF);
+						connectionMPI.subscribeToTopic(topicSWR);
+						connectionMPI.subscribeToTopic(topicSEF);
+						connectionMPI.subscribeToTopic(topicSER);
+
+						MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicN,l1);
+
+						MPInFieldsListeners l2 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicS,l2);
+
+//						MPInFieldsListeners l3 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+//
+//						connectionMPI.asynchronousReceive(topicW,l3);
+//
+//						MPInFieldsListeners l4 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+//
+//						connectionMPI.asynchronousReceive(topicE,l4);
+
+						MPInFieldsListeners l5 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNF,l5);
+
+						MPInFieldsListeners l6 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNW,l6);
+
+						MPInFieldsListeners l7 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNR,l7);
+
+						MPInFieldsListeners l8 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNE,l8);
+
+						MPInFieldsListeners l9 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSF,l9);
+
+						MPInFieldsListeners l10 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSW,l10);
+
+						MPInFieldsListeners l11 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSR,l11);
+
+						MPInFieldsListeners l12 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSE,l12);
+
+						MPInFieldsListeners l13 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicWF,l13);
+
+						MPInFieldsListeners l14 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicWR,l14);
+
+						MPInFieldsListeners l15 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicEF,l15);
+
+						MPInFieldsListeners l16 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicER,l16);
+
+						MPInFieldsListeners l17 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNWF,l17);
+
+						MPInFieldsListeners l18 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNWR,l18);
+
+						MPInFieldsListeners l19 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNEF,l19);
+
+						MPInFieldsListeners l20 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNER,l20);
+
+						MPInFieldsListeners l21 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSWF,l21);
+
+						MPInFieldsListeners l22 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSWR,l22);
+
+						MPInFieldsListeners l23 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSEF,l23);
+
+						MPInFieldsListeners l24 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSER,l24);
+
+
+
+					}else if(rows==1 && columns>1){
+
+
+						connectionMPI.createTopic(topicPrefix+TYPE+"W",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"E",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NW",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NE",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SW",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SE",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"WF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"WR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"EF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"ER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NWF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NWR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NEF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SWF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SWR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SEF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+
+						String topicW=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"W";
+						String topicE=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"E";
+
+						String topicNF=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NF";
+						String topicNW=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"NW";
+						String topicNR=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NR";
+						String topicNE=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"NE";
+						String topicSF=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SF";
+						String topicSW=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"SW";
+						String topicSR=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SR";
+						String topicSE=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"SE";
+						String topicWF=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"WF";
+						String topicWR=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"WR";
+						String topicEF=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"EF";
+						String topicER=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"ER";
+
+						String topicNWF=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NWF";
+						String topicNWR=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NWR";
+						String topicNEF=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NEF";
+						String topicNER=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NER";
+						String topicSWF=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SWF";
+						String topicSWR=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SWR";
+						String topicSEF=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SEF";
+						String topicSER=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SER";
+
+						connectionMPI.subscribeToTopic(topicW);
+						connectionMPI.subscribeToTopic(topicE);
+						connectionMPI.subscribeToTopic(topicNF);
+						connectionMPI.subscribeToTopic(topicNW);
+						connectionMPI.subscribeToTopic(topicNR);
+						connectionMPI.subscribeToTopic(topicNE);
+						connectionMPI.subscribeToTopic(topicSF);
+						connectionMPI.subscribeToTopic(topicSW);
+						connectionMPI.subscribeToTopic(topicSR);
+						connectionMPI.subscribeToTopic(topicSE);
+						connectionMPI.subscribeToTopic(topicWF);
+						connectionMPI.subscribeToTopic(topicWR);
+						connectionMPI.subscribeToTopic(topicER);
+						connectionMPI.subscribeToTopic(topicEF);
+						connectionMPI.subscribeToTopic(topicNWF);
+						connectionMPI.subscribeToTopic(topicNWR);
+						connectionMPI.subscribeToTopic(topicNEF);
+						connectionMPI.subscribeToTopic(topicNER);
+						connectionMPI.subscribeToTopic(topicSWF);
+						connectionMPI.subscribeToTopic(topicSWR);
+						connectionMPI.subscribeToTopic(topicSEF);
+						connectionMPI.subscribeToTopic(topicSER);
+
+						MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicW,l1);
+
+						MPInFieldsListeners l2 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicE,l2);
+
+						MPInFieldsListeners l3 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNF,l3);
+
+						MPInFieldsListeners l4 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNW,l4);
+
+						MPInFieldsListeners l5 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNR,l5);
+
+						MPInFieldsListeners l6 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNE,l6);
+
+						MPInFieldsListeners l7 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSF,l7);
+
+						MPInFieldsListeners l8 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSW,l8);
+
+						MPInFieldsListeners l9 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSR,l9);
+
+						MPInFieldsListeners l10 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSE,l10);
+
+						MPInFieldsListeners l11 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicWF,l11);
+
+						MPInFieldsListeners l12 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicWR,l12);
+
+						MPInFieldsListeners l13 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicEF,l13);
+
+						MPInFieldsListeners l14 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicER,l14);
+
+						MPInFieldsListeners l15 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNWF,l15);
+
+						MPInFieldsListeners l16 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNWR,l16);
+
+						MPInFieldsListeners l17 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNEF,l17);
+
+						MPInFieldsListeners l18 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNER,l18);
+
+						MPInFieldsListeners l19 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSWF,l19);
+
+						MPInFieldsListeners l20	 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSWR,l20);
+
+						MPInFieldsListeners l21 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSEF,l21);
+
+						MPInFieldsListeners l22 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSER,l22);
+
+					}else{ // rows>1 && columns>1 && lenght==1
+						connectionMPI.createTopic(topicPrefix+TYPE+"N",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"S",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"W",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"E",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NW",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NE",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SW",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SE",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"WF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"WR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"EF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"ER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NWF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NWR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NEF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SWF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SWR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SEF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+
+						String topicN=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+lenghts)%lenghts))+"N";
+						String topicS=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+lenghts)%lenghts))+"S";
+						String topicW=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"W";
+						String topicE=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"E";
+
+						String topicNF=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NF";
+						String topicNW=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"NW";
+						String topicNR=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NR";
+						String topicNE=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"NE";
+						String topicSF=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SF";
+						String topicSW=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"SW";
+						String topicSR=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SR";
+						String topicSE=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"SE";
+						String topicWF=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"WF";
+						String topicWR=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"WR";
+						String topicEF=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"EF";
+						String topicER=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"ER";
+
+						String topicNWF=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NWF";
+						String topicNWR=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NWR";
+						String topicNEF=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NEF";
+						String topicNER=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NER";
+						String topicSWF=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SWF";
+						String topicSWR=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SWR";
+						String topicSEF=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SEF";
+						String topicSER=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SER";
+
+						connectionMPI.subscribeToTopic(topicN);
+						connectionMPI.subscribeToTopic(topicS);
+						connectionMPI.subscribeToTopic(topicW);
+						connectionMPI.subscribeToTopic(topicE);
+						connectionMPI.subscribeToTopic(topicNF);
+						connectionMPI.subscribeToTopic(topicNW);
+						connectionMPI.subscribeToTopic(topicNR);
+						connectionMPI.subscribeToTopic(topicNE);
+						connectionMPI.subscribeToTopic(topicSF);
+						connectionMPI.subscribeToTopic(topicSW);
+						connectionMPI.subscribeToTopic(topicSR);
+						connectionMPI.subscribeToTopic(topicSE);
+						connectionMPI.subscribeToTopic(topicWF);
+						connectionMPI.subscribeToTopic(topicWR);
+						connectionMPI.subscribeToTopic(topicER);
+						connectionMPI.subscribeToTopic(topicEF);
+						connectionMPI.subscribeToTopic(topicNWF);
+						connectionMPI.subscribeToTopic(topicNWR);
+						connectionMPI.subscribeToTopic(topicNEF);
+						connectionMPI.subscribeToTopic(topicNER);
+						connectionMPI.subscribeToTopic(topicSWF);
+						connectionMPI.subscribeToTopic(topicSWR);
+						connectionMPI.subscribeToTopic(topicSEF);
+						connectionMPI.subscribeToTopic(topicSER);
+
+						MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicN,l1);
+
+						MPInFieldsListeners l2 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicS,l2);
+
+						MPInFieldsListeners l3 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicW,l3);
+
+						MPInFieldsListeners l4 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicE,l4);
+
+						MPInFieldsListeners l5 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNF,l5);
+
+						MPInFieldsListeners l6 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNW,l6);
+
+						MPInFieldsListeners l7 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNR,l7);
+
+						MPInFieldsListeners l8 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNE,l8);
+
+						MPInFieldsListeners l9 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSF,l9);
+
+						MPInFieldsListeners l10 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSW,l10);
+
+						MPInFieldsListeners l11 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSR,l11);
+
+						MPInFieldsListeners l12 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSE,l12);
+
+						MPInFieldsListeners l13 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicWF,l13);
+
+						MPInFieldsListeners l14 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicWR,l14);
+
+						MPInFieldsListeners l15 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicEF,l15);
+
+						MPInFieldsListeners l16 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicER,l16);
+
+						MPInFieldsListeners l17 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNWF,l17);
+
+						MPInFieldsListeners l18 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNWR,l18);
+
+						MPInFieldsListeners l19 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNEF,l19);
+
+						MPInFieldsListeners l20 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNER,l20);
+
+						MPInFieldsListeners l21 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSWF,l21);
+
+						MPInFieldsListeners l22 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSWR,l22);
+
+						MPInFieldsListeners l23 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSEF,l23);
+
+						MPInFieldsListeners l24 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSER,l24);
+
+					}
+				}else{ //length>1
+					if (rows==1 && columns==1){
+
+						connectionMPI.createTopic(topicPrefix+TYPE+"F",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"R",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NW",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NE",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SW",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SE",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"WF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"WR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"EF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"ER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NWF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NWR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NEF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SWF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SWR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SEF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+
+						String topicF=topicPrefix+(((i+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"F";
+						String topicR=topicPrefix+(((i+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"R";
+
+						String topicNF=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NF";
+						String topicNW=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"NW";
+						String topicNR=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NR";
+						String topicNE=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"NE";
+						String topicSF=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SF";
+						String topicSW=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"SW";
+						String topicSR=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SR";
+						String topicSE=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"SE";
+						String topicWF=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"WF";
+						String topicWR=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"WR";
+						String topicEF=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"EF";
+						String topicER=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"ER";
+
+						String topicNWF=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NWF";
+						String topicNWR=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NWR";
+						String topicNEF=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NEF";
+						String topicNER=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NER";
+						String topicSWF=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SWF";
+						String topicSWR=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SWR";
+						String topicSEF=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SEF";
+						String topicSER=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SER";
+
+						connectionMPI.subscribeToTopic(topicF);
+						connectionMPI.subscribeToTopic(topicR);
+						connectionMPI.subscribeToTopic(topicNF);
+						connectionMPI.subscribeToTopic(topicNW);
+						connectionMPI.subscribeToTopic(topicNR);
+						connectionMPI.subscribeToTopic(topicNE);
+						connectionMPI.subscribeToTopic(topicSF);
+						connectionMPI.subscribeToTopic(topicSW);
+						connectionMPI.subscribeToTopic(topicSR);
+						connectionMPI.subscribeToTopic(topicSE);
+						connectionMPI.subscribeToTopic(topicWF);
+						connectionMPI.subscribeToTopic(topicWR);
+						connectionMPI.subscribeToTopic(topicER);
+						connectionMPI.subscribeToTopic(topicEF);
+						connectionMPI.subscribeToTopic(topicNWF);
+						connectionMPI.subscribeToTopic(topicNWR);
+						connectionMPI.subscribeToTopic(topicNEF);
+						connectionMPI.subscribeToTopic(topicNER);
+						connectionMPI.subscribeToTopic(topicSWF);
+						connectionMPI.subscribeToTopic(topicSWR);
+						connectionMPI.subscribeToTopic(topicSEF);
+						connectionMPI.subscribeToTopic(topicSER);
+
+						MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicF,l1);
+
+						MPInFieldsListeners l2 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicR,l2);
+
+						MPInFieldsListeners l3 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNF,l3);
+
+						MPInFieldsListeners l4 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNW,l4);
+
+						MPInFieldsListeners l5 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNR,l5);
+
+						MPInFieldsListeners l6 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNE,l6);
+
+						MPInFieldsListeners l7 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSF,l7);
+
+						MPInFieldsListeners l8 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSW,l8);
+
+						MPInFieldsListeners l9 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSR,l9);
+
+						MPInFieldsListeners l10 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSE,l10);
+
+						MPInFieldsListeners l11 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicWF,l11);
+
+						MPInFieldsListeners l12 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicWR,l12);
+
+						MPInFieldsListeners l13 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicEF,l13);
+
+						MPInFieldsListeners l14 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicER,l14);
+
+						MPInFieldsListeners l15 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNWF,l15);
+
+						MPInFieldsListeners l16 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNWR,l16);
+
+						MPInFieldsListeners l17 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNEF,l17);
+
+						MPInFieldsListeners l18 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNER,l18);
+
+						MPInFieldsListeners l19 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSWF,l19);
+
+						MPInFieldsListeners l20 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSWR,l20);
+
+						MPInFieldsListeners l21 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSEF,l21);
+						MPInFieldsListeners l22 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSER,l22);
+
+						//
+
+
+					}else if(rows>1 && columns==1){
+
+						connectionMPI.createTopic(topicPrefix+TYPE+"N",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"S",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"F",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"R",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NW",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NE",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SW",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SE",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"WF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"WR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"EF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"ER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NWF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NWR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NEF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SWF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SWR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SEF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+
+						String topicN=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+lenghts)%lenghts))+"N";
+						String topicS=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+lenghts)%lenghts))+"S";
+						String topicF=topicPrefix+(((i+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"F";
+						String topicR=topicPrefix+(((i+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"R";
+
+						String topicNF=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NF";
+						String topicNW=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"NW";
+						String topicNR=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NR";
+						String topicNE=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"NE";
+						String topicSF=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SF";
+						String topicSW=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"SW";
+						String topicSR=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SR";
+						String topicSE=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"SE";
+						String topicWF=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"WF";
+						String topicWR=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"WR";
+						String topicEF=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"EF";
+						String topicER=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"ER";
+
+						String topicNWF=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NWF";
+						String topicNWR=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NWR";
+						String topicNEF=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NEF";
+						String topicNER=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NER";
+						String topicSWF=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SWF";
+						String topicSWR=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SWR";
+						String topicSEF=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SEF";
+						String topicSER=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SER";
+
+						connectionMPI.subscribeToTopic(topicN);
+						connectionMPI.subscribeToTopic(topicS);
+						connectionMPI.subscribeToTopic(topicF);
+						connectionMPI.subscribeToTopic(topicR);
+						connectionMPI.subscribeToTopic(topicNF);
+						connectionMPI.subscribeToTopic(topicNW);
+						connectionMPI.subscribeToTopic(topicNR);
+						connectionMPI.subscribeToTopic(topicNE);
+						connectionMPI.subscribeToTopic(topicSF);
+						connectionMPI.subscribeToTopic(topicSW);
+						connectionMPI.subscribeToTopic(topicSR);
+						connectionMPI.subscribeToTopic(topicSE);
+						connectionMPI.subscribeToTopic(topicWF);
+						connectionMPI.subscribeToTopic(topicWR);
+						connectionMPI.subscribeToTopic(topicER);
+						connectionMPI.subscribeToTopic(topicEF);
+						connectionMPI.subscribeToTopic(topicNWF);
+						connectionMPI.subscribeToTopic(topicNWR);
+						connectionMPI.subscribeToTopic(topicNEF);
+						connectionMPI.subscribeToTopic(topicNER);
+						connectionMPI.subscribeToTopic(topicSWF);
+						connectionMPI.subscribeToTopic(topicSWR);
+						connectionMPI.subscribeToTopic(topicSEF);
+						connectionMPI.subscribeToTopic(topicSER);
+
+						MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicN,l1);
+
+						MPInFieldsListeners l2 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicS,l2);
+
+						MPInFieldsListeners l3 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicF,l3);
+
+						MPInFieldsListeners l4 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicR,l4);
+
+						MPInFieldsListeners l5 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNF,l5);
+
+						MPInFieldsListeners l6 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNW,l6);
+
+						MPInFieldsListeners l7 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNR,l7);
+
+						MPInFieldsListeners l8 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNE,l8);
+
+						MPInFieldsListeners l9 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSF,l9);
+
+						MPInFieldsListeners l10 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSW,l10);
+
+						MPInFieldsListeners l11 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSR,l11);
+
+						MPInFieldsListeners l12 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSE,l12);
+
+						MPInFieldsListeners l13 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicWF,l13);
+
+						MPInFieldsListeners l14 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicWR,l14);
+
+						MPInFieldsListeners l15 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicEF,l15);
+
+						MPInFieldsListeners l16 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicER,l16);
+
+						MPInFieldsListeners l17 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNWF,l17);
+
+						MPInFieldsListeners l18 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNWR,l18);
+
+						MPInFieldsListeners l19 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNEF,l19);
+
+						MPInFieldsListeners l20 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNER,l20);
+
+						MPInFieldsListeners l21 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSWF,l21);
+
+						MPInFieldsListeners l22 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSWR,l22);
+
+						MPInFieldsListeners l23 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSEF,l23);
+
+						MPInFieldsListeners l24 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSER,l24);
+
+
+					}else if(rows==1 && columns>1){
+
+						connectionMPI.createTopic(topicPrefix+TYPE+"W",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"E",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"F",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"R",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NW",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NE",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SW",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SE",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"WF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"WR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"EF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"ER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NWF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NWR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NEF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SWF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SWR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SEF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+
+						String topicW=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"W";
+						String topicE=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"E";
+						String topicF=topicPrefix+(((i+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"F";
+						String topicR=topicPrefix+(((i+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"R";
+
+						String topicNF=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NF";
+						String topicNW=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"NW";
+						String topicNR=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NR";
+						String topicNE=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"NE";
+						String topicSF=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SF";
+						String topicSW=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"SW";
+						String topicSR=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SR";
+						String topicSE=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"SE";
+						String topicWF=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"WF";
+						String topicWR=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"WR";
+						String topicEF=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"EF";
+						String topicER=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"ER";
+
+						String topicNWF=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NWF";
+						String topicNWR=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NWR";
+						String topicNEF=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NEF";
+						String topicNER=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NER";
+						String topicSWF=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SWF";
+						String topicSWR=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SWR";
+						String topicSEF=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SEF";
+						String topicSER=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SER";
+
+						connectionMPI.subscribeToTopic(topicW);
+						connectionMPI.subscribeToTopic(topicE);
+						connectionMPI.subscribeToTopic(topicF);
+						connectionMPI.subscribeToTopic(topicR);
+						connectionMPI.subscribeToTopic(topicNF);
+						connectionMPI.subscribeToTopic(topicNW);
+						connectionMPI.subscribeToTopic(topicNR);
+						connectionMPI.subscribeToTopic(topicNE);
+						connectionMPI.subscribeToTopic(topicSF);
+						connectionMPI.subscribeToTopic(topicSW);
+						connectionMPI.subscribeToTopic(topicSR);
+						connectionMPI.subscribeToTopic(topicSE);
+						connectionMPI.subscribeToTopic(topicWF);
+						connectionMPI.subscribeToTopic(topicWR);
+						connectionMPI.subscribeToTopic(topicER);
+						connectionMPI.subscribeToTopic(topicEF);
+						connectionMPI.subscribeToTopic(topicNWF);
+						connectionMPI.subscribeToTopic(topicNWR);
+						connectionMPI.subscribeToTopic(topicNEF);
+						connectionMPI.subscribeToTopic(topicNER);
+						connectionMPI.subscribeToTopic(topicSWF);
+						connectionMPI.subscribeToTopic(topicSWR);
+						connectionMPI.subscribeToTopic(topicSEF);
+						connectionMPI.subscribeToTopic(topicSER);
+
+						MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicW,l1);
+
+						MPInFieldsListeners l2 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicE,l2);
+
+						MPInFieldsListeners l3 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicF,l3);
+
+						MPInFieldsListeners l4 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicR,l4);
+
+						MPInFieldsListeners l5 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNF,l5);
+
+						MPInFieldsListeners l6 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNW,l6);
+
+						MPInFieldsListeners l7 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNR,l7);
+
+						MPInFieldsListeners l8 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNE,l8);
+
+						MPInFieldsListeners l9 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSF,l9);
+
+						MPInFieldsListeners l10 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSW,l10);
+
+						MPInFieldsListeners l11 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSR,l11);
+
+						MPInFieldsListeners l12 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSE,l12);
+
+						MPInFieldsListeners l13 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicWF,l13);
+
+						MPInFieldsListeners l14 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicWR,l14);
+
+						MPInFieldsListeners l15 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicEF,l15);
+
+						MPInFieldsListeners l16 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicER,l16);
+
+						MPInFieldsListeners l17 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNWF,l17);
+
+						MPInFieldsListeners l18 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNWR,l18);
+
+						MPInFieldsListeners l19 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNEF,l19);
+
+						MPInFieldsListeners l20 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNER,l20);
+
+						MPInFieldsListeners l21 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSWF,l21);
+
+						MPInFieldsListeners l22 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSWR,l22);
+
+						MPInFieldsListeners l23 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSEF,l23);
+
+						MPInFieldsListeners l24 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSER,l24);
+
+
+					}else {
+						connectionMPI.createTopic(topicPrefix+TYPE+"N",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"S",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"W",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"E",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"F",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"R",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NW",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NE",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SW",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SE",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"WF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"WR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"EF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"ER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NWF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NWR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NEF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"NER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SWF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SWR",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SEF",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+						connectionMPI.createTopic(topicPrefix+TYPE+"SER",
+								((DistributedMultiSchedule)dm.schedule).fields3D.size());
+
+						String topicN=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+lenghts)%lenghts))+"N";
+						String topicS=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+lenghts)%lenghts))+"S";
+						String topicW=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"W";
+						String topicE=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"E";
+						String topicF=topicPrefix+(((i+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"F";
+						String topicR=topicPrefix+(((i+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"R";
+
+						String topicNF=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NF";
+						String topicNW=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"NW";
+						String topicNR=topicPrefix+(((i-1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NR";
+						String topicNE=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"NE";
+						String topicSF=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SF";
+						String topicSW=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"SW";
+						String topicSR=topicPrefix+(((i+1+rows)%rows)+"-"+((j+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SR";
+						String topicSE=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+lenghts)%lenghts))+"SE";
+						String topicWF=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"WF";
+						String topicWR=topicPrefix+(((i+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"WR";
+						String topicEF=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"EF";
+						String topicER=topicPrefix+(((i+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"ER";
+
+						String topicNWF=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NWF";
+						String topicNWR=topicPrefix+(((i-1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NWR";
+						String topicNEF=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"NEF";
+						String topicNER=topicPrefix+(((i-1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"NER";
+						String topicSWF=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SWF";
+						String topicSWR=topicPrefix+(((i+1+rows)%rows)+"-"+((j+1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SWR";
+						String topicSEF=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z-1+lenghts)%lenghts))+"SEF";
+						String topicSER=topicPrefix+(((i+1+rows)%rows)+"-"+((j-1+columns)%columns)+"-"+((z+1+lenghts)%lenghts))+"SER";
+
+						connectionMPI.subscribeToTopic(topicN);
+						connectionMPI.subscribeToTopic(topicS);
+						connectionMPI.subscribeToTopic(topicW);
+						connectionMPI.subscribeToTopic(topicE);
+						connectionMPI.subscribeToTopic(topicF);
+						connectionMPI.subscribeToTopic(topicR);
+						connectionMPI.subscribeToTopic(topicNF);
+						connectionMPI.subscribeToTopic(topicNW);
+						connectionMPI.subscribeToTopic(topicNR);
+						connectionMPI.subscribeToTopic(topicNE);
+						connectionMPI.subscribeToTopic(topicSF);
+						connectionMPI.subscribeToTopic(topicSW);
+						connectionMPI.subscribeToTopic(topicSR);
+						connectionMPI.subscribeToTopic(topicSE);
+						connectionMPI.subscribeToTopic(topicWF);
+						connectionMPI.subscribeToTopic(topicWR);
+						connectionMPI.subscribeToTopic(topicER);
+						connectionMPI.subscribeToTopic(topicEF);
+						connectionMPI.subscribeToTopic(topicNWF);
+						connectionMPI.subscribeToTopic(topicNWR);
+						connectionMPI.subscribeToTopic(topicNEF);
+						connectionMPI.subscribeToTopic(topicNER);
+						connectionMPI.subscribeToTopic(topicSWF);
+						connectionMPI.subscribeToTopic(topicSWR);
+						connectionMPI.subscribeToTopic(topicSEF);
+						connectionMPI.subscribeToTopic(topicSER);
+
+						MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicN,l1);
+
+						MPInFieldsListeners l2 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicS,l2);
+
+						MPInFieldsListeners l3 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicW,l3);
+
+						MPInFieldsListeners l4 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicE,l4);
+
+						MPInFieldsListeners l5 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicF,l5);
+
+						MPInFieldsListeners l6 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicR,l6);
+
+						MPInFieldsListeners l7 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNF,l7);
+
+						MPInFieldsListeners l8 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNW,l8);
+
+						MPInFieldsListeners l9 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNR,l9);
+
+						MPInFieldsListeners l10 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNE,l10);
+
+						MPInFieldsListeners l11 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSF,l11);
+
+						MPInFieldsListeners l12 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSW,l12);
+
+						MPInFieldsListeners l13 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSR,l13);
+
+						MPInFieldsListeners l14 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSE,l14);
+
+						MPInFieldsListeners l15 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicWF,l15);
+
+						MPInFieldsListeners l16 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicWR,l16);
+
+						MPInFieldsListeners l17 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicEF,l17);
+
+						MPInFieldsListeners l18 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicER,l18);
+
+						MPInFieldsListeners l19 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNWF,l19);
+
+						MPInFieldsListeners l20 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNWR,l20);
+
+						MPInFieldsListeners l21 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNEF,l21);
+
+						MPInFieldsListeners l22 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicNER,l22);
+
+						MPInFieldsListeners l23 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSWF,l23);
+
+						MPInFieldsListeners l24 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSWR,l24);
+
+						MPInFieldsListeners l25 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSEF,l25);
+
+						MPInFieldsListeners l26 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields3D);
+
+						connectionMPI.asynchronousReceive(topicSER,l26);
+
+					}
+				}
+			}catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+		}
+	}
+
 	public void init_connection() {
 		if(((DistributedMultiSchedule<E>)dm.schedule).fields2D.size()>0)
 			init_spatial_connection();
+		if(((DistributedMultiSchedule<E>)dm.schedule).fields3D.size()>0)
+			init_3Dspatial_connection();
 		if(((DistributedMultiSchedule<E>)dm.schedule).fieldsNetwork.size()>0)
 			init_network_connection();
 
 		init_MPI();
 	}
-	
+
 
 	private void init_MPI()
 	{
@@ -172,27 +2217,27 @@ public class DistributedStateConnectionMPI<E> {
 			try {
 
 				System.out.println("NO BALANCED MODE");
-//				connectionMPI.createTopic(topicPrefix+TYPE.pos_i + "-" + TYPE.pos_j + "E",
-//						schedule.fields2D
-//						.size());
-//				connectionMPI.createTopic(topicPrefix+TYPE.pos_i + "-" + TYPE.pos_j + "W",
-//						schedule.fields2D
-//						.size());
-//
-//				connectionMPI.subscribeToTopic(topicPrefix+TYPE.pos_i + "-"
-//						+ ((TYPE.pos_j - 1 + NUMPEERS) % NUMPEERS) + "W");
-//				connectionMPI.subscribeToTopic(topicPrefix+TYPE.pos_i + "-"
-//						+ ((TYPE.pos_j + 1 + NUMPEERS) % NUMPEERS) + "E");
-//
-//				MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
-//
-//				connectionMPI.asynchronousReceive(topicPrefix+TYPE.pos_i + "-"
-//						+ ((TYPE.pos_j - 1 + NUMPEERS) % NUMPEERS) + "W",l1);
-//
-//				MPInFieldsListeners l2 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
-//
-//				connectionMPI.asynchronousReceive(topicPrefix+TYPE.pos_i + "-"
-//						+ ((TYPE.pos_j + 1 + NUMPEERS) % NUMPEERS) + "E",l2);
+				//				connectionMPI.createTopic(topicPrefix+TYPE.pos_i + "-" + TYPE.pos_j + "E",
+				//						schedule.fields2D
+				//						.size());
+				//				connectionMPI.createTopic(topicPrefix+TYPE.pos_i + "-" + TYPE.pos_j + "W",
+				//						schedule.fields2D
+				//						.size());
+				//
+				//				connectionMPI.subscribeToTopic(topicPrefix+TYPE.pos_i + "-"
+				//						+ ((TYPE.pos_j - 1 + NUMPEERS) % NUMPEERS) + "W");
+				//				connectionMPI.subscribeToTopic(topicPrefix+TYPE.pos_i + "-"
+				//						+ ((TYPE.pos_j + 1 + NUMPEERS) % NUMPEERS) + "E");
+				//
+				//				MPInFieldsListeners l1 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
+				//
+				//				connectionMPI.asynchronousReceive(topicPrefix+TYPE.pos_i + "-"
+				//						+ ((TYPE.pos_j - 1 + NUMPEERS) % NUMPEERS) + "W",l1);
+				//
+				//				MPInFieldsListeners l2 = new MPInFieldsListeners(((DistributedMultiSchedule) schedule).fields2D);
+				//
+				//				connectionMPI.asynchronousReceive(topicPrefix+TYPE.pos_i + "-"
+				//						+ ((TYPE.pos_j + 1 + NUMPEERS) % NUMPEERS) + "E",l2);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -207,22 +2252,22 @@ public class DistributedStateConnectionMPI<E> {
 				if(rows > 1 && columns == 1){
 					connectionMPI.createTopic(topicPrefix+TYPE + "N",
 							schedule.fields2D
-							.size());
+									.size());
 					connectionMPI.createTopic(topicPrefix+TYPE + "S",
 							schedule.fields2D
-							.size());
+									.size());
 					connectionMPI.createTopic(topicPrefix+TYPE + "NW",
 							schedule.fields2D
-							.size());
+									.size());
 					connectionMPI.createTopic(topicPrefix+TYPE + "NE",
 							schedule.fields2D
-							.size());
+									.size());
 					connectionMPI.createTopic(topicPrefix+TYPE + "SW",
 							schedule.fields2D
-							.size());
+									.size());
 					connectionMPI.createTopic(topicPrefix+TYPE + "SE",
 							schedule.fields2D
-							.size());
+									.size());
 
 					connectionMPI.subscribeToTopic(topicPrefix+((i + 1 + rows) % rows) + "-"
 							+ ((j + columns) % columns) + "N");
@@ -272,23 +2317,23 @@ public class DistributedStateConnectionMPI<E> {
 				else if(rows==1 && columns>1){
 					connectionMPI.createTopic(topicPrefix+TYPE + "W",
 							schedule.fields2D
-							.size());
+									.size());
 					connectionMPI.createTopic(topicPrefix+TYPE + "E",
 							schedule.fields2D
-							.size());
+									.size());
 
 					connectionMPI.createTopic(topicPrefix+TYPE + "NW",
 							schedule.fields2D
-							.size());
+									.size());
 					connectionMPI.createTopic(topicPrefix+TYPE + "NE",
 							schedule.fields2D
-							.size());
+									.size());
 					connectionMPI.createTopic(topicPrefix+TYPE + "SW",
 							schedule.fields2D
-							.size());
+									.size());
 					connectionMPI.createTopic(topicPrefix+TYPE + "SE",
 							schedule.fields2D
-							.size());
+									.size());
 
 
 
@@ -341,28 +2386,28 @@ public class DistributedStateConnectionMPI<E> {
 					// N rows and N columns
 					connectionMPI.createTopic(topicPrefix+TYPE + "W",
 							schedule.fields2D
-							.size());
+									.size());
 					connectionMPI.createTopic(topicPrefix+TYPE + "E",
 							schedule.fields2D
-							.size());
+									.size());
 					connectionMPI.createTopic(topicPrefix+TYPE + "S",
 							schedule.fields2D
-							.size());
+									.size());
 					connectionMPI.createTopic(topicPrefix+TYPE + "N",
 							schedule.fields2D
-							.size());
+									.size());
 					connectionMPI.createTopic(topicPrefix+TYPE + "NW",
 							schedule.fields2D
-							.size());
+									.size());
 					connectionMPI.createTopic(topicPrefix+TYPE + "NE",
 							schedule.fields2D
-							.size());
+									.size());
 					connectionMPI.createTopic(topicPrefix+TYPE + "SW",
 							schedule.fields2D
-							.size());
+									.size());
 					connectionMPI.createTopic(topicPrefix+TYPE + "SE",
 							schedule.fields2D
-							.size());
+									.size());
 
 					int sqrt = (int) Math.sqrt(NUMPEERS);
 
@@ -508,7 +2553,7 @@ public class DistributedStateConnectionMPI<E> {
 				if(TYPE.pos_j != columns-1){
 					connectionMPI.createTopic(topicPrefix+TYPE + "W",
 							schedule.fields2D
-							.size());
+									.size());
 
 					connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "E");
 
@@ -522,7 +2567,7 @@ public class DistributedStateConnectionMPI<E> {
 				if(TYPE.pos_j > 0){
 					connectionMPI.createTopic(topicPrefix+TYPE + "E",
 							schedule.fields2D
-							.size());
+									.size());
 
 					connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "W");
 
@@ -537,7 +2582,7 @@ public class DistributedStateConnectionMPI<E> {
 				e.printStackTrace();
 			}
 
-		} 
+		}
 		else if(MODE ==  DistributedField2D.UNIFORM_PARTITIONING_MODE){
 			try{
 				if(rows>1 && columns==1){
@@ -546,7 +2591,7 @@ public class DistributedStateConnectionMPI<E> {
 						//crea sotto e sottomettiti a i+1-spra
 						connectionMPI.createTopic(topicPrefix+TYPE + "S",
 								schedule.fields2D
-								.size());
+										.size());
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourDown() + "N");
 						connectionMPI.asynchronousReceive(topicPrefix+(TYPE.getNeighbourDown() + "N"),l);
 					}
@@ -554,30 +2599,30 @@ public class DistributedStateConnectionMPI<E> {
 						//crea sopra e sottomettiti a i-1-sotto
 						connectionMPI.createTopic(topicPrefix+TYPE + "N",
 								schedule.fields2D
-								.size());
+										.size());
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourUp() + "S");
 						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourUp() + "S",l);
 					}
 					else{
 						connectionMPI.createTopic(topicPrefix+TYPE + "S",
 								schedule.fields2D
-								.size());
+										.size());
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourDown() + "N");
 						connectionMPI.asynchronousReceive(topicPrefix+(TYPE.getNeighbourDown() + "N"),l);
 
 						connectionMPI.createTopic(topicPrefix+TYPE + "N",
 								schedule.fields2D
-								.size());
+										.size());
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourUp() + "S");
 						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourUp() + "S",l);
-					}	
+					}
 				}
 				else if(rows==1 && columns > 1){
 					MPInFieldsListeners l = new MPInFieldsListeners(schedule.fields2D);
 					if(TYPE.pos_j < columns){
 						connectionMPI.createTopic(topicPrefix+TYPE + "W",
 								schedule.fields2D
-								.size());
+										.size());
 
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "W");
 						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourRight() + "W",l);
@@ -586,7 +2631,7 @@ public class DistributedStateConnectionMPI<E> {
 					if(TYPE.pos_j > 0){
 						connectionMPI.createTopic(topicPrefix+TYPE + "W",
 								schedule.fields2D
-								.size());
+										.size());
 
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "E");
 						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourLeft() + "E",l);
@@ -598,62 +2643,62 @@ public class DistributedStateConnectionMPI<E> {
 					if(TYPE.pos_j > 0)
 						connectionMPI.createTopic(topicPrefix+TYPE + "W",
 								schedule.fields2D
-								.size());
+										.size());
 					if(TYPE.pos_j < columns-1)
 						connectionMPI.createTopic(topicPrefix+TYPE + "E",
 								schedule.fields2D
-								.size());
+										.size());
 					if(TYPE.pos_i > 0)
 						connectionMPI.createTopic(topicPrefix+TYPE + "N",
 								schedule.fields2D
-								.size());
+										.size());
 					if(TYPE.pos_i < rows-1)
 						connectionMPI.createTopic(topicPrefix+TYPE + "S",
 								schedule.fields2D
-								.size());
+										.size());
 					if(TYPE.pos_i < rows-1 && TYPE.pos_j < columns-1)
 						connectionMPI.createTopic(topicPrefix+TYPE + "SE",
 								schedule.fields2D
-								.size());
+										.size());
 					if(TYPE.pos_i > 0 && TYPE.pos_j < columns-1)
 						connectionMPI.createTopic(topicPrefix+TYPE + "NE",
 								schedule.fields2D
-								.size());
+										.size());
 					if(TYPE.pos_i < rows-1 && TYPE.pos_j > 0)
 						connectionMPI.createTopic(topicPrefix+TYPE + "SW",
 								schedule.fields2D
-								.size());
+										.size());
 					if(TYPE.pos_i > 0 && TYPE.pos_j > 0)
 						connectionMPI.createTopic(topicPrefix+TYPE + "NW",
 								schedule.fields2D
-								.size());
+										.size());
 
 					MPInFieldsListeners l = new MPInFieldsListeners(schedule.fields2D);
 
 					if(TYPE.pos_i < rows-1 && TYPE.pos_j < columns-1){
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagRightDown()
-						+ "NW");
+								+ "NW");
 						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourDiagRightDown()
-						+ "NW",l);
+								+ "NW",l);
 					}
 					if(TYPE.pos_i < rows-1 && TYPE.pos_j > 0){
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagLeftDown()
-						+ "NE");
+								+ "NE");
 						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourDiagLeftDown()
-						+ "NE",l);
+								+ "NE",l);
 					}
 
 					if(TYPE.pos_i > 0 && TYPE.pos_j < columns-1){
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagRightUp()
-						+ "SW");
+								+ "SW");
 						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourDiagRightUp()
-						+ "SW",l);
+								+ "SW",l);
 					}
 					if(TYPE.pos_i > 0 && TYPE.pos_j > 0){
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourDiagLeftUp()
-						+ "SE");
+								+ "SE");
 						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourDiagLeftUp()
-						+ "SE",l);
+								+ "SE",l);
 					}
 					if(TYPE.pos_j < columns-1){
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourRight() + "W");
@@ -663,7 +2708,7 @@ public class DistributedStateConnectionMPI<E> {
 						connectionMPI.subscribeToTopic(topicPrefix+TYPE.getNeighbourLeft() + "E");
 						connectionMPI.asynchronousReceive(topicPrefix+TYPE.getNeighbourLeft() + "E",l);
 					}
-					if(TYPE.pos_i < rows-1){	
+					if(TYPE.pos_i < rows-1){
 						connectionMPI.subscribeToTopic(topicPrefix+(TYPE.getNeighbourDown() + "N"));
 						connectionMPI.asynchronousReceive(topicPrefix+(TYPE.getNeighbourDown() + "N"),l);
 					}
@@ -676,13 +2721,13 @@ public class DistributedStateConnectionMPI<E> {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} 
+		}
 	}
 
 	@AuthorAnnotation(
 			author = {"Francesco Milone","Carmine Spagnuolo"},
 			date = "6/3/2014"
-			)
+	)
 	/**
 	 * Setup topics for a  distributed field Network.
 	 */
@@ -727,9 +2772,9 @@ public class DistributedStateConnectionMPI<E> {
 				if(networkNumberOfSubscribersForField.get(distributedNetwork.getDistributedFieldID())==null)
 					networkNumberOfSubscribersForField.put(distributedNetwork.getDistributedFieldID(), new Integer(0));
 
-				networkNumberOfSubscribersForField.put(distributedNetwork.getDistributedFieldID(), 
+				networkNumberOfSubscribersForField.put(distributedNetwork.getDistributedFieldID(),
 						(networkNumberOfSubscribersForField.get(distributedNetwork.getDistributedFieldID())+1));
-			}	
+			}
 		}
 
 		for (DNetwork distributedNetwork : networkLists) {
@@ -780,4 +2825,9 @@ public class DistributedStateConnectionMPI<E> {
 	public ArrayList<MessageListener> getLocalListener() {
 		return listeners;
 	}
+
+	public ArrayList<MessageListener3D> getLocal3DListener() {
+		return listeners3D;
+	}
+
 }

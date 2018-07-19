@@ -1002,7 +1002,7 @@ public class MasterServer implements MultiServerInterface {
 			//			LOGGER.info("send start command to " + workerTopic + "   " + getTopicIdForSimulation());wait
 			this.getConnection().publishToTopic(iDSimToExec, workerTopic, "start");
 		}
-		//		waitEndSim(idSimulation); // method at the end of this class, a timer for end a simulation
+		//waitEndSim(idSimulation); // method at the end of this class, a timer for end a simulation
 	}
 
 	/**
@@ -1370,23 +1370,23 @@ public class MasterServer implements MultiServerInterface {
 	/** insert in start method 
 	 * @param id id of simulation
 	 */
-	private void waitEndSim(int id) {
-		int minutes = 10;
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				/***************TESTING*********************/
-				long start = System.currentTimeMillis();
-				boolean check = true;
-				while (true && check) {
-					long nowTime = System.currentTimeMillis();
-					long checkTime = nowTime-start;				
-					if (checkTime > minutes*60*1000) { 
-						check = false;
-						stop(id);
-					}
-				}
-			}
-		}).start();
-	} /*********END**TESTING**CLUSTER**SECTION********************/
+//	private void waitEndSim(int id) {
+//		int minutes = 1;
+//		new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				/***************TESTING*********************/
+//				long start = System.currentTimeMillis();
+//				boolean check = true;
+//				while (true && check) {
+//					long nowTime = System.currentTimeMillis();
+//					long checkTime = nowTime-start;				
+//					if (checkTime > minutes*60*1000) { 
+//						check = false;
+//						stop(id);
+//					}
+//				}
+//			}
+//		}).start();
+//	} /*********END**TESTING**CLUSTER**SECTION********************/
 }
