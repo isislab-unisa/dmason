@@ -44,12 +44,21 @@
 			<artifactId>json-simple</artifactId>
 			<version>1.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>java3d</groupId>
 			<artifactId>j3d-core</artifactId>
 			<version>1.3.1</version>
 		</dependency>
+
+
+		<!-- https://mvnrepository.com/artifact/java3d/j3d-core-utils -->
+		<dependency>
+			<groupId>java3d</groupId>
+			<artifactId>j3d-core-utils</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+
 
 		<dependency>
 			<groupId>commons-fileupload</groupId>
@@ -84,11 +93,8 @@
 		</dependency>
 
 		<!-- Jetty Apache JSTL dependency -->
-		<!--<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>apache-jstl</artifactId>
-			<version>${jetty-version}</version>
-		</dependency>-->
+		<!--<dependency> <groupId>org.eclipse.jetty</groupId> <artifactId>apache-jstl</artifactId> 
+			<version>${jetty-version}</version> </dependency> -->
 		<!-- Jetty Dependencies end here -->
 
 		<dependency>
@@ -167,8 +173,8 @@
 			<version>1.6.4</version>
 		</dependency>
 
-		<!-- old conf > <groupId>org.apache.activemq</groupId> <artifactId>activemq-all</artifactId>
-			<version>5.5.1</version> </dependency> <dependency> <groupId>log4j</groupId>
+		<!-- old conf > <groupId>org.apache.activemq</groupId> <artifactId>activemq-all</artifactId> 
+			<version>5.5.1</version> </dependency> <dependency> <groupId>log4j</groupId> 
 			<artifactId>log4j</artifactId> <version>1.2.14</version> </dependency -->
 
 		<dependency>
@@ -189,7 +195,7 @@
 			<version>1.7.2</version>
 		</dependency>
 
-		<!-- old conf dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-log4j12</artifactId>
+		<!-- old conf dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-log4j12</artifactId> 
 			<version>1.5.6</version> </dependency -->
 
 		<dependency>
@@ -254,10 +260,10 @@
 
 		<!-- Amazon AWS SDK dependency -->
 		<dependency>
-		    <groupId>com.amazonaws</groupId>
-		    <artifactId>aws-java-sdk</artifactId>
-		    <version>1.11.268</version>
-	  	</dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.11.268</version>
+		</dependency>
 
 		<!-- Apache Commons Configuration -->
 		<dependency>
@@ -402,9 +408,9 @@
 					<execution>
 						<id>attach-javadocs</id>
 						<configuration>
-						    <excludePackageNames>
-						        it.isislab.dmason.experimentals.sim.*:it.isislab.dmason.experimentals.tools.*:it.isislab.dmason.experimentals.util.*
-						    </excludePackageNames>
+							<excludePackageNames>
+								it.isislab.dmason.experimentals.sim.*:it.isislab.dmason.experimentals.tools.*:it.isislab.dmason.experimentals.util.*
+							</excludePackageNames>
 							<outputDirectory>${project.build.directory}/javadoc</outputDirectory>
 							<stylesheetfile>${basedir}/resources/javadoc-style/stylesheet.css</stylesheetfile>
 						</configuration>
