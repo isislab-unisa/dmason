@@ -81,14 +81,14 @@ public class CellType implements Serializable
 	}
 
 	public long getId(int i) {
-		if(!is3D)
+		if(!this.is3D)
 			return (Long.parseLong(pos_i+""+pos_j)+i);
 		else
 			return (Long.parseLong(pos_i+""+pos_j+""+pos_z)+i);
 	}
 
 	public int getInitialValue() {
-		if(!is3D)
+		if(!this.is3D)
 			return Integer.parseInt(pos_i+""+pos_j);
 		else
 			return Integer.parseInt(pos_i+""+pos_j+""+pos_z);
@@ -142,7 +142,7 @@ public class CellType implements Serializable
 
 	@Override
 	public String toString() {
-		if(!is3D)
+		if(!this.is3D)
 			return pos_i+"-"+pos_j;
 		else
 			return pos_i+"-"+pos_j+"-"+pos_z;

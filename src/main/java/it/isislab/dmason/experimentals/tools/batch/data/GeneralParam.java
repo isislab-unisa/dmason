@@ -28,7 +28,7 @@ public class GeneralParam implements Serializable
 	private int Rows;
 	private int Columns;
 	private int Lenghts;
-	private boolean is3D = true;
+	private boolean is3D = false;
 	private int Aoi;
 	private int NumAgents;
 	private int Mode;

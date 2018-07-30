@@ -206,6 +206,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	{	
 		if (!topicName.equals("") || !(object == null))
 		{
+			//System.out.println("topicName: "+topicName);
 			MyHashMap mh = contObj.get(topicName);
 			mh.put(key, object);
 			contObj.put(topicName, mh);
@@ -326,6 +327,7 @@ public class ConnectionNFieldsWithActiveMQAPI extends Observable implements Conn
 	{
 		try
 		{
+			//System.out.println("create topic "+topicName);
 			ActiveMQTopic topic = new ActiveMQTopic(topicName);
 			topics.put(topicName,topic);
 			contObj.put(topicName, new MyHashMap(numFields));
