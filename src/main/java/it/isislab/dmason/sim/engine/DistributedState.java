@@ -78,7 +78,7 @@ public abstract class DistributedState<E> extends SimState {
 	protected DistributedStateConnectionJMS<E> serviceJMS;
 	protected DistributedStateConnectionMPI<E> serviceMPI;
 	protected HashMap<String,ArrayList> reduceVar;
-	
+	protected boolean perfTrace=false;
 
 	public PrintStream out;
 
@@ -128,6 +128,7 @@ public abstract class DistributedState<E> extends SimState {
 		this.topicPrefix = prefix;
 		this.is3D = params.getIs3D();
 		this.reduceVar = new HashMap<String,ArrayList>();
+		this.perfTrace = params.isEnabledPerfTrace();
 		switch (typeOfConnection) {
 			case ConnectionType.pureActiveMQ:
 				serviceJMS = new DistributedStateConnectionJMS(this,
@@ -262,6 +263,10 @@ public abstract class DistributedState<E> extends SimState {
 		if (isPureMPI)
 			return null;
 		return serviceJMS.getConnection();
+	}
+	
+	public boolean isPerfTrace() {	
+		return perfTrace;	
 	}
 
 	protected void setSimulationParameters(

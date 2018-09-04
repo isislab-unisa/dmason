@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 public class PerformanceTCPServer {
+	
 	 public static void main(String argv[]) throws Exception {
 		  String sentence;
 		  String modifiedSentence;
@@ -17,12 +18,13 @@ public class PerformanceTCPServer {
 			  BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			  //sentence = inFromUser.readLine();
 			  StringBuilder sb = new StringBuilder();
-			  sb.append("test-75");
+			  sb.append("test-96");
 			  sb.append(",");
 			  sb.append(i);
+			  System.out.println(sb.toString());
 			  outToServer.writeBytes(sb.toString() + '\n');
 			  modifiedSentence = inFromServer.readLine();
-			  System.out.println("step"+ i +":  " + modifiedSentence);
+			  //System.out.println("step"+ i +":  " + modifiedSentence);
 			  clientSocket.close();
 		  }
 		  

@@ -88,6 +88,7 @@ public class DistributedStateConnectionJMS<E> {
 	protected int columns;
 	protected int lenghts;
 	protected HashMap<String, Integer> networkNumberOfSubscribersForField;
+	protected boolean perfTrace;
 
 	public DistributedStateConnectionJMS()
 	{
@@ -119,6 +120,7 @@ public class DistributedStateConnectionJMS<E> {
 		if(dm.is3D)
 			lenghts=dm.lenghts;
 		networkNumberOfSubscribersForField=dm.networkNumberOfSubscribersForField;
+		perfTrace = dm.isPerfTrace();
 	}
 
 	//	//this is only for test
@@ -184,6 +186,10 @@ public class DistributedStateConnectionJMS<E> {
 					}				
 				}
 			});
+			
+			if(perfTrace) {
+				connectionJMS.createTopic("PERF-TRACE-TOPIC", 1);
+			}
 			
 			if(MODE == DistributedField2D.NON_UNIFORM_PARTITIONING_MODE)
 			{

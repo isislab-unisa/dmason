@@ -30,6 +30,7 @@ import it.isislab.dmason.sim.field.DistributedField2DLB;
 import it.isislab.dmason.sim.field.DistributedFieldNetwork;
 import it.isislab.dmason.sim.field.MessageListener;
 import it.isislab.dmason.sim.field3D.DistributedField3D;
+import it.isislab.dmason.util.connection.Connection;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
 
 import java.io.FileWriter;
@@ -88,8 +89,12 @@ public class DistributedMultiSchedule<E> extends Schedule {
 	private HashMap<String, ArrayList<MyCellInterface>> h;
 
 	private HashMap<String, ArrayList<Object>> reduceValues;
-	
+
 	private HashMap<Long,Long> timeTable = new HashMap<Long,Long>();
+
+	//timestamp
+	private long startTime = 0;
+	private long endTime = 0;
 
 	// thresholds for the split and the merge of the cell
 	private double thresholdSplit;
@@ -246,6 +251,7 @@ public class DistributedMultiSchedule<E> extends Schedule {
 			}
 
 		}
+
 		// NON UNIFORM DISTRIBUTION MODE
 		if (getSteps() == 0 && tree_partitioning != null
 				&& state.MODE == DistributedField2D.NON_UNIFORM_PARTITIONING_MODE) {
@@ -289,7 +295,7 @@ public class DistributedMultiSchedule<E> extends Schedule {
 
 				@Override
 				public void step(SimState state) {
-					/* do nothing */ }
+				/* do nothing */ }
 			};
 			this.scheduleRepeating(zombie);
 		}
@@ -302,9 +308,9 @@ public class DistributedMultiSchedule<E> extends Schedule {
 		}
 
 		// Execute the simulation step
-		// long startTime = System.currentTimeMillis();
+		startTime = System.currentTimeMillis();
 		super.step(state);
-		// long endTime = System.currentTimeMillis();
+		endTime = System.currentTimeMillis();
 		// if(state.schedule.getSteps()-1 !=0){
 		// try {
 		// FileWriter writer = new
@@ -420,17 +426,54 @@ public class DistributedMultiSchedule<E> extends Schedule {
 			}
 		}
 
-		// // If there is an active zoom synchronous monitor, wait for it
-		// if(monitor.ZOOM && monitor.isSynchro)
-		// {
-		// Long currentStep = this.getSteps() - 1;
-		// try
-		// {
-		// monitor.awaitForAckStep(currentStep);
-		// } catch (InterruptedException e) {
-		// e.printStackTrace();
-		// }
-		// }
+		// If there is an active zoom synchronous monitor, wait for it
+		if(monitor.ZOOM && monitor.isSynchro)
+		{
+			Long currentStep = this.getSteps() - 1;
+			try
+			{
+				monitor.awaitForAckStep(currentStep);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+		long com_time=0;
+
+		for(DistributedField2D<E> f : fields2D) {
+			com_time+= f.getCommunicationTime();
+		}
+
+		for(DistributedField3D<E> f : fields3D) {
+			com_time+= f.getCommunicationTime();
+		}
+
+		for(DistributedFieldNetwork f : fieldsNetwork) {
+			com_time+=f.getCommunicationTime();
+		}
+
+		Connection conn = (Connection) state.getCommunicationManagementConnection();
+		//System.out.println(state.isPerfTrace());
+		if (state.isPerfTrace()) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(((DistributedState<?>)simstate).topicPrefix);
+			stringBuilder.append(",");
+			stringBuilder.append(getSteps()-1);
+			stringBuilder.append(";");
+			stringBuilder.append(((DistributedState<?>)simstate).TYPE);
+			stringBuilder.append(",");
+			stringBuilder.append(getComputationTime());
+			stringBuilder.append(",");
+			stringBuilder.append(com_time); // communication time
+
+			try {
+				conn.publishToTopic(stringBuilder.toString(),"PERF-TRACE-TOPIC", "");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}else {
+			System.out.println("PERF_TRACE NON È ATTIVO");
+		}
 
 		// Done
 
@@ -476,7 +519,7 @@ public class DistributedMultiSchedule<E> extends Schedule {
 				}
 			}
 		}
-		
+
 		long endStepTime = System.currentTimeMillis();
 		timeTable.put(getSteps(), endStepTime-stepStartTime);
 		return true;
@@ -759,6 +802,22 @@ public class DistributedMultiSchedule<E> extends Schedule {
 
 	public void setFields3D(ArrayList<DistributedField3D> fields3d) {
 		fields3D = fields3d;
+	}
+
+	public long getComputationTime() {
+		return endTime-startTime;
+	}
+	
+	public double getTime() {
+		double res = 0.0;
+		for(Long i: timeTable.keySet()) {
+			res+=timeTable.get(i);
+		}
+		return res;
+	}
+	
+	public double getTime(int i) {
+		return timeTable.get(i);
 	}
 
 }

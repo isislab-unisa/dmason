@@ -336,7 +336,7 @@ public class MasterServer implements MultiServerInterface {
 
 			@Override
 			public void run() {
-
+				System.out.println("Perfthread avviato");
 				Socket connectionSocket;
 				try {
 					while (true) {
@@ -345,8 +345,8 @@ public class MasterServer implements MultiServerInterface {
 								new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 						DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
 						String clientSentence = inFromClient.readLine();
-						//System.out.println("Received: " + clientSentence);
-
+						System.out.println("Received: " + clientSentence);
+						
 						String[] tmp = clientSentence.split(",");
 						StringBuilder sbtemp = new StringBuilder();
 						sbtemp.append(tmp[0]);

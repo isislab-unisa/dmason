@@ -17,8 +17,16 @@
 
 package it.isislab.dmason.experimentals.tools.batch.data;
 
-		import java.io.Serializable;
-		import java.util.HashMap;
+import java.io.File;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.logging.Logger;
+import org.apache.commons.configuration2.Configuration;	
+import org.apache.commons.configuration2.FileBasedConfiguration;	
+import org.apache.commons.configuration2.PropertiesConfiguration;	
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;	
+import org.apache.commons.configuration2.builder.fluent.Parameters;	
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 public class GeneralParam implements Serializable
 {
@@ -41,13 +49,15 @@ public class GeneralParam implements Serializable
 	private HashMap<String, Object> model_params;
 	private boolean isBatch;
 	private int connectionType;
+	private boolean enablePerfTrace;
 
-
+	private static final Logger LOGGER = Logger.getGlobal();
 	private int P;
 
 
+
 	public GeneralParam(int width, int height, int aoi,
-						int P, int numAgents, int mode, long maxStep , int connectionType) {
+			int P, int numAgents, int mode, long maxStep , int connectionType) {
 		super();
 		this.Width = width;
 		this.Height = height;
@@ -58,10 +68,11 @@ public class GeneralParam implements Serializable
 		this.isBatch = false;
 		this.connectionType=connectionType;
 		this.MaxStep=maxStep;
+		this.enablePerfTrace=getEnablePerfTraceProperty();
 	}
 
 	public GeneralParam(int width, int height,int length, int aoi,
-						int P, int numAgents, int mode, long maxStep , int connectionType, boolean is3D) {
+			int P, int numAgents, int mode, long maxStep , int connectionType, boolean is3D) {
 		super();
 		this.Width = width;
 		this.Height = height;
@@ -74,11 +85,12 @@ public class GeneralParam implements Serializable
 		this.connectionType=connectionType;
 		this.MaxStep=maxStep;
 		this.is3D=is3D;
+		this.enablePerfTrace=getEnablePerfTraceProperty();
 	}
 
 
 	public GeneralParam(int width, int height, int aoi,
-						int P, int numAgents, int mode, int connectionType) {
+			int P, int numAgents, int mode, int connectionType) {
 		super();
 		this.Width = width;
 		this.Height = height;
@@ -88,10 +100,11 @@ public class GeneralParam implements Serializable
 		this.Mode = mode;
 		this.isBatch = false;
 		this.connectionType=connectionType;
+		this.enablePerfTrace=getEnablePerfTraceProperty();
 	}
 
 	public GeneralParam(int width, int height,int length, int aoi,
-						int P, int numAgents, int mode, int connectionType, boolean is3D) {
+			int P, int numAgents, int mode, int connectionType, boolean is3D) {
 		super();
 		this.Width = width;
 		this.Height = height;
@@ -103,6 +116,7 @@ public class GeneralParam implements Serializable
 		this.isBatch = false;
 		this.connectionType=connectionType;
 		this.is3D=is3D;
+		this.enablePerfTrace=getEnablePerfTraceProperty();
 	}
 
 	public int getP() {
@@ -114,7 +128,7 @@ public class GeneralParam implements Serializable
 	}
 
 	public GeneralParam(int width, int height, int aoi,
-						int rows, int columns, int numAgents, int mode, int connectionType) {
+			int rows, int columns, int numAgents, int mode, int connectionType) {
 		super();
 		this.Width = width;
 		this.Height = height;
@@ -127,10 +141,11 @@ public class GeneralParam implements Serializable
 		this.Mode = mode;
 		this.isBatch = false;
 		this.connectionType=connectionType;
+		this.enablePerfTrace=getEnablePerfTraceProperty();
 	}
 
 	public GeneralParam(int width, int height,int length, int aoi,
-						int rows, int columns, int lenghts, int numAgents, int mode, int connectionType, boolean is3D) {
+			int rows, int columns, int lenghts, int numAgents, int mode, int connectionType, boolean is3D) {
 		super();
 		this.Width = width;
 		this.Height = height;
@@ -145,10 +160,11 @@ public class GeneralParam implements Serializable
 		this.isBatch = false;
 		this.connectionType=connectionType;
 		this.is3D=is3D;
+		this.enablePerfTrace=getEnablePerfTraceProperty();
 	}
 
 	public GeneralParam(int width, int height, int aoi,
-						int rows, int columns, int numAgents, int mode,long MaxStep, int connectionType) {
+			int rows, int columns, int numAgents, int mode,long MaxStep, int connectionType) {
 		super();
 		this.Width = width;
 		this.Height = height;
@@ -161,10 +177,11 @@ public class GeneralParam implements Serializable
 		this.MaxStep = MaxStep;
 		this.isBatch = true;
 		this.connectionType=connectionType;
+		this.enablePerfTrace=getEnablePerfTraceProperty();
 	}
 
 	public GeneralParam(int width, int height, int lenght, int aoi,
-						int rows, int columns, int lenghts, int numAgents, int mode,long MaxStep, int connectionType, boolean is3D) {
+			int rows, int columns, int lenghts, int numAgents, int mode,long MaxStep, int connectionType, boolean is3D) {
 		super();
 		this.Width = width;
 		this.Height = height;
@@ -180,11 +197,12 @@ public class GeneralParam implements Serializable
 		this.isBatch = true;
 		this.connectionType=connectionType;
 		this.is3D=is3D;
+		this.enablePerfTrace=getEnablePerfTraceProperty();
 	}
 
 	public GeneralParam(int width, int height, int aoi,
-						int rows, int columns, int numAgents, int mode,
-						HashMap<String, Object> model_params,long MaxStep ,int connectionType) {
+			int rows, int columns, int numAgents, int mode,
+			HashMap<String, Object> model_params,long MaxStep ,int connectionType) {
 		super();
 		this.Width = width;
 		this.Height = height;
@@ -198,11 +216,12 @@ public class GeneralParam implements Serializable
 		this.MaxStep=MaxStep;
 		this.model_params=model_params;
 		this.connectionType=connectionType;
+		this.enablePerfTrace=getEnablePerfTraceProperty();
 	}
 
 	public GeneralParam(int width, int height, int lenght, int aoi,
-						int rows, int columns, int lengths, int numAgents, int mode,
-						HashMap<String, Object> model_params,long MaxStep ,int connectionType, boolean is3D) {
+			int rows, int columns, int lengths, int numAgents, int mode,
+			HashMap<String, Object> model_params,long MaxStep ,int connectionType, boolean is3D) {
 		super();
 		this.Width = width;
 		this.Height = height;
@@ -219,6 +238,7 @@ public class GeneralParam implements Serializable
 		this.model_params=model_params;
 		this.connectionType=connectionType;
 		this.is3D=is3D;
+		this.enablePerfTrace=getEnablePerfTraceProperty();
 	}
 
 	public HashMap<String, Object> getModel_params() {
@@ -371,6 +391,12 @@ public class GeneralParam implements Serializable
 	public void setIs3D(boolean is3d) {
 		is3D = is3d;
 	}
+
+	public boolean isEnabledPerfTrace() {
+		return enablePerfTrace;
+	}
+
+
 	@Override
 	public String toString() {
 		return "GeneralParam [Width=" + Width + ", Height=" + Height
@@ -378,6 +404,42 @@ public class GeneralParam implements Serializable
 				", AOI=" + Aoi + ", P="+ P + ", NumAgents=" + NumAgents + ", Mode=" + Mode
 				+ ", MaxStep=" + MaxStep + ", ip=" + ip + ", port=" + port
 				+ ", i=" + i + ", j=" + j +", z="+z+ ", isBatch=" + isBatch +", is3D="+is3D+ "]";
+	}
+
+	private boolean getEnablePerfTraceProperty()	{	
+		// use Apache Commons Configuration to	
+		// edit parameters in config file	
+		final String PROPERTIES_FILE_PATH = "resources" + File.separator +	
+				"systemmanagement" + File.separator + "master" + File.separator + "conf" +	
+				File.separator + "config.properties";	
+		Parameters params = new Parameters();	
+		FileBasedConfigurationBuilder<FileBasedConfiguration> builder =	
+				new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)	
+				.configure(	
+						params.properties().setFileName(PROPERTIES_FILE_PATH)	
+						);	
+		Configuration config = null;	
+		try	
+		{	
+			config = builder.getConfiguration();	
+		}	
+		catch (ConfigurationException e)	
+		{	
+			LOGGER.severe(e.getClass().getSimpleName() + ": " + e.getMessage() + ".");	
+		}	
+		// extract general parameters	
+		final String GENERAL_PREFIX = "general".concat(".");	
+		String enablePerfTraceString = config.getString(GENERAL_PREFIX.concat("enableperftrace"));	
+		LOGGER.info("Enable performance tracing: " + enablePerfTraceString);	
+		// convert string into boolean	
+		if (enablePerfTraceString.equalsIgnoreCase("true"))	
+		{	
+			return true;	
+		}	
+		else	
+		{	
+			return false;	
+		}	
 	}
 
 
