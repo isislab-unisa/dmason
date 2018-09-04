@@ -77,6 +77,8 @@ public abstract class DistributedState<E> extends SimState {
 	protected boolean isHybrid = false;
 	protected DistributedStateConnectionJMS<E> serviceJMS;
 	protected DistributedStateConnectionMPI<E> serviceMPI;
+	protected HashMap<String,ArrayList> reduceVar;
+	
 
 	public PrintStream out;
 
@@ -125,7 +127,7 @@ public abstract class DistributedState<E> extends SimState {
 		this.MODE = params.getMode();
 		this.topicPrefix = prefix;
 		this.is3D = params.getIs3D();
-
+		this.reduceVar = new HashMap<String,ArrayList>();
 		switch (typeOfConnection) {
 			case ConnectionType.pureActiveMQ:
 				serviceJMS = new DistributedStateConnectionJMS(this,
@@ -279,5 +281,5 @@ public abstract class DistributedState<E> extends SimState {
 			}
 		}
 	}
-
+	
 }

@@ -15,7 +15,9 @@
    limitations under the License.
  */
 package it.isislab.dmason.sim.app.DFlockers;
+import it.isislab.dmason.annotation.ReduceAnnotation;
 import it.isislab.dmason.exception.DMasonException;
+import it.isislab.dmason.sim.engine.DistributedMultiSchedule;
 import it.isislab.dmason.sim.engine.DistributedState;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import java.awt.Color;
@@ -171,8 +173,9 @@ public class DFlocker extends RemoteFlock<Double2D> implements Orientable2D
 	{     	
 		
 		final DFlockers flock = (DFlockers)state;
-		pos = flock.flockers.getObjectLocation(this);
 		
+		pos = flock.flockers.getObjectLocation(this);
+		flock.myFlockers++;
 		if (dead) return;
     	        
 		Bag b = getNeighbors((DistributedState)state);

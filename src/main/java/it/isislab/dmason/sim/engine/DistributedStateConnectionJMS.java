@@ -38,6 +38,7 @@ import it.isislab.dmason.sim.field3D.DistributedField3D;
 import it.isislab.dmason.sim.field3D.MessageListener3D;
 import it.isislab.dmason.sim.field3D.UpdaterThreadForListener3D;
 import it.isislab.dmason.util.connection.Address;
+import it.isislab.dmason.util.connection.MyHashMap;
 import it.isislab.dmason.util.connection.jms.ConnectionJMS;
 import it.isislab.dmason.util.connection.jms.activemq.ConnectionNFieldsWithActiveMQAPI;
 import it.isislab.dmason.util.connection.jms.activemq.MyMessageListener;
@@ -147,12 +148,43 @@ public class DistributedStateConnectionJMS<E> {
 	//		networkNumberOfSubscribersForField=dm.networkNumberOfSubscribersForField;
 	//	}
 
+	
 	public int CONNECTIONS_CREATED_STATUS_P;
 	public boolean CONNECTIONS_CREATED=false;
 	public void init_connection() {
 		try {
 			connectionJMS.setupConnection(new Address(ip, port));
-
+			
+			connectionJMS.createTopic("TOPIC_REDUCE", 1);
+			connectionJMS.subscribeToTopic("TOPIC_REDUCE");
+			
+			connectionJMS.asynchronousReceive("TOPIC_REDUCE", new MyMessageListener() {
+				
+				@Override
+				public void onMessage(Message msg) {
+					MyHashMap bo = null;
+					try {
+						bo = (MyHashMap)parseMessage(msg);
+					} catch (JMSException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					synchronized (dm.reduceVar) {
+						String[] tmp = ((String) bo.get("")).split(",");
+						String key = tmp[0];
+						if(dm.reduceVar.containsKey(key)) {
+							ArrayList tmp_a = (ArrayList) dm.reduceVar.get(key);
+							tmp_a.add(tmp[1]);
+							dm.reduceVar.put(key,tmp_a);
+						}else {
+							ArrayList tmp_a = new ArrayList();
+							tmp_a.add(tmp[1]);
+							dm.reduceVar.put(key,tmp_a);
+						}
+					}				
+				}
+			});
+			
 			if(MODE == DistributedField2D.NON_UNIFORM_PARTITIONING_MODE)
 			{
 				try {
@@ -3280,4 +3312,5 @@ public class DistributedStateConnectionJMS<E> {
 		}
 
 	}
+	
 }

@@ -16,6 +16,7 @@
  */
 package it.isislab.dmason.sim.app.DFlockers;
 
+import it.isislab.dmason.annotation.ReduceAnnotation;
 import it.isislab.dmason.exception.DMasonException;
 import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
@@ -26,7 +27,11 @@ import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2D;
 import it.isislab.dmason.sim.field.continuous.DContinuousGrid2DFactory;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
+
+import com.jcraft.jsch.jce.Random;
+
 import sim.engine.SimState;
 import sim.portrayal.SimplePortrayal2D;
 import sim.portrayal.continuous.ContinuousPortrayal2D;
@@ -58,9 +63,17 @@ public class DFlockers extends DistributedState<Double2D>
 	private static final long serialVersionUID = 1L;
 	public DContinuousGrid2D flockers;
 
-
+	
 	public int numFlockers = 20;
+	
+	@ReduceAnnotation(func="countFlockers")
+	public int myFlockers = 0;
+	
+	
+	public int totalFlockers =0;
+	
 	public double cohesion = 1.0;
+	//@ReduceAnnotation(func="func")
 	public double avoidance = 1.0;
 	public double randomness = 1.0;
 	public double consistency = 1.0;
@@ -266,8 +279,26 @@ public class DFlockers extends DistributedState<Double2D>
 		}
 		return false;
 	}    
+	
+	
+	public Double func(ArrayList<String> str) {
+		Double b = 1.0;
+		
+		for(String s : str) {
+			b=b*Double.parseDouble(s)*0.1;
+		}
+		return avoidance + b;
+	}
 
-
+	public Integer countFlockers(ArrayList<String> ints) {
+		int sum=0;
+		for(String i : ints) {
+			sum+=Integer.parseInt(i);
+		}
+		System.out.println(this.TYPE+": totalFlockers: "+ sum);
+		//myFlockers=0;
+		return 0;
+	}
 
 
 }

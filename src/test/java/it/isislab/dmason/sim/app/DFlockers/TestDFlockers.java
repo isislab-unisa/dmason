@@ -158,8 +158,6 @@ public class TestDFlockers {
         v.startActivemq();
         /******************************/
         
-        
-        
     	System.setProperty("org.apache.activemq.SERIALIZABLE_PACKAGES","*");
     	class worker extends Thread {
             		private DistributedState ds;
