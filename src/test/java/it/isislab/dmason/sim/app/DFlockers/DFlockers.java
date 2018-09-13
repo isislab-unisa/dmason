@@ -66,7 +66,7 @@ public class DFlockers extends DistributedState<Double2D>
 	
 	public int numFlockers = 20;
 	
-	@ReduceAnnotation(func="countFlockers")
+	//@ReduceAnnotation(func="countFlockers")
 	public int myFlockers = 0;
 	
 	

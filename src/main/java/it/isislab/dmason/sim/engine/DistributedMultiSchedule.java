@@ -465,13 +465,13 @@ public class DistributedMultiSchedule<E> extends Schedule {
 			stringBuilder.append(getComputationTime());
 			stringBuilder.append(",");
 			stringBuilder.append(com_time); // communication time
-
+			//System.out.println("stringBuilder.toString: "+stringBuilder.toString());
 			try {
 				conn.publishToTopic(stringBuilder.toString(),"PERF-TRACE-TOPIC", "");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}else {
+		} else {
 			System.out.println("PERF_TRACE NON È ATTIVO");
 		}
 

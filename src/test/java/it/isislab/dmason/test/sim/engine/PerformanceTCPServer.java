@@ -18,13 +18,13 @@ public class PerformanceTCPServer {
 			  BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			  //sentence = inFromUser.readLine();
 			  StringBuilder sb = new StringBuilder();
-			  sb.append("test-96");
+			  sb.append("test-99");
 			  sb.append(",");
 			  sb.append(i);
 			  System.out.println(sb.toString());
 			  outToServer.writeBytes(sb.toString() + '\n');
 			  modifiedSentence = inFromServer.readLine();
-			  //System.out.println("step"+ i +":  " + modifiedSentence);
+			  System.out.println("step "+ i +":  " + modifiedSentence);
 			  clientSocket.close();
 		  }
 		  

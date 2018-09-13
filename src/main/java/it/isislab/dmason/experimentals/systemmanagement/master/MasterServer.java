@@ -316,6 +316,7 @@ public class MasterServer implements MultiServerInterface {
 					o = parseMessage(message);
 					MyHashMap map = (MyHashMap) o;
 					String tmp = map.get("").toString();
+					//System.out.println(tmp);
 					String[] tmpArray = tmp.split(";");
 					if (performanceList.containsKey(tmpArray[0])) {
 						performanceList.get(tmpArray[0]).add(tmpArray[1]);
