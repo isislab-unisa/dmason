@@ -389,6 +389,7 @@ function change_partitioning_input_params(element) {
             $("#form_row").attr("disabled", false);
             $("#form_col").attr("disabled", false);
             $("#form_dep").attr("disabled", true);
+            $("#form_length").attr("disabled", true);
             break;
 
         case "non-uniform":
@@ -396,6 +397,7 @@ function change_partitioning_input_params(element) {
             $("#form_row").attr("disabled", true);
             $("#form_col").attr("disabled", true);
             $("#form_dep").attr("disabled", true);
+            $("#form_length").attr("disabled", true);
             break;
 
         case "three-dim":
@@ -403,6 +405,7 @@ function change_partitioning_input_params(element) {
             $("#form_row").attr("disabled", false);
             $("#form_col").attr("disabled", false);
             $("#form_dep").attr("disabled", false);
+            $("#form_length").attr("disabled", false);
             break;
     }
 }
@@ -439,6 +442,7 @@ function _validate_slots(element) {
     var cols_element = $("#form_col");
     var dep_element = $("#form_dep");
     var cells_element = $("#form_cells");
+    var lenght_element = $("#form_length");
 
     var paper_input_container = current_element.children()[0];
 
@@ -446,6 +450,7 @@ function _validate_slots(element) {
     var cols = document.querySelector("#" + cols_element.attr("id")).value;
     var depth = document.querySelector("#" + dep_element.attr("id")).value;
     var cells = document.querySelector("#" + cells_element.attr("id")).value;
+    var length =  document.querySelector("#" + length_element.attr("id")).value;
 
     var id = current_element.attr("id");
 
@@ -505,6 +510,17 @@ function _validate_slots(element) {
                     }
                 }
                 break;
+            case "form_length":
+            	if (length) {
+                    var int_val = parseInt(length);
+                    cur_slot *= int_val;
+                    if (cur_slot > slots || cur_slot == 0) {
+                        paper_input_container.invalid = true;
+                        submit_btn.disabled = true;
+                        return false;
+                    }
+                }
+            	break;
         }
         paper_input_container.invalid = false;
         submit_btn.disabled = false;
@@ -626,6 +642,16 @@ function checkForm(form) {
                         break;
 
                     case "depth":
+                    if (partitioning.toLowerCase() == 'three-dim') {
+                        $(error_toast_message).html(
+                            "You should fill the <strong>" + paper_input.label + "</strong> field."
+                        );
+                        error_toast.open();
+                        success = false;
+                    }
+                    break;
+                    
+                     case "length":
                     if (partitioning.toLowerCase() == 'three-dim') {
                         $(error_toast_message).html(
                             "You should fill the <strong>" + paper_input.label + "</strong> field."

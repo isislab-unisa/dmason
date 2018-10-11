@@ -438,7 +438,7 @@ public class Simulation implements Serializable{
 
 
 	public int getDepths() {
-		return columns;
+		return depths;
 	}
 
 

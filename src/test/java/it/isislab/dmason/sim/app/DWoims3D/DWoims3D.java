@@ -46,7 +46,7 @@ public class DWoims3D extends DistributedState<Double3D> {
         this.MODE=params.getMode();
         this.gridWidth=params.getWidth();
         this.gridHeight=params.getHeight();
-        this.gridLenght=1000;
+        this.gridLenght=params.getLenght();
 
     }
 
@@ -57,7 +57,7 @@ public class DWoims3D extends DistributedState<Double3D> {
         this.MODE=params.getMode();
         this.gridWidth=params.getWidth();
         this.gridHeight=params.getHeight();
-        this.gridLenght=1000;
+        this.gridLenght=params.getLenght();
         for (EntryParam<String, Object> entryParam : simParams) {
 
             try {

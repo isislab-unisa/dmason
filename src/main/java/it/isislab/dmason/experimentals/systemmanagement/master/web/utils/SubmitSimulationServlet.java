@@ -93,15 +93,17 @@ public class SubmitSimulationServlet extends HttpServlet {
 		String simName = listParams.get("simName");
 		int rows = (listParams.get("rows") != null) ? Integer.parseInt(listParams.get("rows")) : 0;
 		int columns = (listParams.get("cols") != null) ? Integer.parseInt(listParams.get("cols")) : 0;
+		int depths = (listParams.get("depth") !=null) ? Integer.parseInt(listParams.get("depth")) :0;
 		int aoi = Integer.parseInt(listParams.get("aoi"));
 		int width = Integer.parseInt(listParams.get("width"));
 		int height = Integer.parseInt(listParams.get("height"));
+		int lenght = (listParams.get("length") !=null) ? Integer.parseInt(listParams.get("length")) :0;
 		int numAgent = Integer.parseInt(listParams.get("numAgents"));
 		long numStep = Long.parseLong(listParams.get("step"));
 		String conType = listParams.get("connectionType");
 		String modeType = listParams.get("partitioning");
 		int cells = (listParams.get("cells") != null) ? Integer.parseInt(listParams.get("cells")) : -1;
-		int mode = (modeType.equals("uniform")) ? DistributedField2D.UNIFORM_PARTITIONING_MODE : DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
+		int mode = (modeType.equals("uniform") || modeType.equals("three-dim")) ? DistributedField2D.UNIFORM_PARTITIONING_MODE : DistributedField2D.NON_UNIFORM_PARTITIONING_MODE;
 		String exampleSimulation = listParams.get("exampleSimulation");
 
 		// connection
@@ -115,9 +117,15 @@ public class SubmitSimulationServlet extends HttpServlet {
 		// topics
 		String topics[] = listParams.get("workers").split(",");
 		ArrayList<String> topicList = new ArrayList<String>();
+		
+		int numCell=0;
 		switch (mode) {
 			case DistributedField2D.UNIFORM_PARTITIONING_MODE:
-				int numCell = rows * columns;
+				if(depths!=0) {
+					numCell = rows * columns * depths;
+				}else {
+					numCell = rows * columns;
+				}
 				if (numCell < topics.length) {
 					for (int i = 0; i < numCell; i++) {
 						topicList.add(topics[i]);
@@ -160,7 +168,11 @@ public class SubmitSimulationServlet extends HttpServlet {
 		Simulation sim = null;
 
 		if (mode == DistributedField2D.UNIFORM_PARTITIONING_MODE)
-			sim = new Simulation(simName, simPath, simPathJar + File.separator+jarSimName, rows, columns, aoi, width, height, numAgent, numStep, mode, connection);
+			if (depths==0) {
+				sim = new Simulation(simName, simPath, simPathJar + File.separator + jarSimName, rows, columns, aoi, width, height, numAgent, numStep, mode, connection);
+			}else{
+				sim = new Simulation(simName, simPath, simPathJar + File.separator + jarSimName, rows, columns,depths, aoi, width, height,lenght, numAgent, numStep, mode, connection);
+			}
 		else
 			sim = new Simulation(simName, simPath, simPathJar + File.separator+jarSimName, cells, aoi, width, height, numAgent, numStep, mode, connection);	
 

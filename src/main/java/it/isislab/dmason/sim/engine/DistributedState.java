@@ -105,7 +105,7 @@ public abstract class DistributedState<E> extends SimState {
 		if (prefix.startsWith("Batch"))
 			randomizer = System.currentTimeMillis();
 		if(params.getIs3D()){
-			this.TYPE = new CellType(params.getI(), params.getJ(),0);
+			this.TYPE = new CellType(params.getI(), params.getJ(),params.getZ());
 		} else {
 			this.TYPE = new CellType(params.getI(), params.getJ());
 		}
@@ -114,14 +114,14 @@ public abstract class DistributedState<E> extends SimState {
 				+ this.TYPE.getInitialValue());
 		this.AOI = params.getAoi();
 		if(params.getIs3D()){
-			this.NUMPEERS = params.getRows() * params.getColumns()*1;
+			this.NUMPEERS = params.getRows() * params.getColumns()*params.getLenghts();
 		}else{
 			this.NUMPEERS = params.getRows() * params.getColumns();
 		}
 
 		this.rows = params.getRows();
 		this.columns = params.getColumns();
-		this.lenghts = 1;
+		this.lenghts = params.getLenghts();
 		this.NUMAGENTS = params.getNumAgents();
 		this.count_id = NUMAGENTS * TYPE.getInitialValue();
 		this.MODE = params.getMode();

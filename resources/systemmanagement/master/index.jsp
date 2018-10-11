@@ -192,6 +192,7 @@
 										<paper-input id="form_height" class="submit_work_form" name="height" label="Height" allowed-pattern="[0-9]" error-message="Illegal value" onInput="_validate_params(this)"></paper-input>
                                     </td>
                                     <td>
+                                    	<paper-input disabled id="form_length" class="submit_work_form" name="length" label="Length" allowed-pattern="[0-9]" error-message="Illegal value" onInput="_validate_params(this)"></paper-input>
 									</td>
 								</tr>
 								<tr>

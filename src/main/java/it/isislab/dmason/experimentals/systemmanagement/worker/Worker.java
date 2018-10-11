@@ -416,25 +416,38 @@ public class Worker implements Observer {
 			int aoi = simulation.getAoi();
 			int height = simulation.getHeight();
 			int width = simulation.getWidth();
+			int length = simulation.getLenght();
 			int cols = simulation.getColumns();
 			int rows = simulation.getRows();
+			int depth = simulation.getDepths();
 			int agents = simulation.getNumAgents();
 			int mode = simulation.getMode();
 			int p = simulation.getP();
 			int typeConn = simulation.getConnectionType();
 			long step = simulation.getNumberStep();
+			
+			if(simulation.getMode() == DistributedField2D.UNIFORM_PARTITIONING_MODE) {
+				if(depth !=0) {
+					params  = new GeneralParam(width,height,length,aoi,rows,cols,depth,agents,mode,step,typeConn,true);
+				}else {
+					params = new GeneralParam(width, height, aoi, rows, cols, agents, mode, step, typeConn /*ConnectionType.pureActiveMQ*/);
+				}	
+			}else {
+				params = new GeneralParam(width, height, aoi, p, agents, mode, step, typeConn /*ConnectionType.pureActiveMQ*/);
 
-			params = (simulation.getMode() == DistributedField2D.UNIFORM_PARTITIONING_MODE) ?
-					new GeneralParam(width, height, aoi, rows, cols, agents, mode, step, typeConn /*ConnectionType.pureActiveMQ*/) :
-						new GeneralParam(width, height, aoi, p, agents, mode, step, typeConn /*ConnectionType.pureActiveMQ*/);
+			}
 			params.setIp(IP_ACTIVEMQ);
 			params.setPort(PORT_ACTIVEMQ);
 			getSimulationList().put(simulation.getSimID(), simulation);
 			executorThread.put(simulation.getSimID(), new ArrayList<CellExecutor>());
 
 			for (CellType cellType: cellstype) {
+				//System.out.println("ciao");
 				params.setI(cellType.pos_i);
 				params.setJ(cellType.pos_j);
+				if(cellType.is3D) {
+					params.setZ(cellType.pos_z);
+				}
 				FileOutputStream output = new FileOutputStream(simulation.getSimulationFolder() + File.separator + "out" + File.separator + cellType + ".out");
 				PrintStream printOut = new PrintStream(output);
 				CellExecutor celle = (new CellExecutor(params, printOut, simulation.getSimID(),

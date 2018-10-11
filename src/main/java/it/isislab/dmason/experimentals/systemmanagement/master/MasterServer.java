@@ -742,18 +742,32 @@ public class MasterServer implements MultiServerInterface {
 		int LP = simul.getP();
 		int rows = (int) (mode == 0 ? simul.getRows() : Math.ceil(Math.sqrt(LP/*get LP from geneoparam*/))); 
 		int cols = (int) (mode == 0 ? simul.getColumns()/*getfrom genparm*/ : Math.ceil(Math.sqrt(LP/*get LP from geneoparam*/))); 
-
-		LP = (mode == DistributedField2D.UNIFORM_PARTITIONING_MODE ? rows*cols : LP/*get from gene parame*/);
-
+		int depths = (int) (mode == 0 ? simul.getDepths()/*getfrom genparm*/ : Math.ceil(Math.sqrt(LP/*get LP from geneoparam*/)));
+		
+		
+		//LP = (mode == DistributedField2D.UNIFORM_PARTITIONING_MODE ? rows*cols : LP/*get from gene parame*/);
+		if(mode == DistributedField2D.UNIFORM_PARTITIONING_MODE) {
+			if(depths==0)
+				LP = rows*cols;
+			else
+				LP = rows*cols*depths;
+		}else
+			LP = LP;
+		
 		int assignedLP = LP;
 
 		if (mode == DistributedField2D.UNIFORM_PARTITIONING_MODE) {  
-			workerlist = divideForUniform(rows,cols,slots,workerlist,assignedLP);
+			if(depths==0) {
+				workerlist = divideForUniform(rows,cols,slots,workerlist,assignedLP);
+			}
+			else {
+				workerlist = divideForUniform(rows,cols,depths,slots,workerlist,assignedLP);
+				}
 
 		} else if (mode == DistributedField2D.NON_UNIFORM_PARTITIONING_MODE) { // non uniform
 			workerlist = divideForNonUniform( LP, slots, workerlist,assignedLP);
 		}				
-
+		
 		return workerlist;
 	}
 
@@ -801,6 +815,50 @@ public class MasterServer implements MultiServerInterface {
 				}
 				w = (w + 1) % slots.size();
 				if (assignedLP < 1) break;
+			}
+		}
+		return workerlist;
+	}
+	
+	private HashMap<String/*idtopic*/, List<CellType>> divideForUniform(int rows, int cols,int depths, HashMap<String, Integer> slots, HashMap<String/*idtopic*/, List<CellType>> workerlist, int assignedLP) {
+		//System.out.println(slots.keySet());
+		ArrayList<String> workerID = new ArrayList<String>(slots.keySet());
+		int w = 0;
+		int lastIndex = -1;
+		boolean goNext = false;
+
+		for (int i = 0; i < rows; i++) {
+			goNext = false;
+			lastIndex = -1;
+
+			for (int j = 0; j < cols;j++) {
+		
+				for(int z=0;z<depths;) {
+					
+					if (slots.get(workerID.get(w)) > 0)
+					{
+						slots.put(workerID.get(w), slots.get(workerID.get(w))-1);
+						List<CellType> cells = workerlist.get(workerID.get(w)) == null ? new ArrayList<CellType>() : workerlist.get(workerID.get(w));
+						cells.add(new CellType(i,j,z));
+						workerlist.put(workerID.get(w),cells);
+						assignedLP--;
+						goNext = true;
+					}
+					if (goNext) {
+						z++;
+						goNext = false;
+						lastIndex=-1;
+					}
+					else {
+						if (lastIndex == w)
+							System.err.println("errore2"); 
+						//					throw new DMasonException("Error! Not enough slots on the workers for the given partitioning.");
+						if (lastIndex == -1) lastIndex = w;
+					}
+					w = (w + 1) % slots.size();
+					if (assignedLP < 1) break;
+				}
+				
 			}
 		}
 		return workerlist;
@@ -921,7 +979,6 @@ public class MasterServer implements MultiServerInterface {
 		getSimulationsList().put(simul.getSimID(), simul);
 		HashMap<String, Integer> slotsAvalaible = slotsAvailableForSimWorker(simul.getTopicList(), infoWorkers);
 		HashMap<String, List<CellType>> assignmentToworkers = assignCellsToWorkers(slotsAvalaible, simul);
-
 		if (assignmentToworkers == null) {return false;}
 
 		getCounterAckSimRcv().put(simul.getSimID(), new AtomicInteger(0));

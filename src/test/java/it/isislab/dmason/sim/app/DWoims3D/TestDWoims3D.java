@@ -9,6 +9,7 @@ import it.isislab.dmason.experimentals.tools.batch.data.EntryParam;
 import it.isislab.dmason.experimentals.tools.batch.data.GeneralParam;
 
 import it.isislab.dmason.sim.engine.DistributedState;
+import it.isislab.dmason.sim.field.DistributedField2D;
 import it.isislab.dmason.sim.field3D.DistributedField3D;
 import it.isislab.dmason.util.connection.ConnectionType;
 import sim.display.Console;
@@ -18,12 +19,12 @@ public class TestDWoims3D {
     private static int numSteps = 1000;//number of step
     private static int rows = 2; //number of rows
     private static int columns = 2; //number of columns
-    private static int lenghts=1;
+    private static int lenghts=2;
     private static int AOI=15; //max distance
     private static int NUM_AGENTS=100; //number of agents
-    private static int WIDTH=400; //field width
-    private static int HEIGHT=400; //field height
-    private static int LENGHT=400;
+    private static int WIDTH=1000; //field width
+    private static int HEIGHT=1000; //field height
+    private static int LENGHT=1000;
     private static int CONNECTION_TYPE=ConnectionType.pureActiveMQ;
     private static String ip="127.0.0.1"; //ip of activemq
     private static String port="61616"; //port of activemq
@@ -31,7 +32,7 @@ public class TestDWoims3D {
 
 
 
-    private static int MODE = DistributedField3D.UNIFORM_PARTITIONING_MODE;
+    private static int MODE = DistributedField2D.UNIFORM_PARTITIONING_MODE;
 
     private static ActiveMQStarter s = new ActiveMQStarter();
     public static void main(String[] args)

@@ -43,7 +43,7 @@ public class DContinuousGrid3DFactory {
         if(topicPrefix == null){throw new DMasonException("Illegal value : topicPrefix should not be null");}
         if(MODE==DistributedField3D.UNIFORM_PARTITIONING_MODE)
         {
-            DistributedField3D field = new DContinuousGrid3DXYZ(discretization,width, 1000,length,sm, max_distance, i, j,z, rows,columns,depths,name,topicPrefix,isToroidal);
+            DistributedField3D field = new DContinuousGrid3DXYZ(discretization,width, height,length,sm, max_distance, i, j,z, rows,columns,depths,name,topicPrefix,isToroidal);
             ((DistributedMultiSchedule)((DistributedState)sm).schedule).add3DField(field);
             return (DContinuousGrid3D)field;
         } else throw new DMasonException("Illegal Distribution Mode");
