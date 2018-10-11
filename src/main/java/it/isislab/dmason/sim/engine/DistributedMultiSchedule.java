@@ -472,7 +472,7 @@ public class DistributedMultiSchedule<E> extends Schedule {
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("PERF_TRACE NON È ATTIVO");
+			//System.out.println("PERF_TRACE NON È ATTIVO");
 		}
 
 		// Done
@@ -816,7 +816,7 @@ public class DistributedMultiSchedule<E> extends Schedule {
 		return res;
 	}
 	
-	public double getTime(int i) {
+	public double getTime(long i) {
 		return timeTable.get(i);
 	}
 
