@@ -494,18 +494,20 @@ public class DistributedMultiSchedule<E> extends Schedule {
 
 						Boolean flag = true;
 						while (flag) {
-							if ((((ArrayList) state.reduceVar.get(field.getName())) != null)
-									&& ((ArrayList) state.reduceVar.get(field.getName())).size() == state.NUMPEERS) {
-								Method[] methods = state.getClass().getDeclaredMethods();
-								for (Method method : methods) {
-									if (method.getName().equals(((ReduceAnnotation) annotation).func())) {
-										field.setAccessible(true);
-										field.set(state, method.invoke(state, state.reduceVar.get(field.getName())));
-										field.setAccessible(false);
+							synchronized (state.reduceVar) {
+								if ((((ArrayList) state.reduceVar.get(field.getName())) != null)
+										&& ((ArrayList) state.reduceVar.get(field.getName())).size() == state.NUMPEERS) {
+									Method[] methods = state.getClass().getDeclaredMethods();
+									for (Method method : methods) {
+										if (method.getName().equals(((ReduceAnnotation) annotation).func())) {
+											field.setAccessible(true);
+											field.set(state, method.invoke(state, state.reduceVar.get(field.getName())));
+											field.setAccessible(false);
+										}
 									}
+									flag = false;
+									state.reduceVar.put(field.getName(), new ArrayList());
 								}
-								flag = false;
-								state.reduceVar.put(field.getName(), new ArrayList());
 							}
 						}
 
