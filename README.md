@@ -1,6 +1,8 @@
 # DMASON
 DMASON is a parallel version of the [MASON](http://cs.gmu.edu/~eclab/projects/mason/) library for writing and running simulations of Agent based simulation models.
 
+**This project is unspopported, now is availble in the principal project MASON (https://github.com/eclab/mason/tree/distributed-3.0)**
+
 Agent-based simulation models are an increasingly popular tool for research and management in many, different and diverse ﬁelds. In executing such simulations the “speed” is one of the most general and important issues. The traditional answer to this issue is to invest resources in deploying a dedicated installation of dedicated computers. D-MASON is a parallel version of the MASON, a library for writing and running Agent-Based simulations. D-MASON is designed to harness unused PCs for increased performances.
 
 ## Why Distributed MASON?
